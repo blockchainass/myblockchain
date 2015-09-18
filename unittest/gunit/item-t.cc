@@ -176,7 +176,7 @@ TEST_F(ItemTest, ItemInt)
 
   EXPECT_EQ(Item::INT_ITEM,      item_int->type());
   EXPECT_EQ(INT_RESULT,          item_int->result_type());
-  EXPECT_EQ(MYSQL_TYPE_LONGLONG, item_int->field_type());
+  EXPECT_EQ(MYBLOCKCHAIN_TYPE_LONGLONG, item_int->field_type());
   EXPECT_EQ(val,                 item_int->val_int());
   EXPECT_DOUBLE_EQ((double) val, item_int->val_real());
   EXPECT_TRUE(item_int->basic_const_item());
@@ -241,7 +241,7 @@ TEST_F(ItemTest, ItemString)
 
   // Create a CHAR field that can store short_str but not long_str
   Mock_field_string field_string(3);
-  EXPECT_EQ(MYSQL_TYPE_STRING, field_string.type());
+  EXPECT_EQ(MYBLOCKCHAIN_TYPE_STRING, field_string.type());
 
   /*
     Tests of Item_string::save_in_field() when storing into a CHAR field.
@@ -272,7 +272,7 @@ TEST_F(ItemTest, ItemString)
   */
   TABLE_SHARE table_share;
   Mock_field_varstring field_varstring(3, &table_share);
-  EXPECT_EQ(MYSQL_TYPE_VARCHAR, field_varstring.type());
+  EXPECT_EQ(MYBLOCKCHAIN_TYPE_VARCHAR, field_varstring.type());
 
   /*
     Tests of Item_string::save_in_field() when storing into a VARCHAR field.
@@ -504,7 +504,7 @@ TEST_F(ItemTest, ItemFuncIntDivUnderflow)
 
 TEST_F(ItemTest, ItemFuncNegLongLongMin)
 {
-  // Bug#14314156 MAIN.FUNC_MATH TEST FAILS ON MYSQL-TRUNK ON PB2
+  // Bug#14314156 MAIN.FUNC_MATH TEST FAILS ON MYBLOCKCHAIN-TRUNK ON PB2
   const longlong longlong_min= LLONG_MIN;
   Item_func_neg *item_neg= new Item_func_neg(new Item_int(longlong_min));
 
@@ -516,7 +516,7 @@ TEST_F(ItemTest, ItemFuncNegLongLongMin)
 
 /*
   This is not an exhaustive test. It simply demonstrates that more of the
-  initializations in mysqld.cc are needed for testing Item_xxx classes.
+  initializations in myblockchaind.cc are needed for testing Item_xxx classes.
 */
 TEST_F(ItemTest, ItemFuncSetUserVar)
 {
@@ -622,22 +622,22 @@ TEST_F(ItemTest, ItemFuncXor)
 
 
 /*
-  Testing MYSQL_TIME_cache.
+  Testing MYBLOCKCHAIN_TIME_cache.
 */
 TEST_F(ItemTest, MysqlTimeCache)
 {
   String str_buff, *str;
-  MYSQL_TIME datetime6=
-  { 2011, 11, 7, 10, 20, 30, 123456, 0, MYSQL_TIMESTAMP_DATETIME };
-  MYSQL_TIME time6=
-  { 0, 0, 0, 10, 20, 30, 123456, 0, MYSQL_TIMESTAMP_TIME };
+  MYBLOCKCHAIN_TIME datetime6=
+  { 2011, 11, 7, 10, 20, 30, 123456, 0, MYBLOCKCHAIN_TIMESTAMP_DATETIME };
+  MYBLOCKCHAIN_TIME time6=
+  { 0, 0, 0, 10, 20, 30, 123456, 0, MYBLOCKCHAIN_TIMESTAMP_TIME };
   struct timeval tv6= {1320661230, 123456};
-  const MYSQL_TIME *ltime;
-  MYSQL_TIME_cache cache;
+  const MYBLOCKCHAIN_TIME *ltime;
+  MYBLOCKCHAIN_TIME_cache cache;
 
   /*
     Testing DATETIME(6).
-    Initializing from MYSQL_TIME.
+    Initializing from MYBLOCKCHAIN_TIME.
   */
   cache.set_datetime(&datetime6, 6);
   EXPECT_EQ(1840440237558456896LL, cache.val_packed());
@@ -663,8 +663,8 @@ TEST_F(ItemTest, MysqlTimeCache)
   EXPECT_EQ(ltime->time_type, datetime6.time_type);
   // Testing eq()
   {
-    MYSQL_TIME datetime6_2= datetime6;
-    MYSQL_TIME_cache cache2;
+    MYBLOCKCHAIN_TIME datetime6_2= datetime6;
+    MYBLOCKCHAIN_TIME_cache cache2;
     datetime6_2.second_part+= 1;
     cache2.set_datetime(&datetime6_2, 6);
     EXPECT_EQ(cache.eq(cache), true);
@@ -686,7 +686,7 @@ TEST_F(ItemTest, MysqlTimeCache)
 
   /*
     Testing TIME(6).
-    Initializing from MYSQL_TIME.
+    Initializing from MYBLOCKCHAIN_TIME.
   */
   cache.set_time(&time6, 6);
   EXPECT_EQ(709173043776LL, cache.val_packed());
@@ -710,8 +710,8 @@ TEST_F(ItemTest, MysqlTimeCache)
   /*
     Testing DATETIME(5)
   */
-  MYSQL_TIME datetime5=
-  { 2011, 11, 7, 10, 20, 30, 123450, 0, MYSQL_TIMESTAMP_DATETIME };
+  MYBLOCKCHAIN_TIME datetime5=
+  { 2011, 11, 7, 10, 20, 30, 123450, 0, MYBLOCKCHAIN_TIMESTAMP_DATETIME };
   cache.set_datetime(&datetime5, 5);
   EXPECT_EQ(1840440237558456890LL, cache.val_packed());
   EXPECT_EQ(5, cache.decimals());
@@ -726,10 +726,10 @@ TEST_F(ItemTest, MysqlTimeCache)
 
   /*
     Testing DATE.
-    Initializing from MYSQL_TIME.
+    Initializing from MYBLOCKCHAIN_TIME.
   */
-  MYSQL_TIME date=
-  { 2011, 11, 7, 0, 0, 0, 0, 0, MYSQL_TIMESTAMP_DATE };
+  MYBLOCKCHAIN_TIME date=
+  { 2011, 11, 7, 0, 0, 0, 0, 0, MYBLOCKCHAIN_TIMESTAMP_DATE };
   cache.set_date(&date);
   EXPECT_EQ(1840439528385413120LL, cache.val_packed());
   EXPECT_EQ(0, cache.decimals());

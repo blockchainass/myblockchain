@@ -1,0 +1,17 @@
+!include include/default_myblockchaind.cnf
+!include include/default_ndbd.cnf
+
+[cluster_config.1]
+NoOfReplicas=                  2
+ndbd=,,,
+ndb_mgmd=
+myblockchaind=
+ndbapi=,,,,
+RestartSubscriberConnectTimeout=25000
+
+[myblockchaind]
+ndbcluster
+ndb-cluster-connection-pool=5
+
+[ENV]
+NDB_CONNECTSTRING=             @myblockchain_cluster.1.ndb_connectstring

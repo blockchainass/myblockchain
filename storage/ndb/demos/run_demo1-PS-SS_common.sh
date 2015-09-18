@@ -24,7 +24,7 @@ if mgmtsrvr -d -c config.ini ; then :; else
   exit 1
 fi
 
-# Start database node 
+# Start blockchain node 
 
 NDB_ID="2"
 NDB_CONNECTSTRING=$NDB_CONNECTSTRING_BASE$NDB_ID

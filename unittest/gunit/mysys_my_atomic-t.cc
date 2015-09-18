@@ -41,9 +41,9 @@ extern "C" void *test_atomic_add(void *arg)
 
     my_atomic_add32(&bad, -x);
   }
-  mysql_mutex_lock(&mutex);
-  if (!--running_threads) mysql_cond_signal(&cond);
-  mysql_mutex_unlock(&mutex);
+  myblockchain_mutex_lock(&mutex);
+  if (!--running_threads) myblockchain_cond_signal(&cond);
+  myblockchain_mutex_unlock(&mutex);
   return 0;
 }
 
@@ -60,13 +60,13 @@ extern "C" void *test_atomic_add64(void *arg)
 
     my_atomic_add64(&a64, -x);
   }
-  mysql_mutex_lock(&mutex);
+  myblockchain_mutex_lock(&mutex);
   if (!--running_threads)
   {
     bad= (a64 != 0);
-    mysql_cond_signal(&cond);
+    myblockchain_cond_signal(&cond);
   }
-  mysql_mutex_unlock(&mutex);
+  myblockchain_mutex_unlock(&mutex);
   return 0;
 }
 
@@ -100,9 +100,9 @@ extern "C" void *test_atomic_fas(void *arg)
 
   my_atomic_add32(&bad, -x);
 
-  mysql_mutex_lock(&mutex);
-  if (!--running_threads) mysql_cond_signal(&cond);
-  mysql_mutex_unlock(&mutex);
+  myblockchain_mutex_lock(&mutex);
+  if (!--running_threads) myblockchain_cond_signal(&cond);
+  myblockchain_mutex_unlock(&mutex);
   return 0;
 }
 
@@ -126,9 +126,9 @@ extern "C" void *test_atomic_cas(void *arg)
       ok= my_atomic_cas32(&bad, &y, y-x);
     } while (!ok) ;
   }
-  mysql_mutex_lock(&mutex);
-  if (!--running_threads) mysql_cond_signal(&cond);
-  mysql_mutex_unlock(&mutex);
+  myblockchain_mutex_lock(&mutex);
+  if (!--running_threads) myblockchain_cond_signal(&cond);
+  myblockchain_mutex_unlock(&mutex);
   return 0;
 }
 
@@ -162,8 +162,8 @@ void do_tests()
 
 TEST(Mysys, Atomic)
 {
-  mysql_mutex_init(0, &mutex, 0);
-  mysql_cond_init(0, &cond);
+  myblockchain_mutex_init(0, &mutex, 0);
+  myblockchain_cond_init(0, &cond);
   my_thread_attr_init(&thr_attr);
 #ifndef _WIN32
   pthread_attr_setdetachstate(&thr_attr, PTHREAD_CREATE_DETACHED);
@@ -171,8 +171,8 @@ TEST(Mysys, Atomic)
 
   do_tests();
 
-  mysql_mutex_destroy(&mutex);
-  mysql_cond_destroy(&cond);
+  myblockchain_mutex_destroy(&mutex);
+  myblockchain_cond_destroy(&cond);
   my_thread_attr_destroy(&thr_attr);
 }
 

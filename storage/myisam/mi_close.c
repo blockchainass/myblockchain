@@ -13,7 +13,7 @@
    along with this program; if not, write to the Free Software
    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA */
 
-/* close a isam-database */
+/* close a isam-blockchain */
 /*
   TODO:
    We need to have a separate mutex on the closed file to allow other threads
@@ -32,16 +32,16 @@ int mi_close(MI_INFO *info)
                       (uint) share->tot_locks));
 
   if (info->open_list.data)
-    mysql_mutex_lock(&THR_LOCK_myisam);
+    myblockchain_mutex_lock(&THR_LOCK_myisam);
   if (info->lock_type == F_EXTRA_LCK)
     info->lock_type=F_UNLCK;			/* HA_EXTRA_NO_USER_CHANGE */
 
   if (info->lock_type != F_UNLCK)
   {
-    if (mi_lock_database(info,F_UNLCK))
+    if (mi_lock_blockchain(info,F_UNLCK))
       error=my_errno;
   }
-  mysql_mutex_lock(&share->intern_lock);
+  myblockchain_mutex_lock(&share->intern_lock);
 
   if (share->options & HA_OPTION_READ_ONLY_DATA)
   {
@@ -57,7 +57,7 @@ int mi_close(MI_INFO *info)
   flag= !--share->reopen;
   if (info->open_list.data)
     myisam_open_list= list_delete(myisam_open_list, &info->open_list);
-  mysql_mutex_unlock(&share->intern_lock);
+  myblockchain_mutex_unlock(&share->intern_lock);
 
   my_free(mi_get_rec_buff_ptr(info, info->rec_buff));
   if (flag)
@@ -81,7 +81,7 @@ int mi_close(MI_INFO *info)
 	mi_state_info_write(share->kfile, &share->state, 1);
       /* Decrement open count must be last I/O on this file. */
       _mi_decrement_open_count(info);
-      if (mysql_file_close(share->kfile, MYF(0)))
+      if (myblockchain_file_close(share->kfile, MYF(0)))
         error = my_errno;
     }
     if (share->file_map)
@@ -97,25 +97,25 @@ int mi_close(MI_INFO *info)
       my_free(share->decode_tables);
     }
     thr_lock_delete(&share->lock);
-    mysql_mutex_destroy(&share->intern_lock);
+    myblockchain_mutex_destroy(&share->intern_lock);
     {
       int i,keys;
       keys = share->state.header.keys;
-      mysql_rwlock_destroy(&share->mmap_lock);
+      myblockchain_rwlock_destroy(&share->mmap_lock);
       for(i=0; i<keys; i++) {
-        mysql_rwlock_destroy(&share->key_root_lock[i]);
+        myblockchain_rwlock_destroy(&share->key_root_lock[i]);
       }
     }
     my_free(info->s);
   }
   if (info->open_list.data)
-    mysql_mutex_unlock(&THR_LOCK_myisam);
+    myblockchain_mutex_unlock(&THR_LOCK_myisam);
   if (info->ftparser_param)
   {
     my_free(info->ftparser_param);
     info->ftparser_param= 0;
   }
-  if (info->dfile >= 0 && mysql_file_close(info->dfile, MYF(0)))
+  if (info->dfile >= 0 && myblockchain_file_close(info->dfile, MYF(0)))
     error = my_errno;
 
   myisam_log_command(MI_LOG_CLOSE,info,NULL,0,error);

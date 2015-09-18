@@ -15,26 +15,26 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
  */
 
-package com.mysql.clusterj.jdbc;
+package com.myblockchain.clusterj.jdbc;
 
-import com.mysql.clusterj.core.util.I18NHelper;
-import com.mysql.clusterj.core.util.Logger;
-import com.mysql.clusterj.core.util.LoggerFactoryService;
-import com.mysql.jdbc.Connection;
+import com.myblockchain.clusterj.core.util.I18NHelper;
+import com.myblockchain.clusterj.core.util.Logger;
+import com.myblockchain.clusterj.core.util.LoggerFactoryService;
+import com.myblockchain.jdbc.Connection;
 
 import java.sql.SQLException;
 import java.sql.Savepoint;
 
 import java.util.Properties;
 
-/** This interceptor is a plugin for the MySQL JDBC driver, Connector-J.
+/** This interceptor is a plugin for the MyBlockchain JDBC driver, Connector-J.
  * It is called for each change of state of the associated connection.
  * It is registered with the connection via the connection URL parameter
- * connectionLifecycleInterceptors=com.mysql.clusterj.jdbc.ConnectionLifecycleInterceptor.
+ * connectionLifecycleInterceptors=com.myblockchain.clusterj.jdbc.ConnectionLifecycleInterceptor.
  * It must be used in conjunction with the StatementInterceptor.
  */
 public class ConnectionLifecycleInterceptor
-            implements com.mysql.jdbc.ConnectionLifecycleInterceptor {
+            implements com.myblockchain.jdbc.ConnectionLifecycleInterceptor {
 
     /** My message translator */
     static final I18NHelper local = I18NHelper.getInstance(ConnectionLifecycleInterceptor.class);

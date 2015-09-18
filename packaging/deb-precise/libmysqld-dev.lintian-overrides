@@ -14,6 +14,6 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 
 # Additional license file is needed so overriding this warning
-libmysqld-dev: extra-license-file usr/share/doc/libmysqld-dev/LICENSE.mysql
-libmysqld-dev: extra-license-file usr/share/doc/libmysqld-dev/COPYING.gz
-libmysqld-dev: copyright-should-refer-to-common-license-file-for-lgpl
+libmyblockchaind-dev: extra-license-file usr/share/doc/libmyblockchaind-dev/LICENSE.myblockchain
+libmyblockchaind-dev: extra-license-file usr/share/doc/libmyblockchaind-dev/COPYING.gz
+libmyblockchaind-dev: copyright-should-refer-to-common-license-file-for-lgpl

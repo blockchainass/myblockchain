@@ -1,0 +1,29 @@
+myblockchainadmin: [Warning] Using a password on the command line interface can be insecure.
+myblockchaind is alive
+myblockchainadmin: [ERROR] unknown variable 'blockchain=db1'
+myblockchainadmin: [Warning] unknown variable 'loose-blockchain=db2'
+myblockchainadmin: [Warning] Using a password on the command line interface can be insecure.
+myblockchaind is alive
+myblockchaind is alive
+#
+# Bug#58221 : myblockchainadmin --sleep=x --count=x keeps looping
+#
+# Executing myblockchainadmin with --sleep=1 and --count=2.
+# Done.
+# Displaying the output :
+myblockchaind is alive
+myblockchaind is alive
+#
+# BUG#11766184 - 59234: cmdline clients crash --defaults-extra-file
+#                with no .cnf or .ini extension.
+#
+# Creating an empty file 'cnf_file'
+# Using --defaults-extra-file option with 'cnf_file'.
+myblockchaind is alive
+#
+# Bug#12688860 : SECURITY RECOMMENDATION: PASSWORDS ON CLI
+#
+myblockchainadmin: [Warning] Using a password on the command line interface can be insecure.
+myblockchaind is alive
+
+End of tests

@@ -1,0 +1,1 @@
+"--replicate-rewrite-db=test->rewrite" "--replicate-rewrite-db=myblockchaintest1->test"  "--replicate-rewrite-db=blockchain_master_temp_01->blockchain_slave_temp_01" "--replicate-rewrite-db=blockchain_master_temp_02->blockchain_slave_temp_02" "--replicate-rewrite-db=blockchain_master_temp_03->blockchain_slave_temp_03"

@@ -678,7 +678,7 @@ InitConfigFileParser::store_in_properties(Vector<struct my_option>& options,
     const char* section = options[i].comment;
     if (!section)
     {
-      // Option which is not to be saved, like "ndbd", "ndbapi", "mysqld" etc.
+      // Option which is not to be saved, like "ndbd", "ndbapi", "myblockchaind" etc.
       continue;
     }
 
@@ -740,7 +740,7 @@ load_defaults(Vector<struct my_option>& options, const char* groups[])
   BaseString group_suffix;
 
   const char *save_file = my_defaults_file;
-#if MYSQL_VERSION_ID >= 50508
+#if MYBLOCKCHAIN_VERSION_ID >= 50508
   const
 #endif
   char *save_extra_file = my_defaults_extra_file;
@@ -849,10 +849,10 @@ InitConfigFileParser::parse_mycnf()
     }
   }
   
-  struct my_option *ndbd, *ndb_mgmd, *mysqld, *api;
+  struct my_option *ndbd, *ndb_mgmd, *myblockchaind, *api;
 
   /**
-   * Add ndbd, ndb_mgmd, api/mysqld
+   * Add ndbd, ndb_mgmd, api/myblockchaind
    */
   Uint32 idx = options.size();
   {
@@ -872,7 +872,7 @@ InitConfigFileParser::parse_mycnf()
     opt.arg_type = REQUIRED_ARG;
     options.push_back(opt);
 
-    opt.name = "mysqld";
+    opt.name = "myblockchaind";
     opt.id = 256;
     opt.value = (uchar**)malloc(sizeof(char*));
     opt.var_type = GET_STR;
@@ -891,7 +891,7 @@ InitConfigFileParser::parse_mycnf()
 
     ndbd = &options[idx];
     ndb_mgmd = &options[idx+1];
-    mysqld = &options[idx+2];
+    myblockchaind = &options[idx+2];
     api = &options[idx+3];
   }
   
@@ -919,7 +919,7 @@ InitConfigFileParser::parse_mycnf()
       {
 	{ ndb_mgmd, "MGM" },
 	{ ndbd, "DB" },
-	{ mysqld, "API" },
+	{ myblockchaind, "API" },
 	{ api, "API" }
       };
 

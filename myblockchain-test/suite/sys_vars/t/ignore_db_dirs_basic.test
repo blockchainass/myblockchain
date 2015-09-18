@@ -1,0 +1,21 @@
+-- source include/not_embedded.inc
+select @@ignore_db_dirs;
+let $MYBLOCKCHAIND_DATADIR= `select @@datadir`;
+
+mkdir $MYBLOCKCHAIND_DATADIR/.myblockchaingui;
+mkdir $MYBLOCKCHAIND_DATADIR/.otherdir;
+mkdir $MYBLOCKCHAIND_DATADIR/lost+found;
+--echo # Check that SHOW DATABASES ignores all directories from
+--echo # @@ignore_db_dirs and all directories with names starting
+--echo # with '.'
+SHOW DATABASES;
+rmdir $MYBLOCKCHAIND_DATADIR/.myblockchaingui;
+rmdir $MYBLOCKCHAIND_DATADIR/.otherdir;
+rmdir $MYBLOCKCHAIND_DATADIR/lost+found;
+
+--error ER_INCORRECT_GLOBAL_LOCAL_VAR
+SET @@global.ignore_db_dirs = 'aha';
+--error ER_INCORRECT_GLOBAL_LOCAL_VAR
+SET @@local.ignore_db_dirs = 'aha';
+--error ER_INCORRECT_GLOBAL_LOCAL_VAR
+SET @@ignore_db_dirs = 'aha';

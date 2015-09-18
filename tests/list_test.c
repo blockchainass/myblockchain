@@ -18,7 +18,7 @@
 #endif
 #include <stdio.h>
 #include <stdlib.h>
-#include "mysql.h"
+#include "myblockchain.h"
 
 #define SELECT_QUERY "select name from test where num = %d"
 
@@ -26,8 +26,8 @@
 int main(int argc, char **argv)
 {
   int	count, num;
-  MYSQL mysql,*sock;
-  MYSQL_RES *res;
+  MYBLOCKCHAIN myblockchain,*sock;
+  MYBLOCKCHAIN_RES *res;
   char	qbuf[160];
 
   if (argc != 2)
@@ -36,35 +36,35 @@ int main(int argc, char **argv)
     exit(1);
   }
 
-  if (!(sock = mysql_connect(&mysql,NULL,0,0)))
+  if (!(sock = myblockchain_connect(&myblockchain,NULL,0,0)))
   {
-    fprintf(stderr,"Couldn't connect to engine!\n%s\n\n",mysql_error(&mysql));
+    fprintf(stderr,"Couldn't connect to engine!\n%s\n\n",myblockchain_error(&myblockchain));
     perror("");
     exit(1);
   }
-  mysql.reconnect= 1;
+  myblockchain.reconnect= 1;
 
-  if (mysql_select_db(sock,argv[1]) < 0)
+  if (myblockchain_select_db(sock,argv[1]) < 0)
   {
-    fprintf(stderr,"Couldn't select database %s!\n%s\n",argv[1],
-	    mysql_error(sock));
+    fprintf(stderr,"Couldn't select blockchain %s!\n%s\n",argv[1],
+	    myblockchain_error(sock));
     exit(1);
   }
 
-  if (!(res=mysql_list_dbs(sock,NULL)))
+  if (!(res=myblockchain_list_dbs(sock,NULL)))
   {
-    fprintf(stderr,"Couldn't list dbs!\n%s\n",mysql_error(sock));
+    fprintf(stderr,"Couldn't list dbs!\n%s\n",myblockchain_error(sock));
     exit(1);
   }
-  mysql_free_result(res);
-  if (!(res=mysql_list_tables(sock,NULL)))
+  myblockchain_free_result(res);
+  if (!(res=myblockchain_list_tables(sock,NULL)))
   {
-    fprintf(stderr,"Couldn't list tables!\n%s\n",mysql_error(sock));
+    fprintf(stderr,"Couldn't list tables!\n%s\n",myblockchain_error(sock));
     exit(1);
   }
-  mysql_free_result(res);
+  myblockchain_free_result(res);
 
-  mysql_close(sock);
+  myblockchain_close(sock);
   exit(0);
   return 0;
 }

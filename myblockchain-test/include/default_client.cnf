@@ -1,0 +1,19 @@
+#
+# We use default-character-set=latin1 to avoid character set auto-detection
+# when running tests - not to depend on the current machine localization.
+#
+
+[myblockchain]
+default-character-set=latin1
+
+[myblockchainshow]
+default-character-set=latin1
+
+[myblockchainimport]
+default-character-set=latin1
+
+[myblockchaincheck]
+default-character-set=latin1
+
+[myblockchain_upgrade]
+default-character-set=latin1

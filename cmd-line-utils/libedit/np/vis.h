@@ -76,7 +76,7 @@
  * unvis flags
  */
 #define	UNVIS_END	_VIS_END	/* no more characters */
-/* XXXMYSQL */
+/* XXXMYBLOCKCHAIN */
 #ifndef __RENAME
 #define __RENAME(x)
 #endif

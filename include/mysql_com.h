@@ -14,11 +14,11 @@
    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA */
 
 /*
-** Common definition between mysql server & client
+** Common definition between myblockchain server & client
 */
 
-#ifndef _mysql_com_h
-#define _mysql_com_h
+#ifndef _myblockchain_com_h
+#define _myblockchain_com_h
 #include "binary_log_types.h"
 #define HOSTNAME_LENGTH 60
 #define SYSTEM_CHARSET_MBMAXLEN 3
@@ -31,7 +31,7 @@
 #endif
 #define USERNAME_LENGTH         (USERNAME_CHAR_LENGTH*SYSTEM_CHARSET_MBMAXLEN)
 
-#define MYSQL_AUTODETECT_CHARSET_NAME "auto"
+#define MYBLOCKCHAIN_AUTODETECT_CHARSET_NAME "auto"
 
 #define SERVER_VERSION_LENGTH 60
 #define SQLSTATE_LENGTH 5
@@ -56,7 +56,7 @@
 /*
   USER_HOST_BUFF_SIZE -- length of string buffer, that is enough to contain
   username and hostname parts of the user identifier with trailing zero in
-  MySQL standard format:
+  MyBlockchain standard format:
   user_name_part@host_name_part\0
 */
 #define USER_HOST_BUFF_SIZE HOSTNAME_LENGTH + USERNAME_LENGTH + 2
@@ -66,8 +66,8 @@
 
 
 #if defined(_WIN32)
-#define MYSQL_NAMEDPIPE "MySQL"
-#define MYSQL_SERVICENAME "MySQL"
+#define MYBLOCKCHAIN_NAMEDPIPE "MyBlockchain"
+#define MYBLOCKCHAIN_SERVICENAME "MyBlockchain"
 #endif /* _WIN32 */
 
 /*
@@ -161,7 +161,7 @@ enum enum_server_command
 #define REFRESH_GENERAL_LOG    4096 /* Flush the general log */
 #define REFRESH_SLOW_LOG       8192 /* Flush the slow query log */
 
-/* The following can't be set with mysql_refresh() */
+/* The following can't be set with myblockchain_refresh() */
 #define REFRESH_READ_LOCK	16384	/* Lock tables for read */
 #define REFRESH_FAST		32768	/* Intern flag */
 
@@ -177,7 +177,7 @@ enum enum_server_command
 #define CLIENT_FOUND_ROWS	2	/* Found instead of affected rows */
 #define CLIENT_LONG_FLAG	4	/* Get all column flags */
 #define CLIENT_CONNECT_WITH_DB	8	/* One can specify db on connect */
-#define CLIENT_NO_SCHEMA	16	/* Don't allow database.table.column */
+#define CLIENT_NO_SCHEMA	16	/* Don't allow blockchain.table.column */
 #define CLIENT_COMPRESS		32	/* Can use compression protocol */
 #define CLIENT_ODBC		64	/* Odbc client */
 #define CLIENT_LOCAL_FILES	128	/* Can use LOAD DATA LOCAL */
@@ -281,7 +281,7 @@ enum enum_server_command
   COM_STMT_FETCH command.
 */
 #define SERVER_STATUS_LAST_ROW_SENT 128
-#define SERVER_STATUS_DB_DROPPED        256 /* A database was dropped */
+#define SERVER_STATUS_DB_DROPPED        256 /* A blockchain was dropped */
 #define SERVER_STATUS_NO_BACKSLASH_ESCAPES 512
 /**
   Sent to the client if after a prepared statement reprepare
@@ -329,7 +329,7 @@ enum enum_server_command
                                  SERVER_STATUS_LAST_ROW_SENT|\
                                  SERVER_SESSION_STATE_CHANGED)
 
-#define MYSQL_ERRMSG_SIZE	512
+#define MYBLOCKCHAIN_ERRMSG_SIZE	512
 #define NET_READ_TIMEOUT	30		/* Timeout on read */
 #define NET_WRITE_TIMEOUT	60		/* Timeout on write */
 #define NET_WAIT_TIMEOUT	8*60*60		/* Wait for new query */
@@ -381,8 +381,8 @@ typedef struct st_net {
   unsigned char error; 
   my_bool unused4; /* Please remove with the next incompatible ABI change. */
   my_bool unused5; /* Please remove with the next incompatible ABI change. */
-  /** Client library error message buffer. Actually belongs to struct MYSQL. */
-  char last_error[MYSQL_ERRMSG_SIZE];
+  /** Client library error message buffer. Actually belongs to struct MYBLOCKCHAIN. */
+  char last_error[MYBLOCKCHAIN_ERRMSG_SIZE];
   /** Client library sqlstate buffer. Set along with the error message. */
   char sqlstate[SQLSTATE_LENGTH+1];
   /**
@@ -390,7 +390,7 @@ typedef struct st_net {
     Any program linking with the networking library can use this pointer,
     which is handy when private connection specific data needs to be
     maintained.
-    The mysqld server process uses this pointer internally,
+    The myblockchaind server process uses this pointer internally,
     to maintain the server internal instrumentation for the connection.
   */
   void *extension;
@@ -400,45 +400,45 @@ typedef struct st_net {
 #define packet_error (~(unsigned long) 0)
 /* For backward compatibility */
 #define CLIENT_MULTI_QUERIES    CLIENT_MULTI_STATEMENTS    
-#define FIELD_TYPE_DECIMAL     MYSQL_TYPE_DECIMAL
-#define FIELD_TYPE_NEWDECIMAL  MYSQL_TYPE_NEWDECIMAL
-#define FIELD_TYPE_TINY        MYSQL_TYPE_TINY
-#define FIELD_TYPE_SHORT       MYSQL_TYPE_SHORT
-#define FIELD_TYPE_LONG        MYSQL_TYPE_LONG
-#define FIELD_TYPE_FLOAT       MYSQL_TYPE_FLOAT
-#define FIELD_TYPE_DOUBLE      MYSQL_TYPE_DOUBLE
-#define FIELD_TYPE_NULL        MYSQL_TYPE_NULL
-#define FIELD_TYPE_TIMESTAMP   MYSQL_TYPE_TIMESTAMP
-#define FIELD_TYPE_LONGLONG    MYSQL_TYPE_LONGLONG
-#define FIELD_TYPE_INT24       MYSQL_TYPE_INT24
-#define FIELD_TYPE_DATE        MYSQL_TYPE_DATE
-#define FIELD_TYPE_TIME        MYSQL_TYPE_TIME
-#define FIELD_TYPE_DATETIME    MYSQL_TYPE_DATETIME
-#define FIELD_TYPE_YEAR        MYSQL_TYPE_YEAR
-#define FIELD_TYPE_NEWDATE     MYSQL_TYPE_NEWDATE
-#define FIELD_TYPE_ENUM        MYSQL_TYPE_ENUM
-#define FIELD_TYPE_SET         MYSQL_TYPE_SET
-#define FIELD_TYPE_TINY_BLOB   MYSQL_TYPE_TINY_BLOB
-#define FIELD_TYPE_MEDIUM_BLOB MYSQL_TYPE_MEDIUM_BLOB
-#define FIELD_TYPE_LONG_BLOB   MYSQL_TYPE_LONG_BLOB
-#define FIELD_TYPE_BLOB        MYSQL_TYPE_BLOB
-#define FIELD_TYPE_VAR_STRING  MYSQL_TYPE_VAR_STRING
-#define FIELD_TYPE_STRING      MYSQL_TYPE_STRING
-#define FIELD_TYPE_CHAR        MYSQL_TYPE_TINY
-#define FIELD_TYPE_INTERVAL    MYSQL_TYPE_ENUM
-#define FIELD_TYPE_GEOMETRY    MYSQL_TYPE_GEOMETRY
-#define FIELD_TYPE_BIT         MYSQL_TYPE_BIT
+#define FIELD_TYPE_DECIMAL     MYBLOCKCHAIN_TYPE_DECIMAL
+#define FIELD_TYPE_NEWDECIMAL  MYBLOCKCHAIN_TYPE_NEWDECIMAL
+#define FIELD_TYPE_TINY        MYBLOCKCHAIN_TYPE_TINY
+#define FIELD_TYPE_SHORT       MYBLOCKCHAIN_TYPE_SHORT
+#define FIELD_TYPE_LONG        MYBLOCKCHAIN_TYPE_LONG
+#define FIELD_TYPE_FLOAT       MYBLOCKCHAIN_TYPE_FLOAT
+#define FIELD_TYPE_DOUBLE      MYBLOCKCHAIN_TYPE_DOUBLE
+#define FIELD_TYPE_NULL        MYBLOCKCHAIN_TYPE_NULL
+#define FIELD_TYPE_TIMESTAMP   MYBLOCKCHAIN_TYPE_TIMESTAMP
+#define FIELD_TYPE_LONGLONG    MYBLOCKCHAIN_TYPE_LONGLONG
+#define FIELD_TYPE_INT24       MYBLOCKCHAIN_TYPE_INT24
+#define FIELD_TYPE_DATE        MYBLOCKCHAIN_TYPE_DATE
+#define FIELD_TYPE_TIME        MYBLOCKCHAIN_TYPE_TIME
+#define FIELD_TYPE_DATETIME    MYBLOCKCHAIN_TYPE_DATETIME
+#define FIELD_TYPE_YEAR        MYBLOCKCHAIN_TYPE_YEAR
+#define FIELD_TYPE_NEWDATE     MYBLOCKCHAIN_TYPE_NEWDATE
+#define FIELD_TYPE_ENUM        MYBLOCKCHAIN_TYPE_ENUM
+#define FIELD_TYPE_SET         MYBLOCKCHAIN_TYPE_SET
+#define FIELD_TYPE_TINY_BLOB   MYBLOCKCHAIN_TYPE_TINY_BLOB
+#define FIELD_TYPE_MEDIUM_BLOB MYBLOCKCHAIN_TYPE_MEDIUM_BLOB
+#define FIELD_TYPE_LONG_BLOB   MYBLOCKCHAIN_TYPE_LONG_BLOB
+#define FIELD_TYPE_BLOB        MYBLOCKCHAIN_TYPE_BLOB
+#define FIELD_TYPE_VAR_STRING  MYBLOCKCHAIN_TYPE_VAR_STRING
+#define FIELD_TYPE_STRING      MYBLOCKCHAIN_TYPE_STRING
+#define FIELD_TYPE_CHAR        MYBLOCKCHAIN_TYPE_TINY
+#define FIELD_TYPE_INTERVAL    MYBLOCKCHAIN_TYPE_ENUM
+#define FIELD_TYPE_GEOMETRY    MYBLOCKCHAIN_TYPE_GEOMETRY
+#define FIELD_TYPE_BIT         MYBLOCKCHAIN_TYPE_BIT
 
 
 /* Shutdown/kill enums and constants */ 
 
 /* Bits for THD::killable. */
-#define MYSQL_SHUTDOWN_KILLABLE_CONNECT    (unsigned char)(1 << 0)
-#define MYSQL_SHUTDOWN_KILLABLE_TRANS      (unsigned char)(1 << 1)
-#define MYSQL_SHUTDOWN_KILLABLE_LOCK_TABLE (unsigned char)(1 << 2)
-#define MYSQL_SHUTDOWN_KILLABLE_UPDATE     (unsigned char)(1 << 3)
+#define MYBLOCKCHAIN_SHUTDOWN_KILLABLE_CONNECT    (unsigned char)(1 << 0)
+#define MYBLOCKCHAIN_SHUTDOWN_KILLABLE_TRANS      (unsigned char)(1 << 1)
+#define MYBLOCKCHAIN_SHUTDOWN_KILLABLE_LOCK_TABLE (unsigned char)(1 << 2)
+#define MYBLOCKCHAIN_SHUTDOWN_KILLABLE_UPDATE     (unsigned char)(1 << 3)
 
-enum mysql_enum_shutdown_level {
+enum myblockchain_enum_shutdown_level {
   /*
     We want levels to be in growing order of hardness (because we use number
     comparisons). Note that DEFAULT does not respect the growing property, but
@@ -446,15 +446,15 @@ enum mysql_enum_shutdown_level {
   */
   SHUTDOWN_DEFAULT = 0,
   /* wait for existing connections to finish */
-  SHUTDOWN_WAIT_CONNECTIONS= MYSQL_SHUTDOWN_KILLABLE_CONNECT,
+  SHUTDOWN_WAIT_CONNECTIONS= MYBLOCKCHAIN_SHUTDOWN_KILLABLE_CONNECT,
   /* wait for existing trans to finish */
-  SHUTDOWN_WAIT_TRANSACTIONS= MYSQL_SHUTDOWN_KILLABLE_TRANS,
+  SHUTDOWN_WAIT_TRANSACTIONS= MYBLOCKCHAIN_SHUTDOWN_KILLABLE_TRANS,
   /* wait for existing updates to finish (=> no partial MyISAM update) */
-  SHUTDOWN_WAIT_UPDATES= MYSQL_SHUTDOWN_KILLABLE_UPDATE,
+  SHUTDOWN_WAIT_UPDATES= MYBLOCKCHAIN_SHUTDOWN_KILLABLE_UPDATE,
   /* flush InnoDB buffers and other storage engines' buffers*/
-  SHUTDOWN_WAIT_ALL_BUFFERS= (MYSQL_SHUTDOWN_KILLABLE_UPDATE << 1),
+  SHUTDOWN_WAIT_ALL_BUFFERS= (MYBLOCKCHAIN_SHUTDOWN_KILLABLE_UPDATE << 1),
   /* don't flush InnoDB buffers, flush other storage engines' buffers*/
-  SHUTDOWN_WAIT_CRITICAL_BUFFERS= (MYSQL_SHUTDOWN_KILLABLE_UPDATE << 1) + 1,
+  SHUTDOWN_WAIT_CRITICAL_BUFFERS= (MYBLOCKCHAIN_SHUTDOWN_KILLABLE_UPDATE << 1) + 1,
   /* Now the 2 levels of the KILL command */
   KILL_QUERY= 254,
   KILL_CONNECTION= 255
@@ -470,11 +470,11 @@ enum enum_cursor_type
 };
 
 
-/* options for mysql_set_option */
-enum enum_mysql_set_option
+/* options for myblockchain_set_option */
+enum enum_myblockchain_set_option
 {
-  MYSQL_OPTION_MULTI_STATEMENTS_ON,
-  MYSQL_OPTION_MULTI_STATEMENTS_OFF
+  MYBLOCKCHAIN_OPTION_MULTI_STATEMENTS_ON,
+  MYBLOCKCHAIN_OPTION_MULTI_STATEMENTS_OFF
 };
 
 /*
@@ -607,7 +607,7 @@ char *octet2hex(char *to, const char *str, unsigned int len);
 /* end of password.c */
 
 char *get_tty_password(const char *opt_message);
-const char *mysql_errno_to_sqlstate(unsigned int mysql_errno);
+const char *myblockchain_errno_to_sqlstate(unsigned int myblockchain_errno);
 
 /* Some other useful functions */
 
@@ -626,8 +626,8 @@ unsigned int net_length_size(ulonglong num);
 #endif
 
 #define NULL_LENGTH ((unsigned long) ~0) /* For net_store_length */
-#define MYSQL_STMT_HEADER       4
-#define MYSQL_LONG_DATA_HEADER  6
+#define MYBLOCKCHAIN_STMT_HEADER       4
+#define MYBLOCKCHAIN_LONG_DATA_HEADER  6
 
 #define NOT_FIXED_DEC           31
 #endif

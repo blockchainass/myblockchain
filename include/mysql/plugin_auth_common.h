@@ -1,4 +1,4 @@
-#ifndef MYSQL_PLUGIN_AUTH_COMMON_INCLUDED
+#ifndef MYBLOCKCHAIN_PLUGIN_AUTH_COMMON_INCLUDED
 /* Copyright (c) 2010, 2015, Oracle and/or its affiliates. All rights reserved.
 
    This program is free software; you can redistribute it and/or modify
@@ -20,10 +20,10 @@
   This file defines constants and data structures that are the same for
   both client- and server-side authentication plugins.
 */
-#define MYSQL_PLUGIN_AUTH_COMMON_INCLUDED
+#define MYBLOCKCHAIN_PLUGIN_AUTH_COMMON_INCLUDED
 
 /** the max allowed length for a user name */
-#define MYSQL_USERNAME_LENGTH 96
+#define MYBLOCKCHAIN_USERNAME_LENGTH 96
 
 /**
   return values of the plugin authenticate_user() method.
@@ -52,12 +52,12 @@
 #define CR_AUTH_USER_CREDENTIALS 1
 /**
   Authentication failed. Additionally, all other CR_xxx values
-  (libmysql error code) can be used too.
+  (libmyblockchain error code) can be used too.
 
   The client plugin may set the error code and the error message directly
-  in the MYSQL structure and return CR_ERROR. If a CR_xxx specific error
-  code was returned, an error message in the MYSQL structure will be
-  overwritten. If CR_ERROR is returned without setting the error in MYSQL,
+  in the MYBLOCKCHAIN structure and return CR_ERROR. If a CR_xxx specific error
+  code was returned, an error message in the MYBLOCKCHAIN structure will be
+  overwritten. If CR_ERROR is returned without setting the error in MYBLOCKCHAIN,
   CR_UNKNOWN_ERROR will be user.
 */
 #define CR_ERROR 0
@@ -65,7 +65,7 @@
   Authentication (client part) was successful. It does not mean that the
   authentication as a whole was successful, usually it only means
   that the client was able to send the user name and the password to the
-  server. If CR_OK is returned, the libmysql reads the next packet expecting
+  server. If CR_OK is returned, the libmyblockchain reads the next packet expecting
   it to be one of OK, ERROR, or CHANGE_PLUGIN packets.
 */
 #define CR_OK -1
@@ -73,8 +73,8 @@
   Authentication was successful.
   It means that the client has done its part successfully and also that
   a plugin has read the last packet (one of OK, ERROR, CHANGE_PLUGIN).
-  In this case, libmysql will not read a packet from the server,
-  but it will use the data at mysql->net.read_pos.
+  In this case, libmyblockchain will not read a packet from the server,
+  but it will use the data at myblockchain->net.read_pos.
 
   A plugin may return this value if the number of roundtrips in the
   authentication protocol is not known in advance, and the client plugin
@@ -102,13 +102,13 @@ authenticated_as when proxy mapping should be done by the server.
 
 typedef struct st_plugin_vio_info
 {
-  enum { MYSQL_VIO_INVALID, MYSQL_VIO_TCP, MYSQL_VIO_SOCKET,
-         MYSQL_VIO_PIPE, MYSQL_VIO_MEMORY } protocol;
+  enum { MYBLOCKCHAIN_VIO_INVALID, MYBLOCKCHAIN_VIO_TCP, MYBLOCKCHAIN_VIO_SOCKET,
+         MYBLOCKCHAIN_VIO_PIPE, MYBLOCKCHAIN_VIO_MEMORY } protocol;
   int socket;     /**< it's set, if the protocol is SOCKET or TCP */
 #ifdef _WIN32
   HANDLE handle;  /**< it's set, if the protocol is PIPE or MEMORY */
 #endif
-} MYSQL_PLUGIN_VIO_INFO;
+} MYBLOCKCHAIN_PLUGIN_VIO_INFO;
 
 /**
   Provides plugin access to communication channel
@@ -137,7 +137,7 @@ typedef struct st_plugin_vio
   */
   void (*info)(struct st_plugin_vio *vio, struct st_plugin_vio_info *info);
 
-} MYSQL_PLUGIN_VIO;
+} MYBLOCKCHAIN_PLUGIN_VIO;
 
 #endif
 

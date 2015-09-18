@@ -38,7 +38,7 @@ bool PFS_system_variable_cache::init_show_var_array(enum_var_type scope, bool st
   DBUG_ASSERT(!m_initialized);
   m_query_scope= scope;
 
-  mysql_rwlock_rdlock(&LOCK_system_variables_hash);
+  myblockchain_rwlock_rdlock(&LOCK_system_variables_hash);
   DEBUG_SYNC(m_current_thd, "acquired_LOCK_system_variables_hash");
 
   /* Record the system variable hash version to detect subsequent changes. */
@@ -47,7 +47,7 @@ bool PFS_system_variable_cache::init_show_var_array(enum_var_type scope, bool st
   /* Build the SHOW_VAR array from the system variable hash. */
   enumerate_sys_vars(m_current_thd, &m_show_var_array, true, m_query_scope, strict);
 
-  mysql_rwlock_unlock(&LOCK_system_variables_hash);
+  myblockchain_rwlock_unlock(&LOCK_system_variables_hash);
 
   /* Increase cache size if necessary. */
   m_cache.reserve(m_show_var_array.size());
@@ -63,12 +63,12 @@ bool PFS_system_variable_cache::init_show_var_array(enum_var_type scope, bool st
 bool PFS_system_variable_cache::do_initialize_session(void)
 {
   /* Block plugins from unloading. */
-  mysql_mutex_lock(&LOCK_plugin_delete);
+  myblockchain_mutex_lock(&LOCK_plugin_delete);
 
   /* Build the array. */
   bool ret= init_show_var_array(OPT_SESSION, true);
 
-  mysql_mutex_unlock(&LOCK_plugin_delete);
+  myblockchain_mutex_unlock(&LOCK_plugin_delete);
   return ret;
 }
 
@@ -104,7 +104,7 @@ bool PFS_system_variable_cache::match_scope(int scope)
 int PFS_system_variable_cache::do_materialize_global(void)
 {
   /* Block plugins from unloading. */
-  mysql_mutex_lock(&LOCK_plugin_delete);
+  myblockchain_mutex_lock(&LOCK_plugin_delete);
 
   m_materialized= false;
 
@@ -129,7 +129,7 @@ int PFS_system_variable_cache::do_materialize_global(void)
     {
       /*
         PLEASE READ:
-        http://dev.mysql.com/doc/relnotes/mysql/5.7/en/news-5-7-6.html
+        http://dev.myblockchain.com/doc/relnotes/myblockchain/5.7/en/news-5-7-6.html
 
         SQL_LOG_BIN is:
         - declared in sys_vars.cc as both GLOBAL and SESSION in 5.7
@@ -164,7 +164,7 @@ int PFS_system_variable_cache::do_materialize_global(void)
   }
 
   m_materialized= true;
-  mysql_mutex_unlock(&LOCK_plugin_delete);
+  myblockchain_mutex_unlock(&LOCK_plugin_delete);
   return 0;
 }
 
@@ -181,7 +181,7 @@ int PFS_system_variable_cache::do_materialize_all(THD *unsafe_thd)
   m_cache.clear();
 
   /* Block plugins from unloading. */
-  mysql_mutex_lock(&LOCK_plugin_delete);
+  myblockchain_mutex_lock(&LOCK_plugin_delete);
 
   /*
      Build array of SHOW_VARs from system variable hash. Do this within
@@ -203,13 +203,13 @@ int PFS_system_variable_cache::do_materialize_all(THD *unsafe_thd)
     }
 
     /* Release lock taken in get_THD(). */
-    mysql_mutex_unlock(&m_safe_thd->LOCK_thd_data);
+    myblockchain_mutex_unlock(&m_safe_thd->LOCK_thd_data);
 
     m_materialized= true;
     ret= 0;
   }
 
-  mysql_mutex_unlock(&LOCK_plugin_delete);
+  myblockchain_mutex_unlock(&LOCK_plugin_delete);
   return ret;
 }
 
@@ -276,7 +276,7 @@ int PFS_system_variable_cache::do_materialize_session(PFS_thread *pfs_thread)
   m_cache.clear();
 
   /* Block plugins from unloading. */
-  mysql_mutex_lock(&LOCK_plugin_delete);
+  myblockchain_mutex_lock(&LOCK_plugin_delete);
 
   /* The SHOW_VAR array must be initialized externally. */
   DBUG_ASSERT(m_initialized);
@@ -303,7 +303,7 @@ int PFS_system_variable_cache::do_materialize_session(PFS_thread *pfs_thread)
     }
 
     /* Release lock taken in get_THD(). */
-    mysql_mutex_unlock(&m_safe_thd->LOCK_thd_data);
+    myblockchain_mutex_unlock(&m_safe_thd->LOCK_thd_data);
 
     m_materialized= true;
     ret= 0;
@@ -313,7 +313,7 @@ int PFS_system_variable_cache::do_materialize_session(PFS_thread *pfs_thread)
   if (m_use_mem_root)
     clear_mem_root();
 
-  mysql_mutex_unlock(&LOCK_plugin_delete);
+  myblockchain_mutex_unlock(&LOCK_plugin_delete);
   return ret;
 }
 
@@ -331,7 +331,7 @@ int PFS_system_variable_cache::do_materialize_session(PFS_thread *pfs_thread, ui
   m_cache.clear();
 
   /* Block plugins from unloading. */
-  mysql_mutex_lock(&LOCK_plugin_delete);
+  myblockchain_mutex_lock(&LOCK_plugin_delete);
 
   /* The SHOW_VAR array must be initialized externally. */
   DBUG_ASSERT(m_initialized);
@@ -356,13 +356,13 @@ int PFS_system_variable_cache::do_materialize_session(PFS_thread *pfs_thread, ui
     }
 
     /* Release lock taken in get_THD(). */
-    mysql_mutex_unlock(&m_safe_thd->LOCK_thd_data);
+    myblockchain_mutex_unlock(&m_safe_thd->LOCK_thd_data);
 
     m_materialized= true;
     ret= 0;
   }
 
-  mysql_mutex_unlock(&LOCK_plugin_delete);
+  myblockchain_mutex_unlock(&LOCK_plugin_delete);
   return ret;
 }
 
@@ -379,7 +379,7 @@ int PFS_system_variable_cache::do_materialize_session(THD *unsafe_thd)
   m_cache.clear();
 
   /* Block plugins from unloading. */
-  mysql_mutex_lock(&LOCK_plugin_delete);
+  myblockchain_mutex_lock(&LOCK_plugin_delete);
 
   /*
      Build array of SHOW_VARs from system variable hash. Do this within
@@ -407,13 +407,13 @@ int PFS_system_variable_cache::do_materialize_session(THD *unsafe_thd)
     }
 
     /* Release lock taken in get_THD(). */
-    mysql_mutex_unlock(&m_safe_thd->LOCK_thd_data);
+    myblockchain_mutex_unlock(&m_safe_thd->LOCK_thd_data);
 
     m_materialized= true;
     ret= 0;
   }
 
-  mysql_mutex_unlock(&LOCK_plugin_delete);
+  myblockchain_mutex_unlock(&LOCK_plugin_delete);
   return ret;
 }
 
@@ -452,16 +452,16 @@ void System_variable::init(THD *target_thd, const SHOW_VAR *show_var,
   if (show_var == NULL || show_var->name == NULL)
     return;
 
-  enum_mysql_show_type show_var_type= show_var->type;
+  enum_myblockchain_show_type show_var_type= show_var->type;
   DBUG_ASSERT(show_var_type == SHOW_SYS);
 
   m_name= show_var->name;
   m_name_length= strlen(m_name);
 
   /* Block target thread from updating this system variable. */
-  mysql_mutex_lock(&target_thd->LOCK_thd_sysvar);
+  myblockchain_mutex_lock(&target_thd->LOCK_thd_sysvar);
   /* Block system variable additions or deletions. */
-  mysql_mutex_lock(&LOCK_global_system_variables);
+  myblockchain_mutex_lock(&LOCK_global_system_variables);
 
   sys_var *system_var= (sys_var *)show_var->value;
   DBUG_ASSERT(system_var != NULL);
@@ -481,8 +481,8 @@ void System_variable::init(THD *target_thd, const SHOW_VAR *show_var,
     memcpy(m_value_str, value, m_value_length);
   m_value_str[m_value_length]= 0;
 
-  mysql_mutex_unlock(&LOCK_global_system_variables);
-  mysql_mutex_unlock(&target_thd->LOCK_thd_sysvar);
+  myblockchain_mutex_unlock(&LOCK_global_system_variables);
+  myblockchain_mutex_unlock(&target_thd->LOCK_thd_sysvar);
 
   m_initialized= true;
 }
@@ -633,7 +633,7 @@ bool PFS_status_variable_cache::filter_by_name(const SHOW_VAR *show_var)
   @param variable_type         Status variable type
   @return TRUE if variable type can be aggregated
 */
-bool PFS_status_variable_cache::can_aggregate(enum_mysql_show_type variable_type)
+bool PFS_status_variable_cache::can_aggregate(enum_myblockchain_show_type variable_type)
 {
   switch(variable_type)
   {
@@ -734,7 +734,7 @@ bool PFS_status_variable_cache::init_show_var_array(enum_var_type scope, bool st
   }
 
   /* Last element is NULL. */
-  m_show_var_array.push_back(st_mysql_show_var());
+  m_show_var_array.push_back(st_myblockchain_show_var());
 
   /* Get the latest version of all_status_vars. */
   m_version= get_status_vars_version();
@@ -820,12 +820,12 @@ bool PFS_status_variable_cache::do_initialize_session(void)
 {
   /* Acquire LOCK_status to guard against plugin load/unload. */
   if (m_current_thd->fill_status_recursion_level++ == 0)
-    mysql_mutex_lock(&LOCK_status);
+    myblockchain_mutex_lock(&LOCK_status);
 
   bool ret= init_show_var_array(OPT_SESSION, true);
 
   if (m_current_thd->fill_status_recursion_level-- == 1)
-    mysql_mutex_unlock(&LOCK_status);
+    myblockchain_mutex_unlock(&LOCK_status);
 
   return ret;
 }
@@ -842,7 +842,7 @@ int PFS_status_variable_cache::do_materialize_global(void)
 
   /* Acquire LOCK_status to guard against plugin load/unload. */
   if (m_current_thd->fill_status_recursion_level++ == 0)
-    mysql_mutex_lock(&LOCK_status);
+    myblockchain_mutex_lock(&LOCK_status);
 
   /*
      Build array of SHOW_VARs from global status array. Do this within
@@ -870,7 +870,7 @@ int PFS_status_variable_cache::do_materialize_global(void)
   manifest(m_current_thd, m_show_var_array.begin(), &status_totals, "", false, true);
 
   if (m_current_thd->fill_status_recursion_level-- == 1)
-    mysql_mutex_unlock(&LOCK_status);
+    myblockchain_mutex_unlock(&LOCK_status);
 
   m_materialized= true;
   DEBUG_SYNC(m_current_thd, "after_materialize_global_status_array");
@@ -892,7 +892,7 @@ int PFS_status_variable_cache::do_materialize_all(THD* unsafe_thd)
 
   /* Avoid recursive acquisition of LOCK_status. */
   if (m_current_thd->fill_status_recursion_level++ == 0)
-    mysql_mutex_lock(&LOCK_status);
+    myblockchain_mutex_lock(&LOCK_status);
 
   /*
      Build array of SHOW_VARs from global status array. Do this within
@@ -912,14 +912,14 @@ int PFS_status_variable_cache::do_materialize_all(THD* unsafe_thd)
     manifest(m_safe_thd, m_show_var_array.begin(), &m_safe_thd->status_var, "", false, false);
 
     /* Release lock taken in get_THD(). */
-    mysql_mutex_unlock(&m_safe_thd->LOCK_thd_data);
+    myblockchain_mutex_unlock(&m_safe_thd->LOCK_thd_data);
 
     m_materialized= true;
     ret= 0;
   }
 
   if (m_current_thd->fill_status_recursion_level-- == 1)
-    mysql_mutex_unlock(&LOCK_status);
+    myblockchain_mutex_unlock(&LOCK_status);
   return ret;
 }
 
@@ -937,7 +937,7 @@ int PFS_status_variable_cache::do_materialize_session(THD* unsafe_thd)
 
   /* Avoid recursive acquisition of LOCK_status. */
   if (m_current_thd->fill_status_recursion_level++ == 0)
-    mysql_mutex_lock(&LOCK_status);
+    myblockchain_mutex_lock(&LOCK_status);
 
   /*
      Build array of SHOW_VARs from global status array. Do this within
@@ -957,14 +957,14 @@ int PFS_status_variable_cache::do_materialize_session(THD* unsafe_thd)
     manifest(m_safe_thd, m_show_var_array.begin(), &m_safe_thd->status_var, "", false, true);
 
     /* Release lock taken in get_THD(). */
-    mysql_mutex_unlock(&m_safe_thd->LOCK_thd_data);
+    myblockchain_mutex_unlock(&m_safe_thd->LOCK_thd_data);
 
     m_materialized= true;
     ret= 0;
   }
 
   if (m_current_thd->fill_status_recursion_level-- == 1)
-    mysql_mutex_unlock(&LOCK_status);
+    myblockchain_mutex_unlock(&LOCK_status);
   return ret;
 }
 
@@ -983,7 +983,7 @@ int PFS_status_variable_cache::do_materialize_session(PFS_thread *pfs_thread)
 
   /* Acquire LOCK_status to guard against plugin load/unload. */
   if (m_current_thd->fill_status_recursion_level++ == 0)
-    mysql_mutex_lock(&LOCK_status);
+    myblockchain_mutex_lock(&LOCK_status);
 
   /* The SHOW_VAR array must be initialized externally. */
   DBUG_ASSERT(m_initialized);
@@ -998,14 +998,14 @@ int PFS_status_variable_cache::do_materialize_session(PFS_thread *pfs_thread)
     manifest(m_safe_thd, m_show_var_array.begin(), &m_safe_thd->status_var, "", false, true);
 
     /* Release lock taken in get_THD(). */
-    mysql_mutex_unlock(&m_safe_thd->LOCK_thd_data);
+    myblockchain_mutex_unlock(&m_safe_thd->LOCK_thd_data);
 
     m_materialized= true;
     ret= 0;
   }
 
   if (m_current_thd->fill_status_recursion_level-- == 1)
-    mysql_mutex_unlock(&LOCK_status);
+    myblockchain_mutex_unlock(&LOCK_status);
   return ret;
 }
 
@@ -1026,7 +1026,7 @@ int PFS_status_variable_cache::do_materialize_client(PFS_client *pfs_client)
 
   /* Acquire LOCK_status to guard against plugin load/unload. */
   if (m_current_thd->fill_status_recursion_level++ == 0)
-    mysql_mutex_lock(&LOCK_status);
+    myblockchain_mutex_lock(&LOCK_status);
 
   /* The SHOW_VAR array must be initialized externally. */
   DBUG_ASSERT(m_initialized);
@@ -1044,7 +1044,7 @@ int PFS_status_variable_cache::do_materialize_client(PFS_client *pfs_client)
   manifest(m_current_thd, m_show_var_array.begin(), &status_totals, "", false, true);
 
   if (m_current_thd->fill_status_recursion_level-- == 1)
-    mysql_mutex_unlock(&LOCK_status);
+    myblockchain_mutex_unlock(&LOCK_status);
 
   m_materialized= true;
   return 0;
@@ -1080,7 +1080,7 @@ void PFS_status_variable_cache::manifest(THD *thd, const SHOW_VAR *show_var_arra
       */
       for (const SHOW_VAR *var= show_var_ptr; var->type == SHOW_FUNC; var= &show_var_tmp)
       {
-        ((mysql_show_var_func)(var->value))(thd, &show_var_tmp, value_buf);
+        ((myblockchain_show_var_func)(var->value))(thd, &show_var_tmp, value_buf);
       }
       show_var_ptr= &show_var_tmp;
     }

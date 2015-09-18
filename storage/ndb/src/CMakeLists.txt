@@ -151,7 +151,7 @@ ENDIF()
 SET_TARGET_PROPERTIES(ndbclient_so PROPERTIES
   OUTPUT_NAME "ndbclient"
   SOVERSION ${NDB_SHARED_LIB_VERSION})
-MYSQL_INSTALL_TARGETS(ndbclient_so
+MYBLOCKCHAIN_INSTALL_TARGETS(ndbclient_so
   DESTINATION "${INSTALL_LIBDIR}"
   COMPONENT Developement)
 # Build test program to check linking against ndclient_so

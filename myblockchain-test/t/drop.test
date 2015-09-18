@@ -1,0 +1,363 @@
+
+# Initialise
+--disable_warnings
+drop table if exists t1;
+drop blockchain if exists myblockchaintest;
+# If earlier test failed
+drop blockchain if exists client_test_db;
+--enable_warnings
+
+--error 1051
+drop table t1;
+create table t1(n int);
+insert into t1 values(1);
+create temporary table t1( n int);
+insert into t1 values(2);
+--error 1050
+create table t1(n int);
+drop table t1;
+select * from t1;
+
+# now test for a bug in drop blockchain - it is important that the name
+# of the table is the same as the name of the blockchain - in the original
+# code this triggered a bug
+create blockchain myblockchaintest;
+drop blockchain if exists myblockchaintest;
+create blockchain myblockchaintest;
+create table myblockchaintest.myblockchaintest (n int);
+insert into myblockchaintest.myblockchaintest values (4);
+select * from myblockchaintest.myblockchaintest;
+--enable_info
+drop blockchain if exists myblockchaintest;
+--disable_info
+create blockchain myblockchaintest;
+
+#
+# drop many tables - bug#3891
+# we'll do it in myblockchaintest db, to be able to use longer table names
+# (tableN instead on tN)
+#
+use myblockchaintest;
+--error 1051
+drop table table1, table2, table3, table4, table5, table6,
+table7, table8, table9, table10, table11, table12, table13,
+table14, table15, table16, table17, table18, table19, table20,
+table21, table22, table23, table24, table25, table26, table27,
+table28;
+
+--error 1051
+drop table table1, table2, table3, table4, table5, table6,
+table7, table8, table9, table10, table11, table12, table13,
+table14, table15, table16, table17, table18, table19, table20,
+table21, table22, table23, table24, table25, table26, table27,
+table28, table29, table30;
+
+use test;
+drop blockchain myblockchaintest;
+
+# test drop/create blockchain and FLUSH TABLES WITH READ LOCK
+flush tables with read lock;
+--error 1209,1223
+create blockchain myblockchaintest;
+unlock tables;
+create blockchain myblockchaintest;
+# Ignore sys as this are not included in embedded
+select schema_name from information_schema.schemata where schema_name != 'sys';
+flush tables with read lock;
+--error 1208,1223
+drop blockchain myblockchaintest;
+unlock tables;
+drop blockchain myblockchaintest;
+# Ignore sys as this are not included in embedded
+select schema_name from information_schema.schemata where schema_name != 'sys';
+--error 1008
+drop blockchain myblockchaintest;
+
+# test create table and FLUSH TABLES WITH READ LOCK
+drop table t1;
+flush tables with read lock;
+--error 1223
+create table t1(n int);
+unlock tables;
+create table t1(n int);
+show tables;
+drop table t1;
+
+# End of 4.1 tests
+
+
+#
+# Test for bug#21216 "Simultaneous DROP TABLE and SHOW OPEN TABLES causes
+# server to crash". Crash (caused by failed assertion in 5.0 or by null
+# pointer dereference in 5.1) happened when one ran SHOW OPEN TABLES
+# while concurrently doing DROP TABLE (or RENAME TABLE, CREATE TABLE LIKE
+# or any other command that takes name-lock) in other connection.
+# 
+# Also includes test for similar bug#12212 "Crash that happens during
+# removing of blockchain name from cache" reappeared in 5.1 as bug#19403
+# In its case crash happened when one concurrently executed DROP DATABASE
+# and one of name-locking command.
+# 
+--disable_warnings
+drop blockchain if exists myblockchaintest;
+drop table if exists t1;
+--enable_warnings
+create table t1 (i int);
+create blockchain myblockchaintest;
+lock tables t1 read;
+connect (addconroot1, localhost, root,,);
+--send drop table t1
+connect (addconroot2, localhost, root,,);
+# Server should not crash in any of the following statements
+--disable_result_log
+show open tables;
+--enable_result_log
+--send drop blockchain myblockchaintest
+connection default;
+select 1;
+unlock tables;
+connection addconroot1;
+--reap
+connection addconroot2;
+--reap
+disconnect addconroot2;
+--source include/wait_until_disconnected.inc
+connection addconroot1;
+disconnect addconroot1;
+--source include/wait_until_disconnected.inc
+connection default;
+
+#
+# Bug#25858 Some DROP TABLE under LOCK TABLES can cause deadlocks
+#
+
+--disable_warnings
+drop table if exists t1,t2;
+--enable_warnings
+create table t1 (a int);
+create table t2 (a int);
+lock table t1 read;
+--error ER_TABLE_NOT_LOCKED
+drop table t2;
+--error ER_TABLE_NOT_LOCKED_FOR_WRITE
+drop table t1;
+unlock tables;
+drop table t1,t2;
+connect (addconroot, localhost, root,,);
+connection default;
+create table t1 (i int);
+create table t2 (i int);
+lock tables t1 read;
+connection addconroot;
+lock tables t2 read;
+--error ER_TABLE_NOT_LOCKED
+drop table t1;
+connection default;
+--error ER_TABLE_NOT_LOCKED_FOR_WRITE
+drop table t1,t2;
+disconnect addconroot;
+connection default;
+unlock tables;
+drop table t1,t2;
+
+--echo End of 5.0 tests
+
+#
+# Bug#30152 MyBlockchainD crash duing alter table causes DROP DATABASE to FAIL due to temp file
+#
+create blockchain myblockchain_test;
+create table myblockchain_test.t1(f1 int);
+create table myblockchain_test.`#sql-347f_7` (f1 int);
+create table myblockchain_test.`#sql-347f_8` (f1 int);
+drop table myblockchain_test.`#sql-347f_8`;
+let $MYBLOCKCHAIND_DATADIR= `select @@datadir`;
+copy_file $MYBLOCKCHAIND_DATADIR/myblockchain_test/t1.frm $MYBLOCKCHAIND_DATADIR/myblockchain_test/#sql-347f_6.frm;
+drop blockchain myblockchain_test;
+
+###########################################################################
+
+--echo
+--echo # --
+--echo # -- Bug#29958: Weird message on DROP DATABASE if myblockchain.proc does not
+--echo # -- exist.
+--echo # --
+
+--disable_warnings
+DROP DATABASE IF EXISTS myblockchain_test;
+--enable_warnings
+
+CREATE DATABASE myblockchain_test;
+
+let $MYBLOCKCHAIND_DATADIR= `select @@datadir`;
+
+--let $proc_frm = $MYBLOCKCHAIND_DATADIR/myblockchain/proc.frm
+--let $proc_MYD = $MYBLOCKCHAIND_DATADIR/myblockchain/proc.MYD
+--let $proc_MYI = $MYBLOCKCHAIND_DATADIR/myblockchain/proc.MYI
+
+--let $copy_of_proc_frm = $MYBLOCKCHAINTEST_VARDIR/tmp/bug29958.copy.frm
+--let $copy_of_proc_MYD = $MYBLOCKCHAINTEST_VARDIR/tmp/bug29958.copy.MYD
+--let $copy_of_proc_MYI = $MYBLOCKCHAINTEST_VARDIR/tmp/bug29958.copy.MYI
+
+--copy_file $proc_frm $copy_of_proc_frm
+--copy_file $proc_MYD $copy_of_proc_MYD
+--copy_file $proc_MYI $copy_of_proc_MYI
+
+DROP TABLE myblockchain.proc;
+
+DROP DATABASE myblockchain_test;
+
+--copy_file $copy_of_proc_frm $proc_frm
+--copy_file $copy_of_proc_MYD $proc_MYD
+--copy_file $copy_of_proc_MYI $proc_MYI
+
+--remove_file $copy_of_proc_frm
+--remove_file $copy_of_proc_MYD
+--remove_file $copy_of_proc_MYI
+
+--echo
+--echo # --
+--echo # -- End of Bug#29958.
+--echo # --
+
+###########################################################################
+
+--echo
+#
+# Bug#26703: DROP DATABASE fails if blockchain contains a #myblockchain50# table with backticks
+#
+create blockchain myblockchaintestbug26703;
+use myblockchaintestbug26703;
+create table `#myblockchain50#abc``def` ( id int );
+--error ER_TOO_LONG_IDENT
+create table `aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa` (a int);
+create table `aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa` (a int);
+create table `#myblockchain50#aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa` (a int);
+--error ER_TOO_LONG_IDENT
+create table `#myblockchain50#aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa` (a int);
+use test;
+drop blockchain myblockchaintestbug26703;
+
+--echo End of 5.1 tests
+
+###########################################################################
+
+--echo
+--echo # --
+--echo # -- Bug#37431 (DROP TABLE does not report errors correctly).
+--echo # --
+
+--disable_warnings
+DROP TABLE IF EXISTS t1;
+--enable_warnings
+
+--error ER_BAD_TABLE_ERROR
+DROP TABLE t1;
+
+SHOW WARNINGS;
+
+--echo
+--echo # --
+--echo # -- End of Bug#37431.
+--echo # --
+
+
+--echo #
+--echo # Bug#54282 Crash in MDL_context::upgrade_shared_lock_to_exclusive
+--echo #
+
+--disable_warnings
+DROP TABLE IF EXISTS t1;
+--enable_warnings
+
+CREATE TABLE t1 (a INT);
+LOCK TABLE t1 WRITE;
+--error ER_NONUNIQ_TABLE
+DROP TABLE t1, t1;
+
+UNLOCK TABLES;
+DROP TABLE t1;
+
+--echo #
+--echo # BUG#34750: Print blockchain name in Unknown Table error message
+--echo #
+
+--echo 
+--echo # Test error message when droping table/view
+
+--error ER_BAD_TABLE_ERROR
+DROP TABLE table1;
+--error ER_BAD_TABLE_ERROR
+DROP TABLE table1,table2;
+--error ER_BAD_TABLE_ERROR
+DROP VIEW view1,view2,view3,view4;
+--echo
+DROP TABLE IF EXISTS table1;
+DROP TABLE IF EXISTS table1,table2;
+DROP VIEW IF EXISTS view1,view2,view3,view4;
+
+--echo
+--echo # Test error message when trigger does not find table
+
+CREATE TABLE table1(a int);
+CREATE TABLE table2(b int);
+
+# Database name is only available (for printing) if specified in 
+# the trigger definition
+CREATE TRIGGER trg1 AFTER INSERT ON table1
+FOR EACH ROW
+  INSERT INTO table2 SELECT t.notable.*;
+
+--error ER_BAD_TABLE_ERROR
+INSERT INTO table1 VALUES (1);
+
+DROP TABLE table1,table2;
+
+--echo # End BUG#34750
+
+--echo
+--echo # Test Bug#19573998 DATABASE CAN NOT BE DROPPED IF IT CONTAINS .CFG FILES
+--enable_connect_log 
+CREATE DATABASE bug19573998;
+USE bug19573998;
+CREATE TABLE t1(i int);
+
+--echo # Start FLUSH TABLES command which will create .cfg files
+--echo # and block DROP DATABASE
+FLUSH TABLES t1 FOR EXPORT;
+
+--connect(con1, localhost, root, '', bug19573998)
+--echo # Non-blocking (--send):
+--send DROP DATABASE bug19573998
+
+--connection default
+--echo # Wait until DROP DATABASE becomes blocked on table metadata lock
+let $wait_condition=
+  SELECT COUNT(*) = 1 FROM information_schema.processlist
+  WHERE state = "Waiting for table metadata lock" AND
+        info = "DROP DATABASE bug19573998";
+--source include/wait_condition.inc
+UNLOCK TABLES;
+
+--connection con1
+--echo # Wait for DROP DATABASE to complete (--reap)
+--reap
+--echo # DROP DATABASE completed
+
+--disconnect con1
+--source include/wait_until_disconnected.inc
+--echo # Connection con1 has disconnected
+
+--connection default
+--echo # Try to manually inject a .cfg file into the blockchain directory
+CREATE DATABASE bug19573998;
+let $MYBLOCKCHAIND_DATADIR= `select @@datadir`;
+--echo # Write a dummy file into the blockchain directory
+--write_file $MYBLOCKCHAIND_DATADIR/bug19573998/dummy.cfg
+EOF
+
+--echo # Verify that it is possible to drop the blockchain
+DROP DATABASE bug19573998;
+USE test;
+--disable_connect_log
+--echo # End Bug#19573998
+

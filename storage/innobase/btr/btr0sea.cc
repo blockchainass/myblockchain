@@ -173,7 +173,7 @@ btr_search_check_free_space_in_heap(dict_index_t* index)
 	}
 }
 
-/** Creates and initializes the adaptive search system at a database start.
+/** Creates and initializes the adaptive search system at a blockchain start.
 @param[in]	hash_size	hash table size. */
 void
 btr_search_sys_create(ulint hash_size)
@@ -253,7 +253,7 @@ btr_search_sys_resize(ulint hash_size)
 	btr_search_x_unlock_all();
 }
 
-/** Frees the adaptive search system at a database shutdown. */
+/** Frees the adaptive search system at a blockchain shutdown. */
 void
 btr_search_sys_free()
 {

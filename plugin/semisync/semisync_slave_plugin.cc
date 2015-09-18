@@ -1,5 +1,5 @@
 /* Copyright (C) 2007 Google Inc.
-   Copyright (C) 2008 MySQL AB
+   Copyright (C) 2008 MyBlockchain AB
    Copyright (c) 2008, 2015, Oracle and/or its affiliates. All rights reserved.
 
    This program is free software; you can redistribute it and/or modify
@@ -17,7 +17,7 @@
 
 
 #include "semisync_slave.h"
-#include <mysql.h>
+#include <myblockchain.h>
 
 ReplSemiSyncSlave repl_semisync;
 
@@ -41,9 +41,9 @@ int repl_semi_reset_slave(Binlog_relay_IO_param *param)
 int repl_semi_slave_request_dump(Binlog_relay_IO_param *param,
 				 uint32 flags)
 {
-  MYSQL *mysql= param->mysql;
-  MYSQL_RES *res= 0;
-  MYSQL_ROW row;
+  MYBLOCKCHAIN *myblockchain= param->myblockchain;
+  MYBLOCKCHAIN_RES *res= 0;
+  MYBLOCKCHAIN_ROW row;
   const char *query;
 
   if (!repl_semisync.getSlaveEnabled())
@@ -51,36 +51,36 @@ int repl_semi_slave_request_dump(Binlog_relay_IO_param *param,
 
   /* Check if master server has semi-sync plugin installed */
   query= "SHOW VARIABLES LIKE 'rpl_semi_sync_master_enabled'";
-  if (mysql_real_query(mysql, query, static_cast<ulong>(strlen(query))) ||
-      !(res= mysql_store_result(mysql)))
+  if (myblockchain_real_query(myblockchain, query, static_cast<ulong>(strlen(query))) ||
+      !(res= myblockchain_store_result(myblockchain)))
   {
     sql_print_error("Execution failed on master: %s", query);
     return 1;
   }
 
-  row= mysql_fetch_row(res);
+  row= myblockchain_fetch_row(res);
   if (!row)
   {
     /* Master does not support semi-sync */
     sql_print_warning("Master server does not support semi-sync, "
                       "fallback to asynchronous replication");
     rpl_semi_sync_slave_status= 0;
-    mysql_free_result(res);
+    myblockchain_free_result(res);
     return 0;
   }
-  mysql_free_result(res);
+  myblockchain_free_result(res);
 
   /*
     Tell master dump thread that we want to do semi-sync
     replication
   */
   query= "SET @rpl_semi_sync_slave= 1";
-  if (mysql_real_query(mysql, query, static_cast<ulong>(strlen(query))))
+  if (myblockchain_real_query(myblockchain, query, static_cast<ulong>(strlen(query))))
   {
     sql_print_error("Set 'rpl_semi_sync_slave=1' on master failed");
     return 1;
   }
-  mysql_free_result(mysql_store_result(mysql));
+  myblockchain_free_result(myblockchain_store_result(myblockchain));
   rpl_semi_sync_slave_status= 1;
   return 0;
 }
@@ -110,7 +110,7 @@ int repl_semi_slave_queue_event(Binlog_relay_IO_param *param,
       should not cause the slave IO thread to stop, and the error
       messages are already reported.
     */
-    (void) repl_semisync.slaveReply(param->mysql,
+    (void) repl_semisync.slaveReply(param->myblockchain,
                                     param->master_log_name,
                                     param->master_log_pos);
   }
@@ -134,7 +134,7 @@ int repl_semi_slave_sql_stop(Binlog_relay_IO_param *param, bool aborted)
 
 C_MODE_END
 
-static void fix_rpl_semi_sync_slave_enabled(MYSQL_THD thd,
+static void fix_rpl_semi_sync_slave_enabled(MYBLOCKCHAIN_THD thd,
 					    SYS_VAR *var,
 					    void *ptr,
 					    const void *val)
@@ -144,7 +144,7 @@ static void fix_rpl_semi_sync_slave_enabled(MYSQL_THD thd,
   return;
 }
 
-static void fix_rpl_semi_sync_trace_level(MYSQL_THD thd,
+static void fix_rpl_semi_sync_trace_level(MYBLOCKCHAIN_THD thd,
 					  SYS_VAR *var,
 					  void *ptr,
 					  const void *val)
@@ -155,14 +155,14 @@ static void fix_rpl_semi_sync_trace_level(MYSQL_THD thd,
 }
 
 /* plugin system variables */
-static MYSQL_SYSVAR_BOOL(enabled, rpl_semi_sync_slave_enabled,
+static MYBLOCKCHAIN_SYSVAR_BOOL(enabled, rpl_semi_sync_slave_enabled,
   PLUGIN_VAR_OPCMDARG,
  "Enable semi-synchronous replication slave (disabled by default). ",
   NULL,				   // check
   &fix_rpl_semi_sync_slave_enabled, // update
   0);
 
-static MYSQL_SYSVAR_ULONG(trace_level, rpl_semi_sync_slave_trace_level,
+static MYBLOCKCHAIN_SYSVAR_ULONG(trace_level, rpl_semi_sync_slave_trace_level,
   PLUGIN_VAR_OPCMDARG,
  "The tracing level for semi-sync replication.",
   NULL,				  // check
@@ -170,8 +170,8 @@ static MYSQL_SYSVAR_ULONG(trace_level, rpl_semi_sync_slave_trace_level,
   32, 0, ~0UL, 1);
 
 static SYS_VAR* semi_sync_slave_system_vars[]= {
-  MYSQL_SYSVAR(enabled),
-  MYSQL_SYSVAR(trace_level),
+  MYBLOCKCHAIN_SYSVAR(enabled),
+  MYBLOCKCHAIN_SYSVAR(trace_level),
   NULL,
 };
 
@@ -213,15 +213,15 @@ static int semi_sync_slave_plugin_deinit(void *p)
 
 
 struct Mysql_replication semi_sync_slave_plugin= {
-  MYSQL_REPLICATION_INTERFACE_VERSION
+  MYBLOCKCHAIN_REPLICATION_INTERFACE_VERSION
 };
 
 /*
   Plugin library descriptor
 */
-mysql_declare_plugin(semi_sync_slave)
+myblockchain_declare_plugin(semi_sync_slave)
 {
-  MYSQL_REPLICATION_PLUGIN,
+  MYBLOCKCHAIN_REPLICATION_PLUGIN,
   &semi_sync_slave_plugin,
   "rpl_semi_sync_slave",
   "He Zhenxing",
@@ -235,4 +235,4 @@ mysql_declare_plugin(semi_sync_slave)
   NULL,                         /* config options */
   0,                            /* flags */
 }
-mysql_declare_plugin_end;
+myblockchain_declare_plugin_end;

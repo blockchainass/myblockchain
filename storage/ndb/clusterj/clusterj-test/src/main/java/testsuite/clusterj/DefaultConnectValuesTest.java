@@ -19,7 +19,7 @@ package testsuite.clusterj;
 
 import java.util.Properties;
 
-import com.mysql.clusterj.Constants;
+import com.myblockchain.clusterj.Constants;
 
 import testsuite.clusterj.model.Employee;
 

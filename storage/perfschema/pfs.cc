@@ -19,8 +19,8 @@
 */
 #include "my_global.h"
 #include "thr_lock.h"
-#include "mysql/psi/psi.h"
-#include "mysql/psi/mysql_thread.h"
+#include "myblockchain/psi/psi.h"
+#include "myblockchain/psi/myblockchain_thread.h"
 #include "my_thread.h"
 #include "sql_const.h"
 #include "pfs.h"
@@ -78,7 +78,7 @@ static void report_memory_accounting_error(
 
 /**
   @page PAGE_PERFORMANCE_SCHEMA The Performance Schema main page
-  MySQL PERFORMANCE_SCHEMA implementation.
+  MyBlockchain PERFORMANCE_SCHEMA implementation.
 
   @section INTRO Introduction
   The PERFORMANCE_SCHEMA is a way to introspect the internal execution of
@@ -87,7 +87,7 @@ static void report_memory_accounting_error(
   as opposed to the INFORMATION_SCHEMA whose purpose is to inspect metadata.
 
   From a user point of view, the performance schema consists of:
-  - a dedicated database schema, named PERFORMANCE_SCHEMA,
+  - a dedicated blockchain schema, named PERFORMANCE_SCHEMA,
   - SQL tables, used to query the server internal state or change
   configuration settings.
 
@@ -114,7 +114,7 @@ static void report_memory_accounting_error(
   - C++ implementations
   - the core SQL layer (/sql)
   - the mysys library (/mysys)
-  - MySQL plugins, including storage engines,
+  - MyBlockchain plugins, including storage engines,
   - third party plugins, including third party storage engines.
 
   For details, see the @ref PAGE_INSTRUMENTATION_INTERFACE
@@ -123,7 +123,7 @@ static void report_memory_accounting_error(
   @subsection INT_COMPILING Compiling interface
 
   The implementation of the performance schema can be enabled or disabled at
-  build time, when building MySQL from the source code.
+  build time, when building MyBlockchain from the source code.
 
   When building with the performance schema code, some compilation flags
   are available to change the default values used in the code, if required.
@@ -139,7 +139,7 @@ static void report_memory_accounting_error(
 
   @subsection INT_STARTUP Server startup interface
 
-  The server startup interface consists of the "./mysqld ..."
+  The server startup interface consists of the "./myblockchaind ..."
   command line used to start the server.
   When the performance schema is compiled in the server binary,
   extra command line options are available.
@@ -149,10 +149,10 @@ static void report_memory_accounting_error(
   - specify some sizing parameters.
 
   To see help for the performance schema startup options, see:
-  @verbatim ./sql/mysqld --verbose --help  @endverbatim
+  @verbatim ./sql/myblockchaind --verbose --help  @endverbatim
 
   The implementation of all the startup options is located in
-  @verbatim ./sql/mysqld.cc, my_long_options[] @endverbatim
+  @verbatim ./sql/myblockchaind.cc, my_long_options[] @endverbatim
 
   @subsection INT_BOOTSTRAP Server bootstrap interface
 
@@ -160,12 +160,12 @@ static void report_memory_accounting_error(
   the performance schema, and used by the SQL layer.
   Its role is to advertise all the SQL tables natively
   supported by the performance schema to the SQL server.
-  The code consists of creating MySQL tables for the
-  performance schema itself, and is used in './mysql --bootstrap'
+  The code consists of creating MyBlockchain tables for the
+  performance schema itself, and is used in './myblockchain --bootstrap'
   mode when a server is installed.
 
-  The implementation of the database creation script is located in
-  @verbatim ./scripts/mysql_system_tables.sql @endverbatim
+  The implementation of the blockchain creation script is located in
+  @verbatim ./scripts/myblockchain_system_tables.sql @endverbatim
 
   @subsection INT_CONFIG Runtime configuration interface
 
@@ -180,7 +180,7 @@ static void report_memory_accounting_error(
   (SELECT, INSERT, UPDATE, DELETE) against special "SETUP" tables.
 
   For example:
-  @verbatim mysql> update performance_schema.SETUP_INSTRUMENTS
+  @verbatim myblockchain> update performance_schema.SETUP_INSTRUMENTS
     set ENABLED='YES', TIMED='YES';
   Query OK, 234 rows affected (0.00 sec)
   Rows matched: 234  Changed: 234  Warnings: 0 @endverbatim
@@ -191,7 +191,7 @@ static void report_memory_accounting_error(
   performance schema code itself is functioning properly.
   This interface is necessary because a failure caused while
   instrumenting code in the server should not cause failures in the
-  MySQL server itself, so that the performance schema implementation
+  MyBlockchain server itself, so that the performance schema implementation
   never raises errors during runtime execution.
 
   This auditing interface consists of:
@@ -208,7 +208,7 @@ static void report_memory_accounting_error(
   It is provided as SQL tables.
 
   For example:
-  @verbatim mysql> select * from performance_schema.EVENTS_WAITS_CURRENT;
+  @verbatim myblockchain> select * from performance_schema.EVENTS_WAITS_CURRENT;
   @endverbatim
 
   @section DESIGN_PRINCIPLES Design principles
@@ -347,7 +347,7 @@ static void report_memory_accounting_error(
 
 /**
   @page PAGE_INSTRUMENTATION_INTERFACE Performance schema: instrumentation interface page.
-  MySQL performance schema instrumentation interface.
+  MyBlockchain performance schema instrumentation interface.
 
   @section INTRO Introduction
 
@@ -360,13 +360,13 @@ static void report_memory_accounting_error(
 
   The ABI layer consists of:
 @code
-#include "mysql/psi/psi.h"
+#include "myblockchain/psi/psi.h"
 @endcode
 
   The API layer consists of:
 @code
-#include "mysql/psi/mutex_mutex.h"
-#include "mysql/psi/mutex_file.h"
+#include "myblockchain/psi/mutex_mutex.h"
+#include "myblockchain/psi/mutex_file.h"
 @endcode
 
   The first helper is for mutexes, rwlocks and conditions,
@@ -378,9 +378,9 @@ static void report_memory_accounting_error(
   - or to instrumented code, that will issue the raw calls to the ABI layer
   so that the implementation can collect data.
 
-  Note that all the names introduced (for example, @c mysql_mutex_lock) do not
+  Note that all the names introduced (for example, @c myblockchain_mutex_lock) do not
   collide with any other namespace.
-  In particular, the macro @c mysql_mutex_lock is on purpose not named
+  In particular, the macro @c myblockchain_mutex_lock is on purpose not named
   @c pthread_mutex_lock.
   This is to:
   - avoid overloading @c pthread_mutex_lock with yet another macro,
@@ -413,8 +413,8 @@ static void report_memory_accounting_error(
   in implemented, when the instrumentation is compiled in:
 
 @verbatim
-static inline int mysql_mutex_lock(
-  mysql_mutex_t *that, myf flags, const char *src_file, uint src_line)
+static inline int myblockchain_mutex_lock(
+  myblockchain_mutex_t *that, myf flags, const char *src_file, uint src_line)
 {
   int result;
   struct PSI_mutex_locker_state state;
@@ -438,7 +438,7 @@ static inline int mysql_mutex_lock(
   the code becomes simply a wrapper, expanded in line by the compiler:
 
 @verbatim
-static inline int mysql_mutex_lock(...)
+static inline int myblockchain_mutex_lock(...)
 {
   int result;
 
@@ -455,7 +455,7 @@ static inline int mysql_mutex_lock(...)
   to make (a) and (c) calls as efficient as possible.
 
 @verbatim
-static inline int mysql_mutex_lock(...)
+static inline int myblockchain_mutex_lock(...)
 {
   int result;
   struct PSI_mutex_locker_state state;
@@ -484,7 +484,7 @@ static inline int mysql_mutex_lock(...)
   but also independent of the implementation, for binary compatibility.
 
 @verbatim
-static inline int mysql_mutex_lock(...)
+static inline int myblockchain_mutex_lock(...)
 {
   int result;
   struct PSI_mutex_locker_state state;
@@ -588,7 +588,7 @@ static inline int mysql_mutex_lock(...)
 
   Note that not all columns have to be included,
   in particular some columns that are dependent on the x_i column should
-  be removed, so that in practice, MySQL's aggregation method tends to
+  be removed, so that in practice, MyBlockchain's aggregation method tends to
   remove many attributes at each aggregation steps.
 
   For example, when aggregating wait events by object instances,
@@ -615,8 +615,8 @@ static inline int mysql_mutex_lock(...)
   That allows to implement a wait_locker --> object instance projection,
   with m_target.
   The object instance life cycle depends on _init and _destroy calls
-  from the code, such as mysql_mutex_init()
-  and mysql_mutex_destroy() for a mutex.
+  from the code, such as myblockchain_mutex_init()
+  and myblockchain_mutex_destroy() for a mutex.
 
   The object instance waited on contains a pointer to the object class,
   which is represented by the instrument name.
@@ -772,11 +772,11 @@ static inline int mysql_mutex_lock(...)
   - OBJECTS_SUMMARY_GLOBAL_BY_TYPE
 
   The instrumented code that generates waits events consist of:
-  - mutexes (mysql_mutex_t)
-  - rwlocks (mysql_rwlock_t)
-  - conditions (mysql_cond_t)
-  - file io (MYSQL_FILE)
-  - socket io (MYSQL_SOCKET)
+  - mutexes (myblockchain_mutex_t)
+  - rwlocks (myblockchain_rwlock_t)
+  - conditions (myblockchain_cond_t)
+  - file io (MYBLOCKCHAIN_FILE)
+  - socket io (MYBLOCKCHAIN_SOCKET)
   - table io
   - table lock
   - idle
@@ -3593,7 +3593,7 @@ void pfs_unlock_mutex_v1(PSI_mutex *mutex)
 
   /*
     Note that this code is still protected by the instrumented mutex,
-    and therefore is thread safe. See inline_mysql_mutex_unlock().
+    and therefore is thread safe. See inline_myblockchain_mutex_unlock().
   */
 
   /* Always update the instrumented state */
@@ -3638,7 +3638,7 @@ void pfs_unlock_rwlock_v1(PSI_rwlock *rwlock)
     and therefore is:
     - thread safe for write locks
     - almost thread safe for read locks (pfs_rwlock->m_readers is unsafe).
-    See inline_mysql_rwlock_unlock()
+    See inline_myblockchain_rwlock_unlock()
   */
 
   /* Always update the instrumented state */
@@ -5331,8 +5331,8 @@ void pfs_end_statement_v1(PSI_statement_locker *locker, void *stmt_da)
           break;
         case Diagnostics_area::DA_OK:
           memcpy(pfs->m_message_text, da->message_text(),
-                 MYSQL_ERRMSG_SIZE);
-          pfs->m_message_text[MYSQL_ERRMSG_SIZE]= 0;
+                 MYBLOCKCHAIN_ERRMSG_SIZE);
+          pfs->m_message_text[MYBLOCKCHAIN_ERRMSG_SIZE]= 0;
           pfs->m_rows_affected= da->affected_rows();
           pfs->m_warning_count= da->last_statement_cond_count();
           memcpy(pfs->m_sqlstate, "00000", SQLSTATE_LENGTH);
@@ -5342,9 +5342,9 @@ void pfs_end_statement_v1(PSI_statement_locker *locker, void *stmt_da)
           break;
         case Diagnostics_area::DA_ERROR:
           memcpy(pfs->m_message_text, da->message_text(),
-                 MYSQL_ERRMSG_SIZE);
-          pfs->m_message_text[MYSQL_ERRMSG_SIZE]= 0;
-          pfs->m_sql_errno= da->mysql_errno();
+                 MYBLOCKCHAIN_ERRMSG_SIZE);
+          pfs->m_message_text[MYBLOCKCHAIN_ERRMSG_SIZE]= 0;
+          pfs->m_sql_errno= da->myblockchain_errno();
           memcpy(pfs->m_sqlstate, da->returned_sqlstate(), SQLSTATE_LENGTH);
           pfs->m_error_count++;
           break;

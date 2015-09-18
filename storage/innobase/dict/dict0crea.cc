@@ -39,7 +39,7 @@ Created 1/8/1996 Heikki Tuuri
 #include "dict0dict.h"
 #include "que0que.h"
 #include "row0ins.h"
-#include "row0mysql.h"
+#include "row0myblockchain.h"
 #include "pars0pars.h"
 #include "trx0roll.h"
 #include "usr0sess.h"
@@ -218,7 +218,7 @@ dict_create_sys_columns_tuple(
 	ptr = static_cast<byte*>(mem_heap_alloc(heap, 4));
 
 	if (v_col_no != ULINT_UNDEFINED) {
-		/* encode virtual column's position in MySQL table and InnoDB
+		/* encode virtual column's position in MyBlockchain table and InnoDB
 		table in "POS" */
 		mach_write_to_4(ptr, dict_create_v_col_pos(
 				i - table->n_def, v_col_no));
@@ -1691,7 +1691,7 @@ function_exit:
 /****************************************************************//**
 Check whether a system table exists.  Additionally, if it exists,
 move it to the non-LRU end of the table LRU list.  This is oly used
-for system tables that can be upgraded or added to an older database,
+for system tables that can be upgraded or added to an older blockchain,
 which include SYS_FOREIGN, SYS_FOREIGN_COLS, SYS_TABLESPACES and
 SYS_DATAFILES.
 @return DB_SUCCESS if the sys table exists, DB_CORRUPTION if it exists
@@ -1762,27 +1762,27 @@ dict_create_or_check_foreign_constraint_tables(void)
 		return(DB_SUCCESS);
 	}
 
-	trx = trx_allocate_for_mysql();
+	trx = trx_allocate_for_myblockchain();
 
 	trx_set_dict_operation(trx, TRX_DICT_OP_TABLE);
 
 	trx->op_info = "creating foreign key sys tables";
 
-	row_mysql_lock_data_dictionary(trx);
+	row_myblockchain_lock_data_dictionary(trx);
 
 	/* Check which incomplete table definition to drop. */
 
 	if (sys_foreign_err == DB_CORRUPTION) {
 		ib::warn() << "Dropping incompletely created"
 			" SYS_FOREIGN table.";
-		row_drop_table_for_mysql("SYS_FOREIGN", trx, TRUE);
+		row_drop_table_for_myblockchain("SYS_FOREIGN", trx, TRUE);
 	}
 
 	if (sys_foreign_cols_err == DB_CORRUPTION) {
 		ib::warn() << "Dropping incompletely created"
 			" SYS_FOREIGN_COLS table.";
 
-		row_drop_table_for_mysql("SYS_FOREIGN_COLS", trx, TRUE);
+		row_drop_table_for_myblockchain("SYS_FOREIGN_COLS", trx, TRUE);
 	}
 
 	ib::warn() << "Creating foreign key constraint system tables.";
@@ -1834,19 +1834,19 @@ dict_create_or_check_foreign_constraint_tables(void)
 		ut_ad(err == DB_OUT_OF_FILE_SPACE
 		      || err == DB_TOO_MANY_CONCURRENT_TRXS);
 
-		row_drop_table_for_mysql("SYS_FOREIGN", trx, TRUE);
-		row_drop_table_for_mysql("SYS_FOREIGN_COLS", trx, TRUE);
+		row_drop_table_for_myblockchain("SYS_FOREIGN", trx, TRUE);
+		row_drop_table_for_myblockchain("SYS_FOREIGN_COLS", trx, TRUE);
 
 		if (err == DB_OUT_OF_FILE_SPACE) {
 			err = DB_MUST_GET_MORE_FILE_SPACE;
 		}
 	}
 
-	trx_commit_for_mysql(trx);
+	trx_commit_for_myblockchain(trx);
 
-	row_mysql_unlock_data_dictionary(trx);
+	row_myblockchain_unlock_data_dictionary(trx);
 
-	trx_free_for_mysql(trx);
+	trx_free_for_myblockchain(trx);
 
 	srv_file_per_table = srv_file_per_table_backup;
 
@@ -1891,20 +1891,20 @@ dict_create_or_check_sys_virtual()
 		return(DB_SUCCESS);
 	}
 
-	trx = trx_allocate_for_mysql();
+	trx = trx_allocate_for_myblockchain();
 
 	trx_set_dict_operation(trx, TRX_DICT_OP_TABLE);
 
 	trx->op_info = "creating sys_virtual tables";
 
-	row_mysql_lock_data_dictionary(trx);
+	row_myblockchain_lock_data_dictionary(trx);
 
 	/* Check which incomplete table definition to drop. */
 
 	if (err == DB_CORRUPTION) {
 		ib::warn() << "Dropping incompletely created"
 			" SYS_VIRTUAL table.";
-		row_drop_table_for_mysql("SYS_VIRTUAL", trx, TRUE);
+		row_drop_table_for_myblockchain("SYS_VIRTUAL", trx, TRUE);
 	}
 
 	ib::info() << "Creating sys_virtual system tables.";
@@ -1938,18 +1938,18 @@ dict_create_or_check_sys_virtual()
 		ut_ad(err == DB_OUT_OF_FILE_SPACE
 		      || err == DB_TOO_MANY_CONCURRENT_TRXS);
 
-		row_drop_table_for_mysql("SYS_VIRTUAL", trx, TRUE);
+		row_drop_table_for_myblockchain("SYS_VIRTUAL", trx, TRUE);
 
 		if (err == DB_OUT_OF_FILE_SPACE) {
 			err = DB_MUST_GET_MORE_FILE_SPACE;
 		}
 	}
 
-	trx_commit_for_mysql(trx);
+	trx_commit_for_myblockchain(trx);
 
-	row_mysql_unlock_data_dictionary(trx);
+	row_myblockchain_unlock_data_dictionary(trx);
 
-	trx_free_for_mysql(trx);
+	trx_free_for_myblockchain(trx);
 
 	srv_file_per_table = srv_file_per_table_backup;
 
@@ -1997,12 +1997,12 @@ dict_foreign_eval_sql(
 		fputs(".\nA foreign key constraint of name ", ef);
 		ut_print_name(ef, trx, id);
 		fputs("\nalready exists."
-		      " (Note that internally InnoDB adds 'databasename'\n"
+		      " (Note that internally InnoDB adds 'blockchainname'\n"
 		      "in front of the user-defined constraint name.)\n"
 		      "Note that InnoDB's FOREIGN KEY system tables store\n"
 		      "constraint names as case-insensitive, with the\n"
-		      "MySQL standard latin1_swedish_ci collation. If you\n"
-		      "create tables or databases whose names differ only in\n"
+		      "MyBlockchain standard latin1_swedish_ci collation. If you\n"
+		      "create tables or blockchains whose names differ only in\n"
 		      "the character case, then collisions in constraint\n"
 		      "names can occur. Workaround: name your constraints\n"
 		      "explicitly with unique names.\n",
@@ -2023,7 +2023,7 @@ dict_foreign_eval_sql(
 		      " for table ", ef);
 		ut_print_name(ef, trx, name);
 		fputs(".\n"
-		      "See the MySQL .err log in the datadir"
+		      "See the MyBlockchain .err log in the datadir"
 		      " for more information.\n", ef);
 		mutex_exit(&dict_foreign_err_mutex);
 
@@ -2035,7 +2035,7 @@ dict_foreign_eval_sql(
 
 /********************************************************************//**
 Add a single foreign key field definition to the data dictionary tables in
-the database.
+the blockchain.
 @return error code or DB_SUCCESS */
 static __attribute__((nonnull, warn_unused_result))
 dberr_t
@@ -2128,7 +2128,7 @@ dict_create_add_foreign_to_dictionary(
 }
 
 /** Adds the given set of foreign key objects to the dictionary tables
-in the database. This function does not modify the dictionary cache. The
+in the blockchain. This function does not modify the dictionary cache. The
 caller must ensure that all foreign key objects contain a valid constraint
 name in foreign->id.
 @param[in]	local_fk_set	set of foreign key objects, to be added to
@@ -2220,27 +2220,27 @@ dict_create_or_check_sys_tablespace(void)
 		return(DB_SUCCESS);
 	}
 
-	trx = trx_allocate_for_mysql();
+	trx = trx_allocate_for_myblockchain();
 
 	trx_set_dict_operation(trx, TRX_DICT_OP_TABLE);
 
 	trx->op_info = "creating tablepace and datafile sys tables";
 
-	row_mysql_lock_data_dictionary(trx);
+	row_myblockchain_lock_data_dictionary(trx);
 
 	/* Check which incomplete table definition to drop. */
 
 	if (sys_tablespaces_err == DB_CORRUPTION) {
 		ib::warn() << "Dropping incompletely created"
 			" SYS_TABLESPACES table.";
-		row_drop_table_for_mysql("SYS_TABLESPACES", trx, TRUE);
+		row_drop_table_for_myblockchain("SYS_TABLESPACES", trx, TRUE);
 	}
 
 	if (sys_datafiles_err == DB_CORRUPTION) {
 		ib::warn() << "Dropping incompletely created"
 			" SYS_DATAFILES table.";
 
-		row_drop_table_for_mysql("SYS_DATAFILES", trx, TRUE);
+		row_drop_table_for_myblockchain("SYS_DATAFILES", trx, TRUE);
 	}
 
 	ib::info() << "Creating tablespace and datafile system tables.";
@@ -2274,19 +2274,19 @@ dict_create_or_check_sys_tablespace(void)
 		ut_a(err == DB_OUT_OF_FILE_SPACE
 		     || err == DB_TOO_MANY_CONCURRENT_TRXS);
 
-		row_drop_table_for_mysql("SYS_TABLESPACES", trx, TRUE);
-		row_drop_table_for_mysql("SYS_DATAFILES", trx, TRUE);
+		row_drop_table_for_myblockchain("SYS_TABLESPACES", trx, TRUE);
+		row_drop_table_for_myblockchain("SYS_DATAFILES", trx, TRUE);
 
 		if (err == DB_OUT_OF_FILE_SPACE) {
 			err = DB_MUST_GET_MORE_FILE_SPACE;
 		}
 	}
 
-	trx_commit_for_mysql(trx);
+	trx_commit_for_myblockchain(trx);
 
-	row_mysql_unlock_data_dictionary(trx);
+	row_myblockchain_unlock_data_dictionary(trx);
 
-	trx_free_for_mysql(trx);
+	trx_free_for_myblockchain(trx);
 
 	srv_file_per_table = srv_file_per_table_backup;
 

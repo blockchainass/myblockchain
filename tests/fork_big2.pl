@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# Copyright (c) 2002, 2003, 2005, 2006 MySQL AB
+# Copyright (c) 2002, 2003, 2005, 2006 MyBlockchain AB
 # Use is subject to license terms
 # 
 # This program is free software; you can redistribute it and/or modify
@@ -17,7 +17,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA
 
 #
-# This is a test with uses many processes to test a MySQL server.
+# This is a test with uses many processes to test a MyBlockchain server.
 #
 # Tested a lot with:  --threads=30
 
@@ -81,7 +81,7 @@ if ($opt_time == 0 && $opt_insert == 0)
 }
 
 $start_time=new Benchmark;
-$dbh = DBI->connect("DBI:mysql:$opt_db:$opt_host",
+$dbh = DBI->connect("DBI:myblockchain:$opt_db:$opt_host",
 		    $opt_user, $opt_password,
 		  { PrintError => 0}) || die $DBI::errstr;
 if (!$opt_skip_create)
@@ -90,7 +90,7 @@ if (!$opt_skip_create)
   foreach $table_def (@testtables)
   {
     my ($table,$extra)= ($table_def->[0], $table_def->[1]);
-    print "Creating table $table in database $opt_db\n";
+    print "Creating table $table in blockchain $opt_db\n";
     $dbh->do("drop table if exists $table");
     $dbh->do("create table $table".
 	     " (id int(6) not null auto_increment,".
@@ -212,7 +212,7 @@ while (($pid=wait()) != -1)
 if (!$opt_skip_drop && !$errors)
 {
   my $table_def;
-  $dbh = DBI->connect("DBI:mysql:$opt_db:$opt_host",
+  $dbh = DBI->connect("DBI:myblockchain:$opt_db:$opt_host",
 		      $opt_user, $opt_password,
 		    { PrintError => 0}) || die $DBI::errstr;
 
@@ -257,7 +257,7 @@ sub test_insert
     $from_table=0; $to_table=$numtables-1;
   }
 
-  $dbh = DBI->connect("DBI:mysql:$opt_db:$opt_host",
+  $dbh = DBI->connect("DBI:myblockchain:$opt_db:$opt_host",
 		      $opt_user, $opt_password,
 		    { PrintError => 0}) || die $DBI::errstr;
 
@@ -286,7 +286,7 @@ sub test_select
 {
   my ($dbh, $i, $j, $count, $loop);
 
-  $dbh = DBI->connect("DBI:mysql:$opt_db:$opt_host",
+  $dbh = DBI->connect("DBI:myblockchain:$opt_db:$opt_host",
 		      $opt_user, $opt_password,
 		    { PrintError => 0}) || die $DBI::errstr;
 
@@ -323,7 +323,7 @@ sub test_select_count
 {
   my ($dbh, $i, $j, $count, $loop);
 
-  $dbh = DBI->connect("DBI:mysql:$opt_db:$opt_host",
+  $dbh = DBI->connect("DBI:myblockchain:$opt_db:$opt_host",
 		      $opt_user, $opt_password,
 		    { PrintError => 0}) || die $DBI::errstr;
 
@@ -353,7 +353,7 @@ sub test_join
 {
   my ($dbh, $i, $j, $count, $loop);
 
-  $dbh = DBI->connect("DBI:mysql:$opt_db:$opt_host",
+  $dbh = DBI->connect("DBI:myblockchain:$opt_db:$opt_host",
 		      $opt_user, $opt_password,
 		    { PrintError => 0}) || die $DBI::errstr;
 
@@ -391,7 +391,7 @@ sub test_join_count
 {
   my ($dbh, $i, $j, $count, $loop);
 
-  $dbh = DBI->connect("DBI:mysql:$opt_db:$opt_host",
+  $dbh = DBI->connect("DBI:myblockchain:$opt_db:$opt_host",
 		      $opt_user, $opt_password,
 		    { PrintError => 0}) || die $DBI::errstr;
 
@@ -446,7 +446,7 @@ sub test_delete
 
   $table_count=2;
   $count=0;
-  $dbh = DBI->connect("DBI:mysql:$opt_db:$opt_host",
+  $dbh = DBI->connect("DBI:myblockchain:$opt_db:$opt_host",
 		      $opt_user, $opt_password,
 		    { PrintError => 0}) || die $DBI::errstr;
 
@@ -480,7 +480,7 @@ sub test_delete
 sub test_update
 {
   my ($dbh, $i, $j, $row_counts, $count_query, $count, $loop);
-  $dbh = DBI->connect("DBI:mysql:$opt_db:$opt_host",
+  $dbh = DBI->connect("DBI:myblockchain:$opt_db:$opt_host",
 		      $opt_user, $opt_password,
 		    { PrintError => 0}) || die $DBI::errstr;
 
@@ -523,7 +523,7 @@ sub test_update
 sub test_check
 {
   my ($dbh, $row, $i, $j, $type, $table);
-  $dbh = DBI->connect("DBI:mysql:$opt_db:$opt_host",
+  $dbh = DBI->connect("DBI:myblockchain:$opt_db:$opt_host",
 		      $opt_user, $opt_password,
 		    { PrintError => 0}) || die $DBI::errstr;
 
@@ -560,7 +560,7 @@ sub test_check
 sub test_repair
 {
   my ($dbh, $row, $i, $type, $table);
-  $dbh = DBI->connect("DBI:mysql:$opt_db:$opt_host",
+  $dbh = DBI->connect("DBI:myblockchain:$opt_db:$opt_host",
 		      $opt_user, $opt_password,
 		    { PrintError => 0}) || die $DBI::errstr;
 
@@ -594,7 +594,7 @@ sub test_flush
 {
   my ($dbh,$count,$tables);
 
-  $dbh = DBI->connect("DBI:mysql:$opt_db:$opt_host",
+  $dbh = DBI->connect("DBI:myblockchain:$opt_db:$opt_host",
 		      $opt_user, $opt_password,
 		    { PrintError => 0}) || die $DBI::errstr;
 
@@ -621,7 +621,7 @@ sub test_resize
 {
   my ($dbh, $key_buffer_size);
 
-  $dbh = DBI->connect("DBI:mysql:$opt_db:$opt_host",
+  $dbh = DBI->connect("DBI:myblockchain:$opt_db:$opt_host",
 		      $opt_user, $opt_password,
 		    { PrintError => 0}) || die $DBI::errstr;
 
@@ -641,14 +641,14 @@ sub test_resize
 }
 
 #
-# Test all tables in a database
+# Test all tables in a blockchain
 #
 
-sub test_database
+sub test_blockchain
 {
-  my ($database) = @_;
+  my ($blockchain) = @_;
   my ($dbh, $row, $i, $type, $tables);
-  $dbh = DBI->connect("DBI:mysql:$database:$opt_host",
+  $dbh = DBI->connect("DBI:myblockchain:$blockchain:$opt_host",
 		      $opt_user, $opt_password,
 		    { PrintError => 0}) || die $DBI::errstr;
 
@@ -681,7 +681,7 @@ sub test_database
 sub test_alter
 {
   my ($dbh, $row, $i, $type, $table);
-  $dbh = DBI->connect("DBI:mysql:$opt_db:$opt_host",
+  $dbh = DBI->connect("DBI:myblockchain:$opt_db:$opt_host",
 		      $opt_user, $opt_password,
 		    { PrintError => 0}) || die $DBI::errstr;
 
@@ -705,7 +705,7 @@ sub test_alter
 sub signal_abort
 {
   my ($dbh);
-  $dbh = DBI->connect("DBI:mysql:$opt_db:$opt_host",
+  $dbh = DBI->connect("DBI:myblockchain:$opt_db:$opt_host",
 		      $opt_user, $opt_password,
 		    { PrintError => 0}) || die $DBI::errstr;
 

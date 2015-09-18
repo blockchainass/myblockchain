@@ -181,11 +181,11 @@ typedef struct st_my_ftb_param
 } MY_FTB_PARAM;
 
 
-static int ftb_query_add_word(MYSQL_FTPARSER_PARAM *param,
+static int ftb_query_add_word(MYBLOCKCHAIN_FTPARSER_PARAM *param,
                               char *word, int word_len,
-                              MYSQL_FTPARSER_BOOLEAN_INFO *info)
+                              MYBLOCKCHAIN_FTPARSER_BOOLEAN_INFO *info)
 {
-  MY_FTB_PARAM *ftb_param= param->mysql_ftparam;
+  MY_FTB_PARAM *ftb_param= param->myblockchain_ftparam;
   FTB_WORD *ftbw;
   FTB_EXPR *ftbe, *tmp_expr;
   FT_WORD *phrase_word;
@@ -283,11 +283,11 @@ static int ftb_query_add_word(MYSQL_FTPARSER_PARAM *param,
 }
 
 
-static int ftb_parse_query_internal(MYSQL_FTPARSER_PARAM *param,
+static int ftb_parse_query_internal(MYBLOCKCHAIN_FTPARSER_PARAM *param,
                                     char *query, int len)
 {
-  MY_FTB_PARAM *ftb_param= param->mysql_ftparam;
-  MYSQL_FTPARSER_BOOLEAN_INFO info;
+  MY_FTB_PARAM *ftb_param= param->myblockchain_ftparam;
+  MYBLOCKCHAIN_FTPARSER_BOOLEAN_INFO info;
   const CHARSET_INFO *cs= ftb_param->ftb->charset;
   uchar **start= (uchar**) &query;
   uchar *end= (uchar*) query + len;
@@ -296,15 +296,15 @@ static int ftb_parse_query_internal(MYSQL_FTPARSER_PARAM *param,
   info.prev= ' ';
   info.quot= 0;
   while (ft_get_word(cs, start, end, &w, &info))
-    param->mysql_add_word(param, (char*) w.pos, w.len, &info);
+    param->myblockchain_add_word(param, (char*) w.pos, w.len, &info);
   return(0);
 }
 
 
 static int _ftb_parse_query(FTB *ftb, uchar *query, uint len,
-                            struct st_mysql_ftparser *parser)
+                            struct st_myblockchain_ftparser *parser)
 {
-  MYSQL_FTPARSER_PARAM *param;
+  MYBLOCKCHAIN_FTPARSER_PARAM *param;
   MY_FTB_PARAM ftb_param;
   DBUG_ENTER("_ftb_parse_query");
   DBUG_ASSERT(parser);
@@ -319,14 +319,14 @@ static int _ftb_parse_query(FTB *ftb, uchar *query, uint len,
   ftb_param.ftbe= ftb->root;
   ftb_param.up_quot= 0;
 
-  param->mysql_parse= ftb_parse_query_internal;
-  param->mysql_add_word= ftb_query_add_word;
-  param->mysql_ftparam= (void *)&ftb_param;
+  param->myblockchain_parse= ftb_parse_query_internal;
+  param->myblockchain_add_word= ftb_query_add_word;
+  param->myblockchain_ftparam= (void *)&ftb_param;
   param->cs= ftb->charset;
   param->doc= (char*) query;
   param->length= len;
   param->flags= 0;
-  param->mode= MYSQL_FTPARSER_FULL_BOOLEAN_INFO;
+  param->mode= MYBLOCKCHAIN_FTPARSER_FULL_BOOLEAN_INFO;
   DBUG_RETURN(parser->parse(param));
 }
 
@@ -487,10 +487,10 @@ static int _ft2_search(FTB *ftb, FTB_WORD *ftbw, my_bool init_search)
   int r;
   MYISAM_SHARE *share= ftb->info->s;
   if (share->concurrent_insert)
-    mysql_rwlock_rdlock(&share->key_root_lock[ftb->keynr]);
+    myblockchain_rwlock_rdlock(&share->key_root_lock[ftb->keynr]);
   r= _ft2_search_no_lock(ftb, ftbw, init_search);
   if (share->concurrent_insert)
-    mysql_rwlock_unlock(&share->key_root_lock[ftb->keynr]);
+    myblockchain_rwlock_unlock(&share->key_root_lock[ftb->keynr]);
   return r;
 }
 
@@ -639,11 +639,11 @@ typedef struct st_my_ftb_phrase_param
 } MY_FTB_PHRASE_PARAM;
 
 
-static int ftb_phrase_add_word(MYSQL_FTPARSER_PARAM *param,
+static int ftb_phrase_add_word(MYBLOCKCHAIN_FTPARSER_PARAM *param,
                                char *word, int word_len,
-    MYSQL_FTPARSER_BOOLEAN_INFO *boolean_info __attribute__((unused)))
+    MYBLOCKCHAIN_FTPARSER_BOOLEAN_INFO *boolean_info __attribute__((unused)))
 {
-  MY_FTB_PHRASE_PARAM *phrase_param= param->mysql_ftparam;
+  MY_FTB_PHRASE_PARAM *phrase_param= param->myblockchain_ftparam;
   FT_WORD *w= (FT_WORD *)phrase_param->document->data;
   LIST *phrase, *document;
   w->pos= (uchar*) word;
@@ -671,16 +671,16 @@ static int ftb_phrase_add_word(MYSQL_FTPARSER_PARAM *param,
 }
 
 
-static int ftb_check_phrase_internal(MYSQL_FTPARSER_PARAM *param,
+static int ftb_check_phrase_internal(MYBLOCKCHAIN_FTPARSER_PARAM *param,
                                      char *document, int len)
 {
   FT_WORD word;
-  MY_FTB_PHRASE_PARAM *phrase_param= param->mysql_ftparam;
+  MY_FTB_PHRASE_PARAM *phrase_param= param->myblockchain_ftparam;
   const uchar *docend= (uchar*) document + len;
   while (ft_simple_get_word(phrase_param->cs, (uchar**) &document, docend,
                             &word, FALSE))
   {
-    param->mysql_add_word(param, (char*) word.pos, word.len, 0);
+    param->myblockchain_add_word(param, (char*) word.pos, word.len, 0);
     if (phrase_param->match)
       break;
   }
@@ -704,10 +704,10 @@ static int ftb_check_phrase_internal(MYSQL_FTPARSER_PARAM *param,
 */
 
 static int _ftb_check_phrase(FTB *ftb, const uchar *document, uint len,
-                FTB_EXPR *ftbe, struct st_mysql_ftparser *parser)
+                FTB_EXPR *ftbe, struct st_myblockchain_ftparser *parser)
 {
   MY_FTB_PHRASE_PARAM ftb_param;
-  MYSQL_FTPARSER_PARAM *param;
+  MYBLOCKCHAIN_FTPARSER_PARAM *param;
   DBUG_ENTER("_ftb_check_phrase");
   DBUG_ASSERT(parser);
 
@@ -721,14 +721,14 @@ static int _ftb_check_phrase(FTB *ftb, const uchar *document, uint len,
   ftb_param.document_length= 1;
   ftb_param.match= 0;
 
-  param->mysql_parse= ftb_check_phrase_internal;
-  param->mysql_add_word= ftb_phrase_add_word;
-  param->mysql_ftparam= (void *)&ftb_param;
+  param->myblockchain_parse= ftb_check_phrase_internal;
+  param->myblockchain_add_word= ftb_phrase_add_word;
+  param->myblockchain_ftparam= (void *)&ftb_param;
   param->cs= ftb->charset;
   param->doc= (char *) document;
   param->length= len;
   param->flags= 0;
-  param->mode= MYSQL_FTPARSER_WITH_STOPWORDS;
+  param->mode= MYBLOCKCHAIN_FTPARSER_WITH_STOPWORDS;
   if (unlikely(parser->parse(param)))
     DBUG_RETURN(-1);
   DBUG_RETURN(ftb_param.match ? 1 : 0);
@@ -742,7 +742,7 @@ static int _ftb_climb_the_tree(FTB *ftb, FTB_WORD *ftbw, FT_SEG_ITERATOR *ftsi_o
   float weight=ftbw->weight;
   int  yn_flag= ftbw->flags, ythresh, mode=(ftsi_orig != 0);
   my_off_t curdoc=ftbw->docid[mode];
-  struct st_mysql_ftparser *parser= ftb->keynr == NO_SUCH_KEY ?
+  struct st_myblockchain_ftparser *parser= ftb->keynr == NO_SUCH_KEY ?
                                     &ft_default_parser :
                                     ftb->info->s->keyinfo[ftb->keynr].parser;
 
@@ -897,11 +897,11 @@ typedef struct st_my_ftb_find_param
 } MY_FTB_FIND_PARAM;
 
 
-static int ftb_find_relevance_add_word(MYSQL_FTPARSER_PARAM *param,
+static int ftb_find_relevance_add_word(MYBLOCKCHAIN_FTPARSER_PARAM *param,
                                        char *word, int len,
-             MYSQL_FTPARSER_BOOLEAN_INFO *boolean_info __attribute__((unused)))
+             MYBLOCKCHAIN_FTPARSER_BOOLEAN_INFO *boolean_info __attribute__((unused)))
 {
-  MY_FTB_FIND_PARAM *ftb_param= param->mysql_ftparam;
+  MY_FTB_FIND_PARAM *ftb_param= param->myblockchain_ftparam;
   FT_INFO *ftb= ftb_param->ftb;
   FTB_WORD *ftbw;
   int a, b, c;
@@ -958,15 +958,15 @@ static int ftb_find_relevance_add_word(MYSQL_FTPARSER_PARAM *param,
 }
 
 
-static int ftb_find_relevance_parse(MYSQL_FTPARSER_PARAM *param,
+static int ftb_find_relevance_parse(MYBLOCKCHAIN_FTPARSER_PARAM *param,
                                     char *doc, int len)
 {
-  MY_FTB_FIND_PARAM *ftb_param= param->mysql_ftparam;
+  MY_FTB_FIND_PARAM *ftb_param= param->myblockchain_ftparam;
   FT_INFO *ftb= ftb_param->ftb;
   uchar *end= (uchar*) doc + len;
   FT_WORD w;
   while (ft_simple_get_word(ftb->charset, (uchar**) &doc, end, &w, TRUE))
-    param->mysql_add_word(param, (char*) w.pos, w.len, 0);
+    param->myblockchain_add_word(param, (char*) w.pos, w.len, 0);
   return(0);
 }
 
@@ -977,8 +977,8 @@ float ft_boolean_find_relevance(FT_INFO *ftb, uchar *record, uint length)
   FT_SEG_ITERATOR ftsi, ftsi2;
   my_off_t  docid=ftb->info->lastpos;
   MY_FTB_FIND_PARAM ftb_param;
-  MYSQL_FTPARSER_PARAM *param;
-  struct st_mysql_ftparser *parser= ftb->keynr == NO_SUCH_KEY ?
+  MYBLOCKCHAIN_FTPARSER_PARAM *param;
+  struct st_myblockchain_ftparser *parser= ftb->keynr == NO_SUCH_KEY ?
                                     &ft_default_parser :
                                     ftb->info->s->keyinfo[ftb->keynr].parser;
 
@@ -1012,12 +1012,12 @@ float ft_boolean_find_relevance(FT_INFO *ftb, uchar *record, uint length)
 
   ftb_param.ftb= ftb;
   ftb_param.ftsi= &ftsi2;
-  param->mysql_parse= ftb_find_relevance_parse;
-  param->mysql_add_word= ftb_find_relevance_add_word;
-  param->mysql_ftparam= (void *)&ftb_param;
+  param->myblockchain_parse= ftb_find_relevance_parse;
+  param->myblockchain_add_word= ftb_find_relevance_add_word;
+  param->myblockchain_ftparam= (void *)&ftb_param;
   param->flags= 0;
   param->cs= ftb->charset;
-  param->mode= MYSQL_FTPARSER_SIMPLE_MODE;
+  param->mode= MYBLOCKCHAIN_FTPARSER_SIMPLE_MODE;
   while (_mi_ft_segiterator(&ftsi))
   {
     if (!ftsi.pos)

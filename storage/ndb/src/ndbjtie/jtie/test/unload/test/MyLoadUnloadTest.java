@@ -91,11 +91,11 @@ public class MyLoadUnloadTest {
     }
     
     static final String pprefixes_prop
-        = "com.mysql.jtie.test.MyLoadUnloadTest.target_package_prefixes";
+        = "com.myblockchain.jtie.test.MyLoadUnloadTest.target_package_prefixes";
     static final String cname_prop
-        = "com.mysql.jtie.test.MyLoadUnloadTest.target_class_name";
+        = "com.myblockchain.jtie.test.MyLoadUnloadTest.target_class_name";
     static final String mname_prop
-        = "com.mysql.jtie.test.MyLoadUnloadTest.target_method_name";
+        = "com.myblockchain.jtie.test.MyLoadUnloadTest.target_method_name";
 
     /**
      * A weak reference to a class loader loading the native library.

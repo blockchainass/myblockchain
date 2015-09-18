@@ -1,0 +1,44 @@
+--source include/force_myisam_default.inc
+
+-- source include/force_binlog_format_statement.inc
+-- source include/have_gb18030.inc
+
+RESET MASTER;
+SET NAMES gb18030;
+--character_set gb18030
+
+CREATE TABLE t1 (
+  f1 BLOB
+) DEFAULT CHARSET=gb18030;
+
+delimiter |;
+CREATE PROCEDURE p1(IN val BLOB)
+BEGIN
+     SET @tval = val;
+     SET @sql_cmd = CONCAT_WS(' ', 'INSERT INTO t1(f1) VALUES(?)');
+     PREPARE stmt FROM @sql_cmd;
+     EXECUTE stmt USING @tval;
+     DEALLOCATE PREPARE stmt;
+END|
+delimiter ;|
+
+SET @`tcontent`:='����binlog���ƣ��������ֽڱ���:�9�1�9�2�9�3,���3�6���F';
+CALL p1(@`tcontent`);
+
+FLUSH LOGS;
+DROP PROCEDURE p1;
+RENAME TABLE t1 to t2;
+
+let $MYBLOCKCHAIND_DATADIR= `select @@datadir`;
+copy_file $MYBLOCKCHAIND_DATADIR/master-bin.000001 $MYBLOCKCHAIND_DATADIR/master-bin-gb18030.saved;
+# Reset GTIDs
+RESET MASTER;
+--exec $MYBLOCKCHAIN_BINLOG --force-if-open --short-form $MYBLOCKCHAIND_DATADIR/master-bin-gb18030.saved | $MYBLOCKCHAIN
+SELECT hex(f1), f1 FROM t2;
+SELECT hex(f1), f1 FROM t1;
+
+DROP PROCEDURE p1;
+DROP TABLE t1;
+DROP TABLE t2;
+
+--source include/restore_default_binlog_format.inc

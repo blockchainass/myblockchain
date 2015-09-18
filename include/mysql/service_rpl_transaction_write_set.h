@@ -13,10 +13,10 @@
    along with this program; if not, write to the Free Software
    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA */
 
-#ifndef MYSQL_SERVICE_TRANSACTION_WRITE_SET_INCLUDED
+#ifndef MYBLOCKCHAIN_SERVICE_TRANSACTION_WRITE_SET_INCLUDED
 
 /**
-  @file include/mysql/service_rpl_transaction_write_set.h
+  @file include/myblockchain/service_rpl_transaction_write_set.h
   This service provides a function for plugins to get the write set of a given
   transaction.
 
@@ -37,7 +37,7 @@
     call to prevent memory leaks.
 */
 
-#ifndef MYSQL_ABI_CHECK
+#ifndef MYBLOCKCHAIN_ABI_CHECK
 #include <stdlib.h>
 #endif
 
@@ -61,7 +61,7 @@ extern struct transaction_write_set_service_st {
   Transaction_write_set* (*get_transaction_write_set)(unsigned long m_thread_id);
 } *transaction_write_set_service;
 
-#ifdef MYSQL_DYNAMIC_PLUGIN
+#ifdef MYBLOCKCHAIN_DYNAMIC_PLUGIN
 
 #define get_transaction_write_set(m_thread_id) \
   (transaction_write_set_service->get_transaction_write_set((m_thread_id)))
@@ -76,5 +76,5 @@ Transaction_write_set* get_transaction_write_set(unsigned long m_thread_id);
 }
 #endif
 
-#define MYSQL_SERVICE_TRANSACTION_WRITE_SET_INCLUDED
+#define MYBLOCKCHAIN_SERVICE_TRANSACTION_WRITE_SET_INCLUDED
 #endif

@@ -91,7 +91,7 @@ Format_description_event::Format_description_event(uint8_t binlog_ver,
 {
   binlog_version= binlog_ver;
   switch (binlog_ver) {
-  case 4: /* MySQL 5.0 and above*/
+  case 4: /* MyBlockchain 5.0 and above*/
   {
     /*
      As we are copying from a char * it might be the case at times that some
@@ -230,7 +230,7 @@ Format_description_event::Format_description_event(uint8_t binlog_ver,
   }
   default: /* Includes binlog version 2 i.e. 4.0.x x<=1 */
     /*
-      Will make the mysql-server variable *is_valid* defined in class Log_event
+      Will make the myblockchain-server variable *is_valid* defined in class Log_event
       to be set to false.
     */
     break;
@@ -259,7 +259,7 @@ unsigned long Format_description_event::get_product_version() const
 }
 
 /**
-   This method checks the MySQL version to determine whether checksums may be
+   This method checks the MyBlockchain version to determine whether checksums may be
    present in the events contained in the bainry log.
 
    @retval true  if the event's version is earlier than one that introduced
@@ -324,7 +324,7 @@ Format_description_event(const char* buf, unsigned int event_len,
   /*
    This is equivalent to (!Start_log_event_v3::is_valid()) in server,
    we dont have access to is_valid method here as it is defined in Log_event class
-   in mysql-server code.
+   in myblockchain-server code.
   */
   if (!(server_version[0] != 0))
     return; /* Sanity Check*/
@@ -369,15 +369,15 @@ Format_description_event(const char* buf, unsigned int event_len,
     id numbers than in the present version. When replicating from such
     a version, we therefore set up an array that maps those id numbers
     to the id numbers of the present server.
-    If post_header_len is null, it means malloc failed, and in the mysql-server
+    If post_header_len is null, it means malloc failed, and in the myblockchain-server
     code the variable *is_valid* will be set to false, so there is no need to do
     anything.
 
     The trees in which events have wrong id's are:
 
-    mysql-5.1-wl1012.old mysql-5.1-wl2325-5.0-drop6p13-alpha
-    mysql-5.1-wl2325-5.0-drop6 mysql-5.1-wl2325-5.0
-    mysql-5.1-wl2325-no-dd
+    myblockchain-5.1-wl1012.old myblockchain-5.1-wl2325-5.0-drop6p13-alpha
+    myblockchain-5.1-wl2325-5.0-drop6 myblockchain-5.1-wl2325-5.0
+    myblockchain-5.1-wl2325-no-dd
 
     (this was found by grepping for two lines in sequence where the
     first matches "FORMAT_DESCRIPTION_EVENT," and the second matches
@@ -401,7 +401,7 @@ Format_description_event(const char* buf, unsigned int event_len,
     5.2.2-a_drop6p13  5.2.2-a_drop6p13-alpha 5.2.2-a_drop6p13b
     5.2.2-a_drop6p13c
 
-    (this was found by grepping for "mysql," in all historical
+    (this was found by grepping for "myblockchain," in all historical
     versions of configure.in in the trees listed above).
 
     There are 5.1.1-alpha versions that use the new event id's, so we
@@ -430,7 +430,7 @@ Format_description_event(const char* buf, unsigned int event_len,
         server_version[4] >= '0' && server_version[4] <= '2' &&
         server_version[12] == '6')))
   {
-    // 22= No of events used in the mysql version mentioned above in the comments
+    // 22= No of events used in the myblockchain version mentioned above in the comments
     if (number_of_event_types != 22)
     {
       post_header_len.clear();

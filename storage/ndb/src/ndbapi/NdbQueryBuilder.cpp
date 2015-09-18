@@ -1809,7 +1809,7 @@ NdbQueryIndexScanOperationDefImpl::checkPrunable(
           /**
            * Shinked varchars should already have been converted in 
            * NdbQueryImpl::setBound(), so no need to deal with them here.
-           * (See also bug#56853 and http://lists.mysql.com/commits/121387 .)
+           * (See also bug#56853 and http://lists.myblockchain.com/commits/121387 .)
            */
           assert((recAttr.flags & NdbRecord::IsMysqldShrinkVarchar) == 0);
           const int res=

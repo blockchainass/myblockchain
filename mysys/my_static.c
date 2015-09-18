@@ -89,8 +89,8 @@ void (*local_message_hook)(enum loglevel ll, const char *format, va_list args)=
   my_message_local_stderr;
 
 static void enter_cond_dummy(void *a __attribute__((unused)),
-                             mysql_cond_t *b __attribute__((unused)),
-                             mysql_mutex_t *c __attribute__((unused)),
+                             myblockchain_cond_t *b __attribute__((unused)),
+                             myblockchain_mutex_t *c __attribute__((unused)),
                              const PSI_stage_info *d __attribute__((unused)),
                              PSI_stage_info *e __attribute__((unused)),
                              const char *f __attribute__((unused)),
@@ -110,7 +110,7 @@ static void exid_cond_dummy(void *a __attribute__((unused)),
   implementations will be set during server startup by
   init_server_components().
 */
-void (*enter_cond_hook)(void *, mysql_cond_t *, mysql_mutex_t *,
+void (*enter_cond_hook)(void *, myblockchain_cond_t *, myblockchain_mutex_t *,
                         const PSI_stage_info *, PSI_stage_info *,
                         const char *, const char *, int)= enter_cond_dummy;
 
@@ -120,7 +120,7 @@ void (*exit_cond_hook)(void *, const PSI_stage_info *,
 #if defined(ENABLED_DEBUG_SYNC)
 /**
   Global pointer to be set if callback function is defined
-  (e.g. in mysqld). See sql/debug_sync.cc.
+  (e.g. in myblockchaind). See sql/debug_sync.cc.
 */
 void (*debug_sync_C_callback_ptr)(const char *, size_t);
 #endif /* defined(ENABLED_DEBUG_SYNC) */

@@ -53,7 +53,7 @@ struct BackupFormat {
     Uint32 BackupKey_1;
     Uint32 ByteOrder;
     Uint32 NdbVersion;
-    Uint32 MySQLVersion;
+    Uint32 MyBlockchainVersion;
   };
 
   struct FileHeader_pre_backup_version {

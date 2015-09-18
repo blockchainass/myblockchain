@@ -26,7 +26,7 @@
 static int clear_table(Ndb* pNdb, const NdbDictionary::Table* pTab,
                        bool fetch_across_commit, int parallelism=240);
 
-const char *load_default_groups[]= { "mysql_cluster",0 };
+const char *load_default_groups[]= { "myblockchain_cluster",0 };
 
 static const char* _dbname = "TEST_DB";
 static my_bool _transactional = false;
@@ -36,7 +36,7 @@ static my_bool _diskscan = 0;
 static struct my_option my_long_options[] =
 {
   NDB_STD_OPTS("ndb_desc"),
-  { "database", 'd', "Name of database table is in",
+  { "blockchain", 'd', "Name of blockchain table is in",
     (uchar**) &_dbname, (uchar**) &_dbname, 0,
     GET_STR, REQUIRED_ARG, 0, 0, 0, 0, 0, 0 },
   { "transactional", 't', "Single transaction (may run out of operations)",

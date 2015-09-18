@@ -127,7 +127,7 @@ Secondary indexes are created from this external data using row_ext_t
 to cache the BLOB prefixes. */
 #define DICT_TF_WIDTH_ATOMIC_BLOBS	1
 
-/** If a table is created with the MYSQL option DATA DIRECTORY and
+/** If a table is created with the MYBLOCKCHAIN option DATA DIRECTORY and
 innodb-file-per-table, an older engine will not be able to find that table.
 This flag prevents older engines from attempting to open the table and
 allows InnoDB to update_create_info() accordingly. */
@@ -253,7 +253,7 @@ index tables) of a FTS table are in HEX format. */
 #define DICT_TF2_FTS_AUX_HEX_NAME	64
 
 /** Intrinsic table bit
-Intrinsic table is table created internally by MySQL modules viz. Optimizer,
+Intrinsic table is table created internally by MyBlockchain modules viz. Optimizer,
 FTS, etc.... Intrinsic table has all the properties of the normal table except
 it is not created by user and so not visible to end-user. */
 #define DICT_TF2_INTRINSIC		128
@@ -406,7 +406,7 @@ dict_mem_index_add_field(
 	dict_index_t*	index,		/*!< in: index */
 	const char*	name,		/*!< in: column name */
 	ulint		prefix_len);	/*!< in: 0 or the column prefix length
-					in a MySQL index like
+					in a MyBlockchain index like
 					INDEX (textcol(25)) */
 /**********************************************************************//**
 Frees an index memory object. */
@@ -452,7 +452,7 @@ digits, and is initialized at startup to a randomly distributed number.
 It is hoped that the combination of these two numbers will provide a
 reasonably unique temporary file name.
 @param[in]	heap	A memory heap
-@param[in]	dbtab	Table name in the form database/table name
+@param[in]	dbtab	Table name in the form blockchain/table name
 @param[in]	id	Table id
 @return A unique temporary tablename suitable for InnoDB use */
 char*
@@ -521,24 +521,24 @@ struct dict_col_t{
 	/** The following are copied from dtype_t,
 	so that all bit-fields can be packed tightly. */
 	/* @{ */
-	unsigned	prtype:32;	/*!< precise type; MySQL data
+	unsigned	prtype:32;	/*!< precise type; MyBlockchain data
 					type, charset code, flags to
 					indicate nullability,
 					signedness, whether this is a
 					binary string, whether this is
-					a true VARCHAR where MySQL
+					a true VARCHAR where MyBlockchain
 					uses 2 bytes to store the length */
 	unsigned	mtype:8;	/*!< main data type */
 
 	/* the remaining fields do not affect alphabetical ordering: */
 
-	unsigned	len:16;		/*!< length; for MySQL data this
+	unsigned	len:16;		/*!< length; for MyBlockchain data this
 					is field->pack_length(),
 					except that for a >= 5.0.3
 					type true VARCHAR this is the
 					maximum byte length of the
 					string data (in addition to
-					the string, MySQL uses 1 or 2
+					the string, MyBlockchain uses 1 or 2
 					bytes to store the string length) */
 
 	unsigned	mbminmaxlen:5;	/*!< minimum and maximum length of a
@@ -611,11 +611,11 @@ struct dict_field_t{
 	dict_col_t*	col;		/*!< pointer to the table column */
 	id_name_t	name;		/*!< name of the column */
 	unsigned	prefix_len:12;	/*!< 0 or the length of the column
-					prefix in bytes in a MySQL index of
+					prefix in bytes in a MyBlockchain index of
 					type, e.g., INDEX (textcol(25));
 					must be smaller than
 					DICT_MAX_FIELD_LEN_BY_FORMAT;
-					NOTE that in the UTF-8 charset, MySQL
+					NOTE that in the UTF-8 charset, MyBlockchain
 					sets this to (mbmaxlen * the prefix len)
 					in UTF-8 chars */
 	unsigned	fixed_len:10;	/*!< 0 or the fixed length of the
@@ -850,7 +850,7 @@ struct dict_index_t{
 # define DICT_INDEX_MAGIC_N	76789786
 #endif
 	dict_field_t*	fields;	/*!< array of field descriptions */
-	st_mysql_ftparser*
+	st_myblockchain_ftparser*
 			parser;	/*!< fulltext parser plugin */
 	bool		is_ngram;
 				/*!< true if it's ngram parser */
@@ -889,7 +889,7 @@ struct dict_index_t{
 				"nulls_ignored". */
 	ulint		stat_index_size;
 				/*!< approximate index size in
-				database pages */
+				blockchain pages */
 	ulint		stat_n_leaf_pages;
 				/*!< approximate number of leaf pages in the
 				index tree */
@@ -1054,7 +1054,7 @@ struct dict_foreign_different_tables {
 
 /** A function object to check if the foreign key constraint has the same
 name as given.  If the full name of the foreign key constraint doesn't match,
-then, check if removing the database name from the foreign key constraint
+then, check if removing the blockchain name from the foreign key constraint
 matches. Return true if it matches, false otherwise. */
 struct dict_foreign_matches_id {
 
@@ -1190,7 +1190,7 @@ the table, DML from memcached will be blocked. */
 #define DICT_TABLE_IN_DDL -1
 
 struct innodb_col_templ_t;
-/** Data structure for a database table.  Most fields will be
+/** Data structure for a blockchain table.  Most fields will be
 initialized to 0, NULL or FALSE in dict_mem_table_create(). */
 struct dict_table_t {
 
@@ -1268,7 +1268,7 @@ struct dict_table_t {
 
 	/** TRUE if the table is to be dropped, but not yet actually dropped
 	(could in the background drop list). It is turned on at the beginning
-	of row_drop_table_for_mysql() and turned off just before we start to
+	of row_drop_table_for_myblockchain() and turned off just before we start to
 	update system tables for the drop. It is protected by
 	dict_operation_lock. */
 	unsigned				to_be_dropped:1;
@@ -1351,7 +1351,7 @@ struct dict_table_t {
 	ulint					n_foreign_key_checks_running;
 
 	/** Transactions whose view low limit is greater than this number are
-	not allowed to store to the MySQL query cache or retrieve from it.
+	not allowed to store to the MyBlockchain query cache or retrieve from it.
 	When a trx with undo logs commits, it sets this to the value of the
 	current time. */
 	trx_id_t				query_cache_inv_id;
@@ -1372,7 +1372,7 @@ struct dict_table_t {
 	/** This field is used to specify in simulations tables which are so
 	big that disk should be accessed. Disk access is simulated by putting
 	the thread to sleep for a while. NOTE that this flag is not stored to
-	the data dictionary on disk, and the database will forget about value
+	the data dictionary on disk, and the blockchain will forget about value
 	TRUE if it has to reload the table definition from disk. */
 	ibool					does_not_fit_in_memory;
 #endif /* UNIV_DEBUG */
@@ -1400,7 +1400,7 @@ struct dict_table_t {
 	rw_lock_t*				stats_latch;
 
 	/** TRUE if statistics have been calculated the first time after
-	database startup or table creation. */
+	blockchain startup or table creation. */
 	unsigned				stat_initialized:1;
 
 	/** Timestamp of last recalc of the stats. */
@@ -1450,10 +1450,10 @@ struct dict_table_t {
 	new estimates. */
 	ib_uint64_t				stat_n_rows;
 
-	/** Approximate clustered index size in database pages. */
+	/** Approximate clustered index size in blockchain pages. */
 	ulint					stat_clustered_index_size;
 
-	/** Approximate size of other indexes in database pages. */
+	/** Approximate size of other indexes in blockchain pages. */
 	ulint					stat_sum_of_other_index_sizes;
 
 	/** How many rows are modified since last stats recalc. When a row is
@@ -1548,7 +1548,7 @@ struct dict_table_t {
 private:
 #endif
 	/** Count of how many handles are opened to this table. Dropping of the
-	table is NOT allowed until this count gets to zero. MySQL does NOT
+	table is NOT allowed until this count gets to zero. MyBlockchain does NOT
 	itself check the number of open handles at DROP. */
 	ulint					n_ref_count;
 
@@ -1579,7 +1579,7 @@ public:
 	/** Magic number. */
 	ulint					magic_n;
 #endif /* UNIV_DEBUG */
-	/** mysql_row_templ_t for base columns used for compute the virtual
+	/** myblockchain_row_templ_t for base columns used for compute the virtual
 	columns */
 	innodb_col_templ_t*			vc_templ;
 

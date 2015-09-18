@@ -369,9 +369,9 @@ static ENGINE_ERROR_CODE ndb_remove(ENGINE_HANDLE* handle,
   DEBUG_PRINT("prefix: %d", prefix.prefix_id);
 
   /* DELETE.  
-     You should attempt the cache delete, regardless of whether the database 
+     You should attempt the cache delete, regardless of whether the blockchain 
      delete succeeds or fails.  So, we simply perform the cache delete first, 
-     here, and then queue the database delete. 
+     here, and then queue the blockchain delete. 
   */
 
   if(prefix.do_mc_delete) {                         /* Cache Delete */ 
@@ -380,7 +380,7 @@ static ENGINE_ERROR_CODE ndb_remove(ENGINE_HANDLE* handle,
     if (it != NULL) {
       // ACTUALLY NO??? 
       /* In the binary protocol there is such a thing as a CAS delete.
-         This is the CAS check.  If we will also be deleting from the database, 
+         This is the CAS check.  If we will also be deleting from the blockchain, 
          there are two possibilities:
           1: The CAS matches; perform the delete.
           2: The CAS doesn't match; delete the item because it's stale.
@@ -574,7 +574,7 @@ static ENGINE_ERROR_CODE ndb_store(ENGINE_HANDLE* handle,
                      
   /* Build and send the NDB transaction. 
      If there is also a cache operation, it must be deferred until we know
-     whether the database operation has succeeded or failed.
+     whether the blockchain operation has succeeded or failed.
   */
   if(prefix.do_db_write) {
     wqitem = new_workitem_for_store_op(pipeline, op, prefix, cookie, item, cas);

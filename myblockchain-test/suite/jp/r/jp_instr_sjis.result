@@ -1,0 +1,202 @@
+drop table if exists `�s�P`;
+drop table if exists `�s�Q`;
+drop table if exists `�s�R`;
+drop table if exists `�s�S`;
+drop table if exists `�s�T`;
+drop table if exists `�s�U`;
+drop table if exists `�s�V`;
+drop table if exists `�s�W`;
+drop table if exists `�s�X`;
+SET NAMES sjis;
+SET character_set_blockchain = sjis;
+Warnings:
+Warning	1681	Updating 'character_set_blockchain' is deprecated. It will be made read-only in a future release.
+CREATE TABLE `�s�P` (`�b�P` char(5), INDEX(`�b�P`)) DEFAULT CHARSET = sjis engine = innodb;
+CREATE TABLE `�s�Q` (`�b�P` char(5), INDEX(`�b�P`)) DEFAULT CHARSET = sjis engine = innodb;
+CREATE TABLE `�s�R` (`�b�P` char(5), INDEX(`�b�P`)) DEFAULT CHARSET = sjis engine = innodb;
+CREATE TABLE `�s�S` (`�b�P` char(5), INDEX(`�b�P`)) DEFAULT CHARSET = sjis engine = myisam;
+CREATE TABLE `�s�T` (`�b�P` char(5), INDEX(`�b�P`)) DEFAULT CHARSET = sjis engine = myisam;
+CREATE TABLE `�s�U` (`�b�P` char(5), INDEX(`�b�P`)) DEFAULT CHARSET = sjis engine = myisam;
+CREATE TABLE `�s�V` (`�b�P` char(5), INDEX(`�b�P`)) DEFAULT CHARSET = sjis engine = MEMORY;
+CREATE TABLE `�s�W` (`�b�P` char(5), INDEX(`�b�P`)) DEFAULT CHARSET = sjis engine = MEMORY;
+CREATE TABLE `�s�X` (`�b�P` char(5), INDEX(`�b�P`)) DEFAULT CHARSET = sjis engine = MEMORY;
+INSERT INTO `�s�P` VALUES ('�����');
+INSERT INTO `�s�Q` VALUES ('����������');
+INSERT INTO `�s�R` VALUES ('�\�\�\�\�\');
+INSERT INTO `�s�S` VALUES ('�����');
+INSERT INTO `�s�T` VALUES ('����������');
+INSERT INTO `�s�U` VALUES ('�\�\�\�\�\');
+INSERT INTO `�s�V` VALUES ('�����');
+INSERT INTO `�s�W` VALUES ('����������');
+INSERT INTO `�s�X` VALUES ('�\�\�\�\�\');
+SELECT INSTR(`�b�P`,'�') from `�s�P`;
+INSTR(`�b�P`,'�')
+1
+SELECT INSTR(`�b�P`,'�') from `�s�P`;
+INSTR(`�b�P`,'�')
+2
+SELECT INSTR(`�b�P`,'�') from `�s�P`;
+INSTR(`�b�P`,'�')
+3
+SELECT INSTR(`�b�P`,'�') from `�s�P`;
+INSTR(`�b�P`,'�')
+4
+SELECT INSTR(`�b�P`,'�') from `�s�P`;
+INSTR(`�b�P`,'�')
+5
+SELECT INSTR(`�b�P`,'�') from `�s�P`;
+INSTR(`�b�P`,'�')
+0
+SELECT INSTR(`�b�P`,'��') from `�s�Q`;
+INSTR(`�b�P`,'��')
+1
+SELECT INSTR(`�b�P`,'��') from `�s�Q`;
+INSTR(`�b�P`,'��')
+2
+SELECT INSTR(`�b�P`,'��') from `�s�Q`;
+INSTR(`�b�P`,'��')
+3
+SELECT INSTR(`�b�P`,'��') from `�s�Q`;
+INSTR(`�b�P`,'��')
+4
+SELECT INSTR(`�b�P`,'��') from `�s�Q`;
+INSTR(`�b�P`,'��')
+5
+SELECT INSTR(`�b�P`,'��') from `�s�Q`;
+INSTR(`�b�P`,'��')
+0
+SELECT INSTR(`�b�P`,'�\') from `�s�R`;
+INSTR(`�b�P`,'�\')
+1
+SELECT INSTR(`�b�P`,'�\') from `�s�R`;
+INSTR(`�b�P`,'�\')
+2
+SELECT INSTR(`�b�P`,'�\') from `�s�R`;
+INSTR(`�b�P`,'�\')
+3
+SELECT INSTR(`�b�P`,'�\') from `�s�R`;
+INSTR(`�b�P`,'�\')
+4
+SELECT INSTR(`�b�P`,'�\') from `�s�R`;
+INSTR(`�b�P`,'�\')
+5
+SELECT INSTR(`�b�P`,'�\') from `�s�R`;
+INSTR(`�b�P`,'�\')
+0
+SELECT INSTR(`�b�P`,'�') from `�s�S`;
+INSTR(`�b�P`,'�')
+1
+SELECT INSTR(`�b�P`,'�') from `�s�S`;
+INSTR(`�b�P`,'�')
+2
+SELECT INSTR(`�b�P`,'�') from `�s�S`;
+INSTR(`�b�P`,'�')
+3
+SELECT INSTR(`�b�P`,'�') from `�s�S`;
+INSTR(`�b�P`,'�')
+4
+SELECT INSTR(`�b�P`,'�') from `�s�S`;
+INSTR(`�b�P`,'�')
+5
+SELECT INSTR(`�b�P`,'�') from `�s�S`;
+INSTR(`�b�P`,'�')
+0
+SELECT INSTR(`�b�P`,'��') from `�s�T`;
+INSTR(`�b�P`,'��')
+1
+SELECT INSTR(`�b�P`,'��') from `�s�T`;
+INSTR(`�b�P`,'��')
+2
+SELECT INSTR(`�b�P`,'��') from `�s�T`;
+INSTR(`�b�P`,'��')
+3
+SELECT INSTR(`�b�P`,'��') from `�s�T`;
+INSTR(`�b�P`,'��')
+4
+SELECT INSTR(`�b�P`,'��') from `�s�T`;
+INSTR(`�b�P`,'��')
+5
+SELECT INSTR(`�b�P`,'��') from `�s�T`;
+INSTR(`�b�P`,'��')
+0
+SELECT INSTR(`�b�P`,'�\') from `�s�U`;
+INSTR(`�b�P`,'�\')
+1
+SELECT INSTR(`�b�P`,'�\') from `�s�U`;
+INSTR(`�b�P`,'�\')
+2
+SELECT INSTR(`�b�P`,'�\') from `�s�U`;
+INSTR(`�b�P`,'�\')
+3
+SELECT INSTR(`�b�P`,'�\') from `�s�U`;
+INSTR(`�b�P`,'�\')
+4
+SELECT INSTR(`�b�P`,'�\') from `�s�U`;
+INSTR(`�b�P`,'�\')
+5
+SELECT INSTR(`�b�P`,'�\') from `�s�U`;
+INSTR(`�b�P`,'�\')
+0
+SELECT INSTR(`�b�P`,'�') from `�s�V`;
+INSTR(`�b�P`,'�')
+1
+SELECT INSTR(`�b�P`,'�') from `�s�V`;
+INSTR(`�b�P`,'�')
+2
+SELECT INSTR(`�b�P`,'�') from `�s�V`;
+INSTR(`�b�P`,'�')
+3
+SELECT INSTR(`�b�P`,'�') from `�s�V`;
+INSTR(`�b�P`,'�')
+4
+SELECT INSTR(`�b�P`,'�') from `�s�V`;
+INSTR(`�b�P`,'�')
+5
+SELECT INSTR(`�b�P`,'�') from `�s�V`;
+INSTR(`�b�P`,'�')
+0
+SELECT INSTR(`�b�P`,'��') from `�s�W`;
+INSTR(`�b�P`,'��')
+1
+SELECT INSTR(`�b�P`,'��') from `�s�W`;
+INSTR(`�b�P`,'��')
+2
+SELECT INSTR(`�b�P`,'��') from `�s�W`;
+INSTR(`�b�P`,'��')
+3
+SELECT INSTR(`�b�P`,'��') from `�s�W`;
+INSTR(`�b�P`,'��')
+4
+SELECT INSTR(`�b�P`,'��') from `�s�W`;
+INSTR(`�b�P`,'��')
+5
+SELECT INSTR(`�b�P`,'��') from `�s�W`;
+INSTR(`�b�P`,'��')
+0
+SELECT INSTR(`�b�P`,'�\') from `�s�X`;
+INSTR(`�b�P`,'�\')
+1
+SELECT INSTR(`�b�P`,'�\') from `�s�X`;
+INSTR(`�b�P`,'�\')
+2
+SELECT INSTR(`�b�P`,'�\') from `�s�X`;
+INSTR(`�b�P`,'�\')
+3
+SELECT INSTR(`�b�P`,'�\') from `�s�X`;
+INSTR(`�b�P`,'�\')
+4
+SELECT INSTR(`�b�P`,'�\') from `�s�X`;
+INSTR(`�b�P`,'�\')
+5
+SELECT INSTR(`�b�P`,'�\') from `�s�X`;
+INSTR(`�b�P`,'�\')
+0
+DROP TABLE `�s�P`;
+DROP TABLE `�s�Q`;
+DROP TABLE `�s�R`;
+DROP TABLE `�s�S`;
+DROP TABLE `�s�T`;
+DROP TABLE `�s�U`;
+DROP TABLE `�s�V`;
+DROP TABLE `�s�W`;
+DROP TABLE `�s�X`;

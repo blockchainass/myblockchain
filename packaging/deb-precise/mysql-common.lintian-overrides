@@ -14,6 +14,6 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 
 # Additional license file is needed so overriding this warning
-mysql-common: extra-license-file usr/share/doc/mysql-common/LICENSE.mysql
-mysql-common: extra-license-file usr/share/doc/mysql-common/COPYING.gz
-mysql-common: copyright-should-refer-to-common-license-file-for-lgpl
+myblockchain-common: extra-license-file usr/share/doc/myblockchain-common/LICENSE.myblockchain
+myblockchain-common: extra-license-file usr/share/doc/myblockchain-common/COPYING.gz
+myblockchain-common: copyright-should-refer-to-common-license-file-for-lgpl

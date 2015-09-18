@@ -26,11 +26,11 @@
 #define NDB_MGM_MAX_LOGLEVEL 15
 
 /**
- * @section MySQL Cluster Management API
+ * @section MyBlockchain Cluster Management API
  *
- * The MySQL Cluster Management API (MGM API) is a C language API
+ * The MyBlockchain Cluster Management API (MGM API) is a C language API
  * that is used for:
- * - Starting and stopping database nodes (ndbd processes)
+ * - Starting and stopping blockchain nodes (ndbd processes)
  * - Starting and stopping Cluster backups
  * - Controlling the NDB Cluster log
  * - Performing other administrative tasks
@@ -76,7 +76,7 @@
  *
  * @section secLogEvents  Log Events
  *
- * The database nodes and management server(s) regularly and on specific
+ * The blockchain nodes and management server(s) regularly and on specific
  * occations report on various log events that occurs in the cluster. These
  * log events are written to the cluster log.  Optionally a mgmapi client
  * may listen to these events by using the method ndb_mgm_listen_event().
@@ -170,7 +170,7 @@ extern "C" {
 #ifndef DOXYGEN_SHOULD_SKIP_INTERNAL
     = NODE_TYPE_API
 #endif
-    ,NDB_MGM_NODE_TYPE_NDB    /** A database node */
+    ,NDB_MGM_NODE_TYPE_NDB    /** A blockchain node */
 #ifndef DOXYGEN_SHOULD_SKIP_INTERNAL
     = NODE_TYPE_DB
 #endif
@@ -224,7 +224,7 @@ extern "C" {
    *
    *   @note <var>node_status</var>, <var>start_phase</var>,
    *         <var>dynamic_id</var> 
-   *         and <var>node_group</var> are relevant only for database nodes,
+   *         and <var>node_group</var> are relevant only for blockchain nodes,
    *         i.e. <var>node_type</var> == @ref NDB_MGM_NODE_TYPE_NDB.
    */
   struct ndb_mgm_node_state {
@@ -262,8 +262,8 @@ extern "C" {
 #endif
     ];
 
-    /** MySQL version number */
-    int mysql_version;
+    /** MyBlockchain version number */
+    int myblockchain_version;
   };
   
   /**
@@ -599,7 +599,7 @@ extern "C" {
    *                         available to return version string in
    * @param   str            Pointer to buffer where to return the
    *                         version string which is in the
-   *                         form "mysql-X.X.X ndb-Y.Y.Y-status"
+   *                         form "myblockchain-X.X.X ndb-Y.Y.Y-status"
    *
    * @return  0 for error and 1 for success
    */
@@ -733,14 +733,14 @@ extern "C" {
    */
 
   /**
-   * Stops database nodes
+   * Stops blockchain nodes
    *
    * @param   handle        Management handle.
-   * @param   no_of_nodes   Number of database nodes to be stopped<br>
-   *                          0: All database nodes in cluster<br>
+   * @param   no_of_nodes   Number of blockchain nodes to be stopped<br>
+   *                          0: All blockchain nodes in cluster<br>
    *                          n: Stop the <var>n</var> node(s) specified in the
    *                            array node_list
-   * @param   node_list     List of node IDs for database nodes to be stopped
+   * @param   node_list     List of node IDs for blockchain nodes to be stopped
    *
    * @return                Number of nodes stopped (-1 on error)
    *
@@ -751,14 +751,14 @@ extern "C" {
 		   const int * node_list);
 
   /**
-   * Stops database nodes
+   * Stops blockchain nodes
    *
    * @param   handle        Management handle.
-   * @param   no_of_nodes   Number of database nodes to stop<br>
-   *                          0: All database nodes in cluster<br>
+   * @param   no_of_nodes   Number of blockchain nodes to stop<br>
+   *                          0: All blockchain nodes in cluster<br>
    *                          n: Stop the <var>n</var> node(s) specified in
    *                            the array node_list
-   * @param   node_list     List of node IDs of database nodes to be stopped
+   * @param   node_list     List of node IDs of blockchain nodes to be stopped
    * @param   abort         Don't perform graceful stop,
    *                        but rather stop immediately
    *
@@ -771,12 +771,12 @@ extern "C" {
    * Stops cluster nodes
    *
    * @param   handle        Management handle.
-   * @param   no_of_nodes   Number of database nodes to stop<br>
-   *                         -1: All database and management nodes<br>
-   *                          0: All database nodes in cluster<br>
+   * @param   no_of_nodes   Number of blockchain nodes to stop<br>
+   *                         -1: All blockchain and management nodes<br>
+   *                          0: All blockchain nodes in cluster<br>
    *                          n: Stop the <var>n</var> node(s) specified in
    *                            the array node_list
-   * @param   node_list     List of node IDs of database nodes to be stopped
+   * @param   node_list     List of node IDs of blockchain nodes to be stopped
    * @param   abort         Don't perform graceful stop,
    *                        but rather stop immediately
    * @param   disconnect    Returns true if you need to disconnect to apply
@@ -792,12 +792,12 @@ extern "C" {
    * Stops cluster nodes
    *
     * @param   handle        Management handle.
-   * @param   no_of_nodes   Number of database nodes to stop<br>
-   *                         -1: All database and management nodes<br>
-   *                          0: All database nodes in cluster<br>
+   * @param   no_of_nodes   Number of blockchain nodes to stop<br>
+   *                         -1: All blockchain and management nodes<br>
+   *                          0: All blockchain nodes in cluster<br>
    *                          n: Stop the <var>n</var> node(s) specified in
    *                            the array node_list
-   * @param   node_list     List of node IDs of database nodes to be stopped
+   * @param   node_list     List of node IDs of blockchain nodes to be stopped
    * @param   abort         Don't perform graceful stop,
    *                        but rather stop immediately
    * @param   force         Force stop of nodes even if it means the
@@ -813,14 +813,14 @@ extern "C" {
                     int *disconnect);
 
   /**
-   * Restart database nodes
+   * Restart blockchain nodes
    *
    * @param   handle        Management handle.
-   * @param   no_of_nodes   Number of database nodes to restart<br>
-   *                          0: All database nodes in cluster<br>
+   * @param   no_of_nodes   Number of blockchain nodes to restart<br>
+   *                          0: All blockchain nodes in cluster<br>
    *                          n: Restart the <var>n</var> node(s) specified in the
    *                            array node_list
-   * @param   node_list     List of node IDs of database nodes to be restarted
+   * @param   node_list     List of node IDs of blockchain nodes to be restarted
    *
    * @return                Number of nodes restarted (-1 on error).
    *
@@ -831,14 +831,14 @@ extern "C" {
 		      const int * node_list);
 
   /**
-   * Restart database nodes
+   * Restart blockchain nodes
    *
    * @param   handle        Management handle.
-   * @param   no_of_nodes   Number of database nodes to be restarted:<br>
-   *                          0: Restart all database nodes in the cluster<br>
+   * @param   no_of_nodes   Number of blockchain nodes to be restarted:<br>
+   *                          0: Restart all blockchain nodes in the cluster<br>
    *                          n: Restart the <var>n</var> node(s) specified in the
    *                            array node_list
-   * @param   node_list     List of node IDs of database nodes to be restarted
+   * @param   node_list     List of node IDs of blockchain nodes to be restarted
    * @param   initial       Remove filesystem from restarting node(s)
    * @param   nostart       Don't actually start node(s) but leave them
    *                        waiting for start command
@@ -855,11 +855,11 @@ extern "C" {
    * Restart nodes
    *
    * @param   handle        Management handle.
-   * @param   no_of_nodes   Number of database nodes to be restarted:<br>
-   *                          0: Restart all database nodes in the cluster<br>
+   * @param   no_of_nodes   Number of blockchain nodes to be restarted:<br>
+   *                          0: Restart all blockchain nodes in the cluster<br>
    *                          n: Restart the <var>n</var> node(s) specified in the
    *                            array node_list
-   * @param   node_list     List of node IDs of database nodes to be restarted
+   * @param   node_list     List of node IDs of blockchain nodes to be restarted
    * @param   initial       Remove filesystem from restarting node(s)
    * @param   nostart       Don't actually start node(s) but leave them
    *                        waiting for start command
@@ -880,11 +880,11 @@ extern "C" {
    * Restart nodes
    *
    * @param   handle        Management handle.
-   * @param   no_of_nodes   Number of database nodes to be restarted:<br>
-   *                          0: Restart all database nodes in the cluster<br>
+   * @param   no_of_nodes   Number of blockchain nodes to be restarted:<br>
+   *                          0: Restart all blockchain nodes in the cluster<br>
    *                          n: Restart the <var>n</var> node(s) specified
    *                             in the array node_list
-   * @param   node_list     List of node IDs of database nodes to be restarted
+   * @param   node_list     List of node IDs of blockchain nodes to be restarted
    * @param   initial       Remove filesystem from restarting node(s)
    * @param   nostart       Don't actually start node(s) but leave them
    *                        waiting for start command
@@ -904,22 +904,22 @@ extern "C" {
 		       int nostart, int abort, int force, int *disconnect);
 
   /**
-   * Start database nodes
+   * Start blockchain nodes
    *
    * @param   handle        Management handle.
-   * @param   no_of_nodes   Number of database nodes to be started<br>
-   *                        0: Start all database nodes in the cluster<br>
+   * @param   no_of_nodes   Number of blockchain nodes to be started<br>
+   *                        0: Start all blockchain nodes in the cluster<br>
    *                        n: Start the <var>n</var> node(s) specified in
    *                            the array node_list
-   * @param   node_list     List of node IDs of database nodes to be started
+   * @param   node_list     List of node IDs of blockchain nodes to be started
    *
    * @return                Number of nodes actually started (-1 on error).
    *
    * @note    The nodes to be started must have been started with nostart(-n)
    *          argument.
-   *          This means that the database node binary is started and
+   *          This means that the blockchain node binary is started and
    *          waiting for a START management command which will
-   *          actually enable the database node
+   *          actually enable the blockchain node
    */
   int ndb_mgm_start(NdbMgmHandle handle,
 		    int no_of_nodes,
@@ -1427,11 +1427,11 @@ extern "C" {
    *
    * @param   handle        Management handle.
    * @param   type          Which ndb_logevent to request
-   * @param   no_of_nodes   Number of database nodes to request info from<br>
-   *                          0: All database nodes in cluster<br>
+   * @param   no_of_nodes   Number of blockchain nodes to request info from<br>
+   *                          0: All blockchain nodes in cluster<br>
    *                          n: Only the <var>n</var> node(s) specified in<br>
    *                             the array node_list
-   * @param   node_list     List of node IDs of database nodes to request<br>
+   * @param   node_list     List of node IDs of blockchain nodes to request<br>
    *                        info from
    *
    * @return                struct with array of ndb_logevent's

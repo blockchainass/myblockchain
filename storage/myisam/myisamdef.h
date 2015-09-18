@@ -21,8 +21,8 @@
 #include <my_tree.h>
 #include <my_thread.h>
 #include <thr_lock.h>
-#include <mysql/psi/mysql_file.h>
-#include <mysql/plugin_ftparser.h>
+#include <myblockchain/psi/myblockchain_file.h>
+#include <myblockchain/plugin_ftparser.h>
 
 /* undef map from my_nosys; We need test-if-disk full */
 #if defined(my_write)
@@ -78,7 +78,7 @@ typedef struct st_mi_state_info
   ulonglong key_map;			/* Which keys are in use */
   ha_checksum checksum;                 /* Table checksum */
   ulong version;			/* timestamp of create */
-  time_t create_time;			/* Time when created database */
+  time_t create_time;			/* Time when created blockchain */
   time_t recover_time;			/* Time for last recover */
   time_t check_time;			/* Time for last check */
   uint	sortkey;			/* sorted by this key  (not used) */
@@ -134,7 +134,7 @@ typedef struct st_mi_base_info
 } MI_BASE_INFO;
 
 
-	/* Structs used intern in database */
+	/* Structs used intern in blockchain */
 
 typedef struct st_mi_blob		/* Info of record */
 {
@@ -211,12 +211,12 @@ typedef struct st_mi_isam_share {	/* Shared between opens */
     concurrent_insert;
 
   THR_LOCK lock;
-  mysql_mutex_t intern_lock;            /* Locking for use with _locking */
-  mysql_rwlock_t *key_root_lock;
+  myblockchain_mutex_t intern_lock;            /* Locking for use with _locking */
+  myblockchain_rwlock_t *key_root_lock;
   my_off_t mmaped_length;
   uint     nonmmaped_inserts;           /* counter of writing in non-mmaped
                                            area */
-  mysql_rwlock_t mmap_lock;
+  myblockchain_rwlock_t mmap_lock;
 } MYISAM_SHARE;
 
 typedef uint mi_bit_type;
@@ -241,7 +241,7 @@ struct st_myisam_info {
   TREE	        *bulk_insert;
   DYNAMIC_ARRAY *ft1_to_ft2;            /* used only in ft1->ft2 conversion */
   MEM_ROOT      ft_memroot;             /* used by the parser               */
-  MYSQL_FTPARSER_PARAM *ftparser_param; /* share info between init/deinit   */
+  MYBLOCKCHAIN_FTPARSER_PARAM *ftparser_param; /* share info between init/deinit   */
   LIST in_use;                          /* Thread using this table          */
   char *filename;			/* parameter to open filename       */
   uchar *buff,				/* Temp area for key                */
@@ -283,7 +283,7 @@ struct st_myisam_info {
   uint  pack_key_length;                /* For MYISAMMRG */
   uint16 last_used_keyseg;              /* For MyISAMMRG */
   int	errkey;				/* Got last error on this key */
-  int   lock_type;			/* How database was locked */
+  int   lock_type;			/* How blockchain was locked */
   int   tmp_lock_type;			/* When locked by readinfo */
   uint	data_changed;			/* Somebody has changed data */
   uint	save_update;			/* When using KEY_READ */
@@ -469,7 +469,7 @@ typedef struct st_mi_sort_param
 #define MI_UNIQUE_HASH_TYPE	HA_KEYTYPE_ULONG_INT
 #define mi_unique_store(A,B)    mi_int4store((A),(B))
 
-extern mysql_mutex_t THR_LOCK_myisam;
+extern myblockchain_mutex_t THR_LOCK_myisam;
 
 	/* Some extern variables */
 

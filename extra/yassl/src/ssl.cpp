@@ -18,7 +18,7 @@
 
 /*  SSL source implements all openssl compatibility API functions
  *
- *  TODO: notes are mostly api additions to allow compilation with mysql
+ *  TODO: notes are mostly api additions to allow compilation with myblockchain
  *  they don't affect normal modes but should be provided for completeness
 
  *  stunnel functions at end of file

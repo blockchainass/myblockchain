@@ -16,7 +16,7 @@
 
 /* 
    UCA (Unicode Collation Algorithm) support. 
-   Written by Alexander Barkov <bar@mysql.com>
+   Written by Alexander Barkov <bar@myblockchain.com>
    
    Currently supports only subset of the full UCA:
    - Only Primary level key comparison
@@ -19281,9 +19281,9 @@ static const char roman[]= /* i.e. Classical Latin */
 
 /*
   Persian collation support was provided by 
-  Jody McIntyre <mysql@modernduck.com>
+  Jody McIntyre <myblockchain@modernduck.com>
   
-  To: internals@lists.mysql.com
+  To: internals@lists.myblockchain.com
   Subject: Persian UTF8 collation support
   Date: 17.08.2004
   

@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2003-2006 MySQL AB, 2009 Sun Microsystems, Inc.
+   Copyright (C) 2003-2006 MyBlockchain AB, 2009 Sun Microsystems, Inc.
     All rights reserved. Use is subject to license terms.
 
    This program is free software; you can redistribute it and/or modify
@@ -35,8 +35,8 @@ int main(int argc, const char** argv){
   int _help = 0;
   
   struct getargs args[] = {
-    { "database", 'd', arg_string, &_dbname, "dbname", 
-      "Name of database table is in"}, 
+    { "blockchain", 'd', arg_string, &_dbname, "dbname", 
+      "Name of blockchain table is in"}, 
     { "connstr", 'c', arg_string, &_connectstr, "connect string", 
       "How to connect to NDB"}, 
     { "copy-data", '\0', arg_negative_flag, &_copy_data, "Don't copy data to new table", 

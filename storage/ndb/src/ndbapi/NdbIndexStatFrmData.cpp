@@ -20,7 +20,7 @@
 
 #if ndb_index_stat_systables_sql
 
-use mysql;
+use myblockchain;
 
 create table ndb_index_stat_head (
   index_id int unsigned not null,

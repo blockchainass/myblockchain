@@ -1,609 +1,609 @@
-diff -rup old/libmysql/libmysql.c new/libmysql/libmysql.c
---- old/libmysql/libmysql.c	2013-11-04 20:15:10.000000000 +0100
-+++ new/libmysql/libmysql.c	2014-01-14 12:10:27.148374504 +0100
-@@ -4898,3 +4898,612 @@ my_bool STDCALL mysql_read_query_result(
-   return (*mysql->methods->read_query_result)(mysql);
+diff -rup old/libmyblockchain/libmyblockchain.c new/libmyblockchain/libmyblockchain.c
+--- old/libmyblockchain/libmyblockchain.c	2013-11-04 20:15:10.000000000 +0100
++++ new/libmyblockchain/libmyblockchain.c	2014-01-14 12:10:27.148374504 +0100
+@@ -4898,3 +4898,612 @@ my_bool STDCALL myblockchain_read_query_result(
+   return (*myblockchain->methods->read_query_result)(myblockchain);
  }
  
 +#ifndef EMBEDDED_LIBRARY
 +
-+// Hack to provide both libmysqlclient_16 and libmysqlclient_18 symbol versions
++// Hack to provide both libmyblockchainclient_16 and libmyblockchainclient_18 symbol versions
 +
-+#define SYM_16(_exportedsym) __asm__(".symver symver16_" #_exportedsym "," #_exportedsym "@libmysqlclient_16")
++#define SYM_16(_exportedsym) __asm__(".symver symver16_" #_exportedsym "," #_exportedsym "@libmyblockchainclient_16")
 +
-+void STDCALL symver16_myodbc_remove_escape(MYSQL *mysql,char *name)
++void STDCALL symver16_myodbc_remove_escape(MYBLOCKCHAIN *myblockchain,char *name)
 +{
-+  return myodbc_remove_escape(mysql, name);
++  return myodbc_remove_escape(myblockchain, name);
 +}
 +SYM_16(myodbc_remove_escape);
 +
 +
-+my_ulonglong STDCALL symver16_mysql_affected_rows(MYSQL *mysql)
++my_ulonglong STDCALL symver16_myblockchain_affected_rows(MYBLOCKCHAIN *myblockchain)
 +{
-+  return mysql_affected_rows(mysql);
++  return myblockchain_affected_rows(myblockchain);
 +}
-+SYM_16(mysql_affected_rows);
++SYM_16(myblockchain_affected_rows);
 +
 +
-+my_bool STDCALL symver16_mysql_autocommit(MYSQL * mysql, my_bool auto_mode)
++my_bool STDCALL symver16_myblockchain_autocommit(MYBLOCKCHAIN * myblockchain, my_bool auto_mode)
 +{
-+  return mysql_autocommit(mysql, auto_mode);
++  return myblockchain_autocommit(myblockchain, auto_mode);
 +}
-+SYM_16(mysql_autocommit);
++SYM_16(myblockchain_autocommit);
 +
 +
-+my_bool STDCALL symver16_mysql_change_user(MYSQL *mysql, const char *user, const char *passwd, const char *db)
++my_bool STDCALL symver16_myblockchain_change_user(MYBLOCKCHAIN *myblockchain, const char *user, const char *passwd, const char *db)
 +{
-+  return mysql_change_user(mysql, user, passwd, db);
++  return myblockchain_change_user(myblockchain, user, passwd, db);
 +}
-+SYM_16(mysql_change_user);
++SYM_16(myblockchain_change_user);
 +
 +
-+const char * STDCALL symver16_mysql_character_set_name(MYSQL *mysql)
++const char * STDCALL symver16_myblockchain_character_set_name(MYBLOCKCHAIN *myblockchain)
 +{
-+  return mysql_character_set_name(mysql);
++  return myblockchain_character_set_name(myblockchain);
 +}
-+SYM_16(mysql_character_set_name);
++SYM_16(myblockchain_character_set_name);
 +
 +
-+my_bool STDCALL symver16_mysql_commit(MYSQL * mysql)
++my_bool STDCALL symver16_myblockchain_commit(MYBLOCKCHAIN * myblockchain)
 +{
-+  return mysql_commit(mysql);
++  return myblockchain_commit(myblockchain);
 +}
-+SYM_16(mysql_commit);
++SYM_16(myblockchain_commit);
 +
 +
-+void STDCALL symver16_mysql_data_seek(MYSQL_RES *result, my_ulonglong row)
++void STDCALL symver16_myblockchain_data_seek(MYBLOCKCHAIN_RES *result, my_ulonglong row)
 +{
-+  return mysql_data_seek(result, row);
++  return myblockchain_data_seek(result, row);
 +}
-+SYM_16(mysql_data_seek);
++SYM_16(myblockchain_data_seek);
 +
 +
-+void STDCALL symver16_mysql_debug(const char *debug __attribute__((unused)))
++void STDCALL symver16_myblockchain_debug(const char *debug __attribute__((unused)))
 +{
-+  return mysql_debug(debug);
++  return myblockchain_debug(debug);
 +}
-+SYM_16(mysql_debug);
++SYM_16(myblockchain_debug);
 +
 +
-+int STDCALL symver16_mysql_dump_debug_info(MYSQL *mysql)
++int STDCALL symver16_myblockchain_dump_debug_info(MYBLOCKCHAIN *myblockchain)
 +{
-+  return mysql_dump_debug_info(mysql);
++  return myblockchain_dump_debug_info(myblockchain);
 +}
-+SYM_16(mysql_dump_debug_info);
++SYM_16(myblockchain_dump_debug_info);
 +
 +
-+my_bool STDCALL symver16_mysql_embedded(void)
++my_bool STDCALL symver16_myblockchain_embedded(void)
 +{
-+  return mysql_embedded();
++  return myblockchain_embedded();
 +}
-+SYM_16(mysql_embedded);
++SYM_16(myblockchain_embedded);
 +
 +
-+my_bool STDCALL symver16_mysql_eof(MYSQL_RES *res)
++my_bool STDCALL symver16_myblockchain_eof(MYBLOCKCHAIN_RES *res)
 +{
-+  return mysql_eof(res);
++  return myblockchain_eof(res);
 +}
-+SYM_16(mysql_eof);
++SYM_16(myblockchain_eof);
 +
 +
-+ulong STDCALL symver16_mysql_escape_string(char *to,const char *from,ulong length)
++ulong STDCALL symver16_myblockchain_escape_string(char *to,const char *from,ulong length)
 +{
-+  return mysql_escape_string(to, from, length);
++  return myblockchain_escape_string(to, from, length);
 +}
-+SYM_16(mysql_escape_string);
++SYM_16(myblockchain_escape_string);
 +
 +
-+MYSQL_FIELD * STDCALL symver16_mysql_fetch_field(MYSQL_RES *result)
++MYBLOCKCHAIN_FIELD * STDCALL symver16_myblockchain_fetch_field(MYBLOCKCHAIN_RES *result)
 +{
-+  return mysql_fetch_field(result);
++  return myblockchain_fetch_field(result);
 +}
-+SYM_16(mysql_fetch_field);
++SYM_16(myblockchain_fetch_field);
 +
 +
-+MYSQL_FIELD * STDCALL symver16_mysql_fetch_field_direct(MYSQL_RES *res,uint fieldnr)
++MYBLOCKCHAIN_FIELD * STDCALL symver16_myblockchain_fetch_field_direct(MYBLOCKCHAIN_RES *res,uint fieldnr)
 +{
-+  return mysql_fetch_field_direct(res, fieldnr);
++  return myblockchain_fetch_field_direct(res, fieldnr);
 +}
-+SYM_16(mysql_fetch_field_direct);
++SYM_16(myblockchain_fetch_field_direct);
 +
 +
-+MYSQL_FIELD * STDCALL symver16_mysql_fetch_fields(MYSQL_RES *res)
++MYBLOCKCHAIN_FIELD * STDCALL symver16_myblockchain_fetch_fields(MYBLOCKCHAIN_RES *res)
 +{
-+  return mysql_fetch_fields(res);
++  return myblockchain_fetch_fields(res);
 +}
-+SYM_16(mysql_fetch_fields);
++SYM_16(myblockchain_fetch_fields);
 +
 +
-+unsigned int STDCALL symver16_mysql_field_count(MYSQL *mysql)
++unsigned int STDCALL symver16_myblockchain_field_count(MYBLOCKCHAIN *myblockchain)
 +{
-+  return mysql_field_count(mysql);
++  return myblockchain_field_count(myblockchain);
 +}
-+SYM_16(mysql_field_count);
++SYM_16(myblockchain_field_count);
 +
 +
-+MYSQL_FIELD_OFFSET STDCALL symver16_mysql_field_seek(MYSQL_RES *result, MYSQL_FIELD_OFFSET field_offset)
++MYBLOCKCHAIN_FIELD_OFFSET STDCALL symver16_myblockchain_field_seek(MYBLOCKCHAIN_RES *result, MYBLOCKCHAIN_FIELD_OFFSET field_offset)
 +{
-+  return mysql_field_seek(result, field_offset);
++  return myblockchain_field_seek(result, field_offset);
 +}
-+SYM_16(mysql_field_seek);
++SYM_16(myblockchain_field_seek);
 +
 +
-+MYSQL_FIELD_OFFSET STDCALL symver16_mysql_field_tell(MYSQL_RES *res)
++MYBLOCKCHAIN_FIELD_OFFSET STDCALL symver16_myblockchain_field_tell(MYBLOCKCHAIN_RES *res)
 +{
-+  return mysql_field_tell(res);
++  return myblockchain_field_tell(res);
 +}
-+SYM_16(mysql_field_tell);
++SYM_16(myblockchain_field_tell);
 +
 +
-+void STDCALL symver16_mysql_get_character_set_info(MYSQL *mysql, MY_CHARSET_INFO *csinfo)
++void STDCALL symver16_myblockchain_get_character_set_info(MYBLOCKCHAIN *myblockchain, MY_CHARSET_INFO *csinfo)
 +{
-+  return mysql_get_character_set_info(mysql, csinfo);
++  return myblockchain_get_character_set_info(myblockchain, csinfo);
 +}
-+SYM_16(mysql_get_character_set_info);
++SYM_16(myblockchain_get_character_set_info);
 +
 +
-+const char * STDCALL symver16_mysql_get_client_info(void)
++const char * STDCALL symver16_myblockchain_get_client_info(void)
 +{
-+  return mysql_get_client_info();
++  return myblockchain_get_client_info();
 +}
-+SYM_16(mysql_get_client_info);
++SYM_16(myblockchain_get_client_info);
 +
-+ulong STDCALL symver16_mysql_get_client_version(void)
++ulong STDCALL symver16_myblockchain_get_client_version(void)
 +{
-+  return mysql_get_client_version();
++  return myblockchain_get_client_version();
 +}
-+SYM_16(mysql_get_client_version);
++SYM_16(myblockchain_get_client_version);
 +
 +
-+const char * STDCALL symver16_mysql_get_host_info(MYSQL *mysql)
++const char * STDCALL symver16_myblockchain_get_host_info(MYBLOCKCHAIN *myblockchain)
 +{
-+  return mysql_get_host_info(mysql);
++  return myblockchain_get_host_info(myblockchain);
 +}
-+SYM_16(mysql_get_host_info);
++SYM_16(myblockchain_get_host_info);
 +
 +
-+MYSQL_PARAMETERS *STDCALL symver16_mysql_get_parameters(void)
++MYBLOCKCHAIN_PARAMETERS *STDCALL symver16_myblockchain_get_parameters(void)
 +{
-+  return mysql_get_parameters();
++  return myblockchain_get_parameters();
 +}
-+SYM_16(mysql_get_parameters);
++SYM_16(myblockchain_get_parameters);
 +
 +
-+uint STDCALL symver16_mysql_get_proto_info(MYSQL *mysql)
++uint STDCALL symver16_myblockchain_get_proto_info(MYBLOCKCHAIN *myblockchain)
 +{
-+  return mysql_get_proto_info(mysql);
++  return myblockchain_get_proto_info(myblockchain);
 +}
-+SYM_16(mysql_get_proto_info);
++SYM_16(myblockchain_get_proto_info);
 +
 +
-+const char * STDCALL symver16_mysql_get_server_info(MYSQL *mysql)
++const char * STDCALL symver16_myblockchain_get_server_info(MYBLOCKCHAIN *myblockchain)
 +{
-+  return mysql_get_server_info(mysql);
++  return myblockchain_get_server_info(myblockchain);
 +}
-+SYM_16(mysql_get_server_info);
++SYM_16(myblockchain_get_server_info);
 +
 +
-+ulong STDCALL symver16_mysql_hex_string(char *to, const char *from, ulong length)
++ulong STDCALL symver16_myblockchain_hex_string(char *to, const char *from, ulong length)
 +{
-+  return mysql_hex_string(to, from, length);
++  return myblockchain_hex_string(to, from, length);
 +}
-+SYM_16(mysql_hex_string);
++SYM_16(myblockchain_hex_string);
 +
 +
-+const char *STDCALL symver16_mysql_info(MYSQL *mysql)
++const char *STDCALL symver16_myblockchain_info(MYBLOCKCHAIN *myblockchain)
 +{
-+  return mysql_info(mysql);
++  return myblockchain_info(myblockchain);
 +}
-+SYM_16(mysql_info);
++SYM_16(myblockchain_info);
 +
 +
-+my_ulonglong STDCALL symver16_mysql_insert_id(MYSQL *mysql)
++my_ulonglong STDCALL symver16_myblockchain_insert_id(MYBLOCKCHAIN *myblockchain)
 +{
-+  return mysql_insert_id(mysql);
++  return myblockchain_insert_id(myblockchain);
 +}
-+SYM_16(mysql_insert_id);
++SYM_16(myblockchain_insert_id);
 +
 +
-+int STDCALL symver16_mysql_kill(MYSQL *mysql,ulong pid)
++int STDCALL symver16_myblockchain_kill(MYBLOCKCHAIN *myblockchain,ulong pid)
 +{
-+  return mysql_kill(mysql, pid);
++  return myblockchain_kill(myblockchain, pid);
 +}
-+SYM_16(mysql_kill);
++SYM_16(myblockchain_kill);
 +
 +
-+MYSQL_RES * STDCALL symver16_mysql_list_dbs(MYSQL *mysql, const char *wild)
++MYBLOCKCHAIN_RES * STDCALL symver16_myblockchain_list_dbs(MYBLOCKCHAIN *myblockchain, const char *wild)
 +{
-+  return mysql_list_dbs(mysql, wild);
++  return myblockchain_list_dbs(myblockchain, wild);
 +}
-+SYM_16(mysql_list_dbs);
++SYM_16(myblockchain_list_dbs);
 +
 +
-+MYSQL_RES * STDCALL symver16_mysql_list_fields(MYSQL *mysql, const char *table, const char *wild)
++MYBLOCKCHAIN_RES * STDCALL symver16_myblockchain_list_fields(MYBLOCKCHAIN *myblockchain, const char *table, const char *wild)
 +{
-+  return mysql_list_fields(mysql, table, wild);
++  return myblockchain_list_fields(myblockchain, table, wild);
 +}
-+SYM_16(mysql_list_fields);
++SYM_16(myblockchain_list_fields);
 +
 +
-+MYSQL_RES * STDCALL symver16_mysql_list_processes(MYSQL *mysql)
++MYBLOCKCHAIN_RES * STDCALL symver16_myblockchain_list_processes(MYBLOCKCHAIN *myblockchain)
 +{
-+  return mysql_list_processes(mysql);
++  return myblockchain_list_processes(myblockchain);
 +}
-+SYM_16(mysql_list_processes);
++SYM_16(myblockchain_list_processes);
 +
 +
-+MYSQL_RES * STDCALL symver16_mysql_list_tables(MYSQL *mysql, const char *wild)
++MYBLOCKCHAIN_RES * STDCALL symver16_myblockchain_list_tables(MYBLOCKCHAIN *myblockchain, const char *wild)
 +{
-+  return mysql_list_tables(mysql, wild);
++  return myblockchain_list_tables(myblockchain, wild);
 +}
-+SYM_16(mysql_list_tables);
++SYM_16(myblockchain_list_tables);
 +
 +
-+my_bool STDCALL symver16_mysql_more_results(MYSQL *mysql)
++my_bool STDCALL symver16_myblockchain_more_results(MYBLOCKCHAIN *myblockchain)
 +{
-+  return mysql_more_results(mysql);
++  return myblockchain_more_results(myblockchain);
 +}
-+SYM_16(mysql_more_results);
++SYM_16(myblockchain_more_results);
 +
 +
-+int STDCALL symver16_mysql_next_result(MYSQL *mysql)
++int STDCALL symver16_myblockchain_next_result(MYBLOCKCHAIN *myblockchain)
 +{
-+  return mysql_next_result(mysql);
++  return myblockchain_next_result(myblockchain);
 +}
-+SYM_16(mysql_next_result);
++SYM_16(myblockchain_next_result);
 +
 +
-+int STDCALL symver16_mysql_ping(MYSQL *mysql)
++int STDCALL symver16_myblockchain_ping(MYBLOCKCHAIN *myblockchain)
 +{
-+  return mysql_ping(mysql);
++  return myblockchain_ping(myblockchain);
 +}
-+SYM_16(mysql_ping);
++SYM_16(myblockchain_ping);
 +
 +
-+int STDCALL symver16_mysql_query(MYSQL *mysql, const char *query)
++int STDCALL symver16_myblockchain_query(MYBLOCKCHAIN *myblockchain, const char *query)
 +{
-+  return mysql_query(mysql, query);
++  return myblockchain_query(myblockchain, query);
 +}
-+SYM_16(mysql_query);
++SYM_16(myblockchain_query);
 +
 +
-+my_bool STDCALL symver16_mysql_read_query_result(MYSQL *mysql)
++my_bool STDCALL symver16_myblockchain_read_query_result(MYBLOCKCHAIN *myblockchain)
 +{
-+  return mysql_read_query_result(mysql);
++  return myblockchain_read_query_result(myblockchain);
 +}
-+SYM_16(mysql_read_query_result);
++SYM_16(myblockchain_read_query_result);
 +
 +
-+ulong STDCALL symver16_mysql_real_escape_string(MYSQL *mysql, char *to,const char *from, ulong length)
++ulong STDCALL symver16_myblockchain_real_escape_string(MYBLOCKCHAIN *myblockchain, char *to,const char *from, ulong length)
 +{
-+  return mysql_real_escape_string(mysql, to, from, length);
++  return myblockchain_real_escape_string(myblockchain, to, from, length);
 +}
-+SYM_16(mysql_real_escape_string);
++SYM_16(myblockchain_real_escape_string);
 +
 +
-+int STDCALL symver16_mysql_refresh(MYSQL *mysql,uint options)
++int STDCALL symver16_myblockchain_refresh(MYBLOCKCHAIN *myblockchain,uint options)
 +{
-+  return mysql_refresh(mysql, options);
++  return myblockchain_refresh(myblockchain, options);
 +}
-+SYM_16(mysql_refresh);
++SYM_16(myblockchain_refresh);
 +
 +
-+my_bool STDCALL symver16_mysql_rollback(MYSQL * mysql)
++my_bool STDCALL symver16_myblockchain_rollback(MYBLOCKCHAIN * myblockchain)
 +{
-+  return mysql_rollback(mysql);
++  return myblockchain_rollback(myblockchain);
 +}
-+SYM_16(mysql_rollback);
++SYM_16(myblockchain_rollback);
 +
 +
-+MYSQL_ROW_OFFSET STDCALL symver16_mysql_row_seek(MYSQL_RES *result, MYSQL_ROW_OFFSET row)
++MYBLOCKCHAIN_ROW_OFFSET STDCALL symver16_myblockchain_row_seek(MYBLOCKCHAIN_RES *result, MYBLOCKCHAIN_ROW_OFFSET row)
 +{
-+  return mysql_row_seek(result, row);
++  return myblockchain_row_seek(result, row);
 +}
-+SYM_16(mysql_row_seek);
++SYM_16(myblockchain_row_seek);
 +
 +
-+MYSQL_ROW_OFFSET STDCALL symver16_mysql_row_tell(MYSQL_RES *res)
++MYBLOCKCHAIN_ROW_OFFSET STDCALL symver16_myblockchain_row_tell(MYBLOCKCHAIN_RES *res)
 +{
-+  return mysql_row_tell(res);
++  return myblockchain_row_tell(res);
 +}
-+SYM_16(mysql_row_tell);
++SYM_16(myblockchain_row_tell);
 +
 +
-+void STDCALL symver16_mysql_server_end()
++void STDCALL symver16_myblockchain_server_end()
 +{
-+  return mysql_server_end();
++  return myblockchain_server_end();
 +}
-+SYM_16(mysql_server_end);
++SYM_16(myblockchain_server_end);
 +
 +
-+int STDCALL symver16_mysql_server_init(int argc __attribute__((unused)), char **argv __attribute__((unused)), char **groups __attribute__((unused)))
++int STDCALL symver16_myblockchain_server_init(int argc __attribute__((unused)), char **argv __attribute__((unused)), char **groups __attribute__((unused)))
 +{
-+  return mysql_server_init(argc, argv, groups);
++  return myblockchain_server_init(argc, argv, groups);
 +}
-+SYM_16(mysql_server_init);
++SYM_16(myblockchain_server_init);
 +
 +
-+void symver16_mysql_set_local_infile_default(MYSQL *mysql)
++void symver16_myblockchain_set_local_infile_default(MYBLOCKCHAIN *myblockchain)
 +{
-+  return mysql_set_local_infile_default(mysql);
++  return myblockchain_set_local_infile_default(myblockchain);
 +}
-+SYM_16(mysql_set_local_infile_default);
++SYM_16(myblockchain_set_local_infile_default);
 +
 +
-+void symver16_mysql_set_local_infile_handler(MYSQL *mysql, int (*local_infile_init)(void **, const char *, void *), int (*local_infile_read)(void *, char *, uint), void (*local_infile_end)(void *), int (*local_infile_error)(void *, char *, uint), void *userdata)
++void symver16_myblockchain_set_local_infile_handler(MYBLOCKCHAIN *myblockchain, int (*local_infile_init)(void **, const char *, void *), int (*local_infile_read)(void *, char *, uint), void (*local_infile_end)(void *), int (*local_infile_error)(void *, char *, uint), void *userdata)
 +{
-+  return mysql_set_local_infile_handler(mysql, local_infile_init, local_infile_read, local_infile_end, local_infile_error, userdata);
++  return myblockchain_set_local_infile_handler(myblockchain, local_infile_init, local_infile_read, local_infile_end, local_infile_error, userdata);
 +}
-+SYM_16(mysql_set_local_infile_handler);
++SYM_16(myblockchain_set_local_infile_handler);
 +
 +
-+int STDCALL symver16_mysql_set_server_option(MYSQL *mysql, enum enum_mysql_set_option option)
++int STDCALL symver16_myblockchain_set_server_option(MYBLOCKCHAIN *myblockchain, enum enum_myblockchain_set_option option)
 +{
-+  return mysql_set_server_option(mysql, option);
++  return myblockchain_set_server_option(myblockchain, option);
 +}
-+SYM_16(mysql_set_server_option);
++SYM_16(myblockchain_set_server_option);
 +
 +
-+int STDCALL symver16_mysql_shutdown(MYSQL *mysql, enum mysql_enum_shutdown_level shutdown_level)
++int STDCALL symver16_myblockchain_shutdown(MYBLOCKCHAIN *myblockchain, enum myblockchain_enum_shutdown_level shutdown_level)
 +{
-+  return mysql_shutdown(mysql, shutdown_level);
++  return myblockchain_shutdown(myblockchain, shutdown_level);
 +}
-+SYM_16(mysql_shutdown);
++SYM_16(myblockchain_shutdown);
 +
 +
-+const char *STDCALL symver16_mysql_sqlstate(MYSQL *mysql)
++const char *STDCALL symver16_myblockchain_sqlstate(MYBLOCKCHAIN *myblockchain)
 +{
-+  return mysql_sqlstate(mysql);
++  return myblockchain_sqlstate(myblockchain);
 +}
-+SYM_16(mysql_sqlstate);
++SYM_16(myblockchain_sqlstate);
 +
 +
-+const char * STDCALL symver16_mysql_stat(MYSQL *mysql)
++const char * STDCALL symver16_myblockchain_stat(MYBLOCKCHAIN *myblockchain)
 +{
-+  return mysql_stat(mysql);
++  return myblockchain_stat(myblockchain);
 +}
-+SYM_16(mysql_stat);
++SYM_16(myblockchain_stat);
 +
 +
-+my_ulonglong STDCALL symver16_mysql_stmt_affected_rows(MYSQL_STMT *stmt)
++my_ulonglong STDCALL symver16_myblockchain_stmt_affected_rows(MYBLOCKCHAIN_STMT *stmt)
 +{
-+  return mysql_stmt_affected_rows(stmt);
++  return myblockchain_stmt_affected_rows(stmt);
 +}
-+SYM_16(mysql_stmt_affected_rows);
++SYM_16(myblockchain_stmt_affected_rows);
 +
 +
-+my_bool STDCALL symver16_mysql_stmt_attr_get(MYSQL_STMT *stmt, enum enum_stmt_attr_type attr_type, void *value)
++my_bool STDCALL symver16_myblockchain_stmt_attr_get(MYBLOCKCHAIN_STMT *stmt, enum enum_stmt_attr_type attr_type, void *value)
 +{
-+  return mysql_stmt_attr_get(stmt, attr_type, value);
++  return myblockchain_stmt_attr_get(stmt, attr_type, value);
 +}
-+SYM_16(mysql_stmt_attr_get);
++SYM_16(myblockchain_stmt_attr_get);
 +
 +
-+my_bool STDCALL symver16_mysql_stmt_attr_set(MYSQL_STMT *stmt, enum enum_stmt_attr_type attr_type, const void *value)
++my_bool STDCALL symver16_myblockchain_stmt_attr_set(MYBLOCKCHAIN_STMT *stmt, enum enum_stmt_attr_type attr_type, const void *value)
 +{
-+  return mysql_stmt_attr_set(stmt, attr_type, value);
++  return myblockchain_stmt_attr_set(stmt, attr_type, value);
 +}
-+SYM_16(mysql_stmt_attr_set);
++SYM_16(myblockchain_stmt_attr_set);
 +
 +
-+my_bool STDCALL symver16_mysql_stmt_bind_param(MYSQL_STMT *stmt, MYSQL_BIND *my_bind)
++my_bool STDCALL symver16_myblockchain_stmt_bind_param(MYBLOCKCHAIN_STMT *stmt, MYBLOCKCHAIN_BIND *my_bind)
 +{
-+  return mysql_stmt_bind_param(stmt, my_bind);
++  return myblockchain_stmt_bind_param(stmt, my_bind);
 +}
-+SYM_16(mysql_stmt_bind_param);
++SYM_16(myblockchain_stmt_bind_param);
 +
 +
-+my_bool STDCALL symver16_mysql_stmt_bind_result(MYSQL_STMT *stmt, MYSQL_BIND *my_bind)
++my_bool STDCALL symver16_myblockchain_stmt_bind_result(MYBLOCKCHAIN_STMT *stmt, MYBLOCKCHAIN_BIND *my_bind)
 +{
-+  return mysql_stmt_bind_result(stmt, my_bind);
++  return myblockchain_stmt_bind_result(stmt, my_bind);
 +}
-+SYM_16(mysql_stmt_bind_result);
++SYM_16(myblockchain_stmt_bind_result);
 +
 +
-+my_bool STDCALL symver16_mysql_stmt_close(MYSQL_STMT *stmt)
++my_bool STDCALL symver16_myblockchain_stmt_close(MYBLOCKCHAIN_STMT *stmt)
 +{
-+  return mysql_stmt_close(stmt);
++  return myblockchain_stmt_close(stmt);
 +}
-+SYM_16(mysql_stmt_close);
++SYM_16(myblockchain_stmt_close);
 +
 +
-+void STDCALL symver16_mysql_stmt_data_seek(MYSQL_STMT *stmt, my_ulonglong row)
++void STDCALL symver16_myblockchain_stmt_data_seek(MYBLOCKCHAIN_STMT *stmt, my_ulonglong row)
 +{
-+  return mysql_stmt_data_seek(stmt, row);
++  return myblockchain_stmt_data_seek(stmt, row);
 +}
-+SYM_16(mysql_stmt_data_seek);
++SYM_16(myblockchain_stmt_data_seek);
 +
 +
-+uint STDCALL symver16_mysql_stmt_errno(MYSQL_STMT * stmt)
++uint STDCALL symver16_myblockchain_stmt_errno(MYBLOCKCHAIN_STMT * stmt)
 +{
-+  return mysql_stmt_errno(stmt);
++  return myblockchain_stmt_errno(stmt);
 +}
-+SYM_16(mysql_stmt_errno);
++SYM_16(myblockchain_stmt_errno);
 +
 +
-+const char *STDCALL symver16_mysql_stmt_error(MYSQL_STMT * stmt)
++const char *STDCALL symver16_myblockchain_stmt_error(MYBLOCKCHAIN_STMT * stmt)
 +{
-+  return mysql_stmt_error(stmt);
++  return myblockchain_stmt_error(stmt);
 +}
-+SYM_16(mysql_stmt_error);
++SYM_16(myblockchain_stmt_error);
 +
 +
-+int STDCALL symver16_mysql_stmt_execute(MYSQL_STMT *stmt)
++int STDCALL symver16_myblockchain_stmt_execute(MYBLOCKCHAIN_STMT *stmt)
 +{
-+  return mysql_stmt_execute(stmt);
++  return myblockchain_stmt_execute(stmt);
 +}
-+SYM_16(mysql_stmt_execute);
++SYM_16(myblockchain_stmt_execute);
 +
 +
-+int STDCALL symver16_mysql_stmt_fetch(MYSQL_STMT *stmt)
++int STDCALL symver16_myblockchain_stmt_fetch(MYBLOCKCHAIN_STMT *stmt)
 +{
-+  return mysql_stmt_fetch(stmt);
++  return myblockchain_stmt_fetch(stmt);
 +}
-+SYM_16(mysql_stmt_fetch);
++SYM_16(myblockchain_stmt_fetch);
 +
 +
-+int STDCALL symver16_mysql_stmt_fetch_column(MYSQL_STMT *stmt, MYSQL_BIND *my_bind, uint column, ulong offset)  
++int STDCALL symver16_myblockchain_stmt_fetch_column(MYBLOCKCHAIN_STMT *stmt, MYBLOCKCHAIN_BIND *my_bind, uint column, ulong offset)  
 +{
-+  return mysql_stmt_fetch_column(stmt, my_bind, column, offset);
++  return myblockchain_stmt_fetch_column(stmt, my_bind, column, offset);
 +}
-+SYM_16(mysql_stmt_fetch_column);
++SYM_16(myblockchain_stmt_fetch_column);
 +
 +
-+unsigned int STDCALL symver16_mysql_stmt_field_count(MYSQL_STMT *stmt)
++unsigned int STDCALL symver16_myblockchain_stmt_field_count(MYBLOCKCHAIN_STMT *stmt)
 +{
-+  return mysql_stmt_field_count(stmt);
++  return myblockchain_stmt_field_count(stmt);
 +}
-+SYM_16(mysql_stmt_field_count);
++SYM_16(myblockchain_stmt_field_count);
 +
 +
-+my_bool STDCALL symver16_mysql_stmt_free_result(MYSQL_STMT *stmt)
++my_bool STDCALL symver16_myblockchain_stmt_free_result(MYBLOCKCHAIN_STMT *stmt)
 +{
-+  return mysql_stmt_free_result(stmt);
++  return myblockchain_stmt_free_result(stmt);
 +}
-+SYM_16(mysql_stmt_free_result);
++SYM_16(myblockchain_stmt_free_result);
 +
 +
-+MYSQL_STMT * STDCALL symver16_mysql_stmt_init(MYSQL *mysql)
++MYBLOCKCHAIN_STMT * STDCALL symver16_myblockchain_stmt_init(MYBLOCKCHAIN *myblockchain)
 +{
-+  return mysql_stmt_init(mysql);
++  return myblockchain_stmt_init(myblockchain);
 +}
-+SYM_16(mysql_stmt_init);
++SYM_16(myblockchain_stmt_init);
 +
 +
-+my_ulonglong STDCALL symver16_mysql_stmt_insert_id(MYSQL_STMT *stmt)
++my_ulonglong STDCALL symver16_myblockchain_stmt_insert_id(MYBLOCKCHAIN_STMT *stmt)
 +{
-+  return mysql_stmt_insert_id(stmt);
++  return myblockchain_stmt_insert_id(stmt);
 +}
-+SYM_16(mysql_stmt_insert_id);
++SYM_16(myblockchain_stmt_insert_id);
 +
 +
-+my_ulonglong STDCALL symver16_mysql_stmt_num_rows(MYSQL_STMT *stmt)
++my_ulonglong STDCALL symver16_myblockchain_stmt_num_rows(MYBLOCKCHAIN_STMT *stmt)
 +{
-+  return mysql_stmt_num_rows(stmt);
++  return myblockchain_stmt_num_rows(stmt);
 +}
-+SYM_16(mysql_stmt_num_rows);
++SYM_16(myblockchain_stmt_num_rows);
 +
 +
-+ulong STDCALL symver16_mysql_stmt_param_count(MYSQL_STMT * stmt)
++ulong STDCALL symver16_myblockchain_stmt_param_count(MYBLOCKCHAIN_STMT * stmt)
 +{
-+  return mysql_stmt_param_count(stmt);
++  return myblockchain_stmt_param_count(stmt);
 +}
-+SYM_16(mysql_stmt_param_count);
++SYM_16(myblockchain_stmt_param_count);
 +
 +
-+MYSQL_RES * STDCALL symver16_mysql_stmt_param_metadata(MYSQL_STMT *stmt)
++MYBLOCKCHAIN_RES * STDCALL symver16_myblockchain_stmt_param_metadata(MYBLOCKCHAIN_STMT *stmt)
 +{
-+  return mysql_stmt_param_metadata(stmt);
++  return myblockchain_stmt_param_metadata(stmt);
 +}
-+SYM_16(mysql_stmt_param_metadata);
++SYM_16(myblockchain_stmt_param_metadata);
 +
 +
-+int STDCALL symver16_mysql_stmt_prepare(MYSQL_STMT *stmt, const char *query, ulong length)
++int STDCALL symver16_myblockchain_stmt_prepare(MYBLOCKCHAIN_STMT *stmt, const char *query, ulong length)
 +{
-+  return mysql_stmt_prepare(stmt, query, length);
++  return myblockchain_stmt_prepare(stmt, query, length);
 +}
-+SYM_16(mysql_stmt_prepare);
++SYM_16(myblockchain_stmt_prepare);
 +
 +
-+my_bool STDCALL symver16_mysql_stmt_reset(MYSQL_STMT *stmt)
++my_bool STDCALL symver16_myblockchain_stmt_reset(MYBLOCKCHAIN_STMT *stmt)
 +{
-+  return mysql_stmt_reset(stmt);
++  return myblockchain_stmt_reset(stmt);
 +}
-+SYM_16(mysql_stmt_reset);
++SYM_16(myblockchain_stmt_reset);
 +
 +
-+MYSQL_RES * STDCALL symver16_mysql_stmt_result_metadata(MYSQL_STMT *stmt)
++MYBLOCKCHAIN_RES * STDCALL symver16_myblockchain_stmt_result_metadata(MYBLOCKCHAIN_STMT *stmt)
 +{
-+  return mysql_stmt_result_metadata(stmt);
++  return myblockchain_stmt_result_metadata(stmt);
 +}
-+SYM_16(mysql_stmt_result_metadata);
++SYM_16(myblockchain_stmt_result_metadata);
 +
 +
-+MYSQL_ROW_OFFSET STDCALL symver16_mysql_stmt_row_seek(MYSQL_STMT *stmt, MYSQL_ROW_OFFSET row)
++MYBLOCKCHAIN_ROW_OFFSET STDCALL symver16_myblockchain_stmt_row_seek(MYBLOCKCHAIN_STMT *stmt, MYBLOCKCHAIN_ROW_OFFSET row)
 +{
-+  return mysql_stmt_row_seek(stmt, row);
++  return myblockchain_stmt_row_seek(stmt, row);
 +}
-+SYM_16(mysql_stmt_row_seek);
++SYM_16(myblockchain_stmt_row_seek);
 +
 +
-+MYSQL_ROW_OFFSET STDCALL symver16_mysql_stmt_row_tell(MYSQL_STMT *stmt)
++MYBLOCKCHAIN_ROW_OFFSET STDCALL symver16_myblockchain_stmt_row_tell(MYBLOCKCHAIN_STMT *stmt)
 +{
-+  return mysql_stmt_row_tell(stmt);
++  return myblockchain_stmt_row_tell(stmt);
 +}
-+SYM_16(mysql_stmt_row_tell);
++SYM_16(myblockchain_stmt_row_tell);
 +
 +
-+my_bool STDCALL symver16_mysql_stmt_send_long_data(MYSQL_STMT *stmt, uint param_number, const char *data, ulong length)
++my_bool STDCALL symver16_myblockchain_stmt_send_long_data(MYBLOCKCHAIN_STMT *stmt, uint param_number, const char *data, ulong length)
 +{
-+  return mysql_stmt_send_long_data(stmt, param_number, data, length);
++  return myblockchain_stmt_send_long_data(stmt, param_number, data, length);
 +}
-+SYM_16(mysql_stmt_send_long_data);
++SYM_16(myblockchain_stmt_send_long_data);
 +
 +
-+const char *STDCALL symver16_mysql_stmt_sqlstate(MYSQL_STMT * stmt)
++const char *STDCALL symver16_myblockchain_stmt_sqlstate(MYBLOCKCHAIN_STMT * stmt)
 +{
-+  return mysql_stmt_sqlstate(stmt);
++  return myblockchain_stmt_sqlstate(stmt);
 +}
-+SYM_16(mysql_stmt_sqlstate);
++SYM_16(myblockchain_stmt_sqlstate);
 +
 +
-+int STDCALL symver16_mysql_stmt_store_result(MYSQL_STMT *stmt)
++int STDCALL symver16_myblockchain_stmt_store_result(MYBLOCKCHAIN_STMT *stmt)
 +{
-+  return mysql_stmt_store_result(stmt);
++  return myblockchain_stmt_store_result(stmt);
 +}
-+SYM_16(mysql_stmt_store_result);
++SYM_16(myblockchain_stmt_store_result);
 +
 +
-+void STDCALL symver16_mysql_thread_end()
++void STDCALL symver16_myblockchain_thread_end()
 +{
-+  return mysql_thread_end();
++  return myblockchain_thread_end();
 +}
-+SYM_16(mysql_thread_end);
++SYM_16(myblockchain_thread_end);
 +
 +
-+ulong STDCALL symver16_mysql_thread_id(MYSQL *mysql)
++ulong STDCALL symver16_myblockchain_thread_id(MYBLOCKCHAIN *myblockchain)
 +{
-+  return mysql_thread_id(mysql);
++  return myblockchain_thread_id(myblockchain);
 +}
-+SYM_16(mysql_thread_id);
++SYM_16(myblockchain_thread_id);
 +
 +
-+my_bool STDCALL symver16_mysql_thread_init()
++my_bool STDCALL symver16_myblockchain_thread_init()
 +{
-+  return mysql_thread_init();
++  return myblockchain_thread_init();
 +}
-+SYM_16(mysql_thread_init);
++SYM_16(myblockchain_thread_init);
 +
 +
-+uint STDCALL symver16_mysql_thread_safe(void)
++uint STDCALL symver16_myblockchain_thread_safe(void)
 +{
-+  return mysql_thread_safe();
++  return myblockchain_thread_safe();
 +}
-+SYM_16(mysql_thread_safe);
++SYM_16(myblockchain_thread_safe);
 +
 +
-+MYSQL_RES * STDCALL symver16_mysql_use_result(MYSQL *mysql)
++MYBLOCKCHAIN_RES * STDCALL symver16_myblockchain_use_result(MYBLOCKCHAIN *myblockchain)
 +{
-+  return mysql_use_result(mysql);
++  return myblockchain_use_result(myblockchain);
 +}
-+SYM_16(mysql_use_result);
++SYM_16(myblockchain_use_result);
 +
 +
-+uint STDCALL symver16_mysql_warning_count(MYSQL *mysql)
++uint STDCALL symver16_myblockchain_warning_count(MYBLOCKCHAIN *myblockchain)
 +{
-+  return mysql_warning_count(mysql);
++  return myblockchain_warning_count(myblockchain);
 +}
-+SYM_16(mysql_warning_count);
++SYM_16(myblockchain_warning_count);
 +
 +/*****/
 +
-+MYSQL * STDCALL symver16_mysql_real_connect(MYSQL *mysql,const char *host, const char *user, const char *passwd, const char *db, uint port, const char *unix_socket,ulong client_flag)
++MYBLOCKCHAIN * STDCALL symver16_myblockchain_real_connect(MYBLOCKCHAIN *myblockchain,const char *host, const char *user, const char *passwd, const char *db, uint port, const char *unix_socket,ulong client_flag)
 +{
-+  return mysql_real_connect(mysql, host, user, passwd, db, port, unix_socket, client_flag);
++  return myblockchain_real_connect(myblockchain, host, user, passwd, db, port, unix_socket, client_flag);
 +}
-+SYM_16(mysql_real_connect);
++SYM_16(myblockchain_real_connect);
 +
 +/*****/
 +
@@ -614,124 +614,124 @@ diff -rup old/libmysql/libmysql.c new/libmysql/libmysql.c
 +SYM_16(my_init);
 +
 +#endif
-diff -rup old/libmysql/libmysql.ver.in new/libmysql/libmysql.ver.in
---- old/libmysql/libmysql.ver.in	2013-11-04 20:15:10.000000000 +0100
-+++ new/libmysql/libmysql.ver.in	2014-01-14 12:10:27.148374504 +0100
+diff -rup old/libmyblockchain/libmyblockchain.ver.in new/libmyblockchain/libmyblockchain.ver.in
+--- old/libmyblockchain/libmyblockchain.ver.in	2013-11-04 20:15:10.000000000 +0100
++++ new/libmyblockchain/libmyblockchain.ver.in	2014-01-14 12:10:27.148374504 +0100
 @@ -1 +1,136 @@
--libmysqlclient_@SHARED_LIB_MAJOR_VERSION@ { global: *; };
-+libmysqlclient_16
+-libmyblockchainclient_@SHARED_LIB_MAJOR_VERSION@ { global: *; };
++libmyblockchainclient_16
 +{
 +  local:
 +    symver16_*;
 +};
 +
-+libmysqlclient_18
++libmyblockchainclient_18
 +{
 +  global:
 +    my_init;
 +    myodbc_remove_escape;
-+    mysql_affected_rows;
-+    mysql_autocommit;
-+    mysql_change_user;
-+    mysql_character_set_name;
-+    mysql_close;
-+    mysql_commit;
-+    mysql_data_seek;
-+    mysql_debug;
-+    mysql_dump_debug_info;
-+    mysql_embedded;
-+    mysql_eof;
-+    mysql_errno;
-+    mysql_error;
-+    mysql_escape_string;
-+    mysql_fetch_field;
-+    mysql_fetch_field_direct;
-+    mysql_fetch_fields;
-+    mysql_fetch_lengths;
-+    mysql_fetch_row;
-+    mysql_field_count;
-+    mysql_field_seek;
-+    mysql_field_tell;
-+    mysql_free_result;
-+    mysql_get_character_set_info;
-+    mysql_get_client_info;
-+    mysql_get_client_version;
-+    mysql_get_host_info;
-+    mysql_get_parameters;
-+    mysql_get_proto_info;
-+    mysql_get_server_info;
-+    mysql_get_server_version;
-+    mysql_get_ssl_cipher;
-+    mysql_hex_string;
-+    mysql_info;
-+    mysql_init;
-+    mysql_insert_id;
-+    mysql_kill;
-+    mysql_list_dbs;
-+    mysql_list_fields;
-+    mysql_list_processes;
-+    mysql_list_tables;
-+    mysql_more_results;
-+    mysql_next_result;
-+    mysql_num_fields;
-+    mysql_num_rows;
-+    mysql_options;
-+    mysql_ping;
-+    mysql_query;
-+    mysql_read_query_result;
-+    mysql_real_connect;
-+    mysql_real_escape_string;
-+    mysql_real_query;
-+    mysql_refresh;
-+    mysql_rollback;
-+    mysql_row_seek;
-+    mysql_row_tell;
-+    mysql_select_db;
-+    mysql_send_query;
-+    mysql_server_end;
-+    mysql_server_init;
-+    mysql_set_character_set;
-+    mysql_set_local_infile_default;
-+    mysql_set_local_infile_handler;
-+    mysql_set_server_option;
-+    mysql_shutdown;
-+    mysql_sqlstate;
-+    mysql_ssl_set;
-+    mysql_stat;
-+    mysql_stmt_affected_rows;
-+    mysql_stmt_attr_get;
-+    mysql_stmt_attr_set;
-+    mysql_stmt_bind_param;
-+    mysql_stmt_bind_result;
-+    mysql_stmt_close;
-+    mysql_stmt_data_seek;
-+    mysql_stmt_errno;
-+    mysql_stmt_error;
-+    mysql_stmt_execute;
-+    mysql_stmt_fetch;
-+    mysql_stmt_fetch_column;
-+    mysql_stmt_field_count;
-+    mysql_stmt_free_result;
-+    mysql_stmt_init;
-+    mysql_stmt_insert_id;
-+    mysql_stmt_num_rows;
-+    mysql_stmt_param_count;
-+    mysql_stmt_param_metadata;
-+    mysql_stmt_prepare;
-+    mysql_stmt_reset;
-+    mysql_stmt_result_metadata;
-+    mysql_stmt_row_seek;
-+    mysql_stmt_row_tell;
-+    mysql_stmt_send_long_data;
-+    mysql_stmt_sqlstate;
-+    mysql_stmt_store_result;
-+    mysql_store_result;
-+    mysql_thread_end;
-+    mysql_thread_id;
-+    mysql_thread_init;
-+    mysql_thread_safe;
-+    mysql_use_result;
-+    mysql_warning_count;
++    myblockchain_affected_rows;
++    myblockchain_autocommit;
++    myblockchain_change_user;
++    myblockchain_character_set_name;
++    myblockchain_close;
++    myblockchain_commit;
++    myblockchain_data_seek;
++    myblockchain_debug;
++    myblockchain_dump_debug_info;
++    myblockchain_embedded;
++    myblockchain_eof;
++    myblockchain_errno;
++    myblockchain_error;
++    myblockchain_escape_string;
++    myblockchain_fetch_field;
++    myblockchain_fetch_field_direct;
++    myblockchain_fetch_fields;
++    myblockchain_fetch_lengths;
++    myblockchain_fetch_row;
++    myblockchain_field_count;
++    myblockchain_field_seek;
++    myblockchain_field_tell;
++    myblockchain_free_result;
++    myblockchain_get_character_set_info;
++    myblockchain_get_client_info;
++    myblockchain_get_client_version;
++    myblockchain_get_host_info;
++    myblockchain_get_parameters;
++    myblockchain_get_proto_info;
++    myblockchain_get_server_info;
++    myblockchain_get_server_version;
++    myblockchain_get_ssl_cipher;
++    myblockchain_hex_string;
++    myblockchain_info;
++    myblockchain_init;
++    myblockchain_insert_id;
++    myblockchain_kill;
++    myblockchain_list_dbs;
++    myblockchain_list_fields;
++    myblockchain_list_processes;
++    myblockchain_list_tables;
++    myblockchain_more_results;
++    myblockchain_next_result;
++    myblockchain_num_fields;
++    myblockchain_num_rows;
++    myblockchain_options;
++    myblockchain_ping;
++    myblockchain_query;
++    myblockchain_read_query_result;
++    myblockchain_real_connect;
++    myblockchain_real_escape_string;
++    myblockchain_real_query;
++    myblockchain_refresh;
++    myblockchain_rollback;
++    myblockchain_row_seek;
++    myblockchain_row_tell;
++    myblockchain_select_db;
++    myblockchain_send_query;
++    myblockchain_server_end;
++    myblockchain_server_init;
++    myblockchain_set_character_set;
++    myblockchain_set_local_infile_default;
++    myblockchain_set_local_infile_handler;
++    myblockchain_set_server_option;
++    myblockchain_shutdown;
++    myblockchain_sqlstate;
++    myblockchain_ssl_set;
++    myblockchain_stat;
++    myblockchain_stmt_affected_rows;
++    myblockchain_stmt_attr_get;
++    myblockchain_stmt_attr_set;
++    myblockchain_stmt_bind_param;
++    myblockchain_stmt_bind_result;
++    myblockchain_stmt_close;
++    myblockchain_stmt_data_seek;
++    myblockchain_stmt_errno;
++    myblockchain_stmt_error;
++    myblockchain_stmt_execute;
++    myblockchain_stmt_fetch;
++    myblockchain_stmt_fetch_column;
++    myblockchain_stmt_field_count;
++    myblockchain_stmt_free_result;
++    myblockchain_stmt_init;
++    myblockchain_stmt_insert_id;
++    myblockchain_stmt_num_rows;
++    myblockchain_stmt_param_count;
++    myblockchain_stmt_param_metadata;
++    myblockchain_stmt_prepare;
++    myblockchain_stmt_reset;
++    myblockchain_stmt_result_metadata;
++    myblockchain_stmt_row_seek;
++    myblockchain_stmt_row_tell;
++    myblockchain_stmt_send_long_data;
++    myblockchain_stmt_sqlstate;
++    myblockchain_stmt_store_result;
++    myblockchain_store_result;
++    myblockchain_thread_end;
++    myblockchain_thread_id;
++    myblockchain_thread_init;
++    myblockchain_thread_safe;
++    myblockchain_use_result;
++    myblockchain_warning_count;
 +
 +    free_defaults;
 +    handle_options;
@@ -741,24 +741,24 @@ diff -rup old/libmysql/libmysql.ver.in new/libmysql/libmysql.ver.in
 +    #my_make_scrambled_password;
 +    THR_KEY_mysys;
 +
-+    mysql_client_find_plugin;
-+    mysql_client_register_plugin;
-+    mysql_load_plugin;
-+    mysql_load_plugin_v;
-+    mysql_plugin_options;
-+    mysql_stmt_next_result;
++    myblockchain_client_find_plugin;
++    myblockchain_client_register_plugin;
++    myblockchain_load_plugin;
++    myblockchain_load_plugin_v;
++    myblockchain_plugin_options;
++    myblockchain_stmt_next_result;
 +
-+    #mysql_default_charset_info;
-+    mysql_get_charset;
-+    mysql_get_charset_by_csname;
-+    mysql_net_realloc;
-+    #mysql_client_errors;
++    #myblockchain_default_charset_info;
++    myblockchain_get_charset;
++    myblockchain_get_charset_by_csname;
++    myblockchain_net_realloc;
++    #myblockchain_client_errors;
 +    *;
-+} libmysqlclient_16;
++} libmyblockchainclient_16;
 diff -rup old/mysys/charset.c new/mysys/charset.c
 --- old/mysys/charset.c	2013-11-04 20:15:10.000000000 +0100
 +++ new/mysys/charset.c	2014-01-14 12:10:27.197377417 +0100
-@@ -1040,3 +1040,20 @@ size_t escape_quotes_for_mysql(CHARSET_I
+@@ -1040,3 +1040,20 @@ size_t escape_quotes_for_myblockchain(CHARSET_I
    *to= 0;
    return overflow ? (ulong)~0 : (ulong) (to - to_start);
  }
@@ -767,13 +767,13 @@ diff -rup old/mysys/charset.c new/mysys/charset.c
 +
 +// Hack to provide Fedora symbols
 +
-+CHARSET_INFO *mysql_get_charset(uint cs_number, myf flags)
++CHARSET_INFO *myblockchain_get_charset(uint cs_number, myf flags)
 +{
 +  return get_charset(cs_number, flags);
 +}
 +
 +
-+CHARSET_INFO * mysql_get_charset_by_csname(const char *cs_name, uint cs_flags, myf flags)
++CHARSET_INFO * myblockchain_get_charset_by_csname(const char *cs_name, uint cs_flags, myf flags)
 +{
 +  return get_charset_by_csname(cs_name, cs_flags, flags);
 +}
@@ -791,7 +791,7 @@ diff -rup old/sql/net_serv.cc new/sql/net_serv.cc
 +
 +// Hack to provide Fedora symbols
 +
-+my_bool mysql_net_realloc(NET *net, size_t length)
++my_bool myblockchain_net_realloc(NET *net, size_t length)
 +{
 +  return net_realloc(net, length);
 +}
@@ -807,9 +807,9 @@ diff -rup old/sql/password.c new/sql/password.c
  
 +#ifndef EMBEDDED_LIBRARY
 +
-+// Hack to provide both libmysqlclient_16 and libmysqlclient_18 symbol versions
++// Hack to provide both libmyblockchainclient_16 and libmyblockchainclient_18 symbol versions
 +
-+#define SYM_16(_exportedsym) __asm__(".symver symver16_" #_exportedsym "," #_exportedsym "@libmysqlclient_16")
++#define SYM_16(_exportedsym) __asm__(".symver symver16_" #_exportedsym "," #_exportedsym "@libmyblockchainclient_16")
 +
 +void symver16_my_make_scrambled_password(char *to, const char *password, size_t pass_len)
 +{
@@ -828,133 +828,133 @@ diff -rup old/sql-common/client.c new/sql-common/client.c
 +
 +#ifndef EMBEDDED_LIBRARY
 +
-+// Hack to provide both libmysqlclient_16 and libmysqlclient_18 symbol versions
++// Hack to provide both libmyblockchainclient_16 and libmyblockchainclient_18 symbol versions
 +
-+#define SYM_16(_exportedsym) __asm__(".symver symver16_" #_exportedsym "," #_exportedsym "@libmysqlclient_16")
++#define SYM_16(_exportedsym) __asm__(".symver symver16_" #_exportedsym "," #_exportedsym "@libmyblockchainclient_16")
 +
-+void STDCALL symver16_mysql_close(MYSQL *mysql)
++void STDCALL symver16_myblockchain_close(MYBLOCKCHAIN *myblockchain)
 +{
-+  return mysql_close(mysql);
++  return myblockchain_close(myblockchain);
 +}
-+SYM_16(mysql_close);
++SYM_16(myblockchain_close);
 +
 +
-+uint STDCALL symver16_mysql_errno(MYSQL *mysql)
++uint STDCALL symver16_myblockchain_errno(MYBLOCKCHAIN *myblockchain)
 +{
-+  return mysql_errno(mysql);
++  return myblockchain_errno(myblockchain);
 +}
-+SYM_16(mysql_errno);
++SYM_16(myblockchain_errno);
 +
 +
-+const char * STDCALL symver16_mysql_error(MYSQL *mysql)
++const char * STDCALL symver16_myblockchain_error(MYBLOCKCHAIN *myblockchain)
 +{
-+  return mysql_error(mysql);
++  return myblockchain_error(myblockchain);
 +}
-+SYM_16(mysql_error);
++SYM_16(myblockchain_error);
 +
 +
-+ulong * STDCALL symver16_mysql_fetch_lengths(MYSQL_RES *res)
++ulong * STDCALL symver16_myblockchain_fetch_lengths(MYBLOCKCHAIN_RES *res)
 +{
-+  return mysql_fetch_lengths(res);
++  return myblockchain_fetch_lengths(res);
 +}
-+SYM_16(mysql_fetch_lengths);
++SYM_16(myblockchain_fetch_lengths);
 +
 +
-+MYSQL_ROW STDCALL symver16_mysql_fetch_row(MYSQL_RES *res)
++MYBLOCKCHAIN_ROW STDCALL symver16_myblockchain_fetch_row(MYBLOCKCHAIN_RES *res)
 +{
-+  return mysql_fetch_row(res);
++  return myblockchain_fetch_row(res);
 +}
-+SYM_16(mysql_fetch_row);
++SYM_16(myblockchain_fetch_row);
 +
 +
-+void STDCALL symver16_mysql_free_result(MYSQL_RES *result)
++void STDCALL symver16_myblockchain_free_result(MYBLOCKCHAIN_RES *result)
 +{
-+  return mysql_free_result(result);
++  return myblockchain_free_result(result);
 +}
-+SYM_16(mysql_free_result);
++SYM_16(myblockchain_free_result);
 +
 +
-+ulong STDCALL symver16_mysql_get_server_version(MYSQL *mysql)
++ulong STDCALL symver16_myblockchain_get_server_version(MYBLOCKCHAIN *myblockchain)
 +{
-+  return mysql_get_server_version(mysql);
++  return myblockchain_get_server_version(myblockchain);
 +}
-+SYM_16(mysql_get_server_version);
++SYM_16(myblockchain_get_server_version);
 +
 +
-+const char * STDCALL symver16_mysql_get_ssl_cipher(MYSQL *mysql __attribute__((unused)))
++const char * STDCALL symver16_myblockchain_get_ssl_cipher(MYBLOCKCHAIN *myblockchain __attribute__((unused)))
 +{
-+  return mysql_get_ssl_cipher(mysql);
++  return myblockchain_get_ssl_cipher(myblockchain);
 +}
-+SYM_16(mysql_get_ssl_cipher);
++SYM_16(myblockchain_get_ssl_cipher);
 +
 +
-+MYSQL * STDCALL symver16_mysql_init(MYSQL *mysql)
++MYBLOCKCHAIN * STDCALL symver16_myblockchain_init(MYBLOCKCHAIN *myblockchain)
 +{
-+  return mysql_init(mysql);
++  return myblockchain_init(myblockchain);
 +}
-+SYM_16(mysql_init);
++SYM_16(myblockchain_init);
 +
 +
-+unsigned int STDCALL symver16_mysql_num_fields(MYSQL_RES *res)
++unsigned int STDCALL symver16_myblockchain_num_fields(MYBLOCKCHAIN_RES *res)
 +{
-+  return mysql_num_fields(res);
++  return myblockchain_num_fields(res);
 +}
-+SYM_16(mysql_num_fields);
++SYM_16(myblockchain_num_fields);
 +
 +
-+my_ulonglong STDCALL symver16_mysql_num_rows(MYSQL_RES *res)
++my_ulonglong STDCALL symver16_myblockchain_num_rows(MYBLOCKCHAIN_RES *res)
 +{
-+  return mysql_num_rows(res);
++  return myblockchain_num_rows(res);
 +}
-+SYM_16(mysql_num_rows);
++SYM_16(myblockchain_num_rows);
 +
 +
-+int STDCALL symver16_mysql_options(MYSQL *mysql,enum mysql_option option, const void *arg)
++int STDCALL symver16_myblockchain_options(MYBLOCKCHAIN *myblockchain,enum myblockchain_option option, const void *arg)
 +{
-+  return mysql_options(mysql, option, arg);
++  return myblockchain_options(myblockchain, option, arg);
 +}
-+SYM_16(mysql_options);
++SYM_16(myblockchain_options);
 +
 +
-+int STDCALL symver16_mysql_real_query(MYSQL *mysql, const char *query, ulong length)
++int STDCALL symver16_myblockchain_real_query(MYBLOCKCHAIN *myblockchain, const char *query, ulong length)
 +{
-+  return mysql_real_query(mysql, query, length);
++  return myblockchain_real_query(myblockchain, query, length);
 +}
-+SYM_16(mysql_real_query);
++SYM_16(myblockchain_real_query);
 +
 +
-+int STDCALL symver16_mysql_select_db(MYSQL *mysql, const char *db)
++int STDCALL symver16_myblockchain_select_db(MYBLOCKCHAIN *myblockchain, const char *db)
 +{
-+  return mysql_select_db(mysql, db);
++  return myblockchain_select_db(myblockchain, db);
 +}
-+SYM_16(mysql_select_db);
++SYM_16(myblockchain_select_db);
 +
 +
-+int STDCALL symver16_mysql_send_query(MYSQL* mysql, const char* query, ulong length)
++int STDCALL symver16_myblockchain_send_query(MYBLOCKCHAIN* myblockchain, const char* query, ulong length)
 +{
-+  return mysql_send_query(mysql, query, length);
++  return myblockchain_send_query(myblockchain, query, length);
 +}
-+SYM_16(mysql_send_query);
++SYM_16(myblockchain_send_query);
 +
 +
-+int STDCALL symver16_mysql_set_character_set(MYSQL *mysql, const char *cs_name)
++int STDCALL symver16_myblockchain_set_character_set(MYBLOCKCHAIN *myblockchain, const char *cs_name)
 +{
-+  return mysql_set_character_set(mysql, cs_name);
++  return myblockchain_set_character_set(myblockchain, cs_name);
 +}
-+SYM_16(mysql_set_character_set);
++SYM_16(myblockchain_set_character_set);
 +
 +
-+my_bool STDCALL symver16_mysql_ssl_set(MYSQL *mysql __attribute__((unused)), const char *key __attribute__((unused)), const char *cert __attribute__((unused)), const char *ca __attribute__((unused)), const char *capath __attribute__((unused)), const char *cipher __attribute__((unused)))
++my_bool STDCALL symver16_myblockchain_ssl_set(MYBLOCKCHAIN *myblockchain __attribute__((unused)), const char *key __attribute__((unused)), const char *cert __attribute__((unused)), const char *ca __attribute__((unused)), const char *capath __attribute__((unused)), const char *cipher __attribute__((unused)))
 +{
-+  return mysql_ssl_set(mysql, key, cert, ca, capath, cipher);
++  return myblockchain_ssl_set(myblockchain, key, cert, ca, capath, cipher);
 +}
-+SYM_16(mysql_ssl_set);
++SYM_16(myblockchain_ssl_set);
 +
 +
-+MYSQL_RES * STDCALL symver16_mysql_store_result(MYSQL *mysql)
++MYBLOCKCHAIN_RES * STDCALL symver16_myblockchain_store_result(MYBLOCKCHAIN *myblockchain)
 +{
-+  return mysql_store_result(mysql);
++  return myblockchain_store_result(myblockchain);
 +}
-+SYM_16(mysql_store_result);
++SYM_16(myblockchain_store_result);
 +
 +#endif

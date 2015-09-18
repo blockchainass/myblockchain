@@ -1,0 +1,34 @@
+CREATE TABLE t1 (
+a	varchar(40),
+KEY	a(a)
+) ENGINE=InnoDB;
+CREATE TABLE t1_fk (
+a	varchar(40),
+KEY	a(a),
+FULLTEXT KEY (a),
+CONSTRAINT fk FOREIGN KEY (a) REFERENCES t1 (a) ON UPDATE CASCADE
+) ENGINE=InnoDB;
+INSERT INTO t1 VALUES('myblockchain');
+INSERT INTO t1_fk VALUES('myblockchain');
+INSERT INTO t1_fk VALUES('myblockchain');
+SELECT * FROM t1_fk;
+a
+myblockchain
+myblockchain
+SELECT * FROM t1_fk WHERE MATCH(a) AGAINST('myblockchain');
+a
+myblockchain
+myblockchain
+UPDATE t1 SET a = 'blockchain' WHERE a = 'myblockchain';
+SELECT * FROM t1_fk;
+a
+blockchain
+blockchain
+SELECT * FROM t1_fk WHERE MATCH(a) AGAINST('myblockchain');
+a
+SELECT * FROM t1_fk WHERE MATCH(a) AGAINST('blockchain');
+a
+blockchain
+blockchain
+DROP TABLE t1_fk;
+DROP TABLE t1;

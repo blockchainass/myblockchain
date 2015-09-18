@@ -19,7 +19,7 @@
  * @file ndb_constants.h
  *
  * Constants common to NDB API and NDB kernel.
- * Changing the values makes database upgrade impossible.
+ * Changing the values makes blockchain upgrade impossible.
  *
  * New or removed definitions must be replicated to
  * NdbDictionary.hpp and NdbSqlUtil.hpp.
@@ -117,7 +117,7 @@
 /**
  * Defines for index statistics
  */
-#define NDB_INDEX_STAT_DB     "mysql"
+#define NDB_INDEX_STAT_DB     "myblockchain"
 #define NDB_INDEX_STAT_SCHEMA "def"
 
 #define NDB_INDEX_STAT_HEAD_TABLE    "ndb_index_stat_head"

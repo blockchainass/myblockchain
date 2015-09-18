@@ -49,7 +49,7 @@ buf_dblwr_create(void);
 /*==================*/
 
 /****************************************************************//**
-At a database startup initializes the doublewrite buffer memory structure if
+At a blockchain startup initializes the doublewrite buffer memory structure if
 we already have a doublewrite buffer created in the data files. If we are
 upgrading to an InnoDB version which supports multiple tablespaces, then this
 function performs the necessary update operations. If we are in a crash

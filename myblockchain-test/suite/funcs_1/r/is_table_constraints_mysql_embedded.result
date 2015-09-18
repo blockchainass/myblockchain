@@ -1,0 +1,81 @@
+DROP DATABASE IF EXISTS db_datadict;
+CREATE DATABASE db_datadict;
+DROP   USER testuser1@localhost;
+CREATE USER testuser1@localhost;
+GRANT SELECT ON db_datadict.* TO testuser1@localhost;
+SELECT * FROM information_schema.table_constraints
+WHERE table_schema = 'myblockchain'
+ORDER BY table_schema,table_name,constraint_name;
+CONSTRAINT_CATALOG	CONSTRAINT_SCHEMA	CONSTRAINT_NAME	TABLE_SCHEMA	TABLE_NAME	CONSTRAINT_TYPE
+def	myblockchain	PRIMARY	myblockchain	columns_priv	PRIMARY KEY
+def	myblockchain	PRIMARY	myblockchain	db	PRIMARY KEY
+def	myblockchain	PRIMARY	myblockchain	engine_cost	PRIMARY KEY
+def	myblockchain	PRIMARY	myblockchain	event	PRIMARY KEY
+def	myblockchain	PRIMARY	myblockchain	func	PRIMARY KEY
+def	myblockchain	PRIMARY	myblockchain	gtid_executed	PRIMARY KEY
+def	myblockchain	name	myblockchain	help_category	UNIQUE
+def	myblockchain	PRIMARY	myblockchain	help_category	PRIMARY KEY
+def	myblockchain	name	myblockchain	help_keyword	UNIQUE
+def	myblockchain	PRIMARY	myblockchain	help_keyword	PRIMARY KEY
+def	myblockchain	PRIMARY	myblockchain	help_relation	PRIMARY KEY
+def	myblockchain	name	myblockchain	help_topic	UNIQUE
+def	myblockchain	PRIMARY	myblockchain	help_topic	PRIMARY KEY
+def	myblockchain	PRIMARY	myblockchain	innodb_index_stats	PRIMARY KEY
+def	myblockchain	PRIMARY	myblockchain	innodb_table_stats	PRIMARY KEY
+def	myblockchain	PRIMARY	myblockchain	ndb_binlog_index	PRIMARY KEY
+def	myblockchain	PRIMARY	myblockchain	plugin	PRIMARY KEY
+def	myblockchain	PRIMARY	myblockchain	proc	PRIMARY KEY
+def	myblockchain	PRIMARY	myblockchain	procs_priv	PRIMARY KEY
+def	myblockchain	PRIMARY	myblockchain	proxies_priv	PRIMARY KEY
+def	myblockchain	PRIMARY	myblockchain	servers	PRIMARY KEY
+def	myblockchain	PRIMARY	myblockchain	server_cost	PRIMARY KEY
+def	myblockchain	PRIMARY	myblockchain	slave_master_info	PRIMARY KEY
+def	myblockchain	PRIMARY	myblockchain	slave_relay_log_info	PRIMARY KEY
+def	myblockchain	PRIMARY	myblockchain	slave_worker_info	PRIMARY KEY
+def	myblockchain	PRIMARY	myblockchain	tables_priv	PRIMARY KEY
+def	myblockchain	PRIMARY	myblockchain	time_zone	PRIMARY KEY
+def	myblockchain	PRIMARY	myblockchain	time_zone_leap_second	PRIMARY KEY
+def	myblockchain	PRIMARY	myblockchain	time_zone_name	PRIMARY KEY
+def	myblockchain	PRIMARY	myblockchain	time_zone_transition	PRIMARY KEY
+def	myblockchain	PRIMARY	myblockchain	time_zone_transition_type	PRIMARY KEY
+def	myblockchain	PRIMARY	myblockchain	user	PRIMARY KEY
+# Establish connection testuser1 (user=testuser1)
+SELECT * FROM information_schema.table_constraints
+WHERE table_schema = 'myblockchain'
+ORDER BY table_schema,table_name,constraint_name;
+CONSTRAINT_CATALOG	CONSTRAINT_SCHEMA	CONSTRAINT_NAME	TABLE_SCHEMA	TABLE_NAME	CONSTRAINT_TYPE
+def	myblockchain	PRIMARY	myblockchain	columns_priv	PRIMARY KEY
+def	myblockchain	PRIMARY	myblockchain	db	PRIMARY KEY
+def	myblockchain	PRIMARY	myblockchain	engine_cost	PRIMARY KEY
+def	myblockchain	PRIMARY	myblockchain	event	PRIMARY KEY
+def	myblockchain	PRIMARY	myblockchain	func	PRIMARY KEY
+def	myblockchain	PRIMARY	myblockchain	gtid_executed	PRIMARY KEY
+def	myblockchain	name	myblockchain	help_category	UNIQUE
+def	myblockchain	PRIMARY	myblockchain	help_category	PRIMARY KEY
+def	myblockchain	name	myblockchain	help_keyword	UNIQUE
+def	myblockchain	PRIMARY	myblockchain	help_keyword	PRIMARY KEY
+def	myblockchain	PRIMARY	myblockchain	help_relation	PRIMARY KEY
+def	myblockchain	name	myblockchain	help_topic	UNIQUE
+def	myblockchain	PRIMARY	myblockchain	help_topic	PRIMARY KEY
+def	myblockchain	PRIMARY	myblockchain	innodb_index_stats	PRIMARY KEY
+def	myblockchain	PRIMARY	myblockchain	innodb_table_stats	PRIMARY KEY
+def	myblockchain	PRIMARY	myblockchain	ndb_binlog_index	PRIMARY KEY
+def	myblockchain	PRIMARY	myblockchain	plugin	PRIMARY KEY
+def	myblockchain	PRIMARY	myblockchain	proc	PRIMARY KEY
+def	myblockchain	PRIMARY	myblockchain	procs_priv	PRIMARY KEY
+def	myblockchain	PRIMARY	myblockchain	proxies_priv	PRIMARY KEY
+def	myblockchain	PRIMARY	myblockchain	servers	PRIMARY KEY
+def	myblockchain	PRIMARY	myblockchain	server_cost	PRIMARY KEY
+def	myblockchain	PRIMARY	myblockchain	slave_master_info	PRIMARY KEY
+def	myblockchain	PRIMARY	myblockchain	slave_relay_log_info	PRIMARY KEY
+def	myblockchain	PRIMARY	myblockchain	slave_worker_info	PRIMARY KEY
+def	myblockchain	PRIMARY	myblockchain	tables_priv	PRIMARY KEY
+def	myblockchain	PRIMARY	myblockchain	time_zone	PRIMARY KEY
+def	myblockchain	PRIMARY	myblockchain	time_zone_leap_second	PRIMARY KEY
+def	myblockchain	PRIMARY	myblockchain	time_zone_name	PRIMARY KEY
+def	myblockchain	PRIMARY	myblockchain	time_zone_transition	PRIMARY KEY
+def	myblockchain	PRIMARY	myblockchain	time_zone_transition_type	PRIMARY KEY
+def	myblockchain	PRIMARY	myblockchain	user	PRIMARY KEY
+# Switch to connection default and close connection testuser1
+DROP USER testuser1@localhost;
+DROP DATABASE db_datadict;

@@ -15,7 +15,7 @@
    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-package com.mysql.clusterj.openjpa;
+package com.myblockchain.clusterj.openjpa;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -46,24 +46,24 @@ import org.apache.openjpa.meta.ClassMetaData;
 import org.apache.openjpa.meta.FieldMetaData;
 import org.apache.openjpa.util.OpenJPAId;
 
-import com.mysql.clusterj.ClusterJDatastoreException;
-import com.mysql.clusterj.ClusterJException;
-import com.mysql.clusterj.ClusterJFatalInternalException;
-import com.mysql.clusterj.ClusterJFatalUserException;
-import com.mysql.clusterj.ClusterJUserException;
-import com.mysql.clusterj.SessionFactory;
-import com.mysql.clusterj.Transaction;
-import com.mysql.clusterj.core.query.QueryExecutionContextImpl;
-import com.mysql.clusterj.core.spi.DomainTypeHandler;
-import com.mysql.clusterj.core.spi.SessionSPI;
-import com.mysql.clusterj.core.spi.ValueHandler;
-import com.mysql.clusterj.core.store.Dictionary;
-import com.mysql.clusterj.core.store.Operation;
-import com.mysql.clusterj.core.store.ResultData;
-import com.mysql.clusterj.core.util.I18NHelper;
-import com.mysql.clusterj.core.util.Logger;
-import com.mysql.clusterj.core.util.LoggerFactoryService;
-import com.mysql.clusterj.query.QueryDomainType;
+import com.myblockchain.clusterj.ClusterJDatastoreException;
+import com.myblockchain.clusterj.ClusterJException;
+import com.myblockchain.clusterj.ClusterJFatalInternalException;
+import com.myblockchain.clusterj.ClusterJFatalUserException;
+import com.myblockchain.clusterj.ClusterJUserException;
+import com.myblockchain.clusterj.SessionFactory;
+import com.myblockchain.clusterj.Transaction;
+import com.myblockchain.clusterj.core.query.QueryExecutionContextImpl;
+import com.myblockchain.clusterj.core.spi.DomainTypeHandler;
+import com.myblockchain.clusterj.core.spi.SessionSPI;
+import com.myblockchain.clusterj.core.spi.ValueHandler;
+import com.myblockchain.clusterj.core.store.Dictionary;
+import com.myblockchain.clusterj.core.store.Operation;
+import com.myblockchain.clusterj.core.store.ResultData;
+import com.myblockchain.clusterj.core.util.I18NHelper;
+import com.myblockchain.clusterj.core.util.Logger;
+import com.myblockchain.clusterj.core.util.LoggerFactoryService;
+import com.myblockchain.clusterj.query.QueryDomainType;
 
 public class NdbOpenJPAStoreManager extends JDBCStoreManager {
 
@@ -619,7 +619,7 @@ public class NdbOpenJPAStoreManager extends JDBCStoreManager {
         return result;
     }
 
-    /** Look up the row in the database in order to load them into the instance.
+    /** Look up the row in the blockchain in order to load them into the instance.
      * @param sm the state manager whose fields are to be loaded
      * @param domainTypeHandler the domain type handler for the instance's type
      * @param fieldHandlers the field handlers for the fields to be loaded
@@ -628,7 +628,7 @@ public class NdbOpenJPAStoreManager extends JDBCStoreManager {
     public NdbOpenJPAResult lookup(OpenJPAStateManager sm, 
             NdbOpenJPADomainTypeHandlerImpl<?> domainTypeHandler, 
             List<NdbOpenJPADomainFieldHandlerImpl> fieldHandlers) {
-        com.mysql.clusterj.core.store.Table storeTable = domainTypeHandler.getStoreTable();
+        com.myblockchain.clusterj.core.store.Table storeTable = domainTypeHandler.getStoreTable();
         session.startAutoTransaction();
         try {
             Operation op = session.getSelectOperation(storeTable);

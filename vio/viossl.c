@@ -15,7 +15,7 @@
 
 /*
   Note that we can't have assertion on file descriptors;  The reason for
-  this is that during mysql shutdown, another thread can close a file
+  this is that during myblockchain shutdown, another thread can close a file
   we are working on.  In this case we should just return read errors from
   the file descriptior.
 */
@@ -380,7 +380,7 @@ static int ssl_do(struct st_VioSSLFd *ptr, Vio *vio, long timeout,
 {
   int r;
   SSL *ssl;
-  my_socket sd= mysql_socket_getfd(vio->mysql_socket);
+  my_socket sd= myblockchain_socket_getfd(vio->myblockchain_socket);
 
   /* Declared here to make compiler happy */
 #if !defined(HAVE_YASSL) && !defined(DBUG_OFF)

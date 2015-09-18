@@ -23,9 +23,9 @@
 #include "i_progress_watcher.h"
 #include "standard_progress_watcher.h"
 #include "i_crawler.h"
-#include "mysql_crawler.h"
+#include "myblockchain_crawler.h"
 #include "i_chain_maker.h"
-#include "mysqldump_tool_chain_maker.h"
+#include "myblockchaindump_tool_chain_maker.h"
 #include <boost/chrono.hpp>
 
 using namespace Mysql::Tools::Dump;
@@ -132,12 +132,12 @@ int Program::execute(std::vector<std::string> positional_options)
   }
   I_crawler* crawler= new Mysql_crawler(
     connection_provider, message_handler, id_generator,
-    m_mysql_chain_element_options);
-  m_mysqldump_tool_chain_maker_options->process_positional_options(
+    m_myblockchain_chain_element_options);
+  m_myblockchaindump_tool_chain_maker_options->process_positional_options(
     positional_options);
   I_chain_maker* chain_maker= new Mysqldump_tool_chain_maker(
     connection_provider, message_handler, id_generator,
-    m_mysqldump_tool_chain_maker_options);
+    m_myblockchaindump_tool_chain_maker_options);
 
   crawler->register_chain_maker(chain_maker);
   if (progress_watcher != NULL)
@@ -164,7 +164,7 @@ int Program::execute(std::vector<std::string> positional_options)
 
 std::string Program::get_description()
 {
-  return "MySQL utility for dumping data from databases to external file.";
+  return "MyBlockchain utility for dumping data from blockchains to external file.";
 }
 
 int Program::get_first_release_year()
@@ -179,8 +179,8 @@ std::string Program::get_version()
 
 Program::~Program()
 {
-  delete m_mysql_chain_element_options;
-  delete m_mysqldump_tool_chain_maker_options;
+  delete m_myblockchain_chain_element_options;
+  delete m_myblockchaindump_tool_chain_maker_options;
   this->close_redirected_stderr();
 }
 
@@ -188,18 +188,18 @@ Program::Program()
   : Abstract_connection_program(),
   m_stderr(NULL)
 {
-  m_mysql_chain_element_options= new Mysql_chain_element_options(this);
-  m_mysqldump_tool_chain_maker_options=
-    new Mysqldump_tool_chain_maker_options(m_mysql_chain_element_options);
+  m_myblockchain_chain_element_options= new Mysql_chain_element_options(this);
+  m_myblockchaindump_tool_chain_maker_options=
+    new Mysqldump_tool_chain_maker_options(m_myblockchain_chain_element_options);
 
-  this->add_provider(m_mysql_chain_element_options);
-  this->add_provider(m_mysqldump_tool_chain_maker_options);
+  this->add_provider(m_myblockchain_chain_element_options);
+  this->add_provider(m_myblockchaindump_tool_chain_maker_options);
 }
 
 const char *load_default_groups[]=
 {
   "client", /* Read settings how to connect to server. */
-  "mysql_dump", /* Read special settings for mysql_dump. */
+  "myblockchain_dump", /* Read special settings for myblockchain_dump. */
   0
 };
 

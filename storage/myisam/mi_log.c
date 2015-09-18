@@ -45,7 +45,7 @@ int mi_log(int activate_log)
       myisam_pid=(ulong) getpid();
     if (myisam_log_file < 0)
     {
-      if ((myisam_log_file= mysql_file_create(mi_key_file_log,
+      if ((myisam_log_file= myblockchain_file_create(mi_key_file_log,
                                               fn_format(buff,
                                                         myisam_log_filename,
                                                         "", ".log", 4),
@@ -57,7 +57,7 @@ int mi_log(int activate_log)
   }
   else if (myisam_log_file >= 0)
   {
-    error= mysql_file_close(myisam_log_file, MYF(0)) ? my_errno : 0 ;
+    error= myblockchain_file_close(myisam_log_file, MYF(0)) ? my_errno : 0 ;
     myisam_log_file= -1;
   }
   DBUG_RETURN(error);
@@ -80,13 +80,13 @@ void _myisam_log(enum myisam_log_commands command, MI_INFO *info,
   mi_int4store(buff+3,pid);
   mi_int2store(buff+9,length);
 
-  mysql_mutex_lock(&THR_LOCK_myisam);
+  myblockchain_mutex_lock(&THR_LOCK_myisam);
   error=my_lock(myisam_log_file,F_WRLCK,0L,F_TO_EOF,MYF(MY_SEEK_NOT_DONE));
-  (void) mysql_file_write(myisam_log_file, buff, sizeof(buff), MYF(0));
-  (void) mysql_file_write(myisam_log_file, buffert, length, MYF(0));
+  (void) myblockchain_file_write(myisam_log_file, buff, sizeof(buff), MYF(0));
+  (void) myblockchain_file_write(myisam_log_file, buffert, length, MYF(0));
   if (!error)
     error=my_lock(myisam_log_file,F_UNLCK,0L,F_TO_EOF,MYF(MY_SEEK_NOT_DONE));
-  mysql_mutex_unlock(&THR_LOCK_myisam);
+  myblockchain_mutex_unlock(&THR_LOCK_myisam);
   my_errno=old_errno;
 }
 
@@ -103,14 +103,14 @@ void _myisam_log_command(enum myisam_log_commands command, MI_INFO *info,
   mi_int2store(buff+1,info->dfile);
   mi_int4store(buff+3,pid);
   mi_int2store(buff+7,result);
-  mysql_mutex_lock(&THR_LOCK_myisam);
+  myblockchain_mutex_lock(&THR_LOCK_myisam);
   error=my_lock(myisam_log_file,F_WRLCK,0L,F_TO_EOF,MYF(MY_SEEK_NOT_DONE));
-  (void) mysql_file_write(myisam_log_file, buff, sizeof(buff), MYF(0));
+  (void) myblockchain_file_write(myisam_log_file, buff, sizeof(buff), MYF(0));
   if (buffert)
-    (void) mysql_file_write(myisam_log_file, buffert, length, MYF(0));
+    (void) myblockchain_file_write(myisam_log_file, buffert, length, MYF(0));
   if (!error)
     error=my_lock(myisam_log_file,F_UNLCK,0L,F_TO_EOF,MYF(MY_SEEK_NOT_DONE));
-  mysql_mutex_unlock(&THR_LOCK_myisam);
+  myblockchain_mutex_unlock(&THR_LOCK_myisam);
   my_errno=old_errno;
 }
 
@@ -134,10 +134,10 @@ void _myisam_log_record(enum myisam_log_commands command, MI_INFO *info,
   mi_int2store(buff+7,result);
   mi_sizestore(buff+9,filepos);
   mi_int4store(buff+17,length);
-  mysql_mutex_lock(&THR_LOCK_myisam);
+  myblockchain_mutex_lock(&THR_LOCK_myisam);
   error=my_lock(myisam_log_file,F_WRLCK,0L,F_TO_EOF,MYF(MY_SEEK_NOT_DONE));
-  (void) mysql_file_write(myisam_log_file, buff, sizeof(buff), MYF(0));
-  (void) mysql_file_write(myisam_log_file, record, info->s->base.reclength, MYF(0));
+  (void) myblockchain_file_write(myisam_log_file, buff, sizeof(buff), MYF(0));
+  (void) myblockchain_file_write(myisam_log_file, record, info->s->base.reclength, MYF(0));
   if (info->s->base.blobs)
   {
     MI_BLOB *blob,*end;
@@ -148,11 +148,11 @@ void _myisam_log_record(enum myisam_log_commands command, MI_INFO *info,
     {
       memcpy(&pos, record+blob->offset+blob->pack_length,
                    sizeof(char*));
-      (void) mysql_file_write(myisam_log_file, pos, blob->length, MYF(0));
+      (void) myblockchain_file_write(myisam_log_file, pos, blob->length, MYF(0));
     }
   }
   if (!error)
     error=my_lock(myisam_log_file,F_UNLCK,0L,F_TO_EOF,MYF(MY_SEEK_NOT_DONE));
-  mysql_mutex_unlock(&THR_LOCK_myisam);
+  myblockchain_mutex_unlock(&THR_LOCK_myisam);
   my_errno=old_errno;
 }

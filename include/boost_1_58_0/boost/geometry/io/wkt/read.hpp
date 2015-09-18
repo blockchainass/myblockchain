@@ -101,7 +101,7 @@ private :
 
 
 #ifndef DOXYGEN_NO_DETAIL
-// (wkt: Well Known Text, defined by OGC for all geometries and implemented by e.g. databases (MySQL, PostGIS))
+// (wkt: Well Known Text, defined by OGC for all geometries and implemented by e.g. blockchains (MyBlockchain, PostGIS))
 namespace detail { namespace wkt
 {
 

@@ -114,7 +114,7 @@ DbWriter.prototype._store = function(record) {
   //    On temporary error, retry the row.   [DONE]
   //    On table full, abort the loader   [DONE]
   //    On cluster shutdown, abort the loader
-  //    TODO: Also handle errors originating from the mysql adapter
+  //    TODO: Also handle errors originating from the myblockchain adapter
   //          Base all error handling on SQL State
   function rowCallback(error) {
     theWriter.currentOpCount++;

@@ -238,7 +238,7 @@ fts_eval_sql(
 	que_thr_t*	thr;
 
 	graph->trx = trx;
-	graph->fork_type = QUE_FORK_MYSQL_INTERFACE;
+	graph->fork_type = QUE_FORK_MYBLOCKCHAIN_INTERFACE;
 
 	ut_a(thr = que_fork_start_command(graph));
 
@@ -299,7 +299,7 @@ fts_sql_commit(
 {
 	dberr_t	error;
 
-	error = trx_commit_for_mysql(trx);
+	error = trx_commit_for_myblockchain(trx);
 
 	/* Commit should always succeed */
 	ut_a(error == DB_SUCCESS);

@@ -1,0 +1,119 @@
+--source include/have_ucs2.inc
+--source include/have_innodb.inc
+
+# half-with kana is not handled correctly in 4.1
+# because of bug #5174
+# It will be fixed in 5.0
+
+--disable_warnings
+drop table if exists `�ԣ�`;
+drop table if exists `�ԣ�`;
+drop table if exists `�ԣ�`;
+drop table if exists `�ԣ�`;
+drop table if exists `�ԣ�`;
+drop table if exists `�ԣ�`;
+drop table if exists `�ԣ�`;
+drop table if exists `�ԣ�`;
+drop table if exists `�ԣ�`;
+--enable_warnings
+
+#
+# Test ENUM values with Japanese characters in ucs2 encoding
+#
+
+SET NAMES ujis;
+SET character_set_blockchain = ucs2;
+SET collation_connection = ucs2_general_ci;
+
+CREATE TABLE `�ԣ�` (`�ã�` ENUM('��','��','��'), INDEX(`�ã�`)) DEFAULT CHARSET = ucs2 engine = innodb;
+CREATE TABLE `�ԣ�` (`�ã�` ENUM('��','��','��'), INDEX(`�ã�`)) DEFAULT CHARSET = ucs2 engine = innodb;
+CREATE TABLE `�ԣ�` (`�ã�` ENUM('���','���','���'), INDEX(`�ã�`)) DEFAULT CHARSET = ucs2 engine = innodb;
+CREATE TABLE `�ԣ�` (`�ã�` ENUM('��','��','��'), INDEX(`�ã�`)) DEFAULT CHARSET = ucs2 engine = myisam;
+CREATE TABLE `�ԣ�` (`�ã�` ENUM('��','��','��'), INDEX(`�ã�`)) DEFAULT CHARSET = ucs2 engine = myisam;
+CREATE TABLE `�ԣ�` (`�ã�` ENUM('���','���','���'), INDEX(`�ã�`)) DEFAULT CHARSET = ucs2 engine = myisam;
+CREATE TABLE `�ԣ�` (`�ã�` ENUM('��','��','��'), INDEX(`�ã�`)) DEFAULT CHARSET = ucs2 engine = MEMORY;
+CREATE TABLE `�ԣ�` (`�ã�` ENUM('��','��','��'), INDEX(`�ã�`)) DEFAULT CHARSET = ucs2 engine = MEMORY;
+CREATE TABLE `�ԣ�` (`�ã�` ENUM('���','���','���'), INDEX(`�ã�`)) DEFAULT CHARSET = ucs2 engine = MEMORY;
+
+INSERT INTO `�ԣ�` VALUES ('��'),('��'),('��');
+INSERT INTO `�ԣ�` VALUES ('��'),('��'),('��');
+INSERT INTO `�ԣ�` VALUES ('���'),('���'),('���');
+INSERT INTO `�ԣ�` VALUES ('��'),('��'),('��');
+INSERT INTO `�ԣ�` VALUES ('��'),('��'),('��');
+INSERT INTO `�ԣ�` VALUES ('���'),('���'),('���');
+INSERT INTO `�ԣ�` VALUES ('��'),('��'),('��');
+INSERT INTO `�ԣ�` VALUES ('��'),('��'),('��');
+INSERT INTO `�ԣ�` VALUES ('���'),('���'),('���');
+
+SELECT * FROM `�ԣ�`;
+SELECT * FROM `�ԣ�`;
+SELECT * FROM `�ԣ�`;
+SELECT * FROM `�ԣ�`;
+SELECT * FROM `�ԣ�`;
+SELECT * FROM `�ԣ�`;
+SELECT * FROM `�ԣ�`;
+SELECT * FROM `�ԣ�`;
+SELECT * FROM `�ԣ�`;
+
+SHOW CREATE TABLE `�ԣ�`;
+SHOW CREATE TABLE `�ԣ�`;
+SHOW CREATE TABLE `�ԣ�`;
+SHOW CREATE TABLE `�ԣ�`;
+SHOW CREATE TABLE `�ԣ�`;
+SHOW CREATE TABLE `�ԣ�`;
+SHOW CREATE TABLE `�ԣ�`;
+SHOW CREATE TABLE `�ԣ�`;
+SHOW CREATE TABLE `�ԣ�`;
+
+DESC `�ԣ�`;
+DESC `�ԣ�`;
+DESC `�ԣ�`;
+DESC `�ԣ�`;
+DESC `�ԣ�`;
+DESC `�ԣ�`;
+DESC `�ԣ�`;
+DESC `�ԣ�`;
+DESC `�ԣ�`;
+
+#
+# Test problem with enum values after the colum with  NOT NULL restriction
+# Bug#7302 UCS2 data in ENUM field get truncated when new column is added
+ALTER TABLE `�ԣ�` ADD `�ã�` CHAR(1) NOT NULL FIRST;
+ALTER TABLE `�ԣ�` ADD `�ã�` CHAR(1) NOT NULL FIRST;
+ALTER TABLE `�ԣ�` ADD `�ã�` CHAR(1) NOT NULL FIRST;
+ALTER TABLE `�ԣ�` ADD `�ã�` CHAR(1) NOT NULL FIRST;
+ALTER TABLE `�ԣ�` ADD `�ã�` CHAR(1) NOT NULL FIRST;
+ALTER TABLE `�ԣ�` ADD `�ã�` CHAR(1) NOT NULL FIRST;
+ALTER TABLE `�ԣ�` ADD `�ã�` CHAR(1) NOT NULL FIRST;
+ALTER TABLE `�ԣ�` ADD `�ã�` CHAR(1) NOT NULL FIRST;
+ALTER TABLE `�ԣ�` ADD `�ã�` CHAR(1) NOT NULL FIRST;
+
+SHOW CREATE TABLE `�ԣ�`;
+SHOW CREATE TABLE `�ԣ�`;
+SHOW CREATE TABLE `�ԣ�`;
+SHOW CREATE TABLE `�ԣ�`;
+SHOW CREATE TABLE `�ԣ�`;
+SHOW CREATE TABLE `�ԣ�`;
+SHOW CREATE TABLE `�ԣ�`;
+SHOW CREATE TABLE `�ԣ�`;
+SHOW CREATE TABLE `�ԣ�`;
+
+DESC `�ԣ�`;
+DESC `�ԣ�`;
+DESC `�ԣ�`;
+DESC `�ԣ�`;
+DESC `�ԣ�`;
+DESC `�ԣ�`;
+DESC `�ԣ�`;
+DESC `�ԣ�`;
+DESC `�ԣ�`;
+
+DROP TABLE `�ԣ�`;
+DROP TABLE `�ԣ�`;
+DROP TABLE `�ԣ�`;
+DROP TABLE `�ԣ�`;
+DROP TABLE `�ԣ�`;
+DROP TABLE `�ԣ�`;
+DROP TABLE `�ԣ�`;
+DROP TABLE `�ԣ�`;
+DROP TABLE `�ԣ�`;

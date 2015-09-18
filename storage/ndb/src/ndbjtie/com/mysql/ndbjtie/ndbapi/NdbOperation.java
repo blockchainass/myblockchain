@@ -18,12 +18,12 @@
  * NdbOperation.java
  */
 
-package com.mysql.ndbjtie.ndbapi;
+package com.myblockchain.ndbjtie.ndbapi;
 
 import java.nio.ByteBuffer;
 
-import com.mysql.jtie.Wrapper;
-import com.mysql.jtie.ArrayWrapper;
+import com.myblockchain.jtie.Wrapper;
+import com.myblockchain.jtie.ArrayWrapper;
 
 public class NdbOperation extends Wrapper implements NdbOperationConst
 {

@@ -15,7 +15,7 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
  */
 
-package com.mysql.clusterj.jdbc;
+package com.myblockchain.clusterj.jdbc;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -24,25 +24,25 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.mysql.clusterj.ClusterJDatastoreException;
-import com.mysql.clusterj.ClusterJFatalInternalException;
-import com.mysql.clusterj.ClusterJUserException;
-import com.mysql.clusterj.LockMode;
-import com.mysql.clusterj.core.query.QueryDomainTypeImpl;
-import com.mysql.clusterj.core.spi.DomainTypeHandler;
-import com.mysql.clusterj.core.spi.SessionSPI;
-import com.mysql.clusterj.core.spi.ValueHandler;
-import com.mysql.clusterj.core.spi.ValueHandlerBatching;
-import com.mysql.clusterj.core.store.Operation;
-import com.mysql.clusterj.core.store.ResultData;
-import com.mysql.clusterj.core.util.I18NHelper;
-import com.mysql.clusterj.core.util.Logger;
-import com.mysql.clusterj.core.util.LoggerFactoryService;
-import com.mysql.jdbc.ParameterBindings;
-import com.mysql.jdbc.PreparedStatement;
-import com.mysql.jdbc.ResultSetInternalMethods;
-import com.mysql.jdbc.ServerPreparedStatement;
-import com.mysql.jdbc.ServerPreparedStatement.BindValue;
+import com.myblockchain.clusterj.ClusterJDatastoreException;
+import com.myblockchain.clusterj.ClusterJFatalInternalException;
+import com.myblockchain.clusterj.ClusterJUserException;
+import com.myblockchain.clusterj.LockMode;
+import com.myblockchain.clusterj.core.query.QueryDomainTypeImpl;
+import com.myblockchain.clusterj.core.spi.DomainTypeHandler;
+import com.myblockchain.clusterj.core.spi.SessionSPI;
+import com.myblockchain.clusterj.core.spi.ValueHandler;
+import com.myblockchain.clusterj.core.spi.ValueHandlerBatching;
+import com.myblockchain.clusterj.core.store.Operation;
+import com.myblockchain.clusterj.core.store.ResultData;
+import com.myblockchain.clusterj.core.util.I18NHelper;
+import com.myblockchain.clusterj.core.util.Logger;
+import com.myblockchain.clusterj.core.util.LoggerFactoryService;
+import com.myblockchain.jdbc.ParameterBindings;
+import com.myblockchain.jdbc.PreparedStatement;
+import com.myblockchain.jdbc.ResultSetInternalMethods;
+import com.myblockchain.jdbc.ServerPreparedStatement;
+import com.myblockchain.jdbc.ServerPreparedStatement.BindValue;
 
 /** This class contains behavior to execute various SQL commands. There is one subclass for each
  * command to be executed. 
@@ -79,12 +79,12 @@ public class SQLExecutor {
     /** The query domain type for qualified SELECT and DELETE operations */
     protected QueryDomainTypeImpl<?> queryDomainType;
 
-    /** Does the jdbc driver support bind values (mysql 5.1.17 and later)? */
+    /** Does the jdbc driver support bind values (myblockchain 5.1.17 and later)? */
     static boolean bindValueSupport = getBindValueSupport();
 
     static boolean getBindValueSupport() {
         try {
-            com.mysql.jdbc.ServerPreparedStatement.class.getMethod("getParameterBindValues", (Class<?>[])null);
+            com.myblockchain.jdbc.ServerPreparedStatement.class.getMethod("getParameterBindValues", (Class<?>[])null);
             return true;
         } catch (Exception e) {
             return false;
@@ -458,9 +458,9 @@ public class SQLExecutor {
     }
 
     /** Initialize the mappings between the Java representation of the row (domain type handler)
-     * and the JDBC/database representation of the row. The JDBC driver asks for columns by column
+     * and the JDBC/blockchain representation of the row. The JDBC driver asks for columns by column
      * index or column name, 1-origin. The domain type handler returns data by field number, 0-origin.
-     * The domain type handler has representations for all columns in the database, whereas the JDBC
+     * The domain type handler has representations for all columns in the blockchain, whereas the JDBC
      * driver has a specific set of columns referenced by the SQL statement.
      * For insert, the column number to field number mapping will map parameters to field numbers,
      * e.g. INSERT INTO EMPLOYEE (id, name, age) VALUES (?, ?, ?)

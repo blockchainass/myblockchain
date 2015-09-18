@@ -686,7 +686,7 @@ uint hp_rb_pack_key(HP_KEYDEF *keydef, uchar *key, const uchar *old,
     keypart_map>>= 1;
     if (seg->null_bit)
     {
-      /* Convert NULL from MySQL representation into HEAP's. */
+      /* Convert NULL from MyBlockchain representation into HEAP's. */
       if (!(*key++= (char) 1 - *old++))
       {
         /*

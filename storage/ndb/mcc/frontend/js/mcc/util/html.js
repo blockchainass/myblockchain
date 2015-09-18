@@ -85,7 +85,7 @@ var backgroundColor = false;
 
 // Get root url to documentation
 function getDocUrlRoot() {
-    return "https://dev.mysql.com/doc/refman/5.6/en/"; 
+    return "https://dev.myblockchain.com/doc/refman/5.6/en/"; 
 }
 
 // Set property default

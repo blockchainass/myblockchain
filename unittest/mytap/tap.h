@@ -14,7 +14,7 @@
    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA
 
    Library for providing TAP support for testing C and C++ was written
-   by Mats Kindahl <mats@mysql.com>.
+   by Mats Kindahl <mats@myblockchain.com>.
 */
 
 #ifndef TAP_H
@@ -23,7 +23,7 @@
 #include "my_global.h"
 
 /*
-  @defgroup MyTAP MySQL support for performing unit tests according to
+  @defgroup MyTAP MyBlockchain support for performing unit tests according to
   the Test Anything Protocol (TAP).
 */
 
@@ -82,7 +82,7 @@ extern int skip_big_tests;
 /**
   @defgroup MyTAP_API MyTAP API
 
-  MySQL support for performing unit tests according to TAP.
+  MyBlockchain support for performing unit tests according to TAP.
 
   @{
 */

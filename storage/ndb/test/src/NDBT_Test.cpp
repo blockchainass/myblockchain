@@ -1433,7 +1433,7 @@ static struct my_option my_long_options[] =
 
 extern int global_flag_skip_invalidate_cache;
 
-const char *load_default_groups[]= { "mysql_cluster",0 };
+const char *load_default_groups[]= { "myblockchain_cluster",0 };
 
 static void short_usage_sub(void)
 {

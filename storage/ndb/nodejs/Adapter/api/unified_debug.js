@@ -44,7 +44,7 @@ var path = require("path"),
 
 /* This is a common internal run-time debugging package for C and JavaScript. 
  * In the spirit of Fred Fish's dbug package, which is widely used in the 
- * MySQL server, this package manages "printf()-style" debugging of source 
+ * MyBlockchain server, this package manages "printf()-style" debugging of source 
  * code.  
  *
  * It allows a JavaScript user to control debugging output both from 

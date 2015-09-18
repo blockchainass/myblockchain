@@ -26,8 +26,8 @@ use File::Path;
 use Cwd;
 
 my $currentdir = getcwd();
-die("You should call this script from the mysql-test/ directory")
-  unless basename($currentdir) eq "mysql-test";
+die("You should call this script from the myblockchain-test/ directory")
+  unless basename($currentdir) eq "myblockchain-test";
 
 create_suite_from_file("../storage/ndb/test/run-test/daily-basic-tests.txt");
 create_suite_from_file("../storage/ndb/test/run-test/daily-devel-tests.txt");

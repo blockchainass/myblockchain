@@ -1,0 +1,103 @@
+--source include/have_ujis.inc
+--source include/have_innodb.inc
+
+--disable_warnings
+drop table if exists `�ԣ�`;
+drop table if exists `�ԣ�`;
+drop table if exists `�ԣ�`;
+drop table if exists `�ԣ�`;
+drop table if exists `�ԣ�`;
+drop table if exists `�ԣ�`;
+drop table if exists `�ԣ�`;
+drop table if exists `�ԣ�`;
+drop table if exists `�ԣ�`;
+--enable_warnings
+
+#
+# Test UNION with Japanese characters in ujis encoding
+#
+
+SET NAMES ujis;
+SET character_set_blockchain = ujis;
+
+#InnoDB
+CREATE TABLE `�ԣ�` (`�ã�` char(1), INDEX(`�ã�`)) DEFAULT CHARSET = ujis engine = innodb;
+CREATE TABLE `�ԣ�` (`�ã�` char(1), INDEX(`�ã�`)) DEFAULT CHARSET = ujis engine = innodb;
+CREATE TABLE `�ԣ�` (`�ã�` char(1), INDEX(`�ã�`)) DEFAULT CHARSET = ujis engine = innodb;
+INSERT INTO `�ԣ�` VALUES('��'),('��'),('��'),('��'),('���'),('���');
+INSERT INTO `�ԣ�` VALUES('��'),('��'),('��'),('��'),('���'),('���');
+INSERT INTO `�ԣ�` VALUES('��'),('��'),('��'),('��'),('���'),('���');
+SELECT * FROM `�ԣ�` UNION DISTINCT SELECT * FROM `�ԣ�` ORDER BY `�ã�`;
+SELECT * FROM `�ԣ�` UNION ALL SELECT * FROM `�ԣ�` ORDER BY `�ã�`;
+(SELECT * FROM `�ԣ�`) UNION (SELECT * FROM `�ԣ�`) UNION (SELECT '��') ORDER BY `�ã�`;
+(SELECT '��' AS `�ã�`) UNION (SELECT * FROM `�ԣ�`) UNION (SELECT * FROM `�ԣ�`) ORDER BY `�ã�`;
+SELECT `�ã�`, COUNT(*) FROM `�ԣ�` GROUP BY `�ã�` UNION
+SELECT `�ã�`, COUNT(*) FROM `�ԣ�` GROUP BY `�ã�` ORDER BY `�ã�`;
+SELECT * FROM `�ԣ�` UNION DISTINCT
+SELECT * FROM `�ԣ�` UNION ALL
+SELECT * FROM `�ԣ�` ORDER BY `�ã�`;
+SELECT * FROM `�ԣ�` UNION ALL
+SELECT * FROM `�ԣ�` UNION DISTINCT
+SELECT * FROM `�ԣ�` ORDER BY `�ã�`;
+SELECT * FROM `�ԣ�` UNION SELECT REPEAT(`�ã�`,5) FROM `�ԣ�` ORDER BY `�ã�`;
+DROP TABLE `�ԣ�` ;
+DROP TABLE `�ԣ�` ;
+DROP TABLE `�ԣ�` ;
+
+#MyISAM
+CREATE TABLE `�ԣ�` (`�ã�` char(1), INDEX(`�ã�`)) DEFAULT CHARSET = ujis engine = MYISAM;
+CREATE TABLE `�ԣ�` (`�ã�` char(1), INDEX(`�ã�`)) DEFAULT CHARSET = ujis engine = MYISAM;
+CREATE TABLE `�ԣ�` (`�ã�` char(1), INDEX(`�ã�`)) DEFAULT CHARSET = ujis engine = MYISAM;
+INSERT INTO `�ԣ�` VALUES('��'),('��'),('��'),('��'),('���'),('���');
+INSERT INTO `�ԣ�` VALUES('��'),('��'),('��'),('��'),('���'),('���');
+INSERT INTO `�ԣ�` VALUES('��'),('��'),('��'),('��'),('���'),('���');
+SELECT * FROM `�ԣ�` UNION DISTINCT SELECT * FROM `�ԣ�` ORDER BY `�ã�`;
+SELECT * FROM `�ԣ�` UNION ALL SELECT * FROM `�ԣ�` ORDER BY `�ã�`;
+(SELECT * FROM `�ԣ�`) UNION (SELECT * FROM `�ԣ�`) UNION (SELECT '��') ORDER BY `�ã�`;
+(SELECT '��' AS `�ã�`) UNION (SELECT * FROM `�ԣ�`) UNION (SELECT * FROM `�ԣ�`) ORDER BY `�ã�`;
+SELECT `�ã�`, COUNT(*) FROM `�ԣ�` GROUP BY `�ã�` UNION
+SELECT `�ã�`, COUNT(*) FROM `�ԣ�` GROUP BY `�ã�` ORDER BY `�ã�`;
+SELECT * FROM `�ԣ�` UNION DISTINCT
+SELECT * FROM `�ԣ�` UNION ALL
+SELECT * FROM `�ԣ�` ORDER BY `�ã�`;
+SELECT * FROM `�ԣ�` UNION ALL
+SELECT * FROM `�ԣ�` UNION DISTINCT
+SELECT * FROM `�ԣ�` ORDER BY `�ã�`;
+SELECT * FROM `�ԣ�` UNION SELECT REPEAT(`�ã�`,5) FROM `�ԣ�` ORDER BY `�ã�`;
+DROP TABLE `�ԣ�` ;
+DROP TABLE `�ԣ�` ;
+DROP TABLE `�ԣ�` ;
+
+#MEMORY
+CREATE TABLE `�ԣ�` (`�ã�` char(1), INDEX(`�ã�`)) DEFAULT CHARSET = ujis engine = MEMORY;
+CREATE TABLE `�ԣ�` (`�ã�` char(1), INDEX(`�ã�`)) DEFAULT CHARSET = ujis engine = MEMORY;
+CREATE TABLE `�ԣ�` (`�ã�` char(1), INDEX(`�ã�`)) DEFAULT CHARSET = ujis engine = MEMORY;
+INSERT INTO `�ԣ�` VALUES('��'),('��'),('��'),('��'),('���'),('���');
+INSERT INTO `�ԣ�` VALUES('��'),('��'),('��'),('��'),('���'),('���');
+INSERT INTO `�ԣ�` VALUES('��'),('��'),('��'),('��'),('���'),('���');
+SELECT * FROM `�ԣ�` UNION DISTINCT SELECT * FROM `�ԣ�` ORDER BY `�ã�`;
+SELECT * FROM `�ԣ�` UNION ALL SELECT * FROM `�ԣ�` ORDER BY `�ã�`;
+(SELECT * FROM `�ԣ�`) UNION (SELECT * FROM `�ԣ�`) UNION (SELECT '��') ORDER BY `�ã�`;
+(SELECT '��' AS `�ã�`) UNION (SELECT * FROM `�ԣ�`) UNION (SELECT * FROM `�ԣ�`) ORDER BY `�ã�`;
+SELECT `�ã�`, COUNT(*) FROM `�ԣ�` GROUP BY `�ã�` UNION
+SELECT `�ã�`, COUNT(*) FROM `�ԣ�` GROUP BY `�ã�` ORDER BY `�ã�`;
+SELECT * FROM `�ԣ�` UNION DISTINCT
+SELECT * FROM `�ԣ�` UNION ALL
+SELECT * FROM `�ԣ�` ORDER BY `�ã�`;
+SELECT * FROM `�ԣ�` UNION ALL
+SELECT * FROM `�ԣ�` UNION DISTINCT
+SELECT * FROM `�ԣ�` ORDER BY `�ã�`;
+SELECT * FROM `�ԣ�` UNION SELECT REPEAT(`�ã�`,5) FROM `�ԣ�` ORDER BY `�ã�`;
+DROP TABLE `�ԣ�` ;
+DROP TABLE `�ԣ�` ;
+DROP TABLE `�ԣ�` ;
+
+# Test mixed strage engine
+CREATE TABLE `�ԣ�` (`�ã�` char(1), INDEX(`�ã�`)) DEFAULT CHARSET = ujis engine = InnoDB;
+CREATE TABLE `�ԣ�` (`�ã�` char(1), INDEX(`�ã�`)) DEFAULT CHARSET = ujis engine = MyISAM;
+INSERT INTO `�ԣ�` VALUES('��'),('��'),('��'),('��'),('���'),('���');
+INSERT INTO `�ԣ�` VALUES('��'),('��'),('��'),('��'),('���'),('���');
+SELECT * FROM `�ԣ�` UNION DISTINCT SELECT * FROM `�ԣ�` ORDER BY `�ã�`;
+SELECT * FROM `�ԣ�` UNION ALL SELECT * FROM `�ԣ�` ORDER BY `�ã�`;
+DROP TABLE `�ԣ�`;
+DROP TABLE `�ԣ�`;

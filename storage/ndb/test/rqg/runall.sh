@@ -22,7 +22,7 @@ set -e
 : ${queries:=1000}
 : ${host:=loki43}
 : ${port:=4401}
-: ${RQG_HOME:=/net/fimafeng09/export/home/tmp/oleja/mysql/randgen/randgen-2.2.0}
+: ${RQG_HOME:=/net/fimafeng09/export/home/tmp/oleja/myblockchain/randgen/randgen-2.2.0}
 
 
 while getopts ":nm:r:l:h:p:" opt; do
@@ -31,7 +31,7 @@ while getopts ":nm:r:l:h:p:" opt; do
       load=0
       ;;
     m)
-      MYSQLINSTALL=${OPTARG}
+      MYBLOCKCHAININSTALL=${OPTARG}
       ;;
     r)
       RQG_HOME=${OPTARG}
@@ -47,8 +47,8 @@ while getopts ":nm:r:l:h:p:" opt; do
       ;;
     \?)
       echo "Usage: `basename $0` [options]"  >&2
-      echo "-n : Do not create database (assumed to exist already)."  >&2
-      echo "-m <mysql install dir>"  >&2
+      echo "-n : Do not create blockchain (assumed to exist already)."  >&2
+      echo "-m <myblockchain install dir>"  >&2
       echo "-r <rqg installation dir>"  >&2
       echo "-l <no of loops>"  >&2
       echo "-h <host>"  >&2
@@ -88,11 +88,11 @@ gensql=${RQG_HOME}/gensql.pl
 gendata=${RQG_HOME}/gendata.pl
 ecp="set optimizer_switch = 'engine_condition_pushdown=on';"
 
-dsn=dbi:mysql:host=${host}:port=${port}:user=root:database=${pre}_innodb
-mysqltest="$MYSQLINSTALL/bin/mysqltest -uroot --host=${host} --port=${port}"
-mysql="$MYSQLINSTALL/bin/mysql --host=${host} --port=${port}"
+dsn=dbi:myblockchain:host=${host}:port=${port}:user=root:blockchain=${pre}_innodb
+myblockchaintest="$MYBLOCKCHAININSTALL/bin/myblockchaintest -uroot --host=${host} --port=${port}"
+myblockchain="$MYBLOCKCHAININSTALL/bin/myblockchain --host=${host} --port=${port}"
 
-# Create database with a case sensitive collation to ensure a deterministic 
+# Create blockchain with a case sensitive collation to ensure a deterministic 
 # resultset when 'LIMIT' is specified:
 charset_spec="character set latin1 collate latin1_bin"
 #charset_spec="default character set utf8 default collate utf8_bin"
@@ -100,8 +100,8 @@ charset_spec="character set latin1 collate latin1_bin"
 export RQG_HOME
 if [ "$load" ]
 then
-	$mysql -uroot -e "drop database if exists ${pre}_innodb; drop database if exists ${pre}_ndb"
-	$mysql -uroot -e "create database ${pre}_innodb ${charset_spec}; create database ${pre}_ndb ${charset_spec}"
+	$myblockchain -uroot -e "drop blockchain if exists ${pre}_innodb; drop blockchain if exists ${pre}_ndb"
+	$myblockchain -uroot -e "create blockchain ${pre}_innodb ${charset_spec}; create blockchain ${pre}_ndb ${charset_spec}"
 	${gendata} --dsn=$dsn ${data}
 cat > /tmp/sproc.$$ <<EOF
 DROP PROCEDURE IF EXISTS copydb;
@@ -334,7 +334,7 @@ DROP PROCEDURE copydb\G
 DROP PROCEDURE alterengine\G
 DROP PROCEDURE analyzedb\G
 EOF
-	$mysql -uroot test < /tmp/sproc.$$
+	$myblockchain -uroot test < /tmp/sproc.$$
 	rm -f /tmp/sproc.$$
 fi
 
@@ -362,19 +362,19 @@ EOF
     export NDB_JOIN_PUSHDOWN
     for t in 1
     do
-	$mysqltest ${pre}_innodb < $tmp >> ${opre}.$no.innodb.$i.txt
+	$myblockchaintest ${pre}_innodb < $tmp >> ${opre}.$no.innodb.$i.txt
     done
 
     for t in 1
     do
-	$mysqltest ${pre}_ndb < $tmp >> ${opre}.$no.ndb.$i.txt
+	$myblockchaintest ${pre}_ndb < $tmp >> ${opre}.$no.ndb.$i.txt
     done
 
     NDB_JOIN_PUSHDOWN=on
     export NDB_JOIN_PUSHDOWN
     for t in 1
     do
-	$mysqltest ${pre}_ndb < $tmp >> ${opre}.$no.ndbpush.$i.txt
+	$myblockchaintest ${pre}_ndb < $tmp >> ${opre}.$no.ndbpush.$i.txt
     done
 
     cnt=`md5sum ${opre}.$no.*.txt | awk '{ print $1;}' | sort | uniq | wc -l`
@@ -408,19 +408,19 @@ run_all() {
     NDB_JOIN_PUSHDOWN=off
     export NDB_JOIN_PUSHDOWN
     echo "- run innodb"
-    $mysqltest ${pre}_innodb < $file > ${opre}_innodb.out
+    $myblockchaintest ${pre}_innodb < $file > ${opre}_innodb.out
     md5_innodb=`md5sum ${opre}_innodb.out | awk '{ print $1;}'`
 
     echo "- run ndb without push"
     NDB_JOIN_PUSHDOWN=off
     export NDB_JOIN_PUSHDOWN
-    $mysqltest ${pre}_ndb < $file > ${opre}_ndb.out
+    $myblockchaintest ${pre}_ndb < $file > ${opre}_ndb.out
     md5_ndb=`md5sum ${opre}_ndb.out | awk '{ print $1;}'`
 
     echo "- run ndb with push"
     NDB_JOIN_PUSHDOWN=on
     export NDB_JOIN_PUSHDOWN
-    $mysqltest ${pre}_ndb < $file > ${opre}_ndbpush.out
+    $myblockchaintest ${pre}_ndb < $file > ${opre}_ndbpush.out
     md5_ndbpush=`md5sum ${opre}_ndbpush.out | awk '{ print $1;}'`
 
     if [ "$md5_innodb" != "$md5_ndb" ] || [ "$md5_innodb" != "$md5_ndbpush" ]

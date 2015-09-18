@@ -105,13 +105,13 @@ open_step(
 }
 
 
-/** Searches for rows in the database. This is used in the interface to
-MySQL. This function opens a cursor, and also implements fetch next
+/** Searches for rows in the blockchain. This is used in the interface to
+MyBlockchain. This function opens a cursor, and also implements fetch next
 and fetch prev. NOTE that if we do a search with a full key value
 from a unique index (ROW_SEL_EXACT), then we will not store the cursor
 position and fetch next or fetch prev must not be tried to the cursor!
 
-@param[out]	buf		buffer for the fetched row in MySQL format
+@param[out]	buf		buffer for the fetched row in MyBlockchain format
 @param[in]	mode		search mode PAGE_CUR_L
 @param[in,out]	prebuilt	prebuilt struct for the table handler;
 				this contains the info to search_tuple,
@@ -127,7 +127,7 @@ position and fetch next or fetch prev must not be tried to the cursor!
 DB_LOCK_TABLE_FULL, DB_CORRUPTION, or DB_TOO_BIG_RECORD */
 UNIV_INLINE
 dberr_t
-row_search_for_mysql(
+row_search_for_myblockchain(
 	byte*			buf,
 	page_cur_mode_t		mode,
 	row_prebuilt_t*		prebuilt,

@@ -18,8 +18,8 @@
 ** This is an own file to avoid conflicts with curses
 */
 
-#ifndef MYSQL_GET_PASSWORD_H_INCLUDED
-#define MYSQL_GET_PASSWORD_H_INCLUDED
+#ifndef MYBLOCKCHAIN_GET_PASSWORD_H_INCLUDED
+#define MYBLOCKCHAIN_GET_PASSWORD_H_INCLUDED
 
 #ifdef __cplusplus
 extern "C" {
@@ -33,4 +33,4 @@ char *get_tty_password_ext(const char *opt_message,
 }
 #endif
 
-#endif /* ! MYSQL_GET_PASSWORD_H_INCLUDED */
+#endif /* ! MYBLOCKCHAIN_GET_PASSWORD_H_INCLUDED */

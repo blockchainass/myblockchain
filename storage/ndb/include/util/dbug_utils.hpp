@@ -25,7 +25,7 @@
 #include "my_dbug.h"
 
 /*
- * These macros are robuster versions of the ones in MySQL's DBUG package.
+ * These macros are robuster versions of the ones in MyBlockchain's DBUG package.
  * 
  * As the DBUG macros/functions don't check arguments, the caller (or JVM!)
  * crashes in case, for instance, of NULL args.  Also, macros returning a

@@ -26,7 +26,7 @@
 #include <mgmapi.h>
 #include <CpcClient.hpp>
 #include <Properties.hpp>
-#include <mysql.h>
+#include <myblockchain.h>
 #include <my_sys.h>
 #include <my_getopt.h>
 #ifdef HAVE_MY_DEFAULT_H
@@ -77,7 +77,7 @@ struct atrt_process
     ,AP_NDBD         = 1
     ,AP_NDB_API      = 2
     ,AP_NDB_MGMD     = 4
-    ,AP_MYSQLD       = 16
+    ,AP_MYBLOCKCHAIND       = 16
     ,AP_CLIENT       = 32
     ,AP_CLUSTER      = 256 // Used for options parsing for "cluster" options
   } m_type;
@@ -85,10 +85,10 @@ struct atrt_process
   SimpleCpcClient::Process m_proc;
 
   NdbMgmHandle m_ndb_mgm_handle;   // if type == ndb_mgm
-  atrt_process * m_mysqld;         // if type == client
-  atrt_process * m_rep_src;        // if type == mysqld
-  Vector<atrt_process*> m_rep_dst; // if type == mysqld
-  MYSQL m_mysql;                   // if type == mysqld
+  atrt_process * m_myblockchaind;         // if type == client
+  atrt_process * m_rep_src;        // if type == myblockchaind
+  Vector<atrt_process*> m_rep_dst; // if type == myblockchaind
+  MYBLOCKCHAIN m_myblockchain;                   // if type == myblockchaind
   atrt_options m_options;
   uint m_nodeid;                   // if m_fix_nodeid
 
@@ -124,7 +124,7 @@ struct atrt_testcase
   bool m_run_all;
   time_t m_max_time;
   BaseString m_name;
-  BaseString m_mysqld_options;
+  BaseString m_myblockchaind_options;
 
   struct Command
   {
@@ -137,7 +137,7 @@ struct atrt_testcase
 extern Logger g_logger;
 
 bool parse_args(int argc, char** argv);
-bool setup_config(atrt_config&, const char * mysqld);
+bool setup_config(atrt_config&, const char * myblockchaind);
 bool configure(atrt_config&, int setup);
 bool setup_directories(atrt_config&, int setup);
 bool setup_files(atrt_config&, int setup, int sshx);
@@ -166,8 +166,8 @@ bool do_command(atrt_config& config);
 bool start_process(atrt_process & proc);
 bool stop_process(atrt_process & proc);
 
-bool connect_mysqld(atrt_process & proc);
-bool disconnect_mysqld(atrt_process & proc);
+bool connect_myblockchaind(atrt_process & proc);
+bool disconnect_myblockchaind(atrt_process & proc);
 
 /**
  * check configuration if any changes has been 
@@ -214,9 +214,9 @@ char * find_bin_path(const char * prefix, const char * basename);
 extern const char * g_ndb_mgmd_bin_path;
 extern const char * g_ndbd_bin_path;
 extern const char * g_ndbmtd_bin_path;
-extern const char * g_mysqld_bin_path;
-extern const char * g_mysql_install_db_bin_path;
-extern const char * g_libmysqlclient_so_path;
+extern const char * g_myblockchaind_bin_path;
+extern const char * g_myblockchain_install_db_bin_path;
+extern const char * g_libmyblockchainclient_so_path;
 
 extern const char * g_search_path[];
 

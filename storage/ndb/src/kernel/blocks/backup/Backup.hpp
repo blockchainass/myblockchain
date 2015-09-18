@@ -42,7 +42,7 @@
 
 
 /**
- * Backup - This block manages database backup and restore
+ * Backup - This block manages blockchain backup and restore
  */
 class Backup : public SimulatedBlock
 {

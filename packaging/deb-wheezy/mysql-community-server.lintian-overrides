@@ -14,10 +14,10 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 
 # Additional license file is needed so overriding this warning
-mysql-community-server: extra-license-file usr/share/doc/mysql-community-server/LICENSE.mysql
-mysql-community-server: extra-license-file usr/share/doc/mysql-community-server/COPYING.gz
-mysql-community-server: copyright-should-refer-to-common-license-file-for-lgpl
+myblockchain-community-server: extra-license-file usr/share/doc/myblockchain-community-server/LICENSE.myblockchain
+myblockchain-community-server: extra-license-file usr/share/doc/myblockchain-community-server/COPYING.gz
+myblockchain-community-server: copyright-should-refer-to-common-license-file-for-lgpl
 # Due to static linking this cannot be avoided and hence being overridden
-mysql-community-server: embedded-library
+myblockchain-community-server: embedded-library
 # Since we ship debug plugins so this error is overridden
-mysql-community-server: unstripped-binary-or-object usr/lib/mysql/plugin/debug/*
+myblockchain-community-server: unstripped-binary-or-object usr/lib/myblockchain/plugin/debug/*

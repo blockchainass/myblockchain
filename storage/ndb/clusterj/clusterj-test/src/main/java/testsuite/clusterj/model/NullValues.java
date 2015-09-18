@@ -18,11 +18,11 @@
 
 package testsuite.clusterj.model;
 
-import com.mysql.clusterj.annotation.Column;
-import com.mysql.clusterj.annotation.NullValue;
-import com.mysql.clusterj.annotation.PersistenceCapable;
-import com.mysql.clusterj.annotation.Persistent;
-import com.mysql.clusterj.annotation.PrimaryKey;
+import com.myblockchain.clusterj.annotation.Column;
+import com.myblockchain.clusterj.annotation.NullValue;
+import com.myblockchain.clusterj.annotation.PersistenceCapable;
+import com.myblockchain.clusterj.annotation.Persistent;
+import com.myblockchain.clusterj.annotation.PrimaryKey;
 
 @PersistenceCapable(table="nullvalues")
 @PrimaryKey(column="id")

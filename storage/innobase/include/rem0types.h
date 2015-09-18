@@ -60,7 +60,7 @@ This (3072) is the maximum index row length allowed, so we cannot create index
 prefix column longer than that. */
 #define REC_VERSION_56_MAX_INDEX_COL_LEN	3072
 
-/** Innodb row types are a subset of the MySQL global enum row_type.
+/** Innodb row types are a subset of the MyBlockchain global enum row_type.
 They are made into their own enum so that switch statements can account
 for each of them. */
 enum rec_format_enum {

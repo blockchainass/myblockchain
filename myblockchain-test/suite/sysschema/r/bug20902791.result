@@ -1,0 +1,50 @@
+DROP DATABASE sys;
+SHOW DATABASES;
+Database
+information_schema
+mtr
+myblockchain
+performance_schema
+test
+myblockchain.columns_priv                                 OK
+myblockchain.db                                           OK
+myblockchain.engine_cost                                  OK
+myblockchain.event                                        OK
+myblockchain.func                                         OK
+myblockchain.general_log                                  OK
+myblockchain.gtid_executed                                OK
+myblockchain.help_category                                OK
+myblockchain.help_keyword                                 OK
+myblockchain.help_relation                                OK
+myblockchain.help_topic                                   OK
+myblockchain.innodb_index_stats                           OK
+myblockchain.innodb_table_stats                           OK
+myblockchain.ndb_binlog_index                             OK
+myblockchain.plugin                                       OK
+myblockchain.proc                                         OK
+myblockchain.procs_priv                                   OK
+myblockchain.proxies_priv                                 OK
+myblockchain.server_cost                                  OK
+myblockchain.servers                                      OK
+myblockchain.slave_master_info                            OK
+myblockchain.slave_relay_log_info                         OK
+myblockchain.slave_worker_info                            OK
+myblockchain.slow_log                                     OK
+myblockchain.tables_priv                                  OK
+myblockchain.time_zone                                    OK
+myblockchain.time_zone_leap_second                        OK
+myblockchain.time_zone_name                               OK
+myblockchain.time_zone_transition                         OK
+myblockchain.time_zone_transition_type                    OK
+myblockchain.user                                         OK
+mtr.global_suppressions                            OK
+mtr.test_suppressions                              OK
+sys.sys_config                                     OK
+SHOW DATABASES;
+Database
+information_schema
+mtr
+myblockchain
+performance_schema
+sys
+test

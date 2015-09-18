@@ -31,11 +31,11 @@ int mi_rename(const char *old_name, const char *new_name)
 
   fn_format(from,old_name,"",MI_NAME_IEXT,MY_UNPACK_FILENAME|MY_APPEND_EXT);
   fn_format(to,new_name,"",MI_NAME_IEXT,MY_UNPACK_FILENAME|MY_APPEND_EXT);
-  if (mysql_file_rename_with_symlink(mi_key_file_kfile, from, to, MYF(MY_WME)))
+  if (myblockchain_file_rename_with_symlink(mi_key_file_kfile, from, to, MYF(MY_WME)))
     DBUG_RETURN(my_errno);
   fn_format(from,old_name,"",MI_NAME_DEXT,MY_UNPACK_FILENAME|MY_APPEND_EXT);
   fn_format(to,new_name,"",MI_NAME_DEXT,MY_UNPACK_FILENAME|MY_APPEND_EXT);
-  DBUG_RETURN(mysql_file_rename_with_symlink(mi_key_file_dfile,
+  DBUG_RETURN(myblockchain_file_rename_with_symlink(mi_key_file_dfile,
                                              from, to,
                                              MYF(MY_WME)) ? my_errno : 0);
 }

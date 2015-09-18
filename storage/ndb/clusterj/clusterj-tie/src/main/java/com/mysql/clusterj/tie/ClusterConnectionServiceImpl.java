@@ -15,23 +15,23 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
  */
 
-package com.mysql.clusterj.tie;
+package com.myblockchain.clusterj.tie;
 
-import com.mysql.clusterj.ClusterJFatalUserException;
-import com.mysql.clusterj.core.store.ClusterConnection;
-import com.mysql.clusterj.core.util.I18NHelper;
-import com.mysql.clusterj.core.util.Logger;
-import com.mysql.clusterj.core.util.LoggerFactoryService;
-import com.mysql.ndbjtie.ndbapi.Ndb;
-import com.mysql.ndbjtie.ndbapi.NdbDictionary;
-import com.mysql.ndbjtie.ndbapi.NdbOperation;
-import com.mysql.ndbjtie.ndbapi.NdbScanOperation;
+import com.myblockchain.clusterj.ClusterJFatalUserException;
+import com.myblockchain.clusterj.core.store.ClusterConnection;
+import com.myblockchain.clusterj.core.util.I18NHelper;
+import com.myblockchain.clusterj.core.util.Logger;
+import com.myblockchain.clusterj.core.util.LoggerFactoryService;
+import com.myblockchain.ndbjtie.ndbapi.Ndb;
+import com.myblockchain.ndbjtie.ndbapi.NdbDictionary;
+import com.myblockchain.ndbjtie.ndbapi.NdbOperation;
+import com.myblockchain.ndbjtie.ndbapi.NdbScanOperation;
 
 /**
  *
  */
 public class ClusterConnectionServiceImpl
-        implements com.mysql.clusterj.core.store.ClusterConnectionService {
+        implements com.myblockchain.clusterj.core.store.ClusterConnectionService {
 
     /** My message translator */
     static final I18NHelper local = I18NHelper.getInstance(ClusterConnectionServiceImpl.class);
@@ -41,7 +41,7 @@ public class ClusterConnectionServiceImpl
             .getInstance(ClusterConnectionServiceImpl.class);
 
     static {
-        LoggerFactoryService.getFactory().registerLogger("com.mysql.clusterj.tie");
+        LoggerFactoryService.getFactory().registerLogger("com.myblockchain.clusterj.tie");
     }
 
     /** Load the ndbclient system library only once */

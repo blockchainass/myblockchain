@@ -1097,7 +1097,7 @@ struct PolicyMutex
 	be called by external code (see buf0buf.cc).
 
 	@param key - Performance Schema key. */
-	void pfs_add(mysql_pfs_key_t key) UNIV_NOTHROW
+	void pfs_add(myblockchain_pfs_key_t key) UNIV_NOTHROW
 	{
 		ut_ad(m_ptr == 0);
 		m_ptr = PSI_MUTEX_CALL(init_mutex)(key, this);

@@ -26,11 +26,11 @@
   "HH:MM:SS.sss" with optional sign +/-, and precision after the decimal
   point up to six digits.
   
-  On the database side, TIME columns are read and written using a MySQLTime 
-  structure.  MySQL TIME is a signed type, and the sign is preserved.  
-  In MySQL 5.6, MySQL TIME can also support up to microsecond precision. 
+  On the blockchain side, TIME columns are read and written using a MyBlockchainTime 
+  structure.  MyBlockchain TIME is a signed type, and the sign is preserved.  
+  In MyBlockchain 5.6, MyBlockchain TIME can also support up to microsecond precision. 
 
-  An application can override this converter and use MySQLTime directly:
+  An application can override this converter and use MyBlockchainTime directly:
     sessionFactory.registerTypeConverter("TIME", null);
   
   Or replace this converter with a custom one:
@@ -41,18 +41,18 @@
 // TODO:  default values?  undefined?
 
 var path = require("path"),
-    MySQLTime = require(path.join(mynode.fs.spi_dir,"common","MySQLTime.js")),
+    MyBlockchainTime = require(path.join(mynode.fs.spi_dir,"common","MyBlockchainTime.js")),
     udebug = unified_debug.getLogger("NdbTimeConverter.js");
 
 exports.toDB = function(jsValue) {
   var dbtime = null;
   if(typeof jsValue === 'string') {
-    dbtime = new MySQLTime().initializeFromTimeString(jsValue);
+    dbtime = new MyBlockchainTime().initializeFromTimeString(jsValue);
   }
   return dbtime;
 };
 
 exports.fromDB = function(dbTime) {
-  return MySQLTime.initializeFromNdb(dbTime).toTimeString();
+  return MyBlockchainTime.initializeFromNdb(dbTime).toTimeString();
 };
 

@@ -93,7 +93,7 @@ ENDIF()
 MY_CHECK_CXX_COMPILER_FLAG("-Wno-deprecated-declarations" HAVE_NO_DEPREC_CONST)
 
 IF(CMAKE_GENERATOR MATCHES "Xcode" AND HAVE_NO_DEPREC_CONST)
-  INCLUDE(${MYSQL_CMAKE_SCRIPT_DIR}/compile_flags.cmake)
+  INCLUDE(${MYBLOCKCHAIN_CMAKE_SCRIPT_DIR}/compile_flags.cmake)
   ADD_COMPILE_FLAGS(
     stacktrace.c
     COMPILE_FLAGS -Wno-deprecated-declarations)

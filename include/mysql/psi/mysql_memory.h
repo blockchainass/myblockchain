@@ -13,15 +13,15 @@
   along with this program; if not, write to the Free Software Foundation,
   51 Franklin Street, Suite 500, Boston, MA 02110-1335 USA */
 
-#ifndef MYSQL_MEMORY_H
-#define MYSQL_MEMORY_H
+#ifndef MYBLOCKCHAIN_MEMORY_H
+#define MYBLOCKCHAIN_MEMORY_H
 
 /**
-  @file mysql/psi/mysql_memory.h
+  @file myblockchain/psi/myblockchain_memory.h
   Instrumentation helpers for memory allocation.
 */
 
-#include "mysql/psi/psi.h"
+#include "myblockchain/psi/psi.h"
 
 #ifndef PSI_MEMORY_CALL
 #define PSI_MEMORY_CALL(M) PSI_DYNAMIC_CALL(M)
@@ -34,13 +34,13 @@
 */
 
 /**
-  @def mysql_memory_register(P1, P2, P3)
+  @def myblockchain_memory_register(P1, P2, P3)
   Memory registration.
 */
-#define mysql_memory_register(P1, P2, P3) \
-  inline_mysql_memory_register(P1, P2, P3)
+#define myblockchain_memory_register(P1, P2, P3) \
+  inline_myblockchain_memory_register(P1, P2, P3)
 
-static inline void inline_mysql_memory_register(
+static inline void inline_myblockchain_memory_register(
 #ifdef HAVE_PSI_MEMORY_INTERFACE
   const char *category,
   PSI_memory_info *info,

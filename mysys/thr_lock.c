@@ -70,7 +70,7 @@ lock at the same time as multiple read locks.
 #include "mysys_priv.h"
 #include "my_sys.h"
 #include "thr_lock.h"
-#include "mysql/psi/mysql_table.h"
+#include "myblockchain/psi/myblockchain_table.h"
 #include <m_string.h>
 #include <errno.h>
 
@@ -295,16 +295,16 @@ void thr_lock_init(THR_LOCK *lock)
   DBUG_ENTER("thr_lock_init");
   memset(lock, 0, sizeof(*lock));
 
-  mysql_mutex_init(key_THR_LOCK_mutex, &lock->mutex, MY_MUTEX_INIT_FAST);
+  myblockchain_mutex_init(key_THR_LOCK_mutex, &lock->mutex, MY_MUTEX_INIT_FAST);
   lock->read.last= &lock->read.data;
   lock->read_wait.last= &lock->read_wait.data;
   lock->write_wait.last= &lock->write_wait.data;
   lock->write.last= &lock->write.data;
 
-  mysql_mutex_lock(&THR_LOCK_lock);              /* Add to locks in use */
+  myblockchain_mutex_lock(&THR_LOCK_lock);              /* Add to locks in use */
   lock->list.data=(void*) lock;
   thr_lock_thread_list=list_add(thr_lock_thread_list,&lock->list);
-  mysql_mutex_unlock(&THR_LOCK_lock);
+  myblockchain_mutex_unlock(&THR_LOCK_lock);
   DBUG_VOID_RETURN;
 }
 
@@ -312,10 +312,10 @@ void thr_lock_init(THR_LOCK *lock)
 void thr_lock_delete(THR_LOCK *lock)
 {
   DBUG_ENTER("thr_lock_delete");
-  mysql_mutex_lock(&THR_LOCK_lock);
+  myblockchain_mutex_lock(&THR_LOCK_lock);
   thr_lock_thread_list=list_delete(thr_lock_thread_list,&lock->list);
-  mysql_mutex_unlock(&THR_LOCK_lock);
-  mysql_mutex_destroy(&lock->mutex);
+  myblockchain_mutex_unlock(&THR_LOCK_lock);
+  myblockchain_mutex_destroy(&lock->mutex);
   DBUG_VOID_RETURN;
 }
 
@@ -415,7 +415,7 @@ wait_for_lock(struct st_lock_list *wait, THR_LOCK_DATA *data,
   set_timespec(&wait_timeout, lock_wait_timeout);
   while (!thread_var->abort || in_wait_list)
   {
-    int rc= mysql_cond_timedwait(data->cond, &data->lock->mutex, &wait_timeout);
+    int rc= myblockchain_cond_timedwait(data->cond, &data->lock->mutex, &wait_timeout);
     /*
       We must break the wait if one of the following occurs:
       - the connection has been aborted (!thread_var->abort),
@@ -476,7 +476,7 @@ wait_for_lock(struct st_lock_list *wait, THR_LOCK_DATA *data,
       (*data->lock->get_status)(data->status_param, 0);
     check_locks(data->lock,"got wait_for_lock",0);
   }
-  mysql_mutex_unlock(&data->lock->mutex);
+  myblockchain_mutex_unlock(&data->lock->mutex);
 
   exit_cond_hook(NULL, &old_stage, __func__, __FILE__, __LINE__);
 
@@ -492,7 +492,7 @@ thr_lock(THR_LOCK_DATA *data, THR_LOCK_INFO *owner,
   THR_LOCK *lock=data->lock;
   enum enum_thr_lock_result result= THR_LOCK_SUCCESS;
   struct st_lock_list *wait_queue;
-  MYSQL_TABLE_WAIT_VARIABLES(locker, state) /* no ';' */
+  MYBLOCKCHAIN_TABLE_WAIT_VARIABLES(locker, state) /* no ';' */
   DBUG_ENTER("thr_lock");
 
   data->next=0;
@@ -500,10 +500,10 @@ thr_lock(THR_LOCK_DATA *data, THR_LOCK_INFO *owner,
   data->type=lock_type;
   data->owner= owner;                           /* Must be reset ! */
 
-  MYSQL_START_TABLE_LOCK_WAIT(locker, &state, data->m_psi,
+  MYBLOCKCHAIN_START_TABLE_LOCK_WAIT(locker, &state, data->m_psi,
                               PSI_TABLE_LOCK, lock_type);
 
-  mysql_mutex_lock(&lock->mutex);
+  myblockchain_mutex_lock(&lock->mutex);
   DBUG_PRINT("lock",("data: 0x%lx  thread: 0x%x  lock: 0x%lx  type: %d",
                      (long) data, data->owner->thread_id,
                      (long) lock, (int) lock_type));
@@ -708,11 +708,11 @@ thr_lock(THR_LOCK_DATA *data, THR_LOCK_INFO *owner,
   }
   /* Can't get lock yet;  Wait for it */
   result= wait_for_lock(wait_queue, data, 0, lock_wait_timeout, thread_var);
-  MYSQL_END_TABLE_LOCK_WAIT(locker);
+  MYBLOCKCHAIN_END_TABLE_LOCK_WAIT(locker);
   DBUG_RETURN(result);
 end:
-  mysql_mutex_unlock(&lock->mutex);
-  MYSQL_END_TABLE_LOCK_WAIT(locker);
+  myblockchain_mutex_unlock(&lock->mutex);
+  MYBLOCKCHAIN_END_TABLE_LOCK_WAIT(locker);
   DBUG_RETURN(result);
 }
 
@@ -734,7 +734,7 @@ static inline void free_all_read_locks(THR_LOCK *lock,
 
   do
   {
-    mysql_cond_t *cond= data->cond;
+    myblockchain_cond_t *cond= data->cond;
     if ((int) data->type == (int) TL_READ_NO_INSERT)
     {
       if (using_concurrent_insert)
@@ -759,7 +759,7 @@ static inline void free_all_read_locks(THR_LOCK *lock,
 		       data->owner->thread_id));
     /* purecov: end */
     data->cond=0;				/* Mark thread free */
-    mysql_cond_signal(cond);
+    myblockchain_cond_signal(cond);
   } while ((data=data->next));
   *lock->read_wait.last=0;
   if (!lock->read_wait.data)
@@ -776,7 +776,7 @@ void thr_unlock(THR_LOCK_DATA *data)
   DBUG_ENTER("thr_unlock");
   DBUG_PRINT("lock",("data: 0x%lx  thread: 0x%x  lock: 0x%lx",
                      (long) data, data->owner->thread_id, (long) lock));
-  mysql_mutex_lock(&lock->mutex);
+  myblockchain_mutex_lock(&lock->mutex);
   check_locks(lock,"start of release lock",0);
 
   if (((*data->prev)=data->next))		/* remove from lock-list */
@@ -798,10 +798,10 @@ void thr_unlock(THR_LOCK_DATA *data)
   if (lock_type == TL_READ_NO_INSERT)
     lock->read_no_write_count--;
   data->type=TL_UNLOCK;				/* Mark unlocked */
-  MYSQL_UNLOCK_TABLE(data->m_psi);
+  MYBLOCKCHAIN_UNLOCK_TABLE(data->m_psi);
   check_locks(lock,"after releasing lock",1);
   wake_up_waiters(lock);
-  mysql_mutex_unlock(&lock->mutex);
+  myblockchain_mutex_unlock(&lock->mutex);
   DBUG_VOID_RETURN;
 }
 
@@ -860,9 +860,9 @@ static void wake_up_waiters(THR_LOCK *lock)
 			     data->type, data->owner->thread_id));
           /* purecov: end */
 	  {
-            mysql_cond_t *cond= data->cond;
+            myblockchain_cond_t *cond= data->cond;
 	    data->cond=0;				/* Mark thread free */
-            mysql_cond_signal(cond);                    /* Start waiting thread */
+            myblockchain_cond_signal(cond);                    /* Start waiting thread */
 	  }
 	  if (data->type != TL_WRITE_ALLOW_WRITE ||
 	      !lock->write_wait.data ||
@@ -903,7 +903,7 @@ static void wake_up_waiters(THR_LOCK *lock)
 	goto end;
       }
       do {
-        mysql_cond_t *cond= data->cond;
+        myblockchain_cond_t *cond= data->cond;
 	if (((*data->prev)=data->next))		/* remove from wait-list */
 	  data->next->prev= data->prev;
 	else
@@ -913,7 +913,7 @@ static void wake_up_waiters(THR_LOCK *lock)
 	lock->write.last= &data->next;
 	data->next=0;				/* Only one write lock */
 	data->cond=0;				/* Mark thread free */
-        mysql_cond_signal(cond);                /* Start waiting thread */
+        myblockchain_cond_signal(cond);                /* Start waiting thread */
       } while (lock_type == TL_WRITE_ALLOW_WRITE &&
 	       (data=lock->write_wait.data) &&
 	       data->type == TL_WRITE_ALLOW_WRITE);
@@ -1101,19 +1101,19 @@ void thr_abort_locks(THR_LOCK *lock, my_bool upgrade_lock)
 {
   THR_LOCK_DATA *data;
   DBUG_ENTER("thr_abort_locks");
-  mysql_mutex_lock(&lock->mutex);
+  myblockchain_mutex_lock(&lock->mutex);
 
   for (data=lock->read_wait.data; data ; data=data->next)
   {
     data->type=TL_UNLOCK;			/* Mark killed */
     /* It's safe to signal the cond first: we're still holding the mutex. */
-    mysql_cond_signal(data->cond);
+    myblockchain_cond_signal(data->cond);
     data->cond=0;				/* Removed from list */
   }
   for (data=lock->write_wait.data; data ; data=data->next)
   {
     data->type=TL_UNLOCK;
-    mysql_cond_signal(data->cond);
+    myblockchain_cond_signal(data->cond);
     data->cond=0;
   }
   lock->read_wait.last= &lock->read_wait.data;
@@ -1121,7 +1121,7 @@ void thr_abort_locks(THR_LOCK *lock, my_bool upgrade_lock)
   lock->read_wait.data=lock->write_wait.data=0;
   if (upgrade_lock && lock->write.data)
     lock->write.data->type=TL_WRITE_ONLY;
-  mysql_mutex_unlock(&lock->mutex);
+  myblockchain_mutex_unlock(&lock->mutex);
   DBUG_VOID_RETURN;
 }
 
@@ -1137,7 +1137,7 @@ void thr_abort_locks_for_thread(THR_LOCK *lock, my_thread_id thread_id)
   THR_LOCK_DATA *data;
   DBUG_ENTER("thr_abort_locks_for_thread");
 
-  mysql_mutex_lock(&lock->mutex);
+  myblockchain_mutex_lock(&lock->mutex);
   for (data= lock->read_wait.data; data ; data= data->next)
   {
     if (data->owner->thread_id == thread_id)    /* purecov: tested */
@@ -1145,7 +1145,7 @@ void thr_abort_locks_for_thread(THR_LOCK *lock, my_thread_id thread_id)
       DBUG_PRINT("info",("Aborting read-wait lock"));
       data->type= TL_UNLOCK;			/* Mark killed */
       /* It's safe to signal the cond first: we're still holding the mutex. */
-      mysql_cond_signal(data->cond);
+      myblockchain_cond_signal(data->cond);
       data->cond= 0;				/* Removed from list */
 
       if (((*data->prev)= data->next))
@@ -1160,7 +1160,7 @@ void thr_abort_locks_for_thread(THR_LOCK *lock, my_thread_id thread_id)
     {
       DBUG_PRINT("info",("Aborting write-wait lock"));
       data->type= TL_UNLOCK;
-      mysql_cond_signal(data->cond);
+      myblockchain_cond_signal(data->cond);
       data->cond= 0;
 
       if (((*data->prev)= data->next))
@@ -1170,7 +1170,7 @@ void thr_abort_locks_for_thread(THR_LOCK *lock, my_thread_id thread_id)
     }
   }
   wake_up_waiters(lock);
-  mysql_mutex_unlock(&lock->mutex);
+  myblockchain_mutex_unlock(&lock->mutex);
   DBUG_VOID_RETURN;
 }
 
@@ -1211,13 +1211,13 @@ void thr_downgrade_write_lock(THR_LOCK_DATA *in_data,
 #endif
   DBUG_ENTER("thr_downgrade_write_only_lock");
 
-  mysql_mutex_lock(&lock->mutex);
+  myblockchain_mutex_lock(&lock->mutex);
   DBUG_ASSERT(old_lock_type == TL_WRITE_ONLY);
   DBUG_ASSERT(old_lock_type > new_lock_type);
   in_data->type= new_lock_type;
   check_locks(lock,"after downgrading lock",0);
 
-  mysql_mutex_unlock(&lock->mutex);
+  myblockchain_mutex_unlock(&lock->mutex);
   DBUG_VOID_RETURN;
 }
 
@@ -1252,13 +1252,13 @@ void thr_print_locks(void)
   LIST *list;
   uint count=0;
 
-  mysql_mutex_lock(&THR_LOCK_lock);
+  myblockchain_mutex_lock(&THR_LOCK_lock);
   puts("Current locks:");
   for (list= thr_lock_thread_list; list && count++ < MAX_THREADS;
        list= list_rest(list))
   {
     THR_LOCK *lock=(THR_LOCK*) list->data;
-    mysql_mutex_lock(&lock->mutex);
+    myblockchain_mutex_lock(&lock->mutex);
     printf("lock: 0x%lx:",(ulong) lock);
     if ((lock->write_wait.data || lock->read_wait.data) &&
 	(! lock->read.data && ! lock->write.data))
@@ -1276,11 +1276,11 @@ void thr_print_locks(void)
     thr_print_lock("write_wait",&lock->write_wait);
     thr_print_lock("read",&lock->read);
     thr_print_lock("read_wait",&lock->read_wait);
-    mysql_mutex_unlock(&lock->mutex);
+    myblockchain_mutex_unlock(&lock->mutex);
     puts("");
   }
   fflush(stdout);
-  mysql_mutex_unlock(&THR_LOCK_lock);
+  myblockchain_mutex_unlock(&THR_LOCK_lock);
 }
 
 
@@ -1336,8 +1336,8 @@ int lock_counts[]= {sizeof(test_0)/sizeof(struct st_test),
 };
 
 
-static mysql_cond_t COND_thread_count;
-static mysql_mutex_t LOCK_thread_count;
+static myblockchain_cond_t COND_thread_count;
+static myblockchain_mutex_t LOCK_thread_count;
 static uint thread_count;
 static ulong sum=0;
 
@@ -1376,7 +1376,7 @@ static void *test_thread(void *arg)
   struct st_my_thread_var my_thread_var;
   memset(&my_thread_var, 0, sizeof(my_thread_var));
   my_thread_var.id= param + 1; /* Main thread uses value 0. */
-  mysql_cond_init(0, &my_thread_var.suspend);
+  myblockchain_cond_init(0, &my_thread_var.suspend);
 
   printf("Thread T@%u (%d) started\n", my_thread_var.id, param);
   fflush(stdout);
@@ -1397,7 +1397,7 @@ static void *test_thread(void *arg)
     }
     thr_multi_lock(multi_locks, lock_counts[param], &lock_info, TEST_TIMEOUT,
                    &my_thread_var);
-    mysql_mutex_lock(&LOCK_thread_count);
+    myblockchain_mutex_lock(&LOCK_thread_count);
     {
       int tmp=rand() & 7;			/* Do something from 0-2 sec */
       if (tmp == 0)
@@ -1411,17 +1411,17 @@ static void *test_thread(void *arg)
 	  sum+=k;
       }
     }
-    mysql_mutex_unlock(&LOCK_thread_count);
+    myblockchain_mutex_unlock(&LOCK_thread_count);
     thr_multi_unlock(multi_locks,lock_counts[param]);
   }
 
   printf("Thread T@%u (%d) ended\n", my_thread_var.id, param);
   fflush(stdout);
   thr_print_locks();
-  mysql_mutex_lock(&LOCK_thread_count);
+  myblockchain_mutex_lock(&LOCK_thread_count);
   thread_count--;
-  mysql_cond_signal(&COND_thread_count); /* Tell main we are ready */
-  mysql_mutex_unlock(&LOCK_thread_count);
+  myblockchain_cond_signal(&COND_thread_count); /* Tell main we are ready */
+  myblockchain_mutex_unlock(&LOCK_thread_count);
   free((uchar*) arg);
   return 0;
 }
@@ -1438,14 +1438,14 @@ int main(int argc __attribute__((unused)),char **argv __attribute__((unused)))
 
   printf("Main thread: T@%u\n", 0); /* 0 for main thread, 1+ for test_thread */
 
-  if ((error= mysql_cond_init(0, &COND_thread_count)))
+  if ((error= myblockchain_cond_init(0, &COND_thread_count)))
   {
-    my_message_stderr(0, "Got error %d from mysql_cond_init", errno);
+    my_message_stderr(0, "Got error %d from myblockchain_cond_init", errno);
     exit(1);
   }
-  if ((error= mysql_mutex_init(0, &LOCK_thread_count, MY_MUTEX_INIT_FAST)))
+  if ((error= myblockchain_mutex_init(0, &LOCK_thread_count, MY_MUTEX_INIT_FAST)))
   {
-    my_message_stderr(0, "Got error %d from mysql_cond_init", errno);
+    my_message_stderr(0, "Got error %d from myblockchain_cond_init", errno);
     exit(1);
   }
 
@@ -1481,36 +1481,36 @@ int main(int argc __attribute__((unused)),char **argv __attribute__((unused)))
     param=(int*) malloc(sizeof(int));
     *param=i;
 
-    if ((error= mysql_mutex_lock(&LOCK_thread_count)))
+    if ((error= myblockchain_mutex_lock(&LOCK_thread_count)))
     {
-      my_message_stderr(0, "Got error %d from mysql_mutex_lock",
+      my_message_stderr(0, "Got error %d from myblockchain_mutex_lock",
                         errno);
       exit(1);
     }
-    if ((error= mysql_thread_create(0,
+    if ((error= myblockchain_thread_create(0,
                                     &tid, &thr_attr, test_thread,
                                     (void*) param)))
     {
-      my_message_stderr(0, "Got error %d from mysql_thread_create",
+      my_message_stderr(0, "Got error %d from myblockchain_thread_create",
                         errno);
-      mysql_mutex_unlock(&LOCK_thread_count);
+      myblockchain_mutex_unlock(&LOCK_thread_count);
       exit(1);
     }
     thread_count++;
-    mysql_mutex_unlock(&LOCK_thread_count);
+    myblockchain_mutex_unlock(&LOCK_thread_count);
   }
 
   my_thread_attr_destroy(&thr_attr);
-  if ((error= mysql_mutex_lock(&LOCK_thread_count)))
-    my_message_stderr(0, "Got error %d from mysql_mutex_lock", error);
+  if ((error= myblockchain_mutex_lock(&LOCK_thread_count)))
+    my_message_stderr(0, "Got error %d from myblockchain_mutex_lock", error);
   while (thread_count)
   {
-    if ((error= mysql_cond_wait(&COND_thread_count, &LOCK_thread_count)))
-      my_message_stderr(0, "Got error %d from mysql_cond_wait",
+    if ((error= myblockchain_cond_wait(&COND_thread_count, &LOCK_thread_count)))
+      my_message_stderr(0, "Got error %d from myblockchain_cond_wait",
                         error);
   }
-  if ((error= mysql_mutex_unlock(&LOCK_thread_count)))
-    my_message_stderr(0, "Got error %d from mysql_mutex_unlock",
+  if ((error= myblockchain_mutex_unlock(&LOCK_thread_count)))
+    my_message_stderr(0, "Got error %d from myblockchain_mutex_unlock",
                       error);
   for (i=0 ; i < (int) array_elements(locks) ; i++)
     thr_lock_delete(locks+i);

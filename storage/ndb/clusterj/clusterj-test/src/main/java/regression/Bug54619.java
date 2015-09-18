@@ -26,9 +26,9 @@ import junit.framework.TestCase;
 
 import testsuite.clusterj.model.Employee;
 
-import com.mysql.clusterj.ClusterJHelper;
-import com.mysql.clusterj.Session;
-import com.mysql.clusterj.SessionFactory;
+import com.myblockchain.clusterj.ClusterJHelper;
+import com.myblockchain.clusterj.Session;
+import com.myblockchain.clusterj.SessionFactory;
 
 public class Bug54619 extends TestCase {
 
@@ -38,9 +38,9 @@ public class Bug54619 extends TestCase {
 
     public static void main(String[] args) {
 
-        /* http://bugs.mysql.com/bug.php?id=54619
+        /* http://bugs.myblockchain.com/bug.php?id=54619
          * 
-         * MySQL Cluster generic Linux and Windows 7.1.3
+         * MyBlockchain Cluster generic Linux and Windows 7.1.3
          * 
          * Session factory in a different thread than sessions crashes JVM.
          * 
@@ -112,8 +112,8 @@ class Manager {
 
     static void createClusterJSession() {
         Properties properties = new Properties();
-        properties.put("com.mysql.clusterj.connectstring", "localhost:1186");
-        properties.put("com.mysql.clusterj.database", "test");
+        properties.put("com.myblockchain.clusterj.connectstring", "localhost:1186");
+        properties.put("com.myblockchain.clusterj.blockchain", "test");
         sessionfactory = ClusterJHelper.getSessionFactory(properties);
 
         return;

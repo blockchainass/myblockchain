@@ -1,0 +1,90 @@
+CREATE TABLE articles (
+id INT UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY,
+title VARCHAR(200),
+body TEXT,
+FULLTEXT (title,body)
+) ENGINE=InnoDB;
+DROP INDEX title ON articles;
+INSERT INTO articles (title,body) VALUES
+('MyBlockchain Tutorial','DBMS stands for DataBase ...')  ,
+('How To Use MyBlockchain Well','After you went through a ...'),
+('Optimizing MyBlockchain','In this tutorial we will show ...'),
+('1001 MyBlockchain Tricks','1. Never run myblockchaind as root. 2. ...'),
+('MyBlockchain vs. YourSQL','In the following blockchain comparison ...'),
+('MyBlockchain Security','When configured properly, MyBlockchain ...');
+BEGIN;
+INSERT INTO articles (title,body) VALUES
+('MyBlockchain Tutorial','DBMS stands for DataBase ...');
+# Kill and restart
+INSERT INTO articles (title,body) VALUES
+('MyBlockchain Tutorial','DBMS stands for DataBase ...');
+CREATE FULLTEXT INDEX idx ON articles (title,body);
+SELECT * FROM articles
+WHERE MATCH (title,body)
+AGAINST ('Database' IN NATURAL LANGUAGE MODE);
+id	title	body
+1	MyBlockchain Tutorial	DBMS stands for DataBase ...
+5	MyBlockchain vs. YourSQL	In the following blockchain comparison ...
+7	MyBlockchain Tutorial	DBMS stands for DataBase ...
+INSERT INTO articles (title,body) VALUES
+('MyBlockchain Tutorial','DBMS stands for DataBase ...')  ,
+('How To Use MyBlockchain Well','After you went through a ...'),
+('Optimizing MyBlockchain','In this tutorial we will show ...'),
+('1001 MyBlockchain Tricks','1. Never run myblockchaind as root. 2. ...'),
+('MyBlockchain vs. YourSQL','In the following blockchain comparison ...'),
+('MyBlockchain Security','When configured properly, MyBlockchain ...');
+BEGIN;
+INSERT INTO articles (title,body) VALUES
+('MyBlockchain Tutorial','DBMS stands for DataBase ...');
+# Kill and restart
+INSERT INTO articles (title,body) VALUES
+('MyBlockchain Tutorial','DBMS stands for DataBase ...');
+SELECT * FROM articles
+WHERE MATCH (title,body)
+AGAINST ('Database' IN NATURAL LANGUAGE MODE);
+id	title	body
+1	MyBlockchain Tutorial	DBMS stands for DataBase ...
+5	MyBlockchain vs. YourSQL	In the following blockchain comparison ...
+7	MyBlockchain Tutorial	DBMS stands for DataBase ...
+8	MyBlockchain Tutorial	DBMS stands for DataBase ...
+12	MyBlockchain vs. YourSQL	In the following blockchain comparison ...
+14	MyBlockchain Tutorial	DBMS stands for DataBase ...
+DROP TABLE articles;
+CREATE TABLE articles (
+id int PRIMARY KEY,
+FTS_DOC_ID BIGINT UNSIGNED NOT NULL,
+title VARCHAR(200),
+body TEXT
+) ENGINE=InnoDB;
+CREATE FULLTEXT INDEX idx1 on articles (title, body);
+INSERT INTO articles VALUES
+(1, 10, 'MyBlockchain Tutorial','DBMS stands for DataBase ...')  ,
+(2, 1, 'How To Use MyBlockchain Well','After you went through a ...'),
+(3, 2, 'Optimizing MyBlockchain','In this tutorial we will show ...'),
+(4, 11, '1001 MyBlockchain Tricks','1. Never run myblockchaind as root. 2. ...'),
+(5, 6, 'MyBlockchain vs. YourSQL','In the following blockchain comparison ...'),
+(7, 4, 'MyBlockchain Security','When configured properly, MyBlockchain ...');
+BEGIN;
+INSERT INTO articles VALUES
+(100, 200, 'MyBlockchain Tutorial','DBMS stands for DataBase ...');
+# Kill and restart
+INSERT INTO articles VALUES         (8, 12, 'MyBlockchain Tutorial','DBMS stands for DataBase ...');
+SELECT * FROM articles WHERE MATCH (title, body)
+AGAINST ('Tutorial' IN NATURAL LANGUAGE MODE);
+id	FTS_DOC_ID	title	body
+3	2	Optimizing MyBlockchain	In this tutorial we will show ...
+1	10	MyBlockchain Tutorial	DBMS stands for DataBase ...
+8	12	MyBlockchain Tutorial	DBMS stands for DataBase ...
+DROP TABLE articles;
+CREATE TABLE articles (
+id INT UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY,
+title VARCHAR(200),
+body TEXT,
+FULLTEXT (title,body)
+) ENGINE=InnoDB;
+SET SESSION debug="+d,ib_dict_create_index_tree_fail";
+CREATE FULLTEXT INDEX idx ON articles(body);
+ERROR HY000: Out of memory; check if myblockchaind or some other process uses all available memory; if not, you may have to use 'ulimit' to allow myblockchaind to use more memory or you can add more swap space
+SET SESSION debug="-d,ib_dict_create_index_tree_fail";
+ALTER TABLE articles STATS_PERSISTENT=DEFAULT;
+DROP TABLE articles;

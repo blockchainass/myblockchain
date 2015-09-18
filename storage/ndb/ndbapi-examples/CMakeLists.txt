@@ -33,7 +33,7 @@ ADD_EXECUTABLE(ndb_ndbapi_s_i_ndbrecord ndbapi_s_i_ndbrecord/main.cpp)
 ADD_EXECUTABLE(ndb_mgmapi_logevent mgmapi_logevent/main.cpp)
 ADD_EXECUTABLE(ndb_mgmapi_logevent2 mgmapi_logevent2/main.cpp)
 
-# Link each example program with both ndbclient and mysql libraries
+# Link each example program with both ndbclient and myblockchain libraries
 SET(EXAMPLES
   ndb_ndbapi_array_simple
   ndb_ndbapi_array_using_adapter
@@ -53,7 +53,7 @@ SET(EXAMPLES
   ndb_mgmapi_logevent2
 )
 FOREACH(EXAMPLE ${EXAMPLES})
-  TARGET_LINK_LIBRARIES(${EXAMPLE} libmysql)
+  TARGET_LINK_LIBRARIES(${EXAMPLE} libmyblockchain)
   TARGET_LINK_LIBRARIES(${EXAMPLE} ndbclient_so)
 ENDFOREACH()
 

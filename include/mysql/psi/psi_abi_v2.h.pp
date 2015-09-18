@@ -1,4 +1,4 @@
-#include "mysql/psi/psi.h"
+#include "myblockchain/psi/psi.h"
 #include "psi_base.h"
 #include "psi_memory.h"
 #include "psi_base.h"
@@ -279,5 +279,5 @@ typedef struct PSI_transaction_locker_state_v2 PSI_transaction_locker_state;
 typedef struct PSI_socket_locker_state_v2 PSI_socket_locker_state;
 typedef struct PSI_sp_locker_state_v2 PSI_sp_locker_state;
 typedef struct PSI_metadata_locker_state_v2 PSI_metadata_locker_state;
-extern MYSQL_PLUGIN_IMPORT PSI *PSI_server;
+extern MYBLOCKCHAIN_PLUGIN_IMPORT PSI *PSI_server;
 C_MODE_END

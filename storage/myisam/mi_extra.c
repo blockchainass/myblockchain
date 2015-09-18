@@ -74,17 +74,17 @@ int mi_extra(MI_INFO *info, enum ha_extra_function function, void *extra_arg)
 #if defined(HAVE_MADVISE)
     if ((share->options & HA_OPTION_COMPRESS_RECORD))
     {
-      mysql_mutex_lock(&share->intern_lock);
+      myblockchain_mutex_lock(&share->intern_lock);
       if (_mi_memmap_file(info))
       {
 	/* We don't nead MADV_SEQUENTIAL if small file */
 	madvise((char*) share->file_map, share->state.state.data_file_length,
 		share->state.state.data_file_length <= RECORD_CACHE_SIZE*16 ?
 		MADV_RANDOM : MADV_SEQUENTIAL);
-        mysql_mutex_unlock(&share->intern_lock);
+        myblockchain_mutex_unlock(&share->intern_lock);
 	break;
       }
-      mysql_mutex_unlock(&share->intern_lock);
+      myblockchain_mutex_unlock(&share->intern_lock);
     }
 #endif
     if (info->opt_flag & WRITE_CACHE_USED)
@@ -252,14 +252,14 @@ int mi_extra(MI_INFO *info, enum ha_extra_function function, void *extra_arg)
     }
     break;
   case HA_EXTRA_FORCE_REOPEN:
-    mysql_mutex_lock(&THR_LOCK_myisam);
+    myblockchain_mutex_lock(&THR_LOCK_myisam);
     share->last_version= 0L;			/* Impossible version */
-    mysql_mutex_unlock(&THR_LOCK_myisam);
+    myblockchain_mutex_unlock(&THR_LOCK_myisam);
     break;
   case HA_EXTRA_PREPARE_FOR_DROP:
-    mysql_mutex_lock(&THR_LOCK_myisam);
+    myblockchain_mutex_lock(&THR_LOCK_myisam);
     share->last_version= 0L;			/* Impossible version */
-    mysql_mutex_unlock(&THR_LOCK_myisam);
+    myblockchain_mutex_unlock(&THR_LOCK_myisam);
     break;
   case HA_EXTRA_FLUSH:
     if (!share->temporary)
@@ -270,9 +270,9 @@ int mi_extra(MI_INFO *info, enum ha_extra_function function, void *extra_arg)
     if (share->not_flushed)
     {
       share->not_flushed=0;
-      if (mysql_file_sync(share->kfile, MYF(0)))
+      if (myblockchain_file_sync(share->kfile, MYF(0)))
 	error= my_errno;
-      if (mysql_file_sync(info->dfile, MYF(0)))
+      if (myblockchain_file_sync(info->dfile, MYF(0)))
 	error= my_errno;
       if (error)
       {
@@ -302,7 +302,7 @@ int mi_extra(MI_INFO *info, enum ha_extra_function function, void *extra_arg)
     mi_extra_keyflag(info, function);
     break;
   case HA_EXTRA_MMAP:
-    mysql_mutex_lock(&share->intern_lock);
+    myblockchain_mutex_lock(&share->intern_lock);
     /*
       Memory map the data file if it is not already mapped. It is safe
       to memory map a file while other threads are using file I/O on it.
@@ -318,12 +318,12 @@ int mi_extra(MI_INFO *info, enum ha_extra_function function, void *extra_arg)
         error= my_errno= errno;
       }
     }
-    mysql_mutex_unlock(&share->intern_lock);
+    myblockchain_mutex_unlock(&share->intern_lock);
     break;
   case HA_EXTRA_MARK_AS_LOG_TABLE:
-    mysql_mutex_lock(&share->intern_lock);
+    myblockchain_mutex_lock(&share->intern_lock);
     share->is_log_table= TRUE;
-    mysql_mutex_unlock(&share->intern_lock);
+    myblockchain_mutex_unlock(&share->intern_lock);
     break;
   case HA_EXTRA_KEY_CACHE:
   case HA_EXTRA_NO_KEY_CACHE:

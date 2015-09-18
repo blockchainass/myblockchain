@@ -14,9 +14,9 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 SET ( JAVA_SOURCE_DIRS
- ${CMAKE_CURRENT_SOURCE_DIR}/src/main/java/com/mysql/clusterj
- ${CMAKE_CURRENT_SOURCE_DIR}/src/main/java/com/mysql/clusterj/annotation
- ${CMAKE_CURRENT_SOURCE_DIR}/src/main/java/com/mysql/clusterj/query)
+ ${CMAKE_CURRENT_SOURCE_DIR}/src/main/java/com/myblockchain/clusterj
+ ${CMAKE_CURRENT_SOURCE_DIR}/src/main/java/com/myblockchain/clusterj/annotation
+ ${CMAKE_CURRENT_SOURCE_DIR}/src/main/java/com/myblockchain/clusterj/query)
 
 SET ( JAVA_SOURCES "")
 FOREACH(D ${JAVA_SOURCE_DIRS})
@@ -25,7 +25,7 @@ FOREACH(D ${JAVA_SOURCE_DIRS})
   LIST(APPEND JAVA_SOURCES ${tmp})
 ENDFOREACH()
 
-SET(CLUSTERJ_API_EXPORTS com.mysql.clusterj,com.mysql.clusterj.query,com.mysql.clusterj.annotation)
+SET(CLUSTERJ_API_EXPORTS com.myblockchain.clusterj,com.myblockchain.clusterj.query,com.myblockchain.clusterj.annotation)
 CREATE_MANIFEST(manifest.mf ${CLUSTERJ_API_EXPORTS} clusterj-api)
 
 CREATE_JAR(clusterj-api ${JAVA_SOURCES}
@@ -33,4 +33,4 @@ CREATE_JAR(clusterj-api ${JAVA_SOURCES}
   MANIFEST ${CMAKE_CURRENT_BINARY_DIR}/manifest.mf)
 
 INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/clusterj-api-${JAVA_NDB_VERSION}.jar
-        DESTINATION ${INSTALL_MYSQLSHAREDIR}/java COMPONENT ClusterJ)
+        DESTINATION ${INSTALL_MYBLOCKCHAINSHAREDIR}/java COMPONENT ClusterJ)

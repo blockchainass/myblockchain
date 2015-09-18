@@ -49,7 +49,7 @@ set MYJAPI=..\myjapi
 set MYJAPI_JAR=%MYJAPI%\jtie-test-myjapi-@JAVA_NDB_VERSION@.jar
 set JAVA_CLASSPATH=-classpath "%UNLOAD_TEST_JAR%;%MYJAPI_JAR%"
 set JAVA_LIBPATH=-Djava.library.path="%MYJAPI%\%BIN_DIR%"
-set JAVA_DEFS=-Dcom.mysql.jtie.test.MyLoadUnloadTest.target_package_prefixes=test.,myjapi. -Dcom.mysql.jtie.test.MyLoadUnloadTest.target_class_name=test.MyJapiTest -Dcom.mysql.jtie.test.MyLoadUnloadTest.target_method_name=test
+set JAVA_DEFS=-Dcom.myblockchain.jtie.test.MyLoadUnloadTest.target_package_prefixes=test.,myjapi. -Dcom.myblockchain.jtie.test.MyLoadUnloadTest.target_class_name=test.MyJapiTest -Dcom.myblockchain.jtie.test.MyLoadUnloadTest.target_method_name=test
 
 echo running
 echo.  	%JAVA%

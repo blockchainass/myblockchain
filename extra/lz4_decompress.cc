@@ -26,7 +26,7 @@ static void usage()
   printf("%s  Ver 1.6 for %s at %s\n","lz4_decompress",SYSTEM_TYPE,
 	 MACHINE_TYPE);
   puts(ORACLE_WELCOME_COPYRIGHT_NOTICE("2015"));
-  puts("Decompress data compressed by mysqldump using lz4 compression "
+  puts("Decompress data compressed by myblockchaindump using lz4 compression "
     "algorithm from standard input and writes uncompressed data to standard "
     "output");
   printf("Usage: %s input_file output_file\n", "lz4_decompress");

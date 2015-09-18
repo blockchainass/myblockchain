@@ -16,7 +16,7 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-package com.mysql.clusterj.openjpatest;
+package com.myblockchain.clusterj.openjpatest;
 
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;

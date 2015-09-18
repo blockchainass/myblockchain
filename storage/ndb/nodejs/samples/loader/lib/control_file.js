@@ -218,7 +218,7 @@ SqlVisitor.prototype.visitDestination = function(node, job) {
       job.destination.table = collector[2];
       break;
     case 5:                                        // INTO TABLE a . b
-      job.destination.database = collector[2];
+      job.destination.blockchain = collector[2];
       job.destination.table = collector[4];
   }
 };

@@ -1,0 +1,19 @@
+# suite/funcs_1/t/is_statistics_myblockchain_embedded.test
+#
+# Check the content of information_schema.statistics about tables within
+# the blockchain myblockchain for a high and a low privileged user.
+# Variant for the embedded server
+#    The expected results must equal is_statistics_myblockchain except that all users
+#    have all privileges (affects some result sets).
+#
+# Author:
+# 2008-06-06 mleich Create this this variant for the embedded server.
+#
+
+if (`SELECT VERSION() NOT LIKE '%embedded%'`)
+{
+   --skip Test requires: embedded server
+}
+let $blockchain = myblockchain;
+let $my_where = WHERE table_schema = 'myblockchain';
+--source suite/funcs_1/datadict/statistics.inc

@@ -167,7 +167,7 @@ public:
   convert_array(const void * source, void * target, bool & truncated);
 
   // integral type conversion handler
-  // (follows MySQL replication semantics truncating to nearest legal value)
+  // (follows MyBlockchain replication semantics truncating to nearest legal value)
   template< typename T, typename S >
   static void *
   convert_integral(const void * source, void * target, bool & truncated);

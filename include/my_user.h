@@ -1,4 +1,4 @@
-/* Copyright (c) 2005-2007 MySQL AB
+/* Copyright (c) 2005-2007 MyBlockchain AB
    Use is subject to license terms
 
  This program is free software; you can redistribute it and/or modify
@@ -16,7 +16,7 @@
 
 /*
   This is a header for libraries containing functions used in both server and
-  only some of clients (but not in libmysql)...
+  only some of clients (but not in libmyblockchain)...
 */
 
 #ifndef _my_user_h_

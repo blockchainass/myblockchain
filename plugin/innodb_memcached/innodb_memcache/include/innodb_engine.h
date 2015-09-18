@@ -88,8 +88,8 @@ struct innodb_conn_data_struct {
 	uint64_t	n_writes_since_commit;
 					/*!< number of updates since
 					last commit */
-	void*		thd;		/*!< MySQL THD, used for binlog */
-	void*		mysql_tbl;	/*!< MySQL TABLE, used for binlog */
+	void*		thd;		/*!< MyBlockchain THD, used for binlog */
+	void*		myblockchain_tbl;	/*!< MyBlockchain TABLE, used for binlog */
 	meta_cfg_info_t*conn_meta;	/*!< metadata info for this
 					connection */
 	pthread_mutex_t	curr_conn_mutex;/*!< mutex protect current connection */

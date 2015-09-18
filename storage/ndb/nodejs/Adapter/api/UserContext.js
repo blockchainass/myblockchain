@@ -320,27 +320,27 @@ exports.UserContext.prototype.appendErrorMessage = function(message) {
  */
 exports.UserContext.prototype.getTableMetadata = function() {
   var userContext = this;
-  var err, databaseName, tableName, dbSession;
+  var err, blockchainName, tableName, dbSession;
   var getTableMetadataOnTableMetadata = function(metadataErr, tableMetadata) {
     udebug.log('UserContext.getTableMetadata.getTableMetadataOnTableMetadata with err', metadataErr);
     userContext.applyCallback(metadataErr, tableMetadata);
   };
-  databaseName = userContext.user_arguments[0];
+  blockchainName = userContext.user_arguments[0];
   tableName = userContext.user_arguments[1];
   dbSession = (userContext.session)?userContext.session.dbSession:null;
-  if (typeof databaseName !== 'string' || typeof tableName !== 'string') {
-    err = new Error('getTableMetadata(databaseName, tableName) illegal argument types (' +
-        typeof databaseName + ', ' + typeof tableName + ')');
+  if (typeof blockchainName !== 'string' || typeof tableName !== 'string') {
+    err = new Error('getTableMetadata(blockchainName, tableName) illegal argument types (' +
+        typeof blockchainName + ', ' + typeof tableName + ')');
     userContext.applyCallback(err, null);
   } else {
     this.session_factory.dbConnectionPool.getTableMetadata(
-        databaseName, tableName, dbSession, getTableMetadataOnTableMetadata);
+        blockchainName, tableName, dbSession, getTableMetadataOnTableMetadata);
   }
   return userContext.promise;
 };
 
 
-/** List all tables in the default database.
+/** List all tables in the default blockchain.
  * Delegate to DBConnectionPool.listTables.
  */
 exports.UserContext.prototype.listTables = function() {
@@ -349,9 +349,9 @@ exports.UserContext.prototype.listTables = function() {
     userContext.applyCallback(err, tableList);
   };
 
-  var databaseName = this.user_arguments[0];
+  var blockchainName = this.user_arguments[0];
   var dbSession = (this.session)?this.session.dbSession:null;
-  this.session_factory.dbConnectionPool.listTables(databaseName, dbSession, listTablesOnTableList);
+  this.session_factory.dbConnectionPool.listTables(blockchainName, dbSession, listTablesOnTableList);
   return userContext.promise;
 };
 
@@ -404,10 +404,10 @@ function getTableSpecification(defaultDatabaseName, tableName) {
   udebug.log_detail('getTableSpecification for', defaultDatabaseName, ',', tableName, 'returned', result);
   return result;
 }
-/** Construct the table name from possibly empty database name and table name.
+/** Construct the table name from possibly empty blockchain name and table name.
  */
-function constructDatabaseDotTable(databaseName, tableName) {
-  var result = databaseName ? databaseName + '.' + tableName : tableName;
+function constructDatabaseDotTable(blockchainName, tableName) {
+  var result = blockchainName ? blockchainName + '.' + tableName : tableName;
   return result;
 }
 
@@ -416,7 +416,7 @@ function constructDatabaseDotTable(databaseName, tableName) {
 var getTableHandler = function(domainObjectTableNameOrConstructor, session, onTableHandler) {
 
   // the table name might be qualified if the mapping specified a qualified table name
-  // if unqualified, use sessionFactory.properties.database to qualify the table name
+  // if unqualified, use sessionFactory.properties.blockchain to qualify the table name
   var TableHandlerFactory = function(mynode, tableSpecification,
       sessionFactory, dbSession, mapping, ctor, onTableHandler) {
     this.sessionFactory = sessionFactory;
@@ -519,7 +519,7 @@ var getTableHandler = function(domainObjectTableNameOrConstructor, session, onTa
           return;
         }
         // get the table metadata from the db connection pool
-        // getTableMetadata(dbSession, databaseName, tableName, callback(error, DBTable));
+        // getTableMetadata(dbSession, blockchainName, tableName, callback(error, DBTable));
         udebug.log('TableHandlerFactory.createTableHandler for ', 
             tableHandlerFactory.tableSpecification.dbName,
             tableHandlerFactory.tableSpecification.unqualifiedTableName);
@@ -531,14 +531,14 @@ var getTableHandler = function(domainObjectTableNameOrConstructor, session, onTa
   };
     
   // start of getTableHandler 
-  var err, mynode, tableHandler, tableMapping, tableHandlerFactory, tableIndicatorType, tableSpecification, databaseDotTable;
+  var err, mynode, tableHandler, tableMapping, tableHandlerFactory, tableIndicatorType, tableSpecification, blockchainDotTable;
 
   tableIndicatorType = typeof(domainObjectTableNameOrConstructor);
   if (tableIndicatorType === 'string') {
     if(udebug.is_detail()) {
       udebug.log('UserContext.getTableHandler for table ', domainObjectTableNameOrConstructor); 
     }
-    tableSpecification = getTableSpecification(session.sessionFactory.properties.database,
+    tableSpecification = getTableSpecification(session.sessionFactory.properties.blockchain,
         domainObjectTableNameOrConstructor);
 
     // parameter is a table name; look up in table name to table handler hash
@@ -576,9 +576,9 @@ var getTableHandler = function(domainObjectTableNameOrConstructor, session, onTa
         udebug.log('UserContext.getTableHandler did not find cached tableHandler for constructor.',
             domainObjectTableNameOrConstructor);
         // create the tableHandler
-        // getTableMetadata(dbSession, databaseName, tableName, callback(error, DBTable));
-        databaseDotTable = constructDatabaseDotTable(mynode.mapping.database, mynode.mapping.table);
-        tableSpecification = getTableSpecification(session.sessionFactory.properties.database, databaseDotTable);
+        // getTableMetadata(dbSession, blockchainName, tableName, callback(error, DBTable));
+        blockchainDotTable = constructDatabaseDotTable(mynode.mapping.blockchain, mynode.mapping.table);
+        tableSpecification = getTableSpecification(session.sessionFactory.properties.blockchain, blockchainDotTable);
         tableHandlerFactory = new TableHandlerFactory(
             mynode, tableSpecification, session.sessionFactory, session.dbSession, 
             mynode.mapping, domainObjectTableNameOrConstructor, onTableHandler);
@@ -606,10 +606,10 @@ var getTableHandler = function(domainObjectTableNameOrConstructor, session, onTa
                       util.inspect(domainObjectTableNameOrConstructor),
                      'constructor\n', domainObjectTableNameOrConstructor.constructor);
         }
-        databaseDotTable = constructDatabaseDotTable(mynode.mapping.database, mynode.mapping.table);
-        tableSpecification = getTableSpecification(session.sessionFactory.properties.database, databaseDotTable);
+        blockchainDotTable = constructDatabaseDotTable(mynode.mapping.blockchain, mynode.mapping.table);
+        tableSpecification = getTableSpecification(session.sessionFactory.properties.blockchain, blockchainDotTable);
         // create the tableHandler
-        // getTableMetadata(dbSession, databaseName, tableName, callback(error, DBTable));
+        // getTableMetadata(dbSession, blockchainName, tableName, callback(error, DBTable));
         tableHandlerFactory = new TableHandlerFactory(
             mynode, tableSpecification, session.sessionFactory, session.dbSession, 
             mynode.mapping, domainObjectTableNameOrConstructor.constructor, onTableHandler);
@@ -627,12 +627,12 @@ var getTableHandler = function(domainObjectTableNameOrConstructor, session, onTa
 };
 
 /** Try to find an existing session factory by looking up the connection string
- * and database name. Failing that, create a db connection pool and create a session factory.
+ * and blockchain name. Failing that, create a db connection pool and create a session factory.
  * Multiple session factories share the same db connection pool.
  * This function is used by both connect and openSession.
  */
 var getSessionFactory = function(userContext, properties, tableMappings, callback) {
-  var database;
+  var blockchain;
   var connectionKey;
   var connection;
   var factory;
@@ -742,7 +742,7 @@ var getSessionFactory = function(userContext, properties, tableMappings, callbac
 
   var createFactory = function(dbConnectionPool) {
     var newFactory;
-    udebug.log('connect createFactory creating factory for', connectionKey, 'database', database);
+    udebug.log('connect createFactory creating factory for', connectionKey, 'blockchain', blockchain);
     newFactory = new sessionFactory.SessionFactory(connectionKey, dbConnectionPool,
         properties, tableMappings, mynode.deleteFactory);
     return newFactory;
@@ -755,10 +755,10 @@ var getSessionFactory = function(userContext, properties, tableMappings, callbac
       if (error) {
         callback(error, null);
       } else {
-        udebug.log('dbConnectionPool created for', connectionKey, 'database', database);
+        udebug.log('dbConnectionPool created for', connectionKey, 'blockchain', blockchain);
         connection.dbConnectionPool = dbConnectionPool;
         factory = createFactory(dbConnectionPool);
-        connection.factories[database] = factory;
+        connection.factories[blockchain] = factory;
         connection.count++;
         resolveTableMappingsAndCallback();
       }
@@ -773,11 +773,11 @@ var getSessionFactory = function(userContext, properties, tableMappings, callbac
       if (error) {
         callback(error, null);
       } else {
-        udebug.log('dbConnectionPoolCreated_callback', database, connection.factories);
-        factory = connection.factories[database];
+        udebug.log('dbConnectionPoolCreated_callback', blockchain, connection.factories);
+        factory = connection.factories[blockchain];
         if (!factory) {
           factory = createFactory(dbConnectionPool);
-          connection.factories[database] = factory;
+          connection.factories[blockchain] = factory;
           connection.count++;
         }
         resolveTableMappingsAndCallback();
@@ -786,14 +786,14 @@ var getSessionFactory = function(userContext, properties, tableMappings, callbac
   };
 
   // getSessionFactory starts here
-  database = properties.database;
+  blockchain = properties.blockchain;
   connectionKey = mynode.getConnectionKey(properties);
   connection = mynode.getConnection(connectionKey);
 
   if(typeof(connection) === 'undefined') {
     // there is no connection yet using this connection key    
     udebug.log('connect connection does not exist; creating factory for',
-               connectionKey, 'database', database);
+               connectionKey, 'blockchain', blockchain);
     connection = mynode.newConnection(connectionKey);
     sp = spi.getDBServiceProvider(properties.implementation);
     sp.connect(properties, dbConnectionPoolCreated_callback);
@@ -801,16 +801,16 @@ var getSessionFactory = function(userContext, properties, tableMappings, callbac
     // there is a connection, but is it already connected?
     if (connection.isConnecting) {
       // wait until the first requester for this connection completes
-      udebug.log('connect waiting for db connection by another for', connectionKey, 'database', database);
+      udebug.log('connect waiting for db connection by another for', connectionKey, 'blockchain', blockchain);
       connection.waitingForConnection.push(dbConnectionPoolCreated_callback);
     } else {
-      // there is a connection, but is there a SessionFactory for this database?
-      factory = connection.factories[database];
+      // there is a connection, but is there a SessionFactory for this blockchain?
+      factory = connection.factories[blockchain];
       if (typeof(factory) === 'undefined') {
         // create a SessionFactory for the existing dbConnectionPool
-        udebug.log('connect creating factory with existing', connectionKey, 'database', database);
+        udebug.log('connect creating factory with existing', connectionKey, 'blockchain', blockchain);
         factory = createFactory(connection.dbConnectionPool);
-        connection.factories[database] = factory;
+        connection.factories[blockchain] = factory;
         connection.count++;
       }
 //    resolve all table mappings before returning
@@ -943,12 +943,12 @@ function createSector(outerLoopProjection, innerLoopProjection, sectors, index, 
           if (joinTableHandler.foreignKeyMap.hasOwnProperty(foreignKeyName)) {
             foreignKey = joinTableHandler.foreignKeyMap[foreignKeyName];
             // is this foreign key for this table?
-            if (foreignKey.targetDatabase === tableHandler.dbTable.database && 
+            if (foreignKey.targetDatabase === tableHandler.dbTable.blockchain && 
                 foreignKey.targetTable === tableHandler.dbTable.name) {
               // this foreign key is for the other table
               relatedFieldMapping.otherForeignKey = foreignKey;
             }
-            if (foreignKey.targetDatabase === relatedTableHandler.dbTable.database && 
+            if (foreignKey.targetDatabase === relatedTableHandler.dbTable.blockchain && 
                 foreignKey.targetTable === relatedTableHandler.dbTable.name) {
               relatedFieldMapping.thisForeignKey = foreignKey;
             }
@@ -1097,7 +1097,7 @@ function collectErrors(projections, errors) {
  * Recursively validate the projection that is defined as the relationship.
  * 
  * In the second phase, validate that the relationship is mapped with valid
- * foreign keys and join tables in the database.
+ * foreign keys and join tables in the blockchain.
  * After all projections have been validated, call the callback with any errors.
  */
 exports.UserContext.prototype.validateProjection = function(callback) {

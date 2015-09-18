@@ -278,7 +278,7 @@ Trpman::execENABLE_COMREQ(Signal* signal)
     signal->theData[0] = NDB_LE_ConnectedApiVersion;
     signal->theData[1] = tStartingNode;
     signal->theData[2] = getNodeInfo(tStartingNode).m_version;
-    signal->theData[3] = getNodeInfo(tStartingNode).m_mysql_version;
+    signal->theData[3] = getNodeInfo(tStartingNode).m_myblockchain_version;
 
     sendSignal(CMVMI_REF, GSN_EVENT_REP, signal, 4, JBB);
     //-----------------------------------------------------

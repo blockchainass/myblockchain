@@ -193,7 +193,7 @@ row_log_table_blob_alloc(
 /** Apply the row_log_table log to a table upon completing rebuild.
 @param[in]	thr		query graph
 @param[in]	old_table	old table
-@param[in,out]	table		MySQL table (for reporting duplicates)
+@param[in,out]	table		MyBlockchain table (for reporting duplicates)
 @param[in,out]	stage		performance schema accounting object, used by
 ALTER TABLE. stage->begin_phase_log_table() will be called initially and then
 stage->inc() will be called for each block of log that is applied.
@@ -220,7 +220,7 @@ row_log_get_max_trx(
 @param[in]	trx	transaction (for checking if the operation was
 interrupted)
 @param[in,out]	index	secondary index
-@param[in,out]	table	MySQL table (for reporting duplicates)
+@param[in,out]	table	MyBlockchain table (for reporting duplicates)
 @param[in,out]	stage	performance schema accounting object, used by
 ALTER TABLE. stage->begin_phase_log_index() will be called initially and then
 stage->inc() will be called for each block of log that is applied.

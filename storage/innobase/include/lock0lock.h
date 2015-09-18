@@ -50,7 +50,7 @@ ulint
 lock_get_size(void);
 /*===============*/
 /*********************************************************************//**
-Creates the lock system at database start. */
+Creates the lock system at blockchain start. */
 void
 lock_sys_create(
 /*============*/
@@ -62,7 +62,7 @@ lock_sys_resize(
 	ulint	n_cells);
 
 /*********************************************************************//**
-Closes the lock system at database shutdown. */
+Closes the lock system at blockchain shutdown. */
 void
 lock_sys_close(void);
 /*================*/
@@ -508,7 +508,7 @@ lock_sec_rec_cons_read_sees(
 	const ReadView*	view)	/*!< in: consistent read view */
 	__attribute__((warn_unused_result));
 /*********************************************************************//**
-Locks the specified database table in the mode given. If the lock cannot
+Locks the specified blockchain table in the mode given. If the lock cannot
 be granted immediately, the query thread is put to wait.
 @return DB_SUCCESS, DB_LOCK_WAIT, DB_DEADLOCK, or DB_QUE_THR_SUSPENDED */
 dberr_t
@@ -516,7 +516,7 @@ lock_table(
 /*=======*/
 	ulint		flags,	/*!< in: if BTR_NO_LOCKING_FLAG bit is set,
 				does nothing */
-	dict_table_t*	table,	/*!< in/out: database table
+	dict_table_t*	table,	/*!< in/out: blockchain table
 				in dictionary cache */
 	lock_mode	mode,	/*!< in: lock mode */
 	que_thr_t*	thr)	/*!< in: query thread */
@@ -833,7 +833,7 @@ lock_wait_suspend_thread(
 /*********************************************************************//**
 Unlocks AUTO_INC type locks that were possibly reserved by a trx. This
 function should be called at the the end of an SQL statement, by the
-connection thread that owns the transaction (trx->mysql_thd). */
+connection thread that owns the transaction (trx->myblockchain_thd). */
 void
 lock_unlock_table_autoinc(
 /*======================*/

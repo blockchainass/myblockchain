@@ -30,7 +30,7 @@ Created 9/8/1995 Heikki Tuuri
 #include "univ.i"
 
 /* Maximum number of threads which can be created in the program;
-this is also the size of the wait slot array for MySQL threads which
+this is also the size of the wait slot array for MyBlockchain threads which
 can wait inside InnoDB */
 
 #define	OS_THREAD_MAX_N		srv_max_n_threads
@@ -76,7 +76,7 @@ typedef void* (*os_posix_f_t) (void*);
 
 #ifdef HAVE_PSI_INTERFACE
 /* Define for performance schema registration key */
-typedef unsigned int    mysql_pfs_key_t;
+typedef unsigned int    myblockchain_pfs_key_t;
 #endif /* HAVE_PSI_INTERFACE */
 
 /** Number of threads active. */

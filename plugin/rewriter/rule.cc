@@ -13,15 +13,15 @@
     along with this program; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
     02110-1301  USA */
-#ifndef MYSQL_SERVER
-#define MYSQL_SERVER
+#ifndef MYBLOCKCHAIN_SERVER
+#define MYBLOCKCHAIN_SERVER
 #endif
 
 #include "my_config.h"
 #include "rule.h"
 #include "query_builder.h"
 #include "services.h"
-#include "mysqld_error.h"
+#include "myblockchaind_error.h"
 #include <vector>
 #include <string>
 
@@ -105,7 +105,7 @@ class Literal_collector : public services::Literal_visitor
 
 public:
 
-  bool visit(MYSQL_ITEM item)
+  bool visit(MYBLOCKCHAIN_ITEM item)
   {
     m_literals.push_back(services::print_item(item));
     return false;
@@ -116,14 +116,14 @@ public:
 
 
 Pattern::Load_status
-Pattern::load(MYSQL_THD thd, const Persisted_rule *diskrule)
+Pattern::load(MYBLOCKCHAIN_THD thd, const Persisted_rule *diskrule)
 {
   Parse_error_recorder recorder;
 
   if (diskrule->pattern_db.has_value())
-    services::set_current_database(thd, diskrule->pattern_db.value());
+    services::set_current_blockchain(thd, diskrule->pattern_db.value());
   else
-    services::set_current_database(thd, "");
+    services::set_current_blockchain(thd, "");
 
   if (services::parse(thd, diskrule->pattern.value(), true, &recorder))
   {
@@ -156,7 +156,7 @@ Pattern::load(MYSQL_THD thd, const Persisted_rule *diskrule)
     - extract the position of the parameters in the query string
     - copy the replacement in the rewrite rule
 */
-bool Replacement::load(MYSQL_THD thd, const string replacement)
+bool Replacement::load(MYBLOCKCHAIN_THD thd, const string replacement)
 {
   Parse_error_recorder recorder;
   if (services::parse(thd, replacement, true, &recorder))
@@ -175,7 +175,7 @@ bool Replacement::load(MYSQL_THD thd, const string replacement)
 }
 
 
-Rewrite_result Rule::create_new_query(MYSQL_THD thd)
+Rewrite_result Rule::create_new_query(MYBLOCKCHAIN_THD thd)
 {
   Query_builder builder(&m_pattern, &m_replacement);
 
@@ -194,7 +194,7 @@ Rewrite_result Rule::create_new_query(MYSQL_THD thd)
 }
 
 
-bool Rule::matches(MYSQL_THD thd) const {
+bool Rule::matches(MYBLOCKCHAIN_THD thd) const {
   string normalized_query= services::get_current_query_normalized(thd);
   return normalized_query.compare(m_pattern.normalized_pattern) == 0;
 }

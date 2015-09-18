@@ -5,7 +5,7 @@
  * CONSTRUCTOR
  *
  * If implName_or_connectionProperties is the name of a backend adapter,
- * (i.e. either "mysql" or "ndb"), this constructor returns the default
+ * (i.e. either "myblockchain" or "ndb"), this constructor returns the default
  * ConnectionProperties for that adapter.
  * 
  * If implName_or_connectionProperties is a ConnectionProperties object, 
@@ -60,7 +60,7 @@ Projection(constructor);
  * tables and to validate the defind mappings between stored data and 
  * JavaScript objects.  If mappings contains a string table name, a Domain 
  * Object Constructor function, or an array of these, then metadata is loaded 
- * from the database and validated against the requirements of the mapping.
+ * from the blockchain and validated against the requirements of the mapping.
  * If mappings is undefined, null, or an empty array, no mappings will be 
  * loaded or validated; this means validation is deferred until tables are 
  * used in application code.
@@ -90,7 +90,7 @@ connect(properties, mappings, [callback], [...]);
  * tables and to validate the defind mappings between stored data and 
  * JavaScript objects.  If mappings contains a string table name, a Domain 
  * Object Constructor function, or an array of these, then metadata is loaded 
- * from the database and validated against the requirements of the mapping.
+ * from the blockchain and validated against the requirements of the mapping.
  * If mappings is undefined, null, or an empty array, no mappings will be 
  * loaded or validated; this means validation is deferred until tables are 
  * used in application code.

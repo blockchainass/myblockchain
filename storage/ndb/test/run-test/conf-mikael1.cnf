@@ -23,10 +23,10 @@ mt = 0
 
 [ndb_mgmd]
 
-[mysqld]
+[myblockchaind]
 innodb
 skip-grant-tables
-socket=mysql.sock
+socket=myblockchain.sock
 default-storage-engine=myisam
 
 [client]
@@ -38,8 +38,8 @@ ndb_mgmd = CHOOSE_host1
 #ndbd = CHOOSE_host2,CHOOSE_host3,CHOOSE_host4,CHOOSE_host5
 ndbd = CHOOSE_host2,CHOOSE_host3
 ndbapi= CHOOSE_host1,CHOOSE_host1,CHOOSE_host1
-#mysqld = CHOOSE_host1,CHOOSE_host6
-mysqld = CHOOSE_host1,CHOOSE_host4
+#myblockchaind = CHOOSE_host1,CHOOSE_host6
+myblockchaind = CHOOSE_host1,CHOOSE_host4
 
 NoOfReplicas = 2
 IndexMemory = 100M 

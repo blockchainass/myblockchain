@@ -358,15 +358,15 @@ function makeGroupCallback(dbSession, container, key) {
 }
 
 
-function makeListTablesCall(dbSession, ndbConnectionPool, databaseName) {
+function makeListTablesCall(dbSession, ndbConnectionPool, blockchainName) {
   var container = ndbConnectionPool.pendingListTables;
-  var groupCallback = makeGroupCallback(dbSession, container, databaseName);
+  var groupCallback = makeGroupCallback(dbSession, container, blockchainName);
   var apiCall = new QueuedAsyncCall(dbSession.execQueue, groupCallback);
   apiCall.impl = dbSession.impl;
-  apiCall.databaseName = databaseName;
+  apiCall.blockchainName = blockchainName;
   apiCall.description = "listTables";
   apiCall.run = function() {
-    adapter.ndb.impl.DBDictionary.listTables(this.impl, this.databaseName, 
+    adapter.ndb.impl.DBDictionary.listTables(this.impl, this.blockchainName, 
                                              this.callback);
   };
   return apiCall;
@@ -376,22 +376,22 @@ function makeListTablesCall(dbSession, ndbConnectionPool, databaseName) {
 /** List all tables in the schema
   * ASYNC
   * 
-  * listTables(databaseName, dbSession, callback(error, array));
+  * listTables(blockchainName, dbSession, callback(error, array));
   */
-DBConnectionPool.prototype.listTables = function(databaseName, dictSession, 
+DBConnectionPool.prototype.listTables = function(blockchainName, dictSession, 
                                                  user_callback) {
   stats.list_tables++;
-  assert(databaseName && user_callback);
+  assert(blockchainName && user_callback);
 
-  if(this.pendingListTables[databaseName]) {
+  if(this.pendingListTables[blockchainName]) {
     // This request is already running, so add our own callback to its list
-    udebug.log("listTables", databaseName, "Adding request to pending group");
-    this.pendingListTables[databaseName].push(user_callback);
+    udebug.log("listTables", blockchainName, "Adding request to pending group");
+    this.pendingListTables[blockchainName].push(user_callback);
   }
   else {
-    this.pendingListTables[databaseName] = [];
-    this.pendingListTables[databaseName].push(user_callback);
-    makeListTablesCall(dictSession, this, databaseName).enqueue();
+    this.pendingListTables[blockchainName] = [];
+    this.pendingListTables[blockchainName].push(user_callback);
+    makeListTablesCall(dictSession, this, blockchainName).enqueue();
   }
 };
 
@@ -452,7 +452,7 @@ function makeGetTableCall(dbSession, ndbConnectionPool, dbName, tableName) {
 /** Fetch metadata for a table
   * ASYNC
   * 
-  * getTableMetadata(databaseName, tableName, dbSession, callback(error, TableMetadata));
+  * getTableMetadata(blockchainName, tableName, dbSession, callback(error, TableMetadata));
   */
 DBConnectionPool.prototype.getTableMetadata = function(dbname, tabname, 
                                                        dictSession, user_callback) {

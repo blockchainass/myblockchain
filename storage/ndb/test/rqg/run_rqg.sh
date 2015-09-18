@@ -51,19 +51,19 @@ EOF
     export NDB_JOIN_PUSHDOWN
     for t in 1
     do
-	$mysqltest_exe ${innodb_db} < $tmp >> ${opre}.$no.innodb.$i.txt
+	$myblockchaintest_exe ${innodb_db} < $tmp >> ${opre}.$no.innodb.$i.txt
     done
 
     for t in 1
     do
-	$mysqltest_exe ${ndb_db} < $tmp >> ${opre}.$no.ndb.$i.txt
+	$myblockchaintest_exe ${ndb_db} < $tmp >> ${opre}.$no.ndb.$i.txt
     done
 
     NDB_JOIN_PUSHDOWN=on
     export NDB_JOIN_PUSHDOWN
     for t in 1
     do
-	$mysqltest_exe ${ndb_db} < $tmp >> ${opre}.$no.ndbpush.$i.txt
+	$myblockchaintest_exe ${ndb_db} < $tmp >> ${opre}.$no.ndbpush.$i.txt
     done
 
     cnt=`$md5sum ${opre}.$no.*.txt | $awk_exe '{ print $1;}' | sort | uniq | wc -l`
@@ -101,7 +101,7 @@ run_all() {
     then
 	echo "- run innodb"
 	start=`eval $getepochtime`
-	$mysqltest_exe ${innodb_db} < $file > ${opre}_innodb.out
+	$myblockchaintest_exe ${innodb_db} < $file > ${opre}_innodb.out
 	stop=`eval $getepochtime`
 	echo "  elapsed: `expr $stop - $start`s"
 	tmpfiles="$tmpfiles ${opre}_innodb.out"
@@ -113,7 +113,7 @@ run_all() {
 	NDB_JOIN_PUSHDOWN=off
 	export NDB_JOIN_PUSHDOWN
 	start=`eval $getepochtime`
-	$mysqltest_exe ${ndb_db} < $file > ${opre}_ndb.out
+	$myblockchaintest_exe ${ndb_db} < $file > ${opre}_ndb.out
 	stop=`eval $getepochtime`
 	echo "  elapsed: `expr $stop - $start`s"
 	tmpfiles="$tmpfiles ${opre}_ndb.out"
@@ -125,7 +125,7 @@ run_all() {
 	NDB_JOIN_PUSHDOWN=on
 	export NDB_JOIN_PUSHDOWN
 	start=`eval $getepochtime`
-	$mysqltest_exe ${ndb_db} < $file > ${opre}_ndbpush.out
+	$myblockchaintest_exe ${ndb_db} < $file > ${opre}_ndbpush.out
 	stop=`eval $getepochtime`
 	echo "  elapsed: `expr $stop - $start`s"
 	tmpfiles="$tmpfiles ${opre}_ndbpush.out"
@@ -190,7 +190,7 @@ do
 	echo "--eval set ndb_join_pushdown='\$NDB_JOIN_PUSHDOWN';"
 	echo "$ecp"
 	echo "$disable_only_full_group_by"
-	${gensql} --seed=$us --queries=$queries --dsn="$dsn:database=${innodb_db}" --grammar=$grammar | grep -v "#" |
+	${gensql} --seed=$us --queries=$queries --dsn="$dsn:blockchain=${innodb_db}" --grammar=$grammar | grep -v "#" |
         $awk_exe '{ print "--sorted_result"; print "--error 0,233,1242,4006"; print; }'
 	echo "--exit"
     ) > ${opre}_test.sql

@@ -1,4 +1,4 @@
-#ifndef MYSQL_CLIENT_PLUGIN_INCLUDED
+#ifndef MYBLOCKCHAIN_CLIENT_PLUGIN_INCLUDED
 /* Copyright (c) 2010, 2013, Oracle and/or its affiliates. All rights reserved.
 
    This program is free software; you can redistribute it and/or modify
@@ -17,13 +17,13 @@
 /**
   @file
 
-  MySQL Client Plugin API
+  MyBlockchain Client Plugin API
 
   This file defines the API for plugins that work on the client side
 */
-#define MYSQL_CLIENT_PLUGIN_INCLUDED
+#define MYBLOCKCHAIN_CLIENT_PLUGIN_INCLUDED
 
-#ifndef MYSQL_ABI_CHECK
+#ifndef MYBLOCKCHAIN_ABI_CHECK
 #include <stdarg.h>
 #include <stdlib.h>
 #endif
@@ -35,24 +35,24 @@
   for functions.
 */
 
-#undef MYSQL_PLUGIN_EXPORT
+#undef MYBLOCKCHAIN_PLUGIN_EXPORT
 
 #if defined(_MSC_VER)
-#if defined(MYSQL_DYNAMIC_PLUGIN)
+#if defined(MYBLOCKCHAIN_DYNAMIC_PLUGIN)
   #ifdef __cplusplus
-    #define MYSQL_PLUGIN_EXPORT extern "C" __declspec(dllexport)
+    #define MYBLOCKCHAIN_PLUGIN_EXPORT extern "C" __declspec(dllexport)
   #else
-    #define MYSQL_PLUGIN_EXPORT __declspec(dllexport)
+    #define MYBLOCKCHAIN_PLUGIN_EXPORT __declspec(dllexport)
   #endif
-#else /* MYSQL_DYNAMIC_PLUGIN */
+#else /* MYBLOCKCHAIN_DYNAMIC_PLUGIN */
   #ifdef __cplusplus
-    #define  MYSQL_PLUGIN_EXPORT extern "C"
+    #define  MYBLOCKCHAIN_PLUGIN_EXPORT extern "C"
   #else
-    #define MYSQL_PLUGIN_EXPORT
+    #define MYBLOCKCHAIN_PLUGIN_EXPORT
   #endif
-#endif /*MYSQL_DYNAMIC_PLUGIN */
+#endif /*MYBLOCKCHAIN_DYNAMIC_PLUGIN */
 #else /*_MSC_VER */
-#define MYSQL_PLUGIN_EXPORT
+#define MYBLOCKCHAIN_PLUGIN_EXPORT
 #endif
 
 
@@ -61,25 +61,25 @@ extern "C" {
 #endif
 
 /* known plugin types */
-#define MYSQL_CLIENT_reserved1               0
-#define MYSQL_CLIENT_reserved2               1
-#define MYSQL_CLIENT_AUTHENTICATION_PLUGIN   2
-#define MYSQL_CLIENT_TRACE_PLUGIN            3
+#define MYBLOCKCHAIN_CLIENT_reserved1               0
+#define MYBLOCKCHAIN_CLIENT_reserved2               1
+#define MYBLOCKCHAIN_CLIENT_AUTHENTICATION_PLUGIN   2
+#define MYBLOCKCHAIN_CLIENT_TRACE_PLUGIN            3
 
-#define MYSQL_CLIENT_AUTHENTICATION_PLUGIN_INTERFACE_VERSION  0x0100
-#define MYSQL_CLIENT_TRACE_PLUGIN_INTERFACE_VERSION           0x0100
+#define MYBLOCKCHAIN_CLIENT_AUTHENTICATION_PLUGIN_INTERFACE_VERSION  0x0100
+#define MYBLOCKCHAIN_CLIENT_TRACE_PLUGIN_INTERFACE_VERSION           0x0100
 
-#define MYSQL_CLIENT_MAX_PLUGINS             4
+#define MYBLOCKCHAIN_CLIENT_MAX_PLUGINS             4
 
-#define mysql_declare_client_plugin(X)          \
-     MYSQL_PLUGIN_EXPORT struct st_mysql_client_plugin_ ## X        \
-        _mysql_client_plugin_declaration_ = {   \
-          MYSQL_CLIENT_ ## X ## _PLUGIN,        \
-          MYSQL_CLIENT_ ## X ## _PLUGIN_INTERFACE_VERSION,
-#define mysql_end_client_plugin             }
+#define myblockchain_declare_client_plugin(X)          \
+     MYBLOCKCHAIN_PLUGIN_EXPORT struct st_myblockchain_client_plugin_ ## X        \
+        _myblockchain_client_plugin_declaration_ = {   \
+          MYBLOCKCHAIN_CLIENT_ ## X ## _PLUGIN,        \
+          MYBLOCKCHAIN_CLIENT_ ## X ## _PLUGIN_INTERFACE_VERSION,
+#define myblockchain_end_client_plugin             }
 
 /* generic plugin header structure */
-#define MYSQL_CLIENT_PLUGIN_HEADER                      \
+#define MYBLOCKCHAIN_CLIENT_PLUGIN_HEADER                      \
   int type;                                             \
   unsigned int interface_version;                       \
   const char *name;                                     \
@@ -87,25 +87,25 @@ extern "C" {
   const char *desc;                                     \
   unsigned int version[3];                              \
   const char *license;                                  \
-  void *mysql_api;                                      \
+  void *myblockchain_api;                                      \
   int (*init)(char *, size_t, int, va_list);            \
   int (*deinit)();                                      \
   int (*options)(const char *option, const void *);
 
-struct st_mysql_client_plugin
+struct st_myblockchain_client_plugin
 {
-  MYSQL_CLIENT_PLUGIN_HEADER
+  MYBLOCKCHAIN_CLIENT_PLUGIN_HEADER
 };
 
-struct st_mysql;
+struct st_myblockchain;
 
 /******** authentication plugin specific declarations *********/
-#include <mysql/plugin_auth_common.h>
+#include <myblockchain/plugin_auth_common.h>
 
-struct st_mysql_client_plugin_AUTHENTICATION
+struct st_myblockchain_client_plugin_AUTHENTICATION
 {
-  MYSQL_CLIENT_PLUGIN_HEADER
-  int (*authenticate_user)(MYSQL_PLUGIN_VIO *vio, struct st_mysql *mysql);
+  MYBLOCKCHAIN_CLIENT_PLUGIN_HEADER
+  int (*authenticate_user)(MYBLOCKCHAIN_PLUGIN_VIO *vio, struct st_myblockchain *myblockchain);
 };
 
 /******** using plugins ************/
@@ -113,7 +113,7 @@ struct st_mysql_client_plugin_AUTHENTICATION
 /**
   loads a plugin and initializes it
 
-  @param mysql  MYSQL structure.
+  @param myblockchain  MYBLOCKCHAIN structure.
   @param name   a name of the plugin to load
   @param type   type of plugin that should be loaded, -1 to disable type check
   @param argc   number of arguments to pass to the plugin initialization
@@ -123,17 +123,17 @@ struct st_mysql_client_plugin_AUTHENTICATION
   @retval
   a pointer to the loaded plugin, or NULL in case of a failure
 */
-struct st_mysql_client_plugin *
-mysql_load_plugin(struct st_mysql *mysql, const char *name, int type,
+struct st_myblockchain_client_plugin *
+myblockchain_load_plugin(struct st_myblockchain *myblockchain, const char *name, int type,
                   int argc, ...);
 
 /**
   loads a plugin and initializes it, taking va_list as an argument
 
-  This is the same as mysql_load_plugin, but take va_list instead of
+  This is the same as myblockchain_load_plugin, but take va_list instead of
   a list of arguments.
 
-  @param mysql  MYSQL structure.
+  @param myblockchain  MYBLOCKCHAIN structure.
   @param name   a name of the plugin to load
   @param type   type of plugin that should be loaded, -1 to disable type check
   @param argc   number of arguments to pass to the plugin initialization
@@ -143,22 +143,22 @@ mysql_load_plugin(struct st_mysql *mysql, const char *name, int type,
   @retval
   a pointer to the loaded plugin, or NULL in case of a failure
 */
-struct st_mysql_client_plugin *
-mysql_load_plugin_v(struct st_mysql *mysql, const char *name, int type,
+struct st_myblockchain_client_plugin *
+myblockchain_load_plugin_v(struct st_myblockchain *myblockchain, const char *name, int type,
                     int argc, va_list args);
 
 /**
   finds an already loaded plugin by name, or loads it, if necessary
 
-  @param mysql  MYSQL structure.
+  @param myblockchain  MYBLOCKCHAIN structure.
   @param name   a name of the plugin to load
   @param type   type of plugin that should be loaded
 
   @retval
   a pointer to the plugin, or NULL in case of a failure
 */
-struct st_mysql_client_plugin *
-mysql_client_find_plugin(struct st_mysql *mysql, const char *name, int type);
+struct st_myblockchain_client_plugin *
+myblockchain_client_find_plugin(struct st_myblockchain *myblockchain, const char *name, int type);
 
 /**
   adds a plugin structure to the list of loaded plugins
@@ -168,15 +168,15 @@ mysql_client_find_plugin(struct st_mysql *mysql, const char *name, int type);
   the application binary. It can use this function to register the plugin
   directly, avoiding the need to factor it out into a shared object.
 
-  @param mysql  MYSQL structure. It is only used for error reporting
-  @param plugin an st_mysql_client_plugin structure to register
+  @param myblockchain  MYBLOCKCHAIN structure. It is only used for error reporting
+  @param plugin an st_myblockchain_client_plugin structure to register
 
   @retval
   a pointer to the plugin, or NULL in case of a failure
 */
-struct st_mysql_client_plugin *
-mysql_client_register_plugin(struct st_mysql *mysql,
-                             struct st_mysql_client_plugin *plugin);
+struct st_myblockchain_client_plugin *
+myblockchain_client_register_plugin(struct st_myblockchain *myblockchain,
+                             struct st_myblockchain_client_plugin *plugin);
 
 /**
   set plugin options
@@ -184,13 +184,13 @@ mysql_client_register_plugin(struct st_mysql *mysql,
   Can be used to set extra options and affect behavior for a plugin.
   This function may be called multiple times to set several options
 
-  @param plugin an st_mysql_client_plugin structure
+  @param plugin an st_myblockchain_client_plugin structure
   @param option a string which specifies the option to set
   @param value  value for the option.
 
   @retval 0 on success, 1 in case of failure
 **/
-int mysql_plugin_options(struct st_mysql_client_plugin *plugin,
+int myblockchain_plugin_options(struct st_myblockchain_client_plugin *plugin,
                          const char *option, const void *value);
 
 

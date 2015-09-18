@@ -20,7 +20,7 @@ package testsuite.clusterj;
 import testsuite.clusterj.model.Employee;
 import testsuite.clusterj.model.LongIntStringPK;
 
-import com.mysql.clusterj.ClusterJUserException;
+import com.myblockchain.clusterj.ClusterJUserException;
 
 public class PartitionKeyTest extends AbstractClusterJTest {
 

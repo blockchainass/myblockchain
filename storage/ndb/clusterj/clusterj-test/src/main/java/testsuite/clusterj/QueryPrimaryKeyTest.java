@@ -19,12 +19,12 @@
 package testsuite.clusterj;
 
 import testsuite.clusterj.model.Employee;
-import com.mysql.clusterj.query.QueryBuilder;
-import com.mysql.clusterj.query.QueryDomainType;
-import com.mysql.clusterj.query.Predicate;
-import com.mysql.clusterj.query.PredicateOperand;
+import com.myblockchain.clusterj.query.QueryBuilder;
+import com.myblockchain.clusterj.query.QueryDomainType;
+import com.myblockchain.clusterj.query.Predicate;
+import com.myblockchain.clusterj.query.PredicateOperand;
 
-import com.mysql.clusterj.Query;
+import com.myblockchain.clusterj.Query;
 
 import java.util.HashSet;
 import java.util.List;

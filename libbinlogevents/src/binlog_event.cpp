@@ -38,7 +38,7 @@ namespace binary_log
 {
 /**
    The method returns the checksum algorithm used to checksum the binary log.
-   For MySQL server versions < 5.6, the algorithm is undefined. For the higher
+   For MyBlockchain server versions < 5.6, the algorithm is undefined. For the higher
    versions, the type is decoded from the FORMAT_DESCRIPTION_EVENT.
 
    @param buf buffer holding serialized FD event
@@ -134,7 +134,7 @@ Log_event_header(const char* buf, uint16_t binlog_version)
       of the event, which is more useful.
       But how do you know that the log is 4.0: you know it if
       description_event is version 3 *and* you are not reading a
-      Format_desc (remember that mysqlbinlog starts by assuming that 5.0
+      Format_desc (remember that myblockchainbinlog starts by assuming that 5.0
       logs are in 4.0 format, until it finds a Format_desc).
     */
     if (buf[EVENT_TYPE_OFFSET] < FORMAT_DESCRIPTION_EVENT && log_pos)
@@ -330,7 +330,7 @@ void Binary_log_event::print_long_info(std::ostream& info) {}
   information about the event. Since the body of Stop_event is empty
   the relevant information contains only the timestamp.
   Please note this is different from the print_event_info methods
-  used by mysqlbinlog.cc.
+  used by myblockchainbinlog.cc.
 
   @param std output stream to which the event data is appended.
 */

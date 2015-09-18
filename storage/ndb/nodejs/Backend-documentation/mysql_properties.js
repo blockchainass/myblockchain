@@ -1,24 +1,24 @@
 /*
-  MySQL Connection Properties
+  MyBlockchain Connection Properties
 
 */ 
 
 var MysqlDefaultConnectionProperties = {
-  "implementation" : "mysql",
+  "implementation" : "myblockchain",
   "engine"         : "ndb",
-  "database"       : "test",
+  "blockchain"       : "test",
   
-  "mysql_host"     : "localhost",
-  "mysql_port"     : 3306,
-  "mysql_user"     : "root",
-  "mysql_password" : "",
-  "mysql_charset"  : "UTF8MB4",
-  "mysql_sql_mode" : "STRICT_ALL_TABLES",
-  "mysql_socket"   : null,
+  "myblockchain_host"     : "localhost",
+  "myblockchain_port"     : 3306,
+  "myblockchain_user"     : "root",
+  "myblockchain_password" : "",
+  "myblockchain_charset"  : "UTF8MB4",
+  "myblockchain_sql_mode" : "STRICT_ALL_TABLES",
+  "myblockchain_socket"   : null,
   "debug"          : true,
-  "mysql_trace"    : false,
-  "mysql_debug"    : false,
-  "mysql_pool_size": 10
+  "myblockchain_trace"    : false,
+  "myblockchain_debug"    : false,
+  "myblockchain_pool_size": 10
 };
 
 

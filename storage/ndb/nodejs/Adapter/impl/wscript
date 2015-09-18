@@ -12,7 +12,7 @@ def build(ctx):
   obj = ctx.new_task_gen("cxx", "shlib", "node_addon")
   obj.target = "ndb_adapter"
   obj.rpath = ctx.env.my_lib
-  obj.lib = [ "ndbclient" , "mysqlclient"]
+  obj.lib = [ "ndbclient" , "myblockchainclient"]
   
   obj.source = \
   "ndb/src/node_module.cpp " +\
@@ -52,7 +52,7 @@ def build(ctx):
   "ndb/src/BlobHandler.cpp " +\
   "ndb/src/KeyOperation.cpp " +\
   \
-  "ndb/src/mysqlclient_wrapper.cpp " +\
+  "ndb/src/myblockchainclient_wrapper.cpp " +\
   ""
   
   ctx.recurse("test")

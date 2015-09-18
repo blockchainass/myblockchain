@@ -214,7 +214,7 @@ static const MY_UNICASE_CHARACTER plane00[]={
   Almost similar to plane00, but maps sorting order
   for U+00DF to 0x00DF instead of 0x0053.
 */
-static const MY_UNICASE_CHARACTER plane00_mysql500[]={
+static const MY_UNICASE_CHARACTER plane00_myblockchain500[]={
   {0x0000,0x0000,0x0000},  {0x0001,0x0001,0x0001},
   {0x0002,0x0002,0x0002},  {0x0003,0x0003,0x0003},
   {0x0004,0x0004,0x0004},  {0x0005,0x0005,0x0005},
@@ -1704,8 +1704,8 @@ MY_UNICASE_INFO my_unicase_default=
 /*
   Reproduce old utf8_general_ci behaviour before we fixed Bug#27877.
 */
-static const MY_UNICASE_CHARACTER *my_unicase_pages_mysql500[256]={
- plane00_mysql500,
+static const MY_UNICASE_CHARACTER *my_unicase_pages_myblockchain500[256]={
+ plane00_myblockchain500,
           plane01, plane02, plane03, plane04, plane05,    NULL,    NULL,
     NULL,    NULL,    NULL,    NULL,    NULL,    NULL,    NULL,    NULL,
     NULL,    NULL,    NULL,    NULL,    NULL,    NULL,    NULL,    NULL,
@@ -1742,10 +1742,10 @@ static const MY_UNICASE_CHARACTER *my_unicase_pages_mysql500[256]={
 };
 
 
-MY_UNICASE_INFO my_unicase_mysql500=
+MY_UNICASE_INFO my_unicase_myblockchain500=
 {
   0xFFFF,
-  my_unicase_pages_mysql500
+  my_unicase_pages_myblockchain500
 };
 
 
@@ -6108,12 +6108,12 @@ CHARSET_INFO my_charset_utf8_tolower_ci=
 };
 
 
-CHARSET_INFO my_charset_utf8_general_mysql500_ci=
+CHARSET_INFO my_charset_utf8_general_myblockchain500_ci=
 {
   223,0,0,                                      /* number           */
   MY_CS_COMPILED|MY_CS_STRNXFRM|MY_CS_UNICODE,  /* state            */
   "utf8",                                       /* cs name          */
-  "utf8_general_mysql500_ci",                   /* name             */
+  "utf8_general_myblockchain500_ci",                   /* name             */
   "",                                           /* comment          */
   NULL,                                         /* tailoring        */
   ctype_utf8,                                   /* ctype            */
@@ -6123,7 +6123,7 @@ CHARSET_INFO my_charset_utf8_general_mysql500_ci=
   NULL,                                         /* uca              */
   NULL,                                         /* tab_to_uni       */
   NULL,                                         /* tab_from_uni     */
-  &my_unicase_mysql500,                         /* caseinfo         */
+  &my_unicase_myblockchain500,                         /* caseinfo         */
   NULL,                                         /* state_map        */
   NULL,                                         /* ident_map        */
   1,                                            /* strxfrm_multiply */

@@ -120,7 +120,7 @@ static const TABLE_FIELD_TYPE field_types[]=
     { NULL, 0}
   },
   {
-    { C_STRING_WITH_LEN("MYSQL_ERRNO") },
+    { C_STRING_WITH_LEN("MYBLOCKCHAIN_ERRNO") },
     { C_STRING_WITH_LEN("int(11)") },
     { NULL, 0}
   },
@@ -547,7 +547,7 @@ int table_events_statements_common::read_row_values(TABLE *table,
       case 16: /* OBJECT_INSTANCE_BEGIN */
         f->set_null();
         break;
-      case 17: /* MYSQL_ERRNO */
+      case 17: /* MYBLOCKCHAIN_ERRNO */
         set_field_ulong(f, m_row.m_sql_errno);
         break;
       case 18: /* RETURNED_SQLSTATE */

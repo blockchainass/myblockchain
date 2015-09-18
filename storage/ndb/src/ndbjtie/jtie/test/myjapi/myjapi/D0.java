@@ -20,7 +20,7 @@
 
 package myjapi;
 
-public class D0 extends com.mysql.jtie.Wrapper {
+public class D0 extends com.myblockchain.jtie.Wrapper {
     public native final int f_d0();
     public native static int f_nv(D0 d);
     public native int f_v();

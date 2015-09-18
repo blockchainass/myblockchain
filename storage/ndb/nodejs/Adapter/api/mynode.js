@@ -69,7 +69,7 @@ var connections = {};
 
 var deleteFactory;
 
-/** Connection contains a hash of database to SessionFactory */
+/** Connection contains a hash of blockchain to SessionFactory */
 var Connection = function(connectionKey) {
   this.connectionKey = connectionKey;
   this.factories = {};
@@ -156,16 +156,16 @@ exports.closeAllOpenSessionFactories = function() {
  * the last session factory using the db connection pool is closed,
  * this function will also close the db connection pool.
  */
-deleteFactory = function(key, database, callback) {
-  udebug.log('deleteFactory for key', key, 'database', database);
+deleteFactory = function(key, blockchain, callback) {
+  udebug.log('deleteFactory for key', key, 'blockchain', blockchain);
   var connection = connections[key];
-  var factory = connection.factories[database];
+  var factory = connection.factories[blockchain];
   var dbConnectionPool = factory.dbConnectionPool;
   
-  delete connection.factories[database];
+  delete connection.factories[blockchain];
   if (--connection.count === 0) {
     // no more factories in this connection
-    udebug.log('deleteFactory closing dbConnectionPool for key', key, 'database', database);
+    udebug.log('deleteFactory closing dbConnectionPool for key', key, 'blockchain', blockchain);
     dbConnectionPool.close(callback);
     dbConnectionPool = null;
     delete connections[key];

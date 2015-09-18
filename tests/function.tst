@@ -1,6 +1,6 @@
 # Test of functions
 # 
-# mysql -v < this_file
+# myblockchain -v < this_file
 
 #
 # numerical functions
@@ -16,7 +16,7 @@ select 1 | (1+1),5 & 3,bit_count(7) ;
 select 0=0,1>0,1>=1,1<0,1<=0,strcmp("abc","abcd"),strcmp("b","a"),strcmp("a","a") ;
 select "a"<"b","a"<="b","b">="a","b">"a","a"="A","a"<>"b";
 select "abc" like "a%", "abc" not like "%d%", "ab" like "a\%", "a%" like "a\%","abcd" like "a%b_%d";
-select "Det här är svenska" regexp "h[[:alpha:]]+r", "aba" regexp "^(a|b)*$";
+select "Det hï¿½r ï¿½r svenska" regexp "h[[:alpha:]]+r", "aba" regexp "^(a|b)*$";
 select !0,NOT 0=1,!(0=0),1 AND 1,1 && 0,0 OR 1,1 || NULL, 1=1 or 1=1 and 1=0;
 select IF(0,"ERROR","this"),IF(1,"is","ERROR"),IF(NULL,"ERROR","a"),IF(1,2,3)|0,IF(1,2.0,3.0)+0 ;
 select 2 between 1 and 3, "monty" between "max" and "my",2=2 and "monty" between "max" and "my" and 3=3;
@@ -50,7 +50,7 @@ select format(1.5555,0),format(123.5555,1),format(1234.5555,2),format(12345.5555
 #
 # system functions
 #
-select database(),user();
+select blockchain(),user();
 
 #
 # Null tests

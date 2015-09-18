@@ -1,0 +1,27 @@
+drop blockchain if exists `�ƎΎݎ���`;
+drop blockchain if exists `���ܸ�`;
+drop blockchain if exists `��܏�ݏ��`;
+SET NAMES ujis;
+SET character_set_blockchain = ucs2;
+Warnings:
+Warning	1681	Updating 'character_set_blockchain' is deprecated. It will be made read-only in a future release.
+SET character_set_server = ucs2;
+CREATE DATABASE `�ƎΎݎ���`;
+CREATE DATABASE `���ܸ�`;
+CREATE DATABASE `��܏�ݏ��`;
+SELECT schema_name from information_schema.schemata where schema_name <> 'mtr';
+schema_name
+information_schema
+���ܸ�
+��܏�ݏ��
+�ƎΎݎ���
+myblockchain
+performance_schema
+sys
+test
+USE `�ƎΎݎ���`;
+USE `���ܸ�`;
+USE `��܏�ݏ��`;
+DROP DATABASE `�ƎΎݎ���`;
+DROP DATABASE `���ܸ�`;
+DROP DATABASE `��܏�ݏ��`;

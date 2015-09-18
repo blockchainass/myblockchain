@@ -25,9 +25,9 @@
 
 #include "pfs_column_types.h"
 #include "pfs_engine_table.h"
-#include "mysql_com.h"
+#include "myblockchain_com.h"
 #include "rpl_info.h"
-#include <mysql/plugin_group_replication.h>
+#include <myblockchain/plugin_group_replication.h>
 
 /**
   @addtogroup Performance_schema_tables

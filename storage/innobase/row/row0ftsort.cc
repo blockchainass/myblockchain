@@ -106,7 +106,7 @@ row_merge_create_fts_sort_index(
 	if (strcmp(charset->name, "latin1_swedish_ci") == 0) {
 		field->col->mtype = DATA_VARCHAR;
 	} else {
-		field->col->mtype = DATA_VARMYSQL;
+		field->col->mtype = DATA_VARMYBLOCKCHAIN;
 	}
 
 	field->col->prtype = idx_field->col->prtype | DATA_NOT_NULL;
@@ -355,16 +355,16 @@ row_fts_free_pll_merge_buf(
 
 /*********************************************************************//**
 FTS plugin parser 'myql_add_word' callback function for row merge.
-Refer to 'st_mysql_ftparser_param' for more detail.
+Refer to 'st_myblockchain_ftparser_param' for more detail.
 @return always returns 0 */
 static
 int
 row_merge_fts_doc_add_word_for_parser(
 /*==================================*/
-	MYSQL_FTPARSER_PARAM	*param,		/* in: parser paramter */
+	MYBLOCKCHAIN_FTPARSER_PARAM	*param,		/* in: parser paramter */
 	char			*word,		/* in: token word */
 	int			word_len,	/* in: word len */
-	MYSQL_FTPARSER_BOOLEAN_INFO*	boolean_info)	/* in: boolean info */
+	MYBLOCKCHAIN_FTPARSER_BOOLEAN_INFO*	boolean_info)	/* in: boolean info */
 {
 	fts_string_t		str;
 	fts_tokenize_ctx_t*	t_ctx;
@@ -372,11 +372,11 @@ row_merge_fts_doc_add_word_for_parser(
 	byte*			ptr;
 
 	ut_ad(param);
-	ut_ad(param->mysql_ftparam);
+	ut_ad(param->myblockchain_ftparam);
 	ut_ad(word);
 	ut_ad(boolean_info);
 
-	t_ctx = static_cast<fts_tokenize_ctx_t*>(param->mysql_ftparam);
+	t_ctx = static_cast<fts_tokenize_ctx_t*>(param->myblockchain_ftparam);
 	ut_ad(t_ctx);
 
 	str.f_str = reinterpret_cast<byte*>(word);
@@ -412,21 +412,21 @@ void
 row_merge_fts_doc_tokenize_by_parser(
 /*=================================*/
 	fts_doc_t*		doc,	/* in: doc to tokenize */
-	st_mysql_ftparser*	parser,	/* in: plugin parser instance */
+	st_myblockchain_ftparser*	parser,	/* in: plugin parser instance */
 	fts_tokenize_ctx_t*	t_ctx)	/* in/out: tokenize ctx instance */
 {
-	MYSQL_FTPARSER_PARAM	param;
+	MYBLOCKCHAIN_FTPARSER_PARAM	param;
 
 	ut_a(parser);
 
 	/* Set paramters for param */
-	param.mysql_parse = fts_tokenize_document_internal;
-	param.mysql_add_word = row_merge_fts_doc_add_word_for_parser;
-	param.mysql_ftparam = t_ctx;
+	param.myblockchain_parse = fts_tokenize_document_internal;
+	param.myblockchain_add_word = row_merge_fts_doc_add_word_for_parser;
+	param.myblockchain_ftparam = t_ctx;
 	param.cs = doc->charset;
 	param.doc = reinterpret_cast<char*>(doc->text.f_str);
 	param.length = static_cast<int>(doc->text.f_len);
-	param.mode= MYSQL_FTPARSER_SIMPLE_MODE;
+	param.mode= MYBLOCKCHAIN_FTPARSER_SIMPLE_MODE;
 
 	PARSER_INIT(parser, &param);
 	/* We assume parse returns successfully here. */
@@ -462,7 +462,7 @@ row_merge_fts_doc_tokenize(
 	byte		str_buf[FTS_MAX_WORD_LEN + 1];
 	ulint		data_size[FTS_NUM_AUX_INDEX];
 	ulint		n_tuple[FTS_NUM_AUX_INDEX];
-	st_mysql_ftparser*	parser;
+	st_myblockchain_ftparser*	parser;
 	bool			is_ngram;
 
 	t_str.f_n_char = 0;
@@ -508,7 +508,7 @@ row_merge_fts_doc_tokenize(
 				break;
 			}
 		} else {
-			inc = innobase_mysql_fts_get_token(
+			inc = innobase_myblockchain_fts_get_token(
 				doc->charset,
 				doc->text.f_str + t_ctx->processed_len,
 				doc->text.f_str + doc->text.f_len, &str);
@@ -752,7 +752,7 @@ fts_parallel_tokenization(
 	word_dtype.prtype = idx_field->col->prtype;
 	word_dtype.mbminmaxlen = idx_field->col->mbminmaxlen;
 	word_dtype.mtype = (strcmp(doc.charset->name, "latin1_swedish_ci") == 0)
-				? DATA_VARCHAR : DATA_VARMYSQL;
+				? DATA_VARCHAR : DATA_VARMYBLOCKCHAIN;
 
 	block = psort_info->merge_block;
 

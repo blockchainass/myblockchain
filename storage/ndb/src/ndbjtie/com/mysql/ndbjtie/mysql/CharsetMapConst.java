@@ -18,11 +18,11 @@
  * CharsetMapConst.java
  */
 
-package com.mysql.ndbjtie.mysql;
+package com.myblockchain.ndbjtie.myblockchain;
 
 import java.nio.ByteBuffer;
 
-import com.mysql.jtie.Wrapper;
+import com.myblockchain.jtie.Wrapper;
 
 public interface CharsetMapConst
 {
@@ -36,7 +36,7 @@ public interface CharsetMapConst
 
     String/*_const char *_*/ getName(int cs_number) /*_const_*/;
     String/*_const char *_*/ getMysqlName(int cs_number) /*_const_*/; 
-    int getCharsetNumber(String/*_const char *_*/ mysql_name) /*_const_*/;
+    int getCharsetNumber(String/*_const char *_*/ myblockchain_name) /*_const_*/;
     int getUTF8CharsetNumber() /*_const_*/;
     int getUTF16CharsetNumber() /*_const_*/;
     boolean[] isMultibyte(int cs_number) /*_const_*/;

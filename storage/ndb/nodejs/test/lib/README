@@ -9,17 +9,17 @@ After building mynode, change to the test directory and execute
 Tests are organized by suites. Each suite is a directory under the
 test directory. Suites typically contain the following:
 
-create.sql: a file containing mysql commands to set up the environment
-drop.sql: a file containing mysql commands to tear down the environment
+create.sql: a file containing myblockchain commands to set up the environment
+drop.sql: a file containing myblockchain commands to tear down the environment
 SmokeTest.js: set up and verify the test environment (create tables, populate
-  data in tables, open a connection to the database, etc.)
-ClearSmokeTest.js: tear down the test environment (drop tables, databases)
+  data in tables, open a connection to the blockchain, etc.)
+ClearSmokeTest.js: tear down the test environment (drop tables, blockchains)
 
 ConcurrentTest: tests to be run concurrently, using the test setup
   (test schema and test data) and having no side effects (do not insert
-  or delete any rows in the database)
+  or delete any rows in the blockchain)
 SerialTest: tests to be run serially, using the test setup. These tests
-  can have side effects, except for changing schema or databases that other
+  can have side effects, except for changing schema or blockchains that other
   tests depend on. Tests that change schema should generally be in their own
   test suite.
 

@@ -1,0 +1,43 @@
+include/master-slave.inc
+Warnings:
+Note	####	Sending passwords in plain text without SSL/TLS is extremely insecure.
+Note	####	Storing MyBlockchain user name or password information in the master info repository is not secure and is therefore not recommended. Please consider using the USER and PASSWORD connection options for START SLAVE; see the 'START SLAVE Syntax' in the MyBlockchain Manual for more information.
+[connection master]
+drop blockchain if exists myblockchaintest;
+USE test;
+CREATE TABLE t1(a INT, b INT, UNIQUE(b));
+LOAD DATA INFILE '../../std_data/rpl_loaddata.dat' INTO TABLE test.t1;
+SELECT COUNT(*) FROM test.t1;
+COUNT(*)
+2
+CREATE DATABASE myblockchaintest;
+USE myblockchaintest;
+CREATE TABLE t1(a INT, b INT, UNIQUE(b));
+LOAD DATA INFILE '../../std_data/rpl_loaddata.dat' INTO TABLE myblockchaintest.t1;
+SELECT COUNT(*) FROM myblockchaintest.t1;
+COUNT(*)
+2
+include/sync_slave_sql_with_master.inc
+SHOW DATABASES;
+Database
+information_schema
+mtr
+myblockchain
+myblockchaintest
+performance_schema
+sys
+test
+USE test;
+SHOW TABLES;
+Tables_in_test
+USE myblockchaintest;
+SHOW TABLES;
+Tables_in_myblockchaintest
+t1
+SELECT COUNT(*) FROM myblockchaintest.t1;
+COUNT(*)
+2
+DROP DATABASE myblockchaintest;
+DROP TABLE IF EXISTS test.t1;
+include/sync_slave_sql_with_master.inc
+include/rpl_end.inc

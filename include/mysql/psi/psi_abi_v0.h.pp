@@ -1,4 +1,4 @@
-#include "mysql/psi/psi.h"
+#include "myblockchain/psi/psi.h"
 #include "psi_base.h"
 #include "psi_memory.h"
 #include "psi_base.h"
@@ -96,5 +96,5 @@ struct PSI_stage_info_none
   int m_flags;
 };
 typedef struct PSI_stage_info_none PSI_stage_info;
-extern MYSQL_PLUGIN_IMPORT PSI *PSI_server;
+extern MYBLOCKCHAIN_PLUGIN_IMPORT PSI *PSI_server;
 C_MODE_END

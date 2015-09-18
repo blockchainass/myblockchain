@@ -22,7 +22,7 @@
 #include "CharsetMap.hpp"
 #include "CharsetMapImpl.h"
 #include "my_global.h"
-#include "mysql.h"
+#include "myblockchain.h"
 #include "my_sys.h"
 
 bool m_false_result = false;
@@ -36,7 +36,7 @@ static CharsetMapImpl *_map = 0;
 
 /* Initialization allocates the CharsetMapImpl and initializes its mutex.
  But we defer building the map of charset names, so as not to create 
- any sort of ordering dependency that would require mysql_init() to 
+ any sort of ordering dependency that would require myblockchain_init() to 
  be run first.
  */
 

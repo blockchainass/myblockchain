@@ -1,4 +1,4 @@
-/* DBTransactionHandler represents a database transaction.
+/* DBTransactionHandler represents a blockchain transaction.
 */
 
 var DBTransactionHandler; // Standard members of DBTransactionHandler object

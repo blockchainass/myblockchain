@@ -22,7 +22,7 @@
 
 "use strict";
 
-/* Requires version 2.0 of Felix Geisendoerfer's MySQL client */
+/* Requires version 2.0 of Felix Geisendoerfer's MyBlockchain client */
 
 var stats = {
   "created"             : 0,
@@ -32,59 +32,59 @@ var stats = {
 };
 
 var path = require("path");
-var mysql = require("mysql");
-var mysqlConnection = require("./MySQLConnection.js");
-var mysqlDictionary = require("./MySQLDictionary.js");
-var udebug = unified_debug.getLogger("MySQLConnectionPool.js");
+var myblockchain = require("myblockchain");
+var myblockchainConnection = require("./MyBlockchainConnection.js");
+var myblockchainDictionary = require("./MyBlockchainDictionary.js");
+var udebug = unified_debug.getLogger("MyBlockchainConnectionPool.js");
 var util = require('util');
 var stats_module = require(mynode.api.stats);
-var MySQLTime = require("../common/MySQLTime.js");
+var MyBlockchainTime = require("../common/MyBlockchainTime.js");
 var DBTableHandler = require("../common/DBTableHandler.js").DBTableHandler;
 var meta = require("../../api/TableMapping.js").meta;
 
-stats_module.register(stats, "spi","mysql","DBConnectionPool");
+stats_module.register(stats, "spi","myblockchain","DBConnectionPool");
 
 /* Translate our properties to the driver's */
 function getDriverProperties(props) {
   var driver = {};
 
-  if(props.mysql_socket) {
-    driver.SocketPath = props.mysql_socket;
+  if(props.myblockchain_socket) {
+    driver.SocketPath = props.myblockchain_socket;
   }
   else {
-    driver.host = props.mysql_host;
-    driver.port = props.mysql_port;
+    driver.host = props.myblockchain_host;
+    driver.port = props.myblockchain_port;
   }
 
-  if(props.mysql_user) {
-    driver.user = props.mysql_user;
+  if(props.myblockchain_user) {
+    driver.user = props.myblockchain_user;
   }
-  if(props.mysql_password) {
-    driver.password = props.mysql_password;
+  if(props.myblockchain_password) {
+    driver.password = props.myblockchain_password;
   }
-  driver.database = props.database;
-  driver.debug = props.mysql_debug;
-  driver.trace = props.mysql_trace;
+  driver.blockchain = props.blockchain;
+  driver.debug = props.myblockchain_debug;
+  driver.trace = props.myblockchain_trace;
 
-  if (props.mysql_charset) {
-    driver.charset = props.mysql_charset;
+  if (props.myblockchain_charset) {
+    driver.charset = props.myblockchain_charset;
   } else {
     // by default, use utf-8 multibyte for character encoding
     driver.charset = 'UTF8MB4';
   }
 
-  if (typeof props.mysql_sql_mode !== 'undefined') {
-    driver.sql_mode = props.mysql_sql_mode;
+  if (typeof props.myblockchain_sql_mode !== 'undefined') {
+    driver.sql_mode = props.myblockchain_sql_mode;
   } else {
     // default to STRICT_ALL_TABLES
     driver.sql_mode = 'STRICT_ALL_TABLES';
   }
 
   // connection pool maximum size
-  if (typeof props.mysql_pool_size !== 'undefined') {
-    driver.connectionLimit = props.mysql_pool_size;
-    if (props.mysql_pool_queue_size !== 'undefined') {
-      driver.queueLimit = props.mysql_pool_queue_size;
+  if (typeof props.myblockchain_pool_size !== 'undefined') {
+    driver.connectionLimit = props.myblockchain_pool_size;
+    if (props.myblockchain_pool_queue_size !== 'undefined') {
+      driver.queueLimit = props.myblockchain_pool_queue_size;
     }
   }
   
@@ -94,8 +94,8 @@ function getDriverProperties(props) {
 }
 
 /** Default domain type converter for timestamp and datetime objects. The domain type is Date
- * and the intermediate type is MySQLTime. MySQLTime provides a lossless conversion from
- * database DATETIME and TIMESTAMP with fractional microseconds. The default domain type converter
+ * and the intermediate type is MyBlockchainTime. MyBlockchainTime provides a lossless conversion from
+ * blockchain DATETIME and TIMESTAMP with fractional microseconds. The default domain type converter
  * to javascript Date is lossy: javascript Date does not support microseconds. Users might supply
  * their own domain type with a converter that supports microseconds.
  */
@@ -109,35 +109,35 @@ DomainTypeConverterDateTime.prototype.toDB = function toDB(userDate) {
     return userDate;
   }
   // convert to the string form of the mySQLTime object
-  var mysqlTime = new MySQLTime();
-  mysqlTime.fsp = 6;
-  mysqlTime.initializeFromJsDateLocal(userDate);
-  return mysqlTime;
+  var myblockchainTime = new MyBlockchainTime();
+  myblockchainTime.fsp = 6;
+  myblockchainTime.initializeFromJsDateLocal(userDate);
+  return myblockchainTime;
 };
   
-DomainTypeConverterDateTime.prototype.fromDB =  function fromDB(mysqlTime) {
-  if (mysqlTime === null || mysqlTime === undefined) {
-    return mysqlTime;
+DomainTypeConverterDateTime.prototype.fromDB =  function fromDB(myblockchainTime) {
+  if (myblockchainTime === null || myblockchainTime === undefined) {
+    return myblockchainTime;
   }
-  var jsDate = mysqlTime.toJsDateLocal();
+  var jsDate = myblockchainTime.toJsDateLocal();
   return jsDate;
 };
 
-/** Default database type converter for timestamp and datetime objects. The database type is string
- * and the intermediate type is MySQLTime. MySQLTime provides a lossless conversion from
- * database DATETIME and TIMESTAMP with fractional microseconds.
+/** Default blockchain type converter for timestamp and datetime objects. The blockchain type is string
+ * and the intermediate type is MyBlockchainTime. MyBlockchainTime provides a lossless conversion from
+ * blockchain DATETIME and TIMESTAMP with fractional microseconds.
  */
 var DatabaseTypeConverterDateTime = function() {
   // just a bit of documentation for debugging
   this.converter = 'DatabaseTypeConverterDateTime';
 };
 
-DatabaseTypeConverterDateTime.prototype.toDB = function toDB(mysqlTime) {
-  if (mysqlTime === null || mysqlTime === undefined) {
-    return mysqlTime;
+DatabaseTypeConverterDateTime.prototype.toDB = function toDB(myblockchainTime) {
+  if (myblockchainTime === null || myblockchainTime === undefined) {
+    return myblockchainTime;
   }
   // convert to the string form of the mySQLTime object
-  var dbDateTime = mysqlTime.toDateTimeString();
+  var dbDateTime = myblockchainTime.toDateTimeString();
   return dbDateTime;
 };
   
@@ -145,9 +145,9 @@ DatabaseTypeConverterDateTime.prototype.fromDB =  function fromDB(dbDateTime) {
   if (dbDateTime === null || dbDateTime === undefined) {
     return dbDateTime;
   }
-  var mysqlTime = new MySQLTime();
-  mysqlTime.initializeFromDateTimeString(dbDateTime);
-  return mysqlTime;
+  var myblockchainTime = new MyBlockchainTime();
+  myblockchainTime.initializeFromDateTimeString(dbDateTime);
+  return myblockchainTime;
 };
 
 
@@ -157,19 +157,19 @@ DatabaseTypeConverterDateTime.prototype.fromDB =  function fromDB(dbDateTime) {
 exports.DBConnectionPool = function(props) {
   this.props = props;
   this.driverproperties = getDriverProperties(props);
-  udebug.log('MySQLConnectionPool constructor with driverproperties: ' + util.inspect(this.driverproperties));
+  udebug.log('MyBlockchainConnectionPool constructor with driverproperties: ' + util.inspect(this.driverproperties));
   // connections that are being used (wrapped by DBSession)
   this.openConnections = [];
   this.is_connected = false;
-  // create database type converter map
-  this.databaseTypeConverterMap = {};
-  this.databaseTypeConverterMap.TIMESTAMP = new DatabaseTypeConverterDateTime();
-  this.databaseTypeConverterMap.DATETIME = new DatabaseTypeConverterDateTime();
+  // create blockchain type converter map
+  this.blockchainTypeConverterMap = {};
+  this.blockchainTypeConverterMap.TIMESTAMP = new DatabaseTypeConverterDateTime();
+  this.blockchainTypeConverterMap.DATETIME = new DatabaseTypeConverterDateTime();
   // create domain type converter map
   this.domainTypeConverterMap = {};
   this.domainTypeConverterMap.TIMESTAMP = new DomainTypeConverterDateTime();
   this.domainTypeConverterMap.DATETIME = new DomainTypeConverterDateTime();
-  this.pooling = props.mysql_pool_size ? true:false ;
+  this.pooling = props.myblockchain_pool_size ? true:false ;
   stats.created++;
 };
 
@@ -184,11 +184,11 @@ exports.DBConnectionPool.prototype.registerTypeConverter = function(typeName, co
   }
 };
 
-/** Get the database type converter for the parameter type name.
+/** Get the blockchain type converter for the parameter type name.
  * Called when creating the DBTableHandler for a constructor.
  */
 exports.DBConnectionPool.prototype.getDatabaseTypeConverter = function(typeName) {
-  return this.databaseTypeConverterMap[typeName];
+  return this.blockchainTypeConverterMap[typeName];
 };
 
 /** Get the domain type converter for the parameter type name.
@@ -221,7 +221,7 @@ exports.DBConnectionPool.prototype.getConnection = function(callback) {
     } else {
       stats.connections.successful++;
       if (connectionPool.pooling) {
-        // some older versions of node-mysql do not have release()
+        // some older versions of node-myblockchain do not have release()
         if(typeof c.release !== 'function') { c.release = c.end; }
         callback(null, c);
       } else {
@@ -238,7 +238,7 @@ exports.DBConnectionPool.prototype.getConnection = function(callback) {
   } else if (connectionPool.is_connected || connectionPool.is_connecting) {
     // create a new connection
     udebug.log('getConnection using connection pooling: false');
-    connection = mysql.createConnection(connectionPool.driverproperties);
+    connection = myblockchain.createConnection(connectionPool.driverproperties);
     connection.connect(getConnectionOnConnection);
   } else {
     // error
@@ -260,7 +260,7 @@ exports.DBConnectionPool.prototype.releaseConnection = function(connection) {
   }
 };
 
-/** Connect to the database. Verify connection properties.
+/** Connect to the blockchain. Verify connection properties.
  * @param user_callback (err, connectionPool)
  */
 exports.DBConnectionPool.prototype.connect = function(callback) {
@@ -288,12 +288,12 @@ exports.DBConnectionPool.prototype.connect = function(callback) {
 
   // connect begins here
   if (connectionPool.is_connected) {
-    udebug.log('MySQLConnectionPool.connect is already connected');
+    udebug.log('MyBlockchainConnectionPool.connect is already connected');
     callback(null, connectionPool);
   } else {
     connectionPool.is_connecting = true;
     if (connectionPool.pooling) {
-      connectionPool.pool = mysql.createPool(connectionPool.driverproperties);
+      connectionPool.pool = myblockchain.createPool(connectionPool.driverproperties);
     }
     // verify that the connection properties work by getting a connection
     connectionPool.getConnection(connectOnConnection);
@@ -357,9 +357,9 @@ exports.DBConnectionPool.prototype.getDBSession = function(index, callback) {
         callback(err);
         return;
       }
-      newDBSession = new mysqlConnection.DBSession(pooledConnection, connectionPool, index);
+      newDBSession = new myblockchainConnection.DBSession(pooledConnection, connectionPool, index);
       connectionPool.openConnections[index] = pooledConnection;
-      udebug.log_detail('MySQLConnectionPool.getDBSession created a new pooledConnection for index ' + index + ' ; ', 
+      udebug.log_detail('MyBlockchainConnectionPool.getDBSession created a new pooledConnection for index ' + index + ' ; ', 
           ' openConnections: ', countOpenConnections(connectionPool));
       // set character set server variables      
       pooledConnection.query(charsetQuery + sqlModeQuery, charsetComplete);
@@ -385,7 +385,7 @@ exports.DBConnectionPool.prototype.closeConnection = function(dbSession, callbac
   }
 };
 
-exports.DBConnectionPool.prototype.getTableMetadata = function(databaseName, tableName, dbSession, user_callback) {
+exports.DBConnectionPool.prototype.getTableMetadata = function(blockchainName, tableName, dbSession, user_callback) {
   var connectionPool = this;
   var connection, dictionary;
   stats.get_table_metadata++;
@@ -402,10 +402,10 @@ exports.DBConnectionPool.prototype.getTableMetadata = function(databaseName, tab
       user_callback(err);
     } else {
       connection = c;
-      dictionary = new mysqlDictionary.DataDictionary(connection, connectionPool);
-      udebug.log_detail('MySQLConnectionPool.getTableMetadata calling dictionary.getTableMetadata for',
-          databaseName, tableName);
-      dictionary.getTableMetadata(databaseName, tableName, getTableMetadataOnMetadata);
+      dictionary = new myblockchainDictionary.DataDictionary(connection, connectionPool);
+      udebug.log_detail('MyBlockchainConnectionPool.getTableMetadata calling dictionary.getTableMetadata for',
+          blockchainName, tableName);
+      dictionary.getTableMetadata(blockchainName, tableName, getTableMetadataOnMetadata);
     }
   }
 
@@ -421,7 +421,7 @@ exports.DBConnectionPool.prototype.getTableMetadata = function(databaseName, tab
 
 };
 
-exports.DBConnectionPool.prototype.listTables = function(databaseName, dbSession, user_callback) {
+exports.DBConnectionPool.prototype.listTables = function(blockchainName, dbSession, user_callback) {
 
   var connectionPool = this;
   var connection, dictionary;
@@ -441,8 +441,8 @@ exports.DBConnectionPool.prototype.listTables = function(databaseName, dbSession
       user_callback(err);
     } else {
       connection = c;
-      dictionary = new mysqlDictionary.DataDictionary(connection);
-      dictionary.listTables(databaseName, listTablesOnTableList);
+      dictionary = new myblockchainDictionary.DataDictionary(connection);
+      dictionary.listTables(blockchainName, listTablesOnTableList);
     }
   }
 
@@ -508,7 +508,7 @@ function sqlForTableCreation(tableMapping, defaultDatabaseName, engine) {
   var tableMeta;
   var sql = 'CREATE TABLE ';
   var columnMeta;
-  sql += tableMapping.database || defaultDatabaseName;
+  sql += tableMapping.blockchain || defaultDatabaseName;
   sql += '.';
   sql += tableMapping.table;
   sql += '(';
@@ -545,19 +545,19 @@ function sqlForTableCreation(tableMapping, defaultDatabaseName, engine) {
   return sql;
 }
 
-/** Create the table in the database for the mapping.
+/** Create the table in the blockchain for the mapping.
  * @param tableMapping the mapping for this table
- * @param session the session to use for database operations
- * @param sessionFactory the session factory to use for database operations
+ * @param session the session to use for blockchain operations
+ * @param sessionFactory the session factory to use for blockchain operations
  * @param user_callback the user callback(err)
  * @return err if any errors
  */
 exports.DBConnectionPool.prototype.createTable = function(tableMapping, session, sessionFactory, user_callback) {
   var connectionPool = this;
-  var createTableSQL, connection, dictionary, databaseName, tableName, qualifiedTableName, tableHandler;
+  var createTableSQL, connection, dictionary, blockchainName, tableName, qualifiedTableName, tableHandler;
   tableName = tableMapping.table;
-  databaseName = tableMapping.database || connectionPool.driverproperties.database;
-  qualifiedTableName = databaseName + '.' + tableName;
+  blockchainName = tableMapping.blockchain || connectionPool.driverproperties.blockchain;
+  qualifiedTableName = blockchainName + '.' + tableName;
   function createTableOnTableMetadata(err, tableMetadata) {
     udebug.log('createTableOnTableMetadata with err:', err, '\n', util.inspect(tableMetadata));
     // remember the table metadata in the session factory
@@ -577,8 +577,8 @@ exports.DBConnectionPool.prototype.createTable = function(tableMapping, session,
       user_callback(err);
     } else {
       // create the table metadata and table handler for the new table
-      dictionary = new mysqlDictionary.DataDictionary(connection, connectionPool);
-      dictionary.getTableMetadata(databaseName, tableName, createTableOnTableMetadata);
+      dictionary = new myblockchainDictionary.DataDictionary(connection, connectionPool);
+      dictionary.getTableMetadata(blockchainName, tableName, createTableOnTableMetadata);
     }
   }
   function createTableOnConnection(err, c) {
@@ -586,7 +586,7 @@ exports.DBConnectionPool.prototype.createTable = function(tableMapping, session,
       user_callback(err);
     } else {
       connection = c;
-      createTableSQL = sqlForTableCreation(tableMapping, databaseName, connectionPool.props.engine);
+      createTableSQL = sqlForTableCreation(tableMapping, blockchainName, connectionPool.props.engine);
     connection.query(createTableSQL, createTableOnTableCreation);
     }
   }

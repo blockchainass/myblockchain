@@ -44,7 +44,7 @@ Created 3/26/1996 Heikki Tuuri
 #include "trx0rseg.h"
 #include "row0row.h"
 #include "fsp0sysspace.h"
-#include "row0mysql.h"
+#include "row0myblockchain.h"
 
 /*=========== UNDO LOG RECORD CREATION AND DECODING ====================*/
 
@@ -1525,7 +1525,7 @@ trx_undo_report_row_operation(
 
 		ut_ad(!srv_read_only_mode || is_temp_table);
 
-		/* MySQL should block writes to non-temporary tables. */
+		/* MyBlockchain should block writes to non-temporary tables. */
 		ut_a(is_temp_table);
 
 		if (trx->rsegs.m_noredo.rseg == 0) {
@@ -1692,7 +1692,7 @@ trx_undo_report_row_operation(
 				undo_block = NULL;);
 	} while (undo_block != NULL);
 
-	ib_errf(trx->mysql_thd, IB_LOG_LEVEL_ERROR,
+	ib_errf(trx->myblockchain_thd, IB_LOG_LEVEL_ERROR,
 		ER_INNODB_UNDO_LOG_FULL,
 		"No more space left over in %s tablespace for allocating UNDO"
 		" log pages. Please add new data file to the tablespace or"

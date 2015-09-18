@@ -15,23 +15,23 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
  */
 
-package com.mysql.clusterj.tie;
+package com.myblockchain.clusterj.tie;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.mysql.clusterj.core.store.Column;
-import com.mysql.clusterj.core.store.PartitionKey;
-import com.mysql.clusterj.core.store.Table;
+import com.myblockchain.clusterj.core.store.Column;
+import com.myblockchain.clusterj.core.store.PartitionKey;
+import com.myblockchain.clusterj.core.store.Table;
 
-import com.mysql.clusterj.core.util.I18NHelper;
-import com.mysql.clusterj.core.util.Logger;
-import com.mysql.clusterj.core.util.LoggerFactoryService;
+import com.myblockchain.clusterj.core.util.I18NHelper;
+import com.myblockchain.clusterj.core.util.Logger;
+import com.myblockchain.clusterj.core.util.LoggerFactoryService;
 
-import com.mysql.ndbjtie.ndbapi.NdbDictionary.ColumnConst;
-import com.mysql.ndbjtie.ndbapi.NdbDictionary.TableConst;
+import com.myblockchain.ndbjtie.ndbapi.NdbDictionary.ColumnConst;
+import com.myblockchain.ndbjtie.ndbapi.NdbDictionary.TableConst;
 
 /**
  *

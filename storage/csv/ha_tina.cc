@@ -43,10 +43,10 @@ TODO:
 
 #include "my_global.h"
 #include "sql_class.h"                          // SSV
-#include <mysql/plugin.h>
-#include <mysql/psi/mysql_file.h>
+#include <myblockchain/plugin.h>
+#include <myblockchain/psi/myblockchain_file.h>
 #include "ha_tina.h"
-#include "probes_mysql.h"
+#include "probes_myblockchain.h"
 
 #include <algorithm>
 
@@ -77,7 +77,7 @@ extern "C" void tina_update_status(void* param);
 extern "C" my_bool tina_check_status(void* param);
 
 /* Stuff for shares */
-mysql_mutex_t tina_mutex;
+myblockchain_mutex_t tina_mutex;
 static HASH tina_open_tables;
 static handler *tina_create_handler(handlerton *hton,
                                     TABLE_SHARE *table, 
@@ -147,13 +147,13 @@ static void init_tina_psi_keys(void)
   int count;
 
   count= array_elements(all_tina_mutexes);
-  mysql_mutex_register(category, all_tina_mutexes, count);
+  myblockchain_mutex_register(category, all_tina_mutexes, count);
 
   count= array_elements(all_tina_files);
-  mysql_file_register(category, all_tina_files, count);
+  myblockchain_file_register(category, all_tina_files, count);
 
   count= array_elements(all_tina_memory);
-  mysql_memory_register(category, all_tina_memory, count);
+  myblockchain_memory_register(category, all_tina_memory, count);
 }
 #endif /* HAVE_PSI_INTERFACE */
 
@@ -166,7 +166,7 @@ static int tina_init_func(void *p)
 #endif
 
   tina_hton= (handlerton *)p;
-  mysql_mutex_init(csv_key_mutex_tina, &tina_mutex, MY_MUTEX_INIT_FAST);
+  myblockchain_mutex_init(csv_key_mutex_tina, &tina_mutex, MY_MUTEX_INIT_FAST);
   (void) my_hash_init(&tina_open_tables,system_charset_info,32,0,0,
                       (my_hash_get_key) tina_get_key,0,0,
                       csv_key_memory_tina_share);
@@ -181,7 +181,7 @@ static int tina_init_func(void *p)
 static int tina_done_func(void *p)
 {
   my_hash_free(&tina_open_tables);
-  mysql_mutex_destroy(&tina_mutex);
+  myblockchain_mutex_destroy(&tina_mutex);
 
   return 0;
 }
@@ -198,7 +198,7 @@ static TINA_SHARE *get_share(const char *table_name, TABLE *table)
   char *tmp_name;
   uint length;
 
-  mysql_mutex_lock(&tina_mutex);
+  myblockchain_mutex_lock(&tina_mutex);
   length=(uint) strlen(table_name);
 
   /*
@@ -215,7 +215,7 @@ static TINA_SHARE *get_share(const char *table_name, TABLE *table)
                          &tmp_name, length+1,
                          NullS))
     {
-      mysql_mutex_unlock(&tina_mutex);
+      myblockchain_mutex_unlock(&tina_mutex);
       return NULL;
     }
 
@@ -234,7 +234,7 @@ static TINA_SHARE *get_share(const char *table_name, TABLE *table)
     fn_format(meta_file_name, table_name, "", CSM_EXT,
               MY_REPLACE_EXT|MY_UNPACK_FILENAME);
 
-    if (mysql_file_stat(csv_key_file_data,
+    if (myblockchain_file_stat(csv_key_file_data,
                         share->data_file_name, &file_stat, MYF(MY_WME)) == NULL)
       goto error;
     share->saved_data_file_length= file_stat.st_size;
@@ -242,7 +242,7 @@ static TINA_SHARE *get_share(const char *table_name, TABLE *table)
     if (my_hash_insert(&tina_open_tables, (uchar*) share))
       goto error;
     thr_lock_init(&share->lock);
-    mysql_mutex_init(csv_key_mutex_TINA_SHARE_mutex,
+    myblockchain_mutex_init(csv_key_mutex_TINA_SHARE_mutex,
                      &share->mutex, MY_MUTEX_INIT_FAST);
 
     /*
@@ -251,7 +251,7 @@ static TINA_SHARE *get_share(const char *table_name, TABLE *table)
       Usually this will result in auto-repair, and we will get a good
       meta-file in the end.
     */
-    if (((share->meta_file= mysql_file_open(csv_key_file_metadata,
+    if (((share->meta_file= myblockchain_file_open(csv_key_file_metadata,
                                             meta_file_name,
                                             O_RDWR|O_CREAT,
                                             MYF(MY_WME))) == -1) ||
@@ -260,12 +260,12 @@ static TINA_SHARE *get_share(const char *table_name, TABLE *table)
   }
 
   share->use_count++;
-  mysql_mutex_unlock(&tina_mutex);
+  myblockchain_mutex_unlock(&tina_mutex);
 
   return share;
 
 error:
-  mysql_mutex_unlock(&tina_mutex);
+  myblockchain_mutex_unlock(&tina_mutex);
   my_free(share);
 
   return NULL;
@@ -298,8 +298,8 @@ static int read_meta_file(File meta_file, ha_rows *rows)
 
   DBUG_ENTER("ha_tina::read_meta_file");
 
-  mysql_file_seek(meta_file, 0, MY_SEEK_SET, MYF(0));
-  if (mysql_file_read(meta_file, (uchar*)meta_buffer, META_BUFFER_SIZE, 0)
+  myblockchain_file_seek(meta_file, 0, MY_SEEK_SET, MYF(0));
+  if (myblockchain_file_read(meta_file, (uchar*)meta_buffer, META_BUFFER_SIZE, 0)
       != META_BUFFER_SIZE)
     DBUG_RETURN(HA_ERR_CRASHED_ON_USAGE);
 
@@ -321,7 +321,7 @@ static int read_meta_file(File meta_file, ha_rows *rows)
       ((bool)(*ptr)== TRUE))
     DBUG_RETURN(HA_ERR_CRASHED_ON_USAGE);
 
-  mysql_file_sync(meta_file, MYF(MY_WME));
+  myblockchain_file_sync(meta_file, MYF(MY_WME));
 
   DBUG_RETURN(0);
 }
@@ -367,12 +367,12 @@ static int write_meta_file(File meta_file, ha_rows rows, bool dirty)
   ptr+= 3*sizeof(ulonglong);
   *ptr= (uchar)dirty;
 
-  mysql_file_seek(meta_file, 0, MY_SEEK_SET, MYF(0));
-  if (mysql_file_write(meta_file, (uchar *)meta_buffer, META_BUFFER_SIZE, 0)
+  myblockchain_file_seek(meta_file, 0, MY_SEEK_SET, MYF(0));
+  if (myblockchain_file_write(meta_file, (uchar *)meta_buffer, META_BUFFER_SIZE, 0)
       != META_BUFFER_SIZE)
     DBUG_RETURN(-1);
 
-  mysql_file_sync(meta_file, MYF(MY_WME));
+  myblockchain_file_sync(meta_file, MYF(MY_WME));
 
   DBUG_RETURN(0);
 }
@@ -400,7 +400,7 @@ int ha_tina::init_tina_writer()
   (void)write_meta_file(share->meta_file, share->rows_recorded, TRUE);
 
   if ((share->tina_write_filedes=
-        mysql_file_open(csv_key_file_data,
+        myblockchain_file_open(csv_key_file_data,
                         share->data_file_name, O_RDWR|O_APPEND,
                         MYF(MY_WME))) == -1)
   {
@@ -426,27 +426,27 @@ bool ha_tina::is_crashed() const
 static int free_share(TINA_SHARE *share)
 {
   DBUG_ENTER("ha_tina::free_share");
-  mysql_mutex_lock(&tina_mutex);
+  myblockchain_mutex_lock(&tina_mutex);
   int result_code= 0;
   if (!--share->use_count){
     /* Write the meta file. Mark it as crashed if needed. */
     (void)write_meta_file(share->meta_file, share->rows_recorded,
                           share->crashed ? TRUE :FALSE);
-    if (mysql_file_close(share->meta_file, MYF(0)))
+    if (myblockchain_file_close(share->meta_file, MYF(0)))
       result_code= 1;
     if (share->tina_write_opened)
     {
-      if (mysql_file_close(share->tina_write_filedes, MYF(0)))
+      if (myblockchain_file_close(share->tina_write_filedes, MYF(0)))
         result_code= 1;
       share->tina_write_opened= FALSE;
     }
 
     my_hash_delete(&tina_open_tables, (uchar*) share);
     thr_lock_delete(&share->lock);
-    mysql_mutex_destroy(&share->mutex);
+    myblockchain_mutex_destroy(&share->mutex);
     my_free(share);
   }
-  mysql_mutex_unlock(&tina_mutex);
+  myblockchain_mutex_unlock(&tina_mutex);
 
   DBUG_RETURN(result_code);
 }
@@ -801,7 +801,7 @@ int ha_tina::find_current_row(uchar *buf)
 
     if (read_all || bitmap_is_set(table->read_set, (*field)->field_index))
     {
-      bool is_enum= ((*field)->real_type() ==  MYSQL_TYPE_ENUM);
+      bool is_enum= ((*field)->real_type() ==  MYBLOCKCHAIN_TYPE_ENUM);
       /*
         Here CHECK_FIELD_WARN checks that all values in the csv file are valid
         which is normally the case, if they were written  by
@@ -901,9 +901,9 @@ void ha_tina::get_status()
       We have to use mutex to follow pthreads memory visibility
       rules for share->saved_data_file_length
     */
-    mysql_mutex_lock(&share->mutex);
+    myblockchain_mutex_lock(&share->mutex);
     local_saved_data_file_length= share->saved_data_file_length;
-    mysql_mutex_unlock(&share->mutex);
+    myblockchain_mutex_unlock(&share->mutex);
     return;
   }
   local_saved_data_file_length= share->saved_data_file_length;
@@ -939,7 +939,7 @@ void ha_tina::update_status()
 
 
 /*
-  Open a database file. Keep in mind that tables are caches, so
+  Open a blockchain file. Keep in mind that tables are caches, so
   this will not be called for every request. Any sort of positions
   that need to be reset should be kept in the ::extra() call.
 */
@@ -957,7 +957,7 @@ int ha_tina::open(const char *name, int mode, uint open_options)
   }
 
   local_data_file_version= share->data_file_version;
-  if ((data_file= mysql_file_open(csv_key_file_data,
+  if ((data_file= myblockchain_file_open(csv_key_file_data,
                                   share->data_file_name,
                                   O_RDONLY, MYF(MY_WME))) == -1)
   {
@@ -982,14 +982,14 @@ int ha_tina::open(const char *name, int mode, uint open_options)
 
 
 /*
-  Close a database file. We remove ourselves from the shared strucutre.
+  Close a blockchain file. We remove ourselves from the shared strucutre.
   If it is empty we destroy it.
 */
 int ha_tina::close(void)
 {
   int rc= 0;
   DBUG_ENTER("ha_tina::close");
-  rc= mysql_file_close(data_file, MYF(0));
+  rc= myblockchain_file_close(data_file, MYF(0));
   DBUG_RETURN(free_share(share) || rc);
 }
 
@@ -1015,7 +1015,7 @@ int ha_tina::write_row(uchar * buf)
       DBUG_RETURN(-1);
 
    /* use pwrite, as concurrent reader could have changed the position */
-  if (mysql_file_write(share->tina_write_filedes, (uchar*)buffer.ptr(), size,
+  if (myblockchain_file_write(share->tina_write_filedes, (uchar*)buffer.ptr(), size,
                        MYF(MY_WME | MY_NABP)))
     DBUG_RETURN(-1);
 
@@ -1023,12 +1023,12 @@ int ha_tina::write_row(uchar * buf)
   local_saved_data_file_length+= size;
 
   /* update shared info */
-  mysql_mutex_lock(&share->mutex);
+  myblockchain_mutex_lock(&share->mutex);
   share->rows_recorded++;
   /* update status for the log tables */
   if (share->is_log_table)
     update_status();
-  mysql_mutex_unlock(&share->mutex);
+  myblockchain_mutex_unlock(&share->mutex);
 
   stats.records++;
   DBUG_RETURN(0);
@@ -1042,7 +1042,7 @@ int ha_tina::open_update_temp_file_if_needed()
   if (!share->update_file_opened)
   {
     if ((update_temp_file=
-           mysql_file_create(csv_key_file_update,
+           myblockchain_file_create(csv_key_file_update,
                              fn_format(updated_fname, share->table_name,
                                        "", CSN_EXT,
                                        MY_REPLACE_EXT | MY_UNPACK_FILENAME),
@@ -1085,7 +1085,7 @@ int ha_tina::update_row(const uchar * old_data, uchar * new_data)
   if (open_update_temp_file_if_needed())
     goto err;
 
-  if (mysql_file_write(update_temp_file, (uchar*)buffer.ptr(), size,
+  if (myblockchain_file_write(update_temp_file, (uchar*)buffer.ptr(), size,
                        MYF(MY_WME | MY_NABP)))
     goto err;
   temp_file_length+= size;
@@ -1101,7 +1101,7 @@ err:
 
 
 /*
-  Deletes a row. First the database will find the row, and then call this
+  Deletes a row. First the blockchain will find the row, and then call this
   method. In the case of a table scan, the previous call to this will be
   the ::rnd_next() that found this row.
   The exception to this is an ORDER BY. This will cause the table handler
@@ -1120,9 +1120,9 @@ int ha_tina::delete_row(const uchar * buf)
   stats.records--;
   /* Update shared info */
   DBUG_ASSERT(share->rows_recorded);
-  mysql_mutex_lock(&share->mutex);
+  myblockchain_mutex_lock(&share->mutex);
   share->rows_recorded--;
-  mysql_mutex_unlock(&share->mutex);
+  myblockchain_mutex_unlock(&share->mutex);
 
   /* DELETE should never happen on the log table */
   DBUG_ASSERT(!share->is_log_table);
@@ -1149,8 +1149,8 @@ int ha_tina::init_data_file()
   if (local_data_file_version != share->data_file_version)
   {
     local_data_file_version= share->data_file_version;
-    if (mysql_file_close(data_file, MYF(0)) ||
-        (data_file= mysql_file_open(csv_key_file_data,
+    if (myblockchain_file_close(data_file, MYF(0)) ||
+        (data_file= myblockchain_file_open(csv_key_file_data,
                                     share->data_file_name, O_RDONLY,
                                     MYF(MY_WME))) == -1)
       return my_errno ? my_errno : -1;
@@ -1183,7 +1183,7 @@ int ha_tina::init_data_file()
   ENUM HA_EXTRA_NO_CACHE   End cacheing of records (def)
   ha_tina::external_lock
   ha_tina::extra
-  ENUM HA_EXTRA_RESET   Reset database to after open
+  ENUM HA_EXTRA_RESET   Reset blockchain to after open
 
   Each call to ::rnd_next() represents a row returned in the can. When no more
   rows can be returned, rnd_next() returns a value of HA_ERR_END_OF_FILE.
@@ -1225,7 +1225,7 @@ int ha_tina::rnd_next(uchar *buf)
 {
   int rc;
   DBUG_ENTER("ha_tina::rnd_next");
-  MYSQL_READ_ROW_START(table_share->db.str, table_share->table_name.str,
+  MYBLOCKCHAIN_READ_ROW_START(table_share->db.str, table_share->table_name.str,
                        TRUE);
 
   if (share->crashed)
@@ -1251,7 +1251,7 @@ int ha_tina::rnd_next(uchar *buf)
   stats.records++;
   rc= 0;
 end:
-  MYSQL_READ_ROW_DONE(rc);
+  MYBLOCKCHAIN_READ_ROW_DONE(rc);
   DBUG_RETURN(rc);
 }
 
@@ -1281,12 +1281,12 @@ int ha_tina::rnd_pos(uchar * buf, uchar *pos)
 {
   int rc;
   DBUG_ENTER("ha_tina::rnd_pos");
-  MYSQL_READ_ROW_START(table_share->db.str, table_share->table_name.str,
+  MYBLOCKCHAIN_READ_ROW_START(table_share->db.str, table_share->table_name.str,
                        FALSE);
   ha_statistic_increment(&SSV::ha_read_rnd_count);
   current_position= my_get_ptr(pos,ref_length);
   rc= find_current_row(buf);
-  MYSQL_READ_ROW_DONE(rc);
+  MYBLOCKCHAIN_READ_ROW_DONE(rc);
   DBUG_RETURN(rc);
 }
 
@@ -1314,9 +1314,9 @@ int ha_tina::extra(enum ha_extra_function operation)
   DBUG_ENTER("ha_tina::extra");
  if (operation == HA_EXTRA_MARK_AS_LOG_TABLE)
  {
-   mysql_mutex_lock(&share->mutex);
+   myblockchain_mutex_lock(&share->mutex);
    share->is_log_table= TRUE;
-   mysql_mutex_unlock(&share->mutex);
+   myblockchain_mutex_unlock(&share->mutex);
  }
   DBUG_RETURN(0);
 }
@@ -1384,7 +1384,7 @@ int ha_tina::rnd_end()
       /* if there is something to write, write it */
       if (write_length)
       {
-        if (mysql_file_write(update_temp_file,
+        if (myblockchain_file_write(update_temp_file,
                              (uchar*) (file_buff->ptr() +
                                        (write_begin - file_buff->start())),
                              (size_t)write_length, MYF_RW))
@@ -1408,15 +1408,15 @@ int ha_tina::rnd_end()
 
     }
 
-    if (mysql_file_sync(update_temp_file, MYF(MY_WME)) ||
-        mysql_file_close(update_temp_file, MYF(0)))
+    if (myblockchain_file_sync(update_temp_file, MYF(MY_WME)) ||
+        myblockchain_file_close(update_temp_file, MYF(0)))
       DBUG_RETURN(-1);
 
     share->update_file_opened= FALSE;
 
     if (share->tina_write_opened)
     {
-      if (mysql_file_close(share->tina_write_filedes, MYF(0)))
+      if (myblockchain_file_close(share->tina_write_filedes, MYF(0)))
         DBUG_RETURN(-1);
       /*
         Mark that the writer fd is closed, so that init_tina_writer()
@@ -1429,8 +1429,8 @@ int ha_tina::rnd_end()
       Close opened fildes's. Then move updated file in place
       of the old datafile.
     */
-    if (mysql_file_close(data_file, MYF(0)) ||
-        mysql_file_rename(csv_key_file_data,
+    if (myblockchain_file_close(data_file, MYF(0)) ||
+        myblockchain_file_rename(csv_key_file_data,
                           fn_format(updated_fname, share->table_name,
                                     "", CSN_EXT,
                                     MY_REPLACE_EXT | MY_UNPACK_FILENAME),
@@ -1438,7 +1438,7 @@ int ha_tina::rnd_end()
       DBUG_RETURN(-1);
 
     /* Open the file again */
-    if ((data_file= mysql_file_open(csv_key_file_data,
+    if ((data_file= myblockchain_file_open(csv_key_file_data,
                                     share->data_file_name,
                                     O_RDONLY, MYF(MY_WME))) == -1)
       DBUG_RETURN(my_errno ? my_errno : -1);
@@ -1467,7 +1467,7 @@ int ha_tina::rnd_end()
 
   DBUG_RETURN(0);
 error:
-  mysql_file_close(update_temp_file, MYF(0));
+  myblockchain_file_close(update_temp_file, MYF(0));
   share->update_file_opened= FALSE;
   DBUG_RETURN(-1);
 }
@@ -1554,7 +1554,7 @@ int ha_tina::repair(THD* thd, HA_CHECK_OPT* check_opt)
     Otherwise we've encountered a bad row => repair is needed.
     Let us create a temporary file.
   */
-  if ((repair_file= mysql_file_create(csv_key_file_update,
+  if ((repair_file= myblockchain_file_create(csv_key_file_update,
                                       fn_format(repaired_fname,
                                                 share->table_name,
                                                 "", CSN_EXT,
@@ -1573,7 +1573,7 @@ int ha_tina::repair(THD* thd, HA_CHECK_OPT* check_opt)
   {
     write_end= min(file_buff->end(), current_position);
     if ((write_end - write_begin) &&
-        (mysql_file_write(repair_file, (uchar*)file_buff->ptr(),
+        (myblockchain_file_write(repair_file, (uchar*)file_buff->ptr(),
                           (size_t) (write_end - write_begin), MYF_RW)))
       DBUG_RETURN(-1);
 
@@ -1588,7 +1588,7 @@ int ha_tina::repair(THD* thd, HA_CHECK_OPT* check_opt)
     Close the files and rename repaired file to the datafile.
     We have to close the files, as on Windows one cannot rename
     a file, which descriptor is still open. EACCES will be returned
-    when trying to delete the "to"-file in mysql_file_rename().
+    when trying to delete the "to"-file in myblockchain_file_rename().
   */
   if (share->tina_write_opened)
   {
@@ -1597,18 +1597,18 @@ int ha_tina::repair(THD* thd, HA_CHECK_OPT* check_opt)
       during write_row execution. We need to close both instances
       to satisfy Win.
     */
-    if (mysql_file_close(share->tina_write_filedes, MYF(0)))
+    if (myblockchain_file_close(share->tina_write_filedes, MYF(0)))
       DBUG_RETURN(my_errno ? my_errno : -1);
     share->tina_write_opened= FALSE;
   }
-  if (mysql_file_close(data_file, MYF(0)) ||
-      mysql_file_close(repair_file, MYF(0)) ||
-      mysql_file_rename(csv_key_file_data,
+  if (myblockchain_file_close(data_file, MYF(0)) ||
+      myblockchain_file_close(repair_file, MYF(0)) ||
+      myblockchain_file_rename(csv_key_file_data,
                         repaired_fname, share->data_file_name, MYF(0)))
     DBUG_RETURN(-1);
 
   /* Open the file again, it should now be repaired */
-  if ((data_file= mysql_file_open(csv_key_file_data,
+  if ((data_file= myblockchain_file_open(csv_key_file_data,
                                   share->data_file_name, O_RDWR|O_APPEND,
                                   MYF(MY_WME))) == -1)
      DBUG_RETURN(my_errno ? my_errno : -1);
@@ -1638,19 +1638,19 @@ int ha_tina::delete_all_rows()
       DBUG_RETURN(-1);
 
   /* Truncate the file to zero size */
-  rc= mysql_file_chsize(share->tina_write_filedes, 0, 0, MYF(MY_WME));
+  rc= myblockchain_file_chsize(share->tina_write_filedes, 0, 0, MYF(MY_WME));
 
   stats.records=0;
   /* Update shared info */
-  mysql_mutex_lock(&share->mutex);
+  myblockchain_mutex_lock(&share->mutex);
   share->rows_recorded= 0;
-  mysql_mutex_unlock(&share->mutex);
+  myblockchain_mutex_unlock(&share->mutex);
   local_saved_data_file_length= 0;
   DBUG_RETURN(rc);
 }
 
 /*
-  Called by the database to lock the table. Keep in mind that this
+  Called by the blockchain to lock the table. Keep in mind that this
   is an internal lock.
 */
 THR_LOCK_DATA **ha_tina::store_lock(THD *thd,
@@ -1665,7 +1665,7 @@ THR_LOCK_DATA **ha_tina::store_lock(THD *thd,
 
 /* 
   Create a table. You do not want to leave the table open after a call to
-  this (the database will call ::open() if it needs to).
+  this (the blockchain will call ::open() if it needs to).
 */
 
 int ha_tina::create(const char *name, TABLE *table_arg,
@@ -1688,22 +1688,22 @@ int ha_tina::create(const char *name, TABLE *table_arg,
   }
   
 
-  if ((create_file= mysql_file_create(csv_key_file_metadata,
+  if ((create_file= myblockchain_file_create(csv_key_file_metadata,
                                       fn_format(name_buff, name, "", CSM_EXT,
                                                 MY_REPLACE_EXT|MY_UNPACK_FILENAME),
                                       0, O_RDWR | O_TRUNC, MYF(MY_WME))) < 0)
     DBUG_RETURN(-1);
 
   write_meta_file(create_file, 0, FALSE);
-  mysql_file_close(create_file, MYF(0));
+  myblockchain_file_close(create_file, MYF(0));
 
-  if ((create_file= mysql_file_create(csv_key_file_data,
+  if ((create_file= myblockchain_file_create(csv_key_file_data,
                                       fn_format(name_buff, name, "", CSV_EXT,
                                                 MY_REPLACE_EXT|MY_UNPACK_FILENAME),
                                       0, O_RDWR | O_TRUNC, MYF(MY_WME))) < 0)
     DBUG_RETURN(-1);
 
-  mysql_file_close(create_file, MYF(0));
+  myblockchain_file_close(create_file, MYF(0));
 
   DBUG_RETURN(0);
 }
@@ -1763,15 +1763,15 @@ bool ha_tina::check_if_incompatible_data(HA_CREATE_INFO *info,
   return COMPATIBLE_DATA_YES;
 }
 
-struct st_mysql_storage_engine csv_storage_engine=
-{ MYSQL_HANDLERTON_INTERFACE_VERSION };
+struct st_myblockchain_storage_engine csv_storage_engine=
+{ MYBLOCKCHAIN_HANDLERTON_INTERFACE_VERSION };
 
-mysql_declare_plugin(csv)
+myblockchain_declare_plugin(csv)
 {
-  MYSQL_STORAGE_ENGINE_PLUGIN,
+  MYBLOCKCHAIN_STORAGE_ENGINE_PLUGIN,
   &csv_storage_engine,
   "CSV",
-  "Brian Aker, MySQL AB",
+  "Brian Aker, MyBlockchain AB",
   "CSV storage engine",
   PLUGIN_LICENSE_GPL,
   tina_init_func, /* Plugin Init */
@@ -1782,5 +1782,5 @@ mysql_declare_plugin(csv)
   NULL,                       /* config options                  */
   0,                          /* flags                           */
 }
-mysql_declare_plugin_end;
+myblockchain_declare_plugin_end;
 

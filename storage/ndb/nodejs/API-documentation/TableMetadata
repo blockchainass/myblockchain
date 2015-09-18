@@ -5,7 +5,7 @@
    indexes[0] will *ALWAYS* represent the intrinsic primary key.
 */
 TableMetadata = {
-  database         : "", // Database name
+  blockchain         : "", // Database name
   name             : "", // Table Name
   columns          : {}, // ordered array of ColumnMetadata objects
   indexes          : {}, // array of IndexMetadata objects 
@@ -70,7 +70,7 @@ ForeignKeyMetadata = {
   name             : ""    ,  // Constraint name 
   columnNames      : null  ,  // an ordered array of column numbers
   targetTable      : ""    ,  // referenced table name
-  targetDatabase   : ""    ,  // referenced database
+  targetDatabase   : ""    ,  // referenced blockchain
   targetColumnNames: null  ,  // an ordered array of target column names
 };
 

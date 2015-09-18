@@ -18,7 +18,7 @@
  02110-1301  USA
 */
 
-/* Requires version 2.0 of Felix Geisendoerfer's MySQL client */
+/* Requires version 2.0 of Felix Geisendoerfer's MyBlockchain client */
 
 "use strict";
 
@@ -48,14 +48,14 @@ var op_stats = {
 	"scan_delete" : 0
 };
 
-var mysql  = require("mysql"),
-    udebug = unified_debug.getLogger("MySQLConnection.js"),
+var myblockchain  = require("myblockchain"),
+    udebug = unified_debug.getLogger("MyBlockchainConnection.js"),
     stats_module  = require(mynode.api.stats),
-    mysql_code_to_sqlstate_map = require("../common/MysqlErrToSQLStateMap");
+    myblockchain_code_to_sqlstate_map = require("../common/MysqlErrToSQLStateMap");
 
-stats_module.register(session_stats, "spi","mysql","DBSession");
-stats_module.register(transaction_stats, "spi","mysql","DBTransactionHandler");
-stats_module.register(op_stats, "spi","mysql","DBOperation");
+stats_module.register(session_stats, "spi","myblockchain","DBSession");
+stats_module.register(transaction_stats, "spi","myblockchain","DBTransactionHandler");
+stats_module.register(op_stats, "spi","myblockchain","DBOperation");
     
 /** Convert the raw data in the driver to the type expected by the adapter.
  * Felix driver would normally convert DATE, DATETIME, and TIMESTAMP to
@@ -91,7 +91,7 @@ function driverTypeConverter(field, next) {
   }
 }
 
-/** MySQLConnection wraps a mysql connection and implements the DBSession contract.
+/** MyBlockchainConnection wraps a myblockchain connection and implements the DBSession contract.
  *  @param pooledConnection the felix connection to wrap
  *  @param connectionPool the associated connection pool
  *  @param index the index into connectionPool.openConnections for the pooledConnection;
@@ -155,7 +155,7 @@ ErrorOperation.prototype.execute = function(connection, operationCompleteCallbac
  * in sequence. With AbortOnError set to true, an error returned by any operation aborts the
  * transaction. This implies that a failure to insert a row due to duplicate key exception,
  * or a failure to delete a row due to row not found will fail the transaction. This is the only
- * implementable strategy for dealing with the mysql server due to the error handling at the
+ * implementable strategy for dealing with the myblockchain server due to the error handling at the
  * server. The server will decide to roll back a transaction on certain errors, but will not
  * notify the client that it has done so. The client will behave as if operations that succeeded
  * will be effective upon commit, but in fact, some operations that succeeded will be rolled back
@@ -166,7 +166,7 @@ ErrorOperation.prototype.execute = function(connection, operationCompleteCallbac
  * reported, and returning an error on all subsequent operations. This is accomplished by setting
  * RollbackOnly on failed transactions, and keeping track of the error that caused the RollbackOnly
  * status to be set. Since users can also call setRollbackOnly, a different Error object is created
- * that indicates UserError. For errors reported by the mysql adapter, the original Error is
+ * that indicates UserError. For errors reported by the myblockchain adapter, the original Error is
  * reported to the operation that caused it, and a different TransactionRolledBackError error
  * that includes the original error is created and reported to subsequent operations as well as
  * to the transaction.execute callback.
@@ -202,12 +202,12 @@ exports.DBSession.prototype.TransactionHandler = function(dbSession) {
     // transactionHandler.transactionExecuteCallback must also have been set
     transactionHandler.isCommitting = false;
     transactionHandler.numberOfOperations = transactionHandler.operationsList.length;
-    udebug.log('MySQLConnection.TransactionHandler.executeOperations numberOfOperations: ',
+    udebug.log('MyBlockchainConnection.TransactionHandler.executeOperations numberOfOperations: ',
         transactionHandler.numberOfOperations);
     // make sure that the connection is still valid
     if (transactionHandler.dbSession.pooledConnection === null) {
       throw new Error(
-          'Fatal internal exception: MySQLConnection.TransactionHandler.executeOperations ' +
+          'Fatal internal exception: MyBlockchainConnection.TransactionHandler.executeOperations ' +
           'got null for pooledConnection');
       }
     // execute the first operation; the operationCompleteCallback will execute each successive operation
@@ -295,12 +295,12 @@ exports.DBSession.prototype.TransactionHandler = function(dbSession) {
     transactionHandler.executedOperations.push(completedOperation);
     var complete = transactionHandler.executedOperations.length;
     if (complete === transactionHandler.numberOfOperations) {
-      udebug.log_detail('MySQLConnection.TransactionHandler.operationCompleteCallback completed',
+      udebug.log_detail('MyBlockchainConnection.TransactionHandler.operationCompleteCallback completed',
                  complete, 'of', transactionHandler.numberOfOperations);
       transactionHandler.batchComplete();
     } else {
       // there are more operations to execute in this batch
-      udebug.log_detail('MySQLConnection.TransactionHandler.operationCompleteCallback ',
+      udebug.log_detail('MyBlockchainConnection.TransactionHandler.operationCompleteCallback ',
           ' completed ', complete, ' of ', transactionHandler.numberOfOperations);
       if (transactionHandler.error) {
         // do not execute the remaining operations, but call their callbacks with the propagated error
@@ -331,14 +331,14 @@ exports.DBSession.prototype.TransactionHandler = function(dbSession) {
   };
 
   this.commit = function(callback) {
-    udebug.log('MySQLConnection.TransactionHandler.commit.');
+    udebug.log('MyBlockchainConnection.TransactionHandler.commit.');
     transaction_stats.commit++;
     this.dbSession.pooledConnection.query('commit', callback);
     this.autocommit = true;
   };
 
   this.rollback = function(callback) {
-    udebug.log('MySQLConnection.TransactionHandler.rollback.');
+    udebug.log('MyBlockchainConnection.TransactionHandler.rollback.');
     transaction_stats.rollback++;
     this.dbSession.pooledConnection.query('rollback', callback);
     this.autocommit = true;
@@ -358,21 +358,21 @@ exports.DBSession.prototype.getTransactionHandler = function() {
   return this.transactionHandler;
 };
 
-// Create a DBOperationError from a mysql driver err.
+// Create a DBOperationError from a myblockchain driver err.
 var DBOperationError = function(cause) {
-  // the cause is the mysql driver error
-  // the code from the driver is the string form of the mysql error, e.g. ER_DUP_ENTRY
-  this.code = mysql_code_to_sqlstate_map[cause.code];
+  // the cause is the myblockchain driver error
+  // the code from the driver is the string form of the myblockchain error, e.g. ER_DUP_ENTRY
+  this.code = myblockchain_code_to_sqlstate_map[cause.code];
   if (typeof(this.code) === 'undefined') {
     this.code = 0;
     this.sqlstate = 'HY000';
   } else {
-    this.sqlstate = mysql_code_to_sqlstate_map[this.code];
+    this.sqlstate = myblockchain_code_to_sqlstate_map[this.code];
     cause.sqlstate = this.sqlstate;
   }
   this.message = cause.message;
   this.cause = cause;
-  udebug.log('MySQLConnection DBOperationError constructor', this);
+  udebug.log('MyBlockchainConnection DBOperationError constructor', this);
   var toString = function() {
     return 'DBOperationError ' + this.message;
   };
@@ -530,7 +530,7 @@ function ReadOperation(dbSession, dbTableHandler, sql, keys, callback) {
         op.result.value = rows[0];
         op.result.success = true;
         // convert the felix result into the user result
-        op.result.value = dbTableHandler.applyMappingToResult(op.result.value, 'mysql');
+        op.result.value = dbTableHandler.applyMappingToResult(op.result.value, 'myblockchain');
         if (typeof(op.callback) === 'function') {
           // call the UserContext callback
           op.callback(null, op);
@@ -589,7 +589,7 @@ function ScanOperation(dbSession, dbTableHandler, sql, parameters, callback) {
       op.result.success = true;
       // convert the felix result into the user result
       for (i = 0; i < rows.length; ++i) {
-        rows[i] = dbTableHandler.applyMappingToResult(rows[i], 'mysql');
+        rows[i] = dbTableHandler.applyMappingToResult(rows[i], 'myblockchain');
       }
       op.callback(err, op);
     }
@@ -626,7 +626,7 @@ function showProjection(projections, msg) {
   }
 }
 
-/** Initialize the projection object for use with mysql adapter.
+/** Initialize the projection object for use with myblockchain adapter.
  * The projection object is organized into sectors, one for each domain object.
  * A sector contains a count of fields, a list of field names, and the offset column 
  * corresponding to the first column mapped to the first field.
@@ -638,8 +638,8 @@ function showProjection(projections, msg) {
  * Add ORDER BY key columns for multi-value relationships.
  */
 function initializeProjection(projection) {
-  var mysql = {};
-  projection.mysql = mysql;
+  var myblockchain = {};
+  projection.myblockchain = myblockchain;
   var i, j;
   var sector, sectorName;
   var relatedSectorName;
@@ -671,20 +671,20 @@ function initializeProjection(projection) {
     offset += sector.keyFields.length + sector.nonKeyFields.length;
 
     // set up the table names
-    sector.tableName = sector.tableHandler.dbTable.database + '.' + sector.tableHandler.dbTable.name;
+    sector.tableName = sector.tableHandler.dbTable.blockchain + '.' + sector.tableHandler.dbTable.name;
     sectorName = 't' + i;
     relatedSectorName = 't' + (i - 1);
     joinType = '';
     on = '';
     if (sector.relatedFieldMapping && i > 0) {
-      sector.relatedTableName = sector.relatedTableHandler.dbTable.database + '.' + sector.relatedTableHandler.dbTable.name;
+      sector.relatedTableName = sector.relatedTableHandler.dbTable.blockchain + '.' + sector.relatedTableHandler.dbTable.name;
       if (sector.relatedFieldMapping.toMany && sector.relatedFieldMapping.manyTo) {
         // join table mapping
         // create a join table reference based on current table name
         // join tables are "between" tables that are joined for many-to-many relationships
         // ... t1 LEFT OUTER JOIN customerdiscount AS t15 on [t1.k = t15.k and...] 
         //     LEFT OUTER JOIN discount AS t2 on [t15.k = t2.k and ...]
-        sector.joinTableName = sector.joinTableHandler.dbTable.database + '.' + sector.joinTableHandler.dbTable.name;
+        sector.joinTableName = sector.joinTableHandler.dbTable.blockchain + '.' + sector.joinTableHandler.dbTable.name;
         sector.joinTableAlias = relatedSectorName + 'J';
         udebug.log_detail('initializeProjection join table handling for', sector.joinTableName, 'AS', sector.joinTableAlias,
             'thisForeignKey.columnNames', sector.relatedFieldMapping.thisForeignKey.columnNames,
@@ -751,16 +751,16 @@ function initializeProjection(projection) {
       selectDelimiter = ', ';
     }
   }
-  mysql.select = select;
-  mysql.from = from;
-  mysql.sectors = projection.sectors;
+  myblockchain.select = select;
+  myblockchain.from = from;
+  myblockchain.sectors = projection.sectors;
   if (order) {
-    mysql.order = 'ORDER BY ' + order;
+    myblockchain.order = 'ORDER BY ' + order;
   } else {
-    mysql.order = '';
+    myblockchain.order = '';
   }
   // mark this as having been processed
-  projection.mysql.id = projection.id;
+  projection.myblockchain.id = projection.id;
 }
 
 
@@ -779,7 +779,7 @@ function initializeProjection(projection) {
  */
 function ReadProjectionOperation(dbSession, dbTableHandler, projection, where, keys, callback) {
   var op = this;
-  this.selectSQL = projection.mysql.select + projection.mysql.from + where + projection.mysql.order;
+  this.selectSQL = projection.myblockchain.select + projection.myblockchain.from + where + projection.myblockchain.order;
   var query;
   this.type = 'read';
   this.keys = keys;
@@ -787,7 +787,7 @@ function ReadProjectionOperation(dbSession, dbTableHandler, projection, where, k
   this.result = {};
   this.err = null;
   this.tuples = [];
-  this.sectors = projection.mysql.sectors;
+  this.sectors = projection.myblockchain.sectors;
   this.rows = 0;
   op_stats.read++;
 
@@ -861,7 +861,7 @@ function ReadProjectionOperation(dbSession, dbTableHandler, projection, where, k
       // compare the keys of the row with the keys of the current object
       if (!isRowSectorKeyEqual(row, sector, tuple)) {
         // keys do not match the current object; create a new one
-        tuple = sector.tableHandler.newResultObjectFromRow(row, 'mysql',
+        tuple = sector.tableHandler.newResultObjectFromRow(row, 'myblockchain',
             sector.offset, sector.keyFields, sector.nonKeyFields);
         op.tuples[i] = tuple;
         // the rest of the tuples belong to the previous object
@@ -1047,7 +1047,7 @@ function UpdateOperation(sql, keys, values, callback) {
  */
 function createInsertSQL(dbTableHandler, fieldValueDefinedKey) {
   // create the insert SQL statement from the table metadata and field values defined key
-  var insertSQL = 'INSERT INTO ' + dbTableHandler.dbTable.database + '.' + dbTableHandler.dbTable.name + ' (';
+  var insertSQL = 'INSERT INTO ' + dbTableHandler.dbTable.blockchain + '.' + dbTableHandler.dbTable.name + ' (';
   var valuesSQL = ' VALUES (';
   var duplicateSQL = ' ON DUPLICATE KEY UPDATE ';
   var columns = dbTableHandler.getColumnMetadata();
@@ -1071,13 +1071,13 @@ function createInsertSQL(dbTableHandler, fieldValueDefinedKey) {
   valuesSQL += ')';
   insertSQL += ')' + valuesSQL;
   if (typeof(fieldValueDefinedKey) === 'undefined') {
-    dbTableHandler.mysql.insertSQL = insertSQL;
-    dbTableHandler.mysql.duplicateSQL = insertSQL + duplicateSQL;
+    dbTableHandler.myblockchain.insertSQL = insertSQL;
+    dbTableHandler.myblockchain.duplicateSQL = insertSQL + duplicateSQL;
     udebug.log_detail('insertSQL:', insertSQL);
     udebug.log_detail('duplicateSQL:', insertSQL + duplicateSQL);
   } else {
-    dbTableHandler.mysql.insertPartialSQL[fieldValueDefinedKey] = insertSQL;
-    dbTableHandler.mysql.duplicatePartialSQL[fieldValueDefinedKey] = insertSQL + duplicateSQL;
+    dbTableHandler.myblockchain.insertPartialSQL[fieldValueDefinedKey] = insertSQL;
+    dbTableHandler.myblockchain.duplicatePartialSQL[fieldValueDefinedKey] = insertSQL + duplicateSQL;
     udebug.log_detail('insertPartialSQL[', fieldValueDefinedKey, ']:', insertSQL);
     udebug.log_detail('duplicatePartialSQL[', fieldValueDefinedKey, ']:', insertSQL + duplicateSQL);
   }
@@ -1089,14 +1089,14 @@ function createInsertSQL(dbTableHandler, fieldValueDefinedKey) {
  * the value of fieldValueDefinedKey is 'DUUUD'.
  */
 function getInsertSQL(dbTableHandler, fieldValueDefinedKey) {
-  var insertSQL = dbTableHandler.mysql.insertPartialSQL[fieldValueDefinedKey];
+  var insertSQL = dbTableHandler.myblockchain.insertPartialSQL[fieldValueDefinedKey];
   if (insertSQL) {
     // insert all columns
     return insertSQL;
   }
   // create the partial SQL for fieldValueDefinedKey
   createInsertSQL(dbTableHandler, fieldValueDefinedKey);
-  return dbTableHandler.mysql.insertPartialSQL[fieldValueDefinedKey];
+  return dbTableHandler.myblockchain.insertPartialSQL[fieldValueDefinedKey];
 }
 
 /** Get the INSERT... DUPLICATE SQL corresponding to the fieldValueDefinedKey which is a string
@@ -1105,24 +1105,24 @@ function getInsertSQL(dbTableHandler, fieldValueDefinedKey) {
  * the value of fieldValueDefinedKey is 'DUUUD'.
  */
 function getDuplicateSQL(dbTableHandler, fieldValueDefinedKey) {
-  var duplicateSQL = dbTableHandler.mysql.duplicatePartialSQL[fieldValueDefinedKey];
+  var duplicateSQL = dbTableHandler.myblockchain.duplicatePartialSQL[fieldValueDefinedKey];
   if (duplicateSQL) {
     // insert all columns on duplicate key update
     return duplicateSQL;
   }
   // create the duplicate partial SQL for fieldValueDefinedKey
   createInsertSQL(dbTableHandler, fieldValueDefinedKey);
-  return dbTableHandler.mysql.duplicatePartialSQL[fieldValueDefinedKey];
+  return dbTableHandler.myblockchain.duplicatePartialSQL[fieldValueDefinedKey];
 }
 
 function createDeleteSQL(dbTableHandler, index) {
   // create the delete SQL statement from the table metadata for the named index
   var deleteSQL;
   if (!index) {
-    deleteSQL = 'DELETE FROM ' + dbTableHandler.dbTable.database + '.' + dbTableHandler.dbTable.name;
+    deleteSQL = 'DELETE FROM ' + dbTableHandler.dbTable.blockchain + '.' + dbTableHandler.dbTable.name;
     // return non-index delete statement
   } else {
-    deleteSQL = dbTableHandler.mysql.deleteTableScanSQL + ' WHERE ';
+    deleteSQL = dbTableHandler.myblockchain.deleteTableScanSQL + ' WHERE ';
     // find the index metadata from the dbTableHandler index section
     // loop over the columns in the index and extract the column name
     var indexMetadatas = dbTableHandler.dbTable.indexes;
@@ -1155,7 +1155,7 @@ function createSelectSQL(dbTableHandler, index) {
   fields = dbTableHandler.fieldNumberToFieldMap;
   if (!index) {
     selectSQL = 'SELECT ';
-    var fromSQL =   ' FROM ' + dbTableHandler.dbTable.database + '.' + dbTableHandler.dbTable.name;
+    var fromSQL =   ' FROM ' + dbTableHandler.dbTable.blockchain + '.' + dbTableHandler.dbTable.name;
     // loop over the mapped column names in order
     for (i = 0; i < fields.length; ++i) {
       field = fields[i].fieldName;
@@ -1166,7 +1166,7 @@ function createSelectSQL(dbTableHandler, index) {
     selectSQL += fromSQL;
   } else {
     // create the select SQL statement from the table metadata for the named index
-    selectSQL = dbTableHandler.mysql.selectTableScanSQL;
+    selectSQL = dbTableHandler.myblockchain.selectTableScanSQL;
     whereSQL = ' WHERE ';
 
     // loop over the index columns
@@ -1221,19 +1221,19 @@ function createWhereSQL(dbTableHandler, index) {
 }
 
 function getMetadata(dbTableHandler) {
-  if (dbTableHandler.mysql) {
+  if (dbTableHandler.myblockchain) {
     return;
   }
   udebug.log_detail('getMetadata with dbTableHandler', dbTableHandler.dbTable.name);
-  dbTableHandler.mysql = {};
-  dbTableHandler.mysql.indexes = {};
-  dbTableHandler.mysql.deleteSQL = {};
-  dbTableHandler.mysql.deleteTableScanSQL= createDeleteSQL(dbTableHandler);
-  dbTableHandler.mysql.selectSQL = {};
-  dbTableHandler.mysql.selectTableScanSQL = createSelectSQL(dbTableHandler);
-  dbTableHandler.mysql.whereSQL = {};
-  dbTableHandler.mysql.insertPartialSQL = {};
-  dbTableHandler.mysql.duplicatePartialSQL = {};
+  dbTableHandler.myblockchain = {};
+  dbTableHandler.myblockchain.indexes = {};
+  dbTableHandler.myblockchain.deleteSQL = {};
+  dbTableHandler.myblockchain.deleteTableScanSQL= createDeleteSQL(dbTableHandler);
+  dbTableHandler.myblockchain.selectSQL = {};
+  dbTableHandler.myblockchain.selectTableScanSQL = createSelectSQL(dbTableHandler);
+  dbTableHandler.myblockchain.whereSQL = {};
+  dbTableHandler.myblockchain.insertPartialSQL = {};
+  dbTableHandler.myblockchain.duplicatePartialSQL = {};
   
   createInsertSQL(dbTableHandler);
   var i, indexes, index;
@@ -1241,9 +1241,9 @@ function getMetadata(dbTableHandler) {
   indexes = dbTableHandler.dbTable.indexes;
   for (i = 0; i < indexes.length; ++i) {
     index = dbTableHandler.dbTable.indexes[i];
-    dbTableHandler.mysql.deleteSQL[index.name] = createDeleteSQL(dbTableHandler, index.name);
-    dbTableHandler.mysql.selectSQL[index.name] = createSelectSQL(dbTableHandler, index.name);
-    dbTableHandler.mysql.whereSQL[index.name] = createWhereSQL(dbTableHandler, index.name);
+    dbTableHandler.myblockchain.deleteSQL[index.name] = createDeleteSQL(dbTableHandler, index.name);
+    dbTableHandler.myblockchain.selectSQL[index.name] = createSelectSQL(dbTableHandler, index.name);
+    dbTableHandler.myblockchain.whereSQL[index.name] = createWhereSQL(dbTableHandler, index.name);
   }
 }
 
@@ -1292,17 +1292,17 @@ exports.DBSession.prototype.buildInsertOperation = function(dbTableHandler, obje
                     dbTableHandler.dbTable.name, 'object:', object);
   getMetadata(dbTableHandler);
   var fieldValueDefinedListener = new FieldValueDefinedListener();
-  var fieldValues = dbTableHandler.getFieldsWithListener(object, 'mysql', fieldValueDefinedListener);
+  var fieldValues = dbTableHandler.getFieldsWithListener(object, 'myblockchain', fieldValueDefinedListener);
   if (fieldValueDefinedListener.err) {
     // error during preparation of field values
-    udebug.log('MySQLConnection.buildInsertOperation error', fieldValueDefinedListener.err);
+    udebug.log('MyBlockchainConnection.buildInsertOperation error', fieldValueDefinedListener.err);
     return new ErrorOperation(fieldValueDefinedListener.err, callback);
   }
   var fieldValueDefinedKey = fieldValueDefinedListener.key;
-  udebug.log_detail('MySQLConnection.buildWriteOperation', fieldValueDefinedKey);
+  udebug.log_detail('MyBlockchainConnection.buildWriteOperation', fieldValueDefinedKey);
   if (typeof(fieldValueDefinedKey) === 'undefined') {
     // all fields are defined; use the standard generated INSERT... DUPLICATE SQL statement
-    return new InsertOperation(dbTableHandler.mysql.insertSQL, fieldValues, callback);
+    return new InsertOperation(dbTableHandler.myblockchain.insertSQL, fieldValues, callback);
   }
   var insertSQL = getInsertSQL(dbTableHandler, fieldValueDefinedKey);
   // extract the field values that were defined
@@ -1317,7 +1317,7 @@ exports.DBSession.prototype.buildDeleteOperation = function(dbIndexHandler, keys
   var keysArray = dbIndexHandler.getFields(keys);
   var dbTableHandler = dbIndexHandler.tableHandler;
   getMetadata(dbTableHandler);
-  var deleteSQL = dbTableHandler.mysql.deleteSQL[dbIndexHandler.dbIndex.name];
+  var deleteSQL = dbTableHandler.myblockchain.deleteSQL[dbIndexHandler.dbIndex.name];
 
   return new DeleteOperation(deleteSQL, keysArray, callback);
 };
@@ -1334,7 +1334,7 @@ exports.DBSession.prototype.buildReadOperation = function(dbIndexHandler, keys, 
   }
   var dbTableHandler = dbIndexHandler.tableHandler;
   getMetadata(dbTableHandler);
-  var selectSQL = dbTableHandler.mysql.selectSQL[dbIndexHandler.dbIndex.name];
+  var selectSQL = dbTableHandler.myblockchain.selectSQL[dbIndexHandler.dbIndex.name];
   return new ReadOperation(this, dbTableHandler, selectSQL, keysArray, callback);
 };
 
@@ -1344,8 +1344,8 @@ exports.DBSession.prototype.buildReadProjectionOperation =
       'keys:\n', keys);
 
   // process the projection object if it has not been processed since it was last changed
-  if (!projection.mysql || (projection.mysql.id !== projection.id)) {
-    // we need to (re-)initialize the projection object for use with mysql adapter
+  if (!projection.myblockchain || (projection.myblockchain.id !== projection.id)) {
+    // we need to (re-)initialize the projection object for use with myblockchain adapter
     initializeProjection(projection);
   }
     
@@ -1358,7 +1358,7 @@ exports.DBSession.prototype.buildReadProjectionOperation =
   }
   var dbTableHandler = dbIndexHandler.tableHandler;
   getMetadata(dbTableHandler);
-  var whereSQL = dbTableHandler.mysql.whereSQL[dbIndexHandler.dbIndex.name];
+  var whereSQL = dbTableHandler.myblockchain.whereSQL[dbIndexHandler.dbIndex.name];
   return new ReadProjectionOperation(this, dbTableHandler, projection, whereSQL, keysArray, callback);
 };
 
@@ -1376,13 +1376,13 @@ exports.DBSession.prototype.buildScanOperation = function(queryDomainType, param
   getMetadata(dbTableHandler);
   // add the WHERE clause to the sql
   var whereSQL = ' WHERE ' + queryDomainType.mynode_query_domain_type.predicate.getSQL().sqlText;
-  var scanSQL = dbTableHandler.mysql.selectTableScanSQL + whereSQL;
+  var scanSQL = dbTableHandler.myblockchain.selectTableScanSQL + whereSQL;
   udebug.log_detail('dbSession.buildScanOperation sql', scanSQL, 'parameter values', parameterValues);
   // resolve parameters
   var sql = queryDomainType.mynode_query_domain_type.predicate.getSQL();
   var formalParameters = sql.formalParameters;
   var sqlParameters = [];
-  udebug.log_detail('MySQLConnection.DBSession.buildScanOperation formalParameters:', formalParameters);
+  udebug.log_detail('MyBlockchainConnection.DBSession.buildScanOperation formalParameters:', formalParameters);
   var i;
   for (i = 0; i < formalParameters.length; ++i) {
     var parameterName = formalParameters[i].name;
@@ -1438,7 +1438,7 @@ exports.DBSession.prototype.buildUpdateOperation = function(dbIndexHandler, keys
   var dbTableHandler = dbIndexHandler.tableHandler;
   getMetadata(dbTableHandler);
   // build the SQL Update statement along with the data values
-  var updateSetSQL = 'UPDATE ' + dbTableHandler.dbTable.database + '.' + dbTableHandler.dbTable.name + ' SET ';
+  var updateSetSQL = 'UPDATE ' + dbTableHandler.dbTable.blockchain + '.' + dbTableHandler.dbTable.name + ' SET ';
   var updateWhereSQL = ' WHERE ';
   var separatorWhereSQL = '';
   var separatorUpdateSetSQL = '';
@@ -1492,16 +1492,16 @@ exports.DBSession.prototype.buildWriteOperation = function(dbIndexHandler, value
   var dbTableHandler = dbIndexHandler.tableHandler;
   getMetadata(dbTableHandler);
   var fieldValueDefinedListener = new FieldValueDefinedListener();
-  var fieldValues = dbTableHandler.getFieldsWithListener(values, 'mysql', fieldValueDefinedListener);
+  var fieldValues = dbTableHandler.getFieldsWithListener(values, 'myblockchain', fieldValueDefinedListener);
   if (fieldValueDefinedListener.err) {
     // error during preparation of field values
-    udebug.log('MySQLConnection.buildWriteOperation error', fieldValueDefinedListener.err);
+    udebug.log('MyBlockchainConnection.buildWriteOperation error', fieldValueDefinedListener.err);
     return new ErrorOperation(fieldValueDefinedListener.err, callback);
   }
   var fieldValueDefinedKey = fieldValueDefinedListener.key;
   if (typeof(fieldValueDefinedKey) === 'undefined') {
     // all fields are defined; use the standard generated INSERT... DUPLICATE SQL statement
-    return new WriteOperation(dbTableHandler.mysql.duplicateSQL, fieldValues, callback);
+    return new WriteOperation(dbTableHandler.myblockchain.duplicateSQL, fieldValues, callback);
   }
 
   var writeSQL = getDuplicateSQL(dbTableHandler, fieldValueDefinedKey);
@@ -1530,7 +1530,7 @@ exports.DBSession.prototype.rollback = function(callback) {
 };
 
 exports.DBSession.prototype.close = function(callback) {
-  udebug.log('MySQLConnection.close');
+  udebug.log('MyBlockchainConnection.close');
   session_stats.closed++;
   this.connectionPool.closeConnection(this, callback);
 };

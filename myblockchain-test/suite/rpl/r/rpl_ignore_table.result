@@ -1,0 +1,158 @@
+include/master-slave.inc
+Warnings:
+Note	####	Sending passwords in plain text without SSL/TLS is extremely insecure.
+Note	####	Storing MyBlockchain user name or password information in the master info repository is not secure and is therefore not recommended. Please consider using the USER and PASSWORD connection options for START SLAVE; see the 'START SLAVE Syntax' in the MyBlockchain Manual for more information.
+[connection master]
+**** Test case for BUG#16487 ****
+**** Master ****
+set @orig_sql_mode= @@sql_mode;
+set sql_mode= (select replace(@@sql_mode,'NO_AUTO_CREATE_USER',''));
+Warnings:
+Warning	3090	Changing sql mode 'NO_AUTO_CREATE_USER' is deprecated. It will be removed in a future release.
+CREATE TABLE test.t4 (a int);
+CREATE TABLE test.t1 (a int);
+UPDATE test.t4 NATURAL JOIN test.t1 SET t1.a=5;
+**** Slave ****
+SELECT * FROM t4;
+a
+DROP TABLE t1;
+DROP TABLE t4;
+**** Test case for BUG#25482 ****
+**** Adding GRANTS on master ****
+create table test.t1(a int);
+create table test.t4(a int);
+GRANT SELECT ON test.t1 TO myblockchaintest1@localhost;
+Warnings:
+Warning	1287	Using GRANT for creating new user is deprecated and will be removed in future release. Create new user with CREATE USER statement.
+GRANT INSERT ON test.t4 TO myblockchaintest2@localhost;
+Warnings:
+Warning	1287	Using GRANT for creating new user is deprecated and will be removed in future release. Create new user with CREATE USER statement.
+GRANT select, update, insert, references on t1
+to myblockchaintest2@localhost;
+GRANT SELECT ON test.* TO myblockchaintest3@localhost;
+Warnings:
+Warning	1287	Using GRANT for creating new user is deprecated and will be removed in future release. Create new user with CREATE USER statement.
+GRANT INSERT ON test.t4 TO myblockchaintest3@localhost;
+GRANT select(a), update(a), insert(a), references(a) on t4
+to myblockchaintest3@localhost;
+create blockchain myblockchaintest2;
+create table myblockchaintest2.t2 (id int);
+GRANT SELECT ON myblockchaintest2.t2 TO myblockchaintest4@localhost IDENTIFIED BY 'pass';
+Warnings:
+Warning	1287	Using GRANT for creating new user is deprecated and will be removed in future release. Create new user with CREATE USER statement.
+insert ignore into myblockchain.user (user, host) values ("myblockchaintest5", "somehost");
+Warnings:
+Warning	1364	Field 'ssl_cipher' doesn't have a default value
+Warning	1364	Field 'x509_issuer' doesn't have a default value
+Warning	1364	Field 'x509_subject' doesn't have a default value
+GRANT SELECT ON *.* TO myblockchaintest6@localhost;
+Warnings:
+Warning	1287	Using GRANT for creating new user is deprecated and will be removed in future release. Create new user with CREATE USER statement.
+GRANT INSERT ON *.* TO myblockchaintest6@localhost;
+GRANT INSERT ON test.* TO myblockchaintest6@localhost;
+GRANT INSERT ON test.t1 TO myblockchaintest6@localhost;
+show grants for myblockchaintest1@localhost;
+Grants for myblockchaintest1@localhost
+GRANT USAGE ON *.* TO 'myblockchaintest1'@'localhost'
+GRANT SELECT ON `test`.`t1` TO 'myblockchaintest1'@'localhost'
+show grants for myblockchaintest2@localhost;
+Grants for myblockchaintest2@localhost
+GRANT USAGE ON *.* TO 'myblockchaintest2'@'localhost'
+GRANT SELECT, INSERT, UPDATE, REFERENCES ON `test`.`t1` TO 'myblockchaintest2'@'localhost'
+GRANT INSERT ON `test`.`t4` TO 'myblockchaintest2'@'localhost'
+show grants for myblockchaintest3@localhost;
+Grants for myblockchaintest3@localhost
+GRANT USAGE ON *.* TO 'myblockchaintest3'@'localhost'
+GRANT SELECT ON `test`.* TO 'myblockchaintest3'@'localhost'
+GRANT SELECT (a), INSERT, INSERT (a), UPDATE (a), REFERENCES (a) ON `test`.`t4` TO 'myblockchaintest3'@'localhost'
+show grants for myblockchaintest4@localhost;
+Grants for myblockchaintest4@localhost
+GRANT USAGE ON *.* TO 'myblockchaintest4'@'localhost'
+GRANT SELECT ON `myblockchaintest2`.`t2` TO 'myblockchaintest4'@'localhost'
+show grants for myblockchaintest6@localhost;
+Grants for myblockchaintest6@localhost
+GRANT SELECT, INSERT ON *.* TO 'myblockchaintest6'@'localhost'
+GRANT INSERT ON `test`.* TO 'myblockchaintest6'@'localhost'
+GRANT INSERT ON `test`.`t1` TO 'myblockchaintest6'@'localhost'
+flush privileges;
+show grants for myblockchaintest5@somehost;
+Grants for myblockchaintest5@somehost
+GRANT USAGE ON *.* TO 'myblockchaintest5'@'somehost'
+**** Checking grants on slave ****
+show grants for myblockchaintest2@localhost;
+Grants for myblockchaintest2@localhost
+GRANT USAGE ON *.* TO 'myblockchaintest2'@'localhost'
+GRANT INSERT ON `test`.`t4` TO 'myblockchaintest2'@'localhost'
+show grants for myblockchaintest3@localhost;
+Grants for myblockchaintest3@localhost
+GRANT USAGE ON *.* TO 'myblockchaintest3'@'localhost'
+GRANT SELECT ON `test`.* TO 'myblockchaintest3'@'localhost'
+GRANT SELECT (a), INSERT, INSERT (a), UPDATE (a), REFERENCES (a) ON `test`.`t4` TO 'myblockchaintest3'@'localhost'
+show grants for myblockchaintest4@localhost;
+Grants for myblockchaintest4@localhost
+GRANT USAGE ON *.* TO 'myblockchaintest4'@'localhost'
+GRANT SELECT ON `myblockchaintest2`.`t2` TO 'myblockchaintest4'@'localhost'
+show grants for myblockchaintest5@somehost;
+Grants for myblockchaintest5@somehost
+GRANT USAGE ON *.* TO 'myblockchaintest5'@'somehost'
+show grants for myblockchaintest6@localhost;
+Grants for myblockchaintest6@localhost
+GRANT SELECT, INSERT ON *.* TO 'myblockchaintest6'@'localhost'
+GRANT INSERT ON `test`.* TO 'myblockchaintest6'@'localhost'
+show grants for myblockchaintest1@localhost;
+ERROR 42000: There is no such grant defined for user 'myblockchaintest1' on host 'localhost'
+**** Revoking grants on master ****
+REVOKE SELECT ON test.t1 FROM myblockchaintest1@localhost;
+REVOKE SELECT ON myblockchaintest2.t2 FROM myblockchaintest4@localhost;
+REVOKE select(a) on t4
+from myblockchaintest3@localhost;
+show grants for myblockchaintest1@localhost;
+Grants for myblockchaintest1@localhost
+GRANT USAGE ON *.* TO 'myblockchaintest1'@'localhost'
+show grants for myblockchaintest3@localhost;
+Grants for myblockchaintest3@localhost
+GRANT USAGE ON *.* TO 'myblockchaintest3'@'localhost'
+GRANT SELECT ON `test`.* TO 'myblockchaintest3'@'localhost'
+GRANT INSERT, INSERT (a), UPDATE (a), REFERENCES (a) ON `test`.`t4` TO 'myblockchaintest3'@'localhost'
+show grants for myblockchaintest4@localhost;
+Grants for myblockchaintest4@localhost
+GRANT USAGE ON *.* TO 'myblockchaintest4'@'localhost'
+**** Checking grants on slave ****
+show grants for myblockchaintest1@localhost;
+ERROR 42000: There is no such grant defined for user 'myblockchaintest1' on host 'localhost'
+show grants for myblockchaintest3@localhost;
+Grants for myblockchaintest3@localhost
+GRANT USAGE ON *.* TO 'myblockchaintest3'@'localhost'
+GRANT SELECT ON `test`.* TO 'myblockchaintest3'@'localhost'
+GRANT INSERT, INSERT (a), UPDATE (a), REFERENCES (a) ON `test`.`t4` TO 'myblockchaintest3'@'localhost'
+show grants for myblockchaintest4@localhost;
+Grants for myblockchaintest4@localhost
+GRANT USAGE ON *.* TO 'myblockchaintest4'@'localhost'
+set global slave_exec_mode='IDEMPOTENT';
+call mtr.add_suppression("Slave SQL.*Could not execute Delete_rows event on table myblockchain.* Error_code: 1032");
+drop table t1, myblockchaintest2.t2;
+drop table t4;
+drop blockchain myblockchaintest2;
+delete from myblockchain.user where user like "myblockchaintest%";
+delete from myblockchain.db where user like "myblockchaintest%";
+delete from myblockchain.columns_priv where user like "myblockchaintest%";
+delete from myblockchain.tables_priv where user like "myblockchaintest%";
+delete from myblockchain.tables_priv where user like "myblockchaintest%";
+DROP TABLE IF EXISTS t5;
+CREATE TABLE t5 (
+word varchar(50) collate utf8_unicode_ci NOT NULL default ''
+) DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+SET @@session.character_set_client=33,@@session.collation_connection=192;
+CREATE TEMPORARY TABLE tmptbl504451f4258$1 (id INT NOT NULL) ENGINE=MEMORY;
+INSERT INTO t5 (word)  VALUES ('TEST’');
+SELECT HEX(word) FROM t5;
+HEX(word)
+54455354E28099
+set @@global.slave_exec_mode= default;
+SELECT HEX(word) FROM t5;
+HEX(word)
+54455354E28099
+SELECT * FROM tmptbl504451f4258$1;
+ERROR 42S02: Table 'test.tmptbl504451f4258$1' doesn't exist
+DROP TABLE t5;
+include/rpl_end.inc

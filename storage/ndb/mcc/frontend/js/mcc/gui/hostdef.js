@@ -169,7 +169,7 @@ function addHostsDialogSetup() {
         var hostlist_tt = new dijit.Tooltip({
             connectId: ["hostlist", "hostlist_qm"],
             label: "Comma separated list of names or ip addresses of \
-                    additional hosts to use for running MySQL cluster"
+                    additional hosts to use for running MyBlockchain cluster"
         });
     }
 }
@@ -261,9 +261,9 @@ function getFieldTT(field) {
         cores: "<i>CPU cores</i> is the number of cores of host's CPU. " +
                     "A multi core CPU can do several things simultaneously.",
         installdir: "<i>Installation directory</i> is the directory where " +
-                "the MySQL Cluster software is installed. ",
+                "the MyBlockchain Cluster software is installed. ",
         datadir: "<i>Data directory</i> is the directory for storing " +
-                "data, log files, etc. for MySQL Cluster. Data directories " +
+                "data, log files, etc. for MyBlockchain Cluster. Data directories " +
                 "for individual processes are defined automatically by " +
                 "appending process ids to this root path. If you want to " +
                 "have different data directories for different processes, " +
@@ -306,12 +306,12 @@ function editHostsDialogSetup() {
                                     id=\"cores_qm\">[?]\
                                 </span>\
                             </td>\
-                            <td>MySQL Cluster install directory \
+                            <td>MyBlockchain Cluster install directory \
                                 <span class=\"helpIcon\"\
                                     id=\"installdir_qm\">[?]\
                                 </span>\
                             </td>\
-                            <td>MySQL Cluster data directory \
+                            <td>MyBlockchain Cluster data directory \
                                 <span class=\"helpIcon\"\
                                     id=\"datadir_qm\">[?]\
                                 </span>\
@@ -476,13 +476,13 @@ function hostGridSetup() {
         {
             width: '26%',
             field: "installdir",
-            name: "MySQL Cluster install directory",
+            name: "MyBlockchain Cluster install directory",
             editable: true
         },
         {
             width: '26%',
             field: "datadir",
-            name: "MySQL Cluster data directory",
+            name: "MyBlockchain Cluster data directory",
             editable: true
     }];
 

@@ -19,11 +19,11 @@
  * NdbScanFilter.java
  */
 
-package com.mysql.ndbjtie.ndbapi;
+package com.myblockchain.ndbjtie.ndbapi;
 
 import java.nio.ByteBuffer;
 
-import com.mysql.jtie.Wrapper;
+import com.myblockchain.jtie.Wrapper;
 
 public class NdbScanFilter extends Wrapper implements NdbScanFilterConst
 {

@@ -16,7 +16,7 @@
    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-package com.mysql.clusterj.jpatest;
+package com.myblockchain.clusterj.jpatest;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -24,8 +24,8 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Date;
 
-import com.mysql.clusterj.jpatest.model.DatetimeAsUtilDateTypes;
-import com.mysql.clusterj.jpatest.model.IdBase;
+import com.myblockchain.clusterj.jpatest.model.DatetimeAsUtilDateTypes;
+import com.myblockchain.clusterj.jpatest.model.IdBase;
 
 /** Test that Datetimes can be read and written. 
  * case 1: Write using JDBC, read using NDB.

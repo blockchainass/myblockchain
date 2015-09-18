@@ -18,7 +18,7 @@ this program; if not, write to the Free Software Foundation, Inc.,
 
 /******************************************************************//**
 @file mach/mach0data.cc
-Utilities for converting data from the database file
+Utilities for converting data from the blockchain file
 to the machine format.
 
 Created 11/28/1995 Heikki Tuuri

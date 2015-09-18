@@ -16,12 +16,12 @@
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-package com.mysql.cluster.crund;
+package com.myblockchain.cluster.crund;
 
 import java.sql.*;
 
 /**
- * A simple utility class for testing connecting to a JDBC database.
+ * A simple utility class for testing connecting to a JDBC blockchain.
  */
 public class JdbcDriverTest {
     static public void main(String[] args) throws Exception {
@@ -63,7 +63,7 @@ public class JdbcDriverTest {
             System.out.println("conn = " + conn);
             conn.close();
         } catch (SQLException e) {
-            System.out.println("Cannot connect to database, exception: "
+            System.out.println("Cannot connect to blockchain, exception: "
                                + e.getMessage());
             throw e;
         }

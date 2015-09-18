@@ -83,7 +83,7 @@ TEST_F(RegexTest, BasicTest)
 /*
   Bug#20642505: HENRY SPENCER REGULAR EXPRESSIONS (REGEX) LIBRARY
 
-  We have our own variant of the regex code that understands MySQL charsets.
+  We have our own variant of the regex code that understands MyBlockchain charsets.
   This test is hear to make sure that we never checkpoint or cherrypick from
   the upstream and end up with a version that isn't patched against a
   potential overflow.

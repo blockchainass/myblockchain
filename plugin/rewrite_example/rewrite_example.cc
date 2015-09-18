@@ -18,11 +18,11 @@
 #include <string.h>
 
 #include <my_global.h>
-#include <mysql/plugin.h>
-#include <mysql/plugin_audit.h>
-#include <mysql/service_mysql_alloc.h>
-#include <my_thread.h> // my_thread_handle needed by mysql_memory.h
-#include <mysql/psi/mysql_memory.h>
+#include <myblockchain/plugin.h>
+#include <myblockchain/plugin_audit.h>
+#include <myblockchain/service_myblockchain_alloc.h>
+#include <my_thread.h> // my_thread_handle needed by myblockchain_memory.h
+#include <myblockchain/psi/myblockchain_memory.h>
 
 /* instrument the memory allocation */
 #ifdef HAVE_PSI_INTERFACE
@@ -33,13 +33,13 @@ static PSI_memory_info all_rewrite_memory[]=
   { &key_memory_rewrite_example, "rewrite_example", 0 }
 };
 
-static int plugin_init(MYSQL_PLUGIN)
+static int plugin_init(MYBLOCKCHAIN_PLUGIN)
 {
   const char* category= "sql";
   int count;
 
   count= array_elements(all_rewrite_memory);
-  mysql_memory_register(category, all_rewrite_memory, count);
+  myblockchain_memory_register(category, all_rewrite_memory, count);
   return 0; /* success */
 }
 #else
@@ -48,14 +48,14 @@ static int plugin_init(MYSQL_PLUGIN)
 #endif /* HAVE_PSI_INTERFACE */
 
 
-static void rewrite_lower(MYSQL_THD thd, unsigned int event_class,
+static void rewrite_lower(MYBLOCKCHAIN_THD thd, unsigned int event_class,
                           const void *event)
 {
-  if (event_class == MYSQL_AUDIT_PARSE_CLASS)
+  if (event_class == MYBLOCKCHAIN_AUDIT_PARSE_CLASS)
   {
-    const struct mysql_event_parse *event_parse=
-      static_cast<const struct mysql_event_parse *>(event);
-    if (event_parse->event_subclass == MYSQL_AUDIT_PREPARSE)
+    const struct myblockchain_event_parse *event_parse=
+      static_cast<const struct myblockchain_event_parse *>(event);
+    if (event_parse->event_subclass == MYBLOCKCHAIN_AUDIT_PREPARSE)
     {
       size_t query_length= event_parse->query_length;
       char *rewritten_query=
@@ -73,18 +73,18 @@ static void rewrite_lower(MYSQL_THD thd, unsigned int event_class,
 }
 
 /* Audit plugin descriptor */
-static struct st_mysql_audit rewrite_example_descriptor=
+static struct st_myblockchain_audit rewrite_example_descriptor=
 {
-  MYSQL_AUDIT_INTERFACE_VERSION,                    /* interface version */
+  MYBLOCKCHAIN_AUDIT_INTERFACE_VERSION,                    /* interface version */
   NULL,                                             /* release_thd()     */
   rewrite_lower,                                    /* event_notify()    */
-  { MYSQL_AUDIT_PARSE_CLASSMASK }                   /* class mask        */
+  { MYBLOCKCHAIN_AUDIT_PARSE_CLASSMASK }                   /* class mask        */
 };
 
 /* Plugin descriptor */
-mysql_declare_plugin(audit_log)
+myblockchain_declare_plugin(audit_log)
 {
-  MYSQL_AUDIT_PLUGIN,             /* plugin type                   */
+  MYBLOCKCHAIN_AUDIT_PLUGIN,             /* plugin type                   */
   &rewrite_example_descriptor,    /* type specific descriptor      */
   "rewrite_example",              /* plugin name                   */
   "Oracle",                       /* author                        */
@@ -100,4 +100,4 @@ mysql_declare_plugin(audit_log)
   NULL,                           /* reserverd                     */
   0                               /* flags                         */
 }
-mysql_declare_plugin_end;
+myblockchain_declare_plugin_end;

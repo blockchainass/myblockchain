@@ -601,7 +601,7 @@ was set to be executed to be ignored for retrieval purposes.
 The intent of flush_all with a delay, was that in a setting where you
 have a pool of memcached servers, and you need to flush all content,
 you have the option of not resetting all memcached servers at the
-same time (which could e.g. cause a spike in database load with all
+same time (which could e.g. cause a spike in blockchain load with all
 clients suddenly needing to recreate content that would otherwise
 have been found in the memcached daemon).
 

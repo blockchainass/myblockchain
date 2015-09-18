@@ -20,4 +20,4 @@
 # need some extra time
 #for ((i=0; i<1; i++)) ; do printf "." ; sleep 1 ; done
 
-./start_mysqld.sh
+./start_myblockchaind.sh

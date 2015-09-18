@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2003-2006 MySQL AB, 2009 Sun Microsystems, Inc.
+   Copyright (C) 2003-2006 MyBlockchain AB, 2009 Sun Microsystems, Inc.
     All rights reserved. Use is subject to license terms.
 
    This program is free software; you can redistribute it and/or modify
@@ -31,12 +31,12 @@
 int main(int argc, const char** argv){
   ndb_init();
   int _help = 0;
-  const char * _database = "BANK";
+  const char * _blockchain = "BANK";
   int disk = 0;
   int skip_create = 0;
 
   struct getargs args[] = {
-    { "database", 'd', arg_string, &_database, "Database name", ""},
+    { "blockchain", 'd', arg_string, &_blockchain, "Database name", ""},
     { "disk", 0, arg_flag, &disk, "Use disk tables", "" },
     { "skip-create", 0, arg_flag, &skip_create, "Skip create", "" },
     { "usage", '?', arg_flag, &_help, "Print help", "" }
@@ -57,7 +57,7 @@ int main(int argc, const char** argv){
     return NDBT_ProgramExit(NDBT_FAILED);
   }
 
-  Bank bank(con,_database);
+  Bank bank(con,_blockchain);
   int overWriteExisting = true;
   bank.setSkipCreate(skip_create);
   if (bank.createAndLoadBank(overWriteExisting, disk) != NDBT_OK)

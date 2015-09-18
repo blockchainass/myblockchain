@@ -15,8 +15,8 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA */
 
 #include <my_global.h>
-#include <mysql/plugin_auth.h>
-#include <mysql/client_plugin.h>
+#include <myblockchain/plugin_auth.h>
+#include <myblockchain/client_plugin.h>
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -33,7 +33,7 @@
 
 /********************* SERVER SIDE ****************************************/
 
-static int qa_auth_interface (MYSQL_PLUGIN_VIO *vio, MYSQL_SERVER_AUTH_INFO *info)
+static int qa_auth_interface (MYBLOCKCHAIN_PLUGIN_VIO *vio, MYBLOCKCHAIN_SERVER_AUTH_INFO *info)
 {
   unsigned char *pkt;
   int pkt_len, err= CR_OK;
@@ -91,9 +91,9 @@ int set_salt(const char* password __attribute__((unused)),
   return 0;
 }
 
-static struct st_mysql_auth qa_auth_test_handler=
+static struct st_myblockchain_auth qa_auth_test_handler=
 {
-  MYSQL_AUTHENTICATION_INTERFACE_VERSION,
+  MYBLOCKCHAIN_AUTHENTICATION_INTERFACE_VERSION,
   "qa_auth_interface", /* requires test_plugin client's plugin */
   qa_auth_interface,
   generate_auth_string_hash,
@@ -102,9 +102,9 @@ static struct st_mysql_auth qa_auth_test_handler=
   AUTH_FLAG_PRIVILEGED_USER_FOR_PASSWORD_CHANGE
 };
 
-mysql_declare_plugin(test_plugin)
+myblockchain_declare_plugin(test_plugin)
 {
-  MYSQL_AUTHENTICATION_PLUGIN,
+  MYBLOCKCHAIN_AUTHENTICATION_PLUGIN,
   &qa_auth_test_handler,
   "qa_auth_server",
   "Horst Hunger",
@@ -118,4 +118,4 @@ mysql_declare_plugin(test_plugin)
   NULL,
   0,
 }
-mysql_declare_plugin_end;
+myblockchain_declare_plugin_end;

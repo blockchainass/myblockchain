@@ -17,7 +17,7 @@
 /**
   @file
 
-  Test driver for the mysql-test/t/plugin_auth.test
+  Test driver for the myblockchain-test/t/plugin_auth.test
 
   This is a set of test plugins used to test the external authentication 
   implementation.
@@ -26,9 +26,9 @@
 */
 
 #include <my_global.h>
-#include <mysql/plugin_auth.h>
-#include <mysql/client_plugin.h>
-#include <mysql/service_my_plugin_log.h>
+#include <myblockchain/plugin_auth.h>
+#include <myblockchain/client_plugin.h>
+#include <myblockchain/service_my_plugin_log.h>
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -49,10 +49,10 @@
  Handle assigned when loading the plugin. 
  Used with the error reporting functions. 
 */
-static MYSQL_PLUGIN plugin_info_ptr; 
+static MYBLOCKCHAIN_PLUGIN plugin_info_ptr; 
 
 static int
-test_plugin_init (MYSQL_PLUGIN plugin_info)
+test_plugin_init (MYBLOCKCHAIN_PLUGIN plugin_info)
 {
   plugin_info_ptr= plugin_info;
   return 0;
@@ -62,7 +62,7 @@ test_plugin_init (MYSQL_PLUGIN plugin_info)
 /**
   dialog test plugin mimicking the ordinary auth mechanism. Used to test the auth plugin API
 */
-static int auth_test_plugin(MYSQL_PLUGIN_VIO *vio, MYSQL_SERVER_AUTH_INFO *info)
+static int auth_test_plugin(MYBLOCKCHAIN_PLUGIN_VIO *vio, MYBLOCKCHAIN_SERVER_AUTH_INFO *info)
 {
   unsigned char *pkt;
   int pkt_len;
@@ -126,9 +126,9 @@ int set_salt(const char* password __attribute__((unused)),
   return 0;
 }
 
-static struct st_mysql_auth auth_test_handler=
+static struct st_myblockchain_auth auth_test_handler=
 {
-  MYSQL_AUTHENTICATION_INTERFACE_VERSION,
+  MYBLOCKCHAIN_AUTHENTICATION_INTERFACE_VERSION,
   "auth_test_plugin", /* requires test_plugin client's plugin */
   auth_test_plugin,
   generate_auth_string_hash,
@@ -140,8 +140,8 @@ static struct st_mysql_auth auth_test_handler=
 /**
   dialog test plugin mimicking the ordinary auth mechanism. Used to test the clear text plugin API
 */
-static int auth_cleartext_plugin(MYSQL_PLUGIN_VIO *vio, 
-                                 MYSQL_SERVER_AUTH_INFO *info)
+static int auth_cleartext_plugin(MYBLOCKCHAIN_PLUGIN_VIO *vio, 
+                                 MYBLOCKCHAIN_SERVER_AUTH_INFO *info)
 {
   unsigned char *pkt;
   int pkt_len;
@@ -160,10 +160,10 @@ static int auth_cleartext_plugin(MYSQL_PLUGIN_VIO *vio,
 }
 
 
-static struct st_mysql_auth auth_cleartext_handler=
+static struct st_myblockchain_auth auth_cleartext_handler=
 {
-  MYSQL_AUTHENTICATION_INTERFACE_VERSION,
-  "mysql_clear_password", /* requires the clear text plugin */
+  MYBLOCKCHAIN_AUTHENTICATION_INTERFACE_VERSION,
+  "myblockchain_clear_password", /* requires the clear text plugin */
   auth_cleartext_plugin,
   generate_auth_string_hash,
   validate_auth_string_hash,
@@ -171,9 +171,9 @@ static struct st_mysql_auth auth_cleartext_handler=
   AUTH_FLAG_PRIVILEGED_USER_FOR_PASSWORD_CHANGE
 };
 
-mysql_declare_plugin(test_plugin)
+myblockchain_declare_plugin(test_plugin)
 {
-  MYSQL_AUTHENTICATION_PLUGIN,
+  MYBLOCKCHAIN_AUTHENTICATION_PLUGIN,
   &auth_test_handler,
   "test_plugin_server",
   "Georgi Kodinov",
@@ -188,7 +188,7 @@ mysql_declare_plugin(test_plugin)
   0,
 },
 {
-  MYSQL_AUTHENTICATION_PLUGIN,
+  MYBLOCKCHAIN_AUTHENTICATION_PLUGIN,
   &auth_cleartext_handler,
   "cleartext_plugin_server",
   "Georgi Kodinov",
@@ -202,14 +202,14 @@ mysql_declare_plugin(test_plugin)
   NULL,
   0,
 }
-mysql_declare_plugin_end;
+myblockchain_declare_plugin_end;
 
 
 /********************* CLIENT SIDE ***************************************/
 /*
   client plugin used for testing the plugin API
 */
-#include <mysql.h>
+#include <myblockchain.h>
 
 /**
   The main function of the test plugin.
@@ -219,7 +219,7 @@ mysql_declare_plugin_end;
 
   @note
    1. this plugin shows how a client authentication plugin
-      may read a MySQL protocol OK packet internally - which is important
+      may read a MyBlockchain protocol OK packet internally - which is important
       where a number of packets is not known in advance.
    2. the first byte of the prompt is special. it is not
       shown to the user, but signals whether it is the last question
@@ -227,7 +227,7 @@ mysql_declare_plugin_end;
       and whether the input is a password (not echoed).
    3. the prompt is expected to be sent zero-terminated
 */
-static int test_plugin_client(MYSQL_PLUGIN_VIO *vio, MYSQL *mysql)
+static int test_plugin_client(MYBLOCKCHAIN_PLUGIN_VIO *vio, MYBLOCKCHAIN *myblockchain)
 {
   unsigned char *pkt, cmd= 0;
   int pkt_len, res;
@@ -243,7 +243,7 @@ static int test_plugin_client(MYSQL_PLUGIN_VIO *vio, MYSQL *mysql)
     if (pkt == 0)
     {
       /*
-        in mysql_change_user() the client sends the first packet, so
+        in myblockchain_change_user() the client sends the first packet, so
         the first vio->read_packet() does nothing (pkt == 0).
 
         We send the "password", assuming the client knows what it's doing.
@@ -251,22 +251,22 @@ static int test_plugin_client(MYSQL_PLUGIN_VIO *vio, MYSQL *mysql)
         authentication plugin on the client if the first question
         asks for a password - which will be sent in clear text, by the way)
       */
-      reply= mysql->passwd;
+      reply= myblockchain->passwd;
     }
     else
     {
       cmd= *pkt++;
 
-      /* is it MySQL protocol (0=OK or 254=need old password) packet ? */
+      /* is it MyBlockchain protocol (0=OK or 254=need old password) packet ? */
       if (cmd == 0 || cmd == 254)
         return CR_OK_HANDSHAKE_COMPLETE; /* yes. we're done */
 
       /*
-        asking for a password with an empty prompt means mysql->password
+        asking for a password with an empty prompt means myblockchain->password
         otherwise return an error
       */
       if ((cmd == LAST_PASSWORD[0] || cmd == PASSWORD_QUESTION[0]) && *pkt == 0)
-        reply= mysql->passwd;
+        reply= myblockchain->passwd;
       else
         return CR_ERROR;
     }
@@ -287,7 +287,7 @@ static int test_plugin_client(MYSQL_PLUGIN_VIO *vio, MYSQL *mysql)
 }
 
 
-mysql_declare_client_plugin(AUTHENTICATION)
+myblockchain_declare_client_plugin(AUTHENTICATION)
   "auth_test_plugin",
   "Georgi Kodinov",
   "Dialog Client Authentication Plugin",
@@ -298,4 +298,4 @@ mysql_declare_client_plugin(AUTHENTICATION)
   NULL,
   NULL,
   test_plugin_client
-mysql_end_client_plugin;
+myblockchain_end_client_plugin;

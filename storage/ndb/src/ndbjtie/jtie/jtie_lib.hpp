@@ -56,7 +56,7 @@ JTIE_INSTANTIATE_CLASS_MEMBER_INFO_0(_ByteBuffer_position,
                                    "()I")
 
 JTIE_INSTANTIATE_CLASS_MEMBER_INFO_0(_Wrapper_cdelegate,
-                                   "com/mysql/jtie/Wrapper",
+                                   "com/myblockchain/jtie/Wrapper",
                                    "cdelegate",
                                    "J")
 
@@ -153,18 +153,18 @@ JTie_OnUnload(JavaVM * jvm, void * reserved)
 
 extern "C" {
 JNIEXPORT void JNICALL
-Java_com_mysql_jtie_Wrapper_initIds(JNIEnv *, jclass);
+Java_com_myblockchain_jtie_Wrapper_initIds(JNIEnv *, jclass);
 
 /**
  * Handler function called when the class Wrapper is loaded.
  */
 JNIEXPORT void JNICALL
-Java_com_mysql_jtie_Wrapper_initIds(JNIEnv * env, jclass cls)
+Java_com_myblockchain_jtie_Wrapper_initIds(JNIEnv * env, jclass cls)
 {
-    TRACE("void Java_com_mysql_jtie_Wrapper_initIds(JNIEnv *, jclass)");
+    TRACE("void Java_com_myblockchain_jtie_Wrapper_initIds(JNIEnv *, jclass)");
     // store class in a weak global ref to allow for class to be unloaded
-    jtie_cls_com_mysql_jtie_Wrapper = env->NewWeakGlobalRef(cls);
-    if (jtie_cls_com_mysql_jtie_Wrapper == NULL) {
+    jtie_cls_com_myblockchain_jtie_Wrapper = env->NewWeakGlobalRef(cls);
+    if (jtie_cls_com_myblockchain_jtie_Wrapper == NULL) {
         return; // OutOfMemoryError pending
     }
 }

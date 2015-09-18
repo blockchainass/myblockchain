@@ -36,7 +36,7 @@ typedef byte	trx_sysf_rseg_t;
 /*-------------------------------------------------------------*/
 #define	TRX_SYS_RSEG_SPACE	0	/* space where the segment
 					header is placed; starting with
-					MySQL/InnoDB 5.1.7, this is
+					MyBlockchain/InnoDB 5.1.7, this is
 					UNIV_UNDEFINED if the slot is unused */
 #define	TRX_SYS_RSEG_PAGE_NO	4	/*  page number where the segment
 					header is placed; this is FIL_NULL
@@ -422,11 +422,11 @@ trx_sys_get_new_trx_id()
 {
 	ut_ad(trx_sys_mutex_own());
 
-	/* VERY important: after the database is started, max_trx_id value is
+	/* VERY important: after the blockchain is started, max_trx_id value is
 	divisible by TRX_SYS_TRX_ID_WRITE_MARGIN, and the following if
 	will evaluate to TRUE when this function is first time called,
 	and the value for trx id will be written to disk-based header!
-	Thus trx id values will not overlap when the database is
+	Thus trx id values will not overlap when the blockchain is
 	repeatedly started! */
 
 	if (!(trx_sys->max_trx_id % TRX_SYS_TRX_ID_WRITE_MARGIN)) {

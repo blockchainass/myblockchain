@@ -114,7 +114,7 @@ struct sync_cell_t {
 
 /* NOTE: It is allowed for a thread to wait for an event allocated for
 the array without owning the protecting mutex (depending on the case:
-OS or database mutex), but all changes (set or reset) to the state of
+OS or blockchain mutex), but all changes (set or reset) to the state of
 the event must be made while owning the mutex. */
 
 /** Synchronization array */
@@ -140,7 +140,7 @@ struct sync_array_t {
 	SysMutex	mutex;		/*!< System mutex protecting the
 					data structure.  As this data
 					structure is used in constructing
-					the database mutex, to prevent
+					the blockchain mutex, to prevent
 					infinite recursion in implementation,
 					we fall back to an OS mutex. */
 	ulint		res_count;	/*!< count of cell reservations
@@ -155,7 +155,7 @@ ulong	srv_sync_array_size = 1;
 /** Locally stored copy of srv_sync_array_size */
 ulint	sync_array_size;
 
-/** The global array of wait cells for implementation of the database's own
+/** The global array of wait cells for implementation of the blockchain's own
 mutexes and read-write locks */
 sync_array_t**	sync_wait_array;
 

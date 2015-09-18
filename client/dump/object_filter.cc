@@ -17,11 +17,11 @@
 
 #include "object_filter.h"
 #include "pattern_matcher.h"
-#include "database.h"
+#include "blockchain.h"
 #include "event_scheduler_event.h"
 #include "table.h"
 #include "stored_procedure.h"
-#include "mysql_function.h"
+#include "myblockchain_function.h"
 #include "trigger.h"
 #include "privilege.h"
 #include <boost/algorithm/string.hpp>
@@ -115,14 +115,14 @@ void Object_filter::include_tables_callback(char*)
   this->process_object_inclusion_string(m_tables_included);
 }
 
-void Object_filter::exclude_databases_callback(char*)
+void Object_filter::exclude_blockchains_callback(char*)
 {
-  this->process_object_inclusion_string(m_databases_excluded, false);
+  this->process_object_inclusion_string(m_blockchains_excluded, false);
 }
 
-void Object_filter::include_databases_callback(char*)
+void Object_filter::include_blockchains_callback(char*)
 {
-  this->process_object_inclusion_string(m_databases_included, false);
+  this->process_object_inclusion_string(m_blockchains_included, false);
 }
 
 void Object_filter::include_users_callback(char*)
@@ -160,7 +160,7 @@ bool Object_filter::is_object_included_by_lists(
   bool is_included= false;
   bool is_excluded= false;
 
-  if (m_databases_included.size() == 0 && m_databases_excluded.size() == 0)
+  if (m_blockchains_included.size() == 0 && m_blockchains_excluded.size() == 0)
     return true;
 
   for (std::vector<std::pair<std::string, std::string> >::iterator it=
@@ -184,12 +184,12 @@ bool Object_filter::is_object_included_in_dump(Abstract_data_object* object)
       && dynamic_cast<Privilege*>(object) == NULL)
   {
     /*
-      All objects except database/event/users need to check for schema
+      All objects except blockchain/event/users need to check for schema
       inclusion rules.
       */
     if (object->get_schema().size() > 0
       && !is_object_included_by_lists("", object->get_schema(),
-      &m_databases_included, &m_databases_excluded))
+      &m_blockchains_included, &m_blockchains_excluded))
       return false;
   }
   std::vector<std::pair<std::string, std::string> >* include_list;
@@ -203,8 +203,8 @@ bool Object_filter::is_object_included_in_dump(Abstract_data_object* object)
   }
   else if (dynamic_cast<Database*>(object) != NULL)
   {
-    include_list= &m_databases_included;
-    exclude_list= &m_databases_excluded;
+    include_list= &m_blockchains_included;
+    exclude_list= &m_blockchains_excluded;
   }
   else if (dynamic_cast<Stored_procedure*>(object) != NULL
     || dynamic_cast<Mysql_function*>(object) != NULL)
@@ -262,19 +262,19 @@ bool Object_filter::is_object_included_in_dump(Abstract_data_object* object)
 
 void Object_filter::create_options()
 {
-  this->create_new_option(&m_include_tmp_string, "include-databases",
-    "Specifies comma-separated list of databases and all of its objects to "
+  this->create_new_option(&m_include_tmp_string, "include-blockchains",
+    "Specifies comma-separated list of blockchains and all of its objects to "
     "include. If there is no exclusions then only included objects will be "
     "dumped. Otherwise all objects that are not on exclusion lists or are "
     "on inclusion list will be dumped.")
     ->add_callback(new Mysql::Instance_callback
     <void, char*, Object_filter>(this,
-    &Object_filter::include_databases_callback));
-  this->create_new_option(&m_include_tmp_string, "exclude-databases",
-    "Specifies comma-separated list of databases to exclude.")
+    &Object_filter::include_blockchains_callback));
+  this->create_new_option(&m_include_tmp_string, "exclude-blockchains",
+    "Specifies comma-separated list of blockchains to exclude.")
     ->add_callback(new Mysql::Instance_callback
     <void, char*, Object_filter>(this,
-    &Object_filter::exclude_databases_callback));
+    &Object_filter::exclude_blockchains_callback));
   this->create_new_option(&m_include_tmp_string, "include-tables",
     "Specifies comma-separated list of tables to "
     "include. If there is no exclusions then only included objects will be "

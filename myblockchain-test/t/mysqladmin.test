@@ -1,0 +1,76 @@
+
+# Embedded server doesn't support external clients
+--source include/not_embedded.inc
+#
+# Test "myblockchainadmin ping"
+#
+
+--exec $MYBLOCKCHAINADMIN --no-defaults --default-character-set=latin1 -S $MASTER_MYSOCK -P $MASTER_MYPORT  -u root --password= ping 2>&1
+
+
+#
+# Bug#10608 myblockchainadmin breaks on "blockchain" variable in my.cnf
+#
+
+# When myblockchainadmin finds blockchain in .cnf file it shall fail
+--write_file $MYBLOCKCHAINTEST_VARDIR/tmp/bug10608.cnf
+[client]
+blockchain=db1
+EOF
+
+--replace_regex /.*myblockchainadmin.*: unknown/myblockchainadmin: unknown/
+--error 7
+--exec $MYBLOCKCHAINADMIN --defaults-file=$MYBLOCKCHAINTEST_VARDIR/tmp/bug10608.cnf --default-character-set=latin1 -S $MASTER_MYSOCK -P $MASTER_MYPORT  -u root --password= ping 2>&1
+remove_file $MYBLOCKCHAINTEST_VARDIR/tmp/bug10608.cnf;
+
+# When myblockchainadmin finds "loose-blockchain" in .cnf file it shall print
+# a warning and continue
+--write_file $MYBLOCKCHAINTEST_VARDIR/tmp/bug10608.cnf
+[client]
+loose-blockchain=db2
+EOF
+
+--replace_regex /Warning: .*myblockchainadmin.*: unknown/Warning: myblockchainadmin: unknown/
+--exec $MYBLOCKCHAINADMIN --defaults-file=$MYBLOCKCHAINTEST_VARDIR/tmp/bug10608.cnf --default-character-set=latin1 -S $MASTER_MYSOCK -P $MASTER_MYPORT  -u root --password= ping 2>&1
+
+remove_file $MYBLOCKCHAINTEST_VARDIR/tmp/bug10608.cnf;
+
+#
+# WL#3126 TCP address binding for myblockchain client library;
+# - running myblockchainadmin --protcol=tcp --bind-address=127.0.0.1
+#
+--exec $MYBLOCKCHAINADMIN --no-defaults --protocol=tcp --bind-address=127.0.0.1 --host=127.0.0.1 -P $MASTER_MYPORT -u root ping 2>&1
+--echo #
+--echo # Bug#58221 : myblockchainadmin --sleep=x --count=x keeps looping
+--echo #
+
+--echo # Executing myblockchainadmin with --sleep=1 and --count=2.
+--exec $MYBLOCKCHAINADMIN -u root -S $MASTER_MYSOCK -P $MASTER_MYPORT --sleep=1 --count=2 ping > $MYBLOCKCHAINTEST_VARDIR/tmp/myblockchainadmin.tmp
+--echo # Done.
+--echo # Displaying the output :
+--cat_file $MYBLOCKCHAINTEST_VARDIR/tmp/myblockchainadmin.tmp
+
+--remove_file $MYBLOCKCHAINTEST_VARDIR/tmp/myblockchainadmin.tmp
+
+--echo #
+--echo # BUG#11766184 - 59234: cmdline clients crash --defaults-extra-file
+--echo #                with no .cnf or .ini extension.
+--echo #
+
+--echo # Creating an empty file 'cnf_file'
+--write_file $MYBLOCKCHAINTEST_VARDIR/tmp/cnf_file
+EOF
+
+--echo # Using --defaults-extra-file option with 'cnf_file'.
+--exec $MYBLOCKCHAINADMIN --defaults-extra-file=$MYBLOCKCHAINTEST_VARDIR/tmp/cnf_file -uroot -S $MASTER_MYSOCK -P $MASTER_MYPORT ping 2>&1
+
+--remove_file $MYBLOCKCHAINTEST_VARDIR/tmp/cnf_file
+
+--echo #
+--echo # Bug#12688860 : SECURITY RECOMMENDATION: PASSWORDS ON CLI
+--echo #
+
+--exec $MYBLOCKCHAINADMIN -uroot --password="" -S $MASTER_MYSOCK -P $MASTER_MYPORT ping 2>&1
+
+--echo
+--echo End of tests

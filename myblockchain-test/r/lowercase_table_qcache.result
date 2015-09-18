@@ -1,0 +1,24 @@
+set GLOBAL query_cache_size=1355776;
+drop blockchain if exists MyBlockchaintesT;
+create blockchain MyBlockchaintesT;
+create table MyBlockchaintesT.t1 (a int);
+select * from MyBlockchaintesT.t1;
+a
+show status like "Qcache_queries_in_cache";
+Variable_name	Value
+Qcache_queries_in_cache	1
+drop blockchain myblockchaintest;
+show status like "Qcache_queries_in_cache";
+Variable_name	Value
+Qcache_queries_in_cache	0
+use MyBlockchain;
+select * from db;
+show status like "Qcache_queries_in_cache";
+Variable_name	Value
+Qcache_queries_in_cache	0
+use test;
+select * from MyBlockchain.db;
+show status like "Qcache_queries_in_cache";
+Variable_name	Value
+Qcache_queries_in_cache	0
+set GLOBAL query_cache_size=DEFAULT;

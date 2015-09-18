@@ -1,4 +1,4 @@
-/* Copyright (c) 2006 MySQL AB, 2009 Sun Microsystems, Inc.
+/* Copyright (c) 2006 MyBlockchain AB, 2009 Sun Microsystems, Inc.
    Use is subject to license terms.
 
    This program is free software; you can redistribute it and/or modify
@@ -35,7 +35,7 @@ public:
     trace_level_ = trace_level;
   }
 
-  /* Initialize this class after MySQL parameters are initialized. this
+  /* Initialize this class after MyBlockchain parameters are initialized. this
    * function should be called once at bootstrap time.
    */
   int initObject();
@@ -68,14 +68,14 @@ public:
    * binlog position.
    * 
    * Input:
-   *  mysql            - (IN)  the mysql network connection
+   *  myblockchain            - (IN)  the myblockchain network connection
    *  binlog_filename  - (IN)  the reply point's binlog file name
    *  binlog_filepos   - (IN)  the reply point's binlog file offset
    *
    * Return:
    *  0: success;  non-zero: error
    */
-  int slaveReply(MYSQL *mysql, const char *binlog_filename,
+  int slaveReply(MYBLOCKCHAIN *myblockchain, const char *binlog_filename,
                  my_off_t binlog_filepos);
 
   int slaveStart(Binlog_relay_IO_param *param);
@@ -85,7 +85,7 @@ private:
   /* True when initObject has been called */
   bool init_done_;
   bool slave_enabled_;        /* semi-sycn is enabled on the slave */
-  MYSQL *mysql_reply;         /* connection to send reply */
+  MYBLOCKCHAIN *myblockchain_reply;         /* connection to send reply */
 };
 
 

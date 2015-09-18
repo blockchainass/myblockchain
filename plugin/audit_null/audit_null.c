@@ -15,17 +15,17 @@
    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA */
 
 #include <stdio.h>
-#include <mysql/plugin.h>
-#include <mysql/plugin_audit.h>
+#include <myblockchain/plugin.h>
+#include <myblockchain/plugin_audit.h>
 #include "my_compiler.h"
 
 static volatile int number_of_calls; /* for SHOW STATUS, see below */
-/* Count MYSQL_AUDIT_GENERAL_CLASS event instances */
+/* Count MYBLOCKCHAIN_AUDIT_GENERAL_CLASS event instances */
 static volatile int number_of_calls_general_log;
 static volatile int number_of_calls_general_error;
 static volatile int number_of_calls_general_result;
 static volatile int number_of_calls_general_status;
-/* Count MYSQL_AUDIT_CONNECTION_CLASS event instances */
+/* Count MYBLOCKCHAIN_AUDIT_CONNECTION_CLASS event instances */
 static volatile int number_of_calls_connection_connect;
 static volatile int number_of_calls_connection_disconnect;
 static volatile int number_of_calls_connection_change_user;
@@ -88,47 +88,47 @@ static int audit_null_plugin_deinit(void *arg __attribute__((unused)))
   DESCRIPTION
 */
 
-static void audit_null_notify(MYSQL_THD thd __attribute__((unused)),
+static void audit_null_notify(MYBLOCKCHAIN_THD thd __attribute__((unused)),
                               unsigned int event_class,
                               const void *event)
 {
   /* prone to races, oh well */
   number_of_calls++;
-  if (event_class == MYSQL_AUDIT_GENERAL_CLASS)
+  if (event_class == MYBLOCKCHAIN_AUDIT_GENERAL_CLASS)
   {
-    const struct mysql_event_general *event_general=
-      (const struct mysql_event_general *) event;
+    const struct myblockchain_event_general *event_general=
+      (const struct myblockchain_event_general *) event;
     switch (event_general->event_subclass)
     {
-    case MYSQL_AUDIT_GENERAL_LOG:
+    case MYBLOCKCHAIN_AUDIT_GENERAL_LOG:
       number_of_calls_general_log++;
       break;
-    case MYSQL_AUDIT_GENERAL_ERROR:
+    case MYBLOCKCHAIN_AUDIT_GENERAL_ERROR:
       number_of_calls_general_error++;
       break;
-    case MYSQL_AUDIT_GENERAL_RESULT:
+    case MYBLOCKCHAIN_AUDIT_GENERAL_RESULT:
       number_of_calls_general_result++;
       break;
-    case MYSQL_AUDIT_GENERAL_STATUS:
+    case MYBLOCKCHAIN_AUDIT_GENERAL_STATUS:
       number_of_calls_general_status++;
       break;
     default:
       break;
     }
   }
-  else if (event_class == MYSQL_AUDIT_CONNECTION_CLASS)
+  else if (event_class == MYBLOCKCHAIN_AUDIT_CONNECTION_CLASS)
   {
-    const struct mysql_event_connection *event_connection=
-      (const struct mysql_event_connection *) event;
+    const struct myblockchain_event_connection *event_connection=
+      (const struct myblockchain_event_connection *) event;
     switch (event_connection->event_subclass)
     {
-    case MYSQL_AUDIT_CONNECTION_CONNECT:
+    case MYBLOCKCHAIN_AUDIT_CONNECTION_CONNECT:
       number_of_calls_connection_connect++;
       break;
-    case MYSQL_AUDIT_CONNECTION_DISCONNECT:
+    case MYBLOCKCHAIN_AUDIT_CONNECTION_DISCONNECT:
       number_of_calls_connection_disconnect++;
       break;
-    case MYSQL_AUDIT_CONNECTION_CHANGE_USER:
+    case MYBLOCKCHAIN_AUDIT_CONNECTION_CHANGE_USER:
       number_of_calls_connection_change_user++;
       break;
     default:
@@ -142,20 +142,20 @@ static void audit_null_notify(MYSQL_THD thd __attribute__((unused)),
   Plugin type-specific descriptor
 */
 
-static struct st_mysql_audit audit_null_descriptor=
+static struct st_myblockchain_audit audit_null_descriptor=
 {
-  MYSQL_AUDIT_INTERFACE_VERSION,                    /* interface version    */
+  MYBLOCKCHAIN_AUDIT_INTERFACE_VERSION,                    /* interface version    */
   NULL,                                             /* release_thd function */
   audit_null_notify,                                /* notify function      */
-  { (unsigned long) MYSQL_AUDIT_GENERAL_CLASSMASK |
-                    MYSQL_AUDIT_CONNECTION_CLASSMASK } /* class mask           */
+  { (unsigned long) MYBLOCKCHAIN_AUDIT_GENERAL_CLASSMASK |
+                    MYBLOCKCHAIN_AUDIT_CONNECTION_CLASSMASK } /* class mask           */
 };
 
 /*
   Plugin status variables for SHOW STATUS
 */
 
-static struct st_mysql_show_var simple_status[]=
+static struct st_myblockchain_show_var simple_status[]=
 {
   { "Audit_null_called",
     (char *) &number_of_calls,
@@ -189,9 +189,9 @@ static struct st_mysql_show_var simple_status[]=
   Plugin library descriptor
 */
 
-mysql_declare_plugin(audit_null)
+myblockchain_declare_plugin(audit_null)
 {
-  MYSQL_AUDIT_PLUGIN,         /* type                            */
+  MYBLOCKCHAIN_AUDIT_PLUGIN,         /* type                            */
   &audit_null_descriptor,     /* descriptor                      */
   "NULL_AUDIT",               /* name                            */
   "Oracle Corp",              /* author                          */
@@ -205,5 +205,5 @@ mysql_declare_plugin(audit_null)
   NULL,
   0,
 }
-mysql_declare_plugin_end;
+myblockchain_declare_plugin_end;
 

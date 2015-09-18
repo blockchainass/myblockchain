@@ -149,7 +149,7 @@ int table_replication_connection_status::rnd_next(void)
 {
   Master_info *mi= NULL;
 
-  mysql_mutex_lock(&LOCK_msr_map);
+  myblockchain_mutex_lock(&LOCK_msr_map);
 
   for (m_pos.set_at(&m_next_pos);
        m_pos.m_index < msr_map.get_max_channels();
@@ -162,12 +162,12 @@ int table_replication_connection_status::rnd_next(void)
       make_row(mi);
       m_next_pos.set_after(&m_pos);
 
-      mysql_mutex_unlock(&LOCK_msr_map);
+      myblockchain_mutex_unlock(&LOCK_msr_map);
       return 0;
     }
   }
 
-  mysql_mutex_unlock(&LOCK_msr_map);
+  myblockchain_mutex_unlock(&LOCK_msr_map);
 
   return HA_ERR_END_OF_FILE;
 
@@ -179,17 +179,17 @@ int table_replication_connection_status::rnd_pos(const void *pos)
 
   set_position(pos);
 
-  mysql_mutex_lock(&LOCK_msr_map);
+  myblockchain_mutex_lock(&LOCK_msr_map);
 
   if ((mi= msr_map.get_mi_at_pos(m_pos.m_index)))
   {
     make_row(mi);
 
-    mysql_mutex_unlock(&LOCK_msr_map);
+    myblockchain_mutex_unlock(&LOCK_msr_map);
     return 0;
   }
 
-  mysql_mutex_unlock(&LOCK_msr_map);
+  myblockchain_mutex_unlock(&LOCK_msr_map);
 
   return HA_ERR_RECORD_DELETED;
 
@@ -210,8 +210,8 @@ void table_replication_connection_status::make_row(Master_info *mi)
   DBUG_ASSERT(mi != NULL);
   DBUG_ASSERT(mi->rli != NULL);
 
-  mysql_mutex_lock(&mi->data_lock);
-  mysql_mutex_lock(&mi->rli->data_lock);
+  myblockchain_mutex_lock(&mi->data_lock);
+  myblockchain_mutex_lock(&mi->rli->data_lock);
 
   m_row.channel_name_length= mi->get_channel() ? strlen(mi->get_channel()):0;
   memcpy(m_row.channel_name, mi->get_channel(), m_row.channel_name_length);
@@ -270,18 +270,18 @@ void table_replication_connection_status::make_row(Master_info *mi)
       m_row.source_uuid_is_null= false;
     }
 
-    if (mi->slave_running == MYSQL_SLAVE_RUN_CONNECT)
+    if (mi->slave_running == MYBLOCKCHAIN_SLAVE_RUN_CONNECT)
       m_row.service_state= PS_RPL_CONNECT_SERVICE_STATE_YES;
     else
     {
-      if (mi->slave_running == MYSQL_SLAVE_RUN_NOT_CONNECT)
+      if (mi->slave_running == MYBLOCKCHAIN_SLAVE_RUN_NOT_CONNECT)
         m_row.service_state= PS_RPL_CONNECT_SERVICE_STATE_CONNECTING;
       else
         m_row.service_state= PS_RPL_CONNECT_SERVICE_STATE_NO;
     }
   }
 
-  if (mi->slave_running == MYSQL_SLAVE_RUN_CONNECT)
+  if (mi->slave_running == MYBLOCKCHAIN_SLAVE_RUN_CONNECT)
   {
     PSI_thread *psi= thd_get_psi(mi->info_thd);
     PFS_thread *pfs= reinterpret_cast<PFS_thread *> (psi);
@@ -316,8 +316,8 @@ void table_replication_connection_status::make_row(Master_info *mi)
   }
 
   /* Errors */
-  mysql_mutex_lock(&mi->err_lock);
-  mysql_mutex_lock(&mi->rli->err_lock);
+  myblockchain_mutex_lock(&mi->err_lock);
+  myblockchain_mutex_lock(&mi->rli->err_lock);
   m_row.last_error_number= (unsigned int) mi->last_error().number;
   m_row.last_error_message_length= 0;
   m_row.last_error_timestamp= 0;
@@ -335,12 +335,12 @@ void table_replication_connection_status::make_row(Master_info *mi)
       number of seconds so we multiply by 1000000. */
     m_row.last_error_timestamp= (ulonglong)mi->last_error().skr*1000000;
   }
-  mysql_mutex_unlock(&mi->rli->err_lock);
-  mysql_mutex_unlock(&mi->err_lock);
+  myblockchain_mutex_unlock(&mi->rli->err_lock);
+  myblockchain_mutex_unlock(&mi->err_lock);
 
 end:
-  mysql_mutex_unlock(&mi->rli->data_lock);
-  mysql_mutex_unlock(&mi->data_lock);
+  myblockchain_mutex_unlock(&mi->rli->data_lock);
+  myblockchain_mutex_unlock(&mi->data_lock);
 
   if (!error)
     m_row_exists= true;

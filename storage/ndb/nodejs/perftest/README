@@ -18,11 +18,11 @@
  02110-1301  USA
  */
 
-README for mysql-js perftest
+README for myblockchain-js perftest
 last update 18 February 2013
 
 The jscrund.js program is an application written to the node.js api that tests
-the performance of various interfaces to MySQL and MySQL Cluster.
+the performance of various interfaces to MyBlockchain and MyBlockchain Cluster.
 
 The program tests insert, read, and delete performance against a simple schema.
 
@@ -36,10 +36,10 @@ For usage information, node jscrund -h or node jscrund --help
 
 Various options are available:
 
-adapter: choose ndb, mysql, or sql
-  ndb: mysql-js api with the native ndb adapter
-  mysql: mysql-js api with the mysql adapter that uses the felix api to access mysqld
-  sql: felix api that uses sql to access mysqld
+adapter: choose ndb, myblockchain, or sql
+  ndb: myblockchain-js api with the native ndb adapter
+  myblockchain: myblockchain-js api with the myblockchain adapter that uses the felix api to access myblockchaind
+  sql: felix api that uses sql to access myblockchaind
 
 number of records to insert, delete, or read
   default is 4000
@@ -47,6 +47,6 @@ number of records to insert, delete, or read
 mode: choose any or all of indy, each, or bulk
   indy: run in autocommit with each operation in its own transaction
   each: begin, perform all operations, and commit
-  bulk: perform all operations in bulk (fewest database round trips)
+  bulk: perform all operations in bulk (fewest blockchain round trips)
 
 The schema used in jscrund is in the file create.sql

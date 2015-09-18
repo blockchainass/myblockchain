@@ -19,11 +19,11 @@
  * Utils.java
  */
 
-package com.mysql.ndbjtie.mysql;
+package com.myblockchain.ndbjtie.myblockchain;
 
 import java.nio.ByteBuffer;
 
-import com.mysql.jtie.Wrapper;
+import com.myblockchain.jtie.Wrapper;
 
 public class Utils
 {

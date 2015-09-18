@@ -13,7 +13,7 @@
 -- along with this program; if not, write to the Free Software
 -- Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 
-# This script will be used during downgrade from MySQL version 5.7 to 5.6. 
+# This script will be used during downgrade from MyBlockchain version 5.7 to 5.6. 
 # This script will convert the system tables of 5.7 server to be compatible
 # with 5.6 server.
 
@@ -21,7 +21,7 @@ SET session sql_log_bin=0;
 SET NAMES 'utf8';
 START TRANSACTION;
 
-USE `mysql`;
+USE `myblockchain`;
 
 --
 -- Convert InnoDB tables to MyISAM
@@ -52,18 +52,18 @@ ALTER TABLE `time_zone_transition_type` ENGINE=MyISAM STATS_PERSISTENT=DEFAULT;
 --
 
 
-SET @have_password= (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = 'mysql'
+SET @have_password= (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = 'myblockchain'
                     AND TABLE_NAME='user'
                     AND column_name='password');
 SET @str=IF(@have_password = 0, "ALTER TABLE user ADD Password char(41) character set latin1 collate latin1_bin NOT NULL default '' AFTER User", "SET @dummy = 0");
 PREPARE stmt FROM @str;
 EXECUTE stmt;
 DROP PREPARE stmt;
-SET @str=IF(@have_password = 0, "UPDATE user SET password = authentication_string where LENGTH(authentication_string) = 41 and plugin = 'mysql_native_password'", "SET @dummy = 0");
+SET @str=IF(@have_password = 0, "UPDATE user SET password = authentication_string where LENGTH(authentication_string) = 41 and plugin = 'myblockchain_native_password'", "SET @dummy = 0");
 PREPARE stmt FROM @str;
 EXECUTE stmt;
 DROP PREPARE stmt;
-SET @str=IF(@have_password = 0, "UPDATE user SET authentication_string = '' where LENGTH(authentication_string) = 41 and plugin = 'mysql_native_password'", "SET @dummy = 0");
+SET @str=IF(@have_password = 0, "UPDATE user SET authentication_string = '' where LENGTH(authentication_string) = 41 and plugin = 'myblockchain_native_password'", "SET @dummy = 0");
 PREPARE stmt FROM @str;
 EXECUTE stmt;
 DROP PREPARE stmt;

@@ -1,0 +1,12 @@
+myblockchaind: [ERROR] Could not open required defaults file: /path/with/no/extension
+myblockchaind: [ERROR] Fatal error in defaults handling. Program aborted!
+myblockchaind: [ERROR] Could not open required defaults file: /path/with.ext
+myblockchaind: [ERROR] Fatal error in defaults handling. Program aborted!
+myblockchaind: [ERROR] Could not open required defaults file: MYBLOCKCHAIN_TEST_DIR/relative/path/with.ext
+myblockchaind: [ERROR] Fatal error in defaults handling. Program aborted!
+myblockchaind: [ERROR] Could not open required defaults file: MYBLOCKCHAIN_TEST_DIR/relative/path/without/extension
+myblockchaind: [ERROR] Fatal error in defaults handling. Program aborted!
+myblockchaind: [ERROR] Could not open required defaults file: MYBLOCKCHAIN_TEST_DIR/with.ext
+myblockchaind: [ERROR] Fatal error in defaults handling. Program aborted!
+myblockchaind: [ERROR] Could not open required defaults file: MYBLOCKCHAIN_TEST_DIR/no_extension
+myblockchaind: [ERROR] Fatal error in defaults handling. Program aborted!

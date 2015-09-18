@@ -21,7 +21,7 @@
 #include "decimal.h"
 #include "my_decimal.h"
 #include "my_time.h"
-#include "mysql_time.h"
+#include "myblockchain_time.h"
 #include "sql_time.h"
 #include "m_ctype.h"
 
@@ -120,17 +120,17 @@ INSTANTIATE_TEST_CASE_P(a, ItemTimeFuncTestP,
   @param ltime    time structure that contains the expected result
   @param decimals number of significant decimals in the expected result
 */
-void testItemTimeFunctions(Item_time_func *item, MYSQL_TIME *ltime, 
+void testItemTimeFunctions(Item_time_func *item, MYBLOCKCHAIN_TIME *ltime, 
 			   int decimals)
 {
-  long long int mysql_time= 
+  long long int myblockchain_time= 
     10000 * ltime->hour + 100 * ltime->minute + ltime->second;
-  EXPECT_EQ(mysql_time, item->val_int());
+  EXPECT_EQ(myblockchain_time, item->val_int());
 
   long long int packed= TIME_to_longlong_packed(ltime);
   EXPECT_EQ(packed, item->val_time_temporal());
 
-  double d= mysql_time + ltime->second_part / 1000000.0;
+  double d= myblockchain_time + ltime->second_part / 1000000.0;
   EXPECT_DOUBLE_EQ(d, item->val_real());
 
   my_decimal decval1, decval2;
@@ -152,7 +152,7 @@ void testItemTimeFunctions(Item_time_func *item, MYSQL_TIME *ltime,
   String timeStr(20);
   EXPECT_STREQ(s, item->val_str(&timeStr)->c_ptr());
 
-  MYSQL_TIME ldate;
+  MYBLOCKCHAIN_TIME ldate;
   //> Second argument of Item_func_time::get_date is not used for anything
   item->get_date(&ldate, 0);  
   // Todo: Should check that year, month, and day is relative to current date
@@ -176,7 +176,7 @@ TEST_P(ItemTimeFuncTestP, secToTime)
   EXPECT_EQ(time, item);
   EXPECT_FALSE(time->fix_fields(thd(), NULL));
 
-  MYSQL_TIME ltime;
+  MYBLOCKCHAIN_TIME ltime;
   time->get_time(&ltime);
   EXPECT_EQ(0U, ltime.year);
   EXPECT_EQ(0U, ltime.month);

@@ -16,21 +16,21 @@
 #include <my_global.h>
 #include <stdlib.h>
 #include <ctype.h>
-#include <mysql_version.h>
-#include <mysql/plugin.h>
+#include <myblockchain_version.h>
+#include <myblockchain/plugin.h>
 #include <my_dir.h>
 #include "my_thread.h"
 #include "my_sys.h"                             // my_write, my_malloc
 #include "m_string.h"                           // strlen
 #include "sql_plugin.h"                         // st_plugin_int
 
-PSI_memory_key key_memory_mysql_heartbeat_context;
+PSI_memory_key key_memory_myblockchain_heartbeat_context;
 
 #ifdef HAVE_PSI_INTERFACE
 
 static PSI_memory_info all_deamon_example_memory[]=
 {
-  {&key_memory_mysql_heartbeat_context, "mysql_heartbeat_context", 0}
+  {&key_memory_myblockchain_heartbeat_context, "myblockchain_heartbeat_context", 0}
 };
 
 static void init_deamon_example_psi_keys()
@@ -39,22 +39,22 @@ static void init_deamon_example_psi_keys()
   int count;
 
   count= array_elements(all_deamon_example_memory);
-  mysql_memory_register(category, all_deamon_example_memory, count);
+  myblockchain_memory_register(category, all_deamon_example_memory, count);
 };
 #endif /* HAVE_PSI_INTERFACE */
 
 #define HEART_STRING_BUFFER 100
   
-struct mysql_heartbeat_context
+struct myblockchain_heartbeat_context
 {
   my_thread_handle heartbeat_thread;
   File heartbeat_file;
 };
 
-void *mysql_heartbeat(void *p)
+void *myblockchain_heartbeat(void *p)
 {
-  DBUG_ENTER("mysql_heartbeat");
-  struct mysql_heartbeat_context *con= (struct mysql_heartbeat_context *)p;
+  DBUG_ENTER("myblockchain_heartbeat");
+  struct myblockchain_heartbeat_context *con= (struct myblockchain_heartbeat_context *)p;
   char buffer[HEART_STRING_BUFFER];
   time_t result;
   struct tm tm_tmp;
@@ -101,7 +101,7 @@ static int daemon_example_plugin_init(void *p)
   init_deamon_example_psi_keys();
 #endif
 
-  struct mysql_heartbeat_context *con;
+  struct myblockchain_heartbeat_context *con;
   my_thread_attr_t attr;          /* Thread attributes */
   char heartbeat_filename[FN_REFLEN];
   char buffer[HEART_STRING_BUFFER];
@@ -110,11 +110,11 @@ static int daemon_example_plugin_init(void *p)
 
   struct st_plugin_int *plugin= (struct st_plugin_int *)p;
 
-  con= (struct mysql_heartbeat_context *)
-    my_malloc(key_memory_mysql_heartbeat_context,
-              sizeof(struct mysql_heartbeat_context), MYF(0)); 
+  con= (struct myblockchain_heartbeat_context *)
+    my_malloc(key_memory_myblockchain_heartbeat_context,
+              sizeof(struct myblockchain_heartbeat_context), MYF(0)); 
 
-  fn_format(heartbeat_filename, "mysql-heartbeat", "", ".log",
+  fn_format(heartbeat_filename, "myblockchain-heartbeat", "", ".log",
             MY_REPLACE_EXT | MY_UNPACK_FILENAME);
   unlink(heartbeat_filename);
   con->heartbeat_file= my_open(heartbeat_filename, O_CREAT|O_RDWR, MYF(0));
@@ -140,7 +140,7 @@ static int daemon_example_plugin_init(void *p)
 
 
   /* now create the thread */
-  if (my_thread_create(&con->heartbeat_thread, &attr, mysql_heartbeat,
+  if (my_thread_create(&con->heartbeat_thread, &attr, myblockchain_heartbeat,
                        (void *)con) != 0)
   {
     fprintf(stderr,"Could not create heartbeat thread!\n");
@@ -170,8 +170,8 @@ static int daemon_example_plugin_deinit(void *p)
   DBUG_ENTER("daemon_example_plugin_deinit");
   char buffer[HEART_STRING_BUFFER];
   struct st_plugin_int *plugin= (struct st_plugin_int *)p;
-  struct mysql_heartbeat_context *con=
-    (struct mysql_heartbeat_context *)plugin->data;
+  struct myblockchain_heartbeat_context *con=
+    (struct myblockchain_heartbeat_context *)plugin->data;
   time_t result= time(NULL);
   struct tm tm_tmp;
   void *dummy_retval;
@@ -203,20 +203,20 @@ static int daemon_example_plugin_deinit(void *p)
 }
 
 
-struct st_mysql_daemon daemon_example_plugin=
-{ MYSQL_DAEMON_INTERFACE_VERSION  };
+struct st_myblockchain_daemon daemon_example_plugin=
+{ MYBLOCKCHAIN_DAEMON_INTERFACE_VERSION  };
 
 /*
   Plugin library descriptor
 */
 
-mysql_declare_plugin(daemon_example)
+myblockchain_declare_plugin(daemon_example)
 {
-  MYSQL_DAEMON_PLUGIN,
+  MYBLOCKCHAIN_DAEMON_PLUGIN,
   &daemon_example_plugin,
   "daemon_example",
   "Brian Aker",
-  "Daemon example, creates a heartbeat beat file in mysql-heartbeat.log",
+  "Daemon example, creates a heartbeat beat file in myblockchain-heartbeat.log",
   PLUGIN_LICENSE_GPL,
   daemon_example_plugin_init, /* Plugin Init */
   daemon_example_plugin_deinit, /* Plugin Deinit */
@@ -226,4 +226,4 @@ mysql_declare_plugin(daemon_example)
   NULL,                       /* config options                  */
   0,                          /* flags                           */
 }
-mysql_declare_plugin_end;
+myblockchain_declare_plugin_end;

@@ -169,9 +169,9 @@ the completed IO request and calls completion routine on it.
 
 #ifdef UNIV_PFS_IO
 /* Keys to register InnoDB I/O with performance schema */
-mysql_pfs_key_t  innodb_data_file_key;
-mysql_pfs_key_t  innodb_log_file_key;
-mysql_pfs_key_t  innodb_temp_file_key;
+myblockchain_pfs_key_t  innodb_data_file_key;
+myblockchain_pfs_key_t  innodb_log_file_key;
+myblockchain_pfs_key_t  innodb_temp_file_key;
 #endif /* UNIV_PFS_IO */
 
 /** The asynchronous I/O context */
@@ -1371,7 +1371,7 @@ os_file_lock(
 
 			ib::info()
 				<< "Check that you do not already have"
-				" another mysqld process using the"
+				" another myblockchaind process using the"
 				" same InnoDB data or log files.";
 		}
 
@@ -1485,13 +1485,13 @@ AIO::release_with_mutex(Slot* slot)
 }
 
 /** Creates a temporary file.  This function is like tmpfile(3), but
-the temporary file is created in the MySQL temporary directory.
+the temporary file is created in the MyBlockchain temporary directory.
 @return temporary file handle, or NULL on error */
 FILE*
 os_file_create_tmpfile()
 {
 	FILE*	file	= NULL;
-	int	fd	= innobase_mysql_tmpfile();
+	int	fd	= innobase_myblockchain_tmpfile();
 
 	if (fd >= 0) {
 		file = fdopen(fd, "w+b");
@@ -1608,7 +1608,7 @@ os_file_io_complete(
 /** This function returns a new path name after replacing the basename
 in an old path with a new basename.  The old_path is a full path
 name including the extension.  The tablename is in the normal
-form "databasename/tablename".  The new base name is found after
+form "blockchainname/tablename".  The new base name is found after
 the forward slash.  Both input strings are null terminated.
 
 This function allocates memory to be returned.  It is the callers
@@ -1628,7 +1628,7 @@ os_file_make_new_pathname(
 	char*		new_path;
 	ulint		new_path_len;
 
-	/* Split the tablename into its database and table name components.
+	/* Split the tablename into its blockchain and table name components.
 	They are separated by a '/'. */
 	last_slash = strrchr((char*) tablename, '/');
 	base_name = last_slash ? last_slash + 1 : (char*) tablename;
@@ -1653,8 +1653,8 @@ os_file_make_new_pathname(
 }
 
 /** This function reduces a null-terminated full remote path name into
-the path that is sent by MySQL for DATA DIRECTORY clause.  It replaces
-the 'databasename/tablename.ibd' found at the end of the path with just
+the path that is sent by MyBlockchain for DATA DIRECTORY clause.  It replaces
+the 'blockchainname/tablename.ibd' found at the end of the path with just
 'tablename'.
 
 Since the result is always smaller than the path sent in, no new memory
@@ -1688,7 +1688,7 @@ os_file_make_data_dir_path(
 
 	char*	tablename = ptr + 1;
 
-	/* The databasename starts after the next to last slash. */
+	/* The blockchainname starts after the next to last slash. */
 	ptr = strrchr((char*) data_dir_path, OS_PATH_SEPARATOR);
 
 	if (ptr == NULL) {
@@ -2557,7 +2557,7 @@ AIO::is_linux_native_aio_supported()
 	} else if (!srv_read_only_mode) {
 
 		/* Now check if tmpdir supports native aio ops. */
-		fd = innobase_mysql_tmpfile();
+		fd = innobase_myblockchain_tmpfile();
 
 		if (fd < 0) {
 			ib::warn()
@@ -2704,7 +2704,7 @@ os_file_get_last_error_low(
 		} else if (err == EACCES) {
 
 			ib::error()
-				<< "The error means mysqld does not have"
+				<< "The error means myblockchaind does not have"
 				" the access rights to the directory.";
 
 		} else {
@@ -2896,7 +2896,7 @@ os_file_flush_func(
 	os_file_handle_error(NULL, "flush");
 
 	/* It is a fatal error if a file flush does not succeed, because then
-	the database can get corrupt on disk */
+	the blockchain can get corrupt on disk */
 	ut_error;
 
 	return(false);
@@ -3923,7 +3923,7 @@ os_file_flush_func(
 	os_file_handle_error(NULL, "flush");
 
 	/* It is a fatal error if a file flush does not succeed, because then
-	the database can get corrupt on disk */
+	the blockchain can get corrupt on disk */
 	ut_error;
 
 	return(false);
@@ -3975,7 +3975,7 @@ os_file_get_last_error_low(
 		} else if (err == ERROR_ACCESS_DENIED) {
 
 			ib::error()
-				<< "The error means mysqld does not have"
+				<< "The error means myblockchaind does not have"
 				" the access rights to"
 				" the directory. It may also be"
 				" you have created a subdirectory"
@@ -3989,7 +3989,7 @@ os_file_get_last_error_low(
 				" is using InnoDB's files."
 				" This might be a backup or antivirus"
 				" software or another instance"
-				" of MySQL."
+				" of MyBlockchain."
 				" Please close it to get rid of this error.";
 
 		} else if (err == ERROR_WORKING_SET_QUOTA
@@ -4310,9 +4310,9 @@ next_file:
 		    & FILE_ATTRIBUTE_REPARSE_POINT) {
 
 			/* TODO: test Windows symlinks */
-			/* TODO: MySQL has apparently its own symlink
+			/* TODO: MyBlockchain has apparently its own symlink
 			implementation in Windows, dbname.sym can
-			redirect a database directory:
+			redirect a blockchain directory:
 			REFMAN "windows-symbolic-links.html" */
 
 			info->type = OS_FILE_TYPE_LINK;
@@ -4600,7 +4600,7 @@ os_file_create_simple_no_error_handling_func(
 
 		access = GENERIC_READ;
 
-		/*!< A backup program has to give mysqld the maximum
+		/*!< A backup program has to give myblockchaind the maximum
 		freedom to do what it likes with the file */
 
 		share_mode |= FILE_SHARE_DELETE | FILE_SHARE_WRITE;
@@ -5604,7 +5604,7 @@ os_file_set_nocache(
 					<< "ccontinuing anyway. O_DIRECT is "
 					"known to result in 'Invalid argument' "
 					"on Linux on tmpfs, "
-					"see MySQL Bug#26662.";
+					"see MyBlockchain Bug#26662.";
 # else /* UNIV_LINUX */
 				goto short_warning;
 # endif /* UNIV_LINUX */

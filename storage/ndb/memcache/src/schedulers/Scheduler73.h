@@ -39,7 +39,7 @@
  *  7.3 Scheduler 
  *
  *  This is designed to take advantage of the ATC (API Thread Contention) fixes
- *  in MySQL Cluster 7.3.
+ *  in MyBlockchain Cluster 7.3.
  *
  *  There is no send queue; workers themselves send transactions.
  *  Like the S scheduler, it must support online reconfiguration.

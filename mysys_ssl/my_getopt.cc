@@ -174,9 +174,9 @@ double getopt_ulonglong2double(ulonglong v)
 
   Note that this limitation only impacts parsing of several
   short options from the same command line argument,
-  as in "mysqld -anW5".
+  as in "myblockchaind -anW5".
   When each short option is properly separated out in the command line
-  argument, for example in "mysqld -a -n -w5", the code would actually
+  argument, for example in "myblockchaind -a -n -w5", the code would actually
   work even with partial options specs given at each stage.
 
   @param [in, out] argc      command line options (count)

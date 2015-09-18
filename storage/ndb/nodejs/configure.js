@@ -19,11 +19,11 @@
 */
 
 // configure.js:
-//    Try to find installed mysql that matches architecture of node
-//    Ask user for mysql pathname
-//    Write mysql pathname into config.gypi and config.waf
+//    Try to find installed myblockchain that matches architecture of node
+//    Ask user for myblockchain pathname
+//    Write myblockchain pathname into config.gypi and config.waf
 
-// TODO: Auto-detect mysql layout here, and write about it in config.gypi
+// TODO: Auto-detect myblockchain layout here, and write about it in config.gypi
 
 "use strict";
 
@@ -31,16 +31,16 @@ var fs = require("fs"),
     path = require("path"),
     readline = require("readline");
     
-var archbits, archname, archmysql;
+var archbits, archname, archmyblockchain;
 
 switch(process.arch) {
   case 'ia32':
     archbits = 32;
-    archmysql = 'i686';
+    archmyblockchain = 'i686';
     break;
   case 'x64':
     archbits = 64;
-    archmysql = 'x86_64';
+    archmyblockchain = 'x86_64';
     break;
   default:
     throw "Architecture " + process.arch + " unsupported.";
@@ -54,23 +54,23 @@ var lf = '\n';
 
 var greeting = 
 '# '                                                                        +lf+
-'#                 MySQL Cluster NoSQL API for Node.JS'                     +lf+
+'#                 MyBlockchain Cluster NoSQL API for Node.JS'                     +lf+
 '#  April, 2013'                                                            +lf+
 '# '                                                                        +lf+
 '#  The NoSQL API for Node.JS provides lightweight object mapping for '     +lf+
 '#  JavaScript.  The API can be used with two separate backend adapters:'   +lf+
 '#    - The "ndb" adapter, which uses the C++ NDB API to provide'           +lf+
-'#      high-performance native access to MySQL Cluster. '                  +lf+
-'#    - The "mysql" adapter, which uses the node-mysql driver '             +lf+ 
-'#      available from http://github.com/felixge/node-mysql'                +lf+
+'#      high-performance native access to MyBlockchain Cluster. '                  +lf+
+'#    - The "myblockchain" adapter, which uses the node-myblockchain driver '             +lf+ 
+'#      available from http://github.com/felixge/node-myblockchain'                +lf+
 '# '                                                                        +lf+
-'#  The mysql backend translates API calls into SQL statements and sends '  +lf+
-'#  them to a MySQL server.  The ndb backend communicates directly with '   +lf+ 
+'#  The myblockchain backend translates API calls into SQL statements and sends '  +lf+
+'#  them to a MyBlockchain server.  The ndb backend communicates directly with '   +lf+ 
 '#  NDB data nodes, without translating to SQL or making any use of a '     +lf+ 
-'#  MySQL Server.'                                                          +lf+
+'#  MyBlockchain Server.'                                                          +lf+
 '# '                                                                        +lf+
 '#  In order to build and run the ndb adapter, you must have: '             +lf+
-'#    - An installation of MySQL Cluster 7.x or MySQL 5.6 '                 +lf+
+'#    - An installation of MyBlockchain Cluster 7.x or MyBlockchain 5.6 '                 +lf+
 '#      including headers and shared library files [' +archname +']'        +lf+
 '#    - A working C++ compiler '                                            +lf+
 '# ' +lf;
@@ -88,7 +88,7 @@ function verify(dir) {
 
 function get_candidates_windows() {
   var candidates = [];
-  var c1 = "C:\\Program Files\\MySQL Server 5.6";
+  var c1 = "C:\\Program Files\\MyBlockchain Server 5.6";
   if(verify(c1)) {
     candidates.push(c1);
   }
@@ -100,28 +100,28 @@ function get_candidates() {
   var candidates = [];
   var link, verified;
 
-  if(verify('/usr/share/mysql/java')) {   // RPM
+  if(verify('/usr/share/myblockchain/java')) {   // RPM
     candidates.push('/usr');
   }
 
-  if(verify('/usr/local/mysql/share/java'))  {  // Mac or generic TAR
-    /* if /usr/local/mysql is a symlink, the real directory name must match
+  if(verify('/usr/local/myblockchain/share/java'))  {  // Mac or generic TAR
+    /* if /usr/local/myblockchain is a symlink, the real directory name must match
        the target architecture */
     try {
-      link = fs.readlinkSync('/usr/local/mysql');
-      verified = (link.indexOf(archmysql) > 0);
+      link = fs.readlinkSync('/usr/local/myblockchain');
+      verified = (link.indexOf(archmyblockchain) > 0);
     }
     catch(e) { 
       verified = null;   // not a symlink
     }
 
     if(verified !== false) {
-      candidates.push('/usr/local/mysql');
+      candidates.push('/usr/local/myblockchain');
     }
   }
 
-  if(verify('/opt/mysql/server-5.6/share/java'))  {   // Debian
-    candidates.push('/opt/mysql/server-5.6');
+  if(verify('/opt/myblockchain/server-5.6/share/java'))  {   // Debian
+    candidates.push('/opt/myblockchain/server-5.6');
   }
   
   return candidates;
@@ -134,7 +134,7 @@ function build_prompt(candidates) {
   if(candidates.length) {
     found = '# ' +lf+
             '# ' +lf+
-            '#  Choose your preferred mysql install location: ' +lf+
+            '#  Choose your preferred myblockchain install location: ' +lf+
             '# ' +lf;
     
     for(i ; i < candidates.length ; i++) {
@@ -143,10 +143,10 @@ function build_prompt(candidates) {
   }
   else {
     found = '# ' +lf+
-            '#  ~~~~~~~~ No '+archname+'  MySQL Cluster installations found.' +lf+
+            '#  ~~~~~~~~ No '+archname+'  MyBlockchain Cluster installations found.' +lf+
             '# ' +lf;
   }
-  found += ' [' + String(++i) + ']  Choose custom mysql directory' +lf;
+  found += ' [' + String(++i) + ']  Choose custom myblockchain directory' +lf;
 
   return found;
 }
@@ -157,19 +157,19 @@ function finish() {
   process.exit(0);
 }
 
-function testPath(mysqlPath) {
-  // We assert that a path is a valid mysql install true if and only if 
-  // it contains a mysql-test directory
-  var testPath = path.join(mysqlPath.trim(), "mysql-test");
+function testPath(myblockchainPath) {
+  // We assert that a path is a valid myblockchain install true if and only if 
+  // it contains a myblockchain-test directory
+  var testPath = path.join(myblockchainPath.trim(), "myblockchain-test");
   return verify(testPath);
 }
 
-function configure(mysql, layout) {
-  if(mysql) {
+function configure(myblockchain, layout) {
+  if(myblockchain) {
     layout = "";  // fixme
-    var gyp = { "variables" : {"mysql_path":mysql, "mysql_layout":layout}};
+    var gyp = { "variables" : {"myblockchain_path":myblockchain, "myblockchain_layout":layout}};
     fs.writeFileSync("config.gypi", JSON.stringify(gyp) + "\n", "ascii");
-    fs.writeFileSync("config.waf", mysql + "\n", 'ascii');
+    fs.writeFileSync("config.waf", myblockchain + "\n", 'ascii');
     finish();
   }
   else {
@@ -259,13 +259,13 @@ function main() {
     }
   }
 
-  function onPath(mysqlPath) {
-    if(testPath(mysqlPath)) {
+  function onPath(myblockchainPath) {
+    if(testPath(myblockchainPath)) {
       rl.close();
-      configure(mysqlPath);
+      configure(myblockchainPath);
     }
     else {
-      console.log("ERROR: not a MySQL install tree" + lf);
+      console.log("ERROR: not a MyBlockchain install tree" + lf);
       rl.prompt(true);
     }
   }
@@ -277,7 +277,7 @@ function main() {
   }
 
   function customMode() {
-    rl.setPrompt('MySQL Install Path> ', 20);
+    rl.setPrompt('MyBlockchain Install Path> ', 20);
     rl.on('line', onPath);
     rl.prompt(true);
   }

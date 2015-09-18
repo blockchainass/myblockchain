@@ -15,7 +15,7 @@
    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA
 */
 
-/* mysqldump.c  - Dump a tables contents and format to an ASCII file
+/* myblockchaindump.c  - Dump a tables contents and format to an ASCII file
 **
 ** The author's original notes follow :-
 **
@@ -24,7 +24,7 @@
 ** WARRANTY: None, expressed, impressed, implied
 **          or other
 ** STATUS: Public domain
-** Adapted and optimized for MySQL by
+** Adapted and optimized for MyBlockchain by
 ** Michael Widenius, Sinisa Milivojevic, Jani Tolonen
 ** -w --where added 9/10/98 by Jim Faucette
 ** slave code by David Saez Padros <david@ols.es>
@@ -33,7 +33,7 @@
 ** Andrei Errapart <andreie@no.spam.ee>
 ** TÃµnu Samuel  <tonu@please.do.not.remove.this.spam.ee>
 ** XML by Gary Huntress <ghuntress@mediaone.net> 10/10/01, cleaned up
-** and adapted to mysqldump 05/11/01 by Jani Tolonen
+** and adapted to myblockchaindump 05/11/01 by Jani Tolonen
 ** Added --single-transaction option 06/06/2002 by Peter Zaitsev
 ** 10 Jun 2003: SET NAMES and --no-set-names by Alexander Barkov
 */
@@ -50,16 +50,16 @@
 
 #include "client_priv.h"
 #include "my_default.h"
-#include "mysql.h"
-#include "mysql_version.h"
-#include "mysqld_error.h"
+#include "myblockchain.h"
+#include "myblockchain_version.h"
+#include "myblockchaind_error.h"
 
 #include <welcome_copyright_notice.h> /* ORACLE_WELCOME_COPYRIGHT_NOTICE */
 
 /* Exit codes */
 
 #define EX_USAGE 1
-#define EX_MYSQLERR 2
+#define EX_MYBLOCKCHAINERR 2
 #define EX_CONSCHECK 3
 #define EX_EOM 4
 #define EX_EOF 5 /* ferror for output file was got */
@@ -96,14 +96,14 @@ static my_bool  verbose= 0, opt_no_create_info= 0, opt_no_data= 0,
                 lock_tables= 1, opt_force= 0, flush_logs= 0,
                 flush_privileges= 0,
                 opt_drop=1,opt_keywords=0,opt_lock=1,opt_compress=0,
-                create_options=1,opt_quoted=0,opt_databases=0,
+                create_options=1,opt_quoted=0,opt_blockchains=0,
                 opt_alldbs=0,opt_create_db=0,opt_lock_all_tables=0,
                 opt_set_charset=0, opt_dump_date=1,
                 opt_autocommit=0,opt_disable_keys=1,opt_xml=0,
                 opt_delete_master_logs=0, tty_password=0,
                 opt_single_transaction=0, opt_comments= 0, opt_compact= 0,
                 opt_hex_blob=0, opt_order_by_primary=0, opt_ignore=0,
-                opt_complete_insert= 0, opt_drop_database= 0,
+                opt_complete_insert= 0, opt_drop_blockchain= 0,
                 opt_replace_into= 0,
                 opt_dump_triggers= 0, opt_routines=0, opt_tz_utc=1,
                 opt_slave_apply= 0, 
@@ -113,7 +113,7 @@ static my_bool  verbose= 0, opt_no_create_info= 0, opt_no_data= 0,
                 opt_secure_auth= TRUE;
 static my_bool insert_pat_inited= 0, debug_info_flag= 0, debug_check_flag= 0;
 static ulong opt_max_allowed_packet, opt_net_buffer_length;
-static MYSQL mysql_connection,*mysql=0;
+static MYBLOCKCHAIN myblockchain_connection,*myblockchain=0;
 static DYNAMIC_STRING insert_pat;
 static char  *opt_password=0,*current_user=0,
              *current_host=0,*path=0,*fields_terminated=0,
@@ -127,14 +127,14 @@ static char compatible_mode_normal_str[255];
 /* Server supports character_set_results session variable? */
 static my_bool server_supports_switching_charsets= TRUE;
 static ulong opt_compatible_mode= 0;
-#define MYSQL_OPT_MASTER_DATA_EFFECTIVE_SQL 1
-#define MYSQL_OPT_MASTER_DATA_COMMENTED_SQL 2
-#define MYSQL_OPT_SLAVE_DATA_EFFECTIVE_SQL 1
-#define MYSQL_OPT_SLAVE_DATA_COMMENTED_SQL 2
-static uint opt_mysql_port= 0, opt_master_data;
+#define MYBLOCKCHAIN_OPT_MASTER_DATA_EFFECTIVE_SQL 1
+#define MYBLOCKCHAIN_OPT_MASTER_DATA_COMMENTED_SQL 2
+#define MYBLOCKCHAIN_OPT_SLAVE_DATA_EFFECTIVE_SQL 1
+#define MYBLOCKCHAIN_OPT_SLAVE_DATA_COMMENTED_SQL 2
+static uint opt_myblockchain_port= 0, opt_master_data;
 static uint opt_slave_data;
 static uint my_end_arg;
-static char * opt_mysql_unix_port=0;
+static char * opt_myblockchain_unix_port=0;
 static char *opt_bind_addr = NULL;
 static int   first_error=0;
 #include <sslopt-vars.h>
@@ -175,19 +175,19 @@ static void dynstr_append_mem_checked(DYNAMIC_STRING *str, const char *append,
 static void dynstr_realloc_checked(DYNAMIC_STRING *str, size_t additional_size);
 /*
   Constant for detection of default value of default_charset.
-  If default_charset is equal to mysql_universal_client_charset, then
+  If default_charset is equal to myblockchain_universal_client_charset, then
   it is the default value which assigned at the very beginning of main().
 */
-static const char *mysql_universal_client_charset=
-  MYSQL_UNIVERSAL_CLIENT_CHARSET;
+static const char *myblockchain_universal_client_charset=
+  MYBLOCKCHAIN_UNIVERSAL_CLIENT_CHARSET;
 static char *default_charset;
 static CHARSET_INFO *charset_info= &my_charset_latin1;
-const char *default_dbug_option="d:t:o,/tmp/mysqldump.trace";
+const char *default_dbug_option="d:t:o,/tmp/myblockchaindump.trace";
 /* have we seen any VIEWs during table scanning? */
 my_bool seen_views= 0;
 const char *compatible_mode_names[]=
 {
-  "MYSQL323", "MYSQL40", "POSTGRESQL", "ORACLE", "MSSQL", "DB2",
+  "MYBLOCKCHAIN323", "MYBLOCKCHAIN40", "POSTGRESQL", "ORACLE", "MSSQL", "DB2",
   "MAXDB", "NO_KEY_OPTIONS", "NO_TABLE_OPTIONS", "NO_FIELD_OPTIONS",
   "ANSI",
   NullS
@@ -208,8 +208,8 @@ HASH ignore_table;
 
 static struct my_option my_long_options[] =
 {
-  {"all-databases", 'A',
-   "Dump all the databases. This will be same as --databases with all databases selected.",
+  {"all-blockchains", 'A',
+   "Dump all the blockchains. This will be same as --blockchains with all blockchains selected.",
    &opt_alldbs, &opt_alldbs, 0, GET_BOOL, NO_ARG, 0, 0, 0, 0,
    0, 0},
   {"all-tablespaces", 'Y',
@@ -220,8 +220,8 @@ static struct my_option my_long_options[] =
    "Do not dump any tablespace information.",
    &opt_notspcs, &opt_notspcs, 0, GET_BOOL, NO_ARG, 0, 0, 0, 0,
    0, 0},
-  {"add-drop-database", OPT_DROP_DATABASE, "Add a DROP DATABASE before each create.",
-   &opt_drop_database, &opt_drop_database, 0, GET_BOOL, NO_ARG, 0, 0, 0, 0, 0,
+  {"add-drop-blockchain", OPT_DROP_DATABASE, "Add a DROP DATABASE before each create.",
+   &opt_drop_blockchain, &opt_drop_blockchain, 0, GET_BOOL, NO_ARG, 0, 0, 0, 0, 0,
    0},
   {"add-drop-table", OPT_DROP, "Add a DROP TABLE before each create.",
    &opt_drop, &opt_drop, 0, GET_BOOL, NO_ARG, 1, 0, 0, 0, 0,
@@ -235,7 +235,7 @@ static struct my_option my_long_options[] =
   {"allow-keywords", OPT_KEYWORDS,
    "Allow creation of column names that are keywords.", &opt_keywords,
    &opt_keywords, 0, GET_BOOL, NO_ARG, 0, 0, 0, 0, 0, 0},
-  {"apply-slave-statements", OPT_MYSQLDUMP_SLAVE_APPLY,
+  {"apply-slave-statements", OPT_MYBLOCKCHAINDUMP_SLAVE_APPLY,
    "Adds 'STOP SLAVE' prior to 'CHANGE MASTER' and 'START SLAVE' to bottom of dump.",
    &opt_slave_apply, &opt_slave_apply, 0, GET_BOOL, NO_ARG,
    0, 0, 0, 0, 0, 0},
@@ -250,10 +250,10 @@ static struct my_option my_long_options[] =
    1, 0, 0, 0, 0, 0},
   {"compatible", OPT_COMPATIBLE,
    "Change the dump to be compatible with a given mode. By default tables "
-   "are dumped in a format optimized for MySQL. Legal modes are: ansi, "
-   "mysql323, mysql40, postgresql, oracle, mssql, db2, maxdb, no_key_options, "
+   "are dumped in a format optimized for MyBlockchain. Legal modes are: ansi, "
+   "myblockchain323, myblockchain40, postgresql, oracle, mssql, db2, maxdb, no_key_options, "
    "no_table_options, no_field_options. One can use several modes separated "
-   "by commas. Note: Requires MySQL server version 4.1.0 or higher. "
+   "by commas. Note: Requires MyBlockchain server version 4.1.0 or higher. "
    "This option is ignored with earlier server versions.",
    &opt_compatible_mode_str, &opt_compatible_mode_str, 0,
    GET_STR, REQUIRED_ARG, 0, 0, 0, 0, 0, 0},
@@ -270,12 +270,12 @@ static struct my_option my_long_options[] =
    &opt_compress, &opt_compress, 0, GET_BOOL, NO_ARG, 0, 0, 0,
    0, 0, 0},
   {"create-options", 'a',
-   "Include all MySQL specific create options.",
+   "Include all MyBlockchain specific create options.",
    &create_options, &create_options, 0, GET_BOOL, NO_ARG, 1,
    0, 0, 0, 0, 0},
-  {"databases", 'B',
-   "Dump several databases. Note the difference in usage; in this case no tables are given. All name arguments are regarded as database names. 'USE db_name;' will be included in the output.",
-   &opt_databases, &opt_databases, 0, GET_BOOL, NO_ARG, 0, 0,
+  {"blockchains", 'B',
+   "Dump several blockchains. Note the difference in usage; in this case no tables are given. All name arguments are regarded as blockchain names. 'USE db_name;' will be included in the output.",
+   &opt_blockchains, &opt_blockchains, 0, GET_BOOL, NO_ARG, 0, 0,
    0, 0, 0, 0},
 #ifdef DBUG_OFF
   {"debug", '#', "This is a non-debug version. Catch this and exit.",
@@ -306,7 +306,7 @@ static struct my_option my_long_options[] =
    "'/*!40000 ALTER TABLE tb_name DISABLE KEYS */; and '/*!40000 ALTER "
    "TABLE tb_name ENABLE KEYS */; will be put in the output.", &opt_disable_keys,
    &opt_disable_keys, 0, GET_BOOL, NO_ARG, 1, 0, 0, 0, 0, 0},
-  {"dump-slave", OPT_MYSQLDUMP_SLAVE_DATA,
+  {"dump-slave", OPT_MYBLOCKCHAINDUMP_SLAVE_DATA,
    "This causes the binary log position and filename of the master to be "
    "appended to the dumped data output. Setting the value to 1, will print"
    "it as a CHANGE MASTER command in the dumped data output; if equal"
@@ -318,7 +318,7 @@ static struct my_option my_long_options[] =
    "any action on logs will happen at the exact moment of the dump."
    "Option automatically turns --lock-tables off.",
    &opt_slave_data, &opt_slave_data, 0,
-   GET_UINT, OPT_ARG, 0, 0, MYSQL_OPT_SLAVE_DATA_COMMENTED_SQL, 0, 0, 0},
+   GET_UINT, OPT_ARG, 0, 0, MYBLOCKCHAIN_OPT_SLAVE_DATA_COMMENTED_SQL, 0, 0, 0},
   {"events", 'E', "Dump events.",
      &opt_events, &opt_events, 0, GET_BOOL,
      NO_ARG, 0, 0, 0, 0, 0, 0},
@@ -340,9 +340,9 @@ static struct my_option my_long_options[] =
    "Fields in the output file are escaped by the given character.",
    &escaped, &escaped, 0, GET_STR, REQUIRED_ARG, 0, 0, 0, 0, 0, 0},
   {"flush-logs", 'F', "Flush logs file in server before starting dump. "
-   "Note that if you dump many databases at once (using the option "
-   "--databases= or --all-databases), the logs will be flushed for "
-   "each database dumped. The exception is when using --lock-all-tables "
+   "Note that if you dump many blockchains at once (using the option "
+   "--blockchains= or --all-blockchains), the logs will be flushed for "
+   "each blockchain dumped. The exception is when using --lock-all-tables "
    "or --master-data: "
    "in this case the logs will be flushed only once, corresponding "
    "to the moment all tables are locked. So if you want your dump and "
@@ -351,9 +351,9 @@ static struct my_option my_long_options[] =
    &flush_logs, &flush_logs, 0, GET_BOOL, NO_ARG, 0, 0, 0, 0,
    0, 0},
   {"flush-privileges", OPT_ESC, "Emit a FLUSH PRIVILEGES statement "
-   "after dumping the mysql database.  This option should be used any "
-   "time the dump contains the mysql database and any other database "
-   "that depends on the data in the mysql database for proper restore. ",
+   "after dumping the myblockchain blockchain.  This option should be used any "
+   "time the dump contains the myblockchain blockchain and any other blockchain "
+   "that depends on the data in the myblockchain blockchain for proper restore. ",
    &flush_privileges, &flush_privileges, 0, GET_BOOL, NO_ARG, 0, 0, 0, 0,
    0, 0},
   {"force", 'f', "Continue even if we get an SQL error.",
@@ -366,17 +366,17 @@ static struct my_option my_long_options[] =
    &opt_hex_blob, &opt_hex_blob, 0, GET_BOOL, NO_ARG, 0, 0, 0, 0, 0, 0},
   {"host", 'h', "Connect to host.", &current_host,
    &current_host, 0, GET_STR_ALLOC, REQUIRED_ARG, 0, 0, 0, 0, 0, 0},
-  {"ignore-error", OPT_MYSQLDUMP_IGNORE_ERROR, "A comma-separated list of "
+  {"ignore-error", OPT_MYBLOCKCHAINDUMP_IGNORE_ERROR, "A comma-separated list of "
    "error numbers to be ignored if encountered during dump.",
    &opt_ignore_error, &opt_ignore_error, 0, GET_STR_ALLOC, REQUIRED_ARG, 0,
    0, 0, 0, 0, 0},
   {"ignore-table", OPT_IGNORE_TABLE,
    "Do not dump the specified table. To specify more than one table to ignore, "
    "use the directive multiple times, once for each table.  Each table must "
-   "be specified with both database and table names, e.g., "
-   "--ignore-table=database.table.",
+   "be specified with both blockchain and table names, e.g., "
+   "--ignore-table=blockchain.table.",
    0, 0, 0, GET_STR, REQUIRED_ARG, 0, 0, 0, 0, 0, 0},
-  {"include-master-host-port", OPT_MYSQLDUMP_INCLUDE_MASTER_HOST_PORT,
+  {"include-master-host-port", OPT_MYBLOCKCHAINDUMP_INCLUDE_MASTER_HOST_PORT,
    "Adds 'MASTER_HOST=<host>, MASTER_PORT=<port>' to 'CHANGE MASTER TO..' "
    "in dump produced with --dump-slave.", &opt_include_master_host_port,
    &opt_include_master_host_port, 0, GET_BOOL, NO_ARG,
@@ -388,7 +388,7 @@ static struct my_option my_long_options[] =
    "Lines in the output file are terminated by the given string.",
    &lines_terminated, &lines_terminated, 0, GET_STR,
    REQUIRED_ARG, 0, 0, 0, 0, 0, 0},
-  {"lock-all-tables", 'x', "Locks all tables across all databases. This "
+  {"lock-all-tables", 'x', "Locks all tables across all blockchains. This "
    "is achieved by taking a global read lock for the duration of the whole "
    "dump. Automatically turns --single-transaction and --lock-tables off.",
    &opt_lock_all_tables, &opt_lock_all_tables, 0, GET_BOOL, NO_ARG,
@@ -409,7 +409,7 @@ static struct my_option my_long_options[] =
    "any action on logs will happen at the exact moment of the dump. "
    "Option automatically turns --lock-tables off.",
    &opt_master_data, &opt_master_data, 0,
-   GET_UINT, OPT_ARG, 0, 0, MYSQL_OPT_MASTER_DATA_COMMENTED_SQL, 0, 0, 0},
+   GET_UINT, OPT_ARG, 0, 0, MYBLOCKCHAIN_OPT_MASTER_DATA_COMMENTED_SQL, 0, 0, 0},
   {"max_allowed_packet", OPT_MAX_ALLOWED_PACKET, 
    "The maximum packet length to send to or receive from server.",
     &opt_max_allowed_packet, &opt_max_allowed_packet, 0,
@@ -426,7 +426,7 @@ static struct my_option my_long_options[] =
    0, 0, 0, 0, 0, 0},
   {"no-create-db", 'n',
    "Suppress the CREATE DATABASE ... IF EXISTS statement that normally is "
-   "output for each dumped database if --all-databases or --databases is "
+   "output for each dumped blockchain if --all-blockchains or --blockchains is "
    "given.",
    &opt_create_db, &opt_create_db, 0, 
    GET_BOOL, NO_ARG, 0, 0, 0, 0, 0, 0},
@@ -450,10 +450,10 @@ static struct my_option my_long_options[] =
   {"pipe", 'W', "Use named pipes to connect to server.", 0, 0, 0, GET_NO_ARG,
    NO_ARG, 0, 0, 0, 0, 0, 0},
 #endif
-  {"port", 'P', "Port number to use for connection.", &opt_mysql_port,
-   &opt_mysql_port, 0, GET_UINT, REQUIRED_ARG, 0, 0, 0, 0, 0,
+  {"port", 'P', "Port number to use for connection.", &opt_myblockchain_port,
+   &opt_myblockchain_port, 0, GET_UINT, REQUIRED_ARG, 0, 0, 0, 0, 0,
    0},
-  {"protocol", OPT_MYSQL_PROTOCOL, 
+  {"protocol", OPT_MYBLOCKCHAIN_PROTOCOL, 
    "The protocol to use for connection (tcp, socket, pipe, memory).",
    0, 0, 0, GET_STR, REQUIRED_ARG, 0, 0, 0, 0, 0, 0},
   {"quick", 'q', "Don't buffer query, dump directly to stdout.",
@@ -461,7 +461,7 @@ static struct my_option my_long_options[] =
   {"quote-names",'Q', "Quote table and column names with backticks (`).",
    &opt_quoted, &opt_quoted, 0, GET_BOOL, NO_ARG, 1, 0, 0, 0,
    0, 0},
-  {"replace", OPT_MYSQL_REPLACE_INTO, "Use REPLACE INTO instead of INSERT INTO.",
+  {"replace", OPT_MYBLOCKCHAIN_REPLACE_INTO, "Use REPLACE INTO instead of INSERT INTO.",
    &opt_replace_into, &opt_replace_into, 0, GET_BOOL, NO_ARG, 0, 0, 0, 0,
    0, 0},
   {"result-file", 'r',
@@ -515,7 +515,7 @@ static struct my_option my_long_options[] =
    "Disable --opt. Disables --add-drop-table, --add-locks, --create-options, --quick, --extended-insert, --lock-tables, --set-charset, and --disable-keys.",
    0, 0, 0, GET_NO_ARG, NO_ARG, 0, 0, 0, 0, 0, 0},
   {"socket", 'S', "The socket file to use for connection.",
-   &opt_mysql_unix_port, &opt_mysql_unix_port, 0, 
+   &opt_myblockchain_unix_port, &opt_myblockchain_unix_port, 0, 
    GET_STR, REQUIRED_ARG, 0, 0, 0, 0, 0, 0},
   {"secure-auth", OPT_SECURE_AUTH, "Refuse client connecting to server if it"
     " uses old (pre-4.1.1) protocol. Deprecated. Always TRUE",
@@ -523,10 +523,10 @@ static struct my_option my_long_options[] =
 #include <sslopt-longopts.h>
   {"tab",'T',
    "Create tab-separated textfile for each table to given path. (Create .sql "
-   "and .txt files.) NOTE: This only works if mysqldump is run on the same "
-   "machine as the mysqld server.",
+   "and .txt files.) NOTE: This only works if myblockchaindump is run on the same "
+   "machine as the myblockchaind server.",
    &path, &path, 0, GET_STR, REQUIRED_ARG, 0, 0, 0, 0, 0, 0},
-  {"tables", OPT_TABLES, "Overrides option --databases (-B).",
+  {"tables", OPT_TABLES, "Overrides option --blockchains (-B).",
    0, 0, 0, GET_NO_ARG, NO_ARG, 0, 0, 0, 0, 0, 0},
   {"triggers", OPT_TRIGGERS, "Dump triggers for each dumped table.",
    &opt_dump_triggers, &opt_dump_triggers, 0, GET_BOOL,
@@ -543,7 +543,7 @@ static struct my_option my_long_options[] =
    GET_NO_ARG, NO_ARG, 0, 0, 0, 0, 0, 0},
   {"where", 'w', "Dump only selected records. Quotes are mandatory.",
    &where, &where, 0, GET_STR, REQUIRED_ARG, 0, 0, 0, 0, 0, 0},
-  {"xml", 'X', "Dump a database as well formed XML.", 0, 0, 0, GET_NO_ARG,
+  {"xml", 'X', "Dump a blockchain as well formed XML.", 0, 0, 0, GET_NO_ARG,
    NO_ARG, 0, 0, 0, 0, 0, 0},
   {"plugin_dir", OPT_PLUGIN_DIR, "Directory for client-side plugins.",
    &opt_plugin_dir, &opt_plugin_dir, 0,
@@ -555,13 +555,13 @@ static struct my_option my_long_options[] =
   {0, 0, 0, 0, 0, 0, GET_NO_ARG, NO_ARG, 0, 0, 0, 0, 0, 0}
 };
 
-static const char *load_default_groups[]= { "mysqldump","client",0 };
+static const char *load_default_groups[]= { "myblockchaindump","client",0 };
 
 static void maybe_exit(int error);
 static void die(int error, const char* reason, ...);
 static void maybe_die(int error, const char* reason, ...);
 static void write_header(FILE *sql_file, char *db_name);
-static void print_value(FILE *file, MYSQL_RES  *result, MYSQL_ROW row,
+static void print_value(FILE *file, MYBLOCKCHAIN_RES  *result, MYBLOCKCHAIN_ROW row,
                         const char *prefix,const char *name,
                         int string_value);
 static int dump_selected_tables(char *db, char **table_names, int tables);
@@ -569,16 +569,16 @@ static int dump_all_tables_in_db(char *db);
 static int init_dumping_views(char *);
 static int init_dumping_tables(char *);
 static int init_dumping(char *, int init_func(char*));
-static int dump_databases(char **);
-static int dump_all_databases();
+static int dump_blockchains(char **);
+static int dump_all_blockchains();
 static char *quote_name(const char *name, char *buff, my_bool force);
 char check_if_ignore_table(const char *table_name, char *table_type);
 static char *primary_key_fields(const char *table_name);
 static my_bool get_view_structure(char *table, char* db);
-static my_bool dump_all_views_in_db(char *database);
+static my_bool dump_all_views_in_db(char *blockchain);
 static int dump_all_tablespaces();
 static int dump_tablespaces_for_tables(char *db, char **table_names, int tables);
-static int dump_tablespaces_for_databases(char** databases);
+static int dump_tablespaces_for_blockchains(char** blockchains);
 static int dump_tablespaces(char* ts_where);
 static void print_comment(FILE *sql_file, my_bool is_error, const char *format,
                           ...);
@@ -627,16 +627,16 @@ void check_io(FILE *file)
 static void print_version(void)
 {
   printf("%s  Ver %s Distrib %s, for %s (%s)\n",my_progname,DUMP_VERSION,
-         MYSQL_SERVER_VERSION,SYSTEM_TYPE,MACHINE_TYPE);
+         MYBLOCKCHAIN_SERVER_VERSION,SYSTEM_TYPE,MACHINE_TYPE);
 } /* print_version */
 
 
 static void short_usage_sub(void)
 {
-  printf("Usage: %s [OPTIONS] database [tables]\n", my_progname);
-  printf("OR     %s [OPTIONS] --databases [OPTIONS] DB1 [DB2 DB3...]\n",
+  printf("Usage: %s [OPTIONS] blockchain [tables]\n", my_progname);
+  printf("OR     %s [OPTIONS] --blockchains [OPTIONS] DB1 [DB2 DB3...]\n",
          my_progname);
-  printf("OR     %s [OPTIONS] --all-databases [OPTIONS]\n", my_progname);
+  printf("OR     %s [OPTIONS] --all-blockchains [OPTIONS]\n", my_progname);
 }
 
 
@@ -645,7 +645,7 @@ static void usage(void)
   struct my_option *optp;
   print_version();
   puts(ORACLE_WELCOME_COPYRIGHT_NOTICE("2000"));
-  puts("Dumping structure and contents of MySQL databases and tables.");
+  puts("Dumping structure and contents of MyBlockchain blockchains and tables.");
   short_usage_sub();
   print_defaults("my",load_default_groups);
   /*
@@ -682,7 +682,7 @@ static void write_header(FILE *sql_file, char *db_name)
       Schema reference.  Allows use of xsi:nil for NULL values and 
       xsi:type to define an element's data type.
     */
-    fputs("<mysqldump ", sql_file);
+    fputs("<myblockchaindump ", sql_file);
     fputs("xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"",
           sql_file);
     fputs(">\n", sql_file);
@@ -691,8 +691,8 @@ static void write_header(FILE *sql_file, char *db_name)
   else if (!opt_compact)
   {
     print_comment(sql_file, 0,
-                  "-- MySQL dump %s  Distrib %s, for %s (%s)\n--\n",
-                  DUMP_VERSION, MYSQL_SERVER_VERSION, SYSTEM_TYPE,
+                  "-- MyBlockchain dump %s  Distrib %s, for %s (%s)\n--\n",
+                  DUMP_VERSION, MYBLOCKCHAIN_SERVER_VERSION, SYSTEM_TYPE,
                   MACHINE_TYPE);
     print_comment(sql_file, 0, "-- Host: %s    Database: %s\n",
                   current_host ? current_host : "localhost",
@@ -701,7 +701,7 @@ static void write_header(FILE *sql_file, char *db_name)
                   "-- ------------------------------------------------------\n"
                  );
     print_comment(sql_file, 0, "-- Server version\t%s\n",
-                  mysql_get_server_info(&mysql_connection));
+                  myblockchain_get_server_info(&myblockchain_connection));
 
     if (opt_set_charset)
       fprintf(sql_file,
@@ -737,7 +737,7 @@ static void write_footer(FILE *sql_file)
 {
   if (opt_xml)
   {
-    fputs("</mysqldump>\n", sql_file);
+    fputs("</myblockchaindump>\n", sql_file);
     check_io(sql_file);
   }
   else if (!opt_compact)
@@ -812,7 +812,7 @@ get_one_option(int optid, const struct my_option *opt __attribute__((unused)),
     break;
   case 'W':
 #ifdef _WIN32
-    opt_protocol= MYSQL_PROTOCOL_PIPE;
+    opt_protocol= MYBLOCKCHAIN_PROTOCOL_PIPE;
 #endif
     break;
   case 'N':
@@ -853,11 +853,11 @@ get_one_option(int optid, const struct my_option *opt __attribute__((unused)),
     exit(0);
   case (int) OPT_MASTER_DATA:
     if (!argument) /* work like in old versions */
-      opt_master_data= MYSQL_OPT_MASTER_DATA_EFFECTIVE_SQL;
+      opt_master_data= MYBLOCKCHAIN_OPT_MASTER_DATA_EFFECTIVE_SQL;
     break;
-  case (int) OPT_MYSQLDUMP_SLAVE_DATA:
+  case (int) OPT_MYBLOCKCHAINDUMP_SLAVE_DATA:
     if (!argument) /* work like in old versions */
-      opt_slave_data= MYSQL_OPT_SLAVE_DATA_EFFECTIVE_SQL;
+      opt_slave_data= MYBLOCKCHAIN_OPT_SLAVE_DATA_EFFECTIVE_SQL;
     break;
   case (int) OPT_OPTIMIZE:
     extended_insert= opt_drop= opt_lock= quick= create_options=
@@ -875,13 +875,13 @@ get_one_option(int optid, const struct my_option *opt __attribute__((unused)),
     }
     break;
   case (int) OPT_TABLES:
-    opt_databases=0;
+    opt_blockchains=0;
     break;
   case (int) OPT_IGNORE_TABLE:
   {
     if (!strchr(argument, '.'))
     {
-      fprintf(stderr, "Illegal use of option --ignore-table=<database>.<table>\n");
+      fprintf(stderr, "Illegal use of option --ignore-table=<blockchain>.<table>\n");
       exit(1);
     }
     if (my_hash_insert(&ignore_table, (uchar*)my_strdup(PSI_NOT_INSTRUMENTED,
@@ -934,11 +934,11 @@ get_one_option(int optid, const struct my_option *opt __attribute__((unused)),
         Set charset to the default compiled value if it hasn't
         been reset yet by --default-character-set=xxx.
       */
-      if (default_charset == mysql_universal_client_charset)
-        default_charset= (char*) MYSQL_DEFAULT_CHARSET_NAME;
+      if (default_charset == myblockchain_universal_client_charset)
+        default_charset= (char*) MYBLOCKCHAIN_DEFAULT_CHARSET_NAME;
       break;
     }
-  case (int) OPT_MYSQL_PROTOCOL:
+  case (int) OPT_MYBLOCKCHAIN_PROTOCOL:
     opt_protocol= find_type_or_exit(argument, &sql_protocol_typelib,
                                     opt->name);
     break;
@@ -950,7 +950,7 @@ get_one_option(int optid, const struct my_option *opt __attribute__((unused)),
                                                     opt->name)-1;
       break;
     }
-  case (int) OPT_MYSQLDUMP_IGNORE_ERROR:
+  case (int) OPT_MYBLOCKCHAINDUMP_IGNORE_ERROR:
     /* Store the supplied list of errors into an array. */
     if (parse_ignore_error())
       exit(EX_EOM);
@@ -959,7 +959,7 @@ get_one_option(int optid, const struct my_option *opt __attribute__((unused)),
     /* --secure-auth is a zombie option. */
     if (!opt_secure_auth)
     {
-      fprintf(stderr, "mysqldump: [ERROR] --skip-secure-auth is not supported.\n");
+      fprintf(stderr, "myblockchaindump: [ERROR] --skip-secure-auth is not supported.\n");
       exit(1);
     }
     else
@@ -972,10 +972,10 @@ get_one_option(int optid, const struct my_option *opt __attribute__((unused)),
 static int get_options(int *argc, char ***argv)
 {
   int ho_error;
-  MYSQL_PARAMETERS *mysql_params= mysql_get_parameters();
+  MYBLOCKCHAIN_PARAMETERS *myblockchain_params= myblockchain_get_parameters();
 
-  opt_max_allowed_packet= *mysql_params->p_max_allowed_packet;
-  opt_net_buffer_length= *mysql_params->p_net_buffer_length;
+  opt_max_allowed_packet= *myblockchain_params->p_max_allowed_packet;
+  opt_net_buffer_length= *myblockchain_params->p_net_buffer_length;
 
   md_result_file= stdout;
   my_getopt_use_args_separator= TRUE;
@@ -992,23 +992,23 @@ static int get_options(int *argc, char ***argv)
   /* Don't copy internal log tables */
   if (my_hash_insert(&ignore_table,
                      (uchar*) my_strdup(PSI_NOT_INSTRUMENTED,
-                                        "mysql.apply_status", MYF(MY_WME))) ||
+                                        "myblockchain.apply_status", MYF(MY_WME))) ||
       my_hash_insert(&ignore_table,
                      (uchar*) my_strdup(PSI_NOT_INSTRUMENTED,
-                                        "mysql.schema", MYF(MY_WME))) ||
+                                        "myblockchain.schema", MYF(MY_WME))) ||
       my_hash_insert(&ignore_table,
                      (uchar*) my_strdup(PSI_NOT_INSTRUMENTED,
-                                        "mysql.general_log", MYF(MY_WME))) ||
+                                        "myblockchain.general_log", MYF(MY_WME))) ||
       my_hash_insert(&ignore_table,
                      (uchar*) my_strdup(PSI_NOT_INSTRUMENTED,
-                                        "mysql.slow_log", MYF(MY_WME))))
+                                        "myblockchain.slow_log", MYF(MY_WME))))
     return(EX_EOM);
 
   if ((ho_error= handle_options(argc, argv, my_long_options, get_one_option)))
     return(ho_error);
 
-  *mysql_params->p_max_allowed_packet= opt_max_allowed_packet;
-  *mysql_params->p_net_buffer_length= opt_net_buffer_length;
+  *myblockchain_params->p_max_allowed_packet= opt_max_allowed_packet;
+  *myblockchain_params->p_net_buffer_length= opt_net_buffer_length;
   if (debug_info_flag)
     my_end_arg= MY_CHECK_ERROR | MY_GIVE_INFO;
   if (debug_check_flag)
@@ -1032,7 +1032,7 @@ static int get_options(int *argc, char ***argv)
 
   /* Ensure consistency of the set of binlog & locking options */
   if (opt_delete_master_logs && !opt_master_data)
-    opt_master_data= MYSQL_OPT_MASTER_DATA_COMMENTED_SQL;
+    opt_master_data= MYBLOCKCHAIN_OPT_MASTER_DATA_COMMENTED_SQL;
   if (opt_single_transaction && opt_lock_all_tables)
   {
     fprintf(stderr, "%s: You can't use --single-transaction and "
@@ -1051,10 +1051,10 @@ static int get_options(int *argc, char ***argv)
     fprintf(stderr, "%s: You can't use ..enclosed.. and ..optionally-enclosed.. at the same time.\n", my_progname);
     return(EX_USAGE);
   }
-  if ((opt_databases || opt_alldbs) && path)
+  if ((opt_blockchains || opt_alldbs) && path)
   {
     fprintf(stderr,
-            "%s: --databases or --all-databases can't be used with --tab.\n",
+            "%s: --blockchains or --all-blockchains can't be used with --tab.\n",
             my_progname);
     return(EX_USAGE);
   }
@@ -1074,13 +1074,13 @@ static int get_options(int *argc, char ***argv)
 
 
 /*
-** DB_error -- prints mysql error message and exits the program.
+** DB_error -- prints myblockchain error message and exits the program.
 */
-static void DB_error(MYSQL *mysql_arg, const char *when)
+static void DB_error(MYBLOCKCHAIN *myblockchain_arg, const char *when)
 {
   DBUG_ENTER("DB_error");
-  maybe_die(EX_MYSQLERR, "Got error: %d: %s %s",
-          mysql_errno(mysql_arg), mysql_error(mysql_arg), when);
+  maybe_die(EX_MYBLOCKCHAINERR, "Got error: %d: %s %s",
+          myblockchain_errno(myblockchain_arg), myblockchain_error(myblockchain_arg), when);
   DBUG_VOID_RETURN;
 }
 
@@ -1133,7 +1133,7 @@ static void die(int error_num, const char* fmt_reason, ...)
     This call prints out the formatted error message to stderr and then
     terminates the process, unless the --force command line option is used.
     
-    This call should be used for non-fatal errors (such as database
+    This call should be used for non-fatal errors (such as blockchain
     errors) that the code may still be able to continue to the next unit
     of work.
     
@@ -1159,10 +1159,10 @@ static void maybe_die(int error_num, const char* fmt_reason, ...)
   some.
 
   SYNOPSIS
-    mysql_query_with_error_report()
-    mysql_con       connection to use
+    myblockchain_query_with_error_report()
+    myblockchain_con       connection to use
     res             if non zero, result will be put there with
-                    mysql_store_result()
+                    myblockchain_store_result()
     query           query to send to server
 
   RETURN VALUES
@@ -1170,14 +1170,14 @@ static void maybe_die(int error_num, const char* fmt_reason, ...)
     1               error
 */
 
-static int mysql_query_with_error_report(MYSQL *mysql_con, MYSQL_RES **res,
+static int myblockchain_query_with_error_report(MYBLOCKCHAIN *myblockchain_con, MYBLOCKCHAIN_RES **res,
                                          const char *query)
 {
-  if (mysql_query(mysql_con, query) ||
-      (res && !((*res)= mysql_store_result(mysql_con))))
+  if (myblockchain_query(myblockchain_con, query) ||
+      (res && !((*res)= myblockchain_store_result(myblockchain_con))))
   {
-    maybe_die(EX_MYSQLERR, "Couldn't execute '%s': %s (%d)",
-            query, mysql_error(mysql_con), mysql_errno(mysql_con));
+    maybe_die(EX_MYBLOCKCHAINERR, "Couldn't execute '%s': %s (%d)",
+            query, myblockchain_error(myblockchain_con), myblockchain_errno(myblockchain_con));
     return 1;
   }
   return 0;
@@ -1190,29 +1190,29 @@ static int fetch_db_collation(const char *db_name,
 {
   my_bool err_status= FALSE;
   char query[QUERY_LENGTH];
-  MYSQL_RES *db_cl_res;
-  MYSQL_ROW db_cl_row;
-  char quoted_database_buf[NAME_LEN*2+3];
-  char *qdatabase= quote_name(db_name, quoted_database_buf, 1);
+  MYBLOCKCHAIN_RES *db_cl_res;
+  MYBLOCKCHAIN_ROW db_cl_row;
+  char quoted_blockchain_buf[NAME_LEN*2+3];
+  char *qblockchain= quote_name(db_name, quoted_blockchain_buf, 1);
 
-  my_snprintf(query, sizeof (query), "use %s", qdatabase);
+  my_snprintf(query, sizeof (query), "use %s", qblockchain);
 
-  if (mysql_query_with_error_report(mysql, NULL, query))
+  if (myblockchain_query_with_error_report(myblockchain, NULL, query))
     return 1;
 
-  if (mysql_query_with_error_report(mysql, &db_cl_res,
-                                    "select @@collation_database"))
+  if (myblockchain_query_with_error_report(myblockchain, &db_cl_res,
+                                    "select @@collation_blockchain"))
     return 1;
 
   do
   {
-    if (mysql_num_rows(db_cl_res) != 1)
+    if (myblockchain_num_rows(db_cl_res) != 1)
     {
       err_status= TRUE;
       break;
     }
 
-    if (!(db_cl_row= mysql_fetch_row(db_cl_res)))
+    if (!(db_cl_row= myblockchain_fetch_row(db_cl_res)))
     {
       err_status= TRUE;
       break;
@@ -1223,7 +1223,7 @@ static int fetch_db_collation(const char *db_name,
 
   } while (FALSE);
 
-  mysql_free_result(db_cl_res);
+  myblockchain_free_result(db_cl_res);
 
   return err_status ? 1 : 0;
 }
@@ -1403,7 +1403,7 @@ static void restore_time_zone(FILE *sql_file,
 
   @returns  whether there was an error or not
 */
-static int switch_character_set_results(MYSQL *mysql, const char *cs_name)
+static int switch_character_set_results(MYBLOCKCHAIN *myblockchain, const char *cs_name)
 {
   char query_buffer[QUERY_LENGTH];
   size_t query_length;
@@ -1417,7 +1417,7 @@ static int switch_character_set_results(MYSQL *mysql, const char *cs_name)
                             "SET SESSION character_set_results = '%s'",
                             (const char *) cs_name);
 
-  return mysql_real_query(mysql, query_buffer, (ulong)query_length);
+  return myblockchain_real_query(myblockchain, query_buffer, (ulong)query_length);
 }
 
 /**
@@ -1432,11 +1432,11 @@ static int switch_character_set_results(MYSQL *mysql, const char *cs_name)
 
   @param[in] stmt_str                 CREATE statement string.
   @param[in] stmt_length              Length of the stmt_str.
-  @param[in] definer_version_str      Minimal MySQL version number when
+  @param[in] definer_version_str      Minimal MyBlockchain version number when
                                       DEFINER clause is supported in the
                                       given statement.
   @param[in] definer_version_length   Length of definer_version_str.
-  @param[in] stmt_version_str         Minimal MySQL version number when the
+  @param[in] stmt_version_str         Minimal MyBlockchain version number when the
                                       given statement is supported.
   @param[in] stmt_version_length      Length of stmt_version_str.
   @param[in] keyword_str              Keyword to look for after CREATE.
@@ -1580,7 +1580,7 @@ static my_bool do_ignore_error()
 
   DBUG_ENTER("do_ignore_error");
 
-  last_errno= mysql_errno(mysql);
+  last_errno= myblockchain_errno(myblockchain);
 
   if (last_errno == 0)
     goto done;
@@ -1610,8 +1610,8 @@ static void maybe_exit(int error)
   */
   if (opt_force || (opt_ignore_error && do_ignore_error()))
     return;
-  if (mysql)
-    mysql_close(mysql);
+  if (myblockchain)
+    myblockchain_close(myblockchain);
   free_resources();
   exit(error);
 }
@@ -1627,37 +1627,37 @@ static int connect_to_db(char *host, char *user,char *passwd)
   DBUG_ENTER("connect_to_db");
 
   verbose_msg("-- Connecting to %s...\n", host ? host : "localhost");
-  mysql_init(&mysql_connection);
+  myblockchain_init(&myblockchain_connection);
   if (opt_compress)
-    mysql_options(&mysql_connection,MYSQL_OPT_COMPRESS,NullS);
-  SSL_SET_OPTIONS(&mysql_connection);
+    myblockchain_options(&myblockchain_connection,MYBLOCKCHAIN_OPT_COMPRESS,NullS);
+  SSL_SET_OPTIONS(&myblockchain_connection);
   if (opt_protocol)
-    mysql_options(&mysql_connection,MYSQL_OPT_PROTOCOL,(char*)&opt_protocol);
+    myblockchain_options(&myblockchain_connection,MYBLOCKCHAIN_OPT_PROTOCOL,(char*)&opt_protocol);
   if (opt_bind_addr)
-    mysql_options(&mysql_connection,MYSQL_OPT_BIND,opt_bind_addr);
+    myblockchain_options(&myblockchain_connection,MYBLOCKCHAIN_OPT_BIND,opt_bind_addr);
 #if defined (_WIN32) && !defined (EMBEDDED_LIBRARY)
   if (shared_memory_base_name)
-    mysql_options(&mysql_connection,MYSQL_SHARED_MEMORY_BASE_NAME,shared_memory_base_name);
+    myblockchain_options(&myblockchain_connection,MYBLOCKCHAIN_SHARED_MEMORY_BASE_NAME,shared_memory_base_name);
 #endif
-  mysql_options(&mysql_connection, MYSQL_SET_CHARSET_NAME, default_charset);
+  myblockchain_options(&myblockchain_connection, MYBLOCKCHAIN_SET_CHARSET_NAME, default_charset);
 
   if (opt_plugin_dir && *opt_plugin_dir)
-    mysql_options(&mysql_connection, MYSQL_PLUGIN_DIR, opt_plugin_dir);
+    myblockchain_options(&myblockchain_connection, MYBLOCKCHAIN_PLUGIN_DIR, opt_plugin_dir);
 
   if (opt_default_auth && *opt_default_auth)
-    mysql_options(&mysql_connection, MYSQL_DEFAULT_AUTH, opt_default_auth);
+    myblockchain_options(&myblockchain_connection, MYBLOCKCHAIN_DEFAULT_AUTH, opt_default_auth);
 
-  mysql_options(&mysql_connection, MYSQL_OPT_CONNECT_ATTR_RESET, 0);
-  mysql_options4(&mysql_connection, MYSQL_OPT_CONNECT_ATTR_ADD,
-                 "program_name", "mysqldump");
-  if (!(mysql= mysql_real_connect(&mysql_connection,host,user,passwd,
-                                  NULL,opt_mysql_port,opt_mysql_unix_port,
+  myblockchain_options(&myblockchain_connection, MYBLOCKCHAIN_OPT_CONNECT_ATTR_RESET, 0);
+  myblockchain_options4(&myblockchain_connection, MYBLOCKCHAIN_OPT_CONNECT_ATTR_ADD,
+                 "program_name", "myblockchaindump");
+  if (!(myblockchain= myblockchain_real_connect(&myblockchain_connection,host,user,passwd,
+                                  NULL,opt_myblockchain_port,opt_myblockchain_unix_port,
                                   0)))
   {
-    DB_error(&mysql_connection, "when trying to connect");
+    DB_error(&myblockchain_connection, "when trying to connect");
     DBUG_RETURN(1);
   }
-  if ((mysql_get_server_version(&mysql_connection) < 40100) ||
+  if ((myblockchain_get_server_version(&myblockchain_connection) < 40100) ||
       (opt_compatible_mode & 3))
   {
     /* Don't dump SET NAMES with a pre-4.1 server (bug#7997).  */
@@ -1670,10 +1670,10 @@ static int connect_to_db(char *host, char *user,char *passwd)
     As we're going to set SQL_MODE, it would be lost on reconnect, so we
     cannot reconnect.
   */
-  mysql->reconnect= 0;
+  myblockchain->reconnect= 0;
   my_snprintf(buff, sizeof(buff), "/*!40100 SET @@SQL_MODE='%s' */",
               compatible_mode_normal_str);
-  if (mysql_query_with_error_report(mysql, 0, buff))
+  if (myblockchain_query_with_error_report(myblockchain, 0, buff))
     DBUG_RETURN(1);
   /*
     set time_zone to UTC to allow dumping date types between servers with
@@ -1682,7 +1682,7 @@ static int connect_to_db(char *host, char *user,char *passwd)
   if (opt_tz_utc)
   {
     my_snprintf(buff, sizeof(buff), "/*!40103 SET TIME_ZONE='+00:00' */");
-    if (mysql_query_with_error_report(mysql, 0, buff))
+    if (myblockchain_query_with_error_report(myblockchain, 0, buff))
       DBUG_RETURN(1);
   }
   DBUG_RETURN(0);
@@ -1695,7 +1695,7 @@ static int connect_to_db(char *host, char *user,char *passwd)
 static void dbDisconnect(char *host)
 {
   verbose_msg("-- Disconnecting from %s...\n", host ? host : "localhost");
-  mysql_close(mysql);
+  myblockchain_close(myblockchain);
 } /* dbDisconnect */
 
 
@@ -1705,9 +1705,9 @@ static void unescape(FILE *file,char *pos,uint length)
   DBUG_ENTER("unescape");
   if (!(tmp=(char*) my_malloc(PSI_NOT_INSTRUMENTED,
                               length*2+1, MYF(MY_WME))))
-    die(EX_MYSQLERR, "Couldn't allocate memory");
+    die(EX_MYBLOCKCHAINERR, "Couldn't allocate memory");
 
-  mysql_real_escape_string_quote(&mysql_connection, tmp, pos, length, '\'');
+  myblockchain_real_escape_string_quote(&myblockchain_connection, tmp, pos, length, '\'');
   fputc('\'', file);
   fputs(tmp, file);
   fputc('\'', file);
@@ -1774,7 +1774,7 @@ static char *quote_name(const char *name, char *buff, my_bool force)
   DESCRIPTION
     Quote \, _, ' and % characters
 
-    Note: Because MySQL uses the C escape syntax in strings
+    Note: Because MyBlockchain uses the C escape syntax in strings
     (for example, '\n' to represent newline), you must double
     any '\' that you use in your LIKE  strings. For example, to
     search for '\n', specify it as '\\n'. To search for '\', specify
@@ -2012,19 +2012,19 @@ static void print_xml_cdata(FILE *xml_file, const char *str, ulong len)
 */
 
 static void print_xml_row(FILE *xml_file, const char *row_name,
-                          MYSQL_RES *tableRes, MYSQL_ROW *row,
+                          MYBLOCKCHAIN_RES *tableRes, MYBLOCKCHAIN_ROW *row,
                           const char *str_create)
 {
   uint i;
   char *create_stmt_ptr= NULL;
   ulong create_stmt_len= 0;
-  MYSQL_FIELD *field;
-  ulong *lengths= mysql_fetch_lengths(tableRes);
+  MYBLOCKCHAIN_FIELD *field;
+  ulong *lengths= myblockchain_fetch_lengths(tableRes);
 
   fprintf(xml_file, "\t\t<%s", row_name);
   check_io(xml_file);
-  mysql_field_seek(tableRes, 0);
-  for (i= 0; (field= mysql_fetch_field(tableRes)); i++)
+  myblockchain_field_seek(tableRes, 0);
+  for (i= 0; (field= myblockchain_fetch_field(tableRes)); i++)
   {
     if ((*row)[i])
     {
@@ -2183,8 +2183,8 @@ static uint dump_events_for_db(char *db)
   char       *event_name;
   char       delimiter[QUERY_LENGTH];
   FILE       *sql_file= md_result_file;
-  MYSQL_RES  *event_res, *event_list_res;
-  MYSQL_ROW  row, event_list_row;
+  MYBLOCKCHAIN_RES  *event_res, *event_list_res;
+  MYBLOCKCHAIN_ROW  row, event_list_row;
 
   char       db_cl_name[MY_CS_NAME_SIZE];
   int        db_cl_altered= FALSE;
@@ -2192,24 +2192,24 @@ static uint dump_events_for_db(char *db)
   DBUG_ENTER("dump_events_for_db");
   DBUG_PRINT("enter", ("db: '%s'", db));
 
-  mysql_real_escape_string_quote(mysql, db_name_buff,
+  myblockchain_real_escape_string_quote(myblockchain, db_name_buff,
                                  db, (ulong)strlen(db), '\'');
   /* nice comments */
   print_comment(sql_file, 0,
-                "\n--\n-- Dumping events for database '%s'\n--\n", db);
+                "\n--\n-- Dumping events for blockchain '%s'\n--\n", db);
 
   /*
-    not using "mysql_query_with_error_report" because we may have not
-    enough privileges to lock mysql.events.
+    not using "myblockchain_query_with_error_report" because we may have not
+    enough privileges to lock myblockchain.events.
   */
   if (lock_tables)
-    mysql_query(mysql, "LOCK TABLES mysql.event READ");
+    myblockchain_query(myblockchain, "LOCK TABLES myblockchain.event READ");
 
-  if (mysql_query_with_error_report(mysql, &event_list_res, "show events"))
+  if (myblockchain_query_with_error_report(myblockchain, &event_list_res, "show events"))
     DBUG_RETURN(0);
 
   strcpy(delimiter, ";");
-  if (mysql_num_rows(event_list_res) > 0)
+  if (myblockchain_num_rows(event_list_res) > 0)
   {
     if (opt_xml)
       fputs("\t<events>\n", sql_file);
@@ -2217,26 +2217,26 @@ static uint dump_events_for_db(char *db)
     {
       fprintf(sql_file, "/*!50106 SET @save_time_zone= @@TIME_ZONE */ ;\n");
 
-      /* Get database collation. */
+      /* Get blockchain collation. */
 
       if (fetch_db_collation(db_name_buff, db_cl_name, sizeof (db_cl_name)))
         DBUG_RETURN(1);
     }
 
-    if (switch_character_set_results(mysql, "binary"))
+    if (switch_character_set_results(myblockchain, "binary"))
       DBUG_RETURN(1);
 
-    while ((event_list_row= mysql_fetch_row(event_list_res)) != NULL)
+    while ((event_list_row= myblockchain_fetch_row(event_list_res)) != NULL)
     {
       event_name= quote_name(event_list_row[1], name_buff, 0);
       DBUG_PRINT("info", ("retrieving CREATE EVENT for %s", name_buff));
       my_snprintf(query_buff, sizeof(query_buff), "SHOW CREATE EVENT %s", 
           event_name);
 
-      if (mysql_query_with_error_report(mysql, &event_res, query_buff))
+      if (myblockchain_query_with_error_report(myblockchain, &event_res, query_buff))
         DBUG_RETURN(1);
 
-      while ((row= mysql_fetch_row(event_res)) != NULL)
+      while ((row= myblockchain_fetch_row(event_res)) != NULL)
       {
         if (opt_xml)
         {
@@ -2266,7 +2266,7 @@ static uint dump_events_for_db(char *db)
 
           fprintf(sql_file, "DELIMITER %s\n", delimiter);
 
-          if (mysql_num_fields(event_res) >= 7)
+          if (myblockchain_num_fields(event_res) >= 7)
           {
             if (switch_db_collation(sql_file, db_name_buff, delimiter,
                                     db_cl_name, row[6], &db_cl_altered))
@@ -2282,7 +2282,7 @@ static uint dump_events_for_db(char *db)
           else
           {
             /*
-              mysqldump is being run against the server, that does not
+              myblockchaindump is being run against the server, that does not
               provide character set information in SHOW CREATE
               statements.
 
@@ -2315,7 +2315,7 @@ static uint dump_events_for_db(char *db)
           restore_time_zone(sql_file, delimiter);
           restore_sql_mode(sql_file, delimiter);
 
-          if (mysql_num_fields(event_res) >= 7)
+          if (myblockchain_num_fields(event_res) >= 7)
           {
             restore_cs_variables(sql_file, delimiter);
 
@@ -2328,7 +2328,7 @@ static uint dump_events_for_db(char *db)
           }
         }
       } /* end of event printing */
-      mysql_free_result(event_res);
+      myblockchain_free_result(event_res);
 
     } /* end of list of events */
     if (opt_xml)
@@ -2342,13 +2342,13 @@ static uint dump_events_for_db(char *db)
       fprintf(sql_file, "/*!50106 SET TIME_ZONE= @save_time_zone */ ;\n");
     }
 
-    if (switch_character_set_results(mysql, default_charset))
+    if (switch_character_set_results(myblockchain, default_charset))
       DBUG_RETURN(1);
   }
-  mysql_free_result(event_list_res);
+  myblockchain_free_result(event_list_res);
 
   if (lock_tables)
-    (void) mysql_query_with_error_report(mysql, 0, "UNLOCK TABLES");
+    (void) myblockchain_query_with_error_report(myblockchain, 0, "UNLOCK TABLES");
   DBUG_RETURN(0);
 }
 
@@ -2396,8 +2396,8 @@ static uint dump_routines_for_db(char *db)
   char       *routine_name;
   int        i;
   FILE       *sql_file= md_result_file;
-  MYSQL_RES  *routine_res, *routine_list_res;
-  MYSQL_ROW  row, routine_list_row;
+  MYBLOCKCHAIN_RES  *routine_res, *routine_list_res;
+  MYBLOCKCHAIN_ROW  row, routine_list_row;
 
   char       db_cl_name[MY_CS_NAME_SIZE];
   int        db_cl_altered= FALSE;
@@ -2405,25 +2405,25 @@ static uint dump_routines_for_db(char *db)
   DBUG_ENTER("dump_routines_for_db");
   DBUG_PRINT("enter", ("db: '%s'", db));
 
-  mysql_real_escape_string_quote(mysql, db_name_buff,
+  myblockchain_real_escape_string_quote(myblockchain, db_name_buff,
                                  db, (ulong)strlen(db), '\'');
   /* nice comments */
   print_comment(sql_file, 0,
-                "\n--\n-- Dumping routines for database '%s'\n--\n", db);
+                "\n--\n-- Dumping routines for blockchain '%s'\n--\n", db);
 
   /*
-    not using "mysql_query_with_error_report" because we may have not
-    enough privileges to lock mysql.proc.
+    not using "myblockchain_query_with_error_report" because we may have not
+    enough privileges to lock myblockchain.proc.
   */
   if (lock_tables)
-    mysql_query(mysql, "LOCK TABLES mysql.proc READ");
+    myblockchain_query(myblockchain, "LOCK TABLES myblockchain.proc READ");
 
-  /* Get database collation. */
+  /* Get blockchain collation. */
 
   if (fetch_db_collation(db_name_buff, db_cl_name, sizeof (db_cl_name)))
     DBUG_RETURN(1);
 
-  if (switch_character_set_results(mysql, "binary"))
+  if (switch_character_set_results(myblockchain, "binary"))
     DBUG_RETURN(1);
 
   if (opt_xml)
@@ -2436,13 +2436,13 @@ static uint dump_routines_for_db(char *db)
                 "SHOW %s STATUS WHERE Db = '%s'",
                 routine_type[i], db_name_buff);
 
-    if (mysql_query_with_error_report(mysql, &routine_list_res, query_buff))
+    if (myblockchain_query_with_error_report(myblockchain, &routine_list_res, query_buff))
       DBUG_RETURN(1);
 
-    if (mysql_num_rows(routine_list_res))
+    if (myblockchain_num_rows(routine_list_res))
     {
 
-      while ((routine_list_row= mysql_fetch_row(routine_list_res)))
+      while ((routine_list_row= myblockchain_fetch_row(routine_list_res)))
       {
         routine_name= quote_name(routine_list_row[1], name_buff, 0);
         DBUG_PRINT("info", ("retrieving CREATE %s for %s", routine_type[i],
@@ -2450,10 +2450,10 @@ static uint dump_routines_for_db(char *db)
         my_snprintf(query_buff, sizeof(query_buff), "SHOW CREATE %s %s",
                     routine_type[i], routine_name);
 
-        if (mysql_query_with_error_report(mysql, &routine_res, query_buff))
+        if (myblockchain_query_with_error_report(myblockchain, &routine_res, query_buff))
           DBUG_RETURN(1);
 
-        while ((row= mysql_fetch_row(routine_res)))
+        while ((row= myblockchain_fetch_row(routine_res)))
         {
           /*
             if the user has EXECUTE privilege he see routine names, but NOT the
@@ -2467,9 +2467,9 @@ static uint dump_routines_for_db(char *db)
             print_comment(sql_file, 1, "\n-- insufficient privileges to %s\n",
                           query_buff);
             print_comment(sql_file, 1,
-                          "-- does %s have permissions on mysql.proc?\n\n",
+                          "-- does %s have permissions on myblockchain.proc?\n\n",
                           current_user);
-            maybe_die(EX_MYSQLERR,"%s has insufficent privileges to %s!", current_user, query_buff);
+            maybe_die(EX_MYBLOCKCHAINERR,"%s has insufficent privileges to %s!", current_user, query_buff);
           }
           else if (strlen(row[2]))
           {
@@ -2487,7 +2487,7 @@ static uint dump_routines_for_db(char *db)
               fprintf(sql_file, "/*!50003 DROP %s IF EXISTS %s */;\n",
                       routine_type[i], routine_name);
 
-            if (mysql_num_fields(routine_res) >= 6)
+            if (myblockchain_num_fields(routine_res) >= 6)
             {
               if (switch_db_collation(sql_file, db_name_buff, ";",
                                       db_cl_name, row[5], &db_cl_altered))
@@ -2503,7 +2503,7 @@ static uint dump_routines_for_db(char *db)
             else
             {
               /*
-                mysqldump is being run against the server, that does not
+                myblockchaindump is being run against the server, that does not
                 provide character set information in SHOW CREATE
                 statements.
 
@@ -2530,7 +2530,7 @@ static uint dump_routines_for_db(char *db)
 
             restore_sql_mode(sql_file, ";");
 
-            if (mysql_num_fields(routine_res) >= 6)
+            if (myblockchain_num_fields(routine_res) >= 6)
             {
               restore_cs_variables(sql_file, ";");
 
@@ -2543,11 +2543,11 @@ static uint dump_routines_for_db(char *db)
 
           }
         } /* end of routine printing */
-        mysql_free_result(routine_res);
+        myblockchain_free_result(routine_res);
 
       } /* end of list of routines */
     }
-    mysql_free_result(routine_list_res);
+    myblockchain_free_result(routine_list_res);
   } /* end of for i (0 .. 1)  */
 
   if (opt_xml)
@@ -2556,25 +2556,25 @@ static uint dump_routines_for_db(char *db)
     check_io(sql_file);
   }
 
-  if (switch_character_set_results(mysql, default_charset))
+  if (switch_character_set_results(myblockchain, default_charset))
     DBUG_RETURN(1);
 
   if (lock_tables)
-    (void) mysql_query_with_error_report(mysql, 0, "UNLOCK TABLES");
+    (void) myblockchain_query_with_error_report(myblockchain, 0, "UNLOCK TABLES");
   DBUG_RETURN(0);
 }
 
-/* general_log or slow_log tables under mysql database */
+/* general_log or slow_log tables under myblockchain blockchain */
 static inline my_bool general_log_or_slow_log_tables(const char *db,
                                                      const char *table)
 {
-  return (!my_strcasecmp(charset_info, db, "mysql")) &&
+  return (!my_strcasecmp(charset_info, db, "myblockchain")) &&
           (!my_strcasecmp(charset_info, table, "general_log") ||
            !my_strcasecmp(charset_info, table, "slow_log"));
 }
 
 /*
-  get_table_structure -- retrievs database structure, prints out corresponding
+  get_table_structure -- retrievs blockchain structure, prints out corresponding
   CREATE statement and fills out insert_pat if the table is the type we will
   be dumping.
 
@@ -2609,8 +2609,8 @@ static uint get_table_structure(char *table, char *db, char *table_type,
   FILE       *sql_file= md_result_file;
   size_t     len;
   my_bool    is_log_table;
-  MYSQL_RES  *result;
-  MYSQL_ROW  row;
+  MYBLOCKCHAIN_RES  *result;
+  MYBLOCKCHAIN_ROW  row;
   DBUG_ENTER("get_table_structure");
   DBUG_PRINT("enter", ("db: %s  table: %s", db, table));
 
@@ -2646,20 +2646,20 @@ static uint get_table_structure(char *table, char *db, char *table_type,
   if (opt_order_by_primary)
     order_by= primary_key_fields(result_table);
 
-  if (!opt_xml && !mysql_query_with_error_report(mysql, 0, query_buff))
+  if (!opt_xml && !myblockchain_query_with_error_report(myblockchain, 0, query_buff))
   {
     /* using SHOW CREATE statement */
     if (!opt_no_create_info)
     {
       /* Make an sql-file, if path was given iow. option -T was given */
       char buff[20+FN_REFLEN];
-      MYSQL_FIELD *field;
+      MYBLOCKCHAIN_FIELD *field;
 
       my_snprintf(buff, sizeof(buff), "show create table %s", result_table);
 
-      if (switch_character_set_results(mysql, "binary") ||
-          mysql_query_with_error_report(mysql, &result, buff) ||
-          switch_character_set_results(mysql, default_charset))
+      if (switch_character_set_results(myblockchain, "binary") ||
+          myblockchain_query_with_error_report(myblockchain, &result, buff) ||
+          switch_character_set_results(myblockchain, default_charset))
         DBUG_RETURN(0);
 
       if (path)
@@ -2693,7 +2693,7 @@ static uint get_table_structure(char *table, char *db, char *table_type,
         check_io(sql_file);
       }
 
-      field= mysql_fetch_field_direct(result, 0);
+      field= myblockchain_fetch_field_direct(result, 0);
       if (strcmp(field->name, "View") == 0)
       {
         char *scv_buff= NULL;
@@ -2702,11 +2702,11 @@ static uint get_table_structure(char *table, char *db, char *table_type,
         verbose_msg("-- It's a view, create dummy view\n");
 
         /* save "show create" statement for later */
-        if ((row= mysql_fetch_row(result)) && (scv_buff=row[1]))
+        if ((row= myblockchain_fetch_row(result)) && (scv_buff=row[1]))
           scv_buff= my_strdup(PSI_NOT_INSTRUMENTED,
                               scv_buff, MYF(0));
 
-        mysql_free_result(result);
+        myblockchain_free_result(result);
 
         /*
           Create a table with the same name as the view and with columns of
@@ -2721,9 +2721,9 @@ static uint get_table_structure(char *table, char *db, char *table_type,
         */
         my_snprintf(query_buff, sizeof(query_buff),
                     "SHOW FIELDS FROM %s", result_table);
-        if (switch_character_set_results(mysql, "binary") ||
-            mysql_query_with_error_report(mysql, &result, query_buff) ||
-            switch_character_set_results(mysql, default_charset))
+        if (switch_character_set_results(myblockchain, "binary") ||
+            myblockchain_query_with_error_report(myblockchain, &result, query_buff) ||
+            switch_character_set_results(myblockchain, default_charset))
         {
           /*
             View references invalid or privileged table/col/fun (err 1356),
@@ -2731,7 +2731,7 @@ static uint get_table_structure(char *table, char *db, char *table_type,
             a comment with the view's 'show create' statement. (Bug #17371)
           */
 
-          if (mysql_errno(mysql) == ER_VIEW_INVALID)
+          if (myblockchain_errno(myblockchain) == ER_VIEW_INVALID)
             fprintf(sql_file, "\n-- failed on view %s: %s\n\n", result_table, scv_buff ? scv_buff : "");
 
           my_free(scv_buff);
@@ -2741,7 +2741,7 @@ static uint get_table_structure(char *table, char *db, char *table_type,
         else
           my_free(scv_buff);
 
-        n_cols= mysql_num_rows(result);
+        n_cols= myblockchain_num_rows(result);
         if (0 != n_cols)
         {
 
@@ -2783,7 +2783,7 @@ static uint get_table_structure(char *table, char *db, char *table_type,
           */
 
 
-          row= mysql_fetch_row(result);
+          row= myblockchain_fetch_row(result);
 
           /*
             A temporary view is created to resolve the view interdependencies.
@@ -2793,7 +2793,7 @@ static uint get_table_structure(char *table, char *db, char *table_type,
           fprintf(sql_file, " 1 AS %s",
                   quote_name(row[0], name_buff, 0));
 
-          while((row= mysql_fetch_row(result)))
+          while((row= myblockchain_fetch_row(result)))
           {
             fprintf(sql_file, ",\n 1 AS %s",
                     quote_name(row[0], name_buff, 0));
@@ -2805,7 +2805,7 @@ static uint get_table_structure(char *table, char *db, char *table_type,
           check_io(sql_file);
         }
 
-        mysql_free_result(result);
+        myblockchain_free_result(result);
 
         if (path)
           my_fclose(sql_file, MYF(MY_WME));
@@ -2814,7 +2814,7 @@ static uint get_table_structure(char *table, char *db, char *table_type,
         DBUG_RETURN(0);
       }
 
-      row= mysql_fetch_row(result);
+      row= myblockchain_fetch_row(result);
 
       is_log_table= general_log_or_slow_log_tables(db, table);
       if (is_log_table)
@@ -2837,11 +2837,11 @@ static uint get_table_structure(char *table, char *db, char *table_type,
       }
 
       check_io(sql_file);
-      mysql_free_result(result);
+      myblockchain_free_result(result);
     }
     my_snprintf(query_buff, sizeof(query_buff), "show fields from %s",
                 result_table);
-    if (mysql_query_with_error_report(mysql, &result, query_buff))
+    if (myblockchain_query_with_error_report(myblockchain, &result, query_buff))
     {
       if (path)
         my_fclose(sql_file, MYF(MY_WME));
@@ -2875,7 +2875,7 @@ static uint get_table_structure(char *table, char *db, char *table_type,
       }
     }
 
-    while ((row= mysql_fetch_row(result)))
+    while ((row= myblockchain_fetch_row(result)))
     {
       if (complete_insert)
       {
@@ -2888,17 +2888,17 @@ static uint get_table_structure(char *table, char *db, char *table_type,
                       quote_name(row[SHOW_FIELDNAME], name_buff, 0));
       }
     }
-    num_fields= mysql_num_rows(result);
-    mysql_free_result(result);
+    num_fields= myblockchain_num_rows(result);
+    myblockchain_free_result(result);
   }
   else
   {
     verbose_msg("%s: Warning: Can't set SQL_QUOTE_SHOW_CREATE option (%s)\n",
-                my_progname, mysql_error(mysql));
+                my_progname, myblockchain_error(myblockchain));
 
     my_snprintf(query_buff, sizeof(query_buff), show_fields_stmt, db, table);
 
-    if (mysql_query_with_error_report(mysql, &result, query_buff))
+    if (myblockchain_query_with_error_report(myblockchain, &result, query_buff))
       DBUG_RETURN(0);
 
     /* Make an sql-file, if path was given iow. option -T was given */
@@ -2943,9 +2943,9 @@ static uint get_table_structure(char *table, char *db, char *table_type,
       }
     }
 
-    while ((row= mysql_fetch_row(result)))
+    while ((row= myblockchain_fetch_row(result)))
     {
-      ulong *lengths= mysql_fetch_lengths(result);
+      ulong *lengths= myblockchain_fetch_lengths(result);
       if (init)
       {
         if (!opt_xml && !opt_no_create_info)
@@ -2988,24 +2988,24 @@ static uint get_table_structure(char *table, char *db, char *table_type,
         check_io(sql_file);
       }
     }
-    num_fields= mysql_num_rows(result);
-    mysql_free_result(result);
+    num_fields= myblockchain_num_rows(result);
+    myblockchain_free_result(result);
     if (!opt_no_create_info)
     {
       /* Make an sql-file, if path was given iow. option -T was given */
       char buff[20+FN_REFLEN];
       uint keynr,primary_key;
       my_snprintf(buff, sizeof(buff), "show keys from %s", result_table);
-      if (mysql_query_with_error_report(mysql, &result, buff))
+      if (myblockchain_query_with_error_report(myblockchain, &result, buff))
       {
-        if (mysql_errno(mysql) == ER_WRONG_OBJECT)
+        if (myblockchain_errno(myblockchain) == ER_WRONG_OBJECT)
         {
           /* it is VIEW */
           fputs("\t\t<options Comment=\"view\" />\n", sql_file);
           goto continue_xml;
         }
         fprintf(stderr, "%s: Can't get keys for table %s (%s)\n",
-                my_progname, result_table, mysql_error(mysql));
+                my_progname, result_table, myblockchain_error(myblockchain));
         if (path)
           my_fclose(sql_file, MYF(MY_WME));
         DBUG_RETURN(0);
@@ -3014,7 +3014,7 @@ static uint get_table_structure(char *table, char *db, char *table_type,
       /* Find first which key is primary key */
       keynr=0;
       primary_key=INT_MAX;
-      while ((row= mysql_fetch_row(result)))
+      while ((row= myblockchain_fetch_row(result)))
       {
         if (atoi(row[3]) == 1)
         {
@@ -3026,9 +3026,9 @@ static uint get_table_structure(char *table, char *db, char *table_type,
           }
         }
       }
-      mysql_data_seek(result,0);
+      myblockchain_data_seek(result,0);
       keynr=0;
-      while ((row= mysql_fetch_row(result)))
+      while ((row= myblockchain_fetch_row(result)))
       {
         if (opt_xml)
         {
@@ -3056,7 +3056,7 @@ static uint get_table_structure(char *table, char *db, char *table_type,
           fprintf(sql_file, " (%s)",row[7]);      /* Sub key */
         check_io(sql_file);
       }
-      mysql_free_result(result);
+      myblockchain_free_result(result);
       if (!opt_xml)
       {
         if (keynr)
@@ -3065,7 +3065,7 @@ static uint get_table_structure(char *table, char *db, char *table_type,
         check_io(sql_file);
       }
 
-      /* Get MySQL specific create options */
+      /* Get MyBlockchain specific create options */
       if (create_options)
       {
         char show_name_buff[NAME_LEN*2+2+24];
@@ -3074,19 +3074,19 @@ static uint get_table_structure(char *table, char *db, char *table_type,
         my_snprintf(buff, sizeof(buff), "show table status like %s",
                     quote_for_like(table, show_name_buff));
 
-        if (mysql_query_with_error_report(mysql, &result, buff))
+        if (myblockchain_query_with_error_report(myblockchain, &result, buff))
         {
-          if (mysql_errno(mysql) != ER_PARSE_ERROR)
-          {                                     /* If old MySQL version */
+          if (myblockchain_errno(myblockchain) != ER_PARSE_ERROR)
+          {                                     /* If old MyBlockchain version */
             verbose_msg("-- Warning: Couldn't get status information for " \
-                        "table %s (%s)\n", result_table,mysql_error(mysql));
+                        "table %s (%s)\n", result_table,myblockchain_error(myblockchain));
           }
         }
-        else if (!(row= mysql_fetch_row(result)))
+        else if (!(row= myblockchain_fetch_row(result)))
         {
           fprintf(stderr,
                   "Error: Couldn't read status information for table %s (%s)\n",
-                  result_table,mysql_error(mysql));
+                  result_table,myblockchain_error(myblockchain));
         }
         else
         {
@@ -3102,7 +3102,7 @@ static uint get_table_structure(char *table, char *db, char *table_type,
             check_io(sql_file);
           }
         }
-        mysql_free_result(result);              /* Is always safe to free */
+        myblockchain_free_result(result);              /* Is always safe to free */
       }
 continue_xml:
       if (!opt_xml)
@@ -3127,15 +3127,15 @@ continue_xml:
   DBUG_RETURN((uint) num_fields);
 } /* get_table_structure */
 
-static void dump_trigger_old(FILE *sql_file, MYSQL_RES *show_triggers_rs,
-                             MYSQL_ROW *show_trigger_row,
+static void dump_trigger_old(FILE *sql_file, MYBLOCKCHAIN_RES *show_triggers_rs,
+                             MYBLOCKCHAIN_ROW *show_trigger_row,
                              const char *table_name)
 {
   char quoted_table_name_buf[NAME_LEN * 2 + 3];
   char *quoted_table_name= quote_name(table_name, quoted_table_name_buf, 1);
 
   char name_buff[NAME_LEN * 4 + 3];
-  const char *xml_msg= "\nWarning! mysqldump being run against old server "
+  const char *xml_msg= "\nWarning! myblockchaindump being run against old server "
                        "that does not\nsupport 'SHOW CREATE TRIGGERS' "
                        "statement. Skipping..\n";
 
@@ -3166,10 +3166,10 @@ static void dump_trigger_old(FILE *sql_file, MYSQL_RES *show_triggers_rs,
           "/*!50003 CREATE */ ",
           (*show_trigger_row)[6]);
 
-  if (mysql_num_fields(show_triggers_rs) > 7)
+  if (myblockchain_num_fields(show_triggers_rs) > 7)
   {
     /*
-      mysqldump can be run against the server, that does not support
+      myblockchaindump can be run against the server, that does not support
       definer in triggers (there is no DEFINER column in SHOW TRIGGERS
       output). So, we should check if we have this column before
       accessing it.
@@ -3209,17 +3209,17 @@ static void dump_trigger_old(FILE *sql_file, MYSQL_RES *show_triggers_rs,
   DBUG_VOID_RETURN;
 }
 
-static int dump_trigger(FILE *sql_file, MYSQL_RES *show_create_trigger_rs,
+static int dump_trigger(FILE *sql_file, MYBLOCKCHAIN_RES *show_create_trigger_rs,
                         const char *db_name,
                         const char *db_cl_name)
 {
-  MYSQL_ROW row;
+  MYBLOCKCHAIN_ROW row;
   char *query_str;
   int db_cl_altered= FALSE;
 
   DBUG_ENTER("dump_trigger");
 
-  while ((row= mysql_fetch_row(show_create_trigger_rs)))
+  while ((row= myblockchain_fetch_row(show_create_trigger_rs)))
   {
     if (opt_xml)
     {
@@ -3287,8 +3287,8 @@ static int dump_triggers_for_table(char *table_name, char *db_name)
   char       name_buff[NAME_LEN*4+3];
   char       query_buff[QUERY_LENGTH];
   uint       old_opt_compatible_mode= opt_compatible_mode;
-  MYSQL_RES  *show_triggers_rs;
-  MYSQL_ROW  row;
+  MYBLOCKCHAIN_RES  *show_triggers_rs;
+  MYBLOCKCHAIN_ROW  row;
   FILE      *sql_file= md_result_file;
 
   char       db_cl_name[MY_CS_NAME_SIZE];
@@ -3304,9 +3304,9 @@ static int dump_triggers_for_table(char *table_name, char *db_name)
   /* Do not use ANSI_QUOTES on triggers in dump */
   opt_compatible_mode&= ~MASK_ANSI_QUOTES;
 
-  /* Get database collation. */
+  /* Get blockchain collation. */
 
-  if (switch_character_set_results(mysql, "binary"))
+  if (switch_character_set_results(myblockchain, "binary"))
     goto done;
 
   if (fetch_db_collation(db_name, db_cl_name, sizeof (db_cl_name)))
@@ -3318,29 +3318,29 @@ static int dump_triggers_for_table(char *table_name, char *db_name)
               "SHOW TRIGGERS LIKE %s",
               quote_for_like(table_name, name_buff));
 
-  if (mysql_query_with_error_report(mysql, &show_triggers_rs, query_buff))
+  if (myblockchain_query_with_error_report(myblockchain, &show_triggers_rs, query_buff))
     goto done;
 
   /* Dump triggers. */
 
-  if (! mysql_num_rows(show_triggers_rs))
+  if (! myblockchain_num_rows(show_triggers_rs))
     goto skip;
 
   if (opt_xml)
     print_xml_tag(sql_file, "\t", "\n", "triggers", "name=",
                   table_name, NullS);
 
-  while ((row= mysql_fetch_row(show_triggers_rs)))
+  while ((row= myblockchain_fetch_row(show_triggers_rs)))
   {
 
     my_snprintf(query_buff, sizeof (query_buff),
                 "SHOW CREATE TRIGGER %s",
                 quote_name(row[0], name_buff, TRUE));
 
-    if (mysql_query(mysql, query_buff))
+    if (myblockchain_query(myblockchain, query_buff))
     {
       /*
-        mysqldump is being run against old server, that does not support
+        myblockchaindump is being run against old server, that does not support
         SHOW CREATE TRIGGER statement. We should use SHOW TRIGGERS output.
 
         NOTE: the dump may be incorrect, as old SHOW TRIGGERS does not
@@ -3351,13 +3351,13 @@ static int dump_triggers_for_table(char *table_name, char *db_name)
     }
     else
     {
-      MYSQL_RES *show_create_trigger_rs= mysql_store_result(mysql);
+      MYBLOCKCHAIN_RES *show_create_trigger_rs= myblockchain_store_result(myblockchain);
 
       if (!show_create_trigger_rs ||
           dump_trigger(sql_file, show_create_trigger_rs, db_name, db_cl_name))
         goto done;
 
-      mysql_free_result(show_create_trigger_rs);
+      myblockchain_free_result(show_create_trigger_rs);
     }
 
   }
@@ -3369,9 +3369,9 @@ static int dump_triggers_for_table(char *table_name, char *db_name)
   }
 
 skip:
-  mysql_free_result(show_triggers_rs);
+  myblockchain_free_result(show_triggers_rs);
 
-  if (switch_character_set_results(mysql, default_charset))
+  if (switch_character_set_results(myblockchain, default_charset))
     goto done;
 
   /*
@@ -3436,7 +3436,7 @@ static void field_escape(DYNAMIC_STRING* in, const char *from)
     {
       if (*from == '\'' && !end_backslashes)
       {
-        /* We want a duplicate of "'" for MySQL */
+        /* We want a duplicate of "'" for MyBlockchain */
         dynstr_append_checked(in, "\'");
       }
       end_backslashes=0;
@@ -3458,7 +3458,7 @@ static char *alloc_query_str(size_t size)
 
   if (!(query= (char*) my_malloc(PSI_NOT_INSTRUMENTED,
                                  size, MYF(MY_WME))))
-    die(EX_MYSQLERR, "Couldn't allocate a query string.");
+    die(EX_MYBLOCKCHAINERR, "Couldn't allocate a query string.");
 
   return query;
 }
@@ -3469,7 +3469,7 @@ static char *alloc_query_str(size_t size)
  SYNOPSIS
   dump_table()
 
-  dump_table saves database contents as a series of INSERT statements.
+  dump_table saves blockchain contents as a series of INSERT statements.
 
   ARGS
    table - table name
@@ -3492,9 +3492,9 @@ static void dump_table(char *table, char *db)
   ulong         rownr, row_break;
   size_t        total_length, init_length;
   uint num_fields;
-  MYSQL_RES     *res;
-  MYSQL_FIELD   *field;
-  MYSQL_ROW     row;
+  MYBLOCKCHAIN_RES     *res;
+  MYBLOCKCHAIN_FIELD   *field;
+  MYBLOCKCHAIN_ROW     row;
   DBUG_ENTER("dump_table");
 
   /*
@@ -3572,7 +3572,7 @@ static void dump_table(char *table, char *db)
     dynstr_append_checked(&query_string, "'");
 
     dynstr_append_checked(&query_string, " /*!50138 CHARACTER SET ");
-    dynstr_append_checked(&query_string, default_charset == mysql_universal_client_charset ?
+    dynstr_append_checked(&query_string, default_charset == myblockchain_universal_client_charset ?
                                          my_charset_bin.name : /* backward compatibility */
                                          default_charset);
     dynstr_append_checked(&query_string, " */");
@@ -3601,9 +3601,9 @@ static void dump_table(char *table, char *db)
       dynstr_append_checked(&query_string, order_by);
     }
 
-    if (mysql_real_query(mysql, query_string.str, (ulong)query_string.length))
+    if (myblockchain_real_query(myblockchain, query_string.str, (ulong)query_string.length))
     {
-      DB_error(mysql, "when executing 'SELECT INTO OUTFILE'");
+      DB_error(myblockchain, "when executing 'SELECT INTO OUTFILE'");
       dynstr_free(&query_string);
       DBUG_VOID_RETURN;
     }
@@ -3637,23 +3637,23 @@ static void dump_table(char *table, char *db)
       fputs("\n", md_result_file);
       check_io(md_result_file);
     }
-    if (mysql_query_with_error_report(mysql, 0, query_string.str))
+    if (myblockchain_query_with_error_report(myblockchain, 0, query_string.str))
     {
-      DB_error(mysql, "when retrieving data from server");
+      DB_error(myblockchain, "when retrieving data from server");
       goto err;
     }
     if (quick)
-      res=mysql_use_result(mysql);
+      res=myblockchain_use_result(myblockchain);
     else
-      res=mysql_store_result(mysql);
+      res=myblockchain_store_result(myblockchain);
     if (!res)
     {
-      DB_error(mysql, "when retrieving data from server");
+      DB_error(myblockchain, "when retrieving data from server");
       goto err;
     }
 
     verbose_msg("-- Retrieving rows...\n");
-    if (mysql_num_fields(res) != num_fields)
+    if (myblockchain_num_fields(res) != num_fields)
     {
       fprintf(stderr,"%s: Error in field count for table: %s !  Aborting.\n",
               my_progname, result_table);
@@ -3687,17 +3687,17 @@ static void dump_table(char *table, char *db)
       check_io(md_result_file);
     }
 
-    while ((row= mysql_fetch_row(res)))
+    while ((row= myblockchain_fetch_row(res)))
     {
       uint i;
-      ulong *lengths= mysql_fetch_lengths(res);
+      ulong *lengths= myblockchain_fetch_lengths(res);
       rownr++;
       if (!extended_insert && !opt_xml)
       {
         fputs(insert_pat.str,md_result_file);
         check_io(md_result_file);
       }
-      mysql_field_seek(res,0);
+      myblockchain_field_seek(res,0);
 
       if (opt_xml)
       {
@@ -3705,12 +3705,12 @@ static void dump_table(char *table, char *db)
         check_io(md_result_file);
       }
 
-      for (i= 0; i < mysql_num_fields(res); i++)
+      for (i= 0; i < myblockchain_num_fields(res); i++)
       {
         int is_blob;
         ulong length= lengths[i];
 
-        if (!(field= mysql_fetch_field(res)))
+        if (!(field= myblockchain_fetch_field(res)))
           die(EX_CONSCHECK,
                       "Not enough fields from table %s! Aborting.\n",
                       result_table);
@@ -3721,15 +3721,15 @@ static void dump_table(char *table, char *db)
            we'll dump in hex only BLOB columns.
         */
         is_blob= (opt_hex_blob && field->charsetnr == 63 &&
-                  (field->type == MYSQL_TYPE_BIT ||
-                   field->type == MYSQL_TYPE_STRING ||
-                   field->type == MYSQL_TYPE_VAR_STRING ||
-                   field->type == MYSQL_TYPE_VARCHAR ||
-                   field->type == MYSQL_TYPE_BLOB ||
-                   field->type == MYSQL_TYPE_LONG_BLOB ||
-                   field->type == MYSQL_TYPE_MEDIUM_BLOB ||
-                   field->type == MYSQL_TYPE_TINY_BLOB ||
-                   field->type == MYSQL_TYPE_GEOMETRY)) ? 1 : 0;
+                  (field->type == MYBLOCKCHAIN_TYPE_BIT ||
+                   field->type == MYBLOCKCHAIN_TYPE_STRING ||
+                   field->type == MYBLOCKCHAIN_TYPE_VAR_STRING ||
+                   field->type == MYBLOCKCHAIN_TYPE_VARCHAR ||
+                   field->type == MYBLOCKCHAIN_TYPE_BLOB ||
+                   field->type == MYBLOCKCHAIN_TYPE_LONG_BLOB ||
+                   field->type == MYBLOCKCHAIN_TYPE_MEDIUM_BLOB ||
+                   field->type == MYBLOCKCHAIN_TYPE_TINY_BLOB ||
+                   field->type == MYBLOCKCHAIN_TYPE_GEOMETRY)) ? 1 : 0;
         if (extended_insert && !opt_xml)
         {
           if (i == 0)
@@ -3755,18 +3755,18 @@ static void dump_table(char *table, char *db)
                 if (opt_hex_blob && is_blob)
                 {
                   dynstr_append_checked(&extended_row, "0x");
-                  extended_row.length+= mysql_hex_string(extended_row.str +
+                  extended_row.length+= myblockchain_hex_string(extended_row.str +
                                                          extended_row.length,
                                                          row[i], length);
                   DBUG_ASSERT(extended_row.length+1 <= extended_row.max_length);
-                  /* mysql_hex_string() already terminated string by '\0' */
+                  /* myblockchain_hex_string() already terminated string by '\0' */
                   DBUG_ASSERT(extended_row.str[extended_row.length] == '\0');
                 }
                 else
                 {
                   dynstr_append_checked(&extended_row,"'");
                   extended_row.length +=
-                  mysql_real_escape_string_quote(&mysql_connection,
+                  myblockchain_real_escape_string_quote(&myblockchain_connection,
                                          &extended_row.str[extended_row.length],
                                          row[i],length,
                                          '\'');
@@ -3783,7 +3783,7 @@ static void dump_table(char *table, char *db)
                   dynstr_append_checked(&extended_row, "NULL");
                 else
                 {
-                  if (field->type == MYSQL_TYPE_DECIMAL)
+                  if (field->type == MYBLOCKCHAIN_TYPE_DECIMAL)
                   {
                     /* add " signs around */
                     dynstr_append_checked(&extended_row, "'");
@@ -3852,7 +3852,7 @@ static void dump_table(char *table, char *db)
               else if (my_isalpha(charset_info, *ptr) ||
                        (*ptr == '-' && my_isalpha(charset_info, ptr[1])))
                 fputs("NULL", md_result_file);
-              else if (field->type == MYSQL_TYPE_DECIMAL)
+              else if (field->type == MYBLOCKCHAIN_TYPE_DECIMAL)
               {
                 /* add " signs around */
                 fputc('\'', md_result_file);
@@ -3919,13 +3919,13 @@ static void dump_table(char *table, char *db)
       fputs(";\n", md_result_file);             /* If not empty table */
     fflush(md_result_file);
     check_io(md_result_file);
-    if (mysql_errno(mysql))
+    if (myblockchain_errno(myblockchain))
     {
       my_snprintf(buf, sizeof(buf),
                   "%s: Error %d: %s when dumping table %s at row: %ld\n",
                   my_progname,
-                  mysql_errno(mysql),
-                  mysql_error(mysql),
+                  myblockchain_errno(myblockchain),
+                  myblockchain_error(myblockchain),
                   result_table,
                   rownr);
       fputs(buf,stderr);
@@ -3950,7 +3950,7 @@ static void dump_table(char *table, char *db)
       fprintf(md_result_file, "commit;\n");
       check_io(md_result_file);
     }
-    mysql_free_result(res);
+    myblockchain_free_result(res);
   }
   dynstr_free(&query_string);
   if (extended_insert)
@@ -3968,22 +3968,22 @@ err:
 
 static char *getTableName(int reset)
 {
-  static MYSQL_RES *res= NULL;
-  MYSQL_ROW    row;
+  static MYBLOCKCHAIN_RES *res= NULL;
+  MYBLOCKCHAIN_ROW    row;
 
   if (!res)
   {
-    if (!(res= mysql_list_tables(mysql,NullS)))
+    if (!(res= myblockchain_list_tables(myblockchain,NullS)))
       return(NULL);
   }
-  if ((row= mysql_fetch_row(res)))
+  if ((row= myblockchain_fetch_row(res)))
     return((char*) row[0]);
 
   if (reset)
-    mysql_data_seek(res,0);      /* We want to read again */
+    myblockchain_data_seek(res,0);      /* We want to read again */
   else
   {
-    mysql_free_result(res);
+    myblockchain_free_result(res);
     res= NULL;
   }
   return(NULL);
@@ -4006,7 +4006,7 @@ static int dump_tablespaces_for_tables(char *db, char **table_names, int tables)
   int i;
   char name_buff[NAME_LEN*2+3];
 
-  mysql_real_escape_string_quote(mysql, name_buff, db, (ulong)strlen(db), '\'');
+  myblockchain_real_escape_string_quote(myblockchain, name_buff, db, (ulong)strlen(db), '\'');
 
   init_dynamic_string_checked(&where, " AND TABLESPACE_NAME IN ("
                       "SELECT DISTINCT TABLESPACE_NAME FROM"
@@ -4018,7 +4018,7 @@ static int dump_tablespaces_for_tables(char *db, char **table_names, int tables)
 
   for (i=0 ; i<tables ; i++)
   {
-    mysql_real_escape_string_quote(mysql, name_buff,
+    myblockchain_real_escape_string_quote(myblockchain, name_buff,
                            table_names[i], (ulong)strlen(table_names[i]), '\'');
 
     dynstr_append_checked(&where, "'");
@@ -4034,7 +4034,7 @@ static int dump_tablespaces_for_tables(char *db, char **table_names, int tables)
   return r;
 }
 
-static int dump_tablespaces_for_databases(char** databases)
+static int dump_tablespaces_for_blockchains(char** blockchains)
 {
   DYNAMIC_STRING where;
   int r;
@@ -4046,11 +4046,11 @@ static int dump_tablespaces_for_databases(char** databases)
                       " WHERE"
                       " TABLE_SCHEMA IN (", 256, 1024);
 
-  for (i=0 ; databases[i]!=NULL ; i++)
+  for (i=0 ; blockchains[i]!=NULL ; i++)
   {
     char db_name_buff[NAME_LEN*2+3];
-    mysql_real_escape_string_quote(mysql, db_name_buff,
-                               databases[i], (ulong)strlen(databases[i]), '\'');
+    myblockchain_real_escape_string_quote(myblockchain, db_name_buff,
+                               blockchains[i], (ulong)strlen(blockchains[i]), '\'');
     dynstr_append_checked(&where, "'");
     dynstr_append_checked(&where, db_name_buff);
     dynstr_append_checked(&where, "',");
@@ -4066,8 +4066,8 @@ static int dump_tablespaces_for_databases(char** databases)
 
 static int dump_tablespaces(char* ts_where)
 {
-  MYSQL_ROW row;
-  MYSQL_RES *tableres;
+  MYBLOCKCHAIN_ROW row;
+  MYBLOCKCHAIN_RES *tableres;
   char buf[FN_REFLEN];
   DYNAMIC_STRING sqlbuf;
   int first= 0;
@@ -4107,13 +4107,13 @@ static int dump_tablespaces(char* ts_where)
                 ", ENGINE"
                 " ORDER BY LOGFILE_GROUP_NAME");
 
-  if (mysql_query(mysql, sqlbuf.str) ||
-      !(tableres = mysql_store_result(mysql)))
+  if (myblockchain_query(myblockchain, sqlbuf.str) ||
+      !(tableres = myblockchain_store_result(myblockchain)))
   {
     dynstr_free(&sqlbuf);
-    if (mysql_errno(mysql) == ER_BAD_TABLE_ERROR ||
-        mysql_errno(mysql) == ER_BAD_DB_ERROR ||
-        mysql_errno(mysql) == ER_UNKNOWN_TABLE)
+    if (myblockchain_errno(myblockchain) == ER_BAD_TABLE_ERROR ||
+        myblockchain_errno(myblockchain) == ER_BAD_DB_ERROR ||
+        myblockchain_errno(myblockchain) == ER_UNKNOWN_TABLE)
     {
       fprintf(md_result_file,
               "\n--\n-- Not dumping tablespaces as no INFORMATION_SCHEMA.FILES"
@@ -4123,12 +4123,12 @@ static int dump_tablespaces(char* ts_where)
     }
 
     my_printf_error(0, "Error: '%s' when trying to dump tablespaces",
-                    MYF(0), mysql_error(mysql));
+                    MYF(0), myblockchain_error(myblockchain));
     DBUG_RETURN(1);
   }
 
   buf[0]= 0;
-  while ((row= mysql_fetch_row(tableres)))
+  while ((row= myblockchain_fetch_row(tableres)))
   {
     if (strcmp(buf, row[0]) != 0)
       first= 1;
@@ -4174,7 +4174,7 @@ static int dump_tablespaces(char* ts_where)
     }
   }
   dynstr_free(&sqlbuf);
-  mysql_free_result(tableres);
+  myblockchain_free_result(tableres);
   init_dynamic_string_checked(&sqlbuf,
                       "SELECT DISTINCT TABLESPACE_NAME,"
                       " FILE_NAME,"
@@ -4191,14 +4191,14 @@ static int dump_tablespaces(char* ts_where)
 
   dynstr_append_checked(&sqlbuf, " ORDER BY TABLESPACE_NAME, LOGFILE_GROUP_NAME");
 
-  if (mysql_query_with_error_report(mysql, &tableres, sqlbuf.str))
+  if (myblockchain_query_with_error_report(myblockchain, &tableres, sqlbuf.str))
   {
     dynstr_free(&sqlbuf);
     DBUG_RETURN(1);
   }
 
   buf[0]= 0;
-  while ((row= mysql_fetch_row(tableres)))
+  while ((row= myblockchain_fetch_row(tableres)))
   {
     if (strcmp(buf, row[0]) != 0)
       first= 1;
@@ -4237,22 +4237,22 @@ static int dump_tablespaces(char* ts_where)
     }
   }
 
-  mysql_free_result(tableres);
+  myblockchain_free_result(tableres);
   dynstr_free(&sqlbuf);
   DBUG_RETURN(0);
 }
 
 
 static int
-is_ndbinfo(MYSQL* mysql, const char* dbname)
+is_ndbinfo(MYBLOCKCHAIN* myblockchain, const char* dbname)
 {
   static int checked_ndbinfo= 0;
   static int have_ndbinfo= 0;
 
   if (!checked_ndbinfo)
   {
-    MYSQL_RES *res;
-    MYSQL_ROW row;
+    MYBLOCKCHAIN_RES *res;
+    MYBLOCKCHAIN_ROW row;
     char buf[32], query[64];
 
     my_snprintf(query, sizeof(query),
@@ -4261,17 +4261,17 @@ is_ndbinfo(MYSQL* mysql, const char* dbname)
 
     checked_ndbinfo= 1;
 
-    if (mysql_query_with_error_report(mysql, &res, query))
+    if (myblockchain_query_with_error_report(myblockchain, &res, query))
       return 0;
 
-    if (!(row= mysql_fetch_row(res)))
+    if (!(row= myblockchain_fetch_row(res)))
     {
-      mysql_free_result(res);
+      myblockchain_free_result(res);
       return 0;
     }
 
     have_ndbinfo= 1;
-    mysql_free_result(res);
+    myblockchain_free_result(res);
   }
 
   if (!have_ndbinfo)
@@ -4284,76 +4284,76 @@ is_ndbinfo(MYSQL* mysql, const char* dbname)
 }
 
 
-static int dump_all_databases()
+static int dump_all_blockchains()
 {
-  MYSQL_ROW row;
-  MYSQL_RES *tableres;
+  MYBLOCKCHAIN_ROW row;
+  MYBLOCKCHAIN_RES *tableres;
   int result=0;
 
-  if (mysql_query_with_error_report(mysql, &tableres, "SHOW DATABASES"))
+  if (myblockchain_query_with_error_report(myblockchain, &tableres, "SHOW DATABASES"))
     return 1;
-  while ((row= mysql_fetch_row(tableres)))
+  while ((row= myblockchain_fetch_row(tableres)))
   {
-    if (mysql_get_server_version(mysql) >= FIRST_INFORMATION_SCHEMA_VERSION &&
+    if (myblockchain_get_server_version(myblockchain) >= FIRST_INFORMATION_SCHEMA_VERSION &&
         !my_strcasecmp(&my_charset_latin1, row[0], INFORMATION_SCHEMA_DB_NAME))
       continue;
 
-    if (mysql_get_server_version(mysql) >= FIRST_PERFORMANCE_SCHEMA_VERSION &&
+    if (myblockchain_get_server_version(myblockchain) >= FIRST_PERFORMANCE_SCHEMA_VERSION &&
         !my_strcasecmp(&my_charset_latin1, row[0], PERFORMANCE_SCHEMA_DB_NAME))
       continue;
 
-    if (mysql_get_server_version(mysql) >= FIRST_SYS_SCHEMA_VERSION &&
+    if (myblockchain_get_server_version(myblockchain) >= FIRST_SYS_SCHEMA_VERSION &&
         !my_strcasecmp(&my_charset_latin1, row[0], SYS_SCHEMA_DB_NAME))
       continue;
 
-    if (is_ndbinfo(mysql, row[0]))
+    if (is_ndbinfo(myblockchain, row[0]))
       continue;
 
     if (dump_all_tables_in_db(row[0]))
       result=1;
   }
-  mysql_free_result(tableres);
+  myblockchain_free_result(tableres);
   if (seen_views)
   {
-    if (mysql_query(mysql, "SHOW DATABASES") ||
-        !(tableres= mysql_store_result(mysql)))
+    if (myblockchain_query(myblockchain, "SHOW DATABASES") ||
+        !(tableres= myblockchain_store_result(myblockchain)))
     {
       my_printf_error(0, "Error: Couldn't execute 'SHOW DATABASES': %s",
-                      MYF(0), mysql_error(mysql));
+                      MYF(0), myblockchain_error(myblockchain));
       return 1;
     }
-    while ((row= mysql_fetch_row(tableres)))
+    while ((row= myblockchain_fetch_row(tableres)))
     {
-      if (mysql_get_server_version(mysql) >= FIRST_INFORMATION_SCHEMA_VERSION &&
+      if (myblockchain_get_server_version(myblockchain) >= FIRST_INFORMATION_SCHEMA_VERSION &&
           !my_strcasecmp(&my_charset_latin1, row[0], INFORMATION_SCHEMA_DB_NAME))
         continue;
 
-      if (mysql_get_server_version(mysql) >= FIRST_PERFORMANCE_SCHEMA_VERSION &&
+      if (myblockchain_get_server_version(myblockchain) >= FIRST_PERFORMANCE_SCHEMA_VERSION &&
           !my_strcasecmp(&my_charset_latin1, row[0], PERFORMANCE_SCHEMA_DB_NAME))
         continue;
 
-      if (mysql_get_server_version(mysql) >= FIRST_SYS_SCHEMA_VERSION &&
+      if (myblockchain_get_server_version(myblockchain) >= FIRST_SYS_SCHEMA_VERSION &&
           !my_strcasecmp(&my_charset_latin1, row[0], SYS_SCHEMA_DB_NAME))
         continue;
 
-      if (is_ndbinfo(mysql, row[0]))
+      if (is_ndbinfo(myblockchain, row[0]))
         continue;
 
       if (dump_all_views_in_db(row[0]))
         result=1;
     }
-    mysql_free_result(tableres);
+    myblockchain_free_result(tableres);
   }
   return result;
 }
-/* dump_all_databases */
+/* dump_all_blockchains */
 
 
-static int dump_databases(char **db_names)
+static int dump_blockchains(char **db_names)
 {
   int result=0;
   char **db;
-  DBUG_ENTER("dump_databases");
+  DBUG_ENTER("dump_blockchains");
 
   for (db= db_names ; *db ; db++)
   {
@@ -4369,111 +4369,111 @@ static int dump_databases(char **db_names)
     }
   }
   DBUG_RETURN(result);
-} /* dump_databases */
+} /* dump_blockchains */
 
 
 /*
-View Specific database initalization.
+View Specific blockchain initalization.
 
 SYNOPSIS
   init_dumping_views
-  qdatabase      quoted name of the database
+  qblockchain      quoted name of the blockchain
 
 RETURN VALUES
   0        Success.
   1        Failure.
 */
-int init_dumping_views(char *qdatabase __attribute__((unused)))
+int init_dumping_views(char *qblockchain __attribute__((unused)))
 {
     return 0;
 } /* init_dumping_views */
 
 
 /*
-Table Specific database initalization.
+Table Specific blockchain initalization.
 
 SYNOPSIS
   init_dumping_tables
-  qdatabase      quoted name of the database
+  qblockchain      quoted name of the blockchain
 
 RETURN VALUES
   0        Success.
   1        Failure.
 */
 
-int init_dumping_tables(char *qdatabase)
+int init_dumping_tables(char *qblockchain)
 {
   DBUG_ENTER("init_dumping_tables");
 
   if (!opt_create_db)
   {
     char qbuf[256];
-    MYSQL_ROW row;
-    MYSQL_RES *dbinfo;
+    MYBLOCKCHAIN_ROW row;
+    MYBLOCKCHAIN_RES *dbinfo;
 
     my_snprintf(qbuf, sizeof(qbuf),
                 "SHOW CREATE DATABASE IF NOT EXISTS %s",
-                qdatabase);
+                qblockchain);
 
-    if (mysql_query(mysql, qbuf) || !(dbinfo = mysql_store_result(mysql)))
+    if (myblockchain_query(myblockchain, qbuf) || !(dbinfo = myblockchain_store_result(myblockchain)))
     {
       /* Old server version, dump generic CREATE DATABASE */
-      if (opt_drop_database)
+      if (opt_drop_blockchain)
         fprintf(md_result_file,
                 "\n/*!40000 DROP DATABASE IF EXISTS %s*/;\n",
-                qdatabase);
+                qblockchain);
       fprintf(md_result_file,
               "\nCREATE DATABASE /*!32312 IF NOT EXISTS*/ %s;\n",
-              qdatabase);
+              qblockchain);
     }
     else
     {
-      if (opt_drop_database)
+      if (opt_drop_blockchain)
         fprintf(md_result_file,
                 "\n/*!40000 DROP DATABASE IF EXISTS %s*/;\n",
-                qdatabase);
-      row = mysql_fetch_row(dbinfo);
+                qblockchain);
+      row = myblockchain_fetch_row(dbinfo);
       if (row[1])
       {
         fprintf(md_result_file,"\n%s;\n",row[1]);
       }
-      mysql_free_result(dbinfo);
+      myblockchain_free_result(dbinfo);
     }
   }
   DBUG_RETURN(0);
 } /* init_dumping_tables */
 
 
-static int init_dumping(char *database, int init_func(char*))
+static int init_dumping(char *blockchain, int init_func(char*))
 {
-  if (is_ndbinfo(mysql, database))
+  if (is_ndbinfo(myblockchain, blockchain))
   {
-    verbose_msg("-- Skipping dump of ndbinfo database\n");
+    verbose_msg("-- Skipping dump of ndbinfo blockchain\n");
     return 0;
   }
 
-  if (mysql_select_db(mysql, database))
+  if (myblockchain_select_db(myblockchain, blockchain))
   {
-    DB_error(mysql, "when selecting the database");
+    DB_error(myblockchain, "when selecting the blockchain");
     return 1;                   /* If --force */
   }
   if (!path && !opt_xml)
   {
-    if (opt_databases || opt_alldbs)
+    if (opt_blockchains || opt_alldbs)
     {
       /*
         length of table name * 2 (if name contains quotes), 2 quotes and 0
       */
-      char quoted_database_buf[NAME_LEN*2+3];
-      char *qdatabase= quote_name(database,quoted_database_buf,opt_quoted);
+      char quoted_blockchain_buf[NAME_LEN*2+3];
+      char *qblockchain= quote_name(blockchain,quoted_blockchain_buf,opt_quoted);
 
       print_comment(md_result_file, 0,
-                    "\n--\n-- Current Database: %s\n--\n", qdatabase);
+                    "\n--\n-- Current Database: %s\n--\n", qblockchain);
 
       /* Call the view or table specific function */
-      init_func(qdatabase);
+      init_func(qblockchain);
 
-      fprintf(md_result_file,"\nUSE %s;\n", qdatabase);
+      fprintf(md_result_file,"\nUSE %s;\n", qblockchain);
       check_io(md_result_file);
     }
   }
@@ -4489,7 +4489,7 @@ my_bool include_table(const uchar *hash_key, size_t len)
 }
 
 
-static int dump_all_tables_in_db(char *database)
+static int dump_all_tables_in_db(char *blockchain)
 {
   char *table;
   uint numrows;
@@ -4497,16 +4497,16 @@ static int dump_all_tables_in_db(char *database)
   char hash_key[2*NAME_LEN+2];  /* "db.tablename" */
   char *afterdot;
   my_bool general_log_table_exists= 0, slow_log_table_exists=0;
-  int using_mysql_db= !my_strcasecmp(charset_info, database, "mysql");
+  int using_myblockchain_db= !my_strcasecmp(charset_info, blockchain, "myblockchain");
   DBUG_ENTER("dump_all_tables_in_db");
 
-  afterdot= my_stpcpy(hash_key, database);
+  afterdot= my_stpcpy(hash_key, blockchain);
   *afterdot++= '.';
 
-  if (init_dumping(database, init_dumping_tables))
+  if (init_dumping(blockchain, init_dumping_tables))
     DBUG_RETURN(1);
   if (opt_xml)
-    print_xml_tag(md_result_file, "", "\n", "database", "name=", database, NullS);
+    print_xml_tag(md_result_file, "", "\n", "blockchain", "name=", blockchain, NullS);
 
   if (lock_tables)
   {
@@ -4522,23 +4522,23 @@ static int dump_all_tables_in_db(char *database)
         dynstr_append_checked(&query, " READ /*!32311 LOCAL */,");
       }
     }
-    if (numrows && mysql_real_query(mysql, query.str, (ulong)(query.length-1)))
-      DB_error(mysql, "when using LOCK TABLES");
+    if (numrows && myblockchain_real_query(myblockchain, query.str, (ulong)(query.length-1)))
+      DB_error(myblockchain, "when using LOCK TABLES");
             /* We shall continue here, if --force was given */
     dynstr_free(&query);
   }
   if (flush_logs)
   {
-    if (mysql_refresh(mysql, REFRESH_LOG))
-      DB_error(mysql, "when doing refresh");
+    if (myblockchain_refresh(myblockchain, REFRESH_LOG))
+      DB_error(myblockchain, "when doing refresh");
            /* We shall continue here, if --force was given */
     else
       verbose_msg("-- dump_all_tables_in_db : logs flushed successfully!\n");
   }
-  if (opt_single_transaction && mysql_get_server_version(mysql) >= 50500)
+  if (opt_single_transaction && myblockchain_get_server_version(myblockchain) >= 50500)
   {
     verbose_msg("-- Setting savepoint...\n");
-    if (mysql_query_with_error_report(mysql, 0, "SAVEPOINT sp"))
+    if (myblockchain_query_with_error_report(myblockchain, 0, "SAVEPOINT sp"))
       DBUG_RETURN(1);
   }
   while ((table= getTableName(0)))
@@ -4546,16 +4546,16 @@ static int dump_all_tables_in_db(char *database)
     char *end= my_stpcpy(afterdot, table);
     if (include_table((uchar*) hash_key, end - hash_key))
     {
-      dump_table(table,database);
+      dump_table(table,blockchain);
       my_free(order_by);
       order_by= 0;
-      if (opt_dump_triggers && mysql_get_server_version(mysql) >= 50009)
+      if (opt_dump_triggers && myblockchain_get_server_version(myblockchain) >= 50009)
       {
-        if (dump_triggers_for_table(table, database))
+        if (dump_triggers_for_table(table, blockchain))
         {
           if (path)
             my_fclose(md_result_file, MYF(MY_WME));
-          maybe_exit(EX_MYSQLERR);
+          maybe_exit(EX_MYBLOCKCHAINERR);
         }
       }
 
@@ -4569,17 +4569,17 @@ static int dump_all_tables_in_db(char *database)
         DDL safe in general case. It just improves situation for people for whom
         it might be working.
       */
-      if (opt_single_transaction && mysql_get_server_version(mysql) >= 50500)
+      if (opt_single_transaction && myblockchain_get_server_version(myblockchain) >= 50500)
       {
         verbose_msg("-- Rolling back to savepoint sp...\n");
-        if (mysql_query_with_error_report(mysql, 0, "ROLLBACK TO SAVEPOINT sp"))
-          maybe_exit(EX_MYSQLERR);
+        if (myblockchain_query_with_error_report(myblockchain, 0, "ROLLBACK TO SAVEPOINT sp"))
+          maybe_exit(EX_MYBLOCKCHAINERR);
       }
     }
     else
     {
       /*
-        If general_log and slow_log exists in the 'mysql' database,
+        If general_log and slow_log exists in the 'myblockchain' blockchain,
          we should dump the table structure. But we cannot
          call get_table_structure() here as 'LOCK TABLES' query got executed
          above on the session and that 'LOCK TABLES' query does not contain
@@ -4588,7 +4588,7 @@ static int dump_all_tables_in_db(char *database)
          after 'UNLOCK TABLES' query is executed on the session, get the table
          structure from server and dump it in the file.
       */
-      if (using_mysql_db)
+      if (using_myblockchain_db)
       {
         if (!my_strcasecmp(charset_info, table, "general_log"))
           general_log_table_exists= 1;
@@ -4598,50 +4598,50 @@ static int dump_all_tables_in_db(char *database)
     }
   }
 
-  if (opt_single_transaction && mysql_get_server_version(mysql) >= 50500)
+  if (opt_single_transaction && myblockchain_get_server_version(myblockchain) >= 50500)
   {
     verbose_msg("-- Releasing savepoint...\n");
-    if (mysql_query_with_error_report(mysql, 0, "RELEASE SAVEPOINT sp"))
+    if (myblockchain_query_with_error_report(myblockchain, 0, "RELEASE SAVEPOINT sp"))
       DBUG_RETURN(1);
   }
 
-  if (opt_events && mysql_get_server_version(mysql) >= 50106)
+  if (opt_events && myblockchain_get_server_version(myblockchain) >= 50106)
   {
-    DBUG_PRINT("info", ("Dumping events for database %s", database));
-    dump_events_for_db(database);
+    DBUG_PRINT("info", ("Dumping events for blockchain %s", blockchain));
+    dump_events_for_db(blockchain);
   }
-  if (opt_routines && mysql_get_server_version(mysql) >= 50009)
+  if (opt_routines && myblockchain_get_server_version(myblockchain) >= 50009)
   {
-    DBUG_PRINT("info", ("Dumping routines for database %s", database));
-    dump_routines_for_db(database);
+    DBUG_PRINT("info", ("Dumping routines for blockchain %s", blockchain));
+    dump_routines_for_db(blockchain);
   }
   if (opt_xml)
   {
-    fputs("</database>\n", md_result_file);
+    fputs("</blockchain>\n", md_result_file);
     check_io(md_result_file);
   }
   if (lock_tables)
-    (void) mysql_query_with_error_report(mysql, 0, "UNLOCK TABLES");
-  if (using_mysql_db)
+    (void) myblockchain_query_with_error_report(myblockchain, 0, "UNLOCK TABLES");
+  if (using_myblockchain_db)
   {
     char table_type[NAME_LEN];
     char ignore_flag;
     if (general_log_table_exists)
     {
       if (!get_table_structure((char *) "general_log",
-                               database, table_type, &ignore_flag) )
+                               blockchain, table_type, &ignore_flag) )
         verbose_msg("-- Warning: get_table_structure() failed with some internal "
                     "error for 'general_log' table\n");
     }
     if (slow_log_table_exists)
     {
       if (!get_table_structure((char *) "slow_log",
-                               database, table_type, &ignore_flag) )
+                               blockchain, table_type, &ignore_flag) )
         verbose_msg("-- Warning: get_table_structure() failed with some internal "
                     "error for 'slow_log' table\n");
     }
   }
-  if (flush_privileges && using_mysql_db)
+  if (flush_privileges && using_myblockchain_db)
   {
     fprintf(md_result_file,"\n--\n-- Flush Grant Tables \n--\n");
     fprintf(md_result_file,"\n/*! FLUSH PRIVILEGES */;\n");
@@ -4651,18 +4651,18 @@ static int dump_all_tables_in_db(char *database)
 
 
 /*
-   dump structure of views of database
+   dump structure of views of blockchain
 
    SYNOPSIS
      dump_all_views_in_db()
-     database  database name
+     blockchain  blockchain name
 
   RETURN
     0 OK
     1 ERROR
 */
 
-static my_bool dump_all_views_in_db(char *database)
+static my_bool dump_all_views_in_db(char *blockchain)
 {
   char *table;
   uint numrows;
@@ -4670,13 +4670,13 @@ static my_bool dump_all_views_in_db(char *database)
   char hash_key[2*NAME_LEN+2];  /* "db.tablename" */
   char *afterdot;
 
-  afterdot= my_stpcpy(hash_key, database);
+  afterdot= my_stpcpy(hash_key, blockchain);
   *afterdot++= '.';
 
-  if (init_dumping(database, init_dumping_views))
+  if (init_dumping(blockchain, init_dumping_views))
     return 1;
   if (opt_xml)
-    print_xml_tag(md_result_file, "", "\n", "database", "name=", database, NullS);
+    print_xml_tag(md_result_file, "", "\n", "blockchain", "name=", blockchain, NullS);
   if (lock_tables)
   {
     DYNAMIC_STRING query;
@@ -4691,15 +4691,15 @@ static my_bool dump_all_views_in_db(char *database)
         dynstr_append_checked(&query, " READ /*!32311 LOCAL */,");
       }
     }
-    if (numrows && mysql_real_query(mysql, query.str, (ulong)(query.length-1)))
-      DB_error(mysql, "when using LOCK TABLES");
+    if (numrows && myblockchain_real_query(myblockchain, query.str, (ulong)(query.length-1)))
+      DB_error(myblockchain, "when using LOCK TABLES");
             /* We shall continue here, if --force was given */
     dynstr_free(&query);
   }
   if (flush_logs)
   {
-    if (mysql_refresh(mysql, REFRESH_LOG))
-      DB_error(mysql, "when doing refresh");
+    if (myblockchain_refresh(myblockchain, REFRESH_LOG))
+      DB_error(myblockchain, "when doing refresh");
            /* We shall continue here, if --force was given */
     else
       verbose_msg("-- dump_all_views_in_db : logs flushed successfully!\n");
@@ -4708,15 +4708,15 @@ static my_bool dump_all_views_in_db(char *database)
   {
     char *end= my_stpcpy(afterdot, table);
     if (include_table((uchar*) hash_key, end - hash_key))
-      get_view_structure(table, database);
+      get_view_structure(table, blockchain);
   }
   if (opt_xml)
   {
-    fputs("</database>\n", md_result_file);
+    fputs("</blockchain>\n", md_result_file);
     check_io(md_result_file);
   }
   if (lock_tables)
-    (void) mysql_query_with_error_report(mysql, 0, "UNLOCK TABLES");
+    (void) myblockchain_query_with_error_report(myblockchain, 0, "UNLOCK TABLES");
   return 0;
 } /* dump_all_tables_in_db */
 
@@ -4735,8 +4735,8 @@ static my_bool dump_all_views_in_db(char *database)
 static char *get_actual_table_name(const char *old_table_name, MEM_ROOT *root)
 {
   char *name= 0;
-  MYSQL_RES  *table_res;
-  MYSQL_ROW  row;
+  MYBLOCKCHAIN_RES  *table_res;
+  MYBLOCKCHAIN_ROW  row;
   char query[50 + 2*NAME_LEN];
   char show_name_buff[FN_REFLEN];
   DBUG_ENTER("get_actual_table_name");
@@ -4746,12 +4746,12 @@ static char *get_actual_table_name(const char *old_table_name, MEM_ROOT *root)
   my_snprintf(query, sizeof(query), "SHOW TABLES LIKE %s",
               quote_for_like(old_table_name, show_name_buff));
 
-  if (mysql_query_with_error_report(mysql, 0, query))
+  if (myblockchain_query_with_error_report(myblockchain, 0, query))
     DBUG_RETURN(NullS);
 
-  if ((table_res= mysql_store_result(mysql)))
+  if ((table_res= myblockchain_store_result(myblockchain)))
   {
-    my_ulonglong num_rows= mysql_num_rows(table_res);
+    my_ulonglong num_rows= myblockchain_num_rows(table_res);
     if (num_rows > 0)
     {
       ulong *lengths;
@@ -4759,11 +4759,11 @@ static char *get_actual_table_name(const char *old_table_name, MEM_ROOT *root)
         Return first row
         TODO: Return all matching rows
       */
-      row= mysql_fetch_row(table_res);
-      lengths= mysql_fetch_lengths(table_res);
+      row= myblockchain_fetch_row(table_res);
+      lengths= myblockchain_fetch_lengths(table_res);
       name= strmake_root(root, row[0], lengths[0]);
     }
-    mysql_free_result(table_res);
+    myblockchain_free_result(table_res);
   }
   DBUG_PRINT("exit", ("new_table_name: %s", name));
   DBUG_RETURN(name);
@@ -4814,12 +4814,12 @@ static int dump_selected_tables(char *db, char **table_names, int tables)
 
   /* Can't LOCK TABLES in I_S / P_S, so don't try. */
   if (lock_tables &&
-      !(mysql_get_server_version(mysql) >= FIRST_INFORMATION_SCHEMA_VERSION &&
+      !(myblockchain_get_server_version(myblockchain) >= FIRST_INFORMATION_SCHEMA_VERSION &&
         !my_strcasecmp(&my_charset_latin1, db, INFORMATION_SCHEMA_DB_NAME)) &&
-      !(mysql_get_server_version(mysql) >= FIRST_PERFORMANCE_SCHEMA_VERSION &&
+      !(myblockchain_get_server_version(myblockchain) >= FIRST_PERFORMANCE_SCHEMA_VERSION &&
         !my_strcasecmp(&my_charset_latin1, db, PERFORMANCE_SCHEMA_DB_NAME)))
   {
-    if (mysql_real_query(mysql, lock_tables_query.str,
+    if (myblockchain_real_query(myblockchain, lock_tables_query.str,
                          (ulong)(lock_tables_query.length-1)))
     {
       if (!opt_force)
@@ -4827,30 +4827,30 @@ static int dump_selected_tables(char *db, char **table_names, int tables)
         dynstr_free(&lock_tables_query);
         free_root(&root, MYF(0));
       }
-      DB_error(mysql, "when doing LOCK TABLES");
+      DB_error(myblockchain, "when doing LOCK TABLES");
        /* We shall countinue here, if --force was given */
     }
   }
   dynstr_free(&lock_tables_query);
   if (flush_logs)
   {
-    if (mysql_refresh(mysql, REFRESH_LOG))
+    if (myblockchain_refresh(myblockchain, REFRESH_LOG))
     {
       if (!opt_force)
         free_root(&root, MYF(0));
-      DB_error(mysql, "when doing refresh");
+      DB_error(myblockchain, "when doing refresh");
     }
      /* We shall countinue here, if --force was given */
     else
       verbose_msg("-- dump_selected_tables : logs flushed successfully!\n");
   }
   if (opt_xml)
-    print_xml_tag(md_result_file, "", "\n", "database", "name=", db, NullS);
+    print_xml_tag(md_result_file, "", "\n", "blockchain", "name=", db, NullS);
 
-  if (opt_single_transaction && mysql_get_server_version(mysql) >= 50500)
+  if (opt_single_transaction && myblockchain_get_server_version(myblockchain) >= 50500)
   {
     verbose_msg("-- Setting savepoint...\n");
-    if (mysql_query_with_error_report(mysql, 0, "SAVEPOINT sp"))
+    if (myblockchain_query_with_error_report(myblockchain, 0, "SAVEPOINT sp"))
       DBUG_RETURN(1);
   }
 
@@ -4860,13 +4860,13 @@ static int dump_selected_tables(char *db, char **table_names, int tables)
     DBUG_PRINT("info",("Dumping table %s", *pos));
     dump_table(*pos, db);
     if (opt_dump_triggers &&
-        mysql_get_server_version(mysql) >= 50009)
+        myblockchain_get_server_version(myblockchain) >= 50009)
     {
       if (dump_triggers_for_table(*pos, db))
       {
         if (path)
           my_fclose(md_result_file, MYF(MY_WME));
-        maybe_exit(EX_MYSQLERR);
+        maybe_exit(EX_MYBLOCKCHAINERR);
       }
     }
 
@@ -4880,18 +4880,18 @@ static int dump_selected_tables(char *db, char **table_names, int tables)
       DDL safe in general case. It just improves situation for people for whom
       it might be working.
     */
-    if (opt_single_transaction && mysql_get_server_version(mysql) >= 50500)
+    if (opt_single_transaction && myblockchain_get_server_version(myblockchain) >= 50500)
     {
       verbose_msg("-- Rolling back to savepoint sp...\n");
-      if (mysql_query_with_error_report(mysql, 0, "ROLLBACK TO SAVEPOINT sp"))
-        maybe_exit(EX_MYSQLERR);
+      if (myblockchain_query_with_error_report(myblockchain, 0, "ROLLBACK TO SAVEPOINT sp"))
+        maybe_exit(EX_MYBLOCKCHAINERR);
     }
   }
 
-  if (opt_single_transaction && mysql_get_server_version(mysql) >= 50500)
+  if (opt_single_transaction && myblockchain_get_server_version(myblockchain) >= 50500)
   {
     verbose_msg("-- Releasing savepoint...\n");
-    if (mysql_query_with_error_report(mysql, 0, "RELEASE SAVEPOINT sp"))
+    if (myblockchain_query_with_error_report(myblockchain, 0, "RELEASE SAVEPOINT sp"))
       DBUG_RETURN(1);
 
   }
@@ -4902,15 +4902,15 @@ static int dump_selected_tables(char *db, char **table_names, int tables)
     for (pos= dump_tables; pos < end; pos++)
       get_view_structure(*pos, db);
   }
-  if (opt_events && mysql_get_server_version(mysql) >= 50106)
+  if (opt_events && myblockchain_get_server_version(myblockchain) >= 50106)
   {
-    DBUG_PRINT("info", ("Dumping events for database %s", db));
+    DBUG_PRINT("info", ("Dumping events for blockchain %s", db));
     dump_events_for_db(db);
   }
   /* obtain dump of routines (procs/functions) */
-  if (opt_routines && mysql_get_server_version(mysql) >= 50009)
+  if (opt_routines && myblockchain_get_server_version(myblockchain) >= 50009)
   {
-    DBUG_PRINT("info", ("Dumping routines for database %s", db));
+    DBUG_PRINT("info", ("Dumping routines for blockchain %s", db));
     dump_routines_for_db(db);
   }
   free_root(&root, MYF(0));
@@ -4918,28 +4918,28 @@ static int dump_selected_tables(char *db, char **table_names, int tables)
   order_by= 0;
   if (opt_xml)
   {
-    fputs("</database>\n", md_result_file);
+    fputs("</blockchain>\n", md_result_file);
     check_io(md_result_file);
   }
   if (lock_tables)
-    (void) mysql_query_with_error_report(mysql, 0, "UNLOCK TABLES");
+    (void) myblockchain_query_with_error_report(myblockchain, 0, "UNLOCK TABLES");
   DBUG_RETURN(0);
 } /* dump_selected_tables */
 
 
-static int do_show_master_status(MYSQL *mysql_con)
+static int do_show_master_status(MYBLOCKCHAIN *myblockchain_con)
 {
-  MYSQL_ROW row;
-  MYSQL_RES *master;
+  MYBLOCKCHAIN_ROW row;
+  MYBLOCKCHAIN_RES *master;
   const char *comment_prefix=
-    (opt_master_data == MYSQL_OPT_MASTER_DATA_COMMENTED_SQL) ? "-- " : "";
-  if (mysql_query_with_error_report(mysql_con, &master, "SHOW MASTER STATUS"))
+    (opt_master_data == MYBLOCKCHAIN_OPT_MASTER_DATA_COMMENTED_SQL) ? "-- " : "";
+  if (myblockchain_query_with_error_report(myblockchain_con, &master, "SHOW MASTER STATUS"))
   {
     return 1;
   }
   else
   {
-    row= mysql_fetch_row(master);
+    row= myblockchain_fetch_row(master);
     if (row && row[0] && row[1])
     {
       /* SHOW MASTER STATUS reports file and position */
@@ -4956,39 +4956,39 @@ static int do_show_master_status(MYSQL *mysql_con)
       /* SHOW MASTER STATUS reports nothing and --force is not enabled */
       my_printf_error(0, "Error: Binlogging on server not active",
                       MYF(0));
-      mysql_free_result(master);
-      maybe_exit(EX_MYSQLERR);
+      myblockchain_free_result(master);
+      maybe_exit(EX_MYBLOCKCHAINERR);
       return 1;
     }
-    mysql_free_result(master);
+    myblockchain_free_result(master);
   }
   return 0;
 }
 
-static int do_stop_slave_sql(MYSQL *mysql_con)
+static int do_stop_slave_sql(MYBLOCKCHAIN *myblockchain_con)
 {
-  MYSQL_RES *slave;
+  MYBLOCKCHAIN_RES *slave;
   /* We need to check if the slave sql is running in the first place */
-  if (mysql_query_with_error_report(mysql_con, &slave, "SHOW SLAVE STATUS"))
+  if (myblockchain_query_with_error_report(myblockchain_con, &slave, "SHOW SLAVE STATUS"))
     return(1);
   else
   {
-    MYSQL_ROW row= mysql_fetch_row(slave);
+    MYBLOCKCHAIN_ROW row= myblockchain_fetch_row(slave);
     if (row && row[11])
     {
       /* if SLAVE SQL is not running, we don't stop it */
       if (!strcmp(row[11],"No"))
       {
-        mysql_free_result(slave);
+        myblockchain_free_result(slave);
         /* Silently assume that they don't have the slave running */
         return(0);
       }
     }
   }
-  mysql_free_result(slave);
+  myblockchain_free_result(slave);
 
   /* now, stop slave if running */
-  if (mysql_query_with_error_report(mysql_con, 0, "STOP SLAVE SQL_THREAD"))
+  if (myblockchain_query_with_error_report(myblockchain_con, 0, "STOP SLAVE SQL_THREAD"))
     return(1);
 
   return(0);
@@ -5012,24 +5012,24 @@ static int add_slave_statements(void)
   return(0);
 }
 
-static int do_show_slave_status(MYSQL *mysql_con)
+static int do_show_slave_status(MYBLOCKCHAIN *myblockchain_con)
 {
-  MYSQL_RES *slave= NULL;
+  MYBLOCKCHAIN_RES *slave= NULL;
   const char *comment_prefix=
-    (opt_slave_data == MYSQL_OPT_SLAVE_DATA_COMMENTED_SQL) ? "-- " : "";
-  if (mysql_query_with_error_report(mysql_con, &slave, "SHOW SLAVE STATUS"))
+    (opt_slave_data == MYBLOCKCHAIN_OPT_SLAVE_DATA_COMMENTED_SQL) ? "-- " : "";
+  if (myblockchain_query_with_error_report(myblockchain_con, &slave, "SHOW SLAVE STATUS"))
   {
     if (!opt_force)
     {
       /* SHOW SLAVE STATUS reports nothing and --force is not enabled */
       my_printf_error(0, "Error: Slave not set up", MYF(0));
     }
-    mysql_free_result(slave);
+    myblockchain_free_result(slave);
     return 1;
   }
   else
   {
-    MYSQL_ROW row= mysql_fetch_row(slave);
+    MYBLOCKCHAIN_ROW row= myblockchain_fetch_row(slave);
     if (row && row[9] && row[21])
     {
       /* SHOW MASTER STATUS reports file and position */
@@ -5052,35 +5052,35 @@ static int do_show_slave_status(MYSQL *mysql_con)
 
       check_io(md_result_file);
     }
-    mysql_free_result(slave);
+    myblockchain_free_result(slave);
   }
   return 0;
 }
 
-static int do_start_slave_sql(MYSQL *mysql_con)
+static int do_start_slave_sql(MYBLOCKCHAIN *myblockchain_con)
 {
-  MYSQL_RES *slave;
+  MYBLOCKCHAIN_RES *slave;
   /* We need to check if the slave sql is stopped in the first place */
-  if (mysql_query_with_error_report(mysql_con, &slave, "SHOW SLAVE STATUS"))
+  if (myblockchain_query_with_error_report(myblockchain_con, &slave, "SHOW SLAVE STATUS"))
     return(1);
   else
   {
-    MYSQL_ROW row= mysql_fetch_row(slave);
+    MYBLOCKCHAIN_ROW row= myblockchain_fetch_row(slave);
     if (row && row[11])
     {
       /* if SLAVE SQL is not running, we don't start it */
       if (!strcmp(row[11],"Yes"))
       {
-        mysql_free_result(slave);
+        myblockchain_free_result(slave);
         /* Silently assume that they don't have the slave running */
         return(0);
       }
     }
   }
-  mysql_free_result(slave);
+  myblockchain_free_result(slave);
 
   /* now, start slave if stopped */
-  if (mysql_query_with_error_report(mysql_con, 0, "START SLAVE"))
+  if (myblockchain_query_with_error_report(myblockchain_con, 0, "START SLAVE"))
   {
     my_printf_error(0, "Error: Unable to start slave", MYF(0));
     return 1;
@@ -5090,44 +5090,44 @@ static int do_start_slave_sql(MYSQL *mysql_con)
 
 
 
-static int do_flush_tables_read_lock(MYSQL *mysql_con)
+static int do_flush_tables_read_lock(MYBLOCKCHAIN *myblockchain_con)
 {
   /*
     We do first a FLUSH TABLES. If a long update is running, the FLUSH TABLES
-    will wait but will not stall the whole mysqld, and when the long update is
+    will wait but will not stall the whole myblockchaind, and when the long update is
     done the FLUSH TABLES WITH READ LOCK will start and succeed quickly. So,
-    FLUSH TABLES is to lower the probability of a stage where both mysqldump
+    FLUSH TABLES is to lower the probability of a stage where both myblockchaindump
     and most client connections are stalled. Of course, if a second long
     update starts between the two FLUSHes, we have that bad stall.
   */
   return
-    ( mysql_query_with_error_report(mysql_con, 0, 
+    ( myblockchain_query_with_error_report(myblockchain_con, 0, 
                                     ((opt_master_data != 0) ? 
                                         "FLUSH /*!40101 LOCAL */ TABLES" : 
                                         "FLUSH TABLES")) ||
-      mysql_query_with_error_report(mysql_con, 0,
+      myblockchain_query_with_error_report(myblockchain_con, 0,
                                     "FLUSH TABLES WITH READ LOCK") );
 }
 
 
-static int do_unlock_tables(MYSQL *mysql_con)
+static int do_unlock_tables(MYBLOCKCHAIN *myblockchain_con)
 {
-  return mysql_query_with_error_report(mysql_con, 0, "UNLOCK TABLES");
+  return myblockchain_query_with_error_report(myblockchain_con, 0, "UNLOCK TABLES");
 }
 
-static int get_bin_log_name(MYSQL *mysql_con,
+static int get_bin_log_name(MYBLOCKCHAIN *myblockchain_con,
                             char* buff_log_name, uint buff_len)
 {
-  MYSQL_RES *res;
-  MYSQL_ROW row;
+  MYBLOCKCHAIN_RES *res;
+  MYBLOCKCHAIN_ROW row;
 
-  if (mysql_query(mysql_con, "SHOW MASTER STATUS") ||
-      !(res= mysql_store_result(mysql)))
+  if (myblockchain_query(myblockchain_con, "SHOW MASTER STATUS") ||
+      !(res= myblockchain_store_result(myblockchain)))
     return 1;
 
-  if (!(row= mysql_fetch_row(res)))
+  if (!(row= myblockchain_fetch_row(res)))
   {
-    mysql_free_result(res);
+    myblockchain_free_result(res);
     return 1;
   }
   /*
@@ -5136,24 +5136,24 @@ static int get_bin_log_name(MYSQL *mysql_con,
   */
   strmake(buff_log_name, row[0], buff_len - 1);
 
-  mysql_free_result(res);
+  myblockchain_free_result(res);
   return 0;
 }
 
-static int purge_bin_logs_to(MYSQL *mysql_con, char* log_name)
+static int purge_bin_logs_to(MYBLOCKCHAIN *myblockchain_con, char* log_name)
 {
   DYNAMIC_STRING str;
   int err;
   init_dynamic_string_checked(&str, "PURGE BINARY LOGS TO '", 1024, 1024);
   dynstr_append_checked(&str, log_name);
   dynstr_append_checked(&str, "'");
-  err = mysql_query_with_error_report(mysql_con, 0, str.str);
+  err = myblockchain_query_with_error_report(myblockchain_con, 0, str.str);
   dynstr_free(&str);
   return err;
 }
 
 
-static int start_transaction(MYSQL *mysql_con)
+static int start_transaction(MYBLOCKCHAIN *myblockchain_con)
 {
   verbose_msg("-- Starting transaction...\n");
   /*
@@ -5165,23 +5165,23 @@ static int start_transaction(MYSQL *mysql_con)
     need the REPEATABLE READ level (not anything lower, for example READ
     COMMITTED would give one new consistent read per dumped table).
   */
-  if ((mysql_get_server_version(mysql_con) < 40100) && opt_master_data)
+  if ((myblockchain_get_server_version(myblockchain_con) < 40100) && opt_master_data)
   {
     fprintf(stderr, "-- %s: the combination of --single-transaction and "
-            "--master-data requires a MySQL server version of at least 4.1 "
+            "--master-data requires a MyBlockchain server version of at least 4.1 "
             "(current server's version is %s). %s\n",
             opt_force ? "Warning" : "Error",
-            mysql_con->server_version ? mysql_con->server_version : "unknown",
+            myblockchain_con->server_version ? myblockchain_con->server_version : "unknown",
             opt_force ? "Continuing due to --force, backup may not be "
             "consistent across all tables!" : "Aborting.");
     if (!opt_force)
-      exit(EX_MYSQLERR);
+      exit(EX_MYBLOCKCHAINERR);
   }
 
-  return (mysql_query_with_error_report(mysql_con, 0,
+  return (myblockchain_query_with_error_report(myblockchain_con, 0,
                                         "SET SESSION TRANSACTION ISOLATION "
                                         "LEVEL REPEATABLE READ") ||
-          mysql_query_with_error_report(mysql_con, 0,
+          myblockchain_query_with_error_report(myblockchain_con, 0,
                                         "START TRANSACTION "
                                         "/*!40100 WITH CONSISTENT SNAPSHOT */"));
 }
@@ -5229,14 +5229,14 @@ static ulong find_set(TYPELIB *lib, const char *x, uint length,
 
 
 /* Print a value with a prefix on file */
-static void print_value(FILE *file, MYSQL_RES  *result, MYSQL_ROW row,
+static void print_value(FILE *file, MYBLOCKCHAIN_RES  *result, MYBLOCKCHAIN_ROW row,
                         const char *prefix, const char *name,
                         int string_value)
 {
-  MYSQL_FIELD   *field;
-  mysql_field_seek(result, 0);
+  MYBLOCKCHAIN_FIELD   *field;
+  myblockchain_field_seek(result, 0);
 
-  for ( ; (field= mysql_fetch_field(result)) ; row++)
+  for ( ; (field= myblockchain_fetch_field(result)) ; row++)
   {
     if (!strcmp(field->name,name))
     {
@@ -5273,7 +5273,7 @@ static void print_value(FILE *file, MYSQL_RES  *result, MYSQL_ROW row,
     table_type                  Type of table
 
   GLOBAL VARIABLES
-    mysql                       MySQL connection
+    myblockchain                       MyBlockchain connection
     verbose                     Write warning messages
 
   RETURN
@@ -5284,29 +5284,29 @@ char check_if_ignore_table(const char *table_name, char *table_type)
 {
   char result= IGNORE_NONE;
   char buff[FN_REFLEN+80], show_name_buff[FN_REFLEN];
-  MYSQL_RES *res= NULL;
-  MYSQL_ROW row;
+  MYBLOCKCHAIN_RES *res= NULL;
+  MYBLOCKCHAIN_ROW row;
   DBUG_ENTER("check_if_ignore_table");
 
   /* Check memory for quote_for_like() */
   DBUG_ASSERT(2*sizeof(table_name) < sizeof(show_name_buff));
   my_snprintf(buff, sizeof(buff), "show table status like %s",
               quote_for_like(table_name, show_name_buff));
-  if (mysql_query_with_error_report(mysql, &res, buff))
+  if (myblockchain_query_with_error_report(myblockchain, &res, buff))
   {
-    if (mysql_errno(mysql) != ER_PARSE_ERROR)
-    {                                   /* If old MySQL version */
+    if (myblockchain_errno(myblockchain) != ER_PARSE_ERROR)
+    {                                   /* If old MyBlockchain version */
       verbose_msg("-- Warning: Couldn't get status information for "
-                  "table %s (%s)\n", table_name, mysql_error(mysql));
+                  "table %s (%s)\n", table_name, myblockchain_error(myblockchain));
       DBUG_RETURN(result);                       /* assume table is ok */
     }
   }
-  if (!(row= mysql_fetch_row(res)))
+  if (!(row= myblockchain_fetch_row(res)))
   {
     fprintf(stderr,
             "Error: Couldn't read status information for table %s (%s)\n",
-            table_name, mysql_error(mysql));
-    mysql_free_result(res);
+            table_name, myblockchain_error(myblockchain));
+    myblockchain_free_result(res);
     DBUG_RETURN(result);                         /* assume table is ok */
   }
   if (!(row[1]))
@@ -5322,7 +5322,7 @@ char check_if_ignore_table(const char *table_name, char *table_type)
          !strcmp(table_type,"FEDERATED")))
       result= IGNORE_DATA;
   }
-  mysql_free_result(res);
+  myblockchain_free_result(res);
   DBUG_RETURN(result);
 }
 
@@ -5347,8 +5347,8 @@ char check_if_ignore_table(const char *table_name, char *table_type)
 
 static char *primary_key_fields(const char *table_name)
 {
-  MYSQL_RES  *res= NULL;
-  MYSQL_ROW  row;
+  MYBLOCKCHAIN_RES  *res= NULL;
+  MYBLOCKCHAIN_ROW  row;
   /* SHOW KEYS FROM + table name * 2 (escaped) + 2 quotes + \0 */
   char show_keys_buff[15 + NAME_LEN * 2 + 3];
   size_t result_length= 0;
@@ -5358,12 +5358,12 @@ static char *primary_key_fields(const char *table_name)
 
   my_snprintf(show_keys_buff, sizeof(show_keys_buff),
               "SHOW KEYS FROM %s", table_name);
-  if (mysql_query(mysql, show_keys_buff) ||
-      !(res= mysql_store_result(mysql)))
+  if (myblockchain_query(myblockchain, show_keys_buff) ||
+      !(res= myblockchain_store_result(myblockchain)))
   {
     fprintf(stderr, "Warning: Couldn't read keys from table %s;"
             " records are NOT sorted (%s)\n",
-            table_name, mysql_error(mysql));
+            table_name, myblockchain_error(myblockchain));
     /* Don't exit, because it's better to print out unsorted records */
     goto cleanup;
   }
@@ -5374,14 +5374,14 @@ static char *primary_key_fields(const char *table_name)
    * row, and UNIQUE keys come before others.  So we only need to check
    * the first key, not all keys.
    */
-  if ((row= mysql_fetch_row(res)) && atoi(row[1]) == 0)
+  if ((row= myblockchain_fetch_row(res)) && atoi(row[1]) == 0)
   {
     /* Key is unique */
     do
     {
       quoted_field= quote_name(row[4], buff, 0);
       result_length+= strlen(quoted_field) + 1; /* + 1 for ',' or \0 */
-    } while ((row= mysql_fetch_row(res)) && atoi(row[3]) > 1);
+    } while ((row= myblockchain_fetch_row(res)) && atoi(row[3]) > 1);
   }
 
   /* Build the ORDER BY clause result */
@@ -5396,11 +5396,11 @@ static char *primary_key_fields(const char *table_name)
       fprintf(stderr, "Error: Not enough memory to store ORDER BY clause\n");
       goto cleanup;
     }
-    mysql_data_seek(res, 0);
-    row= mysql_fetch_row(res);
+    myblockchain_data_seek(res, 0);
+    row= myblockchain_fetch_row(res);
     quoted_field= quote_name(row[4], buff, 0);
     end= my_stpcpy(result, quoted_field);
-    while ((row= mysql_fetch_row(res)) && atoi(row[3]) > 1)
+    while ((row= myblockchain_fetch_row(res)) && atoi(row[3]) > 1)
     {
       quoted_field= quote_name(row[4], buff, 0);
       end= strxmov(end, ",", quoted_field, NullS);
@@ -5409,7 +5409,7 @@ static char *primary_key_fields(const char *table_name)
 
 cleanup:
   if (res)
-    mysql_free_result(res);
+    myblockchain_free_result(res);
 
   return result;
 }
@@ -5471,14 +5471,14 @@ static void set_session_binlog(my_bool flag)
   if (!flag && !is_binlog_disabled)
   {
     fprintf(md_result_file,
-            "SET @MYSQLDUMP_TEMP_LOG_BIN = @@SESSION.SQL_LOG_BIN;\n");
+            "SET @MYBLOCKCHAINDUMP_TEMP_LOG_BIN = @@SESSION.SQL_LOG_BIN;\n");
     fprintf(md_result_file, "SET @@SESSION.SQL_LOG_BIN= 0;\n");
     is_binlog_disabled= 1;
   }
   else if (flag && is_binlog_disabled)
   {
     fprintf(md_result_file,
-            "SET @@SESSION.SQL_LOG_BIN = @MYSQLDUMP_TEMP_LOG_BIN;\n");
+            "SET @@SESSION.SQL_LOG_BIN = @MYBLOCKCHAINDUMP_TEMP_LOG_BIN;\n");
     is_binlog_disabled= 0;
   }
 }
@@ -5489,7 +5489,7 @@ static void set_session_binlog(my_bool flag)
   server and assigns those sets to GTID_PURGED in the
   dump file.
 
-  @param[in]  mysql_con     connection to the server
+  @param[in]  myblockchain_con     connection to the server
 
   @retval     FALSE         succesfully printed GTID_PURGED sets
                              in the dump file.
@@ -5497,19 +5497,19 @@ static void set_session_binlog(my_bool flag)
 
 */
 
-static my_bool add_set_gtid_purged(MYSQL *mysql_con)
+static my_bool add_set_gtid_purged(MYBLOCKCHAIN *myblockchain_con)
 {
-  MYSQL_RES  *gtid_purged_res;
-  MYSQL_ROW  gtid_set;
+  MYBLOCKCHAIN_RES  *gtid_purged_res;
+  MYBLOCKCHAIN_ROW  gtid_set;
   ulonglong  num_sets, idx;
 
   /* query to get the GTID_EXECUTED */
-  if (mysql_query_with_error_report(mysql_con, &gtid_purged_res,
+  if (myblockchain_query_with_error_report(myblockchain_con, &gtid_purged_res,
                   "SELECT @@GLOBAL.GTID_EXECUTED"))
     return TRUE;
 
   /* Proceed only if gtid_purged_res is non empty */
-  if ((num_sets= mysql_num_rows(gtid_purged_res)) > 0)
+  if ((num_sets= myblockchain_num_rows(gtid_purged_res)) > 0)
   {
     if (opt_comments)
       fprintf(md_result_file,
@@ -5520,11 +5520,11 @@ static my_bool add_set_gtid_purged(MYSQL *mysql_con)
     /* formatting is not required, even for multiple gtid sets */
     for (idx= 0; idx< num_sets-1; idx++)
     {
-      gtid_set= mysql_fetch_row(gtid_purged_res);
+      gtid_set= myblockchain_fetch_row(gtid_purged_res);
       fprintf(md_result_file,"%s,", (char*)gtid_set[0]);
     }
     /* for the last set */
-    gtid_set= mysql_fetch_row(gtid_purged_res);
+    gtid_set= myblockchain_fetch_row(gtid_purged_res);
     /* close the SET expression */
     fprintf(md_result_file,"%s';\n", (char*)gtid_set[0]);
   }
@@ -5538,17 +5538,17 @@ static my_bool add_set_gtid_purged(MYSQL *mysql_con)
   This function also calls set_session_binlog() function before
   setting the SET @@GLOBAL.GTID_PURGED in the output.
 
-  @param[in]          mysql_con     the connection to the server
+  @param[in]          myblockchain_con     the connection to the server
 
   @retval             FALSE         successful according to the value
                                     of opt_set_gtid_purged.
   @retval             TRUE          fail.
 */
 
-static my_bool process_set_gtid_purged(MYSQL* mysql_con)
+static my_bool process_set_gtid_purged(MYBLOCKCHAIN* myblockchain_con)
 {
-  MYSQL_RES  *gtid_mode_res;
-  MYSQL_ROW  gtid_mode_row;
+  MYBLOCKCHAIN_RES  *gtid_mode_res;
+  MYBLOCKCHAIN_ROW  gtid_mode_row;
   char       *gtid_mode_val= 0;
   char buf[32], query[64];
 
@@ -5556,16 +5556,16 @@ static my_bool process_set_gtid_purged(MYSQL* mysql_con)
     return FALSE;  /* nothing to be done */
 
   /*
-    Check if the server has the knowledge of GTIDs(pre mysql-5.6)
+    Check if the server has the knowledge of GTIDs(pre myblockchain-5.6)
     or if the gtid_mode is ON or OFF.
   */
   my_snprintf(query, sizeof(query), "SHOW VARIABLES LIKE %s",
               quote_for_like("gtid_mode", buf));
 
-  if (mysql_query_with_error_report(mysql_con, &gtid_mode_res, query))
+  if (myblockchain_query_with_error_report(myblockchain_con, &gtid_mode_res, query))
     return TRUE;
 
-  gtid_mode_row = mysql_fetch_row(gtid_mode_res);
+  gtid_mode_row = myblockchain_fetch_row(gtid_mode_res);
 
   /*
      gtid_mode_row is NULL for pre 5.6 versions. For versions >= 5.6,
@@ -5579,21 +5579,21 @@ static my_bool process_set_gtid_purged(MYSQL* mysql_con)
        For any gtid_mode !=OFF and irrespective of --set-gtid-purged
        being AUTO or ON,  add GTID_PURGED in the output.
     */
-    if (opt_databases || !opt_alldbs || !opt_dump_triggers
+    if (opt_blockchains || !opt_alldbs || !opt_dump_triggers
         || !opt_routines || !opt_events)
     {
       fprintf(stderr,"Warning: A partial dump from a server that has GTIDs will "
                      "by default include the GTIDs of all transactions, even "
-                     "those that changed suppressed parts of the database. If "
+                     "those that changed suppressed parts of the blockchain. If "
                      "you don't want to restore GTIDs, pass "
                      "--set-gtid-purged=OFF. To make a complete dump, pass "
-                     "--all-databases --triggers --routines --events. \n");
+                     "--all-blockchains --triggers --routines --events. \n");
     }
 
     set_session_binlog(FALSE);
-    if (add_set_gtid_purged(mysql_con))
+    if (add_set_gtid_purged(myblockchain_con))
     {
-      mysql_free_result(gtid_mode_res);
+      myblockchain_free_result(gtid_mode_res);
       return TRUE;
     }
   }
@@ -5602,12 +5602,12 @@ static my_bool process_set_gtid_purged(MYSQL* mysql_con)
     if (opt_set_gtid_purged_mode == SET_GTID_PURGED_ON)
     {
       fprintf(stderr, "Error: Server has GTIDs disabled.\n");
-      mysql_free_result(gtid_mode_res);
+      myblockchain_free_result(gtid_mode_res);
       return TRUE;
     }
   }
 
-  mysql_free_result(gtid_mode_res);
+  myblockchain_free_result(gtid_mode_res);
   return FALSE;
 }
 
@@ -5627,9 +5627,9 @@ static my_bool process_set_gtid_purged(MYSQL* mysql_con)
 
 static my_bool get_view_structure(char *table, char* db)
 {
-  MYSQL_RES  *table_res;
-  MYSQL_ROW  row;
-  MYSQL_FIELD *field;
+  MYBLOCKCHAIN_RES  *table_res;
+  MYBLOCKCHAIN_ROW  row;
+  MYBLOCKCHAIN_FIELD *field;
   char       *result_table, *opt_quoted_table;
   char       table_buff[NAME_LEN*2+3];
   char       table_buff2[NAME_LEN*2+3];
@@ -5645,24 +5645,24 @@ static my_bool get_view_structure(char *table, char* db)
   result_table=     quote_name(table, table_buff, 1);
   opt_quoted_table= quote_name(table, table_buff2, 0);
 
-  if (switch_character_set_results(mysql, "binary"))
+  if (switch_character_set_results(myblockchain, "binary"))
     DBUG_RETURN(1);
 
   my_snprintf(query, sizeof(query), "SHOW CREATE TABLE %s", result_table);
 
-  if (mysql_query_with_error_report(mysql, &table_res, query))
+  if (myblockchain_query_with_error_report(myblockchain, &table_res, query))
   {
-    switch_character_set_results(mysql, default_charset);
+    switch_character_set_results(myblockchain, default_charset);
     DBUG_RETURN(0);
   }
 
   /* Check if this is a view */
-  field= mysql_fetch_field_direct(table_res, 0);
+  field= myblockchain_fetch_field_direct(table_res, 0);
   if (strcmp(field->name, "View") != 0)
   {
-    switch_character_set_results(mysql, default_charset);
+    switch_character_set_results(myblockchain, default_charset);
     verbose_msg("-- It's base table, skipped\n");
-    mysql_free_result(table_res);
+    myblockchain_free_result(table_res);
     DBUG_RETURN(0);
   }
 
@@ -5688,16 +5688,16 @@ static my_bool get_view_structure(char *table, char* db)
               "FROM information_schema.views "
               "WHERE table_name=\"%s\" AND table_schema=\"%s\"", table, db);
 
-  if (mysql_query(mysql, query))
+  if (myblockchain_query(myblockchain, query))
   {
     /*
       Use the raw output from SHOW CREATE TABLE if
        information_schema query fails.
      */
-    row= mysql_fetch_row(table_res);
+    row= myblockchain_fetch_row(table_res);
     fprintf(sql_file, "/*!50001 %s */;\n", row[1]);
     check_io(sql_file);
-    mysql_free_result(table_res);
+    myblockchain_free_result(table_res);
   }
   else
   {
@@ -5708,23 +5708,23 @@ static my_bool get_view_structure(char *table, char* db)
     DYNAMIC_STRING ds_view;
 
     /* Save the result of SHOW CREATE TABLE in ds_view */
-    row= mysql_fetch_row(table_res);
-    lengths= mysql_fetch_lengths(table_res);
+    row= myblockchain_fetch_row(table_res);
+    lengths= myblockchain_fetch_lengths(table_res);
     init_dynamic_string_checked(&ds_view, row[1], lengths[1] + 1, 1024);
-    mysql_free_result(table_res);
+    myblockchain_free_result(table_res);
 
     /* Get the result from "select ... information_schema" */
-    if (!(table_res= mysql_store_result(mysql)) ||
-        !(row= mysql_fetch_row(table_res)))
+    if (!(table_res= myblockchain_store_result(myblockchain)) ||
+        !(row= myblockchain_fetch_row(table_res)))
     {
       if (table_res)
-        mysql_free_result(table_res);
+        myblockchain_free_result(table_res);
       dynstr_free(&ds_view);
-      DB_error(mysql, "when trying to save the result of SHOW CREATE TABLE in ds_view.");
+      DB_error(myblockchain, "when trying to save the result of SHOW CREATE TABLE in ds_view.");
       DBUG_RETURN(1);
     }
 
-    lengths= mysql_fetch_lengths(table_res);
+    lengths= myblockchain_fetch_lengths(table_res);
 
     /*
       "WITH %s CHECK OPTION" is available from 5.0.2
@@ -5794,11 +5794,11 @@ static my_bool get_view_structure(char *table, char* db)
             (const char *) ds_view.str);
 
     check_io(sql_file);
-    mysql_free_result(table_res);
+    myblockchain_free_result(table_res);
     dynstr_free(&ds_view);
   }
 
-  if (switch_character_set_results(mysql, default_charset))
+  if (switch_character_set_results(myblockchain, default_charset))
     DBUG_RETURN(1);
 
   /* If a separate .sql file was opened, close it now */
@@ -5822,32 +5822,32 @@ static void init_dynamic_string_checked(DYNAMIC_STRING *str, const char *init_st
 			    size_t init_alloc, size_t alloc_increment)
 {
   if (init_dynamic_string(str, init_str, init_alloc, alloc_increment))
-    die(EX_MYSQLERR, DYNAMIC_STR_ERROR_MSG);
+    die(EX_MYBLOCKCHAINERR, DYNAMIC_STR_ERROR_MSG);
 }
 
 static void dynstr_append_checked(DYNAMIC_STRING* dest, const char* src)
 {
   if (dynstr_append(dest, src))
-    die(EX_MYSQLERR, DYNAMIC_STR_ERROR_MSG);
+    die(EX_MYBLOCKCHAINERR, DYNAMIC_STR_ERROR_MSG);
 }
 
 static void dynstr_set_checked(DYNAMIC_STRING *str, const char *init_str)
 {
   if (dynstr_set(str, init_str))
-    die(EX_MYSQLERR, DYNAMIC_STR_ERROR_MSG);
+    die(EX_MYBLOCKCHAINERR, DYNAMIC_STR_ERROR_MSG);
 }
 
 static void dynstr_append_mem_checked(DYNAMIC_STRING *str, const char *append,
 			  size_t length)
 {
   if (dynstr_append_mem(str, append, length))
-    die(EX_MYSQLERR, DYNAMIC_STR_ERROR_MSG);
+    die(EX_MYBLOCKCHAINERR, DYNAMIC_STR_ERROR_MSG);
 }
 
 static void dynstr_realloc_checked(DYNAMIC_STRING *str, size_t additional_size)
 {
   if (dynstr_realloc(str, additional_size))
-    die(EX_MYSQLERR, DYNAMIC_STR_ERROR_MSG);
+    die(EX_MYBLOCKCHAINERR, DYNAMIC_STR_ERROR_MSG);
 }
 
 
@@ -5855,10 +5855,10 @@ int main(int argc, char **argv)
 {
   char bin_log_name[FN_REFLEN];
   int exit_code, md_result_fd;
-  MY_INIT("mysqldump");
+  MY_INIT("myblockchaindump");
 
   compatible_mode_normal_str[0]= 0;
-  default_charset= (char *)mysql_universal_client_charset;
+  default_charset= (char *)myblockchain_universal_client_charset;
   memset(&ignore_table, 0, sizeof(ignore_table));
 
   exit_code= get_options(&argc, &argv);
@@ -5879,29 +5879,29 @@ int main(int argc, char **argv)
     if(!(stderror_file= freopen(log_error_file, "a+", stderr)))
     {
       free_resources();
-      exit(EX_MYSQLERR);
+      exit(EX_MYBLOCKCHAINERR);
     }
   }
 
   if (connect_to_db(current_host, current_user, opt_password))
   {
     free_resources();
-    exit(EX_MYSQLERR);
+    exit(EX_MYBLOCKCHAINERR);
   }
   if (!path)
     write_header(md_result_file, *argv);
 
-  if (opt_slave_data && do_stop_slave_sql(mysql))
+  if (opt_slave_data && do_stop_slave_sql(myblockchain))
     goto err;
 
   if ((opt_lock_all_tables || opt_master_data ||
        (opt_single_transaction && flush_logs)) &&
-      do_flush_tables_read_lock(mysql))
+      do_flush_tables_read_lock(myblockchain))
     goto err;
 
   /*
     Flush logs before starting transaction since
-    this causes implicit commit starting mysql-5.5.
+    this causes implicit commit starting myblockchain-5.5.
   */
   if (opt_lock_all_tables || opt_master_data ||
       (opt_single_transaction && flush_logs) ||
@@ -5909,7 +5909,7 @@ int main(int argc, char **argv)
   {
     if (flush_logs || opt_delete_master_logs)
     {
-      if (mysql_refresh(mysql, REFRESH_LOG))
+      if (myblockchain_refresh(myblockchain, REFRESH_LOG))
         goto err;
       verbose_msg("-- main : logs flushed successfully!\n");
     }
@@ -5920,11 +5920,11 @@ int main(int argc, char **argv)
 
   if (opt_delete_master_logs)
   {
-    if (get_bin_log_name(mysql, bin_log_name, sizeof(bin_log_name)))
+    if (get_bin_log_name(myblockchain, bin_log_name, sizeof(bin_log_name)))
       goto err;
   }
 
-  if (opt_single_transaction && start_transaction(mysql))
+  if (opt_single_transaction && start_transaction(myblockchain))
     goto err;
 
   /* Add 'STOP SLAVE to beginning of dump */
@@ -5933,15 +5933,15 @@ int main(int argc, char **argv)
 
 
   /* Process opt_set_gtid_purged and add SET @@GLOBAL.GTID_PURGED if required. */
-  if (process_set_gtid_purged(mysql))
+  if (process_set_gtid_purged(myblockchain))
     goto err;
 
 
-  if (opt_master_data && do_show_master_status(mysql))
+  if (opt_master_data && do_show_master_status(myblockchain))
     goto err;
-  if (opt_slave_data && do_show_slave_status(mysql))
+  if (opt_slave_data && do_show_slave_status(myblockchain))
     goto err;
-  if (opt_single_transaction && do_unlock_tables(mysql)) /* unlock but no commit! */
+  if (opt_single_transaction && do_unlock_tables(myblockchain)) /* unlock but no commit! */
     goto err;
 
   if (opt_alltspcs)
@@ -5951,11 +5951,11 @@ int main(int argc, char **argv)
   {
     if (!opt_alltspcs && !opt_notspcs)
       dump_all_tablespaces();
-    dump_all_databases();
+    dump_all_blockchains();
   }
   else
   {
-    // Check all arguments meet length condition. Currently database and table
+    // Check all arguments meet length condition. Currently blockchain and table
     // names are limited to NAME_LEN bytes and stack-based buffers assumes
     // that escaped name will be not longer than NAME_LEN*2 + 2 bytes long.
     int argument;
@@ -5965,28 +5965,28 @@ int main(int argc, char **argv)
       if (argument_length > NAME_LEN)
       {
         die(EX_CONSCHECK, "[ERROR] Argument '%s' is too long, it cannot be "
-          "name for any table or database.\n", argv[argument]);
+          "name for any table or blockchain.\n", argv[argument]);
       }
     }
 
-    if (argc > 1 && !opt_databases)
+    if (argc > 1 && !opt_blockchains)
     {
-      /* Only one database and selected table(s) */
+      /* Only one blockchain and selected table(s) */
       if (!opt_alltspcs && !opt_notspcs)
         dump_tablespaces_for_tables(*argv, (argv + 1), (argc - 1));
       dump_selected_tables(*argv, (argv + 1), (argc - 1));
     }
     else
     {
-      /* One or more databases, all tables */
+      /* One or more blockchains, all tables */
       if (!opt_alltspcs && !opt_notspcs)
-        dump_tablespaces_for_databases(argv);
-      dump_databases(argv);
+        dump_tablespaces_for_blockchains(argv);
+      dump_blockchains(argv);
     }
   }
 
   /* if --dump-slave , start the slave sql thread */
-  if (opt_slave_data && do_start_slave_sql(mysql))
+  if (opt_slave_data && do_start_slave_sql(myblockchain))
     goto err;
 
   /*
@@ -6014,11 +6014,11 @@ int main(int argc, char **argv)
       (fflush(md_result_file) || my_sync(md_result_fd, MYF(MY_IGNORE_BADFD))))
   {
     if (!first_error)
-      first_error= EX_MYSQLERR;
+      first_error= EX_MYBLOCKCHAINERR;
     goto err;
   }
   /* everything successful, purge the old logs files */
-  if (opt_delete_master_logs && purge_bin_logs_to(mysql, bin_log_name))
+  if (opt_delete_master_logs && purge_bin_logs_to(myblockchain, bin_log_name))
     goto err;
 
 #if defined (_WIN32) && !defined (EMBEDDED_LIBRARY)

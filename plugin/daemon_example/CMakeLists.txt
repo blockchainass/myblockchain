@@ -13,7 +13,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 
-MYSQL_ADD_PLUGIN(daemon_example daemon_example.cc
+MYBLOCKCHAIN_ADD_PLUGIN(daemon_example daemon_example.cc
   MODULE_ONLY TEST_ONLY MODULE_OUTPUT_NAME "libdaemon_example")
 
 INSTALL(FILES daemon_example.ini DESTINATION ${INSTALL_PLUGINDIR} COMPONENT Test)

@@ -15,7 +15,7 @@
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#include "mysql_object_reader_options.h"
+#include "myblockchain_object_reader_options.h"
 
 using namespace Mysql::Tools::Dump;
 
@@ -31,6 +31,6 @@ void Mysql_object_reader_options::create_options()
 }
 
 Mysql_object_reader_options::Mysql_object_reader_options(
-  const Mysql_chain_element_options* mysql_chain_element_options)
-  : m_mysql_chain_element_options(mysql_chain_element_options)
+  const Mysql_chain_element_options* myblockchain_chain_element_options)
+  : m_myblockchain_chain_element_options(myblockchain_chain_element_options)
 {}

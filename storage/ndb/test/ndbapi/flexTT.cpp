@@ -937,8 +937,8 @@ input_error(){
   ndbout_c("   -l Number of loops to run, default 1, 0=infinite");
   ndbout_c("   -i Start by inserting all records");
   ndbout_c("   -d End by deleting all records (only one loop)");
-  ndbout_c("   -simple Use simple read to read from database");
-  ndbout_c("   -dirty Use dirty read to read from database");
+  ndbout_c("   -simple Use simple read to read from blockchain");
+  ndbout_c("   -dirty Use dirty read to read from blockchain");
   ndbout_c("   -write Use writeTuple in insert and update");
   ndbout_c("   -n Use standard table names");
   ndbout_c("   -table_create Create tables in db");

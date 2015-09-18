@@ -27,8 +27,8 @@ set -e
 : ${data:=simple.zz}
 : ${grammar:=spj_test.yy}
 : ${charset:="latin1 collate latin1_bin"}
-: ${EXE_MYSQL:=}
-: ${EXE_MYSQLTEST:=}
+: ${EXE_MYBLOCKCHAIN:=}
+: ${EXE_MYBLOCKCHAINTEST:=}
 : ${runtime:=}
 : ${seed:=}
 : ${mode:=m,nv,np}
@@ -37,7 +37,7 @@ set -e
 while getopts ":nom:r:l:h:p:q:d:c:g:u:t:M:s:R:" opt; do
   case $opt in
     M)
-      MYSQL_BASE_DIR="${OPTARG}"
+      MYBLOCKCHAIN_BASE_DIR="${OPTARG}"
       ;;
     R)
       RQG_HOME="${OPTARG}"
@@ -84,7 +84,7 @@ while getopts ":nom:r:l:h:p:q:d:c:g:u:t:M:s:R:" opt; do
     \?)
       echo "Usage: `basename $0` [options]                        " >&2
       echo "-R <RQH_HOME>         :                               " >&2
-      echo "-M <mysql install>    :                               " >&2
+      echo "-M <myblockchain install>    :                               " >&2
       echo "-l <no of loops>      :                               " >&2
       echo "-q <queries per loop> :                               " >&2
       echo "-t <runtime>          : in seconds, overrides loops   " >&2
@@ -93,7 +93,7 @@ while getopts ":nom:r:l:h:p:q:d:c:g:u:t:M:s:R:" opt; do
       echo "-u <user>             :                               " >&2
       echo "-d <data-spec>        :                               " >&2
       echo "-g <grammar-spec>     :                               " >&2
-      echo "-n                    : skip creating/loading database" >&2
+      echo "-n                    : skip creating/loading blockchain" >&2
       echo "-c <charsets>         : charsets                      " >&2
       echo "-m <mode>             :                               " >&2
       echo "-s <seed>             :                               " >&2
@@ -120,36 +120,36 @@ then
     exit 1
 fi
 
-if [ -z "$EXE_MYSQL" ]
+if [ -z "$EXE_MYBLOCKCHAIN" ]
 then
-    if [ -z "$MYSQL_BASE_DIR" ]
+    if [ -z "$MYBLOCKCHAIN_BASE_DIR" ]
     then
-	EXE_MYSQL=`which mysql`
+	EXE_MYBLOCKCHAIN=`which myblockchain`
     else
-	EXE_MYSQL="$MYSQL_BASE_DIR/bin/mysql"
+	EXE_MYBLOCKCHAIN="$MYBLOCKCHAIN_BASE_DIR/bin/myblockchain"
     fi
 fi
 
-if [ -z "$EXE_MYSQLTEST" ]
+if [ -z "$EXE_MYBLOCKCHAINTEST" ]
 then
-    if [ -z "$MYSQL_BASE_DIR" ]
+    if [ -z "$MYBLOCKCHAIN_BASE_DIR" ]
     then
-	EXE_MYSQLTEST=`which mysqltest`
+	EXE_MYBLOCKCHAINTEST=`which myblockchaintest`
     else
-	EXE_MYSQLTEST="$MYSQL_BASE_DIR/bin/mysqltest"
+	EXE_MYBLOCKCHAINTEST="$MYBLOCKCHAIN_BASE_DIR/bin/myblockchaintest"
     fi
 fi
 
 
-if [ ! -x "$EXE_MYSQL" ]
+if [ ! -x "$EXE_MYBLOCKCHAIN" ]
 then
-    echo "Failed to locate mysql binary"
+    echo "Failed to locate myblockchain binary"
     exit 1
 fi
 
-if [ ! -x "$EXE_MYSQLTEST" ]
+if [ ! -x "$EXE_MYBLOCKCHAINTEST" ]
 then
-    echo "Failed to locate mysqltest binary"
+    echo "Failed to locate myblockchaintest binary"
     exit 1
 fi
 
@@ -170,11 +170,11 @@ then
 fi
 
 
-dsn="dbi:mysql:host=${host}:port=${port}:user=root"
+dsn="dbi:myblockchain:host=${host}:port=${port}:user=root"
 gensql=${RQG_HOME}/gensql.pl
 gendata=${RQG_HOME}/gendata.pl
-mysql_exe="$EXE_MYSQL --show-warnings --user=${user} --host=${host} --port=${port}"
-mysqltest_exe="$EXE_MYSQLTEST --user=${user} --host=${host} --port=${port}"
+myblockchain_exe="$EXE_MYBLOCKCHAIN --show-warnings --user=${user} --host=${host} --port=${port}"
+myblockchaintest_exe="$EXE_MYBLOCKCHAINTEST --user=${user} --host=${host} --port=${port}"
 export RQG_HOME
 
 getepochtime="date +%s"

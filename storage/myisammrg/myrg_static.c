@@ -58,13 +58,13 @@ void init_myisammrg_psi_keys()
   int count;
 
   count= array_elements(all_myisammrg_mutexes);
-  mysql_mutex_register(category, all_myisammrg_mutexes, count);
+  myblockchain_mutex_register(category, all_myisammrg_mutexes, count);
 
   count= array_elements(all_myisammrg_files);
-  mysql_file_register(category, all_myisammrg_files, count);
+  myblockchain_file_register(category, all_myisammrg_files, count);
 
   count= array_elements(all_myisammrg_memory);
-  mysql_memory_register(category, all_myisammrg_memory, count);
+  myblockchain_memory_register(category, all_myisammrg_memory, count);
 }
 #endif /* HAVE_PSI_INTERFACE */
 

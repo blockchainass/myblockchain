@@ -1,0 +1,4 @@
+!include suite/ndb/my.cnf
+
+[myblockchaind]
+lower-case-table-names = 1

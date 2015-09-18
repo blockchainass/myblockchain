@@ -18,7 +18,7 @@
 
 package testsuite.clusterj;
 
-import com.mysql.clusterj.ClusterJException;
+import com.myblockchain.clusterj.ClusterJException;
 
 public class TransactionStateTest extends AbstractClusterJModelTest {
 

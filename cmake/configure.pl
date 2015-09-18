@@ -215,7 +215,7 @@ foreach my $option (@ARGV)
   }
   if ($option =~ /localstatedir=/)
   {
-    $cmakeargs = $cmakeargs." -DMYSQL_DATADIR=".substr($option,14); 
+    $cmakeargs = $cmakeargs." -DMYBLOCKCHAIN_DATADIR=".substr($option,14); 
     next;
   }
   if ($option =~ /with-comment=/)
@@ -223,9 +223,9 @@ foreach my $option (@ARGV)
     $cmakeargs = $cmakeargs." \"-DCOMPILATION_COMMENT=".substr($option,13)."\""; 
     next;
   }
-  if ($option =~ /mysql-maintainer-mode/)
+  if ($option =~ /myblockchain-maintainer-mode/)
   {
-    $cmakeargs = $cmakeargs." -DMYSQL_MAINTAINER_MODE=" .
+    $cmakeargs = $cmakeargs." -DMYBLOCKCHAIN_MAINTAINER_MODE=" .
                  ($option =~ /enable/ ? "1" : "0");
     next;
   }
@@ -244,7 +244,7 @@ foreach my $option (@ARGV)
       print("configure.pl : ignoring $option\n");
       next;
   }
-  if ($option =~ /with-mysqld-ldflags=/)
+  if ($option =~ /with-myblockchaind-ldflags=/)
   {
       print("configure.pl : ignoring $option\n");
       next;

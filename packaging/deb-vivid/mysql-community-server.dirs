@@ -14,6 +14,6 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 
 etc/init.d
-etc/mysql/mysql.conf.d
-usr/lib/mysql
-usr/lib/mysql/plugin
+etc/myblockchain/myblockchain.conf.d
+usr/lib/myblockchain
+usr/lib/myblockchain/plugin

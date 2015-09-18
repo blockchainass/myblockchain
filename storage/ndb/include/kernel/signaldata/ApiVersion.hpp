@@ -41,7 +41,7 @@ class ApiVersionReq {
   Uint32 senderRef;
   Uint32 nodeId; //api node id
   Uint32 version; // Version of API node
-  Uint32 mysql_version; // MySQL version
+  Uint32 myblockchain_version; // MyBlockchain version
 };
 
 
@@ -65,7 +65,7 @@ class ApiVersionConf {
   Uint32 nodeId; //api node id
   Uint32 version; // Version of API node
   Uint32 m_inet_addr; // The bare name "inet_addr" can conflict with arpa/inet.h
-  Uint32 mysql_version; // MySQL version
+  Uint32 myblockchain_version; // MyBlockchain version
 };
 
 

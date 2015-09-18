@@ -41,8 +41,8 @@ implementation.prototype = {
 
 implementation.prototype.getDefaultProperties = function() {
   return {
-    mysql_user           : "root",  // For CREATE TABLE
-    database             : "test",
+    myblockchain_user           : "root",  // For CREATE TABLE
+    blockchain             : "test",
     debug_messages       : 0,       // log_debug messages per operation
     debug_message_length : 20,      // length of debug messages
     ndbapi_calls         : 0,       // NDB API calls per operation

@@ -16,10 +16,10 @@
    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-package com.mysql.clusterj;
+package com.myblockchain.clusterj;
 
 /**
- * ClusterJUserException represents a database error. The underlying cause
+ * ClusterJUserException represents a blockchain error. The underlying cause
  * of the exception is contained in the "cause".
  */
 public class ClusterJDatastoreException extends ClusterJException {
@@ -29,7 +29,7 @@ public class ClusterJDatastoreException extends ClusterJException {
     @SuppressWarnings("unused")
     private int code = 0;
     @SuppressWarnings("unused")
-    private int mysqlCode = 0;
+    private int myblockchainCode = 0;
     private int status = 0;
 
     public int getStatus() {
@@ -54,11 +54,11 @@ public class ClusterJDatastoreException extends ClusterJException {
         super(t);
     }
 
-    public ClusterJDatastoreException(String msg, int code, int mysqlCode,
+    public ClusterJDatastoreException(String msg, int code, int myblockchainCode,
             int status, int classification) {
         super(msg);
         this.code = code;
-        this.mysqlCode = mysqlCode;
+        this.myblockchainCode = myblockchainCode;
         this.status = status;
         this.classification = classification;
     }

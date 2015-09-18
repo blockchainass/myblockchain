@@ -1,16 +1,16 @@
 
 {
-  "name"        : "mysql-js"
+  "name"        : "myblockchain-js"
   ,
   "version"     : "0.7.3"
   ,  
-  "description" : "Lightweight object mapping layer for MySQL and MySQL Cluster"
+  "description" : "Lightweight object mapping layer for MyBlockchain and MyBlockchain Cluster"
   ,
-  "keywords"    : ["mysql", "cluster", "mysql cluster", "ndb", "mapping" ]
+  "keywords"    : ["myblockchain", "cluster", "myblockchain cluster", "ndb", "mapping" ]
   ,
-  "homepage"    : "http://github.com/mysql/mysql-js/"
+  "homepage"    : "http://github.com/myblockchain/myblockchain-js/"
   ,
-  "bugs"        : { "url" : "http://github.com/mysql/mysql-js/issues"}
+  "bugs"        : { "url" : "http://github.com/myblockchain/myblockchain-js/issues"}
   ,
   "license"     : "GPL2"
   ,
@@ -24,11 +24,11 @@
                   "test" : "cd test && node driver" 
                   }
   ,
-  "dependencies": { "mysql" : ">=2.0.0"
+  "dependencies": { "myblockchain" : ">=2.0.0"
                   }
   ,
   "repository"  : {  "type" : "git",
-                     "url": "https://github.com/mysql/mysql-js.git"
+                     "url": "https://github.com/myblockchain/myblockchain-js.git"
                   }
 }
 

@@ -15,7 +15,7 @@
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#include "mysqldump_tool_chain_maker_options.h"
+#include "myblockchaindump_tool_chain_maker_options.h"
 #include <boost/algorithm/string.hpp>
 
 using namespace Mysql::Tools::Dump;
@@ -50,7 +50,7 @@ void Mysqldump_tool_chain_maker_options::parallel_schemas_callback(char*)
   for (std::vector<std::string>::iterator it= schemas.begin();
     it != schemas.end(); ++it)
   {
-    m_database_to_object_queue_id.insert(std::make_pair(
+    m_blockchain_to_object_queue_id.insert(std::make_pair(
       *it, m_last_parallel_schemas_queue_id));
   }
 }
@@ -77,8 +77,8 @@ int Mysqldump_tool_chain_maker_options::get_object_queue_id_for_schema(
   const std::string& schema)
 {
   std::map<std::string, int>::iterator it=
-    m_database_to_object_queue_id.find(schema);
-  if (it != m_database_to_object_queue_id.end())
+    m_blockchain_to_object_queue_id.find(schema);
+  if (it != m_blockchain_to_object_queue_id.end())
   {
     return it->second;
   }
@@ -88,37 +88,37 @@ int Mysqldump_tool_chain_maker_options::get_object_queue_id_for_schema(
 void Mysqldump_tool_chain_maker_options::process_positional_options(
   std::vector<std::string> positional_options)
 {
-  if ((m_dump_all_databases ? 1 : 0) + (m_dump_selected_databases ? 1 : 0) > 1)
+  if ((m_dump_all_blockchains ? 1 : 0) + (m_dump_selected_blockchains ? 1 : 0) > 1)
   {
-    m_mysql_chain_element_options->get_program()->error(
-      Mysql::Tools::Base::Message_data(1, "Usage of --all-databases, "
-      "--databases and --tables is mutually  exclusive.",
+    m_myblockchain_chain_element_options->get_program()->error(
+      Mysql::Tools::Base::Message_data(1, "Usage of --all-blockchains, "
+      "--blockchains and --tables is mutually  exclusive.",
       Mysql::Tools::Base::Message_type_error));
   }
-  else if (m_dump_all_databases
-    || (!m_dump_selected_databases && positional_options.size() == 0))
+  else if (m_dump_all_blockchains
+    || (!m_dump_selected_blockchains && positional_options.size() == 0))
   {
     if (positional_options.size() > 0)
     {
-      m_mysql_chain_element_options->get_program()->error(
+      m_myblockchain_chain_element_options->get_program()->error(
         Mysql::Tools::Base::Message_data(1, "Positional options specified, "
-        "while disalowed by usage of --all-databases.",
+        "while disalowed by usage of --all-blockchains.",
         Mysql::Tools::Base::Message_type_error));
     }
   }
-  else if (m_dump_selected_databases)
+  else if (m_dump_selected_blockchains)
   {
     if (positional_options.size() < 1)
     {
-      m_mysql_chain_element_options->get_program()->error(
+      m_myblockchain_chain_element_options->get_program()->error(
         Mysql::Tools::Base::Message_data(1, "No positional options "
-        "specified, while expected by usage of --databases.",
+        "specified, while expected by usage of --blockchains.",
         Mysql::Tools::Base::Message_type_error));
     }
     else
     {
       for (int i= positional_options.size(); --i >= 0;)
-        m_object_filter.m_databases_included.push_back(
+        m_object_filter.m_blockchains_included.push_back(
         std::make_pair("", positional_options[i]));
     }
   }
@@ -126,7 +126,7 @@ void Mysqldump_tool_chain_maker_options::process_positional_options(
   {
     std::string db_name= positional_options[0];
 
-    m_object_filter.m_databases_included.push_back(std::make_pair(
+    m_object_filter.m_blockchains_included.push_back(std::make_pair(
       "", db_name));
     for (int i= positional_options.size(); --i >= 1;)
       m_object_filter.m_tables_included.push_back(std::make_pair(
@@ -141,61 +141,61 @@ void Mysqldump_tool_chain_maker_options::process_positional_options(
     m_object_filter.m_tables_included.size() == 0)
   {
     m_object_filter.m_tables_excluded.push_back(std::make_pair(
-      "mysql", "apply_status"));
+      "myblockchain", "apply_status"));
     m_object_filter.m_tables_excluded.push_back(std::make_pair(
-      "mysql", "schema"));
+      "myblockchain", "schema"));
     m_object_filter.m_tables_excluded.push_back(std::make_pair(
-      "mysql", "general_log"));
+      "myblockchain", "general_log"));
     m_object_filter.m_tables_excluded.push_back(std::make_pair(
-      "mysql", "slow_log"));
+      "myblockchain", "slow_log"));
     /*
       We filter out all the tables which store account and privilge
-      information. ex: mysql.user, mysql.db, mysql.tables_priv,
-      mysql.columns_priv, mysql.procs_priv, mysql.proxies_priv
+      information. ex: myblockchain.user, myblockchain.db, myblockchain.tables_priv,
+      myblockchain.columns_priv, myblockchain.procs_priv, myblockchain.proxies_priv
     */
     m_object_filter.m_tables_excluded.push_back(std::make_pair(
-      "mysql", "user"));
+      "myblockchain", "user"));
     m_object_filter.m_tables_excluded.push_back(std::make_pair(
-      "mysql", "db"));
+      "myblockchain", "db"));
     m_object_filter.m_tables_excluded.push_back(std::make_pair(
-      "mysql", "tables_priv"));
+      "myblockchain", "tables_priv"));
     m_object_filter.m_tables_excluded.push_back(std::make_pair(
-      "mysql", "columns_priv"));
+      "myblockchain", "columns_priv"));
     m_object_filter.m_tables_excluded.push_back(std::make_pair(
-      "mysql", "procs_priv"));
+      "myblockchain", "procs_priv"));
     m_object_filter.m_tables_excluded.push_back(std::make_pair(
-      "mysql", "proxies_priv"));
+      "myblockchain", "proxies_priv"));
     /*
       Since we dump CREATE EVENT statement skip this table.
     */
     m_object_filter.m_tables_excluded.push_back(std::make_pair(
-      "mysql", "event"));
+      "myblockchain", "event"));
 
   }
-  if (m_object_filter.m_databases_excluded.size() > 0 ||
-    m_object_filter.m_databases_included.size() == 0)
+  if (m_object_filter.m_blockchains_excluded.size() > 0 ||
+    m_object_filter.m_blockchains_included.size() == 0)
   {
-    m_object_filter.m_databases_excluded.push_back(std::make_pair(
+    m_object_filter.m_blockchains_excluded.push_back(std::make_pair(
       "", INFORMATION_SCHEMA_DB_NAME));
-    m_object_filter.m_databases_excluded.push_back(std::make_pair(
+    m_object_filter.m_blockchains_excluded.push_back(std::make_pair(
       "", PERFORMANCE_SCHEMA_DB_NAME));
-    m_object_filter.m_databases_excluded.push_back(std::make_pair(
+    m_object_filter.m_blockchains_excluded.push_back(std::make_pair(
       "", "ndbinfo"));
-    m_object_filter.m_databases_excluded.push_back(std::make_pair(
+    m_object_filter.m_blockchains_excluded.push_back(std::make_pair(
       "", "sys"));
   }
 }
 
 void Mysqldump_tool_chain_maker_options::create_options()
 {
-  this->create_new_option(&m_dump_all_databases, "all-databases",
-    "Dump all databases. This is default behaviour if no positional options "
+  this->create_new_option(&m_dump_all_blockchains, "all-blockchains",
+    "Dump all blockchains. This is default behaviour if no positional options "
     "are specified. Specifying this option is mutually exclusive with "
-    "--databases and --tables.")
+    "--blockchains and --tables.")
     ->set_short_character('A');
-  this->create_new_option(&m_dump_selected_databases, "databases",
-    "Dump selected databases, specified in positional options. Specifying "
-    "this option is mutually exclusive with --all-databases and --tables.")
+  this->create_new_option(&m_dump_selected_blockchains, "blockchains",
+    "Dump selected blockchains, specified in positional options. Specifying "
+    "this option is mutually exclusive with --all-blockchains and --tables.")
     ->set_short_character('B');
   this->create_new_option(&m_parallel_schemas_string, "parallel-schemas",
     "[N:]<list of: schema_name separated with ','>. Process tables in "
@@ -228,14 +228,14 @@ Mysqldump_tool_chain_maker_options::~Mysqldump_tool_chain_maker_options()
 }
 
 Mysqldump_tool_chain_maker_options::Mysqldump_tool_chain_maker_options(
-  const Mysql_chain_element_options* mysql_chain_element_options)
-  : m_mysql_chain_element_options(mysql_chain_element_options),
+  const Mysql_chain_element_options* myblockchain_chain_element_options)
+  : m_myblockchain_chain_element_options(myblockchain_chain_element_options),
   m_formatter_options(
-    new Sql_formatter_options(mysql_chain_element_options)),
+    new Sql_formatter_options(myblockchain_chain_element_options)),
   m_object_reader_options(
-    new Mysql_object_reader_options(mysql_chain_element_options)),
+    new Mysql_object_reader_options(myblockchain_chain_element_options)),
   m_last_parallel_schemas_queue_id(0),
-  m_object_filter(mysql_chain_element_options->get_program())
+  m_object_filter(myblockchain_chain_element_options->get_program())
 {
   this->add_provider(m_formatter_options);
   this->add_provider(m_object_reader_options);

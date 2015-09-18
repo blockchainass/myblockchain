@@ -184,7 +184,7 @@ void start_test(int id)
     lock=0 ; lock_type=0;
     if (rnd(10) == 0)
     {
-      if (mi_lock_database(lock=(rnd(2) ? file1 : file2),
+      if (mi_lock_blockchain(lock=(rnd(2) ? file1 : file2),
 			   lock_type=(rnd(2) == 0 ? F_RDLCK : F_WRLCK)))
       {
 	fprintf(stderr,"%2d: start: Can't lock table %d\n",id,my_errno);
@@ -199,7 +199,7 @@ void start_test(int id)
     case 3: error=test_update(file,id,lock_type); break;
     }
     if (lock)
-      mi_lock_database(lock,F_UNLCK);
+      mi_lock_blockchain(lock,F_UNLCK);
   }
   if (!error)
   {
@@ -230,7 +230,7 @@ int test_read(MI_INFO *file,int id)
   if (rnd(2) == 0)
   {
     lock=1;
-    if (mi_lock_database(file,F_RDLCK))
+    if (mi_lock_blockchain(file,F_RDLCK))
     {
       fprintf(stderr,"%2d: Can't lock table %d\n",id,my_errno);
       return 1;
@@ -276,7 +276,7 @@ int test_read(MI_INFO *file,int id)
   }
   if (lock)
   {
-    if (mi_lock_database(file,F_UNLCK))
+    if (mi_lock_blockchain(file,F_UNLCK))
     {
       fprintf(stderr,"%2d: Can't unlock table\n",id);
       return 1;
@@ -297,7 +297,7 @@ int test_rrnd(MI_INFO *file,int id)
   if (rnd(2) == 0)
   {
     lock=1;
-    if (mi_lock_database(file,F_RDLCK))
+    if (mi_lock_blockchain(file,F_RDLCK))
     {
       fprintf(stderr,"%2d: Can't lock table (%d)\n",id,my_errno);
       mi_close(file);
@@ -326,7 +326,7 @@ end:
   if (lock)
   {
     mi_extra(file,HA_EXTRA_NO_CACHE,0);
-    if (mi_lock_database(file,F_UNLCK))
+    if (mi_lock_blockchain(file,F_UNLCK))
     {
       fprintf(stderr,"%2d: Can't unlock table\n",id);
       exit(0);
@@ -345,7 +345,7 @@ int test_write(MI_INFO *file,int id,int lock_type)
   if (rnd(2) == 0 || lock_type == F_RDLCK)
   {
     lock=1;
-    if (mi_lock_database(file,F_WRLCK))
+    if (mi_lock_blockchain(file,F_WRLCK))
     {
       if (lock_type == F_RDLCK && my_errno == EDEADLK)
       {
@@ -383,7 +383,7 @@ int test_write(MI_INFO *file,int id,int lock_type)
   if (lock)
   {
     mi_extra(file,HA_EXTRA_NO_CACHE,0);
-    if (mi_lock_database(file,F_UNLCK))
+    if (mi_lock_blockchain(file,F_UNLCK))
     {
       fprintf(stderr,"%2d: Can't unlock table\n",id);
       exit(0);
@@ -405,7 +405,7 @@ int test_update(MI_INFO *file,int id,int lock_type)
   if (rnd(2) == 0 || lock_type == F_RDLCK)
   {
     lock=1;
-    if (mi_lock_database(file,F_WRLCK))
+    if (mi_lock_blockchain(file,F_WRLCK))
     {
       if (lock_type == F_RDLCK && my_errno == EDEADLK)
       {
@@ -476,7 +476,7 @@ int test_update(MI_INFO *file,int id,int lock_type)
   }
   if (lock)
   {
-    if (mi_lock_database(file,F_UNLCK))
+    if (mi_lock_blockchain(file,F_UNLCK))
     {
       fprintf(stderr,"Can't unlock table,id, error%d\n",my_errno);
       return 1;

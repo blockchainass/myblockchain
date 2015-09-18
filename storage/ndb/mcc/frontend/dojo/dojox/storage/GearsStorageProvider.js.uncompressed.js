@@ -16,7 +16,7 @@ if(dojo.gears.available){
 		dojo.declare("dojox.storage.GearsStorageProvider", dojox.storage.Provider, {
 			// summary:
 			//		Storage provider that uses the features of Google Gears
-			//		to store data (it is saved into the local SQL database
+			//		to store data (it is saved into the local SQL blockchain
 			//		provided by Gears, using dojox.sql)
 			// description:
 			//		You can disable this storage provider with the following djConfig
@@ -110,7 +110,7 @@ if(dojo.gears.available){
 					throw new Error("Invalid namespace given: " + key);
 				}
 				
-				// try to find this key in the database
+				// try to find this key in the blockchain
 				var results = dojox.sql("SELECT * FROM " + this.TABLE_NAME
 											+ " WHERE namespace = ? AND "
 											+ " key = ?",

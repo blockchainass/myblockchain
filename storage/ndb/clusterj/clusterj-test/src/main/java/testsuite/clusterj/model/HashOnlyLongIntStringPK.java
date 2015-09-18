@@ -17,8 +17,8 @@
 
 package testsuite.clusterj.model;
 
-import com.mysql.clusterj.annotation.Column;
-import com.mysql.clusterj.annotation.PersistenceCapable;
+import com.myblockchain.clusterj.annotation.Column;
+import com.myblockchain.clusterj.annotation.PersistenceCapable;
 
 /** Schema
  *

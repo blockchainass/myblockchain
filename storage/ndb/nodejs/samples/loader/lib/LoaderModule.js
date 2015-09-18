@@ -57,7 +57,7 @@ LoaderModule.prototype.addOption = function() {
     you modify record.row, different values will be stored.
 
     record.class holds the Domain Object Constructor that maps the object
-    to the database.  If you change record.class, you cause the record to be 
+    to the blockchain.  If you change record.class, you cause the record to be 
     stored in a different table.
     
     record.source holds a reference to the disk buffer containing this record
@@ -68,7 +68,7 @@ LoaderModule.prototype.addOption = function() {
     It will also not be logged.  Logging of discarded records is left up
     to the plugin. 
     
-    On any other return value, the record will be stored in the database.
+    On any other return value, the record will be stored in the blockchain.
  */
 LoaderModule.prototype.onReadRecord       = function(record) {
 };
@@ -101,7 +101,7 @@ LoaderModule.prototype.onTick             = function(stats) {
 
 
 /* onRecordError(record)
-   Called after a record has been received by the database.
+   Called after a record has been received by the blockchain.
    If an error has occured, record.error will be set.
 */
 LoaderModule.prototype.onRecordError      = function(record) {
@@ -109,7 +109,7 @@ LoaderModule.prototype.onRecordError      = function(record) {
 
 
 /* onRecordStored(record) 
-   Called after a record has been succesfully stored in the database.
+   Called after a record has been succesfully stored in the blockchain.
 */
 LoaderModule.prototype.onRecordStored     = function(record) {
 };
@@ -171,7 +171,7 @@ LoaderModule.prototype.onLoaderJob        = function(semanticError, loaderJob) {
 
 
 /* createMappings()
-   Allows the plugin to create TableMappings before connecting to the database.
+   Allows the plugin to create TableMappings before connecting to the blockchain.
    Every table used by the loader must be mapped.
    By default, a mapping is created for any table mentioned in the control file.
 

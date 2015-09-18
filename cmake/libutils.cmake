@@ -28,8 +28,8 @@
 # excessive recompiles.
 
 # Except for convenience libraries, this file provides macros to merge static 
-# libraries (we need it for mysqlclient) and to create shared library out of 
-# convenience libraries(again, for mysqlclient)
+# libraries (we need it for myblockchainclient) and to create shared library out of 
+# convenience libraries(again, for myblockchainclient)
 
 # Following macros are exported
 # - ADD_CONVENIENCE_LIBRARY(target source1...sourceN)
@@ -52,12 +52,12 @@
 # during the build. ADD_CONVENIENCE_LIBRARY does not add anything to compile flags
 
 
-GET_FILENAME_COMPONENT(MYSQL_CMAKE_SCRIPT_DIR ${CMAKE_CURRENT_LIST_FILE} PATH)
+GET_FILENAME_COMPONENT(MYBLOCKCHAIN_CMAKE_SCRIPT_DIR ${CMAKE_CURRENT_LIST_FILE} PATH)
 IF(WIN32 OR APPLE OR WITH_PIC OR DISABLE_SHARED OR NOT CMAKE_SHARED_LIBRARY_C_FLAGS)
  SET(_SKIP_PIC 1)
 ENDIF()
 
-INCLUDE(${MYSQL_CMAKE_SCRIPT_DIR}/cmake_parse_arguments.cmake)
+INCLUDE(${MYBLOCKCHAIN_CMAKE_SCRIPT_DIR}/cmake_parse_arguments.cmake)
 # CREATE_EXPORT_FILE (VAR target api_functions)
 # Internal macro, used to create source file for shared libraries that 
 # otherwise consists entirely of "convenience" libraries. On Windows, 
@@ -92,7 +92,7 @@ MACRO(CREATE_EXPORT_FILE VAR TARGET API_FUNCTIONS)
 ENDMACRO()
 
 
-# MYSQL_ADD_CONVENIENCE_LIBRARY(name source1...sourceN)
+# MYBLOCKCHAIN_ADD_CONVENIENCE_LIBRARY(name source1...sourceN)
 # Create static library that can be linked to shared library.
 # On systems that force position-independent code, adds -fPIC or 
 # equivalent flag to compile flags.
@@ -115,14 +115,14 @@ MACRO(CONFIGURE_FILE_CONTENT content file)
  SET(CMAKE_CONFIGURABLE_FILE_CONTENT 
   "${content}\n")
  CONFIGURE_FILE(
-  ${MYSQL_CMAKE_SCRIPT_DIR}/configurable_file_content.in
+  ${MYBLOCKCHAIN_CMAKE_SCRIPT_DIR}/configurable_file_content.in
   ${file}
   @ONLY)
 ENDMACRO()
 
 # Merge static libraries into a big static lib. The resulting library 
 # should not not have dependencies on other static libraries.
-# We use it in MySQL to merge mysys,dbug,vio etc into mysqlclient
+# We use it in MyBlockchain to merge mysys,dbug,vio etc into myblockchainclient
 
 MACRO(MERGE_STATIC_LIBS TARGET OUTPUT_NAME LIBS_TO_MERGE)
   # To produce a library we need at least one source file.
@@ -198,7 +198,7 @@ MACRO(MERGE_STATIC_LIBS TARGET OUTPUT_NAME LIBS_TO_MERGE)
       # and repacks them with "ar r"
       SET(TARGET ${TARGET})
       CONFIGURE_FILE(
-        ${MYSQL_CMAKE_SCRIPT_DIR}/merge_archives_unix.cmake.in
+        ${MYBLOCKCHAIN_CMAKE_SCRIPT_DIR}/merge_archives_unix.cmake.in
         ${CMAKE_CURRENT_BINARY_DIR}/merge_archives_${TARGET}.cmake 
         @ONLY
       )
@@ -219,7 +219,7 @@ ENDMACRO()
 #  [OUTPUT_NAME output_name]
 #)
 MACRO(MERGE_LIBRARIES)
-  MYSQL_PARSE_ARGUMENTS(ARG
+  MYBLOCKCHAIN_PARSE_ARGUMENTS(ARG
     "EXPORTS;OUTPUT_NAME;COMPONENT"
     "STATIC;SHARED;MODULE;NOINSTALL"
     ${ARGN}
@@ -271,7 +271,7 @@ MACRO(MERGE_LIBRARIES)
     IF(ARG_COMPONENT)
       SET(COMP COMPONENT ${ARG_COMPONENT}) 
     ENDIF()
-    MYSQL_INSTALL_TARGETS(${TARGET} DESTINATION "${INSTALL_LIBDIR}" ${COMP})
+    MYBLOCKCHAIN_INSTALL_TARGETS(${TARGET} DESTINATION "${INSTALL_LIBDIR}" ${COMP})
   ENDIF()
   SET_TARGET_PROPERTIES(${TARGET} PROPERTIES LINK_INTERFACE_LIBRARIES "")
 ENDMACRO()

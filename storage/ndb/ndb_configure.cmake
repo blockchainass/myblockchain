@@ -44,7 +44,7 @@ INCLUDE(CheckCSourceCompiles)
 INCLUDE(CheckCXXSourceCompiles)
 INCLUDE(CheckCXXSourceRuns)
 INCLUDE(ndb_require_variable)
-INCLUDE(ndb_check_mysql_include_file)
+INCLUDE(ndb_check_myblockchain_include_file)
 
 CHECK_FUNCTION_EXISTS(posix_memalign HAVE_POSIX_MEMALIGN)
 CHECK_FUNCTION_EXISTS(clock_gettime HAVE_CLOCK_GETTIME)
@@ -200,19 +200,19 @@ int main()
 HAVE_LINUX_FUTEX)
 
 OPTION(WITH_NDBMTD
-  "Build the MySQL Cluster multithreadded data node" ON)
+  "Build the MyBlockchain Cluster multithreadded data node" ON)
 
 SET(WITH_NDB_PORT "" CACHE INTEGER
-  "Default port used by MySQL Cluster management server")
+  "Default port used by MyBlockchain Cluster management server")
 IF(WITH_NDB_PORT GREATER 0)
   SET(NDB_PORT ${WITH_NDB_PORT})
-  MESSAGE(STATUS "Setting MySQL Cluster management server port to ${NDB_PORT}")
+  MESSAGE(STATUS "Setting MyBlockchain Cluster management server port to ${NDB_PORT}")
 ENDIF()
 
 #
-# Check which MySQL include files exists
+# Check which MyBlockchain include files exists
 #
-NDB_CHECK_MYSQL_INCLUDE_FILE(my_default.h HAVE_MY_DEFAULT_H)
+NDB_CHECK_MYBLOCKCHAIN_INCLUDE_FILE(my_default.h HAVE_MY_DEFAULT_H)
 
 CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/include/ndb_config.h.in
                ${CMAKE_CURRENT_BINARY_DIR}/include/ndb_config.h)
@@ -225,7 +225,7 @@ ADD_DEFINITIONS(-DHAVE_NDB_CONFIG_H)
 
 # check zlib
 IF(NOT DEFINED WITH_ZLIB)
-  # Hardcode use of the bundled zlib if not set by MySQL
+  # Hardcode use of the bundled zlib if not set by MyBlockchain
   MESSAGE(STATUS "Using bundled zlib (hardcoded)")
   SET(ZLIB_LIBRARY zlib)
   SET(ZLIB_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/zlib)

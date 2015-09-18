@@ -39,9 +39,9 @@ var udebug  = unified_debug.getLogger("ndb_service_provider.js");
 var NdbDefaultConnectionProperties = 
   require(path.join(mynode.fs.backend_doc_dir, "ndb_properties"));
 
-/* Rely on MySQL SPI for MetadataManager */
-var mysqlService = require(mynode.spi).getDBServiceProvider("mysql"),
-    mysqlMetadataManager = mysqlService.getDBMetadataManager();
+/* Rely on MyBlockchain SPI for MetadataManager */
+var myblockchainService = require(mynode.spi).getDBServiceProvider("myblockchain"),
+    myblockchainMetadataManager = myblockchainService.getDBMetadataManager();
 
 
 exports.loadRequiredModules = function() {
@@ -59,7 +59,7 @@ exports.loadRequiredModules = function() {
     if(existsSync(module)) {
       msg += 
       "  This module has been built, but was not succesfully loaded.  Perhaps \n" +
-      "  setting " + ldp + " to the mysql lib directory (containing \n" +
+      "  setting " + ldp + " to the myblockchain lib directory (containing \n" +
       "  libndbclient) will resolve the problem.\n\n";
     }
     else {
@@ -104,5 +104,5 @@ exports.getFactoryKey = function(properties) {
 
 
 exports.getDBMetadataManager = function() {
-  return mysqlMetadataManager;
+  return myblockchainMetadataManager;
 };

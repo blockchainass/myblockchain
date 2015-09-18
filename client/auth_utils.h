@@ -58,7 +58,7 @@ void trim(std::string *s);
 const std::string get_allowed_pwd_chars();
 
 /**
-  An experimental uniform representation of access privileges in MySQL
+  An experimental uniform representation of access privileges in MyBlockchain
 */
 class Access_privilege
 {

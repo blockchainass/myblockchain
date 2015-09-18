@@ -134,7 +134,7 @@ enum os_file_create_t {
 static const ulint OS_FILE_READ_ONLY = 333;
 static const ulint OS_FILE_READ_WRITE = 444;
 
-/** Used by MySQLBackup */
+/** Used by MyBlockchainBackup */
 static const ulint OS_FILE_READ_ALLOW_DELETE = 555;
 
 /* Options for file_create */
@@ -621,7 +621,7 @@ enum os_file_type_t {
 };
 
 /* Maximum path string length in bytes when referring to tables with in the
-'./databasename/tablename.ibd' path format; we can allocate at least 2 buffers
+'./blockchainname/tablename.ibd' path format; we can allocate at least 2 buffers
 of this size from the thread stack; that is why this should not be made much
 bigger than 4000 bytes.  The maximum path length used by any storage engine
 in the server must be at least this big. */
@@ -650,7 +650,7 @@ struct os_file_stat_t {
 #ifndef UNIV_HOTBACKUP
 /** Create a temporary file. This function is like tmpfile(3), but
 the temporary file is created in the given parameter path. If the path
-is null then it will create the file in the mysql server configuration
+is null then it will create the file in the myblockchain server configuration
 parameter (--tmpdir).
 @param[in]	path	location for creating temporary file
 @return temporary file handle, or NULL on error */
@@ -823,9 +823,9 @@ os_file_close_func(os_file_t file);
 #ifdef UNIV_PFS_IO
 
 /* Keys to register InnoDB I/O with performance schema */
-extern mysql_pfs_key_t	innodb_data_file_key;
-extern mysql_pfs_key_t	innodb_log_file_key;
-extern mysql_pfs_key_t	innodb_temp_file_key;
+extern myblockchain_pfs_key_t	innodb_data_file_key;
+extern myblockchain_pfs_key_t	innodb_log_file_key;
+extern myblockchain_pfs_key_t	innodb_temp_file_key;
 
 /* Following four macros are instumentations to register
 various file I/O operations with performance schema.
@@ -973,7 +973,7 @@ os_file_create_simple() which opens or creates a file.
 UNIV_INLINE
 os_file_t
 pfs_os_file_create_simple_func(
-	mysql_pfs_key_t key,
+	myblockchain_pfs_key_t key,
 	const char*	name,
 	ulint		create_mode,
 	ulint		access_type,
@@ -1004,7 +1004,7 @@ monitor file creation/open.
 UNIV_INLINE
 os_file_t
 pfs_os_file_create_simple_no_error_handling_func(
-	mysql_pfs_key_t key,
+	myblockchain_pfs_key_t key,
 	const char*	name,
 	ulint		create_mode,
 	ulint		access_type,
@@ -1037,7 +1037,7 @@ Add instrumentation to monitor file creation/open.
 UNIV_INLINE
 os_file_t
 pfs_os_file_create_func(
-	mysql_pfs_key_t key,
+	myblockchain_pfs_key_t key,
 	const char*	name,
 	ulint		create_mode,
 	ulint		purpose,
@@ -1204,7 +1204,7 @@ os_file_rename()
 UNIV_INLINE
 bool
 pfs_os_file_rename_func(
-	mysql_pfs_key_t	key,
+	myblockchain_pfs_key_t	key,
 	const char*	oldpath,
 	const char*	newpath,
 	const char*	src_file,
@@ -1223,7 +1223,7 @@ os_file_delete()
 UNIV_INLINE
 bool
 pfs_os_file_delete_func(
-	mysql_pfs_key_t	key,
+	myblockchain_pfs_key_t	key,
 	const char*	name,
 	const char*	src_file,
 	ulint		src_line);
@@ -1242,7 +1242,7 @@ os_file_delete_if_exists()
 UNIV_INLINE
 bool
 pfs_os_file_delete_if_exists_func(
-	mysql_pfs_key_t	key,
+	myblockchain_pfs_key_t	key,
 	const char*	name,
 	bool*		exist,
 	const char*	src_file,
@@ -1490,7 +1490,7 @@ os_file_dirname(
 /** This function returns a new path name after replacing the basename
 in an old path with a new basename.  The old_path is a full path
 name including the extension.  The tablename is in the normal
-form "databasename/tablename".  The new base name is found after
+form "blockchainname/tablename".  The new base name is found after
 the forward slash.  Both input strings are null terminated.
 
 This function allocates memory to be returned.  It is the callers
@@ -1505,8 +1505,8 @@ os_file_make_new_pathname(
 	const char*	new_name);
 
 /** This function reduces a null-terminated full remote path name into
-the path that is sent by MySQL for DATA DIRECTORY clause.  It replaces
-the 'databasename/tablename.ibd' found at the end of the path with just
+the path that is sent by MyBlockchain for DATA DIRECTORY clause.  It replaces
+the 'blockchainname/tablename.ibd' found at the end of the path with just
 'tablename'.
 
 Since the result is always smaller than the path sent in, no new memory
@@ -1670,7 +1670,7 @@ os_file_get_status(
 This function is defined in ha_innodb.cc.
 @return temporary file descriptor, or < 0 on error */
 int
-innobase_mysql_tmpfile();
+innobase_myblockchain_tmpfile();
 #endif /* !UNIV_HOTBACKUP */
 
 

@@ -78,13 +78,13 @@ endif(HAVE_WINDOWS_H)
 configure_file("config.h.cmake" "${CMAKE_CURRENT_BINARY_DIR}/host_info_config.h")
 include_directories(${CMAKE_CURRENT_BINARY_DIR}) 
 
-if(DEFAULT_MYSQL_HOME)
-  MYSQL_ADD_EXECUTABLE(host_info host_info.c
+if(DEFAULT_MYBLOCKCHAIN_HOME)
+  MYBLOCKCHAIN_ADD_EXECUTABLE(host_info host_info.c
     DESTINATION "${MCC_INSTALL_SUBDIR}/host_info/${CMAKE_SYSTEM_NAME}/${CMAKE_SYSTEM_PROCESSOR}"
     COMPONENT ClusterTools)
 else()
   # If not building as part of Cluster we don't have the
-  # MYSQL_ADD_EXECUTABLE macro available, so we just use the normal
+  # MYBLOCKCHAIN_ADD_EXECUTABLE macro available, so we just use the normal
   # add_executable command...
   add_executable(host_info host_info.c)
 

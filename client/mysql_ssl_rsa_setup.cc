@@ -29,7 +29,7 @@
 #include <fstream>
 #include <algorithm>
 
-/* MySQL Headers */
+/* MyBlockchain Headers */
 #include <my_sys.h>
 #include <my_dir.h>
 #include <my_default.h>
@@ -37,7 +37,7 @@
 #include <my_config.h>
 #include <my_getopt.h>
 #include <welcome_copyright_notice.h>   /* ORACLE_WELCOME_COPYRIGHT_NOTICE */
-#include <mysql_version.h>
+#include <myblockchain_version.h>
 #include "path.h"
 #include "logger.h"
 
@@ -89,7 +89,7 @@ Sql_string_t cert_files[] =
                        - cert_files[SERVER_CERT].length() - 1)
 /*
   Higest number of fixed characters in subject line is 47:
-  MySQL_SERVER_<suffix>_Auto_Generated_Server_Certificate
+  MyBlockchain_SERVER_<suffix>_Auto_Generated_Server_Certificate
   Maximum size of subject is 64. So suffix can't be longer
   than 17 characters.
 */
@@ -100,9 +100,9 @@ Log error(cerr,"ERROR");
 
 char **defaults_argv= 0;
 static char *opt_datadir= 0;
-static char default_data_dir[]= MYSQL_DATADIR;
+static char default_data_dir[]= MYBLOCKCHAIN_DATADIR;
 static char *opt_suffix= 0;
-static char default_suffix[]= MYSQL_SERVER_VERSION;
+static char default_suffix[]= MYBLOCKCHAIN_SERVER_VERSION;
 #if HAVE_CHOWN
 static char *opt_userid= 0;
 struct passwd *user_info= 0;
@@ -113,9 +113,9 @@ my_bool opt_verbose;
 
 static const char *load_default_groups[]=
 {
-  "mysql_ssl_rsa_setup",
-  "mysql_install_db",
-  "mysqld",
+  "myblockchain_ssl_rsa_setup",
+  "myblockchain_install_db",
+  "myblockchaind",
   0
 };
 
@@ -279,7 +279,7 @@ public:
            uint32_t validity= 10*365L)
     : m_validity(validity)
   {
-    m_subj_prefix << "-subj /CN=MySQL_Server_" << version;
+    m_subj_prefix << "-subj /CN=MyBlockchain_Server_" << version;
   }
 
   Sql_string_t operator()(Sql_string_t suffix,
@@ -337,7 +337,7 @@ static
 void print_version(void)
 {
   cout << my_progname << " Version : " << MY_VERSION
-       << " Distribution : " << MYSQL_SERVER_VERSION
+       << " Distribution : " << MYBLOCKCHAIN_SERVER_VERSION
        << " For : " << SYSTEM_TYPE << " On : " << MACHINE_TYPE << endl;
 }
 
@@ -347,7 +347,7 @@ void usage(void)
 {
   print_version();
   cout << (ORACLE_WELCOME_COPYRIGHT_NOTICE("2015")) << endl
-       << "MySQL SSL Certificate and RSA Key Generation Utility" << endl
+       << "MyBlockchain SSL Certificate and RSA Key Generation Utility" << endl
        << "Usage : " << my_progname << " [OPTIONS]" << endl;
 
   my_print_help(my_options);
@@ -445,7 +445,7 @@ int main(int argc, char *argv[])
   {
     error << "Failed to access directory pointed by --datadir. "
           << "Please make sure that directory exists and is "
-          << "accessible by mysql_ssl_rsa_setup. Supplied value : "
+          << "accessible by myblockchain_ssl_rsa_setup. Supplied value : "
           << dir_string.to_str() << endl;
     ret_val= 1;
     goto end;

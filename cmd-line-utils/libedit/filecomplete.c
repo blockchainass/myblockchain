@@ -36,7 +36,7 @@
 
 #include "config.h"
 
-/* XXXMYSQL */
+/* XXXMYBLOCKCHAIN */
 #ifdef __GNUC__
 # undef alloca
 # define alloca(n) __builtin_alloca (n)

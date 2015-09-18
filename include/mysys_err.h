@@ -70,7 +70,7 @@ extern const char *globerrs[];  /* my_error_messages is here */
 /* Add error numbers before EE_ERROR_LAST and change it accordingly. */
 
 /* Exit codes for option processing. When exiting from server use the
-   MYSQLD_*EXIT codes defined in sql_const.h */
+   MYBLOCKCHAIND_*EXIT codes defined in sql_const.h */
 
 #define EXIT_UNSPECIFIED_ERROR		1
 #define EXIT_UNKNOWN_OPTION		2

@@ -60,7 +60,7 @@ Created 9/20/1997 Heikki Tuuri
 #include "row0trunc.h"
 #else /* !UNIV_HOTBACKUP */
 /** This is set to FALSE if the backup was originally taken with the
-mysqlbackup --include regexp option: then we do not want to create tables in
+myblockchainbackup --include regexp option: then we do not want to create tables in
 directories which were not included */
 bool	recv_replay_file_ops	= true;
 #endif /* !UNIV_HOTBACKUP */
@@ -129,23 +129,23 @@ static ulint	recv_previous_parsed_rec_is_multi;
 /** This many frames must be left free in the buffer pool when we scan
 the log and store the scanned log records in the buffer pool: we will
 use these free frames to read in pages when we start applying the
-log records to the database.
+log records to the blockchain.
 This is the default value. If the actual size of the buffer pool is
 larger than 10 MB we'll set this value to 512. */
 ulint	recv_n_pool_free_frames;
 
 /** The maximum lsn we see for a page during the recovery process. If this
 is bigger than the lsn we are able to scan up to, that is an indication that
-the recovery failed and the database may be corrupt. */
+the recovery failed and the blockchain may be corrupt. */
 lsn_t	recv_max_page_lsn;
 
 #ifdef UNIV_PFS_THREAD
-mysql_pfs_key_t	trx_rollback_clean_thread_key;
+myblockchain_pfs_key_t	trx_rollback_clean_thread_key;
 #endif /* UNIV_PFS_THREAD */
 
 #ifndef UNIV_HOTBACKUP
 # ifdef UNIV_PFS_THREAD
-mysql_pfs_key_t	recv_writer_thread_key;
+myblockchain_pfs_key_t	recv_writer_thread_key;
 # endif /* UNIV_PFS_THREAD */
 
 /** Flag indicating if recv_writer thread is active. */
@@ -282,9 +282,9 @@ fil_name_process(
 					" become corrupt if we cannot apply"
 					" the log records in the InnoDB log to"
 					" it. To fix the problem and start"
-					" mysqld:";
+					" myblockchaind:";
 				ib::info() << "1) If there is a permission"
-					" problem in the file and mysqld"
+					" problem in the file and myblockchaind"
 					" cannot open the file, you should"
 					" modify the permissions.";
 				ib::info() << "2) If the tablespace is not"
@@ -863,7 +863,7 @@ recv_find_max_checkpoint(
 
 	if (*max_group == NULL) {
 		ib::error() << "No valid checkpoint found. If this error"
-			" appears when you are creating an InnoDB database,"
+			" appears when you are creating an InnoDB blockchain,"
 			" the problem may be that during an earlier attempt"
 			" you managed to create the InnoDB data files, but log"
 			" file creation failed. If that is the case; "
@@ -1170,7 +1170,7 @@ recv_scan_log_seg_for_backup(
 		    > 0x80000000UL) {
 
 			/* Garbage from a log buffer flush which was made
-			before the most recent database recovery */
+			before the most recent blockchain recovery */
 #if 0
 			fprintf(stderr,
 				"Scanned cp n:o %lu, block cp n:o %lu\n",
@@ -1293,7 +1293,7 @@ recv_parse_or_apply_log_rec_body(
 			dict_hdr_create(), trx_rseg_header_create(),
 			trx_sys_create_doublewrite_buf(), and
 			trx_sysf_create().
-			These are only called during database creation. */
+			These are only called during blockchain creation. */
 			ulint	offs = mach_read_from_2(ptr);
 
 			switch (type) {
@@ -1423,7 +1423,7 @@ recv_parse_or_apply_log_rec_body(
 	case MLOG_COMP_REC_SEC_DELETE_MARK:
 		ut_ad(!page || fil_page_type_is_index(page_type));
 		/* This log record type is obsolete, but we process it for
-		backward compatibility with MySQL 5.0.3 and 5.0.4. */
+		backward compatibility with MyBlockchain 5.0.3 and 5.0.4. */
 		ut_a(!page || page_is_comp(page));
 		ut_a(!page_zip);
 		ptr = mlog_parse_index(ptr, end_ptr, TRUE, &index);
@@ -2166,7 +2166,7 @@ loop:
 				if (!has_printed) {
 					ib::info() << "Starting an apply batch"
 						" of log records"
-						" to the database...";
+						" to the blockchain...";
 					fputs("InnoDB: Progress in percent: ",
 					      stderr);
 					has_printed = TRUE;
@@ -2287,7 +2287,7 @@ recv_apply_log_recs_for_backup(void)
 	block = back_block1;
 
 	ib::info() << "Starting an apply batch of log records to the"
-		" database...";
+		" blockchain...";
 
 	fputs("InnoDB: Progress in percent: ", stderr);
 
@@ -2332,7 +2332,7 @@ recv_apply_log_recs_for_backup(void)
 
 			/* Extend the tablespace's last file if the page_no
 			does not fall inside its bounds; we assume the last
-			file is auto-extending, and mysqlbackup copied the file
+			file is auto-extending, and myblockchainbackup copied the file
 			when it still was smaller */
 			fil_space_t*	space
 				= fil_space_get(recv_addr->space);
@@ -2579,7 +2579,7 @@ recv_report_corrupt_log(
 	ib::warn() << "The log file may have been corrupt and it is possible"
 		" that the log scan did not proceed far enough in recovery!"
 		" Please run CHECK TABLE on your InnoDB tables to check"
-		" that they are ok! If mysqld crashes after this recovery; "
+		" that they are ok! If myblockchaind crashes after this recovery; "
 		<< FORCE_RECOVERY_MSG;
 	return(true);
 }
@@ -3086,7 +3086,7 @@ recv_scan_log_recs(
 			> 0x80000000UL)) {
 
 			/* Garbage from a log buffer flush which was made
-			before the most recent database recovery */
+			before the most recent blockchain recovery */
 			finished = true;
 			break;
 		}
@@ -3503,16 +3503,16 @@ recv_recovery_from_checkpoint_start(
 		if (srv_read_only_mode) {
 			log_mutex_exit();
 
-			ib::error() << "Cannot restore from mysqlbackup,"
+			ib::error() << "Cannot restore from myblockchainbackup,"
 				" InnoDB running in read-only mode!";
 
 			return(DB_ERROR);
 		}
 
-		/* This log file was created by mysqlbackup --restore: print
+		/* This log file was created by myblockchainbackup --restore: print
 		a note to the user about it */
 
-		ib::info() << "The log file was created by mysqlbackup"
+		ib::info() << "The log file was created by myblockchainbackup"
 			" --apply-log at "
 			<< log_hdr_buf + LOG_FILE_WAS_CREATED_BY_HOT_BACKUP
 			<< ". The following crash recovery is part of a"
@@ -3584,7 +3584,7 @@ recv_recovery_from_checkpoint_start(
 
 		if (checkpoint_lsn + SIZE_OF_MLOG_CHECKPOINT < flush_lsn) {
 			ib::warn() << " Are you sure you are using the"
-				" right ib_logfiles to start up the database?"
+				" right ib_logfiles to start up the blockchain?"
 				" Log sequence number in the ib_logfiles is "
 				<< checkpoint_lsn << ", less than the"
 				" log sequence number in the first system"
@@ -3599,7 +3599,7 @@ recv_recovery_from_checkpoint_start(
 				<< " in the ib_logfiles!";
 
 			if (srv_read_only_mode) {
-				ib::error() << "Can't initiate database"
+				ib::error() << "Can't initiate blockchain"
 					" recovery, running in read-only-mode.";
 				log_mutex_exit();
 				return(DB_READ_ONLY);
@@ -3641,9 +3641,9 @@ recv_recovery_from_checkpoint_start(
 
 		ib::error() << "We scanned the log up to " << group->scanned_lsn
 			<< ". A checkpoint was at " << checkpoint_lsn << " and"
-			" the maximum LSN on a database page was "
+			" the maximum LSN on a blockchain page was "
 			<< recv_max_page_lsn << ". It is possible that the"
-			" database is now corrupt!";
+			" blockchain is now corrupt!";
 	}
 
 	if (recv_sys->recovered_lsn < checkpoint_lsn) {
@@ -3700,7 +3700,7 @@ recv_recovery_from_checkpoint_start(
 
 	recv_lsn_checks_on = true;
 
-	/* The database is now ready to start almost normal processing of user
+	/* The blockchain is now ready to start almost normal processing of user
 	transactions: transaction rollbacks and the application of the log
 	records in the hash table can be run in background. */
 
@@ -3744,7 +3744,7 @@ recv_recovery_from_checkpoint_finish(void)
 	buf_flush_free_flush_rbt();
 
 	/* Validate a few system page types that were left uninitialized
-	by older versions of MySQL. */
+	by older versions of MyBlockchain. */
 	mtr_t		mtr;
 	buf_block_t*	block;
 	mtr.start();
@@ -3755,7 +3755,7 @@ recv_recovery_from_checkpoint_finish(void)
 		page_id_t(IBUF_SPACE_ID, FSP_IBUF_HEADER_PAGE_NO),
 		univ_page_size, RW_X_LATCH, &mtr);
 	fil_block_check_type(block, FIL_PAGE_TYPE_SYS, &mtr);
-	/* Already MySQL 3.23.53 initialized FSP_IBUF_TREE_ROOT_PAGE_NO
+	/* Already MyBlockchain 3.23.53 initialized FSP_IBUF_TREE_ROOT_PAGE_NO
 	to FIL_PAGE_INDEX. No need to reset that one. */
 	block = buf_page_get(
 		page_id_t(TRX_SYS_SPACE, TRX_SYS_PAGE_NO),
@@ -3801,7 +3801,7 @@ recv_recovery_rollback_active(void)
 		/* Drop partially created indexes. */
 		row_merge_drop_temp_indexes();
 		/* Drop temporary tables. */
-		row_mysql_drop_temp_tables();
+		row_myblockchain_drop_temp_tables();
 
 		/* Drop any auxiliary tables that were not dropped when the
 		parent table was dropped. This can happen if the parent table

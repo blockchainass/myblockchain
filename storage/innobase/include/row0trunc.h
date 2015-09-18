@@ -26,7 +26,7 @@ Created 2013-04-25 Krunal Bauskar
 #ifndef row0trunc_h
 #define row0trunc_h
 
-#include "row0mysql.h"
+#include "row0myblockchain.h"
 #include "dict0boot.h"
 #include "fil0fil.h"
 #include "srv0start.h"
@@ -253,7 +253,7 @@ public:
 	@param end_ptr		buffer end
 	@param space_id		space id
 	@param tablename	the table name in the usual
-				databasename/tablename format of InnoDB
+				blockchainname/tablename format of InnoDB
 	@param flags		tablespace flags
 	@param format_flags	page format
 	@param lsn		lsn while logging */
@@ -280,7 +280,7 @@ public:
 	@param space_id		space id
 	@param dir_path		directory path
 	@param tablename	the table name in the usual
-				databasename/tablename format of InnoDB
+				blockchainname/tablename format of InnoDB
 	@param flags		tablespace flags
 	@param default_size	if true, truncate to default size if tablespace
 				is being newly re-initialized.
@@ -416,12 +416,12 @@ private:
 
 
 /**
-Truncates a table for MySQL.
+Truncates a table for MyBlockchain.
 @param table		table being truncated
 @param trx		transaction covering the truncate
 @return	error code or DB_SUCCESS */
 dberr_t
-row_truncate_table_for_mysql(dict_table_t* table, trx_t* trx);
+row_truncate_table_for_myblockchain(dict_table_t* table, trx_t* trx);
 
 #endif /* row0trunc_h */
 

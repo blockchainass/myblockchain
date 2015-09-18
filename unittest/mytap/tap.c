@@ -14,7 +14,7 @@
    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA
 
    Library for providing TAP support for testing C and C++ was written
-   by Mats Kindahl <mats@mysql.com>.
+   by Mats Kindahl <mats@myblockchain.com>.
 */
 
 #include "tap.h"

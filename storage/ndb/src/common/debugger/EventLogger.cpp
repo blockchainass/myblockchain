@@ -49,13 +49,13 @@ void getTextConnected(QQQQ) {
 }
 void getTextConnectedApiVersion(QQQQ) {
   char tmp[100];
-  Uint32 mysql_version = theData[3];
+  Uint32 myblockchain_version = theData[3];
   if (theData[2] < NDBD_SPLIT_VERSION)
-  mysql_version = 0;
+  myblockchain_version = 0;
   BaseString::snprintf(m_text, m_text_len, 
 		       "Node %u: API %s",
 		       theData[1],
-		       ndbGetVersionString(theData[2], mysql_version, 0,
+		       ndbGetVersionString(theData[2], myblockchain_version, 0,
                                            tmp, sizeof(tmp)));
 }
 
@@ -86,12 +86,12 @@ void getTextNDBStartStarted(QQQQ) {
   //-----------------------------------------------------------------------
 
   char tmp[100];
-  Uint32 mysql_version = theData[2];
+  Uint32 myblockchain_version = theData[2];
   if (theData[1] < NDBD_SPLIT_VERSION)
-    mysql_version = 0;
+    myblockchain_version = 0;
   BaseString::snprintf(m_text, m_text_len, 
 		       "Start initiated (%s)", 
-		       ndbGetVersionString(theData[1], mysql_version, 0,
+		       ndbGetVersionString(theData[1], myblockchain_version, 0,
                                            tmp, sizeof(tmp)));
 }
 void getTextNDBStopStarted(QQQQ) {
@@ -161,12 +161,12 @@ void getTextNDBStartCompleted(QQQQ) {
   //-----------------------------------------------------------------------
 
   char tmp[100];
-  Uint32 mysql_version = theData[2];
+  Uint32 myblockchain_version = theData[2];
   if (theData[1] < NDBD_SPLIT_VERSION)
-    mysql_version = 0;
+    myblockchain_version = 0;
   BaseString::snprintf(m_text, m_text_len, 
 		       "Started (%s)", 
-		       ndbGetVersionString(theData[1], mysql_version, 0,
+		       ndbGetVersionString(theData[1], myblockchain_version, 0,
                                            tmp, sizeof(tmp)));
 }
 

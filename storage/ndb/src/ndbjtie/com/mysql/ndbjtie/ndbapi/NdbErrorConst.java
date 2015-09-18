@@ -18,11 +18,11 @@
  * NdbErrorConst.java
  */
 
-package com.mysql.ndbjtie.ndbapi;
+package com.myblockchain.ndbjtie.ndbapi;
 
 import java.nio.ByteBuffer;
 
-import com.mysql.jtie.Wrapper;
+import com.myblockchain.jtie.Wrapper;
 
 public interface /*_struct_*/ NdbErrorConst
 {
@@ -57,6 +57,6 @@ public interface /*_struct_*/ NdbErrorConst
     int/*_Status_*/ status();
     int/*_Classification_*/ classification();
     int code();
-    int mysql_code();
+    int myblockchain_code();
     String/*_const char *_*/ message();
 }

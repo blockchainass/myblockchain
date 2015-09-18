@@ -18,8 +18,8 @@ SET(FEDERATED_PLUGIN_DYNAMIC "ha_federated")
 SET(FEDERATED_SOURCES  ha_federated.cc)
 IF(NOT WITH_FEDERATED AND NOT WITH_FEDERATED_STORAGE_ENGINE)
  # Bug#45488- federated uses symbols that are not used anywhere in
- # mysqld and are optimized away by the linker.
+ # myblockchaind and are optimized away by the linker.
  SET(FEDERATED_SOURCES ${FEDERATED_SOURCES} ${CMAKE_SOURCE_DIR}/mysys/string.c)
 ENDIF()
-MYSQL_ADD_PLUGIN(federated ${FEDERATED_SOURCES} STORAGE_ENGINE
+MYBLOCKCHAIN_ADD_PLUGIN(federated ${FEDERATED_SOURCES} STORAGE_ENGINE
 RECOMPILE_FOR_EMBEDDED)

@@ -82,7 +82,7 @@ extern ulong ft_min_word_len;
 extern ulong ft_max_word_len;
 extern ulong ft_query_expansion_limit;
 extern const char *ft_boolean_syntax;
-extern struct st_mysql_ftparser ft_default_parser;
+extern struct st_myblockchain_ftparser ft_default_parser;
 
 int ft_init_stopwords(void);
 void ft_free_stopwords(void);

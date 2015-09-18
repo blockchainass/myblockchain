@@ -14,7 +14,7 @@
    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA */
 
 /*
-  Creates a index for a database by reading keys, sorting them and outputing
+  Creates a index for a blockchain by reading keys, sorting them and outputing
   them in sorted order through SORT_INFO functions.
 */
 
@@ -488,10 +488,10 @@ ok:
     if (sort_param->read_cache.share)
       remove_io_thread(&sort_param->read_cache);
 
-    mysql_mutex_lock(&sort_param->sort_info->mutex);
+    myblockchain_mutex_lock(&sort_param->sort_info->mutex);
     if (!--sort_param->sort_info->threads_running)
-      mysql_cond_signal(&sort_param->sort_info->cond);
-    mysql_mutex_unlock(&sort_param->sort_info->mutex);
+      myblockchain_cond_signal(&sort_param->sort_info->cond);
+    myblockchain_mutex_unlock(&sort_param->sort_info->mutex);
     DBUG_PRINT("exit", ("======== ending thread ========"));
   }
   my_thread_end();
@@ -831,7 +831,7 @@ static uint read_to_buffer(IO_CACHE *fromfile, BUFFPEK *buffpek,
 
   if ((count=(uint) MY_MIN((ha_rows) buffpek->max_keys,buffpek->count)))
   {
-    if (mysql_file_pread(fromfile->file, (uchar*) buffpek->base,
+    if (myblockchain_file_pread(fromfile->file, (uchar*) buffpek->base,
                          (length= sort_length*count),
                          buffpek->file_pos, MYF_RW))
       return((uint) -1);                        /* purecov: inspected */
@@ -857,11 +857,11 @@ static uint read_to_buffer_varlen(IO_CACHE *fromfile, BUFFPEK *buffpek,
 
     for (idx=1;idx<=count;idx++)
     {
-      if (mysql_file_pread(fromfile->file, (uchar*)&length_of_key,
+      if (myblockchain_file_pread(fromfile->file, (uchar*)&length_of_key,
                            sizeof(length_of_key), buffpek->file_pos, MYF_RW))
         return((uint) -1);
       buffpek->file_pos+=sizeof(length_of_key);
-      if (mysql_file_pread(fromfile->file, (uchar*) buffp,
+      if (myblockchain_file_pread(fromfile->file, (uchar*) buffp,
                            length_of_key, buffpek->file_pos, MYF_RW))
         return((uint) -1);
       buffpek->file_pos+=length_of_key;

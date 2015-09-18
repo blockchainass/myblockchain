@@ -1,0 +1,56 @@
+
+# Can't be tested with embedded server
+--source include/not_embedded.inc
+
+# Save the initial number of concurrent sessions
+--source include/count_sessions.inc
+
+# Bug#8471 IP address with mask fail when skip-name-resolve is on
+SET @orig_sql_mode= @@sql_mode;
+SET sql_mode= (SELECT replace(@@sql_mode,'NO_AUTO_CREATE_USER',''));
+GRANT ALL ON test.* TO myblockchaintest_1@'127.0.0.1/255.255.255.255';
+SET sql_mode= @orig_sql_mode;
+SHOW GRANTS FOR myblockchaintest_1@'127.0.0.1/255.255.255.255';
+REVOKE ALL ON test.* FROM myblockchaintest_1@'127.0.0.1/255.255.255.255';
+DROP USER myblockchaintest_1@'127.0.0.1/255.255.255.255';
+
+# End of 4.1 tests
+
+# Bug#13407 Remote connecting crashes server
+# Server crashed when one used USER() function in connection for which
+# was impossible to obtain peer hostname.
+connect (con1, localhost, root, , test, $MASTER_MYPORT, );
+--replace_column 1 #
+SELECT USER();
+# We are only interested in the fact that statement below doesn't
+# crash server.
+--disable_result_log
+SHOW PROCESSLIST;
+--enable_result_log
+connection default;
+disconnect con1;
+
+# Wait till all disconnects are completed
+--source include/wait_until_count_sessions.inc
+
+--echo #
+--echo # Bug #37168: Missing variable - skip_name_resolve
+--echo #
+
+SHOW VARIABLES LIKE 'skip_name_resolve';
+SHOW GLOBAL VARIABLES LIKE 'skip_name_resolve';
+SHOW SESSION VARIABLES LIKE 'skip_name_resolve';
+
+SELECT @@skip_name_resolve;
+--error ER_INCORRECT_GLOBAL_LOCAL_VAR
+SELECT @@LOCAL.skip_name_resolve;
+SELECT @@GLOBAL.skip_name_resolve;
+
+--error ER_INCORRECT_GLOBAL_LOCAL_VAR
+SET @@skip_name_resolve=0;
+--error ER_INCORRECT_GLOBAL_LOCAL_VAR
+SET @@LOCAL.skip_name_resolve=0;
+--error ER_INCORRECT_GLOBAL_LOCAL_VAR
+SET @@GLOBAL.skip_name_resolve=0;
+
+--echo End of 5.1 tests

@@ -1967,7 +1967,7 @@ insert_bound(Uint32Buffer& keyInfo, const NdbRecord *key_record,
   if (!is_null)
   {
     bool len_ok;
-    /* Support for special mysqld varchar format in keys. */
+    /* Support for special myblockchaind varchar format in keys. */
     if (column->flags & NdbRecord::IsMysqldShrinkVarchar)
     {
       len_ok= column->shrink_varchar(row, len, buf);

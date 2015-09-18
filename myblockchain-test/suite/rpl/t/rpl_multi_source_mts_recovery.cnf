@@ -1,0 +1,9 @@
+!include ../my.cnf
+
+[myblockchaind.1]
+
+[myblockchaind.2]
+master-info-repository=TABLE
+relay-log-info-repository=TABLE
+log-slave-updates
+

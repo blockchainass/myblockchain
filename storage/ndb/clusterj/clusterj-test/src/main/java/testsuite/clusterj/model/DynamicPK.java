@@ -17,7 +17,7 @@
 
 package testsuite.clusterj.model;
 
-import com.mysql.clusterj.DynamicObject;
+import com.myblockchain.clusterj.DynamicObject;
 
 /** Schema
  *

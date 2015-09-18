@@ -1,0 +1,1 @@
+--ndbcluster --replicate-ignore-table=myblockchain.ndb_apply_status

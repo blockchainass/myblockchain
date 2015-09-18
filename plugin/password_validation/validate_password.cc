@@ -15,9 +15,9 @@
 
 #include <my_sys.h>
 #include <string>
-#include <mysql/plugin_validate_password.h>
-#include <mysql/service_my_plugin_log.h>
-#include <mysql/service_mysql_string.h>
+#include <myblockchain/plugin_validate_password.h>
+#include <myblockchain/service_my_plugin_log.h>
+#include <myblockchain/service_myblockchain_string.h>
 #include <set>
 #include <iostream>
 #include <fstream>
@@ -30,7 +30,7 @@
 #define MAX_PASSWORD_LENGTH           100
 
 /* Read-write lock for dictionary_words cache */
-mysql_rwlock_t LOCK_dict_file;
+myblockchain_rwlock_t LOCK_dict_file;
 
 #ifdef HAVE_PSI_INTERFACE
 PSI_rwlock_key key_validate_password_LOCK_dict_file;
@@ -46,7 +46,7 @@ void init_validate_password_psi_keys()
   int count;
 
   count= array_elements(all_validate_password_rwlocks);
-  mysql_rwlock_register(category, all_validate_password_rwlocks, count);
+  myblockchain_rwlock_register(category, all_validate_password_rwlocks, count);
 }
 #endif /* HAVE_PSI_INTERFACE */
 
@@ -56,7 +56,7 @@ void init_validate_password_psi_keys()
   Used with the error reporting functions.
 */
 
-static MYSQL_PLUGIN plugin_info_ptr;
+static MYBLOCKCHAIN_PLUGIN plugin_info_ptr;
 /*  
   These are the 3 password policies that this plugin allow to set
   and configure as per the requirements.
@@ -117,11 +117,11 @@ static void dictionary_activate(set_type *dict_words)
               tm.tm_sec);
   new_ts= my_strdup(PSI_NOT_INSTRUMENTED, timebuf, MYF(0));
 
-  mysql_rwlock_wrlock(&LOCK_dict_file);
+  myblockchain_rwlock_wrlock(&LOCK_dict_file);
   std::swap(dictionary_words, *dict_words);
   validate_password_dictionary_file_words_count= dictionary_words.size();
   std::swap(new_ts, validate_password_dictionary_file_last_parsed);
-  mysql_rwlock_unlock(&LOCK_dict_file);
+  myblockchain_rwlock_unlock(&LOCK_dict_file);
 
   /* frees up the data just replaced */
   if (!dict_words->empty())
@@ -184,7 +184,7 @@ static void read_dictionary_file()
 /* Clear words from std::set */
 static void free_dictionary_file()
 {
-  mysql_rwlock_wrlock(&LOCK_dict_file);
+  myblockchain_rwlock_wrlock(&LOCK_dict_file);
   if (!dictionary_words.empty())
     dictionary_words.clear();
   if (validate_password_dictionary_file_last_parsed)
@@ -192,14 +192,14 @@ static void free_dictionary_file()
     my_free(validate_password_dictionary_file_last_parsed);
     validate_password_dictionary_file_last_parsed= NULL;
   }
-  mysql_rwlock_unlock(&LOCK_dict_file);
+  myblockchain_rwlock_unlock(&LOCK_dict_file);
 }
 
 /*
   Checks whether password or substring of password
   is present in dictionary file stored as std::set
 */
-static int validate_dictionary_check(mysql_string_handle password)
+static int validate_dictionary_check(myblockchain_string_handle password)
 {
   int length;
   int error= 0;
@@ -209,15 +209,15 @@ static int validate_dictionary_check(mysql_string_handle password)
    return (1);
 
   /* New String is allocated */
-  mysql_string_handle lower_string_handle= mysql_string_to_lowercase(password);
+  myblockchain_string_handle lower_string_handle= myblockchain_string_to_lowercase(password);
   if (!(buffer= (char*) malloc(MAX_PASSWORD_LENGTH)))
     return (0);
 
-  length= mysql_string_convert_to_char_ptr(lower_string_handle, "utf8",
+  length= myblockchain_string_convert_to_char_ptr(lower_string_handle, "utf8",
                                            buffer, MAX_PASSWORD_LENGTH,
                                            &error);
   /* Free the allocated string */
-  mysql_string_free(lower_string_handle);
+  myblockchain_string_free(lower_string_handle);
   int substr_pos= 0;
   int substr_length= length;
   string_type password_str= (const char *)buffer;
@@ -227,7 +227,7 @@ static int validate_dictionary_check(mysql_string_handle password)
     std::set as container stores the dictionary words,
     binary comparison between dictionary words and password
   */
-  mysql_rwlock_rdlock(&LOCK_dict_file);
+  myblockchain_rwlock_rdlock(&LOCK_dict_file);
   while (substr_length >= MIN_DICTIONARY_WORD_LENGTH)
   {
     substr_pos= 0;
@@ -237,7 +237,7 @@ static int validate_dictionary_check(mysql_string_handle password)
       itr= dictionary_words.find(password_substr);
       if (itr != dictionary_words.end())
       {
-        mysql_rwlock_unlock(&LOCK_dict_file);
+        myblockchain_rwlock_unlock(&LOCK_dict_file);
         free(buffer);
         return (0);
       }
@@ -245,12 +245,12 @@ static int validate_dictionary_check(mysql_string_handle password)
     }
     substr_length--;
   }
-  mysql_rwlock_unlock(&LOCK_dict_file);
+  myblockchain_rwlock_unlock(&LOCK_dict_file);
   free(buffer);
   return (1);
 }
 
-static int validate_password_policy_strength(mysql_string_handle password,
+static int validate_password_policy_strength(myblockchain_string_handle password,
                                              int policy)
 {
   int has_digit= 0;
@@ -258,26 +258,26 @@ static int validate_password_policy_strength(mysql_string_handle password,
   int has_upper= 0;
   int has_special_chars= 0;
   int n_chars= 0;
-  mysql_string_iterator_handle iter;
+  myblockchain_string_iterator_handle iter;
 
-  iter = mysql_string_get_iterator(password);
-  while(mysql_string_iterator_next(iter))
+  iter = myblockchain_string_get_iterator(password);
+  while(myblockchain_string_iterator_next(iter))
   {
     n_chars++;
     if (policy > PASSWORD_POLICY_LOW)
     {
-      if (mysql_string_iterator_islower(iter))
+      if (myblockchain_string_iterator_islower(iter))
         has_lower++;
-      else if (mysql_string_iterator_isupper(iter))
+      else if (myblockchain_string_iterator_isupper(iter))
         has_upper++;
-      else if (mysql_string_iterator_isdigit(iter))
+      else if (myblockchain_string_iterator_isdigit(iter))
         has_digit++;
       else
         has_special_chars++;
     }
   }
 
-  mysql_string_iterator_free(iter);
+  myblockchain_string_iterator_free(iter);
   if (n_chars >= validate_password_length)
   {
     if (policy == PASSWORD_POLICY_LOW)
@@ -296,23 +296,23 @@ static int validate_password_policy_strength(mysql_string_handle password,
 }
 
 /* Actual plugin function which acts as a wrapper */
-static int validate_password(mysql_string_handle password)
+static int validate_password(myblockchain_string_handle password)
 {
   return validate_password_policy_strength(password, validate_password_policy);
 }
 
 /* Password strength between (0-100) */
-static int get_password_strength(mysql_string_handle password)
+static int get_password_strength(myblockchain_string_handle password)
 {
   int policy= 0;
   int n_chars= 0;
-  mysql_string_iterator_handle iter;
+  myblockchain_string_iterator_handle iter;
 
-  iter = mysql_string_get_iterator(password);
-  while(mysql_string_iterator_next(iter))
+  iter = myblockchain_string_get_iterator(password);
+  while(myblockchain_string_iterator_next(iter))
     n_chars++;
   
-  mysql_string_iterator_free(iter);
+  myblockchain_string_iterator_free(iter);
   if (n_chars < MIN_DICTIONARY_WORD_LENGTH)
     return (policy);
   if (n_chars < validate_password_length)
@@ -374,9 +374,9 @@ readjust_validate_password_length()
 }
 
 /* Plugin type-specific descriptor */
-static struct st_mysql_validate_password validate_password_descriptor=
+static struct st_myblockchain_validate_password validate_password_descriptor=
 {
-  MYSQL_VALIDATE_PASSWORD_INTERFACE_VERSION,
+  MYBLOCKCHAIN_VALIDATE_PASSWORD_INTERFACE_VERSION,
   validate_password,                         /* validate function          */
   get_password_strength                      /* validate strength function */
 };
@@ -386,13 +386,13 @@ static struct st_mysql_validate_password validate_password_descriptor=
   read dictionary file into std::set.
 */
 
-static int validate_password_init(MYSQL_PLUGIN plugin_info)
+static int validate_password_init(MYBLOCKCHAIN_PLUGIN plugin_info)
 {
   plugin_info_ptr= plugin_info;
 #ifdef HAVE_PSI_INTERFACE
   init_validate_password_psi_keys();
 #endif
-  mysql_rwlock_init(key_validate_password_LOCK_dict_file, &LOCK_dict_file);
+  myblockchain_rwlock_init(key_validate_password_LOCK_dict_file, &LOCK_dict_file);
   read_dictionary_file();
   /* Check if validate_password_length needs readjustment */
   readjust_validate_password_length();
@@ -407,7 +407,7 @@ static int validate_password_init(MYSQL_PLUGIN plugin_info)
 static int validate_password_deinit(void *arg __attribute__((unused)))
 {
   free_dictionary_file();
-  mysql_rwlock_destroy(&LOCK_dict_file);
+  myblockchain_rwlock_destroy(&LOCK_dict_file);
   return (0);
 }
 
@@ -417,8 +417,8 @@ static int validate_password_deinit(void *arg __attribute__((unused)))
   the cache and re-load the new dictionary file.
 */
 static void
-dictionary_update(MYSQL_THD thd __attribute__((unused)),
-                  struct st_mysql_sys_var *var __attribute__((unused)),
+dictionary_update(MYBLOCKCHAIN_THD thd __attribute__((unused)),
+                  struct st_myblockchain_sys_var *var __attribute__((unused)),
                   void *var_ptr, const void *save)
 {
   *(const char**)var_ptr= *(const char**)save;
@@ -433,8 +433,8 @@ dictionary_update(MYSQL_THD thd __attribute__((unused)),
   4. validate_password_special_char_count
 */
 static void
-length_update(MYSQL_THD thd __attribute__((unused)),
-              struct st_mysql_sys_var *var __attribute__((unused)),
+length_update(MYBLOCKCHAIN_THD thd __attribute__((unused)),
+              struct st_myblockchain_sys_var *var __attribute__((unused)),
               void *var_ptr, const void *save)
 {
   /* check if there is an actual change */
@@ -457,48 +457,48 @@ length_update(MYSQL_THD thd __attribute__((unused)),
 
 /* Plugin system variables */
 
-static MYSQL_SYSVAR_INT(length, validate_password_length,
+static MYBLOCKCHAIN_SYSVAR_INT(length, validate_password_length,
   PLUGIN_VAR_RQCMDARG,
   "Password validate length to check for minimum password_length",
   NULL, length_update, 8, 0, 0, 0);
 
-static MYSQL_SYSVAR_INT(number_count, validate_password_number_count,
+static MYBLOCKCHAIN_SYSVAR_INT(number_count, validate_password_number_count,
   PLUGIN_VAR_RQCMDARG,
   "password validate digit to ensure minimum numeric character in password",
   NULL, length_update, 1, 0, 0, 0);
 
-static MYSQL_SYSVAR_INT(mixed_case_count, validate_password_mixed_case_count,
+static MYBLOCKCHAIN_SYSVAR_INT(mixed_case_count, validate_password_mixed_case_count,
   PLUGIN_VAR_RQCMDARG,
   "Password validate mixed case to ensure minimum upper/lower case in password",
   NULL, length_update, 1, 0, 0, 0);
 
-static MYSQL_SYSVAR_INT(special_char_count,
+static MYBLOCKCHAIN_SYSVAR_INT(special_char_count,
   validate_password_special_char_count, PLUGIN_VAR_RQCMDARG,
   "password validate special to ensure minimum special character in password",
   NULL, length_update, 1, 0, 0, 0);
 
-static MYSQL_SYSVAR_ENUM(policy, validate_password_policy,
+static MYBLOCKCHAIN_SYSVAR_ENUM(policy, validate_password_policy,
   PLUGIN_VAR_RQCMDARG,
   "password_validate_policy choosen policy to validate password"
   "possible values are LOW MEDIUM (default), STRONG",
   NULL, NULL, PASSWORD_POLICY_MEDIUM, &password_policy_typelib_t);
 
-static MYSQL_SYSVAR_STR(dictionary_file, validate_password_dictionary_file,
+static MYBLOCKCHAIN_SYSVAR_STR(dictionary_file, validate_password_dictionary_file,
   PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_MEMALLOC,
   "password_validate_dictionary file to be loaded and check for password",
   NULL, dictionary_update, NULL);
 
-static struct st_mysql_sys_var* validate_password_system_variables[]= {
-  MYSQL_SYSVAR(length),
-  MYSQL_SYSVAR(number_count),
-  MYSQL_SYSVAR(mixed_case_count),
-  MYSQL_SYSVAR(special_char_count),
-  MYSQL_SYSVAR(policy),
-  MYSQL_SYSVAR(dictionary_file),
+static struct st_myblockchain_sys_var* validate_password_system_variables[]= {
+  MYBLOCKCHAIN_SYSVAR(length),
+  MYBLOCKCHAIN_SYSVAR(number_count),
+  MYBLOCKCHAIN_SYSVAR(mixed_case_count),
+  MYBLOCKCHAIN_SYSVAR(special_char_count),
+  MYBLOCKCHAIN_SYSVAR(policy),
+  MYBLOCKCHAIN_SYSVAR(dictionary_file),
   NULL
 };
 
-static struct st_mysql_show_var validate_password_status_variables[]= {
+static struct st_myblockchain_show_var validate_password_status_variables[]= {
     { "validate_password_dictionary_file_last_parsed",
       (char *) &validate_password_dictionary_file_last_parsed,
       SHOW_CHAR_PTR, SHOW_SCOPE_GLOBAL },
@@ -508,9 +508,9 @@ static struct st_mysql_show_var validate_password_status_variables[]= {
     { NullS, NullS, SHOW_LONG, SHOW_SCOPE_GLOBAL }
 };
 
-mysql_declare_plugin(validate_password)
+myblockchain_declare_plugin(validate_password)
 {
-  MYSQL_VALIDATE_PASSWORD_PLUGIN,     /*   type                            */
+  MYBLOCKCHAIN_VALIDATE_PASSWORD_PLUGIN,     /*   type                            */
   &validate_password_descriptor,      /*   descriptor                      */
   "validate_password",                /*   name                            */
   "Oracle Corporation",               /*   author                          */
@@ -524,4 +524,4 @@ mysql_declare_plugin(validate_password)
   NULL,
   0,
 }
-mysql_declare_plugin_end;
+myblockchain_declare_plugin_end;

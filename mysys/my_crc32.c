@@ -1,4 +1,4 @@
-/* Copyright (c) 2003, 2004 MySQL AB
+/* Copyright (c) 2003, 2004 MyBlockchain AB
    Use is subject to license terms
 
    This program is free software; you can redistribute it and/or modify

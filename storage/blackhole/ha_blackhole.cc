@@ -14,8 +14,8 @@
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA */
 
 
-#define MYSQL_SERVER 1
-#include "probes_mysql.h"
+#define MYBLOCKCHAIN_SERVER 1
+#include "probes_myblockchain.h"
 #include "ha_blackhole.h"
 #include "sql_class.h"                          // THD, SYSTEM_THREAD_SLAVE_*
 
@@ -39,7 +39,7 @@ static handler *blackhole_create_handler(handlerton *hton,
 
 /* Static declarations for shared structures */
 
-static mysql_mutex_t blackhole_mutex;
+static myblockchain_mutex_t blackhole_mutex;
 static HASH blackhole_open_tables;
 
 static st_blackhole_share *get_share(const char *table_name);
@@ -145,14 +145,14 @@ int ha_blackhole::rnd_next(uchar *buf)
 {
   int rc;
   DBUG_ENTER("ha_blackhole::rnd_next");
-  MYSQL_READ_ROW_START(table_share->db.str, table_share->table_name.str,
+  MYBLOCKCHAIN_READ_ROW_START(table_share->db.str, table_share->table_name.str,
                        TRUE);
   THD *thd= ha_thd();
   if (is_slave_applier(thd) && thd->query().str == NULL)
     rc= 0;
   else
     rc= HA_ERR_END_OF_FILE;
-  MYSQL_READ_ROW_DONE(rc);
+  MYBLOCKCHAIN_READ_ROW_DONE(rc);
   table->status= rc ? STATUS_NOT_FOUND : 0;
   DBUG_RETURN(rc);
 }
@@ -161,10 +161,10 @@ int ha_blackhole::rnd_next(uchar *buf)
 int ha_blackhole::rnd_pos(uchar * buf, uchar *pos)
 {
   DBUG_ENTER("ha_blackhole::rnd_pos");
-  MYSQL_READ_ROW_START(table_share->db.str, table_share->table_name.str,
+  MYBLOCKCHAIN_READ_ROW_START(table_share->db.str, table_share->table_name.str,
                        FALSE);
   DBUG_ASSERT(0);
-  MYSQL_READ_ROW_DONE(0);
+  MYBLOCKCHAIN_READ_ROW_DONE(0);
   DBUG_RETURN(0);
 }
 
@@ -215,7 +215,7 @@ THR_LOCK_DATA **ha_blackhole::store_lock(THD *thd,
 
     /*
       In queries of type INSERT INTO t1 SELECT ... FROM t2 ...
-      MySQL would use the lock TL_READ_NO_INSERT on t2, and that
+      MyBlockchain would use the lock TL_READ_NO_INSERT on t2, and that
       would conflict with TL_WRITE_ALLOW_WRITE, blocking all inserts
       to t2. Convert the lock to a normal read lock to allow
       concurrent inserts to t2.
@@ -237,13 +237,13 @@ int ha_blackhole::index_read_map(uchar * buf, const uchar * key,
 {
   int rc;
   DBUG_ENTER("ha_blackhole::index_read");
-  MYSQL_INDEX_READ_ROW_START(table_share->db.str, table_share->table_name.str);
+  MYBLOCKCHAIN_INDEX_READ_ROW_START(table_share->db.str, table_share->table_name.str);
   THD *thd= ha_thd();
   if (is_slave_applier(thd) && thd->query().str == NULL)
     rc= 0;
   else
     rc= HA_ERR_END_OF_FILE;
-  MYSQL_INDEX_READ_ROW_DONE(rc);
+  MYBLOCKCHAIN_INDEX_READ_ROW_DONE(rc);
   table->status= rc ? STATUS_NOT_FOUND : 0;
   DBUG_RETURN(rc);
 }
@@ -255,13 +255,13 @@ int ha_blackhole::index_read_idx_map(uchar * buf, uint idx, const uchar * key,
 {
   int rc;
   DBUG_ENTER("ha_blackhole::index_read_idx");
-  MYSQL_INDEX_READ_ROW_START(table_share->db.str, table_share->table_name.str);
+  MYBLOCKCHAIN_INDEX_READ_ROW_START(table_share->db.str, table_share->table_name.str);
   THD *thd= ha_thd();
   if (is_slave_applier(thd) && thd->query().str == NULL)
     rc= 0;
   else
     rc= HA_ERR_END_OF_FILE;
-  MYSQL_INDEX_READ_ROW_DONE(rc);
+  MYBLOCKCHAIN_INDEX_READ_ROW_DONE(rc);
   table->status= rc ? STATUS_NOT_FOUND : 0;
   DBUG_RETURN(rc);
 }
@@ -272,13 +272,13 @@ int ha_blackhole::index_read_last_map(uchar * buf, const uchar * key,
 {
   int rc;
   DBUG_ENTER("ha_blackhole::index_read_last");
-  MYSQL_INDEX_READ_ROW_START(table_share->db.str, table_share->table_name.str);
+  MYBLOCKCHAIN_INDEX_READ_ROW_START(table_share->db.str, table_share->table_name.str);
   THD *thd= ha_thd();
   if (is_slave_applier(thd) && thd->query().str == NULL)
     rc= 0;
   else
     rc= HA_ERR_END_OF_FILE;
-  MYSQL_INDEX_READ_ROW_DONE(rc);
+  MYBLOCKCHAIN_INDEX_READ_ROW_DONE(rc);
   table->status= rc ? STATUS_NOT_FOUND : 0;
   DBUG_RETURN(rc);
 }
@@ -288,9 +288,9 @@ int ha_blackhole::index_next(uchar * buf)
 {
   int rc;
   DBUG_ENTER("ha_blackhole::index_next");
-  MYSQL_INDEX_READ_ROW_START(table_share->db.str, table_share->table_name.str);
+  MYBLOCKCHAIN_INDEX_READ_ROW_START(table_share->db.str, table_share->table_name.str);
   rc= HA_ERR_END_OF_FILE;
-  MYSQL_INDEX_READ_ROW_DONE(rc);
+  MYBLOCKCHAIN_INDEX_READ_ROW_DONE(rc);
   table->status= STATUS_NOT_FOUND;
   DBUG_RETURN(rc);
 }
@@ -300,9 +300,9 @@ int ha_blackhole::index_prev(uchar * buf)
 {
   int rc;
   DBUG_ENTER("ha_blackhole::index_prev");
-  MYSQL_INDEX_READ_ROW_START(table_share->db.str, table_share->table_name.str);
+  MYBLOCKCHAIN_INDEX_READ_ROW_START(table_share->db.str, table_share->table_name.str);
   rc= HA_ERR_END_OF_FILE;
-  MYSQL_INDEX_READ_ROW_DONE(rc);
+  MYBLOCKCHAIN_INDEX_READ_ROW_DONE(rc);
   table->status= STATUS_NOT_FOUND;
   DBUG_RETURN(rc);
 }
@@ -312,9 +312,9 @@ int ha_blackhole::index_first(uchar * buf)
 {
   int rc;
   DBUG_ENTER("ha_blackhole::index_first");
-  MYSQL_INDEX_READ_ROW_START(table_share->db.str, table_share->table_name.str);
+  MYBLOCKCHAIN_INDEX_READ_ROW_START(table_share->db.str, table_share->table_name.str);
   rc= HA_ERR_END_OF_FILE;
-  MYSQL_INDEX_READ_ROW_DONE(rc);
+  MYBLOCKCHAIN_INDEX_READ_ROW_DONE(rc);
   table->status= STATUS_NOT_FOUND;
   DBUG_RETURN(rc);
 }
@@ -324,9 +324,9 @@ int ha_blackhole::index_last(uchar * buf)
 {
   int rc;
   DBUG_ENTER("ha_blackhole::index_last");
-  MYSQL_INDEX_READ_ROW_START(table_share->db.str, table_share->table_name.str);
+  MYBLOCKCHAIN_INDEX_READ_ROW_START(table_share->db.str, table_share->table_name.str);
   rc= HA_ERR_END_OF_FILE;
-  MYSQL_INDEX_READ_ROW_DONE(rc);
+  MYBLOCKCHAIN_INDEX_READ_ROW_DONE(rc);
   table->status= STATUS_NOT_FOUND;
   DBUG_RETURN(rc);
 }
@@ -338,7 +338,7 @@ static st_blackhole_share *get_share(const char *table_name)
   uint length;
 
   length= (uint) strlen(table_name);
-  mysql_mutex_lock(&blackhole_mutex);
+  myblockchain_mutex_lock(&blackhole_mutex);
     
   if (!(share= (st_blackhole_share*)
         my_hash_search(&blackhole_open_tables,
@@ -365,16 +365,16 @@ static st_blackhole_share *get_share(const char *table_name)
   share->use_count++;
   
 error:
-  mysql_mutex_unlock(&blackhole_mutex);
+  myblockchain_mutex_unlock(&blackhole_mutex);
   return share;
 }
 
 static void free_share(st_blackhole_share *share)
 {
-  mysql_mutex_lock(&blackhole_mutex);
+  myblockchain_mutex_lock(&blackhole_mutex);
   if (!--share->use_count)
     my_hash_delete(&blackhole_open_tables, (uchar*) share);
-  mysql_mutex_unlock(&blackhole_mutex);
+  myblockchain_mutex_unlock(&blackhole_mutex);
 }
 
 static void blackhole_free_key(st_blackhole_share *share)
@@ -409,10 +409,10 @@ void init_blackhole_psi_keys()
   int count;
 
   count= array_elements(all_blackhole_mutexes);
-  mysql_mutex_register(category, all_blackhole_mutexes, count);
+  myblockchain_mutex_register(category, all_blackhole_mutexes, count);
 
   count= array_elements(all_blackhole_memory);
-  mysql_memory_register(category, all_blackhole_memory, count);
+  myblockchain_memory_register(category, all_blackhole_memory, count);
 }
 #endif
 
@@ -430,7 +430,7 @@ static int blackhole_init(void *p)
   blackhole_hton->create= blackhole_create_handler;
   blackhole_hton->flags= HTON_CAN_RECREATE;
 
-  mysql_mutex_init(bh_key_mutex_blackhole,
+  myblockchain_mutex_init(bh_key_mutex_blackhole,
                    &blackhole_mutex, MY_MUTEX_INIT_FAST);
   (void) my_hash_init(&blackhole_open_tables, system_charset_info,32,0,0,
                       (my_hash_get_key) blackhole_get_key,
@@ -443,20 +443,20 @@ static int blackhole_init(void *p)
 static int blackhole_fini(void *p)
 {
   my_hash_free(&blackhole_open_tables);
-  mysql_mutex_destroy(&blackhole_mutex);
+  myblockchain_mutex_destroy(&blackhole_mutex);
 
   return 0;
 }
 
-struct st_mysql_storage_engine blackhole_storage_engine=
-{ MYSQL_HANDLERTON_INTERFACE_VERSION };
+struct st_myblockchain_storage_engine blackhole_storage_engine=
+{ MYBLOCKCHAIN_HANDLERTON_INTERFACE_VERSION };
 
-mysql_declare_plugin(blackhole)
+myblockchain_declare_plugin(blackhole)
 {
-  MYSQL_STORAGE_ENGINE_PLUGIN,
+  MYBLOCKCHAIN_STORAGE_ENGINE_PLUGIN,
   &blackhole_storage_engine,
   "BLACKHOLE",
-  "MySQL AB",
+  "MyBlockchain AB",
   "/dev/null storage engine (anything you write to it disappears)",
   PLUGIN_LICENSE_GPL,
   blackhole_init, /* Plugin Init */
@@ -467,4 +467,4 @@ mysql_declare_plugin(blackhole)
   NULL,                       /* config options                  */
   0,                          /* flags                           */
 }
-mysql_declare_plugin_end;
+myblockchain_declare_plugin_end;

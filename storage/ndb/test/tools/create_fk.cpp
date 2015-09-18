@@ -38,8 +38,8 @@ main(int argc, const char** argv){
   const char* on_delete_action = "noaction";
 
   struct getargs args[] = {
-    { "database", 'd', arg_string, &_dbname, "dbname",
-      "Name of database table is in"},
+    { "blockchain", 'd', arg_string, &_dbname, "dbname",
+      "Name of blockchain table is in"},
     { "parent", 'p', arg_string, &_parent, "Parent table", "" },
     { "parent-index", 'i', arg_string, &_parenti, "Parent index", "" },
     { "child", 'c', arg_string, &_child, "Child table", "" },

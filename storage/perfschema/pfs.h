@@ -25,7 +25,7 @@
 
 #include <my_global.h>
 #include <my_thread_local.h>
-#include <mysql/psi/psi.h>
+#include <myblockchain/psi/psi.h>
 
 /**
   Entry point to the performance schema implementation.

@@ -18,7 +18,7 @@
 
 package testsuite.clusterj;
 
-import com.mysql.clusterj.query.Predicate;
+import com.myblockchain.clusterj.query.Predicate;
 
 import testsuite.clusterj.model.AllPrimitives;
 

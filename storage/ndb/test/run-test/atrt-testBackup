@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Copyright (C) 2004, 2005 MySQL AB
+# Copyright (C) 2004, 2005 MyBlockchain AB
 # Use is subject to license terms
 #
 # This program is free software; you can redistribute it and/or modify
@@ -16,7 +16,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 
-PATH=$PATH:$MYSQL_BASE_DIR/bin
+PATH=$PATH:$MYBLOCKCHAIN_BASE_DIR/bin
 export PATH
 
 testBackup $*

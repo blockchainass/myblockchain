@@ -1,0 +1,1 @@
+--secure-file-priv=$MYBLOCKCHAIN_TEST_DIR --innodb

@@ -15,10 +15,10 @@
    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-package com.mysql.clusterj.openjpa;
+package com.myblockchain.clusterj.openjpa;
 
-import com.mysql.clusterj.SessionFactory;
-import com.mysql.clusterj.core.store.Dictionary;
+import com.myblockchain.clusterj.SessionFactory;
+import com.myblockchain.clusterj.core.store.Dictionary;
 
 import org.apache.openjpa.jdbc.conf.JDBCConfiguration;
 import org.apache.openjpa.jdbc.meta.ClassMapping;
@@ -43,16 +43,16 @@ public interface NdbOpenJPAConfiguration
      */
     public static final String LOG_NDB_JDBC = "openjpa.ndb.JDBC";
 
-//com.mysql.clusterj.connectstring=localhost:9311
-//com.mysql.clusterj.connect.retries=4
-//com.mysql.clusterj.connect.delay=5
-//com.mysql.clusterj.connect.verbose=1
-//com.mysql.clusterj.connect.timeout.before=30
-//com.mysql.clusterj.connect.timeout.after=20
-//com.mysql.clusterj.username=
-//com.mysql.clusterj.password=
-//com.mysql.clusterj.database=test
-//com.mysql.clusterj.max.transactions=1024
+//com.myblockchain.clusterj.connectstring=localhost:9311
+//com.myblockchain.clusterj.connect.retries=4
+//com.myblockchain.clusterj.connect.delay=5
+//com.myblockchain.clusterj.connect.verbose=1
+//com.myblockchain.clusterj.connect.timeout.before=30
+//com.myblockchain.clusterj.connect.timeout.after=20
+//com.myblockchain.clusterj.username=
+//com.myblockchain.clusterj.password=
+//com.myblockchain.clusterj.blockchain=test
+//com.myblockchain.clusterj.max.transactions=1024
 
     public String getConnectString();
     public void setConnectString(String value);

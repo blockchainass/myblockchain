@@ -15,7 +15,7 @@
    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
  */
 
-package com.mysql.clusterj.tie;
+package com.myblockchain.clusterj.tie;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -25,21 +25,21 @@ import java.nio.ByteOrder;
 
 import java.util.List;
 
-import com.mysql.clusterj.ClusterJFatalInternalException;
+import com.myblockchain.clusterj.ClusterJFatalInternalException;
 
-import com.mysql.clusterj.core.store.Blob;
-import com.mysql.clusterj.core.store.Column;
-import com.mysql.clusterj.core.store.ResultData;
+import com.myblockchain.clusterj.core.store.Blob;
+import com.myblockchain.clusterj.core.store.Column;
+import com.myblockchain.clusterj.core.store.ResultData;
 
-import com.mysql.clusterj.core.util.I18NHelper;
-import com.mysql.clusterj.core.util.Logger;
-import com.mysql.clusterj.core.util.LoggerFactoryService;
-import com.mysql.clusterj.tie.DbImpl.BufferManager;
+import com.myblockchain.clusterj.core.util.I18NHelper;
+import com.myblockchain.clusterj.core.util.Logger;
+import com.myblockchain.clusterj.core.util.LoggerFactoryService;
+import com.myblockchain.clusterj.tie.DbImpl.BufferManager;
 
-import com.mysql.ndbjtie.ndbapi.NdbBlob;
-import com.mysql.ndbjtie.ndbapi.NdbErrorConst;
-import com.mysql.ndbjtie.ndbapi.NdbOperation;
-import com.mysql.ndbjtie.ndbapi.NdbRecAttr;
+import com.myblockchain.ndbjtie.ndbapi.NdbBlob;
+import com.myblockchain.ndbjtie.ndbapi.NdbErrorConst;
+import com.myblockchain.ndbjtie.ndbapi.NdbOperation;
+import com.myblockchain.ndbjtie.ndbapi.NdbRecAttr;
 
 /**
  *

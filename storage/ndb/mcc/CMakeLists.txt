@@ -14,13 +14,13 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 
 # Check if we are running cmake standalone, or as part of Cluster
-if(NOT DEFAULT_MYSQL_HOME)
+if(NOT DEFAULT_MYBLOCKCHAIN_HOME)
   PROJECT(mcc)
   cmake_minimum_required(VERSION 2.6)
   enable_testing()
 endif()
 
-option(WITH_MCC "Include MySQL Cluster Configurator" ON)
+option(WITH_MCC "Include MyBlockchain Cluster Configurator" ON)
 
 if(NOT WITH_MCC)
   message(STATUS "Skipping mcc")
@@ -61,14 +61,14 @@ if(NOT WIN32)
 endif(NOT WIN32)
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/mcc_config.py.in" "${CMAKE_CURRENT_BINARY_DIR}/mcc_config.py")
 
-if(NOT DEFAULT_MYSQL_HOME)
-  # Don't have the MYSQL variables in this case
+if(NOT DEFAULT_MYBLOCKCHAIN_HOME)
+  # Don't have the MYBLOCKCHAIN variables in this case
   set(MCC_INSTALL_BINDIR "bin")
   set(MCC_INSTALL_SUBDIR "share/mcc")
-else(NOT DEFAULT_MYSQL_HOME)
+else(NOT DEFAULT_MYBLOCKCHAIN_HOME)
   set(MCC_INSTALL_BINDIR "${INSTALL_BINDIR}")
-  set(MCC_INSTALL_SUBDIR "${INSTALL_MYSQLSHAREDIR}/mcc")
-endif(NOT DEFAULT_MYSQL_HOME)
+  set(MCC_INSTALL_SUBDIR "${INSTALL_MYBLOCKCHAINSHAREDIR}/mcc")
+endif(NOT DEFAULT_MYBLOCKCHAIN_HOME)
 set(MCC_INSTALL_FRONTENDDIR "${MCC_INSTALL_SUBDIR}/frontend")
 
 add_subdirectory("host_info")
@@ -170,7 +170,7 @@ add_dependencies(run_mcc install_mcc)
 add_custom_target(run_mcc_in_source python "${MCC_SCRIPT_BASE}_in_source.py" -d DEBUG -o mcc_in_source_log.txt VERBATIM)
 add_custom_target(punit python "${CMAKE_CURRENT_SOURCE_DIR}/tst/tst_main.py" VERBATIM)
 
-if(NOT DEFAULT_MYSQL_HOME)
+if(NOT DEFAULT_MYBLOCKCHAIN_HOME)
   if(WIN32)
     SETIFUNDEF_(MCC_CPACK_CMAKE_GENERATOR "Visual Studio 9 2008")
     set(CPACK_CMAKE_GENERATOR "${MCC_CPACK_CMAKE_GENERATOR}")
@@ -183,4 +183,4 @@ if(NOT DEFAULT_MYSQL_HOME)
   set(CPACK_GENERATOR "${MCC_CPACK_GENERATOR}")
 
 include(CPack)
-endif(NOT DEFAULT_MYSQL_HOME)
+endif(NOT DEFAULT_MYBLOCKCHAIN_HOME)

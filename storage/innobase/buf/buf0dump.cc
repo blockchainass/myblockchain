@@ -26,8 +26,8 @@ Created April 08, 2011 Vasil Dimov
 #include "my_global.h"
 #include "my_thread.h"
 
-#include "mysql/psi/mysql_stage.h"
-#include "mysql/psi/psi.h"
+#include "myblockchain/psi/myblockchain_stage.h"
+#include "myblockchain/psi/psi.h"
 
 #include "univ.i"
 
@@ -71,8 +71,8 @@ typedef ib_uint64_t	buf_dump_t;
 
 /*****************************************************************//**
 Wakes up the buffer pool dump/load thread and instructs it to start
-a dump. This function is called by MySQL code via buffer_pool_dump_now()
-and it should return immediately because the whole MySQL is frozen during
+a dump. This function is called by MyBlockchain code via buffer_pool_dump_now()
+and it should return immediately because the whole MyBlockchain is frozen during
 its execution. */
 void
 buf_dump_start()
@@ -84,8 +84,8 @@ buf_dump_start()
 
 /*****************************************************************//**
 Wakes up the buffer pool dump/load thread and instructs it to start
-a load. This function is called by MySQL code via buffer_pool_load_now()
-and it should return immediately because the whole MySQL is frozen during
+a load. This function is called by MyBlockchain code via buffer_pool_load_now()
+and it should return immediately because the whole MyBlockchain is frozen during
 its execution. */
 void
 buf_load_start()
@@ -96,7 +96,7 @@ buf_load_start()
 }
 
 /*****************************************************************//**
-Sets the global variable that feeds MySQL's innodb_buffer_pool_dump_status
+Sets the global variable that feeds MyBlockchain's innodb_buffer_pool_dump_status
 to the specified string. The format and the following parameters are the
 same as the ones used for printf(3). The value of this variable can be
 retrieved by:
@@ -139,7 +139,7 @@ buf_dump_status(
 }
 
 /*****************************************************************//**
-Sets the global variable that feeds MySQL's innodb_buffer_pool_load_status
+Sets the global variable that feeds MyBlockchain's innodb_buffer_pool_load_status
 to the specified string. The format and the following parameters are the
 same as the ones used for printf(3). The value of this variable can be
 retrieved by:
@@ -569,11 +569,11 @@ buf_load()
 
 #ifdef HAVE_PSI_STAGE_INTERFACE
 	PSI_stage_progress*	pfs_stage_progress
-		= mysql_set_stage(srv_stage_buffer_pool_load.m_key);
+		= myblockchain_set_stage(srv_stage_buffer_pool_load.m_key);
 #endif /* HAVE_PSI_STAGE_INTERFACE */
 
-	mysql_stage_set_work_estimated(pfs_stage_progress, dump_n);
-	mysql_stage_set_work_completed(pfs_stage_progress, 0);
+	myblockchain_stage_set_work_estimated(pfs_stage_progress, dump_n);
+	myblockchain_stage_set_work_completed(pfs_stage_progress, 0);
 
 	for (i = 0; i < dump_n && !SHUTTING_DOWN(); i++) {
 
@@ -618,7 +618,7 @@ buf_load()
 			buf_load_status(STATUS_VERBOSE,
 					"Loaded " ULINTPF "/" ULINTPF " pages",
 					i + 1, dump_n);
-			mysql_stage_set_work_completed(pfs_stage_progress, i);
+			myblockchain_stage_set_work_completed(pfs_stage_progress, i);
 		}
 
 		if (buf_load_abort_flag) {
@@ -632,10 +632,10 @@ buf_load()
 				"Buffer pool(s) load aborted on request");
 			/* Premature end, set estimated = completed = i and
 			end the current stage event. */
-			mysql_stage_set_work_estimated(pfs_stage_progress, i);
-			mysql_stage_set_work_completed(pfs_stage_progress, i);
+			myblockchain_stage_set_work_estimated(pfs_stage_progress, i);
+			myblockchain_stage_set_work_completed(pfs_stage_progress, i);
 #ifdef HAVE_PSI_STAGE_INTERFACE
-			mysql_end_stage();
+			myblockchain_end_stage();
 #endif /* HAVE_PSI_STAGE_INTERFACE */
 			return;
 		}
@@ -656,17 +656,17 @@ buf_load()
 			"Buffer pool(s) load completed at %s", now);
 
 	/* Make sure that estimated = completed when we end. */
-	mysql_stage_set_work_completed(pfs_stage_progress, dump_n);
+	myblockchain_stage_set_work_completed(pfs_stage_progress, dump_n);
 	/* End the stage progress event. */
 #ifdef HAVE_PSI_STAGE_INTERFACE
-	mysql_end_stage();
+	myblockchain_end_stage();
 #endif /* HAVE_PSI_STAGE_INTERFACE */
 }
 
 /*****************************************************************//**
 Aborts a currently running buffer pool load. This function is called by
-MySQL code via buffer_pool_load_abort() and it should return immediately
-because the whole MySQL is frozen during its execution. */
+MyBlockchain code via buffer_pool_load_abort() and it should return immediately
+because the whole MyBlockchain is frozen during its execution. */
 void
 buf_load_abort()
 /*============*/

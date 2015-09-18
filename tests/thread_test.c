@@ -17,7 +17,7 @@
 
 #include <my_sys.h>
 #include <my_thread.h>
-#include "mysql.h"
+#include "myblockchain.h"
 #include <my_getopt.h>
 
 static my_bool version, verbose, tty_password= 0;
@@ -25,7 +25,7 @@ static uint thread_count,number_of_tests=1000,number_of_threads=2;
 static pthread_cond_t COND_thread_count;
 static pthread_mutex_t LOCK_thread_count;
 
-static char *database,*host,*user,*password,*unix_socket,*query;
+static char *blockchain,*host,*user,*password,*unix_socket,*query;
 uint tcp_port;
 
 #ifndef _WIN32
@@ -34,38 +34,38 @@ void *test_thread(void *arg __attribute__((unused)))
 unsigned __stdcall test_thread(void *arg __attribute__((unused)))
 #endif
 {
-  MYSQL *mysql;
+  MYBLOCKCHAIN *myblockchain;
   uint count;
 
-  mysql=mysql_init(NULL);
-  if (!mysql_real_connect(mysql,host,user,password,database,tcp_port,
+  myblockchain=myblockchain_init(NULL);
+  if (!myblockchain_real_connect(myblockchain,host,user,password,blockchain,tcp_port,
 			  unix_socket,0))
   {
-    fprintf(stderr,"Couldn't connect to engine!\n%s\n\n",mysql_error(mysql));
+    fprintf(stderr,"Couldn't connect to engine!\n%s\n\n",myblockchain_error(myblockchain));
     perror("");
     goto end;
   }
-  mysql.reconnect= 1;
+  myblockchain.reconnect= 1;
   if (verbose) { putchar('*'); fflush(stdout); }
   for (count=0 ; count < number_of_tests ; count++)
   {
-    MYSQL_RES *res;
-    if (mysql_query(mysql,query))
+    MYBLOCKCHAIN_RES *res;
+    if (myblockchain_query(myblockchain,query))
     {
-      fprintf(stderr,"Query failed (%s)\n",mysql_error(mysql));
+      fprintf(stderr,"Query failed (%s)\n",myblockchain_error(myblockchain));
       goto end;
     }
-    if (!(res=mysql_store_result(mysql)))
+    if (!(res=myblockchain_store_result(myblockchain)))
     {
-      fprintf(stderr,"Couldn't get result from %s\n", mysql_error(mysql));
+      fprintf(stderr,"Couldn't get result from %s\n", myblockchain_error(myblockchain));
       goto end;
     }
-    mysql_free_result(res);
+    myblockchain_free_result(res);
     if (verbose) { putchar('.'); fflush(stdout); }
   }
 end:
   if (verbose) { putchar('#'); fflush(stdout); }
-  mysql_close(mysql);
+  myblockchain_close(myblockchain);
   pthread_mutex_lock(&LOCK_thread_count);
   thread_count--;
   pthread_cond_signal(&COND_thread_count); /* Tell main we are ready */
@@ -79,7 +79,7 @@ static struct my_option my_long_options[] =
 {
   {"help", '?', "Display this help and exit", 0, 0, 0, GET_NO_ARG, NO_ARG, 0,
    0, 0, 0, 0, 0},
-  {"database", 'D', "Database to use", &database, &database,
+  {"blockchain", 'D', "Database to use", &blockchain, &blockchain,
    0, GET_STR_ALLOC, REQUIRED_ARG, 0, 0, 0, 0, 0, 0},
   {"host", 'h', "Connect to host", &host, &host, 0, GET_STR,
    REQUIRED_ARG, 0, 0, 0, 0, 0, 0},
@@ -95,13 +95,13 @@ static struct my_option my_long_options[] =
   {"query", 'Q', "Query to execute in each threads", &query,
    &query, 0, GET_STR, REQUIRED_ARG, 0, 0, 0, 0, 0, 0},
   {"port", 'P', "Port number to use for connection or 0 for default to, in "
-   "order of preference, my.cnf, $MYSQL_TCP_PORT, "
-#if MYSQL_PORT_DEFAULT == 0
+   "order of preference, my.cnf, $MYBLOCKCHAIN_TCP_PORT, "
+#if MYBLOCKCHAIN_PORT_DEFAULT == 0
    "/etc/services, "
 #endif
-   "built-in default (" STRINGIFY_ARG(MYSQL_PORT) ").",
+   "built-in default (" STRINGIFY_ARG(MYBLOCKCHAIN_PORT) ").",
    &tcp_port,
-   &tcp_port, 0, GET_UINT, REQUIRED_ARG, MYSQL_PORT, 0, 0, 0, 0, 0},
+   &tcp_port, 0, GET_UINT, REQUIRED_ARG, MYBLOCKCHAIN_PORT, 0, 0, 0, 0, 0},
   {"socket", 'S', "Socket file to use for connection", &unix_socket,
    &unix_socket, 0, GET_STR_ALLOC, REQUIRED_ARG, 0, 0, 0, 0, 0, 0},
   {"test-count", 'c', "Run test count times (default %d)",
@@ -118,17 +118,17 @@ static const char *load_default_groups[]= { "client",0 };
 
 static void usage()
 {
-  printf("Connection to a mysql server with multiple threads\n");
+  printf("Connection to a myblockchain server with multiple threads\n");
   if (version)
     return;
   puts("This software comes with ABSOLUTELY NO WARRANTY.\n");
-  printf("Usage: %s [OPTIONS] [database]\n", my_progname);
+  printf("Usage: %s [OPTIONS] [blockchain]\n", my_progname);
 
   my_print_help(my_long_options);
   print_defaults("my",load_default_groups);
   my_print_variables(my_long_options);
   printf("\nExample usage:\n\n\
-%s -Q 'select * from mysql.user' -c %d -t %d\n",
+%s -Q 'select * from myblockchain.user' -c %d -t %d\n",
 	 my_progname, number_of_tests, number_of_threads);
 }
 

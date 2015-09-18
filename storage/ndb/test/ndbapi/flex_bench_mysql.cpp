@@ -30,8 +30,8 @@ Arguments:
     independent of this value)
     -lkn Number of long primary keys, default 1
     -lks Size of each long primary key, default 1
-    -simple Use simple read to read from database
-    -dirty Use dirty read to read from database
+    -simple Use simple read to read from blockchain
+    -dirty Use dirty read to read from blockchain
     -write Use writeTuple in insert and update
     -stdtables Use standard table names
     -no_table_create Don't create tables in db
@@ -39,7 +39,7 @@ Arguments:
     can be used so that another flexBench have time to create tables
     -temp Use tables without logging
     -verify Verify inserts, updates and deletes
-    -use_ndb Use NDB API, otherwise use mysql client
+    -use_ndb Use NDB API, otherwise use myblockchain client
 #ifdef CEBIT_STAT
     -statserv host:port  statistics server to report to
     -statfreq ops        report every ops operations (default 100)
@@ -51,9 +51,9 @@ Arguments:
 
 * *************************************************** */
 
-#define USE_MYSQL
-#ifdef USE_MYSQL
-#include <mysql.h>
+#define USE_MYBLOCKCHAIN
+#ifdef USE_MYBLOCKCHAIN
+#include <myblockchain.h>
 #endif
 
 #include "NdbApi.hpp"
@@ -77,9 +77,9 @@ Arguments:
 
 extern "C" { static void* flexBenchThread(void*); }
 static int readArguments(int argc, const char** argv);
-#ifdef USE_MYSQL
-static int createTables(MYSQL*);
-static int dropTables(MYSQL*);
+#ifdef USE_MYBLOCKCHAIN
+static int createTables(MYBLOCKCHAIN*);
+static int dropTables(MYBLOCKCHAIN*);
 #endif
 static int createTables(Ndb*);
 static void sleepBeforeStartingTest(int seconds);
@@ -133,7 +133,7 @@ static bool                 theTempTable = false;
 static bool                 VerifyFlag = true;
 static bool                 useLongKeys = false;
 static bool                 verbose = false;
-#ifdef USE_MYSQL
+#ifdef USE_MYBLOCKCHAIN
 static bool                 use_ndb = false;
 static int                  engine_id = 0;
 static int                  sockets[16];
@@ -363,31 +363,31 @@ NDB_COMMAND(flexBench, "flexBench", "flexBench", "flexbench", 65535)
     ndbout << "Use NDB API with NdbPool in this test case" << endl;
     ndbout << "Pool size = " << t_instances << endl;
   } else {
-    ndbout << "Use mysql client with " << engine[engine_id];
+    ndbout << "Use myblockchain client with " << engine[engine_id];
     ndbout << " as engine" << endl;
   }
   theErrorData.printSettings(ndbout);
   
   NdbThread_SetConcurrencyLevel(tNoOfThreads + 2);
 
-#ifdef USE_MYSQL
-  MYSQL mysql;
+#ifdef USE_MYBLOCKCHAIN
+  MYBLOCKCHAIN myblockchain;
   if (!use_ndb) {
-    if ( mysql_thread_safe() == 0 ) {
-      ndbout << "Not thread safe mysql library..." << endl;
+    if ( myblockchain_thread_safe() == 0 ) {
+      ndbout << "Not thread safe myblockchain library..." << endl;
       return NDBT_ProgramExit(NDBT_FAILED);
     }
 
-    ndbout << "Connecting to MySQL..." <<endl;
+    ndbout << "Connecting to MyBlockchain..." <<endl;
 
-    mysql_init(&mysql);
+    myblockchain_init(&myblockchain);
     {
       int the_socket = sockets[0];
       char the_socket_name[1024];
-      sprintf(the_socket_name, "%s%u%s", "/tmp/mysql.",the_socket,".sock");
-      //    sprintf(the_socket_name, "%s", "/tmp/mysql.sock");
+      sprintf(the_socket_name, "%s%u%s", "/tmp/myblockchain.",the_socket,".sock");
+      //    sprintf(the_socket_name, "%s", "/tmp/myblockchain.sock");
       ndbout << the_socket_name << endl;
-      if ( mysql_real_connect(&mysql,
+      if ( myblockchain_real_connect(&myblockchain,
 			    "localhost",
 			    "root",
 			    "",
@@ -398,11 +398,11 @@ NDB_COMMAND(flexBench, "flexBench", "flexBench", "flexbench", 65535)
         ndbout << "Connect failed" <<endl;
         returnValue = NDBT_FAILED;
       }
-      mysql.reconnect= 1;
+      myblockchain.reconnect= 1;
     }
     if(returnValue == NDBT_OK){
-      mysql_set_server_option(&mysql, MYSQL_OPTION_MULTI_STATEMENTS_ON);
-      if (createTables(&mysql) != 0){
+      myblockchain_set_server_option(&myblockchain, MYBLOCKCHAIN_OPTION_MULTI_STATEMENTS_ON);
+      if (createTables(&myblockchain) != 0){
         returnValue = NDBT_FAILED;
       }
     }
@@ -628,10 +628,10 @@ NDB_COMMAND(flexBench, "flexBench", "flexBench", "flexbench", 65535)
       NdbThread_Destroy(&pThreadsData[i].threadLife);
     }
   }
-#ifdef USE_MYSQL
+#ifdef USE_MYBLOCKCHAIN
   if (!use_ndb) {
-    dropTables(&mysql);
-    mysql_close(&mysql);
+    dropTables(&myblockchain);
+    myblockchain_close(&myblockchain);
   }
 #endif
   if (use_ndb) {
@@ -692,18 +692,18 @@ static void* flexBenchThread(void* pArg)
 
   threadNo = pThreadData->threadNo ;
 
-#ifdef USE_MYSQL
-  MYSQL mysql;
+#ifdef USE_MYBLOCKCHAIN
+  MYBLOCKCHAIN myblockchain;
   int the_socket = sockets[threadNo % n_sockets];
   char the_socket_name[1024];
-  //sprintf(the_socket_name, "%s", "/tmp/mysql.sock");
-  sprintf(the_socket_name, "%s%u%s", "/tmp/mysql.",the_socket,".sock");
+  //sprintf(the_socket_name, "%s", "/tmp/myblockchain.sock");
+  sprintf(the_socket_name, "%s%u%s", "/tmp/myblockchain.",the_socket,".sock");
   if (!use_ndb) {
     ndbout << the_socket_name << endl;
-    ndbout << "Thread connecting to MySQL... " << endl;
-    mysql_init(&mysql);
+    ndbout << "Thread connecting to MyBlockchain... " << endl;
+    myblockchain_init(&myblockchain);
     
-    if ( mysql_real_connect(&mysql,
+    if ( myblockchain_real_connect(&myblockchain,
 			    "localhost",
 			    "root",
 			    "",
@@ -714,14 +714,14 @@ static void* flexBenchThread(void* pArg)
       ndbout << "failed" << endl;
       return 0;
     }
-    mysql.reconnect= 1;
+    myblockchain.reconnect= 1;
     ndbout << "ok" << endl;
 
     int r;
     if (tNoOfTables > 1)
-      r = mysql_autocommit(&mysql, 0);
+      r = myblockchain_autocommit(&myblockchain, 0);
     else
-      r = mysql_autocommit(&mysql, 1);
+      r = myblockchain_autocommit(&myblockchain, 1);
 
     if (r) {
       ndbout << "autocommit on/off failed" << endl;
@@ -809,18 +809,18 @@ static void* flexBenchThread(void* pArg)
   int statOps = 0;
 #endif
 
-#ifdef USE_MYSQL
+#ifdef USE_MYBLOCKCHAIN
   // temporary buffer to store prepared statement text
   char buf[2048];
-  MYSQL_STMT** prep_read   = NULL;
-  MYSQL_STMT** prep_delete = NULL;
-  MYSQL_STMT** prep_update = NULL;
-  MYSQL_STMT** prep_insert = NULL;
-  MYSQL_BIND* bind_delete = NULL;
-  MYSQL_BIND* bind_read   = NULL;
-  MYSQL_BIND* bind_update = NULL;
-  MYSQL_BIND* bind_insert = NULL;
-  int* mysql_data = NULL;
+  MYBLOCKCHAIN_STMT** prep_read   = NULL;
+  MYBLOCKCHAIN_STMT** prep_delete = NULL;
+  MYBLOCKCHAIN_STMT** prep_update = NULL;
+  MYBLOCKCHAIN_STMT** prep_insert = NULL;
+  MYBLOCKCHAIN_BIND* bind_delete = NULL;
+  MYBLOCKCHAIN_BIND* bind_read   = NULL;
+  MYBLOCKCHAIN_BIND* bind_update = NULL;
+  MYBLOCKCHAIN_BIND* bind_insert = NULL;
+  int* myblockchain_data = NULL;
 
   NdbAutoPtr<char> p21;
 
@@ -828,60 +828,60 @@ static void* flexBenchThread(void* pArg)
     // data array to which prepared statements are bound
     char* tmp;
     int e1 = sizeof(int)*tAttributeSize*tNoOfAttributes;
-    int e2 = sizeof(MYSQL_BIND)*tNoOfAttributes;
-    int e3 = sizeof(MYSQL_BIND)*tNoOfAttributes;
-    int e4 = sizeof(MYSQL_BIND)*tNoOfAttributes;
-    int e5 = sizeof(MYSQL_BIND)*1;
-    int e6 = sizeof(MYSQL_STMT*)*tNoOfTables;
-    int e7 = sizeof(MYSQL_STMT*)*tNoOfTables;
-    int e8 = sizeof(MYSQL_STMT*)*tNoOfTables;
-    int e9 = sizeof(MYSQL_STMT*)*tNoOfTables;
+    int e2 = sizeof(MYBLOCKCHAIN_BIND)*tNoOfAttributes;
+    int e3 = sizeof(MYBLOCKCHAIN_BIND)*tNoOfAttributes;
+    int e4 = sizeof(MYBLOCKCHAIN_BIND)*tNoOfAttributes;
+    int e5 = sizeof(MYBLOCKCHAIN_BIND)*1;
+    int e6 = sizeof(MYBLOCKCHAIN_STMT*)*tNoOfTables;
+    int e7 = sizeof(MYBLOCKCHAIN_STMT*)*tNoOfTables;
+    int e8 = sizeof(MYBLOCKCHAIN_STMT*)*tNoOfTables;
+    int e9 = sizeof(MYBLOCKCHAIN_STMT*)*tNoOfTables;
     p21.reset(tmp = (char*)malloc(e1+e2+e3+e4+e5+e6+e7+e8+e9));
 
-    mysql_data  = (int*)tmp;         tmp += e1;
-    bind_insert = (MYSQL_BIND*)tmp;  tmp += e2;
-    bind_update = (MYSQL_BIND*)tmp;  tmp += e3;
-    bind_read   = (MYSQL_BIND*)tmp;  tmp += e4;
-    bind_delete = (MYSQL_BIND*)tmp;  tmp += e5;
-    prep_insert = (MYSQL_STMT**)tmp; tmp += e6;
-    prep_update = (MYSQL_STMT**)tmp; tmp += e7;
-    prep_read   = (MYSQL_STMT**)tmp; tmp += e8;
-    prep_delete = (MYSQL_STMT**)tmp;
+    myblockchain_data  = (int*)tmp;         tmp += e1;
+    bind_insert = (MYBLOCKCHAIN_BIND*)tmp;  tmp += e2;
+    bind_update = (MYBLOCKCHAIN_BIND*)tmp;  tmp += e3;
+    bind_read   = (MYBLOCKCHAIN_BIND*)tmp;  tmp += e4;
+    bind_delete = (MYBLOCKCHAIN_BIND*)tmp;  tmp += e5;
+    prep_insert = (MYBLOCKCHAIN_STMT**)tmp; tmp += e6;
+    prep_update = (MYBLOCKCHAIN_STMT**)tmp; tmp += e7;
+    prep_read   = (MYBLOCKCHAIN_STMT**)tmp; tmp += e8;
+    prep_delete = (MYBLOCKCHAIN_STMT**)tmp;
 
     for (Uint32 ca = 0; ca < tNoOfAttributes; ca++){
-      MYSQL_BIND& bi = bind_insert[ca];
-      bi.buffer_type = MYSQL_TYPE_LONG;
-      bi.buffer = (char*)&mysql_data[ca*tAttributeSize];
+      MYBLOCKCHAIN_BIND& bi = bind_insert[ca];
+      bi.buffer_type = MYBLOCKCHAIN_TYPE_LONG;
+      bi.buffer = (char*)&myblockchain_data[ca*tAttributeSize];
       bi.buffer_length = 0;
       bi.length = NULL;
       bi.is_null = NULL;
     }//for
     
     for (Uint32 ca = 0; ca < tNoOfAttributes; ca++){
-      MYSQL_BIND& bi = bind_update[ca];
-      bi.buffer_type = MYSQL_TYPE_LONG;
+      MYBLOCKCHAIN_BIND& bi = bind_update[ca];
+      bi.buffer_type = MYBLOCKCHAIN_TYPE_LONG;
       if ( ca == tNoOfAttributes-1 ) // the primary key comes last in statement
-	bi.buffer = (char*)&mysql_data[0];
+	bi.buffer = (char*)&myblockchain_data[0];
       else
-	bi.buffer = (char*)&mysql_data[(ca+1)*tAttributeSize];
+	bi.buffer = (char*)&myblockchain_data[(ca+1)*tAttributeSize];
       bi.buffer_length = 0;
       bi.length = NULL;
       bi.is_null = NULL;
     }//for
     
     for (Uint32 ca = 0; ca < tNoOfAttributes; ca++){
-      MYSQL_BIND& bi = bind_read[ca];
-      bi.buffer_type = MYSQL_TYPE_LONG;
-      bi.buffer = (char*)&mysql_data[ca*tAttributeSize];
+      MYBLOCKCHAIN_BIND& bi = bind_read[ca];
+      bi.buffer_type = MYBLOCKCHAIN_TYPE_LONG;
+      bi.buffer = (char*)&myblockchain_data[ca*tAttributeSize];
       bi.buffer_length = 4;
       bi.length = NULL;
       bi.is_null = NULL;
     }//for
     
     for (Uint32 ca = 0; ca < 1; ca++){
-      MYSQL_BIND& bi = bind_delete[ca];
-      bi.buffer_type = MYSQL_TYPE_LONG;
-      bi.buffer = (char*)&mysql_data[ca*tAttributeSize];
+      MYBLOCKCHAIN_BIND& bi = bind_delete[ca];
+      bi.buffer_type = MYBLOCKCHAIN_TYPE_LONG;
+      bi.buffer = (char*)&myblockchain_data[ca*tAttributeSize];
       bi.buffer_length = 0;
       bi.length = NULL;
       bi.is_null = NULL;
@@ -900,13 +900,13 @@ static void* flexBenchThread(void* pArg)
       pos += sprintf(buf+pos, "%s", ")");
       if (verbose)
 	ndbout << buf << endl;
-      prep_insert[i] = mysql_prepare(&mysql, buf, pos);
+      prep_insert[i] = myblockchain_prepare(&myblockchain, buf, pos);
       if (prep_insert[i] == 0) {
-	ndbout << "mysql_prepare: " << mysql_error(&mysql) << endl;
+	ndbout << "myblockchain_prepare: " << myblockchain_error(&myblockchain) << endl;
 	return 0;
       }
-      if (mysql_bind_param(prep_insert[i], bind_insert)) {
-	ndbout << "mysql_bind_param: " << mysql_error(&mysql) << endl;
+      if (myblockchain_bind_param(prep_insert[i], bind_insert)) {
+	ndbout << "myblockchain_bind_param: " << myblockchain_error(&myblockchain) << endl;
 	return 0;
       }
     }
@@ -926,13 +926,13 @@ static void* flexBenchThread(void* pArg)
       
       if (verbose)
 	ndbout << buf << endl;
-      prep_update[i] = mysql_prepare(&mysql, buf, pos);
+      prep_update[i] = myblockchain_prepare(&myblockchain, buf, pos);
       if (prep_update[i] == 0) {
-	ndbout << "mysql_prepare: " << mysql_error(&mysql) << endl;
+	ndbout << "myblockchain_prepare: " << myblockchain_error(&myblockchain) << endl;
 	return 0;
       }
-      if (mysql_bind_param(prep_update[i], bind_update)) {
-	ndbout << "mysql_bind_param: " << mysql_error(&mysql) << endl;
+      if (myblockchain_bind_param(prep_update[i], bind_update)) {
+	ndbout << "myblockchain_bind_param: " << myblockchain_error(&myblockchain) << endl;
 	return 0;
       }
     }
@@ -953,17 +953,17 @@ static void* flexBenchThread(void* pArg)
 		     "=?");
       if (verbose)
 	ndbout << buf << endl;
-      prep_read[i] = mysql_prepare(&mysql, buf, pos);
+      prep_read[i] = myblockchain_prepare(&myblockchain, buf, pos);
       if (prep_read[i] == 0) {
-	ndbout << "mysql_prepare: " << mysql_error(&mysql) << endl;
+	ndbout << "myblockchain_prepare: " << myblockchain_error(&myblockchain) << endl;
 	return 0;
       }
-      if (mysql_bind_param(prep_read[i], bind_read)) {
-	ndbout << "mysql_bind_param: " << mysql_error(&mysql) << endl;
+      if (myblockchain_bind_param(prep_read[i], bind_read)) {
+	ndbout << "myblockchain_bind_param: " << myblockchain_error(&myblockchain) << endl;
 	return 0;
       }
-      if (mysql_bind_result(prep_read[i], &bind_read[1])) {
-	ndbout << "mysql_bind_result: " << mysql_error(&mysql) << endl;
+      if (myblockchain_bind_result(prep_read[i], &bind_read[1])) {
+	ndbout << "myblockchain_bind_result: " << myblockchain_error(&myblockchain) << endl;
 	return 0;
       }
     }
@@ -978,13 +978,13 @@ static void* flexBenchThread(void* pArg)
 		     "=?");
       if (verbose)
 	ndbout << buf << endl;
-      prep_delete[i] = mysql_prepare(&mysql, buf, pos);
+      prep_delete[i] = myblockchain_prepare(&myblockchain, buf, pos);
       if (prep_delete[i] == 0) {
-	ndbout << "mysql_prepare: " << mysql_error(&mysql) << endl;
+	ndbout << "myblockchain_prepare: " << myblockchain_error(&myblockchain) << endl;
 	return 0;
       }
-      if (mysql_bind_param(prep_delete[i], bind_delete)) {
-	ndbout << "mysql_bind_param: " << mysql_error(&mysql) << endl;
+      if (myblockchain_bind_param(prep_delete[i], bind_delete)) {
+	ndbout << "myblockchain_bind_param: " << myblockchain_error(&myblockchain) << endl;
 	return 0;
       }
     }
@@ -1142,81 +1142,81 @@ static void* flexBenchThread(void* pArg)
 	    }
 	  }//if
 	} else { // !use_ndb
-#ifndef USE_MYSQL
+#ifndef USE_MYBLOCKCHAIN
 	  require(false);
 #else
 	  switch (tType)
 	    {
 	    case stInsert:
 	      for (int ca = 0; ca < loopCountAttributes; ca++){
-		mysql_data[ca] = tmpAttrRefValue[tAttributeSize*ca];
+		myblockchain_data[ca] = tmpAttrRefValue[tAttributeSize*ca];
 	      }//for
-	      if (mysql_execute(prep_insert[countTables])) {
+	      if (myblockchain_execute(prep_insert[countTables])) {
 		ndbout << tableName[countTables];  
-		ndbout << " mysql_execute: " << mysql_error(&mysql) << endl;
+		ndbout << " myblockchain_execute: " << myblockchain_error(&myblockchain) << endl;
 		tResult = 1 ;
 	      }
 	      break;
 	    case stUpdate:          // Update Case
-	      mysql_data[0] = tmpAttrRefValue[0];
+	      myblockchain_data[0] = tmpAttrRefValue[0];
 	      for (int ca = 1; ca < loopCountAttributes; ca++){
 		int* tmp = (int*)&tmpAttrRefValue[tAttributeSize*ca];
 		if (countTables == 0)
 		  (*tmp)++;
-		mysql_data[ca] = *tmp;
+		myblockchain_data[ca] = *tmp;
 	      }//for
-	      if (mysql_execute(prep_update[countTables])) {
+	      if (myblockchain_execute(prep_update[countTables])) {
 		ndbout << tableName[countTables];  
-		ndbout << " mysql_execute: " << mysql_error(&mysql) << endl;
+		ndbout << " myblockchain_execute: " << myblockchain_error(&myblockchain) << endl;
 		tResult = 2 ;
 	      }
 	      break;
 	    case stVerify:
 	    case stRead:            // Read Case
-	      mysql_data[0] = tmpAttrRefValue[0];
-	      if (mysql_execute(prep_read[countTables])) {
+	      myblockchain_data[0] = tmpAttrRefValue[0];
+	      if (myblockchain_execute(prep_read[countTables])) {
 		ndbout << tableName[countTables];  
-		ndbout << " mysql_execute: " << mysql_error(&mysql) << endl;
+		ndbout << " myblockchain_execute: " << myblockchain_error(&myblockchain) << endl;
 		tResult = 3 ;
 		break;
 	      }
-	      if (mysql_stmt_store_result(prep_read[countTables])) {
+	      if (myblockchain_stmt_store_result(prep_read[countTables])) {
 		ndbout << tableName[countTables];  
-		ndbout << " mysql_stmt_store_result: "
-		       << mysql_error(&mysql) << endl;
+		ndbout << " myblockchain_stmt_store_result: "
+		       << myblockchain_error(&myblockchain) << endl;
 		tResult = 4 ;
 		break;
 	      }
 	      {
 		int rows= 0;
 		int r;
-		while ( (r= mysql_fetch(prep_read[countTables])) == 0 ){
+		while ( (r= myblockchain_fetch(prep_read[countTables])) == 0 ){
 		  rows++;
 		}
 		if ( r == 1 ) {
 		  ndbout << tableName[countTables];  
-		  ndbout << " mysql_fetch: " << mysql_error(&mysql) << endl;
+		  ndbout << " myblockchain_fetch: " << myblockchain_error(&myblockchain) << endl;
 		  tResult = 5 ;
 		  break;
 		}
 		if ( rows != 1 ) {
 		  ndbout << tableName[countTables];  
-		  ndbout << " mysql_fetch: rows = " << rows << endl;
+		  ndbout << " myblockchain_fetch: rows = " << rows << endl;
 		  tResult = 6 ;
 		  break;
 		}
 	      }
 	      {
 		for (int ca = 1; ca < loopCountAttributes; ca++) {
-		  tmpAttrValue[tAttributeSize*ca] = mysql_data[ca];
+		  tmpAttrValue[tAttributeSize*ca] = myblockchain_data[ca];
 		}
 	      }
 	      break;
 	    case stDelete:          // Delete Case
-	      mysql_data[0] = tmpAttrRefValue[0];
-	      if (mysql_execute(prep_delete[countTables])) {
+	      myblockchain_data[0] = tmpAttrRefValue[0];
+	      if (myblockchain_execute(prep_delete[countTables])) {
 		ndbout << tableName[countTables];  
-		ndbout << " mysql_execute: " << mysql_error(&mysql) << endl;
+		ndbout << " myblockchain_execute: " << myblockchain_error(&myblockchain) << endl;
 		tResult = 7 ;
 		break;
 	      }
@@ -1225,44 +1225,44 @@ static void* flexBenchThread(void* pArg)
 	      {
 		sprintf(buf, "%s%s%s",
 			"SELECT COUNT(*) FROM ",tableName[countTables],";");
-		if (mysql_query(&mysql, buf)) {
+		if (myblockchain_query(&myblockchain, buf)) {
 		  ndbout << buf << endl;
-		  ndbout << "Error: " << mysql_error(&mysql) << endl;
+		  ndbout << "Error: " << myblockchain_error(&myblockchain) << endl;
 		  tResult = 8 ;
 		  break;
 		}
-		MYSQL_RES *res = mysql_store_result(&mysql);
+		MYBLOCKCHAIN_RES *res = myblockchain_store_result(&myblockchain);
 		if ( res == NULL ) {
-		  ndbout << "mysql_store_result: "
-			 << mysql_error(&mysql) << endl
-			 << "errno: " << mysql_errno(&mysql) << endl;
+		  ndbout << "myblockchain_store_result: "
+			 << myblockchain_error(&myblockchain) << endl
+			 << "errno: " << myblockchain_errno(&myblockchain) << endl;
 		  tResult = 9 ;
 		  break;
 		}
-		int num_fields = mysql_num_fields(res);
-		int num_rows   = mysql_num_rows(res);
+		int num_fields = myblockchain_num_fields(res);
+		int num_rows   = myblockchain_num_rows(res);
 		if ( num_rows != 1 || num_fields != 1 ) {
 		  ndbout << tableName[countTables];  
-		  ndbout << " mysql_store_result: num_rows = " << num_rows
+		  ndbout << " myblockchain_store_result: num_rows = " << num_rows
 			 << " num_fields = " << num_fields << endl;
 		  tResult = 10 ;
 		  break;
 		}
-		MYSQL_ROW row = mysql_fetch_row(res);
+		MYBLOCKCHAIN_ROW row = myblockchain_fetch_row(res);
 		if ( row == NULL ) {
-		  ndbout << "mysql_fetch_row: "
-			 << mysql_error(&mysql) << endl;
+		  ndbout << "myblockchain_fetch_row: "
+			 << myblockchain_error(&myblockchain) << endl;
 		  tResult = 11 ;
 		  break;
 		}
 		if ( *(char*)row[0] != '0' ) {
 		  ndbout << tableName[countTables];  
-		  ndbout << " mysql_fetch_row: value = "
+		  ndbout << " myblockchain_fetch_row: value = "
 			 << (char*)(row[0]) << endl;
 		  tResult = 12 ;
 		  break;
 		}
-		mysql_free_result(res);
+		myblockchain_free_result(res);
 	      }
 	      break;
 	    default:
@@ -1278,10 +1278,10 @@ static void* flexBenchThread(void* pArg)
       if (use_ndb){
 	check = pTrans->execute(Commit);
       } else {
-#ifdef USE_MYSQL
+#ifdef USE_MYBLOCKCHAIN
 	if (tNoOfTables > 1)
-	  if (mysql_commit(&mysql)) {
-	    ndbout << " mysql_commit: " << mysql_error(&mysql) << endl;
+	  if (myblockchain_commit(&myblockchain)) {
+	    ndbout << " myblockchain_commit: " << myblockchain_error(&myblockchain) << endl;
 	    tResult = 13;
 	  } else 
 	    check = 0;
@@ -1419,14 +1419,14 @@ static void* flexBenchThread(void* pArg)
     }
   }
 
-#ifdef USE_MYSQL
+#ifdef USE_MYBLOCKCHAIN
   if (!use_ndb) {
-    mysql_close(&mysql);
+    myblockchain_close(&myblockchain);
     for (Uint32 i = 0; i < tNoOfTables; i++) {
-      mysql_stmt_close(prep_insert[i]);
-      mysql_stmt_close(prep_update[i]);
-      mysql_stmt_close(prep_delete[i]);
-      mysql_stmt_close(prep_read[i]);
+      myblockchain_stmt_close(prep_insert[i]);
+      myblockchain_stmt_close(prep_update[i]);
+      myblockchain_stmt_close(prep_delete[i]);
+      myblockchain_stmt_close(prep_read[i]);
     }
   }
 #endif
@@ -1481,7 +1481,7 @@ static int readArguments(int argc, const char** argv)
         return -1;
       argc -= 1;
       i++;
-#ifdef USE_MYSQL
+#ifdef USE_MYBLOCKCHAIN
     }else if (strcmp(argv[i], "-engine") == 0){
       engine_id = atoi(argv[i+1]);
       if ((engine_id < 0) || (engine_id > 3)) 
@@ -1574,7 +1574,7 @@ static int readArguments(int argc, const char** argv)
     argc -= 1;
     i++;
   }
-#ifdef USE_MYSQL
+#ifdef USE_MYBLOCKCHAIN
   if (n_sockets == 0) {
     n_sockets = 1;
     sockets[0] = 3306;
@@ -1592,9 +1592,9 @@ static void sleepBeforeStartingTest(int seconds){
 }
 
 
-#ifdef USE_MYSQL
+#ifdef USE_MYBLOCKCHAIN
 static int
-dropTables(MYSQL* mysqlp){
+dropTables(MYBLOCKCHAIN* myblockchainp){
   char buf[2048];
   for(unsigned i = 0; i < tNoOfTables; i++){
     int pos = 0;
@@ -1603,9 +1603,9 @@ dropTables(MYSQL* mysqlp){
     pos += sprintf(buf+pos, "%s%s", tableName[i], ";");
     if (verbose)
       ndbout << endl << buf << endl;
-    if (mysql_query(mysqlp, buf) != 0){
+    if (myblockchain_query(myblockchainp, buf) != 0){
       ndbout << "Failed!"<<endl
-	     <<mysql_error(mysqlp)<<endl
+	     <<myblockchain_error(myblockchainp)<<endl
 	     <<buf<<endl;
     } else
       ndbout << "OK!" << endl;
@@ -1615,9 +1615,9 @@ dropTables(MYSQL* mysqlp){
 }
 #endif
 
-#ifdef USE_MYSQL
+#ifdef USE_MYBLOCKCHAIN
 static int
-createTables(MYSQL* mysqlp){
+createTables(MYBLOCKCHAIN* myblockchainp){
 
   for (Uint32 i = 0; i < tNoOfAttributes; i++){
     BaseString::snprintf(attrName[i], MAXSTRLEN, "COL%d", i);
@@ -1653,7 +1653,7 @@ createTables(MYSQL* mysqlp){
     pos += sprintf(buf+pos, "%s%s%s", ")", engine[engine_id], ";");
     if (verbose)
       ndbout << endl << buf << endl;
-    if (mysql_query(mysqlp, buf) != 0)
+    if (myblockchain_query(myblockchainp, buf) != 0)
       return -1;
     ndbout << "done" << endl;
   }
@@ -1731,8 +1731,8 @@ static void input_error(){
   ndbout << "   -lkn Number of long primary keys, default 1" << endl;
   ndbout << "   -lks Size of each long primary key, default 1" << endl;
 
-  ndbout << "   -simple Use simple read to read from database" << endl;
-  ndbout << "   -dirty Use dirty read to read from database" << endl;
+  ndbout << "   -simple Use simple read to read from blockchain" << endl;
+  ndbout << "   -dirty Use dirty read to read from blockchain" << endl;
   ndbout << "   -write Use writeTuple in insert and update" << endl;
   ndbout << "   -stdtables Use standard table names" << endl;
   ndbout << "   -no_table_create Don't create tables in db" << endl;
@@ -1740,7 +1740,7 @@ static void input_error(){
   ndbout << "    can be used so that another flexBench have time to create tables" << endl;
   ndbout << "   -temp Use tables without logging" << endl;
   ndbout << "   -verify Verify inserts, updates and deletes" << endl ;
-  ndbout << "   -use_ndb Use NDB API (otherwise use mysql client)" << endl ;
+  ndbout << "   -use_ndb Use NDB API (otherwise use myblockchain client)" << endl ;
   ndbout << "   -pool_size Number of Ndb objects in pool" << endl ;
   theErrorData.printCmdLineArgs(ndbout);
   ndbout << endl <<"Returns:" << endl;

@@ -13,14 +13,14 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 
-# config.ini -- MySQL Cluster configuration file (options case-insensitive)
+# config.ini -- MyBlockchain Cluster configuration file (options case-insensitive)
 
 [ndbd default]
 
 # directory for log, trace, pid files
 # (requires data nodes restart with --initial)
 #DataDir=(cwd)				# default
-#DataDir=.../mysql/ndblog
+#DataDir=.../myblockchain/ndblog
 
 # number of data copies (i.e., size of node groups)
 # (requires cluster restart with --initial)
@@ -68,7 +68,7 @@ MaxNoOfConcurrentOperations=65536
 # jdbc@(A=1024, B=1024, maxBlobBytes=1000000) fails on MaxNoOfLocalOperations
 #   at MaxNoOfConcurrentOperations=131072
 
-# max number of operation records to be local to the database
+# max number of operation records to be local to the blockchain
 #MaxNoOfLocalOperations=(1.1 * MaxNoOfConcurrentOperations)	# default
 
 # max number of parallel scans (scan records in each data node)
@@ -129,16 +129,16 @@ FragmentLogFileSize=64M
 # (may prevent write buffering, ignored when ODirect is enabled)
 #DiskSyncSize=4M			# default
 
-# interval (ms) between synchronization epochs for mysql cluster replication
+# interval (ms) between synchronization epochs for myblockchain cluster replication
 # (increase for long-running transactions)
 #TimeBetweenEpochs=100			# default
-# timeout (ms) for synchronization epochs for mysql cluster replication
+# timeout (ms) for synchronization epochs for myblockchain cluster replication
 # (increase for long-running transactions or set to 0 to disable GCP stops)
 TimeBetweenEpochsTimeout=0		# disabled, default >=7.2.1
 
 [ndb_mgmd default]
 
-[mysqld default]
+[myblockchaind default]
 
 [tcp default]
 
@@ -150,19 +150,19 @@ ReceiveBufferMemory=2M			# default >=7.0.4
 
 HostName=127.0.0.1              # hostname or IP address (default: localhost)
 #PortNumber=1186		# port for mgmd (default: 1186)
-##DataDir=.../mysql/ndblog 	# directory for log files (default: cwd)
+##DataDir=.../myblockchain/ndblog 	# directory for log files (default: cwd)
 
 [ndbd]
 
 HostName=127.0.0.1              # hostname or IP address (default: localhost)
 #ServerPort=61150		# port for data+api node communication
-##DataDir=.../mysql/ndblog 	# directory for log files (default: cwd)
+##DataDir=.../myblockchain/ndblog 	# directory for log files (default: cwd)
 
 [ndbd]
 
 HostName=127.0.0.1              # hostname or IP address (default: localhost)
 #ServerPort=61151		# port for data+api node communication
-##DataDir=.../mysql/ndblog 	# directory for log files (default: cwd)
+##DataDir=.../myblockchain/ndblog 	# directory for log files (default: cwd)
 
 [api]
 [api]

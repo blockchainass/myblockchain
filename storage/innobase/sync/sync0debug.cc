@@ -750,7 +750,7 @@ LatchDebug::check_order(
 		if (srv_is_being_started) {
 			/* This is violated during trx_sys_create_rsegs()
 			when creating additional rollback segments when
-			upgrading in innobase_start_or_create_for_mysql(). */
+			upgrading in innobase_start_or_create_for_myblockchain(). */
 			break;
 		}
 

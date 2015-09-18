@@ -58,9 +58,9 @@ extern "C" void *test_lf_pinbox(void *arg)
     pins= lf_pinbox_get_pins(&lf_allocator.pinbox);
   }
   lf_pinbox_put_pins(pins);
-  mysql_mutex_lock(&mutex);
-  if (!--running_threads) mysql_cond_signal(&cond);
-  mysql_mutex_unlock(&mutex);
+  myblockchain_mutex_lock(&mutex);
+  if (!--running_threads) myblockchain_cond_signal(&cond);
+  myblockchain_mutex_unlock(&mutex);
 
   if (with_my_thread_init)
     my_thread_end();
@@ -104,7 +104,7 @@ extern "C" void *test_lf_alloc(void *arg)
     lf_pinbox_free(pins, node2);
   }
   lf_pinbox_put_pins(pins);
-  mysql_mutex_lock(&mutex);
+  myblockchain_mutex_lock(&mutex);
   bad+= y;
 
   if (--N == 0)
@@ -113,8 +113,8 @@ extern "C" void *test_lf_alloc(void *arg)
     bad|= lf_allocator.mallocs - lf_alloc_pool_count(&lf_allocator);
 #endif
   }
-  if (!--running_threads) mysql_cond_signal(&cond);
-  mysql_mutex_unlock(&mutex);
+  if (!--running_threads) myblockchain_cond_signal(&cond);
+  myblockchain_mutex_unlock(&mutex);
 
   if (with_my_thread_init)
     my_thread_end();
@@ -156,7 +156,7 @@ extern "C" void *test_lf_hash(void *arg)
     }
   }
   lf_hash_put_pins(pins);
-  mysql_mutex_lock(&mutex);
+  myblockchain_mutex_lock(&mutex);
   bad+= sum;
   inserts+= ins;
 
@@ -164,8 +164,8 @@ extern "C" void *test_lf_hash(void *arg)
   {
     bad|= lf_hash.count;
   }
-  if (!--running_threads) mysql_cond_signal(&cond);
-  mysql_mutex_unlock(&mutex);
+  if (!--running_threads) myblockchain_cond_signal(&cond);
+  myblockchain_mutex_unlock(&mutex);
   if (with_my_thread_init)
     my_thread_end();
   return 0;
@@ -201,8 +201,8 @@ void do_tests()
 
 TEST(Mysys, LockFree)
 {
-  mysql_mutex_init(0, &mutex, 0);
-  mysql_cond_init(0, &cond);
+  myblockchain_mutex_init(0, &mutex, 0);
+  myblockchain_cond_init(0, &cond);
   my_thread_attr_init(&thr_attr);
 #ifndef _WIN32
   pthread_attr_setdetachstate(&thr_attr, PTHREAD_CREATE_DETACHED);
@@ -210,8 +210,8 @@ TEST(Mysys, LockFree)
 
   do_tests();
 
-  mysql_mutex_destroy(&mutex);
-  mysql_cond_destroy(&cond);
+  myblockchain_mutex_destroy(&mutex);
+  myblockchain_cond_destroy(&cond);
   my_thread_attr_destroy(&thr_attr);
 }
 

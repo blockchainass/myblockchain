@@ -621,13 +621,13 @@ const char *ft_precompiled_stopwords[]= {
   "zero",
   NULL };
 
-static int ft_default_parser_parse(MYSQL_FTPARSER_PARAM *param)
+static int ft_default_parser_parse(MYBLOCKCHAIN_FTPARSER_PARAM *param)
 {
-  return param->mysql_parse(param, param->doc, param->length);
+  return param->myblockchain_parse(param, param->doc, param->length);
 }
 
-struct st_mysql_ftparser ft_default_parser=
+struct st_myblockchain_ftparser ft_default_parser=
 {
-  MYSQL_FTPARSER_INTERFACE_VERSION, ft_default_parser_parse, 0, 0
+  MYBLOCKCHAIN_FTPARSER_INTERFACE_VERSION, ft_default_parser_parse, 0, 0
 };
 

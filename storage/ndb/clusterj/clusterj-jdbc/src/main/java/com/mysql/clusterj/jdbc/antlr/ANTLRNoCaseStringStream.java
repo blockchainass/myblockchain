@@ -19,7 +19,7 @@
  * http://www.antlr.org/wiki/pages/viewpage.action?pageId=1782
  */
 
-package com.mysql.clusterj.jdbc.antlr;
+package com.myblockchain.clusterj.jdbc.antlr;
 
 import java.io.File;
 import java.io.FileInputStream;

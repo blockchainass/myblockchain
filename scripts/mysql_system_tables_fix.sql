@@ -14,7 +14,7 @@
 -- Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 
 # This part converts any old privilege tables to privilege tables suitable
-# for current version of MySQL
+# for current version of MyBlockchain
 
 # You can safely ignore all 'Duplicate column' and 'Unknown column' errors
 # because these just mean that your tables are already up to date.
@@ -30,9 +30,9 @@ set default_storage_engine=MyISAM;
 # which tables was moved so they can be moved back after upgrade
 SET @had_distributed_user =
   (SELECT COUNT(table_name) FROM information_schema.tables
-     WHERE table_schema = 'mysql' AND table_name = 'user' AND
+     WHERE table_schema = 'myblockchain' AND table_name = 'user' AND
            table_type = 'BASE TABLE' AND engine = 'NDBCLUSTER');
-SET @cmd="ALTER TABLE mysql.user ENGINE=MyISAM";
+SET @cmd="ALTER TABLE myblockchain.user ENGINE=MyISAM";
 SET @str = IF(@had_distributed_user > 0, @cmd, "SET @dummy = 0");
 PREPARE stmt FROM @str;
 EXECUTE stmt;
@@ -40,9 +40,9 @@ DROP PREPARE stmt;
 
 SET @had_distributed_db =
   (SELECT COUNT(table_name) FROM information_schema.tables
-     WHERE table_schema = 'mysql' AND table_name = 'db' AND
+     WHERE table_schema = 'myblockchain' AND table_name = 'db' AND
            table_type = 'BASE TABLE' AND engine = 'NDBCLUSTER');
-SET @cmd="ALTER TABLE mysql.db ENGINE=MyISAM";
+SET @cmd="ALTER TABLE myblockchain.db ENGINE=MyISAM";
 SET @str = IF(@had_distributed_db > 0, @cmd, "SET @dummy = 0");
 PREPARE stmt FROM @str;
 EXECUTE stmt;
@@ -50,9 +50,9 @@ DROP PREPARE stmt;
 
 SET @had_distributed_tables_priv =
   (SELECT COUNT(table_name) FROM information_schema.tables
-     WHERE table_schema = 'mysql' AND table_name = 'tables_priv' AND
+     WHERE table_schema = 'myblockchain' AND table_name = 'tables_priv' AND
            table_type = 'BASE TABLE' AND engine = 'NDBCLUSTER');
-SET @cmd="ALTER TABLE mysql.tables_priv ENGINE=MyISAM";
+SET @cmd="ALTER TABLE myblockchain.tables_priv ENGINE=MyISAM";
 SET @str = IF(@had_distributed_tables_priv > 0, @cmd, "SET @dummy = 0");
 PREPARE stmt FROM @str;
 EXECUTE stmt;
@@ -60,9 +60,9 @@ DROP PREPARE stmt;
 
 SET @had_distributed_columns_priv =
   (SELECT COUNT(table_name) FROM information_schema.tables
-     WHERE table_schema = 'mysql' AND table_name = 'columns_priv' AND
+     WHERE table_schema = 'myblockchain' AND table_name = 'columns_priv' AND
            table_type = 'BASE TABLE' AND engine = 'NDBCLUSTER');
-SET @cmd="ALTER TABLE mysql.columns_priv ENGINE=MyISAM";
+SET @cmd="ALTER TABLE myblockchain.columns_priv ENGINE=MyISAM";
 SET @str = IF(@had_distributed_columns_priv > 0, @cmd, "SET @dummy = 0");
 PREPARE stmt FROM @str;
 EXECUTE stmt;
@@ -70,9 +70,9 @@ DROP PREPARE stmt;
 
 SET @had_distributed_procs_priv =
   (SELECT COUNT(table_name) FROM information_schema.tables
-     WHERE table_schema = 'mysql' AND table_name = 'procs_priv' AND
+     WHERE table_schema = 'myblockchain' AND table_name = 'procs_priv' AND
            table_type = 'BASE TABLE' AND engine = 'NDBCLUSTER');
-SET @cmd="ALTER TABLE mysql.procs_priv ENGINE=MyISAM";
+SET @cmd="ALTER TABLE myblockchain.procs_priv ENGINE=MyISAM";
 SET @str = IF(@had_distributed_procs_priv > 0, @cmd, "SET @dummy = 0");
 PREPARE stmt FROM @str;
 EXECUTE stmt;
@@ -80,9 +80,9 @@ DROP PREPARE stmt;
 
 SET @had_distributed_proxies_priv =
   (SELECT COUNT(table_name) FROM information_schema.tables
-     WHERE table_schema = 'mysql' AND table_name = 'proxies_priv' AND
+     WHERE table_schema = 'myblockchain' AND table_name = 'proxies_priv' AND
            table_type = 'BASE TABLE' AND engine = 'NDBCLUSTER' );
-SET @cmd="ALTER TABLE mysql.proxies_priv ENGINE=MyISAM";
+SET @cmd="ALTER TABLE myblockchain.proxies_priv ENGINE=MyISAM";
 SET @str = IF(@had_distributed_proxies_priv > 0, @cmd, "SET @dummy = 0");
 PREPARE stmt FROM @str;
 EXECUTE stmt;
@@ -140,7 +140,7 @@ ALTER TABLE tables_priv
 # columns_priv
 #
 #
-# Name change of Type -> Column_priv from MySQL 3.22.12
+# Name change of Type -> Column_priv from MyBlockchain 3.22.12
 #
 ALTER TABLE columns_priv
   CHANGE Type Column_priv set('Select','Insert','Update','References')
@@ -444,8 +444,8 @@ ALTER TABLE proc MODIFY name char(64) DEFAULT '' NOT NULL,
                             'NO_KEY_OPTIONS',
                             'NO_TABLE_OPTIONS',
                             'NO_FIELD_OPTIONS',
-                            'MYSQL323',
-                            'MYSQL40',
+                            'MYBLOCKCHAIN323',
+                            'MYBLOCKCHAIN40',
                             'ANSI',
                             'NO_AUTO_VALUE_ON_ZERO',
                             'NO_BACKSLASH_ESCAPES',
@@ -480,7 +480,7 @@ ALTER TABLE proc MODIFY character_set_client
                         char(32) collate utf8_bin DEFAULT NULL;
 
 SELECT CASE WHEN COUNT(*) > 0 THEN 
-CONCAT ("WARNING: NULL values of the 'character_set_client' column ('mysql.proc' table) have been updated with a default value (", @@character_set_client, "). Please verify if necessary.")
+CONCAT ("WARNING: NULL values of the 'character_set_client' column ('myblockchain.proc' table) have been updated with a default value (", @@character_set_client, "). Please verify if necessary.")
 ELSE NULL 
 END 
 AS value FROM proc WHERE character_set_client IS NULL;
@@ -495,7 +495,7 @@ ALTER TABLE proc MODIFY collation_connection
                         char(32) collate utf8_bin DEFAULT NULL;
 
 SELECT CASE WHEN COUNT(*) > 0 THEN 
-CONCAT ("WARNING: NULL values of the 'collation_connection' column ('mysql.proc' table) have been updated with a default value (", @@collation_connection, "). Please verify if necessary.")
+CONCAT ("WARNING: NULL values of the 'collation_connection' column ('myblockchain.proc' table) have been updated with a default value (", @@collation_connection, "). Please verify if necessary.")
 ELSE NULL 
 END 
 AS value FROM proc WHERE collation_connection IS NULL;
@@ -510,7 +510,7 @@ ALTER TABLE proc MODIFY db_collation
                         char(32) collate utf8_bin DEFAULT NULL;
 
 SELECT CASE WHEN COUNT(*) > 0 THEN 
-CONCAT ("WARNING: NULL values of the 'db_collation' column ('mysql.proc' table) have been updated with default values. Please verify if necessary.")
+CONCAT ("WARNING: NULL values of the 'db_collation' column ('myblockchain.proc' table) have been updated with default values. Please verify if necessary.")
 ELSE NULL
 END
 AS value FROM proc WHERE db_collation IS NULL;
@@ -564,8 +564,8 @@ ALTER TABLE event MODIFY sql_mode
                             'NO_KEY_OPTIONS',
                             'NO_TABLE_OPTIONS',
                             'NO_FIELD_OPTIONS',
-                            'MYSQL323',
-                            'MYSQL40',
+                            'MYBLOCKCHAIN323',
+                            'MYBLOCKCHAIN40',
                             'ANSI',
                             'NO_AUTO_VALUE_ON_ZERO',
                             'NO_BACKSLASH_ESCAPES',
@@ -642,31 +642,31 @@ ALTER TABLE user MODIFY Create_tablespace_priv enum('N','Y') COLLATE utf8_genera
 UPDATE user SET Create_tablespace_priv = Super_priv WHERE @hadCreateTablespacePriv = 0;
 
 --
--- Unlike 'performance_schema', the 'mysql' database is reserved already,
+-- Unlike 'performance_schema', the 'myblockchain' blockchain is reserved already,
 -- so no user procedure is supposed to be there.
 --
 -- NOTE: until upgrade is finished, stored routines are not available,
--- because system tables (e.g. mysql.proc) might be not usable.
+-- because system tables (e.g. myblockchain.proc) might be not usable.
 --
-drop procedure if exists mysql.die;
-create procedure mysql.die() signal sqlstate 'HY000' set message_text='Unexpected content found in the performance_schema database.';
+drop procedure if exists myblockchain.die;
+create procedure myblockchain.die() signal sqlstate 'HY000' set message_text='Unexpected content found in the performance_schema blockchain.';
 
 --
 -- For broken upgrades, SIGNAL the error
 --
 
-SET @cmd="call mysql.die()";
+SET @cmd="call myblockchain.die()";
 
 SET @str = IF(@broken_pfs > 0, @cmd, 'SET @dummy = 0');
 PREPARE stmt FROM @str;
 EXECUTE stmt;
 DROP PREPARE stmt;
 
-drop procedure mysql.die;
+drop procedure myblockchain.die;
 
-ALTER TABLE user ADD plugin char(64) DEFAULT 'mysql_native_password' NOT NULL,  ADD authentication_string TEXT;
-ALTER TABLE user MODIFY plugin char(64) DEFAULT 'mysql_native_password' NOT NULL;
-UPDATE user SET plugin=IF((length(password) = 41) OR (length(password) = 0), 'mysql_native_password', '') WHERE plugin = '';
+ALTER TABLE user ADD plugin char(64) DEFAULT 'myblockchain_native_password' NOT NULL,  ADD authentication_string TEXT;
+ALTER TABLE user MODIFY plugin char(64) DEFAULT 'myblockchain_native_password' NOT NULL;
+UPDATE user SET plugin=IF((length(password) = 41) OR (length(password) = 0), 'myblockchain_native_password', '') WHERE plugin = '';
 ALTER TABLE user MODIFY authentication_string TEXT;
 
 -- establish if the field is already there.
@@ -679,7 +679,7 @@ UPDATE user SET password_expired = 'N' WHERE @hadPasswordExpired=0;
 -- need to compensate for the ALTER TABLE user .. CONVERT TO CHARACTER SET above
 ALTER TABLE user MODIFY password_expired ENUM('N', 'Y') COLLATE utf8_general_ci DEFAULT 'N' NOT NULL;
 
--- Need to pre-fill mysql.proxies_priv with access for root even when upgrading from
+-- Need to pre-fill myblockchain.proxies_priv with access for root even when upgrading from
 -- older versions
 
 CREATE TEMPORARY TABLE tmp_proxies_priv LIKE proxies_priv;
@@ -689,10 +689,10 @@ DROP TABLE tmp_proxies_priv;
 
 -- Checking for any duplicate hostname and username combination are exists.
 -- If exits we will throw error.
-DROP PROCEDURE IF EXISTS mysql.warn_duplicate_host_names;
-CREATE PROCEDURE mysql.warn_duplicate_host_names() SIGNAL SQLSTATE '45000'  SET MESSAGE_TEXT = 'Multiple accounts exist for @user_name, @host_name that differ only in Host lettercase; remove all except one of them';
-SET @cmd='call mysql.warn_duplicate_host_names()';
-SET @duplicate_hosts=(SELECT count(*) FROM mysql.user GROUP BY user, lower(host) HAVING count(*) > 1 LIMIT 1);
+DROP PROCEDURE IF EXISTS myblockchain.warn_duplicate_host_names;
+CREATE PROCEDURE myblockchain.warn_duplicate_host_names() SIGNAL SQLSTATE '45000'  SET MESSAGE_TEXT = 'Multiple accounts exist for @user_name, @host_name that differ only in Host lettercase; remove all except one of them';
+SET @cmd='call myblockchain.warn_duplicate_host_names()';
+SET @duplicate_hosts=(SELECT count(*) FROM myblockchain.user GROUP BY user, lower(host) HAVING count(*) > 1 LIMIT 1);
 SET @str=IF(@duplicate_hosts > 1, @cmd, 'SET @dummy=0');
 
 PREPARE stmt FROM @str;
@@ -700,13 +700,13 @@ EXECUTE stmt;
 -- Get warnings (if any)
 SHOW WARNINGS;
 DROP PREPARE stmt;
-DROP PROCEDURE mysql.warn_duplicate_host_names;
+DROP PROCEDURE myblockchain.warn_duplicate_host_names;
 
 # Convering the host name to lower case for existing users
 UPDATE user SET host=LOWER( host ) WHERE LOWER( host ) <> host;
 
 #
-# mysql.ndb_binlog_index
+# myblockchain.ndb_binlog_index
 #
 # Change type from BIGINT to INT
 ALTER TABLE ndb_binlog_index
@@ -729,26 +729,26 @@ ALTER TABLE ndb_binlog_index
 --
 
 -- SCRAMBLED_PASSWORD_CHAR_LENGTH_323 = 16
-SET @deprecated_pwds=(SELECT COUNT(*) FROM mysql.user WHERE LENGTH(password) = 16);
+SET @deprecated_pwds=(SELECT COUNT(*) FROM myblockchain.user WHERE LENGTH(password) = 16);
 
 -- signal the deprecation error
-DROP PROCEDURE IF EXISTS mysql.warn_pre41_pwd;
-CREATE PROCEDURE mysql.warn_pre41_pwd() SIGNAL SQLSTATE '01000' SET MESSAGE_TEXT='Pre-4.1 password hash found. It is deprecated and will be removed in a future release. Please upgrade it to a new format.';
-SET @cmd='call mysql.warn_pre41_pwd()';
+DROP PROCEDURE IF EXISTS myblockchain.warn_pre41_pwd;
+CREATE PROCEDURE myblockchain.warn_pre41_pwd() SIGNAL SQLSTATE '01000' SET MESSAGE_TEXT='Pre-4.1 password hash found. It is deprecated and will be removed in a future release. Please upgrade it to a new format.';
+SET @cmd='call myblockchain.warn_pre41_pwd()';
 SET @str=IF(@deprecated_pwds > 0, @cmd, 'SET @dummy=0');
 PREPARE stmt FROM @str;
 EXECUTE stmt;
 -- Get warnings (if any)
 SHOW WARNINGS;
 DROP PREPARE stmt;
-DROP PROCEDURE mysql.warn_pre41_pwd;
+DROP PROCEDURE myblockchain.warn_pre41_pwd;
 
 --
 -- Add timestamp and expiry columns
 --
 
 ALTER TABLE user ADD password_last_changed timestamp NULL;
-UPDATE user SET password_last_changed = CURRENT_TIMESTAMP WHERE plugin in ('mysql_native_password','sha256_password') and password_last_changed is NULL;
+UPDATE user SET password_last_changed = CURRENT_TIMESTAMP WHERE plugin in ('myblockchain_native_password','sha256_password') and password_last_changed is NULL;
 
 ALTER TABLE user ADD password_lifetime smallint unsigned NULL;
 
@@ -768,11 +768,11 @@ ALTER TABLE user MODIFY account_locked ENUM('N', 'Y') COLLATE utf8_general_ci DE
 -- Drop password column
 --
 
-SET @have_password= (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = 'mysql'
+SET @have_password= (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = 'myblockchain'
                     AND TABLE_NAME='user'
                     AND column_name='password');
-SET @str=IF(@have_password <> 0, "UPDATE user SET authentication_string = password where LENGTH(password) > 0 and plugin = 'mysql_native_password'", "SET @dummy = 0");
-# We have already put mysql_native_password as plugin value in cases where length(PASSWORD) is either 0 or 41.
+SET @str=IF(@have_password <> 0, "UPDATE user SET authentication_string = password where LENGTH(password) > 0 and plugin = 'myblockchain_native_password'", "SET @dummy = 0");
+# We have already put myblockchain_native_password as plugin value in cases where length(PASSWORD) is either 0 or 41.
 PREPARE stmt FROM @str;
 EXECUTE stmt;
 DROP PREPARE stmt;
@@ -836,15 +836,15 @@ ALTER TABLE ndb_binlog_index
 -- Check for non-empty host table and issue a warning
 --
 
-DROP PROCEDURE IF EXISTS mysql.warn_host_table_nonempty;
-CREATE PROCEDURE mysql.warn_host_table_nonempty() SIGNAL SQLSTATE '01000' SET MESSAGE_TEXT='Table mysql.host is not empty. It is deprecated and will be removed in a future release.';
-SET @cmd='call mysql.warn_host_table_nonempty()';
+DROP PROCEDURE IF EXISTS myblockchain.warn_host_table_nonempty;
+CREATE PROCEDURE myblockchain.warn_host_table_nonempty() SIGNAL SQLSTATE '01000' SET MESSAGE_TEXT='Table myblockchain.host is not empty. It is deprecated and will be removed in a future release.';
+SET @cmd='call myblockchain.warn_host_table_nonempty()';
 
 SET @have_host_table=0;
 SET @host_table_nonempty=0;
-SET @have_host_table=(SELECT COUNT(*) FROM information_schema.tables WHERE table_name LIKE 'host' AND table_schema LIKE 'mysql' AND table_type LIKE 'BASE TABLE');
+SET @have_host_table=(SELECT COUNT(*) FROM information_schema.tables WHERE table_name LIKE 'host' AND table_schema LIKE 'myblockchain' AND table_type LIKE 'BASE TABLE');
 
-SET @host_table_nonempty_str=IF(@have_host_table > 0, 'SET @host_table_nonempty=(SELECT COUNT(*) FROM mysql.host)', 'SET @dummy=0');
+SET @host_table_nonempty_str=IF(@have_host_table > 0, 'SET @host_table_nonempty=(SELECT COUNT(*) FROM myblockchain.host)', 'SET @dummy=0');
 PREPARE stmt FROM @host_table_nonempty_str;
 EXECUTE stmt;
 DROP PREPARE stmt;
@@ -856,7 +856,7 @@ EXECUTE stmt;
 -- Get warnings (if any)
 SHOW WARNINGS;
 DROP PREPARE stmt;
-DROP PROCEDURE mysql.warn_host_table_nonempty;
+DROP PROCEDURE myblockchain.warn_host_table_nonempty;
 
 --
 -- Upgrade help tables
@@ -884,37 +884,37 @@ ALTER TABLE time_zone_transition ENGINE=InnoDB STATS_PERSISTENT=0;
 ALTER TABLE time_zone_transition_type ENGINE=InnoDB STATS_PERSISTENT=0;
 
 # Move any distributed grant tables back to NDB after upgrade
-SET @cmd="ALTER TABLE mysql.user ENGINE=NDB";
+SET @cmd="ALTER TABLE myblockchain.user ENGINE=NDB";
 SET @str = IF(@had_distributed_user > 0, @cmd, "SET @dummy = 0");
 PREPARE stmt FROM @str;
 EXECUTE stmt;
 DROP PREPARE stmt;
 
-SET @cmd="ALTER TABLE mysql.db ENGINE=NDB";
+SET @cmd="ALTER TABLE myblockchain.db ENGINE=NDB";
 SET @str = IF(@had_distributed_db > 0, @cmd, "SET @dummy = 0");
 PREPARE stmt FROM @str;
 EXECUTE stmt;
 DROP PREPARE stmt;
 
-SET @cmd="ALTER TABLE mysql.tables_priv ENGINE=NDB";
+SET @cmd="ALTER TABLE myblockchain.tables_priv ENGINE=NDB";
 SET @str = IF(@had_distributed_tables_priv > 0, @cmd, "SET @dummy = 0");
 PREPARE stmt FROM @str;
 EXECUTE stmt;
 DROP PREPARE stmt;
 
-SET @cmd="ALTER TABLE mysql.columns_priv ENGINE=NDB";
+SET @cmd="ALTER TABLE myblockchain.columns_priv ENGINE=NDB";
 SET @str = IF(@had_distributed_columns_priv > 0, @cmd, "SET @dummy = 0");
 PREPARE stmt FROM @str;
 EXECUTE stmt;
 DROP PREPARE stmt;
 
-SET @cmd="ALTER TABLE mysql.procs_priv ENGINE=NDB";
+SET @cmd="ALTER TABLE myblockchain.procs_priv ENGINE=NDB";
 SET @str = IF(@had_distributed_procs_priv > 0, @cmd, "SET @dummy = 0");
 PREPARE stmt FROM @str;
 EXECUTE stmt;
 DROP PREPARE stmt;
 
-SET @cmd="ALTER TABLE mysql.proxies_priv ENGINE=NDB";
+SET @cmd="ALTER TABLE myblockchain.proxies_priv ENGINE=NDB";
 SET @str = IF(@had_distributed_proxies_priv > 0, @cmd, "SET @dummy = 0");
 PREPARE stmt FROM @str;
 EXECUTE stmt;

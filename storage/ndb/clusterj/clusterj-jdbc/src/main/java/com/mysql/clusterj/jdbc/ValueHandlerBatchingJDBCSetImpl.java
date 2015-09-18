@@ -15,7 +15,7 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-package com.mysql.clusterj.jdbc;
+package com.myblockchain.clusterj.jdbc;
 
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
@@ -24,14 +24,14 @@ import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
 
-import com.mysql.clusterj.ClusterJFatalInternalException;
-import com.mysql.clusterj.ColumnMetadata;
-import com.mysql.clusterj.core.CacheManager;
-import com.mysql.clusterj.core.spi.DomainTypeHandler;
-import com.mysql.clusterj.core.spi.ValueHandlerBatching;
-import com.mysql.clusterj.core.util.I18NHelper;
-import com.mysql.clusterj.core.util.Logger;
-import com.mysql.clusterj.core.util.LoggerFactoryService;
+import com.myblockchain.clusterj.ClusterJFatalInternalException;
+import com.myblockchain.clusterj.ColumnMetadata;
+import com.myblockchain.clusterj.core.CacheManager;
+import com.myblockchain.clusterj.core.spi.DomainTypeHandler;
+import com.myblockchain.clusterj.core.spi.ValueHandlerBatching;
+import com.myblockchain.clusterj.core.util.I18NHelper;
+import com.myblockchain.clusterj.core.util.Logger;
+import com.myblockchain.clusterj.core.util.LoggerFactoryService;
 
 /**
  * ValueHandlerBatchingJDBCSetImpl implements the ValueHandler interface

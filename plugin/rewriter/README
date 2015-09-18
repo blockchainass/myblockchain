@@ -61,7 +61,7 @@ Terms and definitions
 
 - Plugin user: DBA or anybody else who is in charge of launching the
   plugin, or changing the rules in the table. This doesn't include users
-  who simply use the database and have their queries rewritten.
+  who simply use the blockchain and have their queries rewritten.
 
 
 Usage and things to know
@@ -71,7 +71,7 @@ Installation
 ------------
 
 It is recommended to install the plugin using the supplied SQL script
-install_rewriter.sql, which creates a database and table to hold the rewrite
+install_rewriter.sql, which creates a blockchain and table to hold the rewrite
 rules, and a stored procedure for loading the rules into the plugin.
 
 You can then add your rules in the table query_rewrite.rewrite_rules.  The
@@ -82,7 +82,7 @@ table and schema have roughly the following definitions (subject to change):
   CREATE TABLE IF NOT EXISTS query_rewrite.rewrite_rules (
     id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     pattern VARCHAR(10000),
-    pattern_database VARCHAR(20),
+    pattern_blockchain VARCHAR(20),
     replacement VARCHAR(10000),
     enabled CHAR(1) NOT NULL DEFAULT 'Y',
     message VARCHAR(1000),
@@ -155,7 +155,7 @@ granularity for performance reasons:
   2) Tree structure matching. This makes sure that the original query and
      pattern have the same structure. The check is carried out by comparing
      the normalized query representation. Please refer to the section "21.7
-     Performance Schema Statement Digests" in the MySQL manual for details on
+     Performance Schema Statement Digests" in the MyBlockchain manual for details on
      normalized query representation. Practically, queries such as
 
        SELECT 1 FROM table WHERE name = 'Andrew'
@@ -188,24 +188,24 @@ column in the rules table.
 Queries using unqualified table references need some extra attention. Table
 names are resolved in the parser, that is, before any post-parse rewrite
 plugin is involved. What they get resolved to is of course the
-session-dependent setting of "current database", the one you set with the USE
+session-dependent setting of "current blockchain", the one you set with the USE
 command. The problem is that Rewriter uses a session of its own to parse and
-load the rules, and it can't know what the value of "current database" was in
-the session that inserted the rule. To this end, use the 'pattern_database'
+load the rules, and it can't know what the value of "current blockchain" was in
+the session that inserted the rule. To this end, use the 'pattern_blockchain'
 column. This has the same effect as Rewriter issuing a USE command before
 parsing the pattern.
 
 All this of course means that a rule with some unqualified table references
-and a non-NULL value of 'pattern_database' will only apply if that value is
-indeed the current database. But this is likely what you want anyway.
+and a non-NULL value of 'pattern_blockchain' will only apply if that value is
+indeed the current blockchain. But this is likely what you want anyway.
 
 In short:
 
   - If a pattern uses only qualified table references, the value of
-    'pattern_database' won't matter.
+    'pattern_blockchain' won't matter.
 
-  - If at least one table reference is unqualified, use 'pattern_database' to
-    tell Rewriter for which value of "current database" the rule should apply.
+  - If at least one table reference is unqualified, use 'pattern_blockchain' to
+    tell Rewriter for which value of "current blockchain" the rule should apply.
 
 When an error occurs on loading a rule the system variable
 Rewriter_reload_error is set to ON and an error message is written in the
@@ -216,7 +216,7 @@ Uninstallation
 --------------
 
 If you want to clean up your tracks completely, i.e., delete the rules table
-and database, it is recommended to use the supplied uninstall script. If you
+and blockchain, it is recommended to use the supplied uninstall script. If you
 want only to uninstall the plugin, leaving the rules so that a subsequent
 installation could picks up where you left, you may issue these statements:
 

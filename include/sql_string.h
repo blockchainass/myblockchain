@@ -16,13 +16,13 @@
    along with this program; if not, write to the Free Software
    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA */
 
-/* This file is originally from the mysql distribution. Coded by monty */
+/* This file is originally from the myblockchain distribution. Coded by monty */
 
 #include "m_ctype.h"                            /* my_charset_bin */
 #include "my_sys.h"              /* alloc_root, my_free, my_realloc */
 #include "m_string.h"                           /* TRASH */
 
-#ifdef MYSQL_SERVER
+#ifdef MYBLOCKCHAIN_SERVER
 extern PSI_memory_key key_memory_String_value;
 #define STRING_PSI_MEMORY_KEY key_memory_String_value
 #else

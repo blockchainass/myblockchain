@@ -18,7 +18,7 @@
 /*
  * testOIBasic - ordered index test
  *
- * dummy push to re-created mysql-5.1-telco ...
+ * dummy push to re-created myblockchain-5.1-telco ...
  */
 
 #include <ndb_global.h>

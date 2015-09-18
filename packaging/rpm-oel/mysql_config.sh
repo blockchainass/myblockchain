@@ -1,6 +1,6 @@
 #! /bin/bash
 #
-# Wrapper script for mysql_config to support multilib
+# Wrapper script for myblockchain_config to support multilib
 #
 #
 
@@ -27,10 +27,10 @@ if [ "$bits" == "unknown" ] ; then
     exit 1
 fi
 
-if [ -x /usr/bin/mysql_config-$bits ] ; then
-    /usr/bin/mysql_config-$bits "$@"
+if [ -x /usr/bin/myblockchain_config-$bits ] ; then
+    /usr/bin/myblockchain_config-$bits "$@"
 else
-    echo "$0: error: needed binary: /usr/bin/mysql_config-$bits is missing. Please check your MySQL installation."
+    echo "$0: error: needed binary: /usr/bin/myblockchain_config-$bits is missing. Please check your MyBlockchain installation."
     exit 1
 fi
 

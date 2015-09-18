@@ -15,26 +15,26 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
  */
 
-package com.mysql.clusterj.tie;
+package com.myblockchain.clusterj.tie;
 
-import com.mysql.ndbjtie.ndbapi.NdbDictionary.Dictionary;
-import com.mysql.ndbjtie.ndbapi.NdbDictionary.DictionaryConst;
-import com.mysql.ndbjtie.ndbapi.NdbDictionary.DictionaryConst.ListConst.Element;
-import com.mysql.ndbjtie.ndbapi.NdbDictionary.DictionaryConst.ListConst.ElementArray;
-import com.mysql.ndbjtie.ndbapi.NdbDictionary.IndexConst;
-import com.mysql.ndbjtie.ndbapi.NdbDictionary.TableConst;
+import com.myblockchain.ndbjtie.ndbapi.NdbDictionary.Dictionary;
+import com.myblockchain.ndbjtie.ndbapi.NdbDictionary.DictionaryConst;
+import com.myblockchain.ndbjtie.ndbapi.NdbDictionary.DictionaryConst.ListConst.Element;
+import com.myblockchain.ndbjtie.ndbapi.NdbDictionary.DictionaryConst.ListConst.ElementArray;
+import com.myblockchain.ndbjtie.ndbapi.NdbDictionary.IndexConst;
+import com.myblockchain.ndbjtie.ndbapi.NdbDictionary.TableConst;
 
-import com.mysql.clusterj.core.store.Index;
-import com.mysql.clusterj.core.store.Table;
+import com.myblockchain.clusterj.core.store.Index;
+import com.myblockchain.clusterj.core.store.Table;
 
-import com.mysql.clusterj.core.util.I18NHelper;
-import com.mysql.clusterj.core.util.Logger;
-import com.mysql.clusterj.core.util.LoggerFactoryService;
+import com.myblockchain.clusterj.core.util.I18NHelper;
+import com.myblockchain.clusterj.core.util.Logger;
+import com.myblockchain.clusterj.core.util.LoggerFactoryService;
 
 /**
  *
  */
-class DictionaryImpl implements com.mysql.clusterj.core.store.Dictionary {
+class DictionaryImpl implements com.myblockchain.clusterj.core.store.Dictionary {
 
     /** My message translator */
     static final I18NHelper local = I18NHelper
@@ -87,8 +87,8 @@ class DictionaryImpl implements com.mysql.clusterj.core.store.Dictionary {
 
     public String[] getIndexNames(String tableName) {
         // get all indexes for this table including ordered PRIMARY
-        com.mysql.ndbjtie.ndbapi.NdbDictionary.DictionaryConst.List indexList = 
-            com.mysql.ndbjtie.ndbapi.NdbDictionary.DictionaryConst.List.create();
+        com.myblockchain.ndbjtie.ndbapi.NdbDictionary.DictionaryConst.List indexList = 
+            com.myblockchain.ndbjtie.ndbapi.NdbDictionary.DictionaryConst.List.create();
         final String[] result;
         try {
             int returnCode = ndbDictionary.listIndexes(indexList, tableName);
@@ -105,7 +105,7 @@ class DictionaryImpl implements com.mysql.clusterj.core.store.Dictionary {
             }
         } finally {
             // free the list memory even if error
-            com.mysql.ndbjtie.ndbapi.NdbDictionary.DictionaryConst.List.delete(indexList);
+            com.myblockchain.ndbjtie.ndbapi.NdbDictionary.DictionaryConst.List.delete(indexList);
         }
         return result;
     }

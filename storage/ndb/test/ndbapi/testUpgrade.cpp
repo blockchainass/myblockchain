@@ -244,7 +244,7 @@ createEvent(Ndb *pNdb,
   if (report)
     myEvent.setReport(NdbDictionary::Event::ER_SUBSCRIBE);
 
-  int res = myDict->createEvent(myEvent); // Add event to database
+  int res = myDict->createEvent(myEvent); // Add event to blockchain
   
   if (res == 0)
     myEvent.print();
@@ -260,7 +260,7 @@ createEvent(Ndb *pNdb,
       return NDBT_FAILED;
     }
     // try again
-    res = myDict->createEvent(myEvent); // Add event to database
+    res = myDict->createEvent(myEvent); // Add event to blockchain
     if (res) {
       g_err << "Failed to create event (1): " 
 	    << myDict->getNdbError().code << " : "
@@ -791,7 +791,7 @@ int runCheckStarted(NDBT_Context* ctx, NDBT_Step* step){
 
   // Make sure atrt assigns nodeid != -1
   SqlResultSet procs;
-  if (!atrt.doQuery("SELECT * FROM process where type <> \'mysql\'", procs))
+  if (!atrt.doQuery("SELECT * FROM process where type <> \'myblockchain\'", procs))
     return NDBT_FAILED;
 
   while (procs.next())
@@ -1204,7 +1204,7 @@ startPostUpgradeChecks(NDBT_Context* ctx, NDBT_Step* step)
   }
 
   /**
-   * mysql-getopt works so that passing "-n X -n Y" is ok
+   * myblockchain-getopt works so that passing "-n X -n Y" is ok
    *   and is interpreted as "-n Y"
    *
    * so we restart ourselves with testcase-name and "--post-upgrade" appended

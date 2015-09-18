@@ -18,7 +18,7 @@
 # The current choices of installation layout are:
 #
 #  STANDALONE
-#    Build with prefix=/usr/local/mysql, create tarball with install prefix="."
+#    Build with prefix=/usr/local/myblockchain, create tarball with install prefix="."
 #    and relative links.  Windows zip uses the same tarball layout but without
 #    the build prefix.
 #
@@ -27,13 +27,13 @@
 #    Note: The layout for ULN RPMs differs, see the "RPM" section.
 #
 #  DEB
-#    Build as per STANDALONE, prefix=/opt/mysql/server-$major.$minor
+#    Build as per STANDALONE, prefix=/opt/myblockchain/server-$major.$minor
 #
 #  SVR4
-#    Solaris package layout suitable for pkg* tools, prefix=/opt/mysql/mysql
+#    Solaris package layout suitable for pkg* tools, prefix=/opt/myblockchain/myblockchain
 #
 #  FREEBSD, GLIBC, OSX, TARGZ
-#    Build with prefix=/usr/local/mysql, create tarball with install prefix="."
+#    Build with prefix=/usr/local/myblockchain, create tarball with install prefix="."
 #    and relative links.
 #
 #  WIN
@@ -52,29 +52,29 @@
 # Several variables can be overwritten:
 #
 # - INSTALL_BINDIR          (directory with client executables and scripts)
-# - INSTALL_SBINDIR         (directory with mysqld)
+# - INSTALL_SBINDIR         (directory with myblockchaind)
 # - INSTALL_SCRIPTDIR       (several scripts, rarely used)
 #
 # - INSTALL_LIBDIR          (directory with client end embedded libraries)
 # - INSTALL_PLUGINDIR       (directory for plugins)
 #
-# - INSTALL_INCLUDEDIR      (directory for MySQL headers)
+# - INSTALL_INCLUDEDIR      (directory for MyBlockchain headers)
 #
 # - INSTALL_DOCDIR          (documentation)
 # - INSTALL_DOCREADMEDIR    (readme and similar)
 # - INSTALL_MANDIR          (man pages)
 # - INSTALL_INFODIR         (info pages)
 #
-# - INSTALL_SHAREDIR        (location of aclocal/mysql.m4)
-# - INSTALL_MYSQLSHAREDIR   (MySQL character sets and localized error messages)
-# - INSTALL_MYSQLTESTDIR    (mysql-test)
+# - INSTALL_SHAREDIR        (location of aclocal/myblockchain.m4)
+# - INSTALL_MYBLOCKCHAINSHAREDIR   (MyBlockchain character sets and localized error messages)
+# - INSTALL_MYBLOCKCHAINTESTDIR    (myblockchain-test)
 # - INSTALL_SUPPORTFILESDIR (various extra support files)
 #
-# - INSTALL_MYSQLDATADIR    (data directory)
+# - INSTALL_MYBLOCKCHAINDATADIR    (data directory)
 # - INSTALL_SECURE_FILE_PRIVDIR (--secure-file-priv directory)
 #
 # When changing this page,  _please_ do not forget to update public Wiki
-# http://forge.mysql.com/wiki/CMake#Fine-tuning_installation_paths
+# http://forge.myblockchain.com/wiki/CMake#Fine-tuning_installation_paths
 
 IF(NOT INSTALL_LAYOUT)
   SET(DEFAULT_INSTALL_LAYOUT "STANDALONE")
@@ -88,13 +88,13 @@ IF(UNIX)
      INSTALL_LAYOUT MATCHES "SLES")
     SET(default_prefix "/usr")
   ELSEIF(INSTALL_LAYOUT MATCHES "DEB")
-    SET(default_prefix "/opt/mysql/server-${MYSQL_BASE_VERSION}")
+    SET(default_prefix "/opt/myblockchain/server-${MYBLOCKCHAIN_BASE_VERSION}")
     # This is required to avoid "cpack -GDEB" default of prefix=/usr
     SET(CPACK_SET_DESTDIR ON)
   ELSEIF(INSTALL_LAYOUT MATCHES "SVR4")
-    SET(default_prefix "/opt/mysql/mysql")
+    SET(default_prefix "/opt/myblockchain/myblockchain")
   ELSE()
-    SET(default_prefix "/usr/local/mysql")
+    SET(default_prefix "/usr/local/myblockchain")
   ENDIF()
   IF(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
     SET(CMAKE_INSTALL_PREFIX ${default_prefix}
@@ -142,10 +142,10 @@ ELSEIF(INSTALL_LAYOUT MATCHES "RPM" OR
        INSTALL_LAYOUT MATCHES "SLES" OR
        INSTALL_LAYOUT MATCHES "SVR4" OR
        INSTALL_LAYOUT MATCHES "DEB")
-  SET(secure_file_priv_path "/var/lib/mysql-files")
+  SET(secure_file_priv_path "/var/lib/myblockchain-files")
   SET(secure_file_priv_embedded_path "NULL")
 ELSE()
-  SET(secure_file_priv_path "${default_prefix}/mysql-files")
+  SET(secure_file_priv_path "${default_prefix}/myblockchain-files")
   SET(secure_file_priv_embedded_path "NULL")
 ENDIF()
 
@@ -167,11 +167,11 @@ SET(INSTALL_MANDIR_STANDALONE           "man")
 SET(INSTALL_INFODIR_STANDALONE          "docs")
 #
 SET(INSTALL_SHAREDIR_STANDALONE         "share")
-SET(INSTALL_MYSQLSHAREDIR_STANDALONE    "share")
-SET(INSTALL_MYSQLTESTDIR_STANDALONE     "mysql-test")
+SET(INSTALL_MYBLOCKCHAINSHAREDIR_STANDALONE    "share")
+SET(INSTALL_MYBLOCKCHAINTESTDIR_STANDALONE     "myblockchain-test")
 SET(INSTALL_SUPPORTFILESDIR_STANDALONE  "support-files")
 #
-SET(INSTALL_MYSQLDATADIR_STANDALONE     "data")
+SET(INSTALL_MYBLOCKCHAINDATADIR_STANDALONE     "data")
 SET(INSTALL_PLUGINTESTDIR_STANDALONE    ${plugin_tests})
 SET(INSTALL_SECURE_FILE_PRIVDIR_STANDALONE ${secure_file_priv_path})
 SET(INSTALL_SECURE_FILE_PRIV_EMBEDDEDDIR_STANDALONE ${secure_file_priv_embedded_path})
@@ -194,11 +194,11 @@ SET(INSTALL_MANDIR_WIN           "man")
 SET(INSTALL_INFODIR_WIN          "docs")
 #
 SET(INSTALL_SHAREDIR_WIN         "share")
-SET(INSTALL_MYSQLSHAREDIR_WIN    "share")
-SET(INSTALL_MYSQLTESTDIR_WIN     "mysql-test")
+SET(INSTALL_MYBLOCKCHAINSHAREDIR_WIN    "share")
+SET(INSTALL_MYBLOCKCHAINTESTDIR_WIN     "myblockchain-test")
 SET(INSTALL_SUPPORTFILESDIR_WIN  "support-files")
 #
-SET(INSTALL_MYSQLDATADIR_WIN     "data")
+SET(INSTALL_MYBLOCKCHAINDATADIR_WIN     "data")
 SET(INSTALL_PLUGINTESTDIR_WIN    ${plugin_tests})
 SET(INSTALL_SECURE_FILE_PRIVDIR_WIN ${secure_file_priv_path})
 SET(INSTALL_SECURE_FILE_PRIV_EMBEDDEDDIR_WIN ${secure_file_priv_embedded_path})
@@ -221,11 +221,11 @@ SET(INSTALL_MANDIR_FREEBSD           "man")
 SET(INSTALL_INFODIR_FREEBSD          "docs")
 #
 SET(INSTALL_SHAREDIR_FREEBSD         "share")
-SET(INSTALL_MYSQLSHAREDIR_FREEBSD    "share")
-SET(INSTALL_MYSQLTESTDIR_FREEBSD     "mysql-test")
+SET(INSTALL_MYBLOCKCHAINSHAREDIR_FREEBSD    "share")
+SET(INSTALL_MYBLOCKCHAINTESTDIR_FREEBSD     "myblockchain-test")
 SET(INSTALL_SUPPORTFILESDIR_FREEBSD  "support-files")
 #
-SET(INSTALL_MYSQLDATADIR_FREEBSD     "data")
+SET(INSTALL_MYBLOCKCHAINDATADIR_FREEBSD     "data")
 SET(INSTALL_PLUGINTESTDIR_FREEBSD    ${plugin_tests})
 SET(INSTALL_SECURE_FILE_PRIVDIR_FREEBSD ${secure_file_priv_path})
 SET(INSTALL_SECURE_FILE_PRIV_EMBEDDEDDIR_FREEBSD ${secure_file_priv_embedded_path})
@@ -248,11 +248,11 @@ SET(INSTALL_MANDIR_GLIBC           "man")
 SET(INSTALL_INFODIR_GLIBC          "docs")
 #
 SET(INSTALL_SHAREDIR_GLIBC         "share")
-SET(INSTALL_MYSQLSHAREDIR_GLIBC    "share")
-SET(INSTALL_MYSQLTESTDIR_GLIBC     "mysql-test")
+SET(INSTALL_MYBLOCKCHAINSHAREDIR_GLIBC    "share")
+SET(INSTALL_MYBLOCKCHAINTESTDIR_GLIBC     "myblockchain-test")
 SET(INSTALL_SUPPORTFILESDIR_GLIBC  "support-files")
 #
-SET(INSTALL_MYSQLDATADIR_GLIBC     "data")
+SET(INSTALL_MYBLOCKCHAINDATADIR_GLIBC     "data")
 SET(INSTALL_PLUGINTESTDIR_GLIBC    ${plugin_tests})
 SET(INSTALL_SECURE_FILE_PRIVDIR_GLIBC ${secure_file_priv_path})
 SET(INSTALL_SECURE_FILE_PRIV_EMBEDDEDDIR_GLIBC ${secure_file_priv_embedded_path})
@@ -275,11 +275,11 @@ SET(INSTALL_MANDIR_OSX           "man")
 SET(INSTALL_INFODIR_OSX          "docs")
 #
 SET(INSTALL_SHAREDIR_OSX         "share")
-SET(INSTALL_MYSQLSHAREDIR_OSX    "share")
-SET(INSTALL_MYSQLTESTDIR_OSX     "mysql-test")
+SET(INSTALL_MYBLOCKCHAINSHAREDIR_OSX    "share")
+SET(INSTALL_MYBLOCKCHAINTESTDIR_OSX     "myblockchain-test")
 SET(INSTALL_SUPPORTFILESDIR_OSX  "support-files")
 #
-SET(INSTALL_MYSQLDATADIR_OSX     "data")
+SET(INSTALL_MYBLOCKCHAINDATADIR_OSX     "data")
 SET(INSTALL_PLUGINTESTDIR_OSX    ${plugin_tests})
 SET(INSTALL_SECURE_FILE_PRIVDIR_OSX ${secure_file_priv_path})
 SET(INSTALL_SECURE_FILE_PRIV_EMBEDDEDDIR_OSX ${secure_file_priv_embedded_path})
@@ -302,11 +302,11 @@ SET(INSTALL_MANDIR_TARGZ           "man")
 SET(INSTALL_INFODIR_TARGZ          "docs")
 #
 SET(INSTALL_SHAREDIR_TARGZ         "share")
-SET(INSTALL_MYSQLSHAREDIR_TARGZ    "share")
-SET(INSTALL_MYSQLTESTDIR_TARGZ     "mysql-test")
+SET(INSTALL_MYBLOCKCHAINSHAREDIR_TARGZ    "share")
+SET(INSTALL_MYBLOCKCHAINTESTDIR_TARGZ     "myblockchain-test")
 SET(INSTALL_SUPPORTFILESDIR_TARGZ  "support-files")
 #
-SET(INSTALL_MYSQLDATADIR_TARGZ     "data")
+SET(INSTALL_MYBLOCKCHAINDATADIR_TARGZ     "data")
 SET(INSTALL_PLUGINTESTDIR_TARGZ    ${plugin_tests})
 SET(INSTALL_SECURE_FILE_PRIVDIR_TARGZ ${secure_file_priv_path})
 SET(INSTALL_SECURE_FILE_PRIV_EMBEDDEDDIR_TARGZ ${secure_file_priv_embedded_path})
@@ -314,7 +314,7 @@ SET(INSTALL_SECURE_FILE_PRIV_EMBEDDEDDIR_TARGZ ${secure_file_priv_embedded_path}
 #
 # RPM layout
 #
-# See "packaging/rpm-uln/mysql-5.5-libdir.patch" for the differences
+# See "packaging/rpm-uln/myblockchain-5.5-libdir.patch" for the differences
 # which apply to RPMs in ULN (Oracle Linux), that patch file will
 # be applied at build time via "rpmbuild".
 #
@@ -324,13 +324,13 @@ SET(INSTALL_SCRIPTDIR_RPM               "bin")
 #
 IF(CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64")
   SET(INSTALL_LIBDIR_RPM                "lib64")
-  SET(INSTALL_PLUGINDIR_RPM             "lib64/mysql/plugin")
+  SET(INSTALL_PLUGINDIR_RPM             "lib64/myblockchain/plugin")
 ELSE()
   SET(INSTALL_LIBDIR_RPM                "lib")
-  SET(INSTALL_PLUGINDIR_RPM             "lib/mysql/plugin")
+  SET(INSTALL_PLUGINDIR_RPM             "lib/myblockchain/plugin")
 ENDIF()
 #
-SET(INSTALL_INCLUDEDIR_RPM              "include/mysql")
+SET(INSTALL_INCLUDEDIR_RPM              "include/myblockchain")
 #
 #SET(INSTALL_DOCDIR_RPM                 unset - installed directly by RPM)
 #SET(INSTALL_DOCREADMEDIR_RPM           unset - installed directly by RPM)
@@ -338,11 +338,11 @@ SET(INSTALL_INFODIR_RPM                 "share/info")
 SET(INSTALL_MANDIR_RPM                  "share/man")
 #
 SET(INSTALL_SHAREDIR_RPM                "share")
-SET(INSTALL_MYSQLSHAREDIR_RPM           "share/mysql")
-SET(INSTALL_MYSQLTESTDIR_RPM            "share/mysql-test")
-SET(INSTALL_SUPPORTFILESDIR_RPM         "share/mysql")
+SET(INSTALL_MYBLOCKCHAINSHAREDIR_RPM           "share/myblockchain")
+SET(INSTALL_MYBLOCKCHAINTESTDIR_RPM            "share/myblockchain-test")
+SET(INSTALL_SUPPORTFILESDIR_RPM         "share/myblockchain")
 #
-SET(INSTALL_MYSQLDATADIR_RPM            "/var/lib/mysql")
+SET(INSTALL_MYBLOCKCHAINDATADIR_RPM            "/var/lib/myblockchain")
 SET(INSTALL_PLUGINTESTDIR_RPM           ${plugin_tests})
 SET(INSTALL_SECURE_FILE_PRIVDIR_RPM     ${secure_file_priv_path})
 SET(INSTALL_SECURE_FILE_PRIV_EMBEDDEDDIR_RPM     ${secure_file_priv_embedded_path})
@@ -356,13 +356,13 @@ SET(INSTALL_SCRIPTDIR_SLES               "bin")
 #
 IF(CMAKE_SYSTEM_PROCESSOR MATCHES "x86_64")
   SET(INSTALL_LIBDIR_SLES                "lib64")
-  SET(INSTALL_PLUGINDIR_SLES             "lib64/mysql/plugin")
+  SET(INSTALL_PLUGINDIR_SLES             "lib64/myblockchain/plugin")
 ELSE()
   SET(INSTALL_LIBDIR_SLES                "lib")
-  SET(INSTALL_PLUGINDIR_SLES             "lib/mysql/plugin")
+  SET(INSTALL_PLUGINDIR_SLES             "lib/myblockchain/plugin")
 ENDIF()
 #
-SET(INSTALL_INCLUDEDIR_SLES              "include/mysql")
+SET(INSTALL_INCLUDEDIR_SLES              "include/myblockchain")
 #
 #SET(INSTALL_DOCDIR_SLES                 unset - installed directly by SLES)
 #SET(INSTALL_DOCREADMEDIR_SLES           unset - installed directly by SLES)
@@ -370,11 +370,11 @@ SET(INSTALL_INFODIR_SLES                 "share/info")
 SET(INSTALL_MANDIR_SLES                  "share/man")
 #
 SET(INSTALL_SHAREDIR_SLES                "share")
-SET(INSTALL_MYSQLSHAREDIR_SLES           "share/mysql")
-SET(INSTALL_MYSQLTESTDIR_SLES            "share/mysql-test")
-SET(INSTALL_SUPPORTFILESDIR_SLES         "share/mysql")
+SET(INSTALL_MYBLOCKCHAINSHAREDIR_SLES           "share/myblockchain")
+SET(INSTALL_MYBLOCKCHAINTESTDIR_SLES            "share/myblockchain-test")
+SET(INSTALL_SUPPORTFILESDIR_SLES         "share/myblockchain")
 #
-SET(INSTALL_MYSQLDATADIR_SLES            "/var/lib/mysql")
+SET(INSTALL_MYBLOCKCHAINDATADIR_SLES            "/var/lib/myblockchain")
 SET(INSTALL_PLUGINTESTDIR_SLES           ${plugin_tests})
 SET(INSTALL_SECURE_FILE_PRIVDIR_SLES     ${secure_file_priv_path})
 SET(INSTALL_SECURE_FILE_PRIV_EMBEDDEDDIR_SLES     ${secure_file_priv_embedded_path})
@@ -397,11 +397,11 @@ SET(INSTALL_MANDIR_DEB                  "man")
 SET(INSTALL_INFODIR_DEB                 "docs")
 #
 SET(INSTALL_SHAREDIR_DEB                "share")
-SET(INSTALL_MYSQLSHAREDIR_DEB           "share")
-SET(INSTALL_MYSQLTESTDIR_DEB            "mysql-test")
+SET(INSTALL_MYBLOCKCHAINSHAREDIR_DEB           "share")
+SET(INSTALL_MYBLOCKCHAINTESTDIR_DEB            "myblockchain-test")
 SET(INSTALL_SUPPORTFILESDIR_DEB         "support-files")
 #
-SET(INSTALL_MYSQLDATADIR_DEB            "/var/lib/mysql")
+SET(INSTALL_MYBLOCKCHAINDATADIR_DEB            "/var/lib/myblockchain")
 SET(INSTALL_PLUGINTESTDIR_DEB           ${plugin_tests})
 SET(INSTALL_SECURE_FILE_PRIVDIR_DEB     ${secure_file_priv_path})
 SET(INSTALL_SECURE_FILE_PRIV_EMBEDDEDDIR_DEB     ${secure_file_priv_embedded_path})
@@ -424,11 +424,11 @@ SET(INSTALL_MANDIR_SVR4                 "man")
 SET(INSTALL_INFODIR_SVR4                "docs")
 #
 SET(INSTALL_SHAREDIR_SVR4               "share")
-SET(INSTALL_MYSQLSHAREDIR_SVR4          "share")
-SET(INSTALL_MYSQLTESTDIR_SVR4           "mysql-test")
+SET(INSTALL_MYBLOCKCHAINSHAREDIR_SVR4          "share")
+SET(INSTALL_MYBLOCKCHAINTESTDIR_SVR4           "myblockchain-test")
 SET(INSTALL_SUPPORTFILESDIR_SVR4        "support-files")
 #
-SET(INSTALL_MYSQLDATADIR_SVR4           "/var/lib/mysql")
+SET(INSTALL_MYBLOCKCHAINDATADIR_SVR4           "/var/lib/myblockchain")
 SET(INSTALL_PLUGINTESTDIR_SVR4          ${plugin_tests})
 SET(INSTALL_SECURE_FILE_PRIVDIR_SVR4    ${secure_file_priv_path})
 SET(INSTALL_SECURE_FILE_PRIV_EMBEDDEDDIR_SVR4    ${secure_file_priv_embedded_path})
@@ -445,8 +445,8 @@ SET(OLD_INSTALL_LAYOUT ${INSTALL_LAYOUT} CACHE INTERNAL "")
 # Set INSTALL_FOODIR variables for chosen layout (for example, INSTALL_BINDIR
 # will be defined  as ${INSTALL_BINDIR_STANDALONE} by default if STANDALONE
 # layout is chosen)
-FOREACH(var BIN SBIN LIB MYSQLSHARE SHARE PLUGIN INCLUDE SCRIPT DOC MAN
-  INFO MYSQLTEST DOCREADME SUPPORTFILES MYSQLDATA PLUGINTEST
+FOREACH(var BIN SBIN LIB MYBLOCKCHAINSHARE SHARE PLUGIN INCLUDE SCRIPT DOC MAN
+  INFO MYBLOCKCHAINTEST DOCREADME SUPPORTFILES MYBLOCKCHAINDATA PLUGINTEST
   SECURE_FILE_PRIV SECURE_FILE_PRIV_EMBEDDED)
   SET(INSTALL_${var}DIR  ${INSTALL_${var}DIR_${INSTALL_LAYOUT}}
   CACHE STRING "${var} installation directory" ${FORCE})

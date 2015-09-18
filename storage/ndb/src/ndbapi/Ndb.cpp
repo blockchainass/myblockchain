@@ -295,7 +295,7 @@ found_middle:
 /*****************************************************************************
 disconnect();
 
-Remark:        Disconnect all connections to the database. 
+Remark:        Disconnect all connections to the blockchain. 
 *****************************************************************************/
 void 
 Ndb::doDisconnect()
@@ -1195,7 +1195,7 @@ Ndb::getAutoIncrementValue(const char* aTableName,
                            Uint64 step, Uint64 start)
 {
   DBUG_ENTER("Ndb::getAutoIncrementValue");
-  ASSERT_NOT_MYSQLD;
+  ASSERT_NOT_MYBLOCKCHAIND;
   BaseString internal_tabname(internalize_table_name(aTableName));
 
   Ndb_local_table_info *info=
@@ -1218,7 +1218,7 @@ Ndb::getAutoIncrementValue(const NdbDictionary::Table * aTable,
                            Uint64 step, Uint64 start)
 {
   DBUG_ENTER("Ndb::getAutoIncrementValue");
-  ASSERT_NOT_MYSQLD;
+  ASSERT_NOT_MYBLOCKCHAIND;
   assert(aTable != 0);
   const NdbTableImpl* table = & NdbTableImpl::getImpl(*aTable);
   const BaseString& internal_tabname = table->m_internalName;
@@ -1315,7 +1315,7 @@ Ndb::getTupleIdFromNdb(const NdbTableImpl* table,
   if (cacheSize == 0)
     cacheSize = 1;
   
-  DBUG_PRINT("info", ("reading %u values from database", (uint)cacheSize));
+  DBUG_PRINT("info", ("reading %u values from blockchain", (uint)cacheSize));
   /*
    * reserve next cacheSize entries in db.  adds cacheSize to NEXTID
    * and returns first tupleId in the new range. If tupleId's are
@@ -1325,7 +1325,7 @@ Ndb::getTupleIdFromNdb(const NdbTableImpl* table,
   
   if (opTupleIdOnNdb(table, range, opValue, 0) == -1)
     DBUG_RETURN(-1);
-  DBUG_PRINT("info", ("Next value fetched from database %lu", (ulong) opValue));
+  DBUG_PRINT("info", ("Next value fetched from blockchain %lu", (ulong) opValue));
   DBUG_PRINT("info", ("Increasing %lu by offset %lu, increment  is %lu", 
                       (ulong) (ulong) opValue, (ulong) offset, (ulong) step));
   Uint64 current, next;
@@ -1353,7 +1353,7 @@ Ndb::readAutoIncrementValue(const char* aTableName,
                             Uint64 & autoValue)
 {
   DBUG_ENTER("Ndb::readAutoIncrementValue");
-  ASSERT_NOT_MYSQLD;
+  ASSERT_NOT_MYBLOCKCHAIND;
   BaseString internal_tabname(internalize_table_name(aTableName));
 
   Ndb_local_table_info *info=
@@ -1375,7 +1375,7 @@ Ndb::readAutoIncrementValue(const NdbDictionary::Table * aTable,
                             Uint64 & autoValue)
 {
   DBUG_ENTER("Ndb::readAutoIncrementValue");
-  ASSERT_NOT_MYSQLD;
+  ASSERT_NOT_MYBLOCKCHAIND;
   assert(aTable != 0);
   const NdbTableImpl* table = & NdbTableImpl::getImpl(*aTable);
   const BaseString& internal_tabname = table->m_internalName;
@@ -1447,7 +1447,7 @@ Ndb::setAutoIncrementValue(const char* aTableName,
                            Uint64 autoValue, bool modify)
 {
   DBUG_ENTER("Ndb::setAutoIncrementValue");
-  ASSERT_NOT_MYSQLD;
+  ASSERT_NOT_MYBLOCKCHAIND;
   BaseString internal_tabname(internalize_table_name(aTableName));
 
   Ndb_local_table_info *info=
@@ -1468,7 +1468,7 @@ Ndb::setAutoIncrementValue(const NdbDictionary::Table * aTable,
                            Uint64 autoValue, bool modify)
 {
   DBUG_ENTER("Ndb::setAutoIncrementValue");
-  ASSERT_NOT_MYSQLD;
+  ASSERT_NOT_MYBLOCKCHAIND;
   assert(aTable != 0);
   const NdbTableImpl* table = & NdbTableImpl::getImpl(*aTable);
   const BaseString& internal_tabname = table->m_internalName;
@@ -1886,7 +1886,7 @@ Ndb::externalizeTableName(const char * internalTableName, bool fullyQualifiedNam
   if (fullyQualifiedNames) {
     register const char *ptr = internalTableName;
    
-    // Skip database name
+    // Skip blockchain name
     while (*ptr && *ptr++ != table_name_separator);
     // Skip schema name
     while (*ptr && *ptr++ != table_name_separator);
@@ -2036,21 +2036,21 @@ Ndb::internalize_index_name(const NdbTableImpl * table,
 const BaseString
 Ndb::getDatabaseFromInternalName(const char * internalName)
 {
-  char * databaseName = new char[strlen(internalName) + 1];
-  if (databaseName == NULL)
+  char * blockchainName = new char[strlen(internalName) + 1];
+  if (blockchainName == NULL)
   {
     errno = ENOMEM;
     return BaseString(NULL);
   }
-  strcpy(databaseName, internalName);
-  register char *ptr = databaseName;
+  strcpy(blockchainName, internalName);
+  register char *ptr = blockchainName;
    
   /* Scan name for the first table_name_separator */
   while (*ptr && *ptr != table_name_separator)
     ptr++;
   *ptr = '\0';
-  BaseString ret = BaseString(databaseName);
-  delete [] databaseName;
+  BaseString ret = BaseString(blockchainName);
+  delete [] blockchainName;
   return ret;
 }
  
@@ -2377,7 +2377,7 @@ Ndb::getNdbErrorDetail(const NdbError& err, char* buff, Uint32 buffLen) const
     {
       /* err.details contains the violated Index's object id
        * We'll map it to a name, then map the name to a 
-       * base table, schema and database, and put that in
+       * base table, schema and blockchain, and put that in
        * string form into the caller's buffer
        */
       UintPtr uip = (UintPtr) err.details;

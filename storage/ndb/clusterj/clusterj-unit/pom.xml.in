@@ -23,12 +23,12 @@
   </properties>
 
   <parent>
-    <groupId>com.mysql.clusterj</groupId>
+    <groupId>com.myblockchain.clusterj</groupId>
     <artifactId>clusterj-aggregate</artifactId>
     <version>@JAVA_NDB_VERSION@@JAVA_MVN_SUFFIX@</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <groupId>com.mysql.clusterj</groupId>
+  <groupId>com.myblockchain.clusterj</groupId>
   <artifactId>clusterj-unit</artifactId>
   <packaging>jar</packaging>
   <version>@JAVA_NDB_VERSION@@JAVA_MVN_SUFFIX@</version>

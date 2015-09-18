@@ -225,8 +225,8 @@ static struct my_option
 my_long_options[] =
 {
   NDB_STD_OPTS("ndb_move_data"),
-  { "database", 'd',
-    "Default database of source and target tables",
+  { "blockchain", 'd',
+    "Default blockchain of source and target tables",
     (uchar**) &opt_dbname, (uchar**) &opt_dbname, 0,
     GET_STR, REQUIRED_ARG, 0, 0, 0, 0, 0, 0 },
   { "exclude-missing-columns", NDB_OPT_NOSHORT,
@@ -270,7 +270,7 @@ my_long_options[] =
 };
 
 const char*
-load_default_groups[]= { "mysql_cluster", 0 };
+load_default_groups[]= { "myblockchain_cluster", 0 };
 
 static void
 short_usage_sub(void)

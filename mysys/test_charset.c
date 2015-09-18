@@ -16,7 +16,7 @@
 #include <my_global.h>
 #include <m_ctype.h>
 #include <my_sys.h>
-#include <mysql_version.h>
+#include <myblockchain_version.h>
 
 #include <stdio.h>
 
@@ -54,7 +54,7 @@ static void _print_csinfo(CHARSET_INFO *cs)
 
 
 int main(int argc, char **argv) {
-  const char *the_set = MYSQL_CHARSET;
+  const char *the_set = MYBLOCKCHAIN_CHARSET;
   char *cs_list;
   int argcnt = 1;
   CHARSET_INFO *cs;

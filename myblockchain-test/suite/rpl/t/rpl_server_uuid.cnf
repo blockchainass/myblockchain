@@ -1,0 +1,13 @@
+!include ../my.cnf
+
+[myblockchaind.1]
+log-warnings=2
+
+[myblockchaind.2]
+
+[myblockchaind.3]
+replicate-same-server-id=1
+
+[ENV]
+SERVER_MYPORT_3=		@myblockchaind.3.port
+SERVER_MYSOCK_3=		@myblockchaind.3.socket

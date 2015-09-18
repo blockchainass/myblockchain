@@ -62,7 +62,7 @@ memcpy(buf, &tmp_value, sizeof(tmp_value));
 
 /* DataTypeHandler is an interface.  
    Each instance of DataTypeHandler is able to read values of a certain 
-   Column type (or set of types) from database records, and to write them
+   Column type (or set of types) from blockchain records, and to write them
    to records.
    The functions have C++ linkage.
  */

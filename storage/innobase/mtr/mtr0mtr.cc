@@ -807,7 +807,7 @@ mtr_t::Command::finish_write(
 		}
 	}
 
-	/* Open the database log for log_write_low */
+	/* Open the blockchain log for log_write_low */
 	m_start_lsn = log_reserve_and_open(len);
 
 	mtr_write_log_t	write_log;

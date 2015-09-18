@@ -36,7 +36,7 @@ Created Apr 26, 2012 Vasil Dimov
 extern os_event_t	dict_stats_event;
 
 #ifdef HAVE_PSI_INTERFACE
-extern mysql_pfs_key_t	dict_stats_recalc_pool_mutex_key;
+extern myblockchain_pfs_key_t	dict_stats_recalc_pool_mutex_key;
 #endif /* HAVE_PSI_INTERFACE */
 
 /*****************************************************************//**
@@ -62,9 +62,9 @@ dict_stats_recalc_pool_del(
 for the background thread to stop accessing a table.
 @param trx transaction holding the data dictionary locks */
 #define DICT_STATS_BG_YIELD(trx)	do {	\
-	row_mysql_unlock_data_dictionary(trx);	\
+	row_myblockchain_unlock_data_dictionary(trx);	\
 	os_thread_sleep(250000);		\
-	row_mysql_lock_data_dictionary(trx);	\
+	row_myblockchain_lock_data_dictionary(trx);	\
 } while (0)
 
 /*****************************************************************//**
@@ -81,7 +81,7 @@ dict_stats_stop_bg(
 /*****************************************************************//**
 Wait until background stats thread has stopped using the specified table.
 The caller must have locked the data dictionary using
-row_mysql_lock_data_dictionary() and this function may unlock it temporarily
+row_myblockchain_lock_data_dictionary() and this function may unlock it temporarily
 and restore the lock before it exits.
 The background stats thread is guaranteed not to start using the specified
 table after this function returns and before the caller unlocks the data

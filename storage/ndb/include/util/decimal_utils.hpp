@@ -29,7 +29,7 @@
 #define E_DEC_BAD_NUM           8
 #define E_DEC_OOM              16
 /* return values below here are unique to ndbjtie --
-   not present in MySQL's decimal library */
+   not present in MyBlockchain's decimal library */
 #define E_DEC_BAD_PREC         32
 #define E_DEC_BAD_SCALE        64
 

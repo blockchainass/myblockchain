@@ -20,7 +20,7 @@
 
 
 /* 
-   This script attempts to load the compiled part of mysql-js
+   This script attempts to load the compiled part of myblockchain-js
 */
 
 var conf = require("./Adapter/adapter_config.js");

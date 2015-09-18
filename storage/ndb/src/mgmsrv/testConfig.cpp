@@ -75,8 +75,8 @@ check_param(const ConfigInfo::ParamInfo & param)
   if (strcmp(param._fname, "Hostname") != 0)
     fprintf(config_file, "HostName=localhost\n");
 
-  if (strcmp(section, "MYSQLD") != 0)
-    fprintf(config_file, "[mysqld]\n");
+  if (strcmp(section, "MYBLOCKCHAIND") != 0)
+    fprintf(config_file, "[myblockchaind]\n");
 
   rewind(config_file);
 
@@ -214,12 +214,12 @@ diff_config(void)
   Config* c1=
     create_config("[ndbd]", "NoOfReplicas=1",
                   "[ndb_mgmd]", "HostName=localhost",
-                  "[mysqld]", NULL);
+                  "[myblockchaind]", NULL);
   CHECK(c1);
   Config* c2=
     create_config("[ndbd]", "NoOfReplicas=1",
                   "[ndb_mgmd]", "HostName=localhost",
-                  "[mysqld]", "[mysqld]", NULL);
+                  "[myblockchaind]", "[myblockchaind]", NULL);
   CHECK(c2);
 
   CHECK(c1->equal(c1));
@@ -246,7 +246,7 @@ diff_config(void)
       create_config("[ndbd]", "NoOfReplicas=1",
                     "DataMemory=100M", "IndexMemory=100M",
                     "[ndb_mgmd]", "HostName=localhost",
-                    "[mysqld]", NULL);
+                    "[myblockchaind]", NULL);
     CHECK(c1_bug47306);
 
     ndbout_c("c1->print_diff(c1_bug47306)");
@@ -327,12 +327,12 @@ checksum_config(void)
   Config* c1=
     create_config("[ndbd]", "NoOfReplicas=1",
                   "[ndb_mgmd]", "HostName=localhost",
-                  "[mysqld]", NULL);
+                  "[myblockchaind]", NULL);
   CHECK(c1);
   Config* c2=
     create_config("[ndbd]", "NoOfReplicas=1",
                   "[ndb_mgmd]", "HostName=localhost",
-                  "[mysqld]", "[mysqld]", NULL);
+                  "[myblockchaind]", "[myblockchaind]", NULL);
   CHECK(c2);
 
   ndbout_c("== checksum tests ==");
@@ -393,7 +393,7 @@ test_param_values(void)
         create_config("[ndbd]", "NoOfReplicas=1",
                       t->param,
                       "[ndb_mgmd]", "HostName=localhost",
-                      "[mysqld]", NULL);
+                      "[myblockchaind]", NULL);
       if (t->result)
       {
         CHECK(c);

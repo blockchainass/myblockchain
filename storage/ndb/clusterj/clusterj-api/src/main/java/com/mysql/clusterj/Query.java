@@ -15,14 +15,14 @@
    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-package com.mysql.clusterj;
+package com.myblockchain.clusterj;
 
 import java.util.List;
 import java.util.Map;
 
 /**
  * A Query instance represents a specific query with bound parameters.
- * The instance is created by the method {@link com.mysql.clusterj.Session#createQuery}.
+ * The instance is created by the method {@link com.myblockchain.clusterj.Session#createQuery}.
  */
 public interface Query<E> {
 

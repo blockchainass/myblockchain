@@ -92,7 +92,7 @@ def get_node_dicts(cp, portbase):
     for ns in node_sections:
         t = '_'.join(ns.split('_')[:-1])
         nalist = [('_NodeType', t.lower())]
-        if t == 'MYSQLD':
+        if t == 'MYBLOCKCHAIND':
             nalist += [('_MysqlPort', portbase)]
             portbase += 1
         if cp.has_section(t+' DEFAULT'):

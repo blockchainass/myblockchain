@@ -1,0 +1,24 @@
+# Test clients with and without CRL lists
+############ Test myblockchain ##############
+# Test myblockchain connecting to a server with an empty crl
+Variable_name	Value
+have_openssl	YES
+have_ssl	YES
+ssl_ca	MYBLOCKCHAIN_TEST_DIR/std_data/crl-ca-cert.pem
+ssl_capath	
+ssl_cert	MYBLOCKCHAIN_TEST_DIR/std_data/crl-client-cert.pem
+ssl_cipher	
+ssl_crl	
+ssl_crlpath	
+ssl_key	MYBLOCKCHAIN_TEST_DIR/std_data/crl-client-key.pem
+# Test myblockchain connecting to a server with a certificate revoked by -crl
+# Test myblockchain connecting to a server with a certificate revoked by -crlpath
+############ Test myblockchainadmin ##############
+# Test myblockchainadmin connecting to a server with an empty crl
+myblockchaind is alive
+# Test myblockchainadmin connecting to a server with a certificate revoked by -crl
+myblockchainadmin: connect to server at 'localhost' failed
+error: 'SSL connection error: Failed to set ciphers to use'
+# Test myblockchainadmin connecting to a server with a certificate revoked by -crlpath
+myblockchainadmin: connect to server at 'localhost' failed
+error: 'SSL connection error: error:00000005:lib(0):func(0):DH lib'

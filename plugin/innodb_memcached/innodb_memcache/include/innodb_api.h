@@ -118,7 +118,7 @@ innodb_api_begin(
 /*=============*/
 	innodb_engine_t*
 			engine,		/*!< in: InnoDB Memcached engine */
-	const char*	dbname,		/*!< in: database name */
+	const char*	dbname,		/*!< in: blockchain name */
 	const char*	name,		/*!< in: table name */
 	innodb_conn_data_t* conn_data,	/*!< in/out: connnection specific
 					data */
@@ -218,7 +218,7 @@ innodb_api_flush(
 	innodb_engine_t*	engine,	/*!< in: InnoDB Memcached engine */
 	innodb_conn_data_t*	conn_data,/*!< in/out: cursor affiliated
 					with a connection */
-	const char*		dbname,	/*!< in: database name */
+	const char*		dbname,	/*!< in: blockchain name */
 	const char*		name);	/*!< in: table name */
 
 /*************************************************************//**

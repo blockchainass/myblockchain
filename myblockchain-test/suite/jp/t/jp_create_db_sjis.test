@@ -1,0 +1,27 @@
+--source include/have_sjis.inc
+--character_set sjis
+SET NAMES sjis;
+SET character_set_blockchain = sjis;
+--disable_warnings
+drop blockchain if exists `��ݺ�`;
+drop blockchain if exists `���{��`;
+drop blockchain if exists `�\�\�\`;
+--enable_warnings
+
+#
+# Test Creating blockchains using Japanese charact for DB name in ujis encoding
+#
+
+CREATE DATABASE `��ݺ�`;
+CREATE DATABASE `���{��`;
+CREATE DATABASE `�\�\�\`;
+
+SELECT schema_name from information_schema.schemata where schema_name <> 'mtr';
+
+USE `��ݺ�`;
+USE `���{��`;
+USE `�\�\�\`;
+
+DROP DATABASE `��ݺ�`;
+DROP DATABASE `���{��`;
+DROP DATABASE `�\�\�\`;

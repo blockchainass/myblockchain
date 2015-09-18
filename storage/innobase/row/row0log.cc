@@ -1532,7 +1532,7 @@ blob_done:
 			dfield_set_data(dfield, data, len);
 		}
 
-		if (len != UNIV_SQL_NULL && col->mtype == DATA_MYSQL
+		if (len != UNIV_SQL_NULL && col->mtype == DATA_MYBLOCKCHAIN
 		    && col->len != len && !dict_table_is_comp(log->table)) {
 
 			ut_ad(col->len >= len);
@@ -1710,7 +1710,7 @@ row_log_table_apply_insert(
 	if (error != DB_SUCCESS) {
 		/* Report the erroneous row using the new
 		version of the table. */
-		innobase_row_to_mysql(dup->table, log->table, row);
+		innobase_row_to_myblockchain(dup->table, log->table, row);
 	}
 	return(error);
 }
@@ -2098,7 +2098,7 @@ func_exit_committed:
 		if (error != DB_SUCCESS) {
 			/* Report the erroneous row using the new
 			version of the table. */
-			innobase_row_to_mysql(dup->table, log->table, row);
+			innobase_row_to_myblockchain(dup->table, log->table, row);
 		}
 
 		return(error);
@@ -2746,7 +2746,7 @@ row_log_table_apply_ops(
 
 	ut_ad(dict_index_is_clust(index));
 	ut_ad(dict_index_is_online_ddl(index));
-	ut_ad(trx->mysql_thd);
+	ut_ad(trx->myblockchain_thd);
 	ut_ad(rw_lock_own(dict_index_get_lock(index), RW_LOCK_X));
 	ut_ad(!dict_index_is_online_ddl(new_index));
 	ut_ad(trx_id_col > 0);
@@ -3053,7 +3053,7 @@ func_exit:
 /** Apply the row_log_table log to a table upon completing rebuild.
 @param[in]	thr		query graph
 @param[in]	old_table	old table
-@param[in,out]	table		MySQL table (for reporting duplicates)
+@param[in,out]	table		MyBlockchain table (for reporting duplicates)
 @param[in,out]	stage		performance schema accounting object, used by
 ALTER TABLE. stage->begin_phase_log_table() will be called initially and then
 stage->inc() will be called for each block of log that is applied.
@@ -3880,7 +3880,7 @@ func_exit:
 @param[in]	trx	transaction (for checking if the operation was
 interrupted)
 @param[in,out]	index	secondary index
-@param[in,out]	table	MySQL table (for reporting duplicates)
+@param[in,out]	table	MyBlockchain table (for reporting duplicates)
 @param[in,out]	stage	performance schema accounting object, used by
 ALTER TABLE. stage->begin_phase_log_index() will be called initially and then
 stage->inc() will be called for each block of log that is applied.

@@ -81,7 +81,7 @@ class LogHandlerList;
  *
  *  ALERT           A condition  that  should  be  corrected
  *                  immediately,  such as a corrupted system
- *                  database.
+ *                  blockchain.
  *
  *  CRITICAL        Critical conditions, such as hard device
  *                  errors.

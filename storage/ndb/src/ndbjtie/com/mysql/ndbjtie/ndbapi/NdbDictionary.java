@@ -18,12 +18,12 @@
  * NdbDictionary.java
  */
 
-package com.mysql.ndbjtie.ndbapi;
+package com.myblockchain.ndbjtie.ndbapi;
 
 import java.nio.ByteBuffer;
 
-import com.mysql.jtie.Wrapper;
-import com.mysql.jtie.ArrayWrapper;
+import com.myblockchain.jtie.Wrapper;
+import com.myblockchain.jtie.ArrayWrapper;
 
 public class NdbDictionary extends Wrapper
 {
@@ -166,7 +166,7 @@ public class NdbDictionary extends Wrapper
         int getPrecision() /*_const_*/;
         int getScale() /*_const_*/;
         int getLength() /*_const_*/;
-        // MMM unsupported, opaque MySQL server type, mapped by mysql utilities: CHARSET_INFO * getCharset() /*_const_*/;
+        // MMM unsupported, opaque MyBlockchain server type, mapped by myblockchain utilities: CHARSET_INFO * getCharset() /*_const_*/;
         int getCharsetNumber() /*_const_*/;
         int getInlineSize() /*_const_*/;
         int getPartSize() /*_const_*/;
@@ -190,7 +190,7 @@ public class NdbDictionary extends Wrapper
         public final native int getPrecision() /*_const_*/;
         public final native int getScale() /*_const_*/;
         public final native int getLength() /*_const_*/;
-        // MMM unsupported, opaque MySQL server type, mapped by mysql utilities: public final native CHARSET_INFO * getCharset() /*_const_*/;
+        // MMM unsupported, opaque MyBlockchain server type, mapped by myblockchain utilities: public final native CHARSET_INFO * getCharset() /*_const_*/;
         public final native int getCharsetNumber() /*_const_*/;
         public final native int getInlineSize() /*_const_*/;
         public final native int getPartSize() /*_const_*/;
@@ -211,7 +211,7 @@ public class NdbDictionary extends Wrapper
         public final native void setPrecision(int p0);
         public final native void setScale(int p0);
         public final native void setLength(int length);
-        // MMM unsupported, opaque MySQL server type, mapped by mysql utilities: public final native void setCharset(CHARSET_INFO * cs);
+        // MMM unsupported, opaque MyBlockchain server type, mapped by myblockchain utilities: public final native void setCharset(CHARSET_INFO * cs);
         public final native void setInlineSize(int size);
         public final native void setPartSize(int size);
         public final native void setStripeSize(int size);
@@ -671,7 +671,7 @@ public class NdbDictionary extends Wrapper
                 int/*_Object.State_*/ state();
                 int/*_Object.Store_*/ store();
                 int/*_Uint32_*/ temp();
-                String/*_char *_*/ database(); // MMM confirmed as null-terminated C string
+                String/*_char *_*/ blockchain(); // MMM confirmed as null-terminated C string
                 String/*_char *_*/ schema(); // MMM confirmed as null-terminated C string
                 String/*_char *_*/ name(); // MMM confirmed as null-terminated C string
             }
@@ -682,7 +682,7 @@ public class NdbDictionary extends Wrapper
                 public final native int/*_Object.State_*/ state();
                 public final native int/*_Object.Store_*/ store();
                 public final native int/*_Uint32_*/ temp();
-                public final native String/*_char *_*/ database(); // MMM confirmed as null-terminated C string
+                public final native String/*_char *_*/ blockchain(); // MMM confirmed as null-terminated C string
                 public final native String/*_char *_*/ schema(); // MMM confirmed as null-terminated C string
                 public final native String/*_char *_*/ name(); // MMM confirmed as null-terminated C string
                 public final native void id(int/*_unsigned_*/ p0);
@@ -690,7 +690,7 @@ public class NdbDictionary extends Wrapper
                 public final native void state(int/*_Object.State_*/ p0);
                 public final native void store(int/*_Object.Store_*/ p0);
                 public final native void temp(int/*_Uint32_*/ p0);
-                // MMM unsupported mapping <in:String->char*> (and questionable NDBAPI usage): public final native void database(String/*_char *_*/ p0);
+                // MMM unsupported mapping <in:String->char*> (and questionable NDBAPI usage): public final native void blockchain(String/*_char *_*/ p0);
                 // MMM unsupported mapping <in:String->char*> (and questionable NDBAPI usage): public final native void schema(String/*_char *_*/ p0);
                 // MMM unsupported mapping <in:String->char*> (and questionable NDBAPI usage): public final native void name(String/*_char *_*/ p0);
                 static public final native Element create();

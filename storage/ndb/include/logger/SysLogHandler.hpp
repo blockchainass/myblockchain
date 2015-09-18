@@ -29,7 +29,7 @@
  *
  *  LOG_ALERT           A condition  that  should  be  corrected
  *                      immediately,  such as a corrupted system
- *                      database.
+ *                      blockchain.
  *
  *  LOG_CRIT            Critical conditions, such as hard device
  *                      errors.

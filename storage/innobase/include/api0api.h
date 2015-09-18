@@ -380,7 +380,7 @@ is a tuple for reading the entire row contents and another for searching
 on the index key. */
 typedef struct ib_tuple_t* ib_tpl_t;
 
-/** InnoDB transaction handle, all database operations need to be covered
+/** InnoDB transaction handle, all blockchain operations need to be covered
 by transactions. This handle represents a transaction. The handle can be
 created with ib_trx_begin(), you commit your changes with ib_trx_commit()
 and undo your changes using ib_trx_rollback(). If the InnoDB deadlock

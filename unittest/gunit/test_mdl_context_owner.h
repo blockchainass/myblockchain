@@ -23,8 +23,8 @@ class Test_MDL_context_owner : public MDL_context_owner
 public:
   Test_MDL_context_owner()
   {}
-  virtual void enter_cond(mysql_cond_t *cond,
-                          mysql_mutex_t* mutex,
+  virtual void enter_cond(myblockchain_cond_t *cond,
+                          myblockchain_mutex_t* mutex,
                           const PSI_stage_info *stage,
                           PSI_stage_info *old_stage,
                           const char *src_function,

@@ -22,8 +22,8 @@
 */
 
 #include "pfs_stat.h"
-#include "include/mysql/psi/psi.h"
-#include "include/mysql/psi/mysql_ps.h"
+#include "include/myblockchain/psi/psi.h"
+#include "include/myblockchain/psi/myblockchain_ps.h"
 #include "pfs_program.h"
 
 #define PS_NAME_LENGTH NAME_LEN

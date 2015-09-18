@@ -1,0 +1,4 @@
+How to run.
+===========
+
+./myblockchain-test-run.pl --suite=rpl --myblockchaind=--binlog-format=mixed 

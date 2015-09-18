@@ -108,7 +108,7 @@ ENDMACRO()
 MACRO(EXTEND_CXX_LINK_FLAGS LIBRARY_PATH)
   # Using the $ORIGIN token with the -R option to locate the libraries
   # on a path relative to the executable:
-  # We need an extra backslash to pass $ORIGIN to the mysql_config script...
+  # We need an extra backslash to pass $ORIGIN to the myblockchain_config script...
   SET(QUOTED_CMAKE_CXX_LINK_FLAGS
     "${CMAKE_CXX_LINK_FLAGS} -R'\\$ORIGIN/../lib' -R${LIBRARY_PATH}")
   SET(CMAKE_CXX_LINK_FLAGS
@@ -624,8 +624,8 @@ IF(NOT CMAKE_CROSSCOMPILING AND NOT MSVC)
       # The loader in some Solaris versions has a bug due to which it refuses to
       # start a binary that has been compiled by GCC and uses __asm__("pause")
       # with the error:
-      # $ ./mysqld
-      # ld.so.1: mysqld: fatal: hardware capability unsupported: 0x2000 [ PAUSE ]
+      # $ ./myblockchaind
+      # ld.so.1: myblockchaind: fatal: hardware capability unsupported: 0x2000 [ PAUSE ]
       # Killed
       # $
       # Even though the CPU does have support for the instruction.

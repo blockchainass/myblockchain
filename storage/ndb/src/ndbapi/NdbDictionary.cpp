@@ -2717,7 +2717,7 @@ NdbDictionary::Dictionary::createRecord(const Table *table,
   NdbTableImpl* impl=&NdbTableImpl::getImpl(*table);
   Ndb* myNdb= &m_impl.m_ndb;
 
-  /* Temporarily change Ndb object to use table's database 
+  /* Temporarily change Ndb object to use table's blockchain 
    * and schema 
    */
   BaseString currentDb(myNdb->getDatabaseName());
@@ -2780,8 +2780,8 @@ NdbDictionary::Dictionary::createRecord(const Index *index,
   NdbTableImpl* tabImpl=&NdbTableImpl::getImpl(*table);
   Ndb* myNdb= &m_impl.m_ndb;
 
-  /* Temporarily change Ndb object to use table's database 
-   * and schema.  Index's database and schema are not 
+  /* Temporarily change Ndb object to use table's blockchain 
+   * and schema.  Index's blockchain and schema are not 
    * useful for finding global table reference
    */
   BaseString currentDb(myNdb->getDatabaseName());
@@ -3283,20 +3283,20 @@ pretty_print_string(NdbOut& out,
   }
 }
 
-/* Three MySQL defs duplicated here : */ 
-static const int MaxMySQLDecimalPrecision= 65;
-static const int MaxMySQLDecimalScale= 30;
+/* Three MyBlockchain defs duplicated here : */ 
+static const int MaxMyBlockchainDecimalPrecision= 65;
+static const int MaxMyBlockchainDecimalScale= 30;
 static const int DigitsPerDigit_t= 9; // (Decimal digits in 2^32)
 
 /* Implications */
 /* Space for -, . and \0 */
-static const int MaxDecimalStrLen= MaxMySQLDecimalPrecision + 3;
+static const int MaxDecimalStrLen= MaxMyBlockchainDecimalPrecision + 3;
 static const int IntPartDigit_ts= 
-  ((MaxMySQLDecimalPrecision - 
-    MaxMySQLDecimalScale) +
+  ((MaxMyBlockchainDecimalPrecision - 
+    MaxMyBlockchainDecimalScale) +
    DigitsPerDigit_t -1) / DigitsPerDigit_t;
 static const int FracPartDigit_ts= 
-  (MaxMySQLDecimalScale + 
+  (MaxMyBlockchainDecimalScale + 
    DigitsPerDigit_t - 1) / DigitsPerDigit_t;
 static const int DigitArraySize= IntPartDigit_ts + FracPartDigit_ts;
 
@@ -3466,8 +3466,8 @@ NdbDictionary::printFormattedValue(NdbOut& out,
       int precision= c->getPrecision();
       int scale= c->getScale();
       
-      assert(precision <= MaxMySQLDecimalPrecision);
-      assert(scale <= MaxMySQLDecimalScale);
+      assert(precision <= MaxMyBlockchainDecimalPrecision);
+      assert(scale <= MaxMyBlockchainDecimalScale);
       assert(decimal_size(precision, scale) <= DigitArraySize );
       decimal_digit_t buff[ DigitArraySize ];
       decimal_t tmpDec;
@@ -3760,7 +3760,7 @@ operator<<(NdbOut& out, const NdbDictionary::Column& col)
     out << "Type" << (Uint32)col.getType();
     break;
   }
-  // show unusual (non-MySQL) array size
+  // show unusual (non-MyBlockchain) array size
   if (col.getLength() != 1) {
     switch (col.getType()) {
     case NdbDictionary::Column::Char:

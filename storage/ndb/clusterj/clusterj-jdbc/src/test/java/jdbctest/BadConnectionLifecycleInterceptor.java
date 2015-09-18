@@ -17,15 +17,15 @@
 
 package jdbctest;
 
-import com.mysql.clusterj.ClusterJUserException;
-import com.mysql.jdbc.Connection;
+import com.myblockchain.clusterj.ClusterJUserException;
+import com.myblockchain.jdbc.Connection;
 
 import java.sql.SQLException;
 import java.sql.Savepoint;
 import java.util.Properties;
 
 public class BadConnectionLifecycleInterceptor
-        implements com.mysql.jdbc.ConnectionLifecycleInterceptor {
+        implements com.myblockchain.jdbc.ConnectionLifecycleInterceptor {
 
     public void close() throws SQLException {
      // TODO Auto-generated method stub

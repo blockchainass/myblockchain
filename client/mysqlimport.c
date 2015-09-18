@@ -16,7 +16,7 @@
 */
 
 /*
-**	   mysqlimport.c  - Imports all given files
+**	   myblockchainimport.c  - Imports all given files
 **			    into a table(s).
 */
 
@@ -24,7 +24,7 @@
 
 #include "client_priv.h"
 #include "my_default.h"
-#include "mysql_version.h"
+#include "myblockchain_version.h"
 
 #include <welcome_copyright_notice.h>   /* ORACLE_WELCOME_COPYRIGHT_NOTICE */
 
@@ -34,8 +34,8 @@ uint counter;
 native_mutex_t counter_mutex;
 native_cond_t count_threshold;
 
-static void db_error_with_table(MYSQL *mysql, char *table);
-static void db_error(MYSQL *mysql);
+static void db_error_with_table(MYBLOCKCHAIN *myblockchain, char *table);
+static void db_error(MYBLOCKCHAIN *myblockchain);
 static char *field_escape(char *to,const char *from,uint length);
 static char *add_load_option(char *ptr,const char *object,
 			     const char *statement);
@@ -49,10 +49,10 @@ static char	*opt_password=0, *current_user=0,
 		*current_host=0, *current_db=0, *fields_terminated=0,
 		*lines_terminated=0, *enclosed=0, *opt_enclosed=0,
 		*escaped=0, *opt_columns=0, 
-		*default_charset= (char*) MYSQL_AUTODETECT_CHARSET_NAME;
-static uint     opt_mysql_port= 0, opt_protocol= 0;
+		*default_charset= (char*) MYBLOCKCHAIN_AUTODETECT_CHARSET_NAME;
+static uint     opt_myblockchain_port= 0, opt_protocol= 0;
 static char *opt_bind_addr = NULL;
-static char * opt_mysql_unix_port=0;
+static char * opt_myblockchain_unix_port=0;
 static char *opt_plugin_dir= 0, *opt_default_auth= 0;
 static longlong opt_ignore_lines= -1;
 #include <sslopt-vars.h>
@@ -154,15 +154,15 @@ static struct my_option my_long_options[] =
    &opt_plugin_dir, &opt_plugin_dir, 0,
    GET_STR, REQUIRED_ARG, 0, 0, 0, 0, 0, 0},
   {"port", 'P', "Port number to use for connection or 0 for default to, in "
-   "order of preference, my.cnf, $MYSQL_TCP_PORT, "
-#if MYSQL_PORT_DEFAULT == 0
+   "order of preference, my.cnf, $MYBLOCKCHAIN_TCP_PORT, "
+#if MYBLOCKCHAIN_PORT_DEFAULT == 0
    "/etc/services, "
 #endif
-   "built-in default (" STRINGIFY_ARG(MYSQL_PORT) ").",
-   &opt_mysql_port,
-   &opt_mysql_port, 0, GET_UINT, REQUIRED_ARG, 0, 0, 0, 0, 0,
+   "built-in default (" STRINGIFY_ARG(MYBLOCKCHAIN_PORT) ").",
+   &opt_myblockchain_port,
+   &opt_myblockchain_port, 0, GET_UINT, REQUIRED_ARG, 0, 0, 0, 0, 0,
    0},
-  {"protocol", OPT_MYSQL_PROTOCOL, "The protocol to use for connection (tcp, socket, pipe, memory).",
+  {"protocol", OPT_MYBLOCKCHAIN_PROTOCOL, "The protocol to use for connection (tcp, socket, pipe, memory).",
    0, 0, 0, GET_STR, REQUIRED_ARG, 0, 0, 0, 0, 0, 0},
   {"replace", 'r', "If duplicate unique key was found, replace old row.",
    &replace, &replace, 0, GET_BOOL, NO_ARG, 0, 0, 0, 0, 0, 0},
@@ -177,7 +177,7 @@ static struct my_option my_long_options[] =
   {"silent", 's', "Be more silent.", &silent, &silent, 0,
    GET_BOOL, NO_ARG, 0, 0, 0, 0, 0, 0},
   {"socket", 'S', "The socket file to use for connection.",
-   &opt_mysql_unix_port, &opt_mysql_unix_port, 0, GET_STR,
+   &opt_myblockchain_unix_port, &opt_myblockchain_unix_port, 0, GET_STR,
    REQUIRED_ARG, 0, 0, 0, 0, 0, 0},
 #include <sslopt-longopts.h>
   {"use-threads", OPT_USE_THREADS,
@@ -195,13 +195,13 @@ static struct my_option my_long_options[] =
 };
 
 
-static const char *load_default_groups[]= { "mysqlimport","client",0 };
+static const char *load_default_groups[]= { "myblockchainimport","client",0 };
 
 
 static void print_version(void)
 {
   printf("%s  Ver %s Distrib %s, for %s (%s)\n" ,my_progname,
-	  IMPORT_VERSION, MYSQL_SERVER_VERSION,SYSTEM_TYPE,MACHINE_TYPE);
+	  IMPORT_VERSION, MYBLOCKCHAIN_SERVER_VERSION,SYSTEM_TYPE,MACHINE_TYPE);
 }
 
 
@@ -213,11 +213,11 @@ static void usage(void)
   printf("\
 Loads tables from text files in various formats.  The base name of the\n\
 text file must be the name of the table that should be used.\n\
-If one uses sockets to connect to the MySQL server, the server will open and\n\
+If one uses sockets to connect to the MyBlockchain server, the server will open and\n\
 read the text file directly. In other cases the client will open the text\n\
 file. The SQL command 'LOAD DATA INFILE' is used to import the rows.\n");
 
-  printf("\nUsage: %s [OPTIONS] database textfile...",my_progname);
+  printf("\nUsage: %s [OPTIONS] blockchain textfile...",my_progname);
   print_defaults("my",load_default_groups);
   /*
     Turn default for zombies off so that the help on how to 
@@ -261,11 +261,11 @@ get_one_option(int optid, const struct my_option *opt __attribute__((unused)),
     break;
 #ifdef _WIN32
   case 'W':
-    opt_protocol = MYSQL_PROTOCOL_PIPE;
+    opt_protocol = MYBLOCKCHAIN_PROTOCOL_PIPE;
     opt_local_file=1;
     break;
 #endif
-  case OPT_MYSQL_PROTOCOL:
+  case OPT_MYBLOCKCHAIN_PROTOCOL:
     opt_protocol= find_type_or_exit(argument, &sql_protocol_typelib,
                                     opt->name);
     break;
@@ -283,7 +283,7 @@ get_one_option(int optid, const struct my_option *opt __attribute__((unused)),
     /* --secure-auth is a zombie option. */
     if (!opt_secure_auth)
     {
-      fprintf(stderr, "mysqlimport: [ERROR] --skip-secure-auth is not supported.\n");
+      fprintf(stderr, "myblockchainimport: [ERROR] --skip-secure-auth is not supported.\n");
       exit(1);
     }
     else
@@ -329,7 +329,7 @@ static int get_options(int *argc, char ***argv)
 
 
 
-static int write_to_table(char *filename, MYSQL *mysql)
+static int write_to_table(char *filename, MYBLOCKCHAIN *myblockchain)
 {
   char tablename[FN_REFLEN], hard_path[FN_REFLEN],
        escaped_name[FN_REFLEN * 2 + 1],
@@ -348,9 +348,9 @@ static int write_to_table(char *filename, MYSQL *mysql)
     if (verbose)
       fprintf(stdout, "Deleting the old data from table %s\n", tablename);
     my_snprintf(sql_statement, FN_REFLEN*16+256, "DELETE FROM %s", tablename);
-    if (mysql_query(mysql, sql_statement))
+    if (myblockchain_query(myblockchain, sql_statement))
     {
-      db_error_with_table(mysql, tablename);
+      db_error_with_table(myblockchain, tablename);
       DBUG_RETURN(1);
     }
   }
@@ -364,7 +364,7 @@ static int write_to_table(char *filename, MYSQL *mysql)
       fprintf(stdout, "Loading data from SERVER file: %s into %s\n",
 	      hard_path, tablename);
   }
-  mysql_real_escape_string_quote(mysql, escaped_name, hard_path,
+  myblockchain_real_escape_string_quote(myblockchain, escaped_name, hard_path,
                                  (unsigned long) strlen(hard_path), '\'');
   sprintf(sql_statement, "LOAD DATA %s %s INFILE '%s'",
 	  opt_low_priority ? "LOW_PRIORITY" : "",
@@ -399,17 +399,17 @@ static int write_to_table(char *filename, MYSQL *mysql)
     end= my_stpcpy(my_stpcpy(my_stpcpy(end, " ("), opt_columns), ")");
   *end= '\0';
 
-  if (mysql_query(mysql, sql_statement))
+  if (myblockchain_query(myblockchain, sql_statement))
   {
-    db_error_with_table(mysql, tablename);
+    db_error_with_table(myblockchain, tablename);
     DBUG_RETURN(1);
   }
   if (!silent)
   {
-    if (mysql_info(mysql)) /* If NULL-pointer, print nothing */
+    if (myblockchain_info(myblockchain)) /* If NULL-pointer, print nothing */
     {
       fprintf(stdout, "%s.%s: %s\n", current_db, tablename,
-	      mysql_info(mysql));
+	      myblockchain_info(myblockchain));
     }
   }
   DBUG_RETURN(0);
@@ -417,7 +417,7 @@ static int write_to_table(char *filename, MYSQL *mysql)
 
 
 
-static void lock_table(MYSQL *mysql, int tablecount, char **raw_tablename)
+static void lock_table(MYBLOCKCHAIN *myblockchain, int tablecount, char **raw_tablename)
 {
   DYNAMIC_STRING query;
   int i;
@@ -432,99 +432,99 @@ static void lock_table(MYSQL *mysql, int tablecount, char **raw_tablename)
     dynstr_append(&query, tablename);
     dynstr_append(&query, " WRITE,");
   }
-  if (mysql_real_query(mysql, query.str, (ulong)(query.length-1)))
-    db_error(mysql); /* We shall countinue here, if --force was given */
+  if (myblockchain_real_query(myblockchain, query.str, (ulong)(query.length-1)))
+    db_error(myblockchain); /* We shall countinue here, if --force was given */
 }
 
 
 
 
-static MYSQL *db_connect(char *host, char *database,
+static MYBLOCKCHAIN *db_connect(char *host, char *blockchain,
                          char *user, char *passwd)
 {
-  MYSQL *mysql;
+  MYBLOCKCHAIN *myblockchain;
   if (verbose)
     fprintf(stdout, "Connecting to %s\n", host ? host : "localhost");
-  if (!(mysql= mysql_init(NULL)))
+  if (!(myblockchain= myblockchain_init(NULL)))
     return 0;
   if (opt_compress)
-    mysql_options(mysql,MYSQL_OPT_COMPRESS,NullS);
+    myblockchain_options(myblockchain,MYBLOCKCHAIN_OPT_COMPRESS,NullS);
   if (opt_local_file)
-    mysql_options(mysql,MYSQL_OPT_LOCAL_INFILE,
+    myblockchain_options(myblockchain,MYBLOCKCHAIN_OPT_LOCAL_INFILE,
 		  (char*) &opt_local_file);
-  SSL_SET_OPTIONS(mysql);
+  SSL_SET_OPTIONS(myblockchain);
   if (opt_protocol)
-    mysql_options(mysql,MYSQL_OPT_PROTOCOL,(char*)&opt_protocol);
+    myblockchain_options(myblockchain,MYBLOCKCHAIN_OPT_PROTOCOL,(char*)&opt_protocol);
   if (opt_bind_addr)
-    mysql_options(mysql,MYSQL_OPT_BIND,opt_bind_addr);
+    myblockchain_options(myblockchain,MYBLOCKCHAIN_OPT_BIND,opt_bind_addr);
 #if defined (_WIN32) && !defined (EMBEDDED_LIBRARY)
   if (shared_memory_base_name)
-    mysql_options(mysql,MYSQL_SHARED_MEMORY_BASE_NAME,shared_memory_base_name);
+    myblockchain_options(myblockchain,MYBLOCKCHAIN_SHARED_MEMORY_BASE_NAME,shared_memory_base_name);
 #endif
 
   if (opt_plugin_dir && *opt_plugin_dir)
-    mysql_options(mysql, MYSQL_PLUGIN_DIR, opt_plugin_dir);
+    myblockchain_options(myblockchain, MYBLOCKCHAIN_PLUGIN_DIR, opt_plugin_dir);
 
   if (opt_default_auth && *opt_default_auth)
-    mysql_options(mysql, MYSQL_DEFAULT_AUTH, opt_default_auth);
+    myblockchain_options(myblockchain, MYBLOCKCHAIN_DEFAULT_AUTH, opt_default_auth);
 
-  mysql_options(mysql, MYSQL_SET_CHARSET_NAME, default_charset);
-  mysql_options(mysql, MYSQL_OPT_CONNECT_ATTR_RESET, 0);
-  mysql_options4(mysql, MYSQL_OPT_CONNECT_ATTR_ADD,
-                 "program_name", "mysqlimport");
-  if (!(mysql_real_connect(mysql,host,user,passwd,
-                           database,opt_mysql_port,opt_mysql_unix_port,
+  myblockchain_options(myblockchain, MYBLOCKCHAIN_SET_CHARSET_NAME, default_charset);
+  myblockchain_options(myblockchain, MYBLOCKCHAIN_OPT_CONNECT_ATTR_RESET, 0);
+  myblockchain_options4(myblockchain, MYBLOCKCHAIN_OPT_CONNECT_ATTR_ADD,
+                 "program_name", "myblockchainimport");
+  if (!(myblockchain_real_connect(myblockchain,host,user,passwd,
+                           blockchain,opt_myblockchain_port,opt_myblockchain_unix_port,
                            0)))
   {
     ignore_errors=0;	  /* NO RETURN FROM db_error */
-    db_error(mysql);
+    db_error(myblockchain);
   }
-  mysql->reconnect= 0;
+  myblockchain->reconnect= 0;
   if (verbose)
-    fprintf(stdout, "Selecting database %s\n", database);
-  if (mysql_select_db(mysql, database))
+    fprintf(stdout, "Selecting blockchain %s\n", blockchain);
+  if (myblockchain_select_db(myblockchain, blockchain))
   {
     ignore_errors=0;
-    db_error(mysql);
+    db_error(myblockchain);
   }
-  return mysql;
+  return myblockchain;
 }
 
 
 
-static void db_disconnect(char *host, MYSQL *mysql)
+static void db_disconnect(char *host, MYBLOCKCHAIN *myblockchain)
 {
   if (verbose)
     fprintf(stdout, "Disconnecting from %s\n", host ? host : "localhost");
-  mysql_close(mysql);
+  myblockchain_close(myblockchain);
 }
 
 
 
-static void safe_exit(int error, MYSQL *mysql)
+static void safe_exit(int error, MYBLOCKCHAIN *myblockchain)
 {
   if (ignore_errors)
     return;
-  if (mysql)
-    mysql_close(mysql);
+  if (myblockchain)
+    myblockchain_close(myblockchain);
   exit(error);
 }
 
 
 
-static void db_error_with_table(MYSQL *mysql, char *table)
+static void db_error_with_table(MYBLOCKCHAIN *myblockchain, char *table)
 {
   my_printf_error(0,"Error: %d, %s, when using table: %s",
-		  MYF(0), mysql_errno(mysql), mysql_error(mysql), table);
-  safe_exit(1, mysql);
+		  MYF(0), myblockchain_errno(myblockchain), myblockchain_error(myblockchain), table);
+  safe_exit(1, myblockchain);
 }
 
 
 
-static void db_error(MYSQL *mysql)
+static void db_error(MYBLOCKCHAIN *myblockchain)
 {
-  my_printf_error(0,"Error: %d %s", MYF(0), mysql_errno(mysql), mysql_error(mysql));
-  safe_exit(1, mysql);
+  my_printf_error(0,"Error: %d %s", MYF(0), myblockchain_errno(myblockchain), myblockchain_error(myblockchain));
+  safe_exit(1, myblockchain);
 }
 
 
@@ -567,7 +567,7 @@ static char *field_escape(char *to,const char *from,uint length)
     else 
     {
       if (*from == '\'' && !end_backslashes)
-	*to++= *from;      /* We want a dublicate of "'" for MySQL */
+	*to++= *from;      /* We want a dublicate of "'" for MyBlockchain */
       end_backslashes=0;
     }
   }
@@ -583,38 +583,38 @@ void *worker_thread(void *arg)
 {
   int error;
   char *raw_table_name= (char *)arg;
-  MYSQL *mysql= 0;
+  MYBLOCKCHAIN *myblockchain= 0;
 
-  if (mysql_thread_init())
+  if (myblockchain_thread_init())
     goto error;
   
-  if (!(mysql= db_connect(current_host,current_db,current_user,opt_password)))
+  if (!(myblockchain= db_connect(current_host,current_db,current_user,opt_password)))
   {
     goto error;
   }
 
-  if (mysql_query(mysql, "/*!40101 set @@character_set_database=binary */;"))
+  if (myblockchain_query(myblockchain, "/*!40101 set @@character_set_blockchain=binary */;"))
   {
-    db_error(mysql); /* We shall countinue here, if --force was given */
+    db_error(myblockchain); /* We shall countinue here, if --force was given */
     goto error;
   }
 
   /*
     We are not currently catching the error here.
   */
-  if((error= write_to_table(raw_table_name, mysql)))
+  if((error= write_to_table(raw_table_name, myblockchain)))
     if (exitcode == 0)
       exitcode= error;
 
 error:
-  if (mysql)
-    db_disconnect(current_host, mysql);
+  if (myblockchain)
+    db_disconnect(current_host, myblockchain);
 
   native_mutex_lock(&counter_mutex);
   counter--;
   native_cond_signal(&count_threshold);
   native_mutex_unlock(&counter_mutex);
-  mysql_thread_end();
+  myblockchain_thread_end();
 
   return 0;
 }
@@ -694,26 +694,26 @@ int main(int argc, char **argv)
   }
   else
   {
-    MYSQL *mysql= 0;
-    if (!(mysql= db_connect(current_host,current_db,current_user,opt_password)))
+    MYBLOCKCHAIN *myblockchain= 0;
+    if (!(myblockchain= db_connect(current_host,current_db,current_user,opt_password)))
     {
       free_defaults(argv_to_free);
       return(1); /* purecov: deadcode */
     }
 
-    if (mysql_query(mysql, "/*!40101 set @@character_set_database=binary */;"))
+    if (myblockchain_query(myblockchain, "/*!40101 set @@character_set_blockchain=binary */;"))
     {
-      db_error(mysql); /* We shall countinue here, if --force was given */
+      db_error(myblockchain); /* We shall countinue here, if --force was given */
       return(1);
     }
 
     if (lock_tables)
-      lock_table(mysql, argc, argv);
+      lock_table(myblockchain, argc, argv);
     for (; *argv != NULL; argv++)
-      if ((error= write_to_table(*argv, mysql)))
+      if ((error= write_to_table(*argv, myblockchain)))
         if (exitcode == 0)
           exitcode= error;
-    db_disconnect(current_host, mysql);
+    db_disconnect(current_host, myblockchain);
   }
   my_free(opt_password);
 #if defined (_WIN32) && !defined (EMBEDDED_LIBRARY)

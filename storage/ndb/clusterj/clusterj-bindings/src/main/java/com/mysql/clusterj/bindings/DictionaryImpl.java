@@ -16,21 +16,21 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
  */
 
-package com.mysql.clusterj.bindings;
+package com.myblockchain.clusterj.bindings;
 
-import com.mysql.cluster.ndbj.NdbApiException;
-import com.mysql.cluster.ndbj.NdbDictionary;
-import com.mysql.clusterj.ClusterJDatastoreException;
-import com.mysql.clusterj.core.store.Index;
-import com.mysql.clusterj.core.store.Table;
-import com.mysql.clusterj.core.util.I18NHelper;
-import com.mysql.clusterj.core.util.Logger;
-import com.mysql.clusterj.core.util.LoggerFactoryService;
+import com.myblockchain.cluster.ndbj.NdbApiException;
+import com.myblockchain.cluster.ndbj.NdbDictionary;
+import com.myblockchain.clusterj.ClusterJDatastoreException;
+import com.myblockchain.clusterj.core.store.Index;
+import com.myblockchain.clusterj.core.store.Table;
+import com.myblockchain.clusterj.core.util.I18NHelper;
+import com.myblockchain.clusterj.core.util.Logger;
+import com.myblockchain.clusterj.core.util.LoggerFactoryService;
 
 /**
  *
  */
-class DictionaryImpl implements com.mysql.clusterj.core.store.Dictionary {
+class DictionaryImpl implements com.myblockchain.clusterj.core.store.Dictionary {
 
     /** My message translator */
     static final I18NHelper local = I18NHelper

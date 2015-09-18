@@ -6,9 +6,9 @@
 
 # Usually this is put in /etc/init.d (at least on machines SYSV R4
 # based systems) and linked to
-#     /etc/rc3.d/S99mysql.svr1
-# and /etc/rc0.d/S01mysql.svr1
-# When this is done the mysql server will be started when the machine is
+#     /etc/rc3.d/S99myblockchain.svr1
+# and /etc/rc0.d/S01myblockchain.svr1
+# When this is done the myblockchain server will be started when the machine is
 # started and shut down when the systems goes down. The '.svr1' suffix can
 # be used to identify one of a number of servers. Multiple symlinks can be
 # created, one per instance. The 'svrN' suffix can then be used to
@@ -16,11 +16,11 @@
 # See example below.
 #
 # A typical multi-instance /etc/my.cnf file would look like:
-# [mysqld]
+# [myblockchaind]
 # basedir=...
 # key_buffer_size=16M
 # max_allowed_packet=1M
-# [mysql_multi_server]
+# [myblockchain_multi_server]
 # svr1-datadir=/foo1/bar
 # svr2-datadir=/foo2/bar
 #
@@ -29,7 +29,7 @@
 #
 # This script can also be run manually in which case the server instance
 # is identified by an extra argument, for example:
-#     /etc/init.d/mysql stop svr3
+#     /etc/init.d/myblockchain stop svr3
 #
 
 PATH=/sbin:/usr/sbin:/bin:/usr/bin
@@ -46,11 +46,11 @@ fi
 svr=`echo "$name" | sed -e 's/.*\<\(svr[1-9][0-9]*\)\>.*/\1/'`
 if [ "$svr" = "" ]
 then
-  echo "Can't determine database svr number from name '$name'"
+  echo "Can't determine blockchain svr number from name '$name'"
   exit 1
 fi
 
-echo "mysqld $svr $mode"
+echo "myblockchaind $svr $mode"
 
 parse_arguments() {
   for arg do
@@ -65,17 +65,17 @@ parse_arguments() {
   done
 }
 
-# Get arguments from the my.cnf file, groups [mysqld], [mysql_server],
-# and mysql_multi_server
+# Get arguments from the my.cnf file, groups [myblockchaind], [myblockchain_server],
+# and myblockchain_multi_server
 if test -x ./bin/my_print_defaults
 then
   print_defaults="./bin/my_print_defaults"
 elif test -x @bindir@/my_print_defaults
 then
   print_defaults="@bindir@/my_print_defaults"
-elif test -x @bindir@/mysql_print_defaults
+elif test -x @bindir@/myblockchain_print_defaults
 then
-  print_defaults="@bindir@/mysql_print_defaults"
+  print_defaults="@bindir@/myblockchain_print_defaults"
 else
   # Try to find basedir in /etc/my.cnf
   conf=/etc/my.cnf
@@ -92,9 +92,9 @@ else
         print_defaults="$d/bin/my_print_defaults"
         break
       fi
-      if test -x "$d/bin/mysql_print_defaults"
+      if test -x "$d/bin/myblockchain_print_defaults"
       then
-        print_defaults="$d/bin/mysql_print_defaults"
+        print_defaults="$d/bin/myblockchain_print_defaults"
         break
       fi
     done
@@ -107,7 +107,7 @@ fi
 datadir=@localstatedir@
 basedir=
 pid_file=
-parse_arguments `$print_defaults $defaults mysqld mysql_server mysql_multi_server`
+parse_arguments `$print_defaults $defaults myblockchaind myblockchain_server myblockchain_multi_server`
 
 if test -z "$basedir"
 then
@@ -133,22 +133,22 @@ case "$mode" in
   'start')
     # Start daemon
 
-    if test -x $bindir/mysqld_safe
+    if test -x $bindir/myblockchaind_safe
     then
       # We only need to specify datadir and pid-file here and we
       # get all other instance-specific config from $datadir/my.cnf.
       # We have to explicitly pass --defaults-extra-file because it
       # reads the config files before the command line options.
-      # Also it must be first because of the way mysqld_safe works.
-      $bindir/mysqld_safe --defaults-extra-file=$datadir/my.cnf \
+      # Also it must be first because of the way myblockchaind_safe works.
+      $bindir/myblockchaind_safe --defaults-extra-file=$datadir/my.cnf \
                           --datadir=$datadir --pid-file=$pid_file &
       # Make lock for RedHat / SuSE
       if test -d /var/lock/subsys
       then
-        touch /var/lock/subsys/mysql
+        touch /var/lock/subsys/myblockchain
       fi
     else
-      echo "Can't execute $bindir/mysqld_safe"
+      echo "Can't execute $bindir/myblockchaind_safe"
     fi
     ;;
 
@@ -157,15 +157,15 @@ case "$mode" in
     # root password.
     if test -f "$pid_file"
     then
-      mysqld_pid=`cat $pid_file`
-      echo "Killing mysqld $svr with pid $mysqld_pid"
-      kill $mysqld_pid
-      # mysqld should remove the pid_file when it exits, so wait for it.
+      myblockchaind_pid=`cat $pid_file`
+      echo "Killing myblockchaind $svr with pid $myblockchaind_pid"
+      kill $myblockchaind_pid
+      # myblockchaind should remove the pid_file when it exits, so wait for it.
 
       sleep 1
       while [ -s $pid_file -a "$flags" != aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa ]
       do
-        [ -z "$flags" ] && echo "Wait for mysqld $svr to exit\c" || echo ".\c"
+        [ -z "$flags" ] && echo "Wait for myblockchaind $svr to exit\c" || echo ".\c"
         flags=a$flags
         sleep 1
       done
@@ -175,12 +175,12 @@ case "$mode" in
          then echo " done"
       fi
       # delete lock for RedHat / SuSE
-      if test -e /var/lock/subsys/mysql
+      if test -e /var/lock/subsys/myblockchain
       then
-        rm /var/lock/subsys/mysql
+        rm /var/lock/subsys/myblockchain
       fi
     else
-      echo "No mysqld pid file found. Looked for $pid_file."
+      echo "No myblockchaind pid file found. Looked for $pid_file."
     fi
     ;;
 

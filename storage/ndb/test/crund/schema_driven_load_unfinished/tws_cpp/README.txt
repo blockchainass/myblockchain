@@ -13,14 +13,14 @@ This benchmark is being built with
 
     and configure these five properties (shared with CRUND):
 
-        MYSQL_HOME=${HOME}/mysql/bin-7.1-opt32
+        MYBLOCKCHAIN_HOME=${HOME}/myblockchain/bin-7.1-opt32
         TARGET_ARCH=-m32
 
-        NDB_INCLUDEOPT0=-I${MYSQL_HOME}/include/mysql/storage/ndb
-        NDB_INCLUDEOPT1=-I${MYSQL_HOME}/include/mysql/storage/ndb/ndbapi
-        NDB_LIBDIR=${MYSQL_HOME}/lib/mysql
+        NDB_INCLUDEOPT0=-I${MYBLOCKCHAIN_HOME}/include/myblockchain/storage/ndb
+        NDB_INCLUDEOPT1=-I${MYBLOCKCHAIN_HOME}/include/myblockchain/storage/ndb/ndbapi
+        NDB_LIBDIR=${MYBLOCKCHAIN_HOME}/lib/myblockchain
 
-    Important: TARGET_ARCH must match the MYSQL_HOME binaries.
+    Important: TARGET_ARCH must match the MYBLOCKCHAIN_HOME binaries.
 
 1)  Build the binary
 

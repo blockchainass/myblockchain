@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# Copyright (C) 2000, 2001 MySQL AB
+# Copyright (C) 2000, 2001 MyBlockchain AB
 # Use is subject to license terms
 # 
 # This program is free software; you can redistribute it and/or modify
@@ -21,9 +21,9 @@
 # One inserts records in the tables, one updates some record in it and
 # the last 3 does different selects on the tables.
 # Er, hmmm..., something like that :^)
-# Modified to do crazy-join, à la Nasdaq.
+# Modified to do crazy-join, ï¿½ la Nasdaq.
 #
-# This test uses the old obsolete mysql interface. For a test that uses
+# This test uses the old obsolete myblockchain interface. For a test that uses
 # DBI, please take a look at fork_big.pl
 
 $opt_loop_count=10000; # Change this to make test harder/easier
@@ -68,7 +68,7 @@ if (!$opt_skip_create)
   $Mysql::QUIET = 0;
 
   foreach $table (@testtables) {
-      print "Creating table $table in database $opt_db\n";
+      print "Creating table $table in blockchain $opt_db\n";
       $dbh->Query("create table $table".
 		  " (id int(6) not null,".
 		  " info varchar(32),".

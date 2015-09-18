@@ -43,7 +43,7 @@ protected:
 };
 
 
-static void compareMysqlTime(const MYSQL_TIME& first, const MYSQL_TIME& second)
+static void compareMysqlTime(const MYBLOCKCHAIN_TIME& first, const MYBLOCKCHAIN_TIME& second)
 {
   EXPECT_EQ(first.year, second.year);
   EXPECT_EQ(first.month, second.month);
@@ -72,19 +72,19 @@ public:
 class Mock_protocol : public Protocol
 {
 private:
-  MYSQL_TIME t;
+  MYBLOCKCHAIN_TIME t;
   uint p;
 public:
   Mock_protocol(THD *thd) {}
 
-  virtual bool store_time(MYSQL_TIME *time, uint precision)
+  virtual bool store_time(MYBLOCKCHAIN_TIME *time, uint precision)
   {
     t= *time;
     p= precision;
     return false;
   }
 
-  void verify_time(MYSQL_TIME *time, uint precision)
+  void verify_time(MYBLOCKCHAIN_TIME *time, uint precision)
   {
     compareMysqlTime(*time, t);
     EXPECT_EQ(precision, p);
@@ -132,8 +132,8 @@ public:
   { return false; }
   virtual bool store(double from, uint32 decimals, String *buffer)
   { return false; }
-  virtual bool store(MYSQL_TIME *time, uint precision) { return false; }
-  virtual bool store_date(MYSQL_TIME *time) { return false; }
+  virtual bool store(MYBLOCKCHAIN_TIME *time, uint precision) { return false; }
+  virtual bool store_date(MYBLOCKCHAIN_TIME *time) { return false; }
   virtual bool store(Proto_field *field) { return false; }
   virtual enum enum_protocol_type type() { return PROTOCOL_LOCAL; };
   virtual int get_command(COM_DATA *com_data, enum_server_command *cmd)
@@ -145,14 +145,14 @@ TEST_F(FieldTest, FieldTimef)
 {
   uchar fieldBuf[6];
   uchar nullPtr[1]= {0};
-  MYSQL_TIME time= {0, 0, 0, 12, 23, 12, 123400, false, MYSQL_TIMESTAMP_TIME};
+  MYBLOCKCHAIN_TIME time= {0, 0, 0, 12, 23, 12, 123400, false, MYBLOCKCHAIN_TIMESTAMP_TIME};
 
   Field_timef* field= new Field_timef(fieldBuf, nullPtr, false, Field::NONE,
 				      "f1", 4);
   // Test public member functions
   EXPECT_EQ(4UL, field->decimals()); //TS-TODO
-  EXPECT_EQ(MYSQL_TYPE_TIME, field->type());
-  EXPECT_EQ(MYSQL_TYPE_TIME2, field->binlog_type());
+  EXPECT_EQ(MYBLOCKCHAIN_TYPE_TIME, field->type());
+  EXPECT_EQ(MYBLOCKCHAIN_TYPE_TIME2, field->binlog_type());
 
   longlong packed= TIME_to_longlong_packed(&time);
 
@@ -196,7 +196,7 @@ TEST_F(FieldTest, FieldTimef)
   // Functions inherited from Field_time_common
   field->store_time(&time, 4);
   EXPECT_EQ(4UL, field->decimals());
-  EXPECT_EQ(MYSQL_TYPE_TIME, field->type());
+  EXPECT_EQ(MYBLOCKCHAIN_TYPE_TIME, field->type());
   EXPECT_DOUBLE_EQ(122312.1234, field->val_real());
   EXPECT_EQ(122312, field->val_int());
   EXPECT_EQ(packed, field->val_time_temporal());
@@ -207,8 +207,8 @@ TEST_F(FieldTest, FieldTimef)
   field->store_time(&time, 0);
   EXPECT_DOUBLE_EQ(122312.1234, field->val_real());  // Correct?
 
-  MYSQL_TIME dateTime;
-  MYSQL_TIME bigTime= {0, 0, 0, 123, 45, 45, 555500, false, MYSQL_TIMESTAMP_TIME};
+  MYBLOCKCHAIN_TIME dateTime;
+  MYBLOCKCHAIN_TIME bigTime= {0, 0, 0, 123, 45, 45, 555500, false, MYBLOCKCHAIN_TIMESTAMP_TIME};
   EXPECT_EQ(0, field->store_time(&bigTime, 4));
   EXPECT_FALSE(field->get_date(&dateTime, 0));
 
@@ -216,7 +216,7 @@ TEST_F(FieldTest, FieldTimef)
   // Skip 'yyyy-mm-dd ' since that will depend on current time zone.
   EXPECT_STREQ("03:45:45.555500", timeStr.c_ptr() + 11);
 
-  MYSQL_TIME t;
+  MYBLOCKCHAIN_TIME t;
   EXPECT_FALSE(field->get_time(&t));
   compareMysqlTime(bigTime, t);
 
@@ -271,7 +271,7 @@ TEST_F(FieldTest, FieldTimef)
 
   // Some of the functions inherited from Field
   Field *f= field;
-  EXPECT_EQ(TYPE_OK, f->store_time(&time, MYSQL_TIMESTAMP_TIME));
+  EXPECT_EQ(TYPE_OK, f->store_time(&time, MYBLOCKCHAIN_TIMESTAMP_TIME));
   EXPECT_DOUBLE_EQ(122312.1234, f->val_real());  // Why decimals  here?
   EXPECT_STREQ("12:23:12.1234", f->val_str(&timeStr)->c_ptr());
   EXPECT_STREQ("122312", f->val_int_as_str(&timeStr, false)->c_ptr());
@@ -298,14 +298,14 @@ TEST_F(FieldTest, FieldTimefCompare)
   uchar fieldBufs[nFields][6];
   uchar nullPtrs[nFields];
 
-  MYSQL_TIME times[nFields]= {
-    {0, 0, 0, 12, 23, 12, 100000, true,  MYSQL_TIMESTAMP_TIME},
-    {0, 0, 0,  0,  0,  0,  10000, true,  MYSQL_TIMESTAMP_TIME},
-    {0, 0, 0,  0,  0,  0,      0, false, MYSQL_TIMESTAMP_TIME},
-    {0, 0, 0,  0,  0,  0, 999900, false, MYSQL_TIMESTAMP_TIME},
-    {0, 0, 0,  0,  0,  0, 999990, false, MYSQL_TIMESTAMP_TIME},
-    {0, 0, 0, 11, 59, 59, 999999, false, MYSQL_TIMESTAMP_TIME},
-    {0, 0, 0, 12, 00, 00, 100000, false, MYSQL_TIMESTAMP_TIME}};
+  MYBLOCKCHAIN_TIME times[nFields]= {
+    {0, 0, 0, 12, 23, 12, 100000, true,  MYBLOCKCHAIN_TIMESTAMP_TIME},
+    {0, 0, 0,  0,  0,  0,  10000, true,  MYBLOCKCHAIN_TIMESTAMP_TIME},
+    {0, 0, 0,  0,  0,  0,      0, false, MYBLOCKCHAIN_TIMESTAMP_TIME},
+    {0, 0, 0,  0,  0,  0, 999900, false, MYBLOCKCHAIN_TIMESTAMP_TIME},
+    {0, 0, 0,  0,  0,  0, 999990, false, MYBLOCKCHAIN_TIMESTAMP_TIME},
+    {0, 0, 0, 11, 59, 59, 999999, false, MYBLOCKCHAIN_TIMESTAMP_TIME},
+    {0, 0, 0, 12, 00, 00, 100000, false, MYBLOCKCHAIN_TIMESTAMP_TIME}};
 
   Field* fields[nFields];
   uchar sortStrings[nFields][6];
@@ -363,12 +363,12 @@ TEST_F(FieldTest, FieldTime)
 {
   uchar fieldBuf[6];
   uchar nullPtr[1]= {0};
-  MYSQL_TIME bigTime= {0, 0, 0, 123, 45, 45, 555500, false, MYSQL_TIMESTAMP_TIME};
+  MYBLOCKCHAIN_TIME bigTime= {0, 0, 0, 123, 45, 45, 555500, false, MYBLOCKCHAIN_TIMESTAMP_TIME};
 
   Field_time* field= new Field_time(fieldBuf, nullPtr, false, Field::NONE,
 				     "f1");
   EXPECT_EQ(0, field->store_time(&bigTime, 4));
-  MYSQL_TIME t;
+  MYBLOCKCHAIN_TIME t;
   EXPECT_FALSE(field->get_time(&t));
   compareMysqlTime(bigTime, t);
 }

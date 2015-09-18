@@ -47,7 +47,7 @@ void init_heap_psi_keys()
   /* Note: THR_LOCK_heap is part of mysys, not storage/heap. */
 
   count= array_elements(all_heap_memory);
-  mysql_memory_register(category, all_heap_memory, count);
+  myblockchain_memory_register(category, all_heap_memory, count);
 }
 #endif /* HAVE_PSI_INTERFACE */
 

@@ -14,6 +14,6 @@
 -- Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 
 --
--- The inital data for system tables of MySQL Server
+-- The inital data for system tables of MyBlockchain Server
 --
 

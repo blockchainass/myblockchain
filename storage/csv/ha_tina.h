@@ -41,7 +41,7 @@ typedef struct st_tina_share {
     share initialization.
   */
   my_off_t saved_data_file_length;
-  mysql_mutex_t mutex;
+  myblockchain_mutex_t mutex;
   THR_LOCK lock;
   bool update_file_opened;
   bool tina_write_opened;
@@ -59,7 +59,7 @@ struct tina_set {
 
 class ha_tina: public handler
 {
-  THR_LOCK_DATA lock;      /* MySQL lock */
+  THR_LOCK_DATA lock;      /* MyBlockchain lock */
   TINA_SHARE *share;       /* Shared lock info */
   my_off_t current_position;  /* Current position in the file during a file scan */
   my_off_t next_position;     /* Next position in the file scan */

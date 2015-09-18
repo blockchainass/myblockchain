@@ -5,7 +5,7 @@ define("dojox/validate/creditCard", ["dojo/_base/lang", "./_base"], function(lan
 	dojox.validate.creditCard = {
 		// summary:
 		//		Module provides validation functions for Credit Cards, using account number
-		//		rules in conjunction with the Luhn algorigthm, with a plugable card info database.
+		//		rules in conjunction with the Luhn algorigthm, with a plugable card info blockchain.
 	};
 
 	validate = dojox.validate;

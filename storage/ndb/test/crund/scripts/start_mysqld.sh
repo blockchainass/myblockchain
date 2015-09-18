@@ -28,24 +28,24 @@ mylogdir="$cwd/ndblog"
 mkdir -p "$mylogdir"
 user="$(whoami)"
 mycnf="$cwd/../my.cnf"
-myerr="$mylogdir/mysqld.log.err"
-mysock="/tmp/mysql.sock"
-#mysock="$mylogdir/mysql.sock"
+myerr="$mylogdir/myblockchaind.log.err"
+mysock="/tmp/myblockchain.sock"
+#mysock="$mylogdir/myblockchain.sock"
 
 echo
-echo start mysqld...
-( cd $MYSQL_HOME ; "mysqld_safe" --defaults-file="$mycnf" --user="$user" --log-error="$myerr" --socket="$mysock" & )
+echo start myblockchaind...
+( cd $MYSQL_HOME ; "myblockchaind_safe" --defaults-file="$mycnf" --user="$user" --log-error="$myerr" --socket="$mysock" & )
 #
 # debug:
-#( cd $MYSQL_HOME ; "mysqld_safe" --defaults-file="$mycnf" --user="$user" --log-error="$myerr" -#d & )
+#( cd $MYSQL_HOME ; "myblockchaind_safe" --defaults-file="$mycnf" --user="$user" --log-error="$myerr" -#d & )
 # crashes when --debug/-# at beginning:
-#( cd $MYSQL_HOME ; "$mysqld" --debug --defaults-file="$mycnf" --user="$user" --log-error="$myerr" & )
+#( cd $MYSQL_HOME ; "$myblockchaind" --debug --defaults-file="$mycnf" --user="$user" --log-error="$myerr" & )
 
 # need some extra time
 for ((i=0; i<10; i++)) ; do printf "." ; sleep 1 ; done ; echo
 
 #echo
-#ps -efa | grep mysqld
+#ps -efa | grep myblockchaind
 
 ./show_cluster.sh
 

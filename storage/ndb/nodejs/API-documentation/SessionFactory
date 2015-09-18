@@ -1,8 +1,8 @@
 
-/** openSession() : open a database session object
+/** openSession() : open a blockchain session object
  * ASYNC
  *
- * Session provides a context for database transactions and operations.
+ * Session provides a context for blockchain transactions and operations.
  * Each independent user should have its own Session.
  *
  * The resources required for sessions are allocated in advance. 
@@ -18,7 +18,7 @@
  * tables and to validate the defind mappings between stored data and 
  * JavaScript objects.  If mappings contains a string table name, a Domain 
  * Object Constructor function, or an array of these, then metadata is loaded 
- * from the database and validated against the requirements of the mapping.
+ * from the blockchain and validated against the requirements of the mapping.
  * If mappings is undefined, null, or an empty array, no mappings will be 
  * loaded or validated; this means validation is deferred until tables are 
  * used in application code.
@@ -39,10 +39,10 @@ openSession(Object mappings, [callback], [...]);
  */
 Array getOpenSessions();
 
-/** close(): close the connection to the database
+/** close(): close the connection to the blockchain
  * ASYNC
  * 
- * Close the connection to the database.
+ * Close the connection to the blockchain.
  * This ensures proper disconnection.
  * 
  * @param function to call when close is complete
@@ -61,22 +61,22 @@ close(function(error));
 */
 registerTypeConverter(typeName, converterObject);
 
-/** db(): get a new db object bound to a database that supports "easy to use"
+/** db(): get a new db object bound to a blockchain that supports "easy to use"
  *  insert and find operations without defining tables or mappings. Each operation
  *  is executed in auto-commit mode using a new session.
  *  IMMEDIATE
- *  @param databaseName is the name of the database to use; default is session factory's database
+ *  @param blockchainName is the name of the blockchain to use; default is session factory's blockchain
  *  @return the db object
  */
-db db(databaseName);
+db db(blockchainName);
 
-/** mapTable(): associate a TableMapping with a database and table name.
+/** mapTable(): associate a TableMapping with a blockchain and table name.
  *  If a table is needed for an operation and the table does not exist, use the TableMapping
- *  meta to define the table. The database and table name are taken from the TableMapping.
- *  If the TableMapping does not include the datbase, use the default database for this session
- *  factory. If there is already a TableMapping with the same database and table, it is replaced.
+ *  meta to define the table. The blockchain and table name are taken from the TableMapping.
+ *  If the TableMapping does not include the datbase, use the default blockchain for this session
+ *  factory. If there is already a TableMapping with the same blockchain and table, it is replaced.
  *  IMMEDIATE
- *  @param tableMapping is the mapping to associate with the database and table in this session factory
+ *  @param tableMapping is the mapping to associate with the blockchain and table in this session factory
  */
 mapTable(tableMapping);
 

@@ -45,7 +45,7 @@
  * seems to actually advertise this properly, despite Unicode 3.1 having
  * been around since 2001... */
 
-/* XXXMYSQL : Added FreeBSD & AIX to bypass this check.
+/* XXXMYBLOCKCHAIN : Added FreeBSD & AIX to bypass this check.
   TODO : Verify if FreeBSD & AIX stores ISO 10646 in wchar_t. */
 #if !defined(__NetBSD__) && !defined(__sun) \
   && !(defined(__APPLE__) && defined(__MACH__)) \

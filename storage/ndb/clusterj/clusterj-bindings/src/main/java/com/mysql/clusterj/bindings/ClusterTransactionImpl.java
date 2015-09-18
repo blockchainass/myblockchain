@@ -16,24 +16,24 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
  */
 
-package com.mysql.clusterj.bindings;
+package com.myblockchain.clusterj.bindings;
 
-import com.mysql.cluster.ndbj.NdbApiException;
-import com.mysql.cluster.ndbj.NdbOperation.AbortOption;
-import com.mysql.cluster.ndbj.NdbOperation;
-import com.mysql.cluster.ndbj.NdbScanOperation;
-import com.mysql.cluster.ndbj.NdbTransaction;
-import com.mysql.clusterj.ClusterJDatastoreException;
-import com.mysql.clusterj.core.store.ClusterTransaction;
-import com.mysql.clusterj.core.store.Index;
-import com.mysql.clusterj.core.store.IndexOperation;
-import com.mysql.clusterj.core.store.IndexScanOperation;
-import com.mysql.clusterj.core.store.Operation;
-import com.mysql.clusterj.core.store.ScanOperation;
-import com.mysql.clusterj.core.store.Table;
-import com.mysql.clusterj.core.util.I18NHelper;
-import com.mysql.clusterj.core.util.Logger;
-import com.mysql.clusterj.core.util.LoggerFactoryService;
+import com.myblockchain.cluster.ndbj.NdbApiException;
+import com.myblockchain.cluster.ndbj.NdbOperation.AbortOption;
+import com.myblockchain.cluster.ndbj.NdbOperation;
+import com.myblockchain.cluster.ndbj.NdbScanOperation;
+import com.myblockchain.cluster.ndbj.NdbTransaction;
+import com.myblockchain.clusterj.ClusterJDatastoreException;
+import com.myblockchain.clusterj.core.store.ClusterTransaction;
+import com.myblockchain.clusterj.core.store.Index;
+import com.myblockchain.clusterj.core.store.IndexOperation;
+import com.myblockchain.clusterj.core.store.IndexScanOperation;
+import com.myblockchain.clusterj.core.store.Operation;
+import com.myblockchain.clusterj.core.store.ScanOperation;
+import com.myblockchain.clusterj.core.store.Table;
+import com.myblockchain.clusterj.core.util.I18NHelper;
+import com.myblockchain.clusterj.core.util.Logger;
+import com.myblockchain.clusterj.core.util.LoggerFactoryService;
 import java.util.ArrayList;
 import java.util.List;
 

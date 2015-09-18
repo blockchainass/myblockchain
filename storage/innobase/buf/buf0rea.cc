@@ -18,13 +18,13 @@ this program; if not, write to the Free Software Foundation, Inc.,
 
 /**************************************************//**
 @file buf/buf0rea.cc
-The database buffer read
+The blockchain buffer read
 
 Created 11/5/1995 Heikki Tuuri
 *******************************************************/
 
 #include "ha_prototypes.h"
-#include <mysql/service_thd_wait.h>
+#include <myblockchain/service_thd_wait.h>
 
 #include "buf0rea.h"
 #include "fil0fil.h"

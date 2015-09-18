@@ -2,7 +2,7 @@
 # Last Modified: Fri Feb 28 18:06:30 2014
 #include <tunables/global>
 
-/usr/sbin/mysqld {
+/usr/sbin/myblockchaind {
   #include <abstractions/base>
   #include <abstractions/nameservice>
   #include <abstractions/user-tmp>
@@ -15,41 +15,41 @@
   capability setgid,
 
 # Allow config access
-  /etc/mysql/** r,
+  /etc/myblockchain/** r,
 
 # Allow pid, socket, socket lock file access
-  /var/run/mysqld/mysqld.pid rw,
-  /var/run/mysqld/mysqld.sock rw,
-  /var/run/mysqld/mysqld.sock.lock rw,
-  /run/mysqld/mysqld.pid rw,
-  /run/mysqld/mysqld.sock rw,
-  /run/mysqld/mysqld.sock.lock rw,
+  /var/run/myblockchaind/myblockchaind.pid rw,
+  /var/run/myblockchaind/myblockchaind.sock rw,
+  /var/run/myblockchaind/myblockchaind.sock.lock rw,
+  /run/myblockchaind/myblockchaind.pid rw,
+  /run/myblockchaind/myblockchaind.sock rw,
+  /run/myblockchaind/myblockchaind.sock.lock rw,
 
 # Allow read/ write to /tmp
   /tmp/ r,
   /tmp/* rw,
 
 # Allow execution of server binary
-  /usr/sbin/mysqld mr,
-  /usr/sbin/mysqld-debug mr,
+  /usr/sbin/myblockchaind mr,
+  /usr/sbin/myblockchaind-debug mr,
 
 # Allow plugin access
-  /usr/lib/mysql/plugin/ r,
-  /usr/lib/mysql/plugin/*.so* mr,
+  /usr/lib/myblockchain/plugin/ r,
+  /usr/lib/myblockchain/plugin/*.so* mr,
 
 # Allow error msg and charset access
-  /usr/share/mysql/ r,
-  /usr/share/mysql/** r,
+  /usr/share/myblockchain/ r,
+  /usr/share/myblockchain/** r,
 
 # Allow data dir access
-  /var/lib/mysql/ r,
-  /var/lib/mysql/** rwk,
+  /var/lib/myblockchain/ r,
+  /var/lib/myblockchain/** rwk,
 
 # Allow data files dir access
-  /var/lib/mysql-files/ r,
-  /var/lib/mysql-files/** rwk,
+  /var/lib/myblockchain-files/ r,
+  /var/lib/myblockchain-files/** rwk,
 
 # Allow log file access
-  /var/log/mysql/ r,
-  /var/log/mysql/** rw,
+  /var/log/myblockchain/ r,
+  /var/log/myblockchain/** rw,
 }

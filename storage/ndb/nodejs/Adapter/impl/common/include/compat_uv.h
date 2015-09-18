@@ -26,7 +26,7 @@
   Work around the lack of uv_mutex_ and uv_pthread_ in Node.JS 0.6
 */
 #ifdef _WIN32
-#error "Building mysql-js with old libuv is not supported on Windows."
+#error "Building myblockchain-js with old libuv is not supported on Windows."
 #endif
 
 #include <pthread.h>

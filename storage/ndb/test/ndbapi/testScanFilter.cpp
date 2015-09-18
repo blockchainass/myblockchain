@@ -34,8 +34,8 @@ fprintf(stderr, "Error in %s, line: %d, code: %d, msg: %s.\n", __FILE__, __LINE_
 } \
 while (0);
 
-#define MYSQLERROR(mysql) { \
-  PRINT_ERROR(mysql_errno(&mysql),mysql_error(&mysql)); \
+#define MYBLOCKCHAINERROR(myblockchain) { \
+  PRINT_ERROR(myblockchain_errno(&myblockchain),myblockchain_error(&myblockchain)); \
   exit(-1); }
 #define APIERROR(error) { \
   PRINT_ERROR(error.code,error.message); \

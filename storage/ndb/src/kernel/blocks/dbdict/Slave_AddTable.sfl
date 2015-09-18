@@ -1,4 +1,4 @@
-// Copyright (C) 2003, 2005, 2006 MySQL AB
+// Copyright (C) 2003, 2005, 2006 MyBlockchain AB
 //  All rights reserved. Use is subject to license terms.
 //
 // This program is free software; you can redistribute it and/or modify
@@ -254,7 +254,7 @@ s.bn: 250 "DBDICT", s.proc: 4, sigId: 46803 length: 2 trace: 0
  H'00000002 H'00000004
 
 //--------------------------------------------------------------------------
-// Update schema file ín memory and on disk to UPDATE_PAGE_COUNT.
+// Update schema file ï¿½n memory and on disk to UPDATE_PAGE_COUNT.
 //--------------------------------------------------------------------------
 
 ---- Received - Signal ----------------

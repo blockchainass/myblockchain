@@ -85,7 +85,7 @@ int mi_preload(MI_INFO *info, ulonglong key_map, my_bool ignore_leaves)
     /* Read the next block of index file into the preload buffer */
     if ((my_off_t) length > (key_file_length-pos))
       length= (ulong) (key_file_length-pos);
-    if (mysql_file_pread(share->kfile, (uchar*) buff, length, pos,
+    if (myblockchain_file_pread(share->kfile, (uchar*) buff, length, pos,
                          MYF(MY_FAE|MY_FNABP)))
       goto err;
 

@@ -86,7 +86,7 @@ Tablespace::get_sum_of_sizes() const
 		    && it->m_size >= (1UL << (32UL - UNIV_PAGE_SIZE_SHIFT))) {
 
 			ib::error() << "File size must be < 4 GB with this"
-				" MySQL binary-operating system combination."
+				" MyBlockchain binary-operating system combination."
 				" In some OS's < 2 GB";
 
 			return(ULINT_UNDEFINED);

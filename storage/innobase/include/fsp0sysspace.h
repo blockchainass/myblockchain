@@ -98,7 +98,7 @@ public:
 	bool parse_params(const char* filepath, bool supports_raw);
 
 	/** Check the data file specification.
-	@param[out]	create_new_db		true if a new database
+	@param[out]	create_new_db		true if a new blockchain
 	is to be created
 	@param[in]	min_expected_size	expected tablespace
 	size in bytes
@@ -157,7 +157,7 @@ public:
 
 	/** Open or create the data files
 	@param[in]  is_temp		whether this is a temporary tablespace
-	@param[in]  create_new_db	whether we are creating a new database
+	@param[in]  create_new_db	whether we are creating a new blockchain
 	@param[out] sum_new_sizes	sum of sizes of the new files added
 	@param[out] flush_lsn		FIL_PAGE_FILE_FLUSH_LSN of first file
 	@return DB_SUCCESS or error code */

@@ -61,7 +61,7 @@ int runSQLQueries(NDBT_Context* ctx, NDBT_Step* step,
     if (!sql.doQuery(query, args))
     {
       switch(sql.last_errno()){
-      case 2006: // MySQL server has gone away(ie. crash)
+      case 2006: // MyBlockchain server has gone away(ie. crash)
         g_err << "Fatal error: " << sql.last_error() << endl;
         g_err.print("query: %s", query);
         result = NDBT_FAILED;

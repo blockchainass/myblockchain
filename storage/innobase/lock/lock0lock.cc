@@ -25,7 +25,7 @@ Created 5/7/1996 Heikki Tuuri
 
 #define LOCK_MODULE_IMPLEMENTATION
 
-#include <mysql/service_thd_engine_lock.h>
+#include <myblockchain/service_thd_engine_lock.h>
 #include "ha_prototypes.h"
 
 #include "lock0lock.h"
@@ -419,7 +419,7 @@ lock_sec_rec_cons_read_sees(
 }
 
 /*********************************************************************//**
-Creates the lock system at database start. */
+Creates the lock system at blockchain start. */
 void
 lock_sys_create(
 /*============*/
@@ -522,7 +522,7 @@ lock_sys_resize(
 }
 
 /*********************************************************************//**
-Closes the lock system at database shutdown. */
+Closes the lock system at blockchain shutdown. */
 void
 lock_sys_close(void)
 /*================*/
@@ -1242,7 +1242,7 @@ lock_sec_rec_some_has_impl(
 
 	/* Some transaction may have an implicit x-lock on the record only
 	if the max trx id for the page >= min trx id for the trx list, or
-	database recovery is running. We do not write the changes of a page
+	blockchain recovery is running. We do not write the changes of a page
 	max trx id to the log, and therefore during recovery, this value
 	for a page may be incorrect. */
 
@@ -1674,7 +1674,7 @@ RecLock::mark_trx_for_rollback(trx_t* trx)
 
 	m_trx->hit_list.push_back(hit_list_t::value_type(trx));
 
-	THD*	thd = trx->mysql_thd;
+	THD*	thd = trx->myblockchain_thd;
 
 	if (thd != NULL) {
 
@@ -1961,7 +1961,7 @@ RecLock::add_to_waitq(const lock_t* wait_for, const lock_prdt_t* prdt)
 	gathering) transactions. The problem is that we don't currently
 	block them using the TrxInInnoDB() mechanism. */
 
-	if (wait_for->trx->mysql_thd == NULL) {
+	if (wait_for->trx->myblockchain_thd == NULL) {
 
 		victim_trx = NULL;
 
@@ -1987,9 +1987,9 @@ RecLock::add_to_waitq(const lock_t* wait_for, const lock_prdt_t* prdt)
 
 			lock_rec_reset_nth_bit(lock, m_rec_id.m_heap_no);
 
-			if (victim_trx->mysql_thd != NULL) {
+			if (victim_trx->myblockchain_thd != NULL) {
 				char	buffer[1024];
-				THD*	thd = victim_trx->mysql_thd;
+				THD*	thd = victim_trx->myblockchain_thd;
 
 				ib::info() << "High priority transaction"
 					" selected for rollback : "
@@ -2013,9 +2013,9 @@ RecLock::add_to_waitq(const lock_t* wait_for, const lock_prdt_t* prdt)
 
 	ut_ad(trx_mutex_own(m_trx));
 
-	/* m_trx->mysql_thd is NULL if it's an internal trx. So current_thd is used */
+	/* m_trx->myblockchain_thd is NULL if it's an internal trx. So current_thd is used */
 	if (err == DB_LOCK_WAIT) {
-		thd_report_row_lock_wait(current_thd, wait_for->trx->mysql_thd);
+		thd_report_row_lock_wait(current_thd, wait_for->trx->myblockchain_thd);
 	}
 	return(err);
 }
@@ -3695,7 +3695,7 @@ UNIV_INLINE
 lock_t*
 lock_table_create(
 /*==============*/
-	dict_table_t*	table,	/*!< in/out: database table
+	dict_table_t*	table,	/*!< in/out: blockchain table
 				in dictionary cache */
 	ulint		type_mode,/*!< in: lock mode possibly ORed with
 				LOCK_WAIT */
@@ -4019,7 +4019,7 @@ lock_table_other_has_incompatible(
 }
 
 /*********************************************************************//**
-Locks the specified database table in the mode given. If the lock cannot
+Locks the specified blockchain table in the mode given. If the lock cannot
 be granted immediately, the query thread is put to wait.
 @return DB_SUCCESS, DB_LOCK_WAIT, DB_DEADLOCK, or DB_QUE_THR_SUSPENDED */
 dberr_t
@@ -4027,7 +4027,7 @@ lock_table(
 /*=======*/
 	ulint		flags,	/*!< in: if BTR_NO_LOCKING_FLAG bit is set,
 				does nothing */
-	dict_table_t*	table,	/*!< in/out: database table
+	dict_table_t*	table,	/*!< in/out: blockchain table
 				in dictionary cache */
 	lock_mode	mode,	/*!< in: lock mode */
 	que_thr_t*	thr)	/*!< in: query thread */
@@ -4244,7 +4244,7 @@ lock_rec_unlock(
 	lock_mutex_exit();
 	trx_mutex_exit(trx);
 
-	stmt = innobase_get_stmt_unsafe(trx->mysql_thd, &stmt_len);
+	stmt = innobase_get_stmt_unsafe(trx->myblockchain_thd, &stmt_len);
 
 	{
 		ib::error	err;
@@ -4352,7 +4352,7 @@ lock_release(
 			    && trx->undo_no != 0) {
 
 				/* The trx may have modified the table. We
-				block the use of the MySQL query cache for
+				block the use of the MyBlockchain query cache for
 				all currently active transactions. */
 
 				table->query_cache_inv_id = max_trx_id;
@@ -4764,7 +4764,7 @@ lock_rec_print(
 #ifdef UNIV_DEBUG
 /* Print the number of lock structs from lock_print_info_summary() only
 in non-production builds for performance reasons, see
-http://bugs.mysql.com/36942 */
+http://bugs.myblockchain.com/36942 */
 #define PRINT_NUM_OF_LOCK_STRUCTS
 #endif /* UNIV_DEBUG */
 
@@ -4887,7 +4887,7 @@ lock_print_info_summary(
 	return(TRUE);
 }
 
-/** Functor to print not-started transaction from the mysql_trx_list. */
+/** Functor to print not-started transaction from the myblockchain_trx_list. */
 
 struct	PrintNotStarted {
 
@@ -4895,7 +4895,7 @@ struct	PrintNotStarted {
 
 	void	operator()(const trx_t* trx)
 	{
-		ut_ad(trx->in_mysql_trx_list);
+		ut_ad(trx->in_myblockchain_trx_list);
 		ut_ad(mutex_own(&trx_sys->mutex));
 
 		/* See state transitions and locking rules in trx0trx.h */
@@ -5202,7 +5202,7 @@ lock_print_info_all_transactions(
 	available from INFORMATION_SCHEMA.INNODB_TRX. */
 
 	PrintNotStarted	print_not_started(file);
-	ut_list_map(trx_sys->mysql_trx_list, print_not_started);
+	ut_list_map(trx_sys->myblockchain_trx_list, print_not_started);
 
 	const trx_t*	trx;
 	TrxListIterator	trx_iter;
@@ -6172,7 +6172,7 @@ lock_sec_rec_read_check_and_lock(
 
 	/* Some transaction may have an implicit x-lock on the record only
 	if the max trx id for the page >= min trx id for the trx list or a
-	database recovery is running. */
+	blockchain recovery is running. */
 
 	if ((page_get_max_trx_id(block->frame) >= trx_rw_min_trx_id()
 	     || recv_recovery_is_on())
@@ -6637,7 +6637,7 @@ lock_cancel_waiting_and_release(
 /*********************************************************************//**
 Unlocks AUTO_INC type locks that were possibly reserved by a trx. This
 function should be called at the the end of an SQL statement, by the
-connection thread that owns the transaction (trx->mysql_thd). */
+connection thread that owns the transaction (trx->myblockchain_thd). */
 void
 lock_unlock_table_autoinc(
 /*======================*/
@@ -6704,13 +6704,13 @@ lock_trx_release_locks(
 	/* The following assignment makes the transaction committed in memory
 	and makes its changes to data visible to other transactions.
 	NOTE that there is a small discrepancy from the strict formal
-	visibility rules here: a human user of the database can see
+	visibility rules here: a human user of the blockchain can see
 	modifications made by another transaction T even before the necessary
-	log segment has been flushed to the disk. If the database happens to
+	log segment has been flushed to the disk. If the blockchain happens to
 	crash before the flush, the user has seen modifications from T which
 	will never be a committed transaction. However, any transaction T2
 	which sees the modifications of the committing transaction T, and
-	which also itself makes modifications to the database, will get an lsn
+	which also itself makes modifications to the blockchain, will get an lsn
 	larger than the committing transaction T. In the case where the log
 	flush fails, and T never gets committed, also T2 will never get
 	committed. */
@@ -7252,8 +7252,8 @@ DeadlockChecker::select_victim() const
 	ut_ad(m_start->lock.wait_lock != 0);
 	ut_ad(m_wait_lock->trx != m_start);
 
-	if (thd_trx_priority(m_start->mysql_thd) > 0
-	    || thd_trx_priority(m_wait_lock->trx->mysql_thd) > 0) {
+	if (thd_trx_priority(m_start->myblockchain_thd) > 0
+	    || thd_trx_priority(m_wait_lock->trx->myblockchain_thd) > 0) {
 
 		const trx_t*	victim;
 

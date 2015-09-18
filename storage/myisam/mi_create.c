@@ -27,7 +27,7 @@
 #include <m_ctype.h>
 
 /*
-  Old options is used when recreating database, from myisamchk
+  Old options is used when recreating blockchain, from myisamchk
 */
 
 int mi_create(const char *name,uint keys,MI_KEYDEF *keydefs,
@@ -423,7 +423,7 @@ int mi_create(const char *name,uint keys,MI_KEYDEF *keydefs,
     /*
       key_segs may be 0 in the case when we only want to be able to
       add on row into the table. This can happen with some DISTINCT queries
-      in MySQL
+      in MyBlockchain
     */
     if ((keydef->flag & (HA_NOSAME | HA_NULL_PART_KEY)) == HA_NOSAME &&
 	key_segs)
@@ -561,7 +561,7 @@ int mi_create(const char *name,uint keys,MI_KEYDEF *keydefs,
     share.state.create_time= (long) time((time_t*) 0);
 
   if (!internal_table)
-    mysql_mutex_lock(&THR_LOCK_myisam);
+    myblockchain_mutex_lock(&THR_LOCK_myisam);
 
   /*
     NOTE: For test_if_reopen() we need a real path name. Hence we need
@@ -627,7 +627,7 @@ int mi_create(const char *name,uint keys,MI_KEYDEF *keydefs,
     goto err;
   }
 
-  if ((file= mysql_file_create_with_symlink(mi_key_file_kfile,
+  if ((file= myblockchain_file_create_with_symlink(mi_key_file_kfile,
                                             linkname_ptr, filename, 0,
                                             create_mode,
                                             MYF(MY_WME | create_flag))) < 0)
@@ -671,7 +671,7 @@ int mi_create(const char *name,uint keys,MI_KEYDEF *keydefs,
         create_flag=(flags & HA_CREATE_KEEP_FILES) ? 0 : MY_DELETE_OLD;
       }
       if ((dfile=
-           mysql_file_create_with_symlink(mi_key_file_dfile,
+           myblockchain_file_create_with_symlink(mi_key_file_dfile,
                                           linkname_ptr, filename, 0,
                                           create_mode,
                                           MYF(MY_WME | create_flag))) < 0)
@@ -685,9 +685,9 @@ int mi_create(const char *name,uint keys,MI_KEYDEF *keydefs,
       mi_base_info_write(file, &share.base))
     goto err;
 #ifndef DBUG_OFF
-  if ((uint) mysql_file_tell(file, MYF(0)) != base_pos + MI_BASE_INFO_SIZE)
+  if ((uint) myblockchain_file_tell(file, MYF(0)) != base_pos + MI_BASE_INFO_SIZE)
   {
-    uint pos=(uint) mysql_file_tell(file, MYF(0));
+    uint pos=(uint) myblockchain_file_tell(file, MYF(0));
     DBUG_PRINT("warning",("base_length: %d  != used_length: %d",
 			  base_pos+ MI_BASE_INFO_SIZE, pos));
   }
@@ -780,9 +780,9 @@ int mi_create(const char *name,uint keys,MI_KEYDEF *keydefs,
       goto err;
 
 #ifndef DBUG_OFF
-  if ((uint) mysql_file_tell(file, MYF(0)) != info_length)
+  if ((uint) myblockchain_file_tell(file, MYF(0)) != info_length)
   {
-    uint pos= (uint) mysql_file_tell(file, MYF(0));
+    uint pos= (uint) myblockchain_file_tell(file, MYF(0));
     DBUG_PRINT("warning",("info_length: %d  != used_length: %d",
 			  info_length, pos));
   }
@@ -790,44 +790,44 @@ int mi_create(const char *name,uint keys,MI_KEYDEF *keydefs,
 
 	/* Enlarge files */
   DBUG_PRINT("info", ("enlarge to keystart: %lu", (ulong) share.base.keystart));
-  if (mysql_file_chsize(file, (ulong) share.base.keystart, 0, MYF(0)))
+  if (myblockchain_file_chsize(file, (ulong) share.base.keystart, 0, MYF(0)))
     goto err;
 
   if (! (flags & HA_DONT_TOUCH_DATA))
   {
     errpos=2;
-    if (mysql_file_close(dfile, MYF(0)))
+    if (myblockchain_file_close(dfile, MYF(0)))
       goto err;
   }
   errpos=0;
   if (!internal_table)
-    mysql_mutex_unlock(&THR_LOCK_myisam);
-  if (mysql_file_close(file, MYF(0)))
+    myblockchain_mutex_unlock(&THR_LOCK_myisam);
+  if (myblockchain_file_close(file, MYF(0)))
     goto err_no_lock;
   my_free(rec_per_key_part);
   DBUG_RETURN(0);
 
 err:
   if (!internal_table)
-    mysql_mutex_unlock(&THR_LOCK_myisam);
+    myblockchain_mutex_unlock(&THR_LOCK_myisam);
 
 err_no_lock:
   save_errno=my_errno;
   switch (errpos) {
   case 3:
-    (void) mysql_file_close(dfile, MYF(0));
+    (void) myblockchain_file_close(dfile, MYF(0));
     /* fall through */
   case 2:
   if (! (flags & HA_DONT_TOUCH_DATA))
-    mysql_file_delete_with_symlink(mi_key_file_dfile,
+    myblockchain_file_delete_with_symlink(mi_key_file_dfile,
                                    fn_format(filename, name, "", MI_NAME_DEXT,
                                              MY_UNPACK_FILENAME | MY_APPEND_EXT),
                                    MYF(0));
     /* fall through */
   case 1:
-    (void) mysql_file_close(file, MYF(0));
+    (void) myblockchain_file_close(file, MYF(0));
     if (! (flags & HA_DONT_TOUCH_DATA))
-      mysql_file_delete_with_symlink(mi_key_file_kfile,
+      myblockchain_file_delete_with_symlink(mi_key_file_kfile,
                                      fn_format(filename, name, "", MI_NAME_IEXT,
                                                MY_UNPACK_FILENAME | MY_APPEND_EXT),
                                      MYF(0));

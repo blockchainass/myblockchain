@@ -24,7 +24,7 @@ void Sql_formatter_options::create_options()
   this->create_new_option(&m_add_locks, "add-locks",
     "Wrap data inserts on table with write lock on that table in output. "
     "This doesn't work with parallelism.");
-  this->create_new_option(&m_drop_database, "add-drop-database",
+  this->create_new_option(&m_drop_blockchain, "add-drop-blockchain",
     "Add a DROP DATABASE before each CREATE DATABASE.");
   this->create_new_option(&m_drop_table, "add-drop-table",
     "Add a DROP TABLE before each CREATE TABLE.");
@@ -43,7 +43,7 @@ void Sql_formatter_options::create_options()
   this->create_new_option(&m_suppress_create_table, "no-create-info",
     "Suppress CREATE TABLE statements.")
     ->set_short_character('t');
-  this->create_new_option(&m_suppress_create_database, "no-create-db",
+  this->create_new_option(&m_suppress_create_blockchain, "no-create-db",
 	  "Suppress CREATE DATABASE statements.");
   this->create_new_option(&m_hex_blob, "hex-blob",
     "Dump binary strings (in fields of type BINARY, VARBINARY, BLOB, ...) "
@@ -62,6 +62,6 @@ void Sql_formatter_options::create_options()
 }
 
 Sql_formatter_options::Sql_formatter_options(
-  const Mysql_chain_element_options* mysql_chain_element_options)
-  : m_mysql_chain_element_options(mysql_chain_element_options)
+  const Mysql_chain_element_options* myblockchain_chain_element_options)
+  : m_myblockchain_chain_element_options(myblockchain_chain_element_options)
 {}

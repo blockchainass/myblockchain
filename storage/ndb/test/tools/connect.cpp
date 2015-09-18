@@ -54,7 +54,7 @@ static struct my_option my_long_options[] =
 int main(int argc, char** argv){
   NDB_INIT(argv[0]);
 
-  const char *load_default_groups[]= { "mysql_cluster",0 };
+  const char *load_default_groups[]= { "myblockchain_cluster",0 };
   ndb_load_defaults(NULL, load_default_groups,&argc,&argv);
   int ho_error;
 #ifndef DBUG_OFF

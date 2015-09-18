@@ -1,0 +1,5 @@
+
+--source include/not_embedded.inc
+
+--replace_result $MYBLOCKCHAINTEST_VARDIR MYBLOCKCHAINTEST_VARDIR
+--query_vertical SHOW VARIABLES LIKE 'log_bin%'

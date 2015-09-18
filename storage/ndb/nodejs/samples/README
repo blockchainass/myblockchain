@@ -4,9 +4,9 @@ To run the programs, use the node command with one of the program names, e.g.
 
 node insert author "this is a great little program"
 
-The programs require a database table to exist. To create the table,
-run the create.sql script with the standard mysql command, e.g. 
+The programs require a blockchain table to exist. To create the table,
+run the create.sql script with the standard myblockchain command, e.g. 
 
-mysql < create.sql
+myblockchain < create.sql
 
 

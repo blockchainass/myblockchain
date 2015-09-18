@@ -1,0 +1,1 @@
+--log-bin=myblockchaind-bin --binlog-format=mixed

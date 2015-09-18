@@ -13,7 +13,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-# Add both MySQL and NDB cmake repositories to search path
+# Add both MyBlockchain and NDB cmake repositories to search path
 SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}
     ${CMAKE_SOURCE_DIR}/cmake
     ${CMAKE_SOURCE_DIR}/storage/ndb/cmake)
@@ -21,35 +21,35 @@ INCLUDE(ndb_add_target_property)
 
 MESSAGE(STATUS "Using cmake version ${CMAKE_VERSION}")
 
-# Check if this is MySQL Cluster build i.e the MySQL Server
+# Check if this is MyBlockchain Cluster build i.e the MyBlockchain Server
 # version string ends in -ndb-Y.Y.Y[-status]    
-MACRO(NDB_CHECK_MYSQL_CLUSTER version_string)
+MACRO(NDB_CHECK_MYBLOCKCHAIN_CLUSTER version_string)
 
   IF(${version_string} MATCHES "(.*)-ndb-(.*)")
-    SET(mysql_version ${CMAKE_MATCH_1})
+    SET(myblockchain_version ${CMAKE_MATCH_1})
     SET(cluster_version ${CMAKE_MATCH_2})
 
-    # Sanity check that the mysql_version matches precalcuated
+    # Sanity check that the myblockchain_version matches precalcuated
     # values from higher level scripts  
-    IF(NOT ${mysql_version} EQUAL "${MYSQL_NO_DASH_VERSION}")
+    IF(NOT ${myblockchain_version} EQUAL "${MYBLOCKCHAIN_NO_DASH_VERSION}")
       MESSAGE(FATAL_ERROR "Sanity check of version_string failed!")
     ENDIF()
 
     # Split the cluster_version further into Y.Y.Y subcomponents
     IF(${cluster_version} MATCHES "([0-9]+)\\.([0-9]+)\\.([0-9]+)")
-      SET(MYSQL_CLUSTER_VERSION_MAJOR ${CMAKE_MATCH_1})
-      SET(MYSQL_CLUSTER_VERSION_MINOR ${CMAKE_MATCH_2})
-      SET(MYSQL_CLUSTER_VERSION_BUILD ${CMAKE_MATCH_3})
+      SET(MYBLOCKCHAIN_CLUSTER_VERSION_MAJOR ${CMAKE_MATCH_1})
+      SET(MYBLOCKCHAIN_CLUSTER_VERSION_MINOR ${CMAKE_MATCH_2})
+      SET(MYBLOCKCHAIN_CLUSTER_VERSION_BUILD ${CMAKE_MATCH_3})
     ENDIF()
 
-    MESSAGE(STATUS  "This is MySQL Cluster ${cluster_version}")
-    # Finally set MYSQL_CLUSTER_VERSION to be used as an indicator
-    # that this is a MySQL Cluster build, yay!
-    SET(MYSQL_CLUSTER_VERSION ${cluster_version})
+    MESSAGE(STATUS  "This is MyBlockchain Cluster ${cluster_version}")
+    # Finally set MYBLOCKCHAIN_CLUSTER_VERSION to be used as an indicator
+    # that this is a MyBlockchain Cluster build, yay!
+    SET(MYBLOCKCHAIN_CLUSTER_VERSION ${cluster_version})
   ENDIF()
 ENDMACRO()
 
-NDB_CHECK_MYSQL_CLUSTER(${VERSION})
+NDB_CHECK_MYBLOCKCHAIN_CLUSTER(${VERSION})
 
 # Temporarily remove -Werror from compiler flags until
 # storage/ndb/ can be built with it
@@ -113,35 +113,35 @@ SET(NDBCLUSTER_SOURCES
 # Include directories used when building ha_ndbcluster
 INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/storage/ndb/include)
 
-IF(NOT MYSQL_CLUSTER_VERSION)
+IF(NOT MYBLOCKCHAIN_CLUSTER_VERSION)
  # Global schema lock not supported in non
- # MySQL Cluster version yet, compile ndbcluster without it
+ # MyBlockchain Cluster version yet, compile ndbcluster without it
  ADD_DEFINITIONS(-DNDB_WITHOUT_GLOBAL_SCHEMA_LOCK)
 ENDIF()
 
 # NDB needs replication
 ADD_DEFINITIONS(-DHAVE_REPLICATION)
 
-# NDB is DEFAULT plugin in MySQL Cluster
+# NDB is DEFAULT plugin in MyBlockchain Cluster
 SET(is_default_plugin "")
 OPTION(WITH_NDB_DEFAULT_PLUGIN_DETECT
-  "Autodetect MySQL Cluster version and set ndbcluster as DEFAULT plugin" ON)
+  "Autodetect MyBlockchain Cluster version and set ndbcluster as DEFAULT plugin" ON)
 MARK_AS_ADVANCED(WITH_NDB_DEFAULT_PLUGIN_DETECT)
 IF(WITH_NDB_DEFAULT_PLUGIN_DETECT)
-  IF(MYSQL_CLUSTER_VERSION)
-    # ndbcluster is DEFAULT plugin in MySQL Cluster
+  IF(MYBLOCKCHAIN_CLUSTER_VERSION)
+    # ndbcluster is DEFAULT plugin in MyBlockchain Cluster
     SET(is_default_plugin "DEFAULT")
   ENDIF()
 ENDIF()
 
 IF(NOT WITHOUT_SERVER)
-  MYSQL_ADD_PLUGIN(ndbcluster ${NDBCLUSTER_SOURCES} STORAGE_ENGINE
+  MYBLOCKCHAIN_ADD_PLUGIN(ndbcluster ${NDBCLUSTER_SOURCES} STORAGE_ENGINE
     ${is_default_plugin} STATIC_ONLY RECOMPILE_FOR_EMBEDDED
     LINK_LIBRARIES ndbclient_static)
 ENDIF()
 
 #
-# Build NDB only if MYSQL_ADD_PLUGIN has decided(by looking at various
+# Build NDB only if MYBLOCKCHAIN_ADD_PLUGIN has decided(by looking at various
 # cmake args same as all other plugins have) to build ndbcluster(our handler)
 #
 IF (NOT WITH_NDBCLUSTER)
@@ -165,7 +165,7 @@ ENDIF()
 INCLUDE(${CMAKE_CURRENT_SOURCE_DIR}/ndb_configure.cmake)
 
 INCLUDE_DIRECTORIES(
-  # MySQL Server includes
+  # MyBlockchain Server includes
   ${CMAKE_SOURCE_DIR}/include
   ${CMAKE_BINARY_DIR}/include
 
@@ -254,13 +254,13 @@ ELSE()
     MESSAGE(STATUS "Default value for WITH_NDB_JAVA set to 0 since "
                    "bootstrapping was detected")
   ENDIF()
-  IF(NOT MYSQL_CLUSTER_VERSION)
-    # Don't build the Java parts of NDB by default in MySQL Server
+  IF(NOT MYBLOCKCHAIN_CLUSTER_VERSION)
+    # Don't build the Java parts of NDB by default in MyBlockchain Server
     # (this lowers the threshold for checking that things
     #  work also with engine = NDB)
     SET(WITH_NDB_JAVA_DEFAULT OFF)
     MESSAGE(STATUS "Default value for WITH_NDB_JAVA set to 0 in "
-                   "MySQL Server version")
+                   "MyBlockchain Server version")
   ENDIF()
 ENDIF()
 OPTION(WITH_NDB_JAVA
@@ -300,7 +300,7 @@ IF(WITH_NDB_JAVA)
   SET(HAVE_JAVA TRUE)
   SET(HAVE_JDK TRUE)
   SET(WITH_CLASSPATH ${WITH_CLASSPATH} CACHE STRING
-    "Enable the classpath for MySQL Cluster Java Connector")
+    "Enable the classpath for MyBlockchain Cluster Java Connector")
 ELSE(WITH_NDB_JAVA)
   MESSAGE(STATUS "Excluding Cluster Java components")
 ENDIF(WITH_NDB_JAVA)

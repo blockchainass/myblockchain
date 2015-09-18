@@ -17,9 +17,9 @@
 
 # we assume this script is in storage/innobase/
 
-MYSQL_ROOT="$(dirname ${0})/../.."
+MYBLOCKCHAIN_ROOT="$(dirname ${0})/../.."
 
-cd ${MYSQL_ROOT}
+cd ${MYBLOCKCHAIN_ROOT}
 
 cmake -DWITH_INNOBASE_STORAGE_ENGINE:BOOL=ON
 make -j$(nproc)

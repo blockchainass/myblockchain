@@ -43,7 +43,7 @@
 #include "m_ctype.h"
 #include <my_dir.h>
 #include <my_aes.h>
-#include "mysql/psi/mysql_file.h"
+#include "myblockchain/psi/myblockchain_file.h"
 #ifdef _WIN32
 #include <winbase.h>
 #endif
@@ -160,7 +160,7 @@ static int search_default_file_with_ext(Process_option_func func,
                                         void *func_ctx,
 					const char *dir, const char *ext,
 					const char *config_file, int recursion_level);
-static my_bool mysql_file_getline(char *str, int size, MYSQL_FILE *file);
+static my_bool myblockchain_file_getline(char *str, int size, MYBLOCKCHAIN_FILE *file);
 
 
 /**
@@ -175,9 +175,9 @@ static my_bool mysql_file_getline(char *str, int size, MYSQL_FILE *file);
   - Windows:     C:/
   - Windows:     Directory above where the executable is located
   - Unix:        /etc/
-  - Unix:        /etc/mysql/
+  - Unix:        /etc/myblockchain/
   - Unix:        --sysconfdir=<path> (compile-time option)
-  - ALL:         getenv("MYSQL_HOME")
+  - ALL:         getenv("MYBLOCKCHAIN_HOME")
   - ALL:         --defaults-extra-file=<path> (run-time option)
   - Unix:        ~/
 
@@ -872,7 +872,7 @@ static int search_default_file_with_ext(Process_option_func opt_handler,
   static const char includedir_keyword[]= "includedir";
   static const char include_keyword[]= "include";
   const int max_recursion_level= 10;
-  MYSQL_FILE *fp;
+  MYBLOCKCHAIN_FILE *fp;
   uint line=0;
   my_bool found_group=0;
   uint i, rc;
@@ -899,17 +899,17 @@ static int search_default_file_with_ext(Process_option_func opt_handler,
 
   if (is_login_file)
   {
-    if ( !(fp = mysql_file_fopen(key_file_cnf, name, (O_RDONLY | O_BINARY),
+    if ( !(fp = myblockchain_file_fopen(key_file_cnf, name, (O_RDONLY | O_BINARY),
                                  MYF(0))))
       return 1;                                 /* Ignore wrong files. */
   }
   else
   {
-    if ( !(fp = mysql_file_fopen(key_file_cnf, name, O_RDONLY, MYF(0))))
+    if ( !(fp = myblockchain_file_fopen(key_file_cnf, name, O_RDONLY, MYF(0))))
       return 1;                                 /* Ignore wrong files */
   }
 
-  while (mysql_file_getline(buff, sizeof(buff) - 1, fp))
+  while (myblockchain_file_getline(buff, sizeof(buff) - 1, fp))
   {
     line++;
     /* Ignore comment and empty lines */
@@ -1107,11 +1107,11 @@ static int search_default_file_with_ext(Process_option_func opt_handler,
         goto err;
     }
   }
-  mysql_file_fclose(fp, MYF(0));
+  myblockchain_file_fclose(fp, MYF(0));
   return(0);
 
  err:
-  mysql_file_fclose(fp, MYF(0));
+  myblockchain_file_fclose(fp, MYF(0));
   return -1;					/* Fatal error */
 }
 
@@ -1155,7 +1155,7 @@ static char *remove_end_comment(char *ptr)
           0               Error
 */
 
-static my_bool mysql_file_getline(char *str, int size, MYSQL_FILE *file)
+static my_bool myblockchain_file_getline(char *str, int size, MYBLOCKCHAIN_FILE *file)
 {
   uchar cipher[4096], len_buf[MAX_CIPHER_STORE_LEN];
   static unsigned char my_key[LOGIN_KEY_LEN];
@@ -1163,16 +1163,16 @@ static my_bool mysql_file_getline(char *str, int size, MYSQL_FILE *file)
 
   if (is_login_file)
   {
-    if (mysql_file_ftell(file, MYF(MY_WME)) == 0)
+    if (myblockchain_file_ftell(file, MYF(MY_WME)) == 0)
     {
       /* Move past unused bytes. */
-      mysql_file_fseek(file, 4, SEEK_SET, MYF(MY_WME));
-      if (mysql_file_fread(file, my_key, LOGIN_KEY_LEN,
+      myblockchain_file_fseek(file, 4, SEEK_SET, MYF(MY_WME));
+      if (myblockchain_file_fread(file, my_key, LOGIN_KEY_LEN,
                            MYF(MY_WME)) != LOGIN_KEY_LEN)
         return 0;
     }
 
-    if (mysql_file_fread(file, len_buf, MAX_CIPHER_STORE_LEN,
+    if (myblockchain_file_fread(file, len_buf, MAX_CIPHER_STORE_LEN,
                          MYF(MY_WME)) == MAX_CIPHER_STORE_LEN)
     {
       cipher_len= sint4korr(len_buf);
@@ -1182,7 +1182,7 @@ static my_bool mysql_file_getline(char *str, int size, MYSQL_FILE *file)
     else
       return 0;
 
-    mysql_file_fread(file, cipher, cipher_len, MYF(MY_WME));
+    myblockchain_file_fread(file, cipher, cipher_len, MYF(MY_WME));
     if ((length= my_aes_decrypt(cipher, cipher_len, (unsigned char *) str,
                                 my_key, LOGIN_KEY_LEN, my_aes_128_ecb, NULL)) < 0)
     {
@@ -1194,7 +1194,7 @@ static my_bool mysql_file_getline(char *str, int size, MYSQL_FILE *file)
   }
   else
   {
-    if (mysql_file_fgets(str, size, file))
+    if (myblockchain_file_fgets(str, size, file))
       return 1;
     else
       return 0;
@@ -1405,7 +1405,7 @@ static const char **init_default_directories(MEM_ROOT *alloc)
 #else
 
   errors += add_directory(alloc, "/etc/", dirs);
-  errors += add_directory(alloc, "/etc/mysql/", dirs);
+  errors += add_directory(alloc, "/etc/myblockchain/", dirs);
 
 #if defined(DEFAULT_SYSCONFDIR)
   if (DEFAULT_SYSCONFDIR[0])
@@ -1414,7 +1414,7 @@ static const char **init_default_directories(MEM_ROOT *alloc)
 
 #endif
 
-  if ((env= getenv("MYSQL_HOME")))
+  if ((env= getenv("MYBLOCKCHAIN_HOME")))
     errors += add_directory(alloc, env, dirs);
 
   /* Placeholder for --defaults-extra-file=<path> */
@@ -1441,12 +1441,12 @@ int my_default_get_login_file(char *file_name, size_t file_name_size)
 {
   size_t rc;
 
-  if (getenv("MYSQL_TEST_LOGIN_FILE"))
+  if (getenv("MYBLOCKCHAIN_TEST_LOGIN_FILE"))
     rc= my_snprintf(file_name, file_name_size, "%s",
-                    getenv("MYSQL_TEST_LOGIN_FILE"));
+                    getenv("MYBLOCKCHAIN_TEST_LOGIN_FILE"));
 #ifdef _WIN32
   else if (getenv("APPDATA"))
-    rc= my_snprintf(file_name, file_name_size, "%s\\MySQL\\.mylogin.cnf",
+    rc= my_snprintf(file_name, file_name_size, "%s\\MyBlockchain\\.mylogin.cnf",
                     getenv("APPDATA"));
 #else
   else if (getenv("HOME"))
@@ -1495,7 +1495,7 @@ int check_file_permissions(const char *file_name)
   /*
     Ignore world-writable regular files.
     This is mainly done to protect us to not read a file created by
-    the mysqld server, but the check is still valid in most context.
+    the myblockchaind server, but the check is still valid in most context.
   */
   else if ((stat_info.st_mode & S_IWOTH) &&
            (stat_info.st_mode & S_IFMT) == S_IFREG)

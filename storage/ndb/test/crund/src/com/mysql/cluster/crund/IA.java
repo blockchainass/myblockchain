@@ -15,9 +15,9 @@
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-package com.mysql.cluster.crund;
+package com.myblockchain.cluster.crund;
 
-import com.mysql.clusterj.annotation.PersistenceCapable;
+import com.myblockchain.clusterj.annotation.PersistenceCapable;
 
 /**
  * An Entity test interface for use with ClusterJ.

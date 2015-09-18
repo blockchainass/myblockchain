@@ -27,7 +27,7 @@ IF(MAN1_FILES)
     LIST(REMOVE_ITEM MAN1_FILES ${MAN1_NDB})
   ENDIF()
   FOREACH(file ${MAN1_FILES})
-    IF(${file} MATCHES "(.*mysqltest.1$)")
+    IF(${file} MATCHES "(.*myblockchaintest.1$)")
       INSTALL(FILES ${file} DESTINATION ${INSTALL_MANDIR}/man1
       COMPONENT Test)
     ELSE()

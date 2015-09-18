@@ -16,14 +16,14 @@
 
 /*
   rdtsc3 -- multi-platform timer code
-  pgulutzan@mysql.com, 2005-08-29
+  pgulutzan@myblockchain.com, 2005-08-29
   modified 2008-11-02
 
   When you run rdtsc3, it will print the contents of
   "my_timer_info". The display indicates
   what timer routine is best for a given platform.
 
-  For example, this is the display on production.mysql.com,
+  For example, this is the display on production.myblockchain.com,
   a 2.8GHz Xeon with Linux 2.6.17, gcc 3.3.3:
 
   cycles        nanoseconds   microseconds  milliseconds  ticks

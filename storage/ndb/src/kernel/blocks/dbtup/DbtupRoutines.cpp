@@ -2002,7 +2002,7 @@ Dbtup::fixsize_updater(Uint32* inBuffer,
         Uint32 bytes = AttributeDescriptor::getSizeInBytes(attrDescriptor);
         Uint32 i = AttributeOffset::getCharsetPos(attrDes2);
         ndbrequire(i < regTabPtr->noOfCharsets);
-        // not const in MySQL
+        // not const in MyBlockchain
         CHARSET_INFO* cs = regTabPtr->charsetArray[i];
         int not_used;
         const char* ssrc = (const char*)&inBuffer[indexBuf + 1];
@@ -3146,7 +3146,7 @@ Dbtup::updateDiskFixedSizeNotNULL(Uint32* inBuffer,
         Uint32 bytes = AttributeDescriptor::getSizeInBytes(attrDescriptor);
         Uint32 i = AttributeOffset::getCharsetPos(attrDes2);
         ndbrequire(i < regTabPtr->noOfCharsets);
-        // not const in MySQL
+        // not const in MyBlockchain
         CHARSET_INFO* cs = regTabPtr->charsetArray[i];
 	int not_used;
         const char* ssrc = (const char*)&inBuffer[indexBuf + 1];
@@ -3243,7 +3243,7 @@ Dbtup::updateDiskVarAsFixedSizeNotNULL(Uint32* inBuffer,
         Uint32 bytes= AttributeDescriptor::getSizeInBytes(attrDescriptor);
         Uint32 i = AttributeOffset::getCharsetPos(attrDes2);
         ndbrequire(i < regTabPtr->noOfCharsets);
-        // not const in MySQL
+        // not const in MyBlockchain
         CHARSET_INFO* cs = regTabPtr->charsetArray[i];
 	int not_used;
         const char* ssrc = (const char*)&inBuffer[indexBuf + 1];

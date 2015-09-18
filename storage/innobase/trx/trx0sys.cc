@@ -25,7 +25,7 @@ Created 3/26/1996 Heikki Tuuri
 
 #include "ha_prototypes.h"
 
-#include "mysqld.h"
+#include "myblockchaind.h"
 #include "trx0sys.h"
 #include "sql_error.h"
 #ifdef UNIV_NONINL
@@ -196,22 +196,22 @@ trx_sys_flush_max_trx_id(void)
 }
 
 /*****************************************************************//**
-Updates the offset information about the end of the MySQL binlog entry
-which corresponds to the transaction just being committed. In a MySQL
+Updates the offset information about the end of the MyBlockchain binlog entry
+which corresponds to the transaction just being committed. In a MyBlockchain
 replication slave updates the latest master binlog position up to which
 replication has proceeded. */
 void
-trx_sys_update_mysql_binlog_offset(
+trx_sys_update_myblockchain_binlog_offset(
 /*===============================*/
-	const char*	file_name,/*!< in: MySQL log file name */
+	const char*	file_name,/*!< in: MyBlockchain log file name */
 	int64_t		offset,	/*!< in: position in that log file */
-	ulint		field,	/*!< in: offset of the MySQL log info field in
+	ulint		field,	/*!< in: offset of the MyBlockchain log info field in
 				the trx sys header */
 	mtr_t*		mtr)	/*!< in: mtr */
 {
 	trx_sysf_t*	sys_header;
 
-	if (ut_strlen(file_name) >= TRX_SYS_MYSQL_LOG_NAME_LEN) {
+	if (ut_strlen(file_name) >= TRX_SYS_MYBLOCKCHAIN_LOG_NAME_LEN) {
 
 		/* We cannot fit the name to the 512 bytes we have reserved */
 
@@ -221,77 +221,77 @@ trx_sys_update_mysql_binlog_offset(
 	sys_header = trx_sysf_get(mtr);
 
 	if (mach_read_from_4(sys_header + field
-			     + TRX_SYS_MYSQL_LOG_MAGIC_N_FLD)
-	    != TRX_SYS_MYSQL_LOG_MAGIC_N) {
+			     + TRX_SYS_MYBLOCKCHAIN_LOG_MAGIC_N_FLD)
+	    != TRX_SYS_MYBLOCKCHAIN_LOG_MAGIC_N) {
 
 		mlog_write_ulint(sys_header + field
-				 + TRX_SYS_MYSQL_LOG_MAGIC_N_FLD,
-				 TRX_SYS_MYSQL_LOG_MAGIC_N,
+				 + TRX_SYS_MYBLOCKCHAIN_LOG_MAGIC_N_FLD,
+				 TRX_SYS_MYBLOCKCHAIN_LOG_MAGIC_N,
 				 MLOG_4BYTES, mtr);
 	}
 
-	if (0 != strcmp((char*) (sys_header + field + TRX_SYS_MYSQL_LOG_NAME),
+	if (0 != strcmp((char*) (sys_header + field + TRX_SYS_MYBLOCKCHAIN_LOG_NAME),
 			file_name)) {
 
 		mlog_write_string(sys_header + field
-				  + TRX_SYS_MYSQL_LOG_NAME,
+				  + TRX_SYS_MYBLOCKCHAIN_LOG_NAME,
 				  (byte*) file_name, 1 + ut_strlen(file_name),
 				  mtr);
 	}
 
 	if (mach_read_from_4(sys_header + field
-			     + TRX_SYS_MYSQL_LOG_OFFSET_HIGH) > 0
+			     + TRX_SYS_MYBLOCKCHAIN_LOG_OFFSET_HIGH) > 0
 	    || (offset >> 32) > 0) {
 
 		mlog_write_ulint(sys_header + field
-				 + TRX_SYS_MYSQL_LOG_OFFSET_HIGH,
+				 + TRX_SYS_MYBLOCKCHAIN_LOG_OFFSET_HIGH,
 				 (ulint)(offset >> 32),
 				 MLOG_4BYTES, mtr);
 	}
 
 	mlog_write_ulint(sys_header + field
-			 + TRX_SYS_MYSQL_LOG_OFFSET_LOW,
+			 + TRX_SYS_MYBLOCKCHAIN_LOG_OFFSET_LOW,
 			 (ulint)(offset & 0xFFFFFFFFUL),
 			 MLOG_4BYTES, mtr);
 }
 
 /*****************************************************************//**
-Stores the MySQL binlog offset info in the trx system header if
+Stores the MyBlockchain binlog offset info in the trx system header if
 the magic number shows it valid, and print the info to stderr */
 void
-trx_sys_print_mysql_binlog_offset(void)
+trx_sys_print_myblockchain_binlog_offset(void)
 /*===================================*/
 {
 	trx_sysf_t*	sys_header;
 	mtr_t		mtr;
-	ulint		trx_sys_mysql_bin_log_pos_high;
-	ulint		trx_sys_mysql_bin_log_pos_low;
+	ulint		trx_sys_myblockchain_bin_log_pos_high;
+	ulint		trx_sys_myblockchain_bin_log_pos_low;
 
 	mtr_start(&mtr);
 
 	sys_header = trx_sysf_get(&mtr);
 
-	if (mach_read_from_4(sys_header + TRX_SYS_MYSQL_LOG_INFO
-			     + TRX_SYS_MYSQL_LOG_MAGIC_N_FLD)
-	    != TRX_SYS_MYSQL_LOG_MAGIC_N) {
+	if (mach_read_from_4(sys_header + TRX_SYS_MYBLOCKCHAIN_LOG_INFO
+			     + TRX_SYS_MYBLOCKCHAIN_LOG_MAGIC_N_FLD)
+	    != TRX_SYS_MYBLOCKCHAIN_LOG_MAGIC_N) {
 
 		mtr_commit(&mtr);
 
 		return;
 	}
 
-	trx_sys_mysql_bin_log_pos_high = mach_read_from_4(
-		sys_header + TRX_SYS_MYSQL_LOG_INFO
-		+ TRX_SYS_MYSQL_LOG_OFFSET_HIGH);
-	trx_sys_mysql_bin_log_pos_low = mach_read_from_4(
-		sys_header + TRX_SYS_MYSQL_LOG_INFO
-		+ TRX_SYS_MYSQL_LOG_OFFSET_LOW);
+	trx_sys_myblockchain_bin_log_pos_high = mach_read_from_4(
+		sys_header + TRX_SYS_MYBLOCKCHAIN_LOG_INFO
+		+ TRX_SYS_MYBLOCKCHAIN_LOG_OFFSET_HIGH);
+	trx_sys_myblockchain_bin_log_pos_low = mach_read_from_4(
+		sys_header + TRX_SYS_MYBLOCKCHAIN_LOG_INFO
+		+ TRX_SYS_MYBLOCKCHAIN_LOG_OFFSET_LOW);
 
-	ib::info() << "Last MySQL binlog file position "
-		<< trx_sys_mysql_bin_log_pos_high << " "
-		<< trx_sys_mysql_bin_log_pos_low << ", file name "
-		<< sys_header + TRX_SYS_MYSQL_LOG_INFO
-		+ TRX_SYS_MYSQL_LOG_NAME;
+	ib::info() << "Last MyBlockchain binlog file position "
+		<< trx_sys_myblockchain_bin_log_pos_high << " "
+		<< trx_sys_myblockchain_bin_log_pos_low << ", file name "
+		<< sys_header + TRX_SYS_MYBLOCKCHAIN_LOG_INFO
+		+ TRX_SYS_MYBLOCKCHAIN_LOG_NAME;
 
 	mtr_commit(&mtr);
 }
@@ -370,7 +370,7 @@ trx_sysf_used_slots_for_redo_rseg(
 
 /*****************************************************************//**
 Creates the file page for the transaction system. This function is called only
-at the database creation, before trx_sys_init. */
+at the blockchain creation, before trx_sys_init. */
 static
 void
 trx_sysf_create(
@@ -444,7 +444,7 @@ trx_sysf_create(
 
 /*****************************************************************//**
 Creates and initializes the central memory structures for the transaction
-system. This is called when the database is started.
+system. This is called when the blockchain is started.
 @return min binary heap of rsegs to purge */
 purge_pq_t*
 trx_sys_init_at_db_start(void)
@@ -470,12 +470,12 @@ trx_sys_init_at_db_start(void)
 		trx_rseg_array_init(sys_header, purge_queue, &mtr);
 	}
 
-	/* VERY important: after the database is started, max_trx_id value is
+	/* VERY important: after the blockchain is started, max_trx_id value is
 	divisible by TRX_SYS_TRX_ID_WRITE_MARGIN, and the 'if' in
 	trx_sys_get_new_trx_id will evaluate to TRUE when the function
 	is first time called, and the value for trx id will be written
 	to the disk-based header! Thus trx id values will not overlap when
-	the database is repeatedly started! */
+	the blockchain is repeatedly started! */
 
 	trx_sys->max_trx_id = 2 * TRX_SYS_TRX_ID_WRITE_MARGIN
 		+ ut_uint64_align_up(mach_read_from_8(sys_header
@@ -543,7 +543,7 @@ trx_sys_create(void)
 
 	UT_LIST_INIT(trx_sys->serialisation_list, &trx_t::no_list);
 	UT_LIST_INIT(trx_sys->rw_trx_list, &trx_t::trx_list);
-	UT_LIST_INIT(trx_sys->mysql_trx_list, &trx_t::mysql_trx_list);
+	UT_LIST_INIT(trx_sys->myblockchain_trx_list, &trx_t::myblockchain_trx_list);
 
 	trx_sys->mvcc = UT_NEW_NOKEY(MVCC(1024));
 
@@ -554,7 +554,7 @@ trx_sys_create(void)
 }
 
 /*****************************************************************//**
-Creates and initializes the transaction system at the database creation. */
+Creates and initializes the transaction system at the blockchain creation. */
 void
 trx_sys_create_sys_pages(void)
 /*==========================*/
@@ -889,7 +889,7 @@ trx_sys_create_rsegs(
 	ut_ad(n_used <= TRX_SYS_N_RSEGS);
 
 	/* Do not create additional rollback segments if innodb_force_recovery
-	has been set and the database was not shutdown cleanly. */
+	has been set and the blockchain was not shutdown cleanly. */
 
 	if (!srv_force_recovery && !recv_needed_recovery && n_used < n_rsegs) {
 		ulint	i;
@@ -928,10 +928,10 @@ trx_sys_create_rsegs(
 
 #else /* !UNIV_HOTBACKUP */
 /*****************************************************************//**
-Prints to stderr the MySQL binlog info in the system header if the
+Prints to stderr the MyBlockchain binlog info in the system header if the
 magic number shows it valid. */
 void
-trx_sys_print_mysql_binlog_offset_from_page(
+trx_sys_print_myblockchain_binlog_offset_from_page(
 /*========================================*/
 	const byte*	page)	/*!< in: buffer containing the trx
 				system header page, i.e., page number
@@ -941,19 +941,19 @@ trx_sys_print_mysql_binlog_offset_from_page(
 
 	sys_header = page + TRX_SYS;
 
-	if (mach_read_from_4(sys_header + TRX_SYS_MYSQL_LOG_INFO
-			     + TRX_SYS_MYSQL_LOG_MAGIC_N_FLD)
-	    == TRX_SYS_MYSQL_LOG_MAGIC_N) {
+	if (mach_read_from_4(sys_header + TRX_SYS_MYBLOCKCHAIN_LOG_INFO
+			     + TRX_SYS_MYBLOCKCHAIN_LOG_MAGIC_N_FLD)
+	    == TRX_SYS_MYBLOCKCHAIN_LOG_MAGIC_N) {
 
-		ib::info() << "mysqlbackup: Last MySQL binlog file position "
+		ib::info() << "myblockchainbackup: Last MyBlockchain binlog file position "
 			<< mach_read_from_4(
-				sys_header + TRX_SYS_MYSQL_LOG_INFO
-				+ TRX_SYS_MYSQL_LOG_OFFSET_HIGH) << " "
+				sys_header + TRX_SYS_MYBLOCKCHAIN_LOG_INFO
+				+ TRX_SYS_MYBLOCKCHAIN_LOG_OFFSET_HIGH) << " "
 			<< mach_read_from_4(
-				sys_header + TRX_SYS_MYSQL_LOG_INFO
-				+ TRX_SYS_MYSQL_LOG_OFFSET_LOW)
+				sys_header + TRX_SYS_MYBLOCKCHAIN_LOG_INFO
+				+ TRX_SYS_MYBLOCKCHAIN_LOG_OFFSET_LOW)
 			<< ", file name " << sys_header
-			+ TRX_SYS_MYSQL_LOG_INFO + TRX_SYS_MYSQL_LOG_NAME;
+			+ TRX_SYS_MYBLOCKCHAIN_LOG_INFO + TRX_SYS_MYBLOCKCHAIN_LOG_NAME;
 	}
 }
 
@@ -992,7 +992,7 @@ trx_sys_read_file_format_id(
 		/* The following call prints an error message */
 		os_file_get_last_error(true);
 
-		ib::error() << "mysqlbackup: Error: trying to read system"
+		ib::error() << "myblockchainbackup: Error: trying to read system"
 			" tablespace file format, but could not open the"
 			" tablespace file " << pathname << "!";
 		return(FALSE);
@@ -1010,7 +1010,7 @@ trx_sys_read_file_format_id(
 		/* The following call prints an error message */
 		os_file_get_last_error(true);
 
-		ib::error() << "mysqlbackup: Error: trying to read system"
+		ib::error() << "myblockchainbackup: Error: trying to read system"
 			" tablespace file format, but failed to read the"
 			" tablespace file " << pathname << "!";
 
@@ -1067,7 +1067,7 @@ trx_sys_read_pertable_file_format_id(
 		/* The following call prints an error message */
 		os_file_get_last_error(true);
 
-		ib::error() << "mysqlbackup: Error: trying to read per-table"
+		ib::error() << "myblockchainbackup: Error: trying to read per-table"
 			" tablespace format, but could not open the tablespace"
 			" file " << pathname << "!";
 
@@ -1085,7 +1085,7 @@ trx_sys_read_pertable_file_format_id(
 		/* The following call prints an error message */
 		os_file_get_last_error(true);
 
-		ib::error() << "mysqlbackup: Error: trying to per-table data"
+		ib::error() << "myblockchainbackup: Error: trying to per-table data"
 			" file format, but failed to read the tablespace file "
 			<< pathname << "!";
 
@@ -1196,7 +1196,7 @@ trx_sys_close(void)
 	UT_DELETE(trx_sys->mvcc);
 
 	ut_a(UT_LIST_GET_LEN(trx_sys->rw_trx_list) == 0);
-	ut_a(UT_LIST_GET_LEN(trx_sys->mysql_trx_list) == 0);
+	ut_a(UT_LIST_GET_LEN(trx_sys->myblockchain_trx_list) == 0);
 	ut_a(UT_LIST_GET_LEN(trx_sys->serialisation_list) == 0);
 
 	/* We used placement new to create this mutex. Call the destructor. */
@@ -1247,7 +1247,7 @@ trx_sys_any_active_transactions(void)
 {
 	trx_sys_mutex_enter();
 
-	ulint	total_trx = UT_LIST_GET_LEN(trx_sys->mysql_trx_list);
+	ulint	total_trx = UT_LIST_GET_LEN(trx_sys->myblockchain_trx_list);
 
 	if (total_trx == 0) {
 		total_trx = UT_LIST_GET_LEN(trx_sys->rw_trx_list);

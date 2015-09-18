@@ -16,11 +16,11 @@
    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-package com.mysql.clusterj.openjpa;
+package com.myblockchain.clusterj.openjpa;
 
-import com.mysql.clusterj.core.util.I18NHelper;
-import com.mysql.clusterj.core.util.Logger;
-import com.mysql.clusterj.core.util.LoggerFactoryService;
+import com.myblockchain.clusterj.core.util.I18NHelper;
+import com.myblockchain.clusterj.core.util.Logger;
+import com.myblockchain.clusterj.core.util.LoggerFactoryService;
 
 import java.util.Map;
 
@@ -85,7 +85,7 @@ public class NdbOpenJPABrokerFactory extends JDBCBrokerFactory {
             buffer.append("; connectTimeoutBefore: " + conf.getConnectTimeoutBefore());
             buffer.append("; connectTimeoutAfter: " + conf.getConnectTimeoutAfter());
             buffer.append("; maxTransactions: " + conf.getMaxTransactions());
-            buffer.append("; default database: " + conf.getDatabase());
+            buffer.append("; default blockchain: " + conf.getDatabase());
             logger.info(buffer.toString());
         }
     }

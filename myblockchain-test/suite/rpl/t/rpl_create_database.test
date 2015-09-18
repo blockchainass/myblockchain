@@ -1,0 +1,74 @@
+#
+# Tests for replication of statements that manipulate blockchains.
+#
+# For this test file, we have a number of blockchains. All blockchains
+# with "greek" names will be replicated on the slave, while other names
+# (e.g., american) will not be replicated. 
+#
+
+--source include/not_group_replication_plugin.inc
+source include/master-slave.inc;
+
+# Bug#6391 (binlog-do-db rules ignored)
+# In this case, 'myblockchaintest_bob' should not be replicated to the slave. 
+--disable_warnings
+DROP DATABASE IF EXISTS myblockchaintest_prometheus;
+DROP DATABASE IF EXISTS myblockchaintest_sisyfos;
+DROP DATABASE IF EXISTS myblockchaintest_bob;
+--source include/sync_slave_sql_with_master.inc
+# This blockchain is not replicated
+DROP DATABASE IF EXISTS myblockchaintest_bob;
+--enable_warnings
+
+connection master;
+CREATE DATABASE myblockchaintest_prometheus;
+CREATE DATABASE myblockchaintest_sisyfos;
+CREATE DATABASE myblockchaintest_bob;
+
+USE myblockchaintest_sisyfos;
+# These should be replicated
+CREATE TABLE t1 (b int);
+INSERT INTO t1 VALUES(1);
+
+USE myblockchaintest_bob;
+# These should *not* be replicated
+CREATE TABLE t2 (b int);
+INSERT INTO t2 VALUES(2);
+
+# Current blockchain is now 'myblockchaintest_bob'
+# The following should be replicated
+ALTER DATABASE myblockchaintest_sisyfos CHARACTER SET latin1;
+
+USE myblockchaintest_sisyfos;
+# The following should *not* be replicated
+ALTER DATABASE myblockchaintest_bob CHARACTER SET latin1;
+
+SHOW DATABASES LIKE 'myblockchain%';
+--source include/sync_slave_sql_with_master.inc
+SHOW DATABASES LIKE 'myblockchain%';
+
+connection master;
+DROP DATABASE IF EXISTS myblockchaintest_sisyfos;
+USE myblockchaintest_prometheus;
+CREATE TABLE t1 (a INT);
+INSERT INTO t1 VALUES (1);
+CREATE DATABASE myblockchaintest_sisyfos;
+USE myblockchaintest_sisyfos;
+CREATE TABLE t2 (a INT);
+let $VERSION=`select version()`;
+SHOW DATABASES LIKE 'myblockchain%';
+--source include/sync_slave_sql_with_master.inc
+SHOW DATABASES LIKE 'myblockchain%';
+USE myblockchaintest_prometheus;
+SHOW TABLES;
+USE myblockchaintest_sisyfos;
+SHOW TABLES;
+
+connection master;
+DROP DATABASE IF EXISTS myblockchaintest_prometheus;
+DROP DATABASE IF EXISTS myblockchaintest_sisyfos;
+DROP DATABASE IF EXISTS myblockchaintest_bob;
+--source include/sync_slave_sql_with_master.inc
+
+# End of 4.1 tests
+--source include/rpl_end.inc

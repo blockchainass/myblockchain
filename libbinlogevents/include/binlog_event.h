@@ -47,9 +47,9 @@
 #endif
 /*
   The symbols below are a part of the common definitions between
-  the MySQL server and the client. Since they should not be a part of
+  the MyBlockchain server and the client. Since they should not be a part of
   this library but the server, these should be placed in a header file
-  common to the library and the MySQL server code, so that if they are
+  common to the library and the MyBlockchain server code, so that if they are
   updated in the server code, it is reflected in the libbinlogevent also.
 
   TODO(WL#7984): Moving the binlog constant in library libbinlogevents into a
@@ -78,11 +78,11 @@
 #endif
 
 /**
-   binlog_version 3 is MySQL 4.x; 4 is MySQL 5.0.0.
+   binlog_version 3 is MyBlockchain 4.x; 4 is MyBlockchain 5.0.0.
    Compared to version 3, version 4 has:
    - a different Start_event, which includes info about the binary log
    (sizes of headers); this info is included for better compatibility if the
-   master's MySQL version is different from the slave's.
+   master's MyBlockchain version is different from the slave's.
 */
 #define BINLOG_VERSION    4
 
@@ -91,14 +91,14 @@
 */
 
 /**
-   The maximum number of updated databases that a status of
+   The maximum number of updated blockchains that a status of
    Query-log-event can carry.  It can be redefined within a range
    [1.. OVER_MAX_DBS_IN_EVENT_MTS].
 */
 #define MAX_DBS_IN_EVENT_MTS 16
 
 /**
-   When the actual number of databases exceeds MAX_DBS_IN_EVENT_MTS
+   When the actual number of blockchains exceeds MAX_DBS_IN_EVENT_MTS
    the value of OVER_MAX_DBS_IN_EVENT_MTS is is put into the
    mts_accessed_dbs status.
 */
@@ -116,7 +116,7 @@
                                    1U + 6          /* type, charset */ + \
                                    1U + 1 + 255    /* type, length, time_zone */ + \
                                    1U + 2          /* type, lc_time_names_number */ + \
-                                   1U + 2          /* type, charset_database_number */ + \
+                                   1U + 2          /* type, charset_blockchain_number */ + \
                                    1U + 8          /* type, table_map_for_update */ + \
                                    1U + 4          /* type, master_data_written */ + \
                                                    /* type, db_1, db_2, ... */  \
@@ -137,7 +137,7 @@ const int64_t SEQ_UNINIT= 0;
 
 /**
   In case the variable is updated,
-  make sure to update it in $MYSQL_SOURCE_DIR/my_global.h.
+  make sure to update it in $MYBLOCKCHAIN_SOURCE_DIR/my_global.h.
 */
 #ifndef FN_REFLEN
 #define FN_REFLEN       512     /* Max length of full path-name */
@@ -219,10 +219,10 @@ namespace binary_log
 /*
    This flag only makes sense for Format_description_event. It is set
    when the event is written, and *reset* when a binlog file is
-   closed (yes, it's the only case when MySQL modifies an already written
+   closed (yes, it's the only case when MyBlockchain modifies an already written
    part of the binlog).  Thus it is a reliable indicator that the binlog was
    closed correctly.  (Stop_event is not enough, there's always a
-   small chance that mysqld crashes in the middle of insert and end of
+   small chance that myblockchaind crashes in the middle of insert and end of
    the binlog would look like a Stop_event).
 
    This flag is used to detect a restart after a crash, and to provide
@@ -230,7 +230,7 @@ namespace binary_log
    rollback automatically, while binlog does not.  To solve this we use this
    flag and automatically append ROLLBACK to every non-closed binlog (append
    virtually, on reading, file itself is not changed). If this flag is found,
-   mysqlbinlog simply prints "ROLLBACK". Replication master does not abort on
+   myblockchainbinlog simply prints "ROLLBACK". Replication master does not abort on
    binlog corruption, but takes it as EOF, and replication slave forces a
    rollback in this case.
 
@@ -284,7 +284,7 @@ enum Log_event_type
   PRE_GA_DELETE_ROWS_EVENT = 22,
 
   /**
-    The V1 event numbers are used from 5.1.16 until mysql-trunk-xx
+    The V1 event numbers are used from 5.1.16 until myblockchain-trunk-xx
   */
   WRITE_ROWS_EVENT_V1 = 23,
   UPDATE_ROWS_EVENT_V1 = 24,
@@ -335,7 +335,7 @@ enum Log_event_type
 
 /**
  The length of the array server_version, which is used to store the version
- of MySQL server.
+ of MyBlockchain server.
  We could have used SERVER_VERSION_LENGTH, but this introduces an
  obscure dependency - if somebody decided to change SERVER_VERSION_LENGTH
  this would break the replication protocol
@@ -461,7 +461,7 @@ class Format_description_event;
 /**
   @class Log_event_footer
 
-  The footer, in the current version of the MySQL server, only contains
+  The footer, in the current version of the MyBlockchain server, only contains
   the checksum algorithm descriptor. The descriptor is contained in the
   FDE of the binary log. This is common for all the events contained in
   that binary log, and defines the algorithm used to checksum
@@ -530,7 +530,7 @@ public:
   @class Log_event_header
 
   The Common-Header always has the same form and length within one
-  version of MySQL.  Each event type specifies a format and length
+  version of MyBlockchain.  Each event type specifies a format and length
   of the Post-Header.  The length of the Common-Header is the same
   for all events of the same type.
 
@@ -684,14 +684,14 @@ public:
   - Body
   - Footer
 
-  Common header has the same format and length in a given MySQL version. It is
+  Common header has the same format and length in a given MyBlockchain version. It is
   documented @ref Table_common_header "here".
 
   The Body may be of different format and length even for different events of
   the same type. The binary formats of Post-Header and Body are documented
   separately in each subclass.
 
-  Footer is common to all the events in a given MySQL version. It is documented
+  Footer is common to all the events in a given MyBlockchain version. It is documented
   @ref Table_common_footer "here".
 
   @anchor packed_integer
@@ -809,7 +809,7 @@ protected:
 
     @param buf              Contains the serialized event
     @param binlog_version   The binary log format version
-    @param server_version   The MySQL server's version
+    @param server_version   The MyBlockchain server's version
   */
   Binary_log_event(const char **buf, uint16_t binlog_version,
                    const char *server_version);
@@ -817,7 +817,7 @@ public:
 #ifndef HAVE_MYSYS
   /*
     The print_event_info functions are used in the free standing version of
-    the library only. Since MySQL server does not use them, and it does not
+    the library only. Since MyBlockchain server does not use them, and it does not
     link to standard input/output library on Windows 32 bit system ,these
     methods are commented out when the library(libbinlogevents) is built
     with the server.

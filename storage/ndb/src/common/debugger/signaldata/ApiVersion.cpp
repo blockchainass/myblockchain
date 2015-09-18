@@ -27,9 +27,9 @@ printAPI_VERSION_REQ(FILE * output,
 
   fprintf(output,
           " senderRef: (node: %d, block: %d), nodeId: %d\n" \
-          " version: %d, mysql_version: %d\n",
+          " version: %d, myblockchain_version: %d\n",
 	  refToNode(sig->senderRef), refToBlock(sig->senderRef),
-	  sig->nodeId, sig->version, sig->mysql_version);
+	  sig->nodeId, sig->version, sig->myblockchain_version);
   return true;
 }
 
@@ -43,8 +43,8 @@ printAPI_VERSION_CONF(FILE * output,
 
   fprintf(output,
           " senderRef: (node: %d, block: %d), nodeId: %d\n" \
-          " version: %d, mysql_version: %d, inet_addr: %d\n",
+          " version: %d, myblockchain_version: %d, inet_addr: %d\n",
 	  refToNode(sig->senderRef), refToBlock(sig->senderRef),
-	  sig->nodeId, sig->version, sig->mysql_version, sig->m_inet_addr);
+	  sig->nodeId, sig->version, sig->myblockchain_version, sig->m_inet_addr);
   return true;
 }

@@ -15,7 +15,7 @@
 
 #include "mysys_priv.h"
 #include "my_sys.h"
-#include "mysql/psi/mysql_file.h"
+#include "myblockchain/psi/myblockchain_file.h"
 
 #include <sys/ipc.h>
 #include <sys/shm.h>
@@ -84,20 +84,20 @@ void my_large_free(uchar* ptr)
 
 uint my_get_large_page_size_int(void)
 {
-  MYSQL_FILE *f;
+  MYBLOCKCHAIN_FILE *f;
   uint size = 0;
   char buf[256];
   DBUG_ENTER("my_get_large_page_size_int");
 
-  if (!(f= mysql_file_fopen(key_file_proc_meminfo, "/proc/meminfo",
+  if (!(f= myblockchain_file_fopen(key_file_proc_meminfo, "/proc/meminfo",
                             O_RDONLY, MYF(MY_WME))))
     goto finish;
 
-  while (mysql_file_fgets(buf, sizeof(buf), f))
+  while (myblockchain_file_fgets(buf, sizeof(buf), f))
     if (sscanf(buf, "Hugepagesize: %u kB", &size))
       break;
 
-  mysql_file_fclose(f, MYF(MY_WME));
+  myblockchain_file_fclose(f, MYF(MY_WME));
   
 finish:
   DBUG_RETURN(size * 1024);

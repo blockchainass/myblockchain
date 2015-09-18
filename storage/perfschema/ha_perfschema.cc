@@ -22,7 +22,7 @@
 #include "my_thread.h"
 #include "my_atomic.h"
 #include "sql_plugin.h"
-#include "mysql/plugin.h"
+#include "myblockchain/plugin.h"
 #include "ha_perfschema.h"
 #include "pfs_engine_table.h"
 #include "pfs_column_values.h"
@@ -46,7 +46,7 @@ static handler* pfs_create_handler(handlerton *hton,
   return new (mem_root) ha_perfschema(hton, table);
 }
 
-static int compare_database_names(const char *name1, const char *name2)
+static int compare_blockchain_names(const char *name1, const char *name2)
 {
   if (lower_case_table_names)
     return native_strcasecmp(name1, name2);
@@ -58,7 +58,7 @@ find_table_share(const char *db, const char *name)
 {
   DBUG_ENTER("find_table_share");
 
-  if (compare_database_names(db, PERFORMANCE_SCHEMA_str.str) != 0)
+  if (compare_blockchain_names(db, PERFORMANCE_SCHEMA_str.str) != 0)
     DBUG_RETURN(NULL);
 
   const PFS_engine_table_share* result;
@@ -82,12 +82,12 @@ static int pfs_init_func(void *p)
 
   /*
     As long as the server implementation keeps using legacy_db_type,
-    as for example in mysql_truncate(),
-    we can not rely on the fact that different mysqld process will assign
+    as for example in myblockchain_truncate(),
+    we can not rely on the fact that different myblockchaind process will assign
     consistently the same legacy_db_type for a given storage engine name.
     In particular, using different --loose-skip-xxx options between
-    ./mysqld --bootstrap
-    ./mysqld
+    ./myblockchaind --bootstrap
+    ./myblockchaind
     creates bogus .frm forms when bootstrapping the performance schema,
     if we rely on ha_initialize_handlerton to assign a really dynamic value.
     To fix this, a dedicated DB_TYPE is officially assigned to
@@ -111,7 +111,7 @@ static int pfs_done_func(void *p)
   DBUG_RETURN(0);
 }
 
-static struct st_mysql_show_var pfs_status_vars[]=
+static struct st_myblockchain_show_var pfs_status_vars[]=
 {
   {"Performance_schema_mutex_classes_lost",
     (char*) &mutex_class_lost, SHOW_LONG_NOFLUSH, SHOW_SCOPE_GLOBAL},
@@ -180,17 +180,17 @@ static struct st_mysql_show_var pfs_status_vars[]=
   {NullS, NullS, SHOW_LONG, SHOW_SCOPE_GLOBAL}
 };
 
-struct st_mysql_storage_engine pfs_storage_engine=
-{ MYSQL_HANDLERTON_INTERFACE_VERSION };
+struct st_myblockchain_storage_engine pfs_storage_engine=
+{ MYBLOCKCHAIN_HANDLERTON_INTERFACE_VERSION };
 
 const char* pfs_engine_name= "PERFORMANCE_SCHEMA";
 
-mysql_declare_plugin(perfschema)
+myblockchain_declare_plugin(perfschema)
 {
-  MYSQL_STORAGE_ENGINE_PLUGIN,
+  MYBLOCKCHAIN_STORAGE_ENGINE_PLUGIN,
   &pfs_storage_engine,
   pfs_engine_name,
-  "Marc Alff, Oracle", /* Formerly Sun Microsystems, formerly MySQL */
+  "Marc Alff, Oracle", /* Formerly Sun Microsystems, formerly MyBlockchain */
   "Performance Schema",
   PLUGIN_LICENSE_GPL,
   pfs_init_func,                                /* Plugin Init */
@@ -201,7 +201,7 @@ mysql_declare_plugin(perfschema)
   NULL,                                         /* config options */
   0,                                            /* flags */
 }
-mysql_declare_plugin_end;
+myblockchain_declare_plugin_end;
 
 ha_perfschema::ha_perfschema(handlerton *hton, TABLE_SHARE *share)
   : handler(hton, share), m_table_share(NULL), m_table(NULL)
@@ -448,7 +448,7 @@ int ha_perfschema::create(const char *name, TABLE *table_arg,
     /*
       Attempting to create a known performance schema table.
       Allowing the create, to create .FRM files,
-      for the initial database install, and mysql_upgrade.
+      for the initial blockchain install, and myblockchain_upgrade.
       This should fail once .FRM are removed.
     */
     DBUG_RETURN(0);

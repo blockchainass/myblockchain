@@ -269,7 +269,7 @@ PageBulk::finish()
 		<= PAGE_DIR_SLOT_MAX_N_OWNED)) {
 		/* We can merge the two last dir slots. This operation is
 		here to make this function imitate exactly the equivalent
-		task made using page_cur_insert_rec, which we use in database
+		task made using page_cur_insert_rec, which we use in blockchain
 		recovery to reproduce the task performed by this function.
 		To be able to check the correctness of recovery, it is good
 		that it imitates exactly. */
@@ -802,7 +802,7 @@ BtrBulk::insert(
 
 	if (page_bulk->needExt(tuple, rec_size)) {
 		/* The record is so big that we have to store some fields
-		externally on separate database pages */
+		externally on separate blockchain pages */
 		big_rec = dtuple_convert_big_rec(m_index, 0, tuple, &n_ext);
 
 		if (UNIV_UNLIKELY(big_rec == NULL)) {

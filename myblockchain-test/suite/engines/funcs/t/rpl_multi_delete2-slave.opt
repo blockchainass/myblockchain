@@ -1,0 +1,1 @@
+"--replicate-rewrite-db=myblockchaintest_from->myblockchaintest_to" --replicate-do-table=myblockchaintest_to.a

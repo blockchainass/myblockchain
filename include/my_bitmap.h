@@ -20,7 +20,7 @@
 #define MY_BIT_NONE (~(uint) 0)
 
 #include <m_string.h>
-#include "mysql/psi/mysql_thread.h"   /* mysql_mutex_t */
+#include "myblockchain/psi/myblockchain_thread.h"   /* myblockchain_mutex_t */
 
 typedef uint32 my_bitmap_map;
 
@@ -35,7 +35,7 @@ typedef struct st_bitmap
      thread_safe flag in bitmap_init was set.  Otherwise, we optimize by not
      acquiring the mutex
    */
-  mysql_mutex_t *mutex;
+  myblockchain_mutex_t *mutex;
 } MY_BITMAP;
 
 #ifdef	__cplusplus

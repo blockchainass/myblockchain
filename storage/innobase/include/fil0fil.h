@@ -185,14 +185,14 @@ struct fil_node_t {
 				serialize calls to fsync */
 	bool		is_raw_disk;/*!< true if the 'file' is actually a raw
 				device or a raw disk partition */
-	ulint		size;	/*!< size of the file in database pages, 0 if
+	ulint		size;	/*!< size of the file in blockchain pages, 0 if
 				not known yet; the possible last incomplete
 				megabyte may be ignored if space == 0 */
 	ulint		init_size;
-				/*!< initial size of the file in database pages,
+				/*!< initial size of the file in blockchain pages,
 				defaults to FIL_IBD_FILE_INITIAL_SIZE. */
 	ulint		max_size;
-				/*!< maximum size of the file in database pages;
+				/*!< maximum size of the file in blockchain pages;
 				0 if there is no maximum size. */
 	ulint		n_pending;
 				/*!< count of pending i/o's on this file;
@@ -324,11 +324,11 @@ private:
 	size_t	m_abs_len;
 };
 
-/** When mysqld is run, the default directory "." is the mysqld datadir,
-but in the MySQL Embedded Server Library and mysqlbackup it is not the default
+/** When myblockchaind is run, the default directory "." is the myblockchaind datadir,
+but in the MyBlockchain Embedded Server Library and myblockchainbackup it is not the default
 directory, and we must set the base file path explicitly */
-extern const char*	fil_path_to_mysql_datadir;
-extern Folder   	folder_mysql_datadir;
+extern const char*	fil_path_to_myblockchain_datadir;
+extern Folder   	folder_myblockchain_datadir;
 
 /** Initial size of a single-table tablespace in pages */
 #define FIL_IBD_FILE_INITIAL_SIZE	4
@@ -361,7 +361,7 @@ extern fil_addr_t	fil_addr_null;
 #endif /* !UNIV_INNOCHECKSUM */
 
 /** The byte offsets on a file page for various variables @{ */
-#define FIL_PAGE_SPACE_OR_CHKSUM 0	/*!< in < MySQL-4.0.14 space id the
+#define FIL_PAGE_SPACE_OR_CHKSUM 0	/*!< in < MyBlockchain-4.0.14 space id the
 					page belongs to (== 0) but in later
 					versions the 'new' checksum of the
 					page */
@@ -397,7 +397,7 @@ extern fil_addr_t	fil_addr_null;
 					The opposite does not hold.
 
 					In tablespaces created by
-					MySQL/InnoDB 5.1.7 or later, the
+					MyBlockchain/InnoDB 5.1.7 or later, the
 					contents of this field is valid
 					for all uncompressed pages. */
 #define FIL_PAGE_FILE_FLUSH_LSN	26	/*!< this is only defined for the
@@ -451,7 +451,7 @@ static const ulint FIL_PAGE_COMPRESS_SIZE_V1 = FIL_PAGE_ORIGINAL_SIZE_V1 + 2;
 #define FIL_PAGE_UNDO_LOG	2	/*!< Undo log page */
 #define FIL_PAGE_INODE		3	/*!< Index node */
 #define FIL_PAGE_IBUF_FREE_LIST	4	/*!< Insert buffer free list */
-/* File page types introduced in MySQL/InnoDB 5.1.7 */
+/* File page types introduced in MyBlockchain/InnoDB 5.1.7 */
 #define FIL_PAGE_TYPE_ALLOCATED	0	/*!< Freshly allocated page */
 #define FIL_PAGE_IBUF_BITMAP	5	/*!< Insert buffer bitmap */
 #define FIL_PAGE_TYPE_SYS	6	/*!< System page */
@@ -547,7 +547,7 @@ __attribute__((warn_unused_result, pure));
 
 /** Append a file to the chain of files of a space.
 @param[in]	name		file name of a file that is not open
-@param[in]	size		file size in entire database blocks
+@param[in]	size		file size in entire blockchain blocks
 @param[in,out]	space		tablespace from fil_space_create()
 @param[in]	is_raw		whether this is a raw device or partition
 @param[in]	atomic_write	true if atomic write enabled
@@ -674,7 +674,7 @@ fil_close(void);
 /*===========*/
 /*******************************************************************//**
 Opens all log files and system tablespace data files. They stay open until the
-database server shutdown. This should be called at a server startup after the
+blockchain server shutdown. This should be called at a server startup after the
 space objects for the log and the system tablespace have been created. The
 purpose of this operation is to make sure we never run out of file descriptors
 if we need to read from the insert buffer or to write to the log. */
@@ -793,12 +793,12 @@ private:
 
 #endif /* !UNIV_HOTBACKUP */
 /********************************************************//**
-Creates the database directory for a table if it does not exist yet. */
+Creates the blockchain directory for a table if it does not exist yet. */
 void
 fil_create_directory_for_tablename(
 /*===============================*/
 	const char*	name);	/*!< in: name in the standard
-				'databasename/tablename' format */
+				'blockchainname/tablename' format */
 /********************************************************//**
 Recreates table indexes by applying
 TRUNCATE log record during recovery.
@@ -918,7 +918,7 @@ The tablespace must exist in the memory cache.
 @param[in]	id		tablespace identifier
 @param[in]	old_path	old file name
 @param[in]	new_name	new table name in the
-databasename/tablename format
+blockchainname/tablename format
 @param[in]	new_path_in	new file name,
 or NULL if it is located in the normal data directory
 @return true if success */
@@ -964,9 +964,9 @@ fil_ibd_create(
 /********************************************************************//**
 Tries to open a single-table tablespace and optionally checks the space id is
 right in it. If does not succeed, prints an error message to the .err log. This
-function is used to open a tablespace when we start up mysqld, and also in
+function is used to open a tablespace when we start up myblockchaind, and also in
 IMPORT TABLESPACE.
-NOTE that we assume this operation is used either at the database startup
+NOTE that we assume this operation is used either at the blockchain startup
 or under the protection of the dictionary mutex, so that two users cannot
 race here. This operation does not leave the file associated with the
 tablespace open, but closes it after we have looked at the space id in it.
@@ -987,7 +987,7 @@ statement to update the dictionary tables if they are incorrect.
 @param[in]	id		tablespace ID
 @param[in]	flags		tablespace flags
 @param[in]	space_name	tablespace name of the datafile
-If file-per-table, it is the table name in the databasename/tablename format
+If file-per-table, it is the table name in the blockchainname/tablename format
 @param[in]	path_in		expected filepath, usually read from dictionary
 @return DB_SUCCESS or error code */
 dberr_t
@@ -1014,7 +1014,7 @@ enum fil_load_status {
 
 /** Open a single-file tablespace and add it to the InnoDB data structures.
 @param[in]	space_id	tablespace ID
-@param[in]	filename	path/to/databasename/tablename.ibd
+@param[in]	filename	path/to/blockchainname/tablename.ibd
 @param[in]	filename_len	the length of the filename, in bytes
 @param[out]	space		the tablespace, or NULL on error
 @return status of the operation */
@@ -1045,7 +1045,7 @@ fil_file_readdir_next_file(
 #ifndef UNIV_HOTBACKUP
 /*******************************************************************//**
 Returns true if a matching tablespace exists in the InnoDB tablespace memory
-cache. Note that if we have not done a crash recovery at the database startup,
+cache. Note that if we have not done a crash recovery at the blockchain startup,
 there may be many tablespaces which are not yet in the memory cache.
 @return true if a matching tablespace exists in the memory cache */
 bool
@@ -1053,7 +1053,7 @@ fil_space_for_table_exists_in_mem(
 /*==============================*/
 	ulint		id,		/*!< in: space id */
 	const char*	name,		/*!< in: table name in the standard
-					'databasename/tablename' format */
+					'blockchainname/tablename' format */
 	bool		print_error_if_does_not_exist,
 					/*!< in: print detailed error
 					information to the .err log if a
@@ -1066,7 +1066,7 @@ fil_space_for_table_exists_in_mem(
 #else /* !UNIV_HOTBACKUP */
 /********************************************************************//**
 Extends all tablespaces to the size stored in the space header. During the
-mysqlbackup --apply-log phase we extended the spaces on-demand so that log
+myblockchainbackup --apply-log phase we extended the spaces on-demand so that log
 records could be appllied, but that may have left spaces still too small
 compared to the size stored in the space header. */
 void
@@ -1098,7 +1098,7 @@ fil_space_release_free_extents(
 	ulint	id,		/*!< in: space id */
 	ulint	n_reserved);	/*!< in: how many one reserved */
 /*******************************************************************//**
-Gets the number of reserved extents. If the database is silent, this number
+Gets the number of reserved extents. If the blockchain is silent, this number
 should be zero. */
 ulint
 fil_space_get_n_reserved_extents(
@@ -1152,7 +1152,7 @@ void
 fil_flush(
 /*======*/
 	ulint	space_id);	/*!< in: file space id (this can be a group of
-				log files or a tablespace of the database) */
+				log files or a tablespace of the blockchain) */
 /** Flush to disk the writes in file spaces of the given type
 possibly cached by the OS.
 @param[in]	purpose	FIL_TYPE_TABLESPACE or FIL_TYPE_LOG */
@@ -1194,8 +1194,8 @@ fil_page_set_type(
 	byte*	page,	/*!< in/out: file page */
 	ulint	type);	/*!< in: type */
 /** Reset the page type.
-Data files created before MySQL 5.1 may contain garbage in FIL_PAGE_TYPE.
-In MySQL 3.23.53, only undo log pages and index pages were tagged.
+Data files created before MyBlockchain 5.1 may contain garbage in FIL_PAGE_TYPE.
+In MyBlockchain 3.23.53, only undo log pages and index pages were tagged.
 Any other pages were written with uninitialized bytes in FIL_PAGE_TYPE.
 @param[in]	page_id	page number
 @param[in,out]	page	page with invalid FIL_PAGE_TYPE
@@ -1218,9 +1218,9 @@ fil_page_get_type(
 	return(mach_read_from_2(page + FIL_PAGE_TYPE));
 }
 /** Check (and if needed, reset) the page type.
-Data files created before MySQL 5.1 may contain
+Data files created before MyBlockchain 5.1 may contain
 garbage in the FIL_PAGE_TYPE field.
-In MySQL 3.23.53, only undo log pages and index pages were tagged.
+In MyBlockchain 3.23.53, only undo log pages and index pages were tagged.
 Any other pages were written with uninitialized bytes in FIL_PAGE_TYPE.
 @param[in]	page_id	page number
 @param[in,out]	page	page with possibly invalid FIL_PAGE_TYPE
@@ -1242,9 +1242,9 @@ fil_page_check_type(
 }
 
 /** Check (and if needed, reset) the page type.
-Data files created before MySQL 5.1 may contain
+Data files created before MyBlockchain 5.1 may contain
 garbage in the FIL_PAGE_TYPE field.
-In MySQL 3.23.53, only undo log pages and index pages were tagged.
+In MyBlockchain 3.23.53, only undo log pages and index pages were tagged.
 Any other pages were written with uninitialized bytes in FIL_PAGE_TYPE.
 @param[in,out]	block	block with possibly invalid FIL_PAGE_TYPE
 @param[in]	type	expected page type
@@ -1380,8 +1380,8 @@ fil_space_read_name_and_filepath(
 	char**	filepath);
 
 /** Convert a file name to a tablespace name.
-@param[in]	filename	directory/databasename/tablename.ibd
-@return database/tablename string, to be freed with ut_free() */
+@param[in]	filename	directory/blockchainname/tablename.ibd
+@return blockchain/tablename string, to be freed with ut_free() */
 char*
 fil_path_to_space_name(
 	const char*	filename);

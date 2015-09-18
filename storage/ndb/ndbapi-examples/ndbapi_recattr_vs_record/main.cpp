@@ -32,7 +32,7 @@
 #ifdef _WIN32
 #include <winsock2.h>
 #endif
-#include <mysql.h>
+#include <myblockchain.h>
 #include <NdbApi.hpp>
 
 #include <stddef.h>
@@ -46,14 +46,14 @@
 // Do we use old-style (NdbRecAttr?) or new style (NdbRecord?)
 enum ApiType {api_attr, api_record};
 
-static void run_application(MYSQL &, Ndb_cluster_connection &, ApiType);
+static void run_application(MYBLOCKCHAIN &, Ndb_cluster_connection &, ApiType);
 
 #define PRINT_ERROR(code,msg) \
   std::cout << "Error in " << __FILE__ << ", line: " << __LINE__ \
             << ", code: " << code \
             << ", msg: " << msg << "." << std::endl
-#define MYSQLERROR(mysql) { \
-  PRINT_ERROR(mysql_errno(&mysql),mysql_error(&mysql)); \
+#define MYBLOCKCHAINERROR(myblockchain) { \
+  PRINT_ERROR(myblockchain_errno(&myblockchain),myblockchain_error(&myblockchain)); \
   exit(-1); }
 #define APIERROR(error) { \
   PRINT_ERROR(error.code,error.message); \
@@ -63,15 +63,15 @@ int main(int argc, char** argv)
 {
   if (argc != 4)
   {
-    std::cout << "Arguments are <socket mysqld> <connect_string cluster> <attr|record>.\n";
+    std::cout << "Arguments are <socket myblockchaind> <connect_string cluster> <attr|record>.\n";
     exit(-1);
   }
   // ndb_init must be called first
   ndb_init();
 
-  // connect to mysql server and cluster and run application
+  // connect to myblockchain server and cluster and run application
   {
-    char * mysqld_sock  = argv[1];
+    char * myblockchaind_sock  = argv[1];
     const char *connectstring = argv[2];
     ApiType accessType=api_attr;
 
@@ -94,15 +94,15 @@ int main(int argc, char** argv)
       exit(-1);
     }
 
-    // connect to mysql server
-    MYSQL mysql;
-    if ( !mysql_init(&mysql) ) {
-      std::cout << "mysql_init failed\n";
+    // connect to myblockchain server
+    MYBLOCKCHAIN myblockchain;
+    if ( !myblockchain_init(&myblockchain) ) {
+      std::cout << "myblockchain_init failed\n";
       exit(-1);
     }
-    if ( !mysql_real_connect(&mysql, "localhost", "root", "", "",
-			     0, mysqld_sock, 0) )
-      MYSQLERROR(mysql);
+    if ( !myblockchain_real_connect(&myblockchain, "localhost", "root", "", "",
+			     0, myblockchaind_sock, 0) )
+      MYBLOCKCHAINERROR(myblockchain);
     
     if (0==strncmp("attr", argv[3], 4))
     {
@@ -119,7 +119,7 @@ int main(int argc, char** argv)
     }
 
     // run the application code
-    run_application(mysql, cluster_connection, accessType);
+    run_application(myblockchain, cluster_connection, accessType);
   }
 
   ndb_end(0);
@@ -128,7 +128,7 @@ int main(int argc, char** argv)
 }
 
 static void init_ndbrecord_info(Ndb &);
-static void create_table(MYSQL &);
+static void create_table(MYBLOCKCHAIN &);
 static void do_insert(Ndb &, ApiType);
 static void do_update(Ndb &, ApiType);
 static void do_delete(Ndb &, ApiType);
@@ -171,27 +171,27 @@ struct IndexRow
   unsigned int attr2;
 };
 
-static void run_application(MYSQL &mysql,
+static void run_application(MYBLOCKCHAIN &myblockchain,
 			    Ndb_cluster_connection &cluster_connection,
                             ApiType accessType)
 {
   /********************************************
-   * Connect to database via mysql-c          *
+   * Connect to blockchain via myblockchain-c          *
    ********************************************/
-  mysql_query(&mysql, "CREATE DATABASE ndb_examples");
-  if (mysql_query(&mysql, "USE ndb_examples") != 0) MYSQLERROR(mysql);
-  create_table(mysql);
+  myblockchain_query(&myblockchain, "CREATE DATABASE ndb_examples");
+  if (myblockchain_query(&myblockchain, "USE ndb_examples") != 0) MYBLOCKCHAINERROR(myblockchain);
+  create_table(myblockchain);
 
   /********************************************
-   * Connect to database via NdbApi           *
+   * Connect to blockchain via NdbApi           *
    ********************************************/
-  // Object representing the database
+  // Object representing the blockchain
   Ndb myNdb( &cluster_connection, "ndb_examples" );
   if (myNdb.init()) APIERROR(myNdb.getNdbError());
 
   init_ndbrecord_info(myNdb);
   /*
-   * Do different operations on database
+   * Do different operations on blockchain
    */
   do_insert(myNdb, accessType);
   do_update(myNdb, accessType);
@@ -221,29 +221,29 @@ static void run_application(MYSQL &mysql,
 /*********************************************************
  * Create a table named api_recattr_vs_record if it does not exist *
  *********************************************************/
-static void create_table(MYSQL &mysql)
+static void create_table(MYBLOCKCHAIN &myblockchain)
 {
-  if (mysql_query(&mysql, 
+  if (myblockchain_query(&myblockchain, 
 		  "DROP TABLE IF EXISTS"
 		  "  api_recattr_vs_record"))
-    MYSQLERROR(mysql);
+    MYBLOCKCHAINERROR(myblockchain);
 
-  if (mysql_query(&mysql, 
+  if (myblockchain_query(&myblockchain, 
 		  "CREATE TABLE"
 		  "  api_recattr_vs_record"
 		  "    (ATTR1 INT UNSIGNED NOT NULL PRIMARY KEY,"
 		  "     ATTR2 INT UNSIGNED NOT NULL,"
                   "     ATTR3 INT UNSIGNED NOT NULL)"
 		  "  ENGINE=NDB"))
-    MYSQLERROR(mysql);
+    MYBLOCKCHAINERROR(myblockchain);
 
   /* Add ordered secondary index on 2 attributes, in reverse order */
-  if (mysql_query(&mysql,
+  if (myblockchain_query(&myblockchain,
                   "CREATE INDEX"
                   "  MYINDEXNAME"
                   "  ON api_recattr_vs_record"
                   "  (ATTR3, ATTR2)"))
-    MYSQLERROR(mysql);
+    MYBLOCKCHAINERROR(myblockchain);
 }
 
 

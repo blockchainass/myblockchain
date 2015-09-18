@@ -41,7 +41,7 @@ public:
   NodeType getType() const;
 
   Uint32 m_version;       ///< Ndb version
-  Uint32 m_mysql_version; ///< MySQL version
+  Uint32 m_myblockchain_version; ///< MyBlockchain version
   Uint32 m_lqh_workers;   ///< LQH workers
   Uint32 m_type;          ///< Node type
   Uint32 m_connectCount;  ///< No of times connected
@@ -54,7 +54,7 @@ public:
 inline
 NodeInfo::NodeInfo(){
   m_version = 0;
-  m_mysql_version = 0;
+  m_myblockchain_version = 0;
   m_lqh_workers = 0;
   m_type = INVALID;
   m_connectCount = 0;
@@ -110,7 +110,7 @@ operator<<(NdbOut& ndbout, const NodeInfo & info){
   }
 
   ndbout << " ndb version: " << NdbVersion(info.m_version)
-	 << " mysql version: " << NdbVersion(info.m_mysql_version)
+	 << " myblockchain version: " << NdbVersion(info.m_myblockchain_version)
 	 << " connect count: " << info.m_connectCount
 	 << "]";
   return ndbout;

@@ -22,7 +22,7 @@
 #include "i_connection_provider.h"
 #include "i_callable.h"
 #include "base/message_data.h"
-#include "base/mysql_query_runner.h"
+#include "base/myblockchain_query_runner.h"
 
 namespace Mysql{
 namespace Tools{

@@ -20,10 +20,10 @@
 #include "m_ctype.h"                    /* for CHARSET_INFO */
 
 #include "my_thread.h"                  /* Needed for psi.h */
-#include "mysql/psi/psi.h"
-#include "mysql/service_mysql_alloc.h"
-#include "mysql/psi/mysql_memory.h"
-#include "mysql/psi/mysql_thread.h"
+#include "myblockchain/psi/psi.h"
+#include "myblockchain/service_myblockchain_alloc.h"
+#include "myblockchain/psi/myblockchain_memory.h"
+#include "myblockchain/psi/myblockchain_thread.h"
 
 #ifdef HAVE_ALLOCA_H
 #include <alloca.h>
@@ -62,7 +62,7 @@ C_MODE_START
   Some mysys functions produce error messages. These mostly go
   to stderr.
   This constant defines the size of the buffer used to format
-  the message. It should be kept in sync with MYSQL_ERRMSG_SIZE,
+  the message. It should be kept in sync with MYBLOCKCHAIN_ERRMSG_SIZE,
   since sometimes mysys errors are stored in the server diagnostics
   area, and we would like to avoid unexpected truncation.
 */
@@ -226,8 +226,8 @@ extern ulong my_thread_stack_size;
   By having hooks, we avoid direct dependencies on server code.
 */
 extern void (*enter_cond_hook)(void *opaque_thd,
-                               mysql_cond_t *cond,
-                               mysql_mutex_t *mutex,
+                               myblockchain_cond_t *cond,
+                               myblockchain_mutex_t *mutex,
                                const PSI_stage_info *stage,
                                PSI_stage_info *old_stage,
                                const char *src_function,
@@ -242,8 +242,8 @@ extern void (*exit_cond_hook)(void *opaque_thd,
 
 /* charsets */
 #define MY_ALL_CHARSETS_SIZE 2048
-extern MYSQL_PLUGIN_IMPORT CHARSET_INFO *default_charset_info;
-extern MYSQL_PLUGIN_IMPORT CHARSET_INFO *all_charsets[MY_ALL_CHARSETS_SIZE];
+extern MYBLOCKCHAIN_PLUGIN_IMPORT CHARSET_INFO *default_charset_info;
+extern MYBLOCKCHAIN_PLUGIN_IMPORT CHARSET_INFO *all_charsets[MY_ALL_CHARSETS_SIZE];
 extern CHARSET_INFO compiled_charsets[];
 
 /* statistics */
@@ -251,7 +251,7 @@ extern ulong	my_file_opened,my_stream_opened, my_tmp_file_created;
 extern ulong    my_file_total_opened;
 extern my_bool	my_init_done;
 
-extern MYSQL_PLUGIN_IMPORT int my_umask;		/* Default creation mask  */
+extern MYBLOCKCHAIN_PLUGIN_IMPORT int my_umask;		/* Default creation mask  */
 extern int my_umask_dir;
 
 extern ulong	my_default_record_cache_size;
@@ -309,7 +309,7 @@ typedef struct st_my_tmpdir
 {
   char **list;
   uint cur, max;
-  mysql_mutex_t mutex;
+  myblockchain_mutex_t mutex;
 } MY_TMPDIR;
 
 typedef struct st_dynamic_string
@@ -323,9 +323,9 @@ typedef int (*IO_CACHE_CALLBACK)(struct st_io_cache*);
 
 typedef struct st_io_cache_share
 {
-  mysql_mutex_t       mutex;           /* To sync on reads into buffer. */
-  mysql_cond_t        cond;            /* To wait for signals. */
-  mysql_cond_t        cond_writer;     /* For a synchronized writer. */
+  myblockchain_mutex_t       mutex;           /* To sync on reads into buffer. */
+  myblockchain_cond_t        cond;            /* To wait for signals. */
+  myblockchain_cond_t        cond_writer;     /* For a synchronized writer. */
   /* Offset in file corresponding to the first byte of buffer. */
   my_off_t              pos_in_file;
   /* If a synchronized write cache is the source of the data. */
@@ -381,7 +381,7 @@ typedef struct st_io_cache		/* Used when cacheing files */
     The lock is for append buffer used in SEQ_READ_APPEND cache
     need mutex copying from append buffer to read buffer.
   */
-  mysql_mutex_t append_buffer_lock;
+  myblockchain_mutex_t append_buffer_lock;
   /*
     The following is used when several threads are reading the
     same file in parallel. They are synchronized on disk
@@ -896,14 +896,14 @@ extern my_bool my_charset_same(const CHARSET_INFO *cs1,
                                const CHARSET_INFO *cs2);
 extern my_bool init_compiled_charsets(myf flags);
 extern void add_compiled_collation(CHARSET_INFO *cs);
-extern size_t escape_string_for_mysql(const CHARSET_INFO *charset_info,
+extern size_t escape_string_for_myblockchain(const CHARSET_INFO *charset_info,
                                       char *to, size_t to_length,
                                       const char *from, size_t length);
 #ifdef _WIN32
 /* File system character set */
 extern CHARSET_INFO *fs_character_set(void);
 #endif
-extern size_t escape_quotes_for_mysql(CHARSET_INFO *charset_info,
+extern size_t escape_quotes_for_myblockchain(CHARSET_INFO *charset_info,
                                   char *to, size_t to_length,
                                   const char *from, size_t length, char quote);
 #ifdef _WIN32
@@ -928,13 +928,13 @@ int my_win_translate_command_line_args(const CHARSET_INFO *cs, int *ac, char ***
 #endif /* _WIN32 */
 
 #ifdef HAVE_PSI_INTERFACE
-extern MYSQL_PLUGIN_IMPORT struct PSI_bootstrap *PSI_hook;
+extern MYBLOCKCHAIN_PLUGIN_IMPORT struct PSI_bootstrap *PSI_hook;
 extern void set_psi_server(PSI *psi);
 void my_init_mysys_psi_keys(void);
 #endif
 
-struct st_mysql_file;
-extern struct st_mysql_file *mysql_stdin;
+struct st_myblockchain_file;
+extern struct st_myblockchain_file *myblockchain_stdin;
 
 C_MODE_END
 #endif /* _my_sys_h */

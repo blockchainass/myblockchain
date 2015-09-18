@@ -19,7 +19,7 @@ this program; if not, write to the Free Software Foundation, Inc.,
 /******************************************************
 SQL parser lexical analyzer: input file for the GNU Flex lexer generator
 
-The InnoDB parser is frozen because MySQL takes care of SQL parsing.
+The InnoDB parser is frozen because MyBlockchain takes care of SQL parsing.
 Therefore we normally keep the InnoDB parser C files as they are, and do
 not automatically generate them from pars0grm.y and pars0lex.l.
 

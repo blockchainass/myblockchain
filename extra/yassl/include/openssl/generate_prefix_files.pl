@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# Copyright (C) 2006 MySQL AB
+# Copyright (C) 2006 MyBlockchain AB
 # Use is subject to license terms
 # 
 # This program is free software; you can redistribute it and/or modify

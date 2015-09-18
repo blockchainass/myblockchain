@@ -13,27 +13,27 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 
-# my.cnf -- MySQL Server configuration file (options case-sensitive)
+# my.cnf -- MyBlockchain Server configuration file (options case-sensitive)
 
 # memo: server variables (system/status, session/global)
-# mysql> show [session|global] status [like '%pattern%' | where expr];
-# mysql> show [session|global] variables [like '%pattern%' | where expr];
-# mysql> select @@{session|global}.xxx, ...
-# mysql> set [session|global] xxx=default, @@{session|global}.xxx=DEFAULT, ...
+# myblockchain> show [session|global] status [like '%pattern%' | where expr];
+# myblockchain> show [session|global] variables [like '%pattern%' | where expr];
+# myblockchain> select @@{session|global}.xxx, ...
+# myblockchain> set [session|global] xxx=default, @@{session|global}.xxx=DEFAULT, ...
 # set boolean options/variables=1|0 (on|off ignored for cmd/cnf options)
 
 #
-# options for mysql clients
+# options for myblockchain clients
 #
 [client]
 
 #port=3306
-#socket=.../mysql.sock
+#socket=.../myblockchain.sock
 
 #
 # cluster-specific options
 #
-[mysql_cluster]
+[myblockchain_cluster]
 
 # connectstring to management server (mandatory, here or per command line)
 # - option: --ndb-connectstring
@@ -44,9 +44,9 @@ ndb-connectstring=127.0.0.1
 #ndb-connectstring=127.0.0.1:1187
 
 #
-# mysql server options
+# myblockchain server options
 #
-[mysqld]
+[myblockchaind]
 
 # ndb<=7.1: enable innodb plugin
 #ignore-builtin-innodb
@@ -66,8 +66,8 @@ ndb-connectstring=127.0.0.1
 # socket spec for local connections (here or per command line)
 # - option: --socket
 # - variable: socket (global, constant)
-# - default: /tmp/mysql.sock
-#socket=.../ndblog/mysql.sock
+# - default: /tmp/myblockchain.sock
+#socket=.../ndblog/myblockchain.sock
 
 # the data directory (here or per command line)
 # - option: --datadir
@@ -85,8 +85,8 @@ ndb-connectstring=127.0.0.1
 # - default: log-bin = <host_name>-bin.<6-digit-suffix>
 # - default: log-bin-index = <host_name>-bin.index
 # - default: <data directory> unless absolute path given
-#log-bin=mysql-bin.log
-#log-bin-index=mysql-bin.index
+#log-bin=myblockchain-bin.log
+#log-bin-index=myblockchain-bin.index
 # set the binary logging format (might be redundant for cluster tables)
 # - option: --binlog-format
 # - variable: binlog_format (system, global+session, changeable)
@@ -111,8 +111,8 @@ skip-slave-start
 # - default: relay-log = <host_name>-relay-bin.<6-digit-suffix>
 # - default: relay-log-index = <host_name>-relay-bin.index
 # - default: <data directory> unless absolute path given
-#relay-log=mysql-relay-bin
-#relay-log-index=mysql-relay-bin.index
+#relay-log=myblockchain-relay-bin
+#relay-log-index=myblockchain-relay-bin.index
 
 # log updates from master to the slave's own binary log
 # - option: --log-slave-updates (requires log-bin)
@@ -138,7 +138,7 @@ skip-slave-start
 #slave-type-conversions=ALL_NON_LOSSY
 
 #
-# mysqld cluster settings
+# myblockchaind cluster settings
 #
 
 # maximum size of one packet or any generated/intermediate string
@@ -150,7 +150,7 @@ skip-slave-start
 # java.sql.BatchUpdateException: Packet for query is too large (1062229 > 1048576). You can change this value on the server by setting the max_allowed_packet' variable.
 #max_allowed_packet=16M
 
-# enable batched operations on MySQL Cluster replication slaves
+# enable batched operations on MyBlockchain Cluster replication slaves
 # - option: --slave-allow-batching (or slave_allow_batching)
 # - variable: slave_allow_batching (system, global, changeable)
 # - default: 0
@@ -191,8 +191,8 @@ ndbcluster
 # sql modes, transaction isolation levels (cluster: only read committed)
 # - options: -a, --ansi, --sql-mode, --transaction-isolation
 # - variables: tx_isolation, sql_mode (system, global+session, changeable)
-# - mysql> set [global|session] transaction isolation level
+# - myblockchain> set [global|session] transaction isolation level
 #          {read uncommitted|read committed|repeatable read|serializable};
-# - mysql> set [global|session] tx_isolation=
+# - myblockchain> set [global|session] tx_isolation=
 #          'read-uncommitted|read-committed|repeatable-read|serializable';
-# - mysql> set [global|session] sql_mode='ansi|traditional|...';
+# - myblockchain> set [global|session] sql_mode='ansi|traditional|...';

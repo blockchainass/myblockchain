@@ -36,7 +36,7 @@ Created Jan 06, 2010 Vasil Dimov
 #include "dict0stats.h"
 #include "ha_prototypes.h"
 #include "ut0new.h"
-#include <mysql_com.h>
+#include <myblockchain_com.h>
 
 #include <algorithm>
 #include <map>
@@ -108,10 +108,10 @@ where n=1..n_uniq.
 @} */
 
 /* names of the tables from the persistent statistics storage */
-#define TABLE_STATS_NAME	"mysql/innodb_table_stats"
-#define TABLE_STATS_NAME_PRINT	"mysql.innodb_table_stats"
-#define INDEX_STATS_NAME	"mysql/innodb_index_stats"
-#define INDEX_STATS_NAME_PRINT	"mysql.innodb_index_stats"
+#define TABLE_STATS_NAME	"myblockchain/innodb_table_stats"
+#define TABLE_STATS_NAME_PRINT	"myblockchain.innodb_table_stats"
+#define INDEX_STATS_NAME	"myblockchain/innodb_index_stats"
+#define INDEX_STATS_NAME_PRINT	"myblockchain.innodb_index_stats"
 
 #ifdef UNIV_STATS_DEBUG
 #define DEBUG_PRINTF(fmt, ...)	printf(fmt, ## __VA_ARGS__)
@@ -178,10 +178,10 @@ dict_stats_persistent_storage_check(
 {
 	/* definition for the table TABLE_STATS_NAME */
 	dict_col_meta_t	table_stats_columns[] = {
-		{"database_name", DATA_VARMYSQL,
+		{"blockchain_name", DATA_VARMYBLOCKCHAIN,
 			DATA_NOT_NULL, 192},
 
-		{"table_name", DATA_VARMYSQL,
+		{"table_name", DATA_VARMYBLOCKCHAIN,
 			DATA_NOT_NULL, 192},
 
 		{"last_update", DATA_FIXBINARY,
@@ -206,19 +206,19 @@ dict_stats_persistent_storage_check(
 
 	/* definition for the table INDEX_STATS_NAME */
 	dict_col_meta_t	index_stats_columns[] = {
-		{"database_name", DATA_VARMYSQL,
+		{"blockchain_name", DATA_VARMYBLOCKCHAIN,
 			DATA_NOT_NULL, 192},
 
-		{"table_name", DATA_VARMYSQL,
+		{"table_name", DATA_VARMYBLOCKCHAIN,
 			DATA_NOT_NULL, 192},
 
-		{"index_name", DATA_VARMYSQL,
+		{"index_name", DATA_VARMYBLOCKCHAIN,
 			DATA_NOT_NULL, 192},
 
 		{"last_update", DATA_FIXBINARY,
 			DATA_NOT_NULL, 4},
 
-		{"stat_name", DATA_VARMYSQL,
+		{"stat_name", DATA_VARMYBLOCKCHAIN,
 			DATA_NOT_NULL, 64*3},
 
 		{"stat_value", DATA_INT,
@@ -227,7 +227,7 @@ dict_stats_persistent_storage_check(
 		{"sample_size", DATA_INT,
 			DATA_UNSIGNED, 8},
 
-		{"stat_description", DATA_VARMYSQL,
+		{"stat_description", DATA_VARMYBLOCKCHAIN,
 			DATA_NOT_NULL, 1024*3}
 	};
 	dict_table_schema_t	index_stats_schema = {
@@ -320,7 +320,7 @@ dict_stats_exec_sql(
 	}
 
 	if (err == DB_SUCCESS) {
-		trx_commit_for_mysql(trx);
+		trx_commit_for_myblockchain(trx);
 	} else {
 		trx->op_info = "rollback of internal trx on stats tables";
 		trx->dict_operation_lock_mode = RW_X_LATCH;
@@ -2243,7 +2243,7 @@ dict_stats_update_persistent(
 	return(DB_SUCCESS);
 }
 
-#include "mysql_com.h"
+#include "myblockchain_com.h"
 /** Save an individual index's statistic into the persistent statistics
 storage.
 @param[in]	index			index to be updated
@@ -2279,7 +2279,7 @@ dict_stats_save_index_stat(
 		     table_utf8, sizeof(table_utf8));
 
 	pinfo = pars_info_create();
-	pars_info_add_str_literal(pinfo, "database_name", db_utf8);
+	pars_info_add_str_literal(pinfo, "blockchain_name", db_utf8);
 	pars_info_add_str_literal(pinfo, "table_name", table_utf8);
 	pars_info_add_str_literal(pinfo, "index_name", index->name);
 	UNIV_MEM_ASSERT_RW_ABORT(&last_update, 4);
@@ -2306,7 +2306,7 @@ dict_stats_save_index_stat(
 
 		"DELETE FROM \"" INDEX_STATS_NAME "\"\n"
 		"WHERE\n"
-		"database_name = :database_name AND\n"
+		"blockchain_name = :blockchain_name AND\n"
 		"table_name = :table_name AND\n"
 		"index_name = :index_name AND\n"
 		"stat_name = :stat_name;\n"
@@ -2314,7 +2314,7 @@ dict_stats_save_index_stat(
 		"INSERT INTO \"" INDEX_STATS_NAME "\"\n"
 		"VALUES\n"
 		"(\n"
-		":database_name,\n"
+		":blockchain_name,\n"
 		":table_name,\n"
 		":index_name,\n"
 		":last_update,\n"
@@ -2363,14 +2363,14 @@ dict_stats_save(
 	rw_lock_x_lock(dict_operation_lock);
 	mutex_enter(&dict_sys->mutex);
 
-	/* MySQL's timestamp is 4 byte, so we use
+	/* MyBlockchain's timestamp is 4 byte, so we use
 	pars_info_add_int4_literal() which takes a lint arg, so "now" is
 	lint */
 	now = (lint) ut_time();
 
 	pinfo = pars_info_create();
 
-	pars_info_add_str_literal(pinfo, "database_name", db_utf8);
+	pars_info_add_str_literal(pinfo, "blockchain_name", db_utf8);
 	pars_info_add_str_literal(pinfo, "table_name", table_utf8);
 	pars_info_add_int4_literal(pinfo, "last_update", now);
 	pars_info_add_ull_literal(pinfo, "n_rows", table->stat_n_rows);
@@ -2386,13 +2386,13 @@ dict_stats_save(
 
 		"DELETE FROM \"" TABLE_STATS_NAME "\"\n"
 		"WHERE\n"
-		"database_name = :database_name AND\n"
+		"blockchain_name = :blockchain_name AND\n"
 		"table_name = :table_name;\n"
 
 		"INSERT INTO \"" TABLE_STATS_NAME "\"\n"
 		"VALUES\n"
 		"(\n"
-		":database_name,\n"
+		":blockchain_name,\n"
 		":table_name,\n"
 		":last_update,\n"
 		":n_rows,\n"
@@ -2431,10 +2431,10 @@ dict_stats_save(
 	single transaction may deadlock with other transactions if they
 	lock the rows in different order. Other transaction could be for
 	example when we DROP a table and do
-	DELETE FROM innodb_index_stats WHERE database_name = '...'
+	DELETE FROM innodb_index_stats WHERE blockchain_name = '...'
 	AND table_name = '...'; which will affect more than one row. To
 	prevent deadlocks we always lock the rows in the same order - the
-	order of the PK, which is (database_name, table_name, index_name,
+	order of the PK, which is (blockchain_name, table_name, index_name,
 	stat_name). This is why below we sort the indexes by name and then
 	for each index, do the mods ordered by stat_name. */
 
@@ -2514,7 +2514,7 @@ dict_stats_save(
 		}
 	}
 
-	trx_commit_for_mysql(trx);
+	trx_commit_for_myblockchain(trx);
 
 end:
 	trx_free_for_background(trx);
@@ -2529,7 +2529,7 @@ end:
 
 /*********************************************************************//**
 Called for the row that is selected by
-SELECT ... FROM mysql.innodb_table_stats WHERE table='...'
+SELECT ... FROM myblockchain.innodb_table_stats WHERE table='...'
 The second argument is a pointer to the table and the fetched stats are
 written to it.
 @return non-NULL dummy */
@@ -2560,7 +2560,7 @@ dict_stats_fetch_table_stats_step(
 		data = static_cast<const byte*>(dfield_get_data(dfield));
 
 		switch (i) {
-		case 0: /* mysql.innodb_table_stats.n_rows */
+		case 0: /* myblockchain.innodb_table_stats.n_rows */
 
 			ut_a(dtype_get_mtype(type) == DATA_INT);
 			ut_a(len == 8);
@@ -2569,7 +2569,7 @@ dict_stats_fetch_table_stats_step(
 
 			break;
 
-		case 1: /* mysql.innodb_table_stats.clustered_index_size */
+		case 1: /* myblockchain.innodb_table_stats.clustered_index_size */
 
 			ut_a(dtype_get_mtype(type) == DATA_INT);
 			ut_a(len == 8);
@@ -2579,7 +2579,7 @@ dict_stats_fetch_table_stats_step(
 
 			break;
 
-		case 2: /* mysql.innodb_table_stats.sum_of_other_index_sizes */
+		case 2: /* myblockchain.innodb_table_stats.sum_of_other_index_sizes */
 
 			ut_a(dtype_get_mtype(type) == DATA_INT);
 			ut_a(len == 8);
@@ -2619,15 +2619,15 @@ struct index_fetch_t {
 
 /*********************************************************************//**
 Called for the rows that are selected by
-SELECT ... FROM mysql.innodb_index_stats WHERE table='...'
+SELECT ... FROM myblockchain.innodb_index_stats WHERE table='...'
 The second argument is a pointer to the table and the fetched stats are
 written to its indexes.
 Let a table has N indexes and each index has Ui unique columns for i=1..N,
-then mysql.innodb_index_stats will have SUM(Ui) i=1..N rows for that table.
+then myblockchain.innodb_index_stats will have SUM(Ui) i=1..N rows for that table.
 So this function will be called SUM(Ui) times where SUM(Ui) is of magnitude
 N*AVG(Ui). In each call it searches for the currently fetched index into
 table->indexes linearly, assuming this list is not sorted. Thus, overall,
-fetching all indexes' stats from mysql.innodb_index_stats is O(N^2) where N
+fetching all indexes' stats from myblockchain.innodb_index_stats is O(N^2) where N
 is the number of indexes.
 This can be improved if we sort table->indexes in a temporary area just once
 and then search in that sorted list. Then the complexity will be O(N*log(N)).
@@ -2668,9 +2668,9 @@ dict_stats_fetch_index_stats_step(
 		data = static_cast<const byte*>(dfield_get_data(dfield));
 
 		switch (i) {
-		case 0: /* mysql.innodb_index_stats.index_name */
+		case 0: /* myblockchain.innodb_index_stats.index_name */
 
-			ut_a(dtype_get_mtype(type) == DATA_VARMYSQL);
+			ut_a(dtype_get_mtype(type) == DATA_VARMYBLOCKCHAIN);
 
 			/* search for index in table's indexes whose name
 			matches data; the fetched index name is in data,
@@ -2688,7 +2688,7 @@ dict_stats_fetch_index_stats_step(
 			}
 
 			/* if index is NULL here this means that
-			mysql.innodb_index_stats contains more rows than the
+			myblockchain.innodb_index_stats contains more rows than the
 			number of indexes in the table; this is ok, we just
 			return ignoring those extra rows; in other words
 			dict_stats_fetch_index_stats_step() has been called
@@ -2701,9 +2701,9 @@ dict_stats_fetch_index_stats_step(
 
 			break;
 
-		case 1: /* mysql.innodb_index_stats.stat_name */
+		case 1: /* myblockchain.innodb_index_stats.stat_name */
 
-			ut_a(dtype_get_mtype(type) == DATA_VARMYSQL);
+			ut_a(dtype_get_mtype(type) == DATA_VARMYBLOCKCHAIN);
 
 			ut_a(index != NULL);
 
@@ -2712,7 +2712,7 @@ dict_stats_fetch_index_stats_step(
 
 			break;
 
-		case 2: /* mysql.innodb_index_stats.stat_value */
+		case 2: /* myblockchain.innodb_index_stats.stat_value */
 
 			ut_a(dtype_get_mtype(type) == DATA_INT);
 			ut_a(len == 8);
@@ -2725,7 +2725,7 @@ dict_stats_fetch_index_stats_step(
 
 			break;
 
-		case 3: /* mysql.innodb_index_stats.sample_size */
+		case 3: /* myblockchain.innodb_index_stats.sample_size */
 
 			ut_a(dtype_get_mtype(type) == DATA_INT);
 			ut_a(len == 8 || len == UNIV_SQL_NULL);
@@ -2803,7 +2803,7 @@ dict_stats_fetch_index_stats_step(
 			ib::info	out;
 			out << "Ignoring strange row from "
 				<< INDEX_STATS_NAME_PRINT << " WHERE"
-				" database_name = '" << db_utf8
+				" blockchain_name = '" << db_utf8
 				<< "' AND table_name = '" << table_utf8
 				<< "' AND index_name = '" << index->name()
 				<< "' AND stat_name = '";
@@ -2831,7 +2831,7 @@ dict_stats_fetch_index_stats_step(
 			ib::info	out;
 			out << "Ignoring strange row from "
 				<< INDEX_STATS_NAME_PRINT << " WHERE"
-				" database_name = '" << db_utf8
+				" blockchain_name = '" << db_utf8
 				<< "' AND table_name = '" << table_utf8
 				<< "' AND index_name = '" << index->name()
 				<< "' AND stat_name = '";
@@ -2908,7 +2908,7 @@ dict_stats_fetch_from_ps(
 
 	pinfo = pars_info_create();
 
-	pars_info_add_str_literal(pinfo, "database_name", db_utf8);
+	pars_info_add_str_literal(pinfo, "blockchain_name", db_utf8);
 
 	pars_info_add_str_literal(pinfo, "table_name", table_utf8);
 
@@ -2939,7 +2939,7 @@ dict_stats_fetch_from_ps(
 			   "  sum_of_other_index_sizes\n"
 			   "  FROM \"" TABLE_STATS_NAME "\"\n"
 			   "  WHERE\n"
-			   "  database_name = :database_name AND\n"
+			   "  blockchain_name = :blockchain_name AND\n"
 			   "  table_name = :table_name;\n"
 			   "DECLARE CURSOR index_stats_cur IS\n"
 			   "  SELECT\n"
@@ -2952,7 +2952,7 @@ dict_stats_fetch_from_ps(
 			   "  sample_size\n"
 			   "  FROM \"" INDEX_STATS_NAME "\"\n"
 			   "  WHERE\n"
-			   "  database_name = :database_name AND\n"
+			   "  blockchain_name = :blockchain_name AND\n"
 			   "  table_name = :table_name;\n"
 
 			   "BEGIN\n"
@@ -2981,7 +2981,7 @@ dict_stats_fetch_from_ps(
 			   TRUE, trx);
 	/* pinfo is freed by que_eval_sql() */
 
-	trx_commit_for_mysql(trx);
+	trx_commit_for_myblockchain(trx);
 
 	trx_free_for_background(trx);
 
@@ -3279,7 +3279,7 @@ dict_stats_drop_index(
 
 	ut_ad(!mutex_own(&dict_sys->mutex));
 
-	/* skip indexes whose table names do not contain a database name
+	/* skip indexes whose table names do not contain a blockchain name
 	e.g. if we are dropping an index from SYS_TABLES */
 	if (strchr(db_and_table, '/') == NULL) {
 
@@ -3291,7 +3291,7 @@ dict_stats_drop_index(
 
 	pinfo = pars_info_create();
 
-	pars_info_add_str_literal(pinfo, "database_name", db_utf8);
+	pars_info_add_str_literal(pinfo, "blockchain_name", db_utf8);
 
 	pars_info_add_str_literal(pinfo, "table_name", table_utf8);
 
@@ -3305,7 +3305,7 @@ dict_stats_drop_index(
 		"PROCEDURE DROP_INDEX_STATS () IS\n"
 		"BEGIN\n"
 		"DELETE FROM \"" INDEX_STATS_NAME "\" WHERE\n"
-		"database_name = :database_name AND\n"
+		"blockchain_name = :blockchain_name AND\n"
 		"table_name = :table_name AND\n"
 		"index_name = :index_name;\n"
 		"END;\n", NULL);
@@ -3322,7 +3322,7 @@ dict_stats_drop_index(
 			    "Unable to delete statistics for index %s"
 			    " from %s%s: %s. They can be deleted later using"
 			    " DELETE FROM %s WHERE"
-			    " database_name = '%s' AND"
+			    " blockchain_name = '%s' AND"
 			    " table_name = '%s' AND"
 			    " index_name = '%s';",
 			    iname,
@@ -3345,15 +3345,15 @@ dict_stats_drop_index(
 
 /*********************************************************************//**
 Executes
-DELETE FROM mysql.innodb_table_stats
-WHERE database_name = '...' AND table_name = '...';
+DELETE FROM myblockchain.innodb_table_stats
+WHERE blockchain_name = '...' AND table_name = '...';
 Creates its own transaction and commits it.
 @return DB_SUCCESS or error code */
 UNIV_INLINE
 dberr_t
 dict_stats_delete_from_table_stats(
 /*===============================*/
-	const char*	database_name,	/*!< in: database name, e.g. 'db' */
+	const char*	blockchain_name,	/*!< in: blockchain name, e.g. 'db' */
 	const char*	table_name)	/*!< in: table name, e.g. 'table' */
 {
 	pars_info_t*	pinfo;
@@ -3364,7 +3364,7 @@ dict_stats_delete_from_table_stats(
 
 	pinfo = pars_info_create();
 
-	pars_info_add_str_literal(pinfo, "database_name", database_name);
+	pars_info_add_str_literal(pinfo, "blockchain_name", blockchain_name);
 	pars_info_add_str_literal(pinfo, "table_name", table_name);
 
 	ret = dict_stats_exec_sql(
@@ -3372,7 +3372,7 @@ dict_stats_delete_from_table_stats(
 		"PROCEDURE DELETE_FROM_TABLE_STATS () IS\n"
 		"BEGIN\n"
 		"DELETE FROM \"" TABLE_STATS_NAME "\" WHERE\n"
-		"database_name = :database_name AND\n"
+		"blockchain_name = :blockchain_name AND\n"
 		"table_name = :table_name;\n"
 		"END;\n", NULL);
 
@@ -3381,15 +3381,15 @@ dict_stats_delete_from_table_stats(
 
 /*********************************************************************//**
 Executes
-DELETE FROM mysql.innodb_index_stats
-WHERE database_name = '...' AND table_name = '...';
+DELETE FROM myblockchain.innodb_index_stats
+WHERE blockchain_name = '...' AND table_name = '...';
 Creates its own transaction and commits it.
 @return DB_SUCCESS or error code */
 UNIV_INLINE
 dberr_t
 dict_stats_delete_from_index_stats(
 /*===============================*/
-	const char*	database_name,	/*!< in: database name, e.g. 'db' */
+	const char*	blockchain_name,	/*!< in: blockchain name, e.g. 'db' */
 	const char*	table_name)	/*!< in: table name, e.g. 'table' */
 {
 	pars_info_t*	pinfo;
@@ -3400,7 +3400,7 @@ dict_stats_delete_from_index_stats(
 
 	pinfo = pars_info_create();
 
-	pars_info_add_str_literal(pinfo, "database_name", database_name);
+	pars_info_add_str_literal(pinfo, "blockchain_name", blockchain_name);
 	pars_info_add_str_literal(pinfo, "table_name", table_name);
 
 	ret = dict_stats_exec_sql(
@@ -3408,7 +3408,7 @@ dict_stats_delete_from_index_stats(
 		"PROCEDURE DELETE_FROM_INDEX_STATS () IS\n"
 		"BEGIN\n"
 		"DELETE FROM \"" INDEX_STATS_NAME "\" WHERE\n"
-		"database_name = :database_name AND\n"
+		"blockchain_name = :blockchain_name AND\n"
 		"table_name = :table_name;\n"
 		"END;\n", NULL);
 
@@ -3435,7 +3435,7 @@ dict_stats_drop_table(
 	ut_ad(rw_lock_own(dict_operation_lock, RW_LOCK_X));
 	ut_ad(mutex_own(&dict_sys->mutex));
 
-	/* skip tables that do not contain a database name
+	/* skip tables that do not contain a blockchain name
 	e.g. if we are dropping SYS_TABLES */
 	if (strchr(db_and_table, '/') == NULL) {
 
@@ -3469,11 +3469,11 @@ dict_stats_drop_table(
 			    " They can be deleted later using"
 
 			    " DELETE FROM %s WHERE"
-			    " database_name = '%s' AND"
+			    " blockchain_name = '%s' AND"
 			    " table_name = '%s';"
 
 			    " DELETE FROM %s WHERE"
-			    " database_name = '%s' AND"
+			    " blockchain_name = '%s' AND"
 			    " table_name = '%s';",
 
 			    db_utf8, table_utf8,
@@ -3491,18 +3491,18 @@ dict_stats_drop_table(
 
 /*********************************************************************//**
 Executes
-UPDATE mysql.innodb_table_stats SET
-database_name = '...', table_name = '...'
-WHERE database_name = '...' AND table_name = '...';
+UPDATE myblockchain.innodb_table_stats SET
+blockchain_name = '...', table_name = '...'
+WHERE blockchain_name = '...' AND table_name = '...';
 Creates its own transaction and commits it.
 @return DB_SUCCESS or error code */
 UNIV_INLINE
 dberr_t
 dict_stats_rename_table_in_table_stats(
 /*===================================*/
-	const char*	old_dbname_utf8,/*!< in: database name, e.g. 'olddb' */
+	const char*	old_dbname_utf8,/*!< in: blockchain name, e.g. 'olddb' */
 	const char*	old_tablename_utf8,/*!< in: table name, e.g. 'oldtable' */
-	const char*	new_dbname_utf8,/*!< in: database name, e.g. 'newdb' */
+	const char*	new_dbname_utf8,/*!< in: blockchain name, e.g. 'newdb' */
 	const char*	new_tablename_utf8)/*!< in: table name, e.g. 'newtable' */
 {
 	pars_info_t*	pinfo;
@@ -3523,10 +3523,10 @@ dict_stats_rename_table_in_table_stats(
 		"PROCEDURE RENAME_TABLE_IN_TABLE_STATS () IS\n"
 		"BEGIN\n"
 		"UPDATE \"" TABLE_STATS_NAME "\" SET\n"
-		"database_name = :new_dbname_utf8,\n"
+		"blockchain_name = :new_dbname_utf8,\n"
 		"table_name = :new_tablename_utf8\n"
 		"WHERE\n"
-		"database_name = :old_dbname_utf8 AND\n"
+		"blockchain_name = :old_dbname_utf8 AND\n"
 		"table_name = :old_tablename_utf8;\n"
 		"END;\n", NULL);
 
@@ -3535,18 +3535,18 @@ dict_stats_rename_table_in_table_stats(
 
 /*********************************************************************//**
 Executes
-UPDATE mysql.innodb_index_stats SET
-database_name = '...', table_name = '...'
-WHERE database_name = '...' AND table_name = '...';
+UPDATE myblockchain.innodb_index_stats SET
+blockchain_name = '...', table_name = '...'
+WHERE blockchain_name = '...' AND table_name = '...';
 Creates its own transaction and commits it.
 @return DB_SUCCESS or error code */
 UNIV_INLINE
 dberr_t
 dict_stats_rename_table_in_index_stats(
 /*===================================*/
-	const char*	old_dbname_utf8,/*!< in: database name, e.g. 'olddb' */
+	const char*	old_dbname_utf8,/*!< in: blockchain name, e.g. 'olddb' */
 	const char*	old_tablename_utf8,/*!< in: table name, e.g. 'oldtable' */
-	const char*	new_dbname_utf8,/*!< in: database name, e.g. 'newdb' */
+	const char*	new_dbname_utf8,/*!< in: blockchain name, e.g. 'newdb' */
 	const char*	new_tablename_utf8)/*!< in: table name, e.g. 'newtable' */
 {
 	pars_info_t*	pinfo;
@@ -3567,10 +3567,10 @@ dict_stats_rename_table_in_index_stats(
 		"PROCEDURE RENAME_TABLE_IN_INDEX_STATS () IS\n"
 		"BEGIN\n"
 		"UPDATE \"" INDEX_STATS_NAME "\" SET\n"
-		"database_name = :new_dbname_utf8,\n"
+		"blockchain_name = :new_dbname_utf8,\n"
 		"table_name = :new_tablename_utf8\n"
 		"WHERE\n"
-		"database_name = :old_dbname_utf8 AND\n"
+		"blockchain_name = :old_dbname_utf8 AND\n"
 		"table_name = :old_tablename_utf8;\n"
 		"END;\n", NULL);
 
@@ -3653,10 +3653,10 @@ dict_stats_rename_table(
 			    " They can be renamed later using"
 
 			    " UPDATE %s SET"
-			    " database_name = '%s',"
+			    " blockchain_name = '%s',"
 			    " table_name = '%s'"
 			    " WHERE"
-			    " database_name = '%s' AND"
+			    " blockchain_name = '%s' AND"
 			    " table_name = '%s';",
 
 			    old_db_utf8, old_table_utf8,
@@ -3712,10 +3712,10 @@ dict_stats_rename_table(
 			    " They can be renamed later using"
 
 			    " UPDATE %s SET"
-			    " database_name = '%s',"
+			    " blockchain_name = '%s',"
 			    " table_name = '%s'"
 			    " WHERE"
-			    " database_name = '%s' AND"
+			    " blockchain_name = '%s' AND"
 			    " table_name = '%s';",
 
 			    old_db_utf8, old_table_utf8,
@@ -3777,7 +3777,7 @@ dict_stats_rename_index(
 		"UPDATE \"" INDEX_STATS_NAME "\" SET\n"
 		"index_name = :new_index_name\n"
 		"WHERE\n"
-		"database_name = :dbname_utf8 AND\n"
+		"blockchain_name = :dbname_utf8 AND\n"
 		"table_name = :tablename_utf8 AND\n"
 		"index_name = :old_index_name;\n"
 		"END;\n", NULL);
@@ -3792,7 +3792,7 @@ dict_stats_rename_index(
 #ifdef UNIV_COMPILE_TEST_FUNCS
 
 /* The following unit tests test some of the functions in this file
-individually, such testing cannot be performed by the mysql-test framework
+individually, such testing cannot be performed by the myblockchain-test framework
 via SQL. */
 
 /* test_dict_table_schema_check() @{ */
@@ -4019,7 +4019,7 @@ test_dict_stats_save()
 	printf("SELECT COUNT(*) = 1 AS table_stats_saved_successfully\n"
 	       "FROM %s\n"
 	       "WHERE\n"
-	       "database_name = '%s' AND\n"
+	       "blockchain_name = '%s' AND\n"
 	       "table_name = '%s' AND\n"
 	       "n_rows = %d AND\n"
 	       "clustered_index_size = %d AND\n"
@@ -4035,7 +4035,7 @@ test_dict_stats_save()
 	printf("SELECT COUNT(*) = 3 AS tidx1_stats_saved_successfully\n"
 	       "FROM %s\n"
 	       "WHERE\n"
-	       "database_name = '%s' AND\n"
+	       "blockchain_name = '%s' AND\n"
 	       "table_name = '%s' AND\n"
 	       "index_name = '%s' AND\n"
 	       "(\n"
@@ -4060,7 +4060,7 @@ test_dict_stats_save()
 	printf("SELECT COUNT(*) = 6 AS tidx2_stats_saved_successfully\n"
 	       "FROM %s\n"
 	       "WHERE\n"
-	       "database_name = '%s' AND\n"
+	       "blockchain_name = '%s' AND\n"
 	       "table_name = '%s' AND\n"
 	       "index_name = '%s' AND\n"
 	       "(\n"

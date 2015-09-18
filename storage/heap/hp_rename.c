@@ -25,18 +25,18 @@ int heap_rename(const char *old_name, const char *new_name)
   char *name_buff;
   DBUG_ENTER("heap_rename");
 
-  mysql_mutex_lock(&THR_LOCK_heap);
+  myblockchain_mutex_lock(&THR_LOCK_heap);
   if ((info = hp_find_named_heap(old_name)))
   {
     if (!(name_buff=(char*) my_strdup(hp_key_memory_HP_SHARE,
                                       new_name, MYF(MY_WME))))
     {
-      mysql_mutex_unlock(&THR_LOCK_heap);
+      myblockchain_mutex_unlock(&THR_LOCK_heap);
       DBUG_RETURN(my_errno);
     }
     my_free(info->name);
     info->name=name_buff;
   }
-  mysql_mutex_unlock(&THR_LOCK_heap);
+  myblockchain_mutex_unlock(&THR_LOCK_heap);
   DBUG_RETURN(0);
 }

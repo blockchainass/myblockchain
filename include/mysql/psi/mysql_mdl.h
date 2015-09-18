@@ -13,15 +13,15 @@
   along with this program; if not, write to the Free Software Foundation,
   51 Franklin Street, Suite 500, Boston, MA 02110-1335 USA */
 
-#ifndef MYSQL_MDL_H
-#define MYSQL_MDL_H
+#ifndef MYBLOCKCHAIN_MDL_H
+#define MYBLOCKCHAIN_MDL_H
 
 /**
-  @file mysql/psi/mysql_mdl.h
+  @file myblockchain/psi/myblockchain_mdl.h
   Instrumentation helpers for metadata locks.
 */
 
-#include "mysql/psi/psi.h"
+#include "myblockchain/psi/psi.h"
 
 #ifndef PSI_METADATA_CALL
 #define PSI_METADATA_CALL(M) PSI_DYNAMIC_CALL(M)
@@ -34,7 +34,7 @@
 */
 
 /**
-  @def mysql_mdl_create(K, M, A)
+  @def myblockchain_mdl_create(K, M, A)
   Instrumented metadata lock creation.
   @param I Metadata lock identity
   @param K Metadata key
@@ -46,38 +46,38 @@
 */
 
 #ifdef HAVE_PSI_METADATA_INTERFACE
-  #define mysql_mdl_create(I, K, T, D, S, F, L) \
-    inline_mysql_mdl_create(I, K, T, D, S, F, L)
+  #define myblockchain_mdl_create(I, K, T, D, S, F, L) \
+    inline_myblockchain_mdl_create(I, K, T, D, S, F, L)
 #else
-  #define mysql_mdl_create(I, K, T, D, S, F, L) NULL
+  #define myblockchain_mdl_create(I, K, T, D, S, F, L) NULL
 #endif
 
 #ifdef HAVE_PSI_METADATA_INTERFACE
-  #define mysql_mdl_set_status(L, S) \
-    inline_mysql_mdl_set_status(L, S)
+  #define myblockchain_mdl_set_status(L, S) \
+    inline_myblockchain_mdl_set_status(L, S)
 #else
-  #define mysql_mdl_set_status(L, S) \
+  #define myblockchain_mdl_set_status(L, S) \
     do {} while (0)
 #endif
 
 
 /**
-  @def mysql_mdl_destroy(M)
+  @def myblockchain_mdl_destroy(M)
   Instrumented metadata lock destruction.
   @param M Metadata lock
 */
 #ifdef HAVE_PSI_METADATA_INTERFACE
-  #define mysql_mdl_destroy(M) \
-    inline_mysql_mdl_destroy(M, __FILE__, __LINE__)
+  #define myblockchain_mdl_destroy(M) \
+    inline_myblockchain_mdl_destroy(M, __FILE__, __LINE__)
 #else
-  #define mysql_mdl_destroy(M) \
+  #define myblockchain_mdl_destroy(M) \
     do {} while (0)
 #endif
 
 #ifdef HAVE_PSI_METADATA_INTERFACE
 
 static inline PSI_metadata_lock *
-inline_mysql_mdl_create(void *identity,
+inline_myblockchain_mdl_create(void *identity,
                         const MDL_key *mdl_key,
                         enum_mdl_type mdl_type,
                         enum_mdl_duration mdl_duration,
@@ -98,7 +98,7 @@ inline_mysql_mdl_create(void *identity,
   return result;
 }
 
-static inline void inline_mysql_mdl_set_status(
+static inline void inline_myblockchain_mdl_set_status(
   PSI_metadata_lock *psi,
   MDL_wait::enum_wait_status mdl_status)
 {
@@ -106,7 +106,7 @@ static inline void inline_mysql_mdl_set_status(
     PSI_METADATA_CALL(set_metadata_lock_status)(psi, mdl_status);
 }
 
-static inline void inline_mysql_mdl_destroy(
+static inline void inline_myblockchain_mdl_destroy(
   PSI_metadata_lock *psi,
   const char *src_file, uint src_line)
 {

@@ -132,7 +132,7 @@ innodb_api_begin(
 /*=============*/
 	innodb_engine_t*
 			engine,		/*!< in: InnoDB Memcached engine */
-	const char*	dbname,		/*!< in: NUL terminated database name */
+	const char*	dbname,		/*!< in: NUL terminated blockchain name */
 	const char*	name,		/*!< in: NUL terminated table name */
 	innodb_conn_data_t* conn_data,	/*!< in/out: connnection specific
 					data */
@@ -160,7 +160,7 @@ innodb_api_begin(
 			return(err);
 		}
 
-		/* If MDL is enabled, we need to create mysql handler. */
+		/* If MDL is enabled, we need to create myblockchain handler. */
 		if (engine) {
 
 			if (lock_mode == IB_LOCK_NONE) {
@@ -186,11 +186,11 @@ innodb_api_begin(
 					}
 				}
 
-				if (!conn_data->mysql_tbl) {
+				if (!conn_data->myblockchain_tbl) {
 					int lock_type =
 						(lock_mode == IB_LOCK_TABLE_X?
 							HDL_FLUSH : HDL_WRITE);
-					conn_data->mysql_tbl =
+					conn_data->myblockchain_tbl =
 						handler_open_table(
 							conn_data->thd,
 							dbname,
@@ -212,7 +212,7 @@ innodb_api_begin(
 			meta_cfg_info_t* meta_info = conn_data->conn_meta;
 			meta_index_t*	meta_index = &meta_info->index_info;
 
-			if (!engine->enable_mdl || !conn_data->mysql_tbl) {
+			if (!engine->enable_mdl || !conn_data->myblockchain_tbl) {
 				err = innodb_verify_low(
 					meta_info , *crsr, true);
 
@@ -357,7 +357,7 @@ innodb_api_write_int(
 	ib_tpl_t        tpl,		/*!< in/out: tuple to set */
 	int		field,		/*!< in: field to set */
 	int64_t		value,		/*!< in: value */
-	void*		table)		/*!< in/out: MySQL table. Only needed
+	void*		table)		/*!< in/out: MyBlockchain table. Only needed
 					when binlog is enabled */
 {
 	ib_col_meta_t   col_meta;
@@ -463,7 +463,7 @@ innodb_api_write_uint64(
 	ib_tpl_t        tpl,		/*!< in/out: tuple to set */
 	int		field,		/*!< in: field to set */
 	uint64_t	value,		/*!< in: value */
-	void*		table)		/*!< in/out: MySQL table. Only needed
+	void*		table)		/*!< in/out: MyBlockchain table. Only needed
 					when binlog is enabled */
 {
 	ib_col_meta_t   col_meta;
@@ -500,7 +500,7 @@ innodb_api_setup_field_value(
 	meta_column_t*	col_info,	/*!< in: insert col info */
 	const char*	value,		/*!< in: value */
 	ib_ulint_t      val_len,	/*!< in: value length */
-	void*		table,		/*!< in/out: MySQL table. Only needed
+	void*		table,		/*!< in/out: MyBlockchain table. Only needed
 					when binlog is enabled */
 	bool		need_cpy)	/*!< in: if need memcpy */
 {
@@ -974,7 +974,7 @@ innodb_api_set_multi_cols(
 	meta_cfg_info_t* meta_info,	/*!< in: metadata info */
 	char*		value,		/*!< in: value to insert */
 	int		value_len,	/*!< in: value length */
-	void*		table)		/*!< in: MySQL TABLE* */
+	void*		table)		/*!< in: MyBlockchain TABLE* */
 {
 	ib_err_t	err = DB_ERROR;
 	meta_column_t*	col_info;
@@ -1061,7 +1061,7 @@ innodb_api_set_multi_cols(
 }
 
 /*************************************************************//**
-Set up a MySQL "TABLE" record in table->record[0] for binlogging */
+Set up a MyBlockchain "TABLE" record in table->record[0] for binlogging */
 static
 void
 innodb_api_setup_hdl_rec(
@@ -1069,7 +1069,7 @@ innodb_api_setup_hdl_rec(
 	mci_item_t*		item,		/*!< in: item contain data
 						to set on table->record[0] */
 	meta_column_t*		col_info,	/*!< in: column information */
-	void*			table)		/*!< out: MySQL TABLE* */
+	void*			table)		/*!< out: MyBlockchain TABLE* */
 {
 	int	i;
 
@@ -1106,12 +1106,12 @@ innodb_api_set_tpl(
 	uint64_t	exp,		/*!< in: expiration */
 	uint64_t	flag,		/*!< in: flag */
 	int		col_to_set,	/*!< in: column to set */
-	void*		table,		/*!< in: MySQL TABLE* */
+	void*		table,		/*!< in: MyBlockchain TABLE* */
 	bool		need_cpy)	/*!< in: if need memcpy */
 {
 	ib_err_t	err = DB_ERROR;
 
-	/* If "table" is not NULL, we need to setup MySQL record
+	/* If "table" is not NULL, we need to setup MyBlockchain record
 	for binlogging */
 	if (table) {
 		handler_rec_init(table);
@@ -1207,14 +1207,14 @@ innodb_api_insert(
 	/* Set expiration time */
 	SET_EXP_TIME(exp);
 
-	assert(!cursor_data->mysql_tbl || engine->enable_binlog
+	assert(!cursor_data->myblockchain_tbl || engine->enable_binlog
 	       || engine->enable_mdl);
 
 	err = innodb_api_set_tpl(tpl, meta_info, col_info, key, len,
 				 key + len, val_len,
 				 new_cas, exp, flags, UPDATE_ALL_VAL_COL,
 				 engine->enable_binlog
-				 ? cursor_data->mysql_tbl : NULL,
+				 ? cursor_data->myblockchain_tbl : NULL,
 				 false);
 
 	if (err == DB_SUCCESS) {
@@ -1224,9 +1224,9 @@ innodb_api_insert(
 	if (err == DB_SUCCESS) {
 		*cas = new_cas;
 
-		if (engine->enable_binlog && cursor_data->mysql_tbl) {
+		if (engine->enable_binlog && cursor_data->myblockchain_tbl) {
 			handler_binlog_row(cursor_data->thd,
-					   cursor_data->mysql_tbl,
+					   cursor_data->myblockchain_tbl,
 					   HDL_INSERT);
 		}
 
@@ -1275,18 +1275,18 @@ innodb_api_update(
 
 	if (engine->enable_binlog) {
 		innodb_api_setup_hdl_rec(result, col_info,
-					 cursor_data->mysql_tbl);
-		handler_store_record(cursor_data->mysql_tbl);
+					 cursor_data->myblockchain_tbl);
+		handler_store_record(cursor_data->myblockchain_tbl);
 	}
 
-	assert(!cursor_data->mysql_tbl || engine->enable_binlog
+	assert(!cursor_data->myblockchain_tbl || engine->enable_binlog
 	       || engine->enable_mdl);
 
 	err = innodb_api_set_tpl(new_tpl, meta_info, col_info, key,
 				 len, key + len, val_len,
 				 new_cas, exp, flags, UPDATE_ALL_VAL_COL,
 				 engine->enable_binlog
-				 ? cursor_data->mysql_tbl : NULL,
+				 ? cursor_data->myblockchain_tbl : NULL,
 				 true);
 
 	if (err == DB_SUCCESS) {
@@ -1297,10 +1297,10 @@ innodb_api_update(
 		*cas = new_cas;
 
 		if (engine->enable_binlog) {
-			assert(cursor_data->mysql_tbl);
+			assert(cursor_data->myblockchain_tbl);
 
 			handler_binlog_row(cursor_data->thd,
-					   cursor_data->mysql_tbl,
+					   cursor_data->myblockchain_tbl,
 					   HDL_UPDATE);
 		}
 
@@ -1342,10 +1342,10 @@ innodb_api_delete(
 		meta_cfg_info_t* meta_info = cursor_data->conn_meta;
 		meta_column_t*	col_info = meta_info->col_info;
 
-		assert(cursor_data->mysql_tbl);
+		assert(cursor_data->myblockchain_tbl);
 
 		innodb_api_setup_hdl_rec(&result, col_info,
-					 cursor_data->mysql_tbl);
+					 cursor_data->myblockchain_tbl);
 	}
 
 	err = ib_cb_delete_row(srch_crsr);
@@ -1354,7 +1354,7 @@ innodb_api_delete(
 	if (engine->enable_binlog) {
 		if (err == DB_SUCCESS) {
 			handler_binlog_row(cursor_data->thd,
-					   cursor_data->mysql_tbl, HDL_DELETE);
+					   cursor_data->myblockchain_tbl, HDL_DELETE);
 		}
 	}
 
@@ -1396,11 +1396,11 @@ innodb_api_link(
 	int		column_used;
 
 	if (engine->enable_binlog) {
-		assert(cursor_data->mysql_tbl);
+		assert(cursor_data->myblockchain_tbl);
 
 		innodb_api_setup_hdl_rec(result, col_info,
-					 cursor_data->mysql_tbl);
-		handler_store_record(cursor_data->mysql_tbl);
+					 cursor_data->myblockchain_tbl);
+		handler_store_record(cursor_data->myblockchain_tbl);
 	}
 
 	/* If we have multiple value columns, the column to append the
@@ -1454,14 +1454,14 @@ innodb_api_link(
 		exp += time;
 	}
 
-	assert(!cursor_data->mysql_tbl || engine->enable_binlog
+	assert(!cursor_data->myblockchain_tbl || engine->enable_binlog
 	       || engine->enable_mdl);
 
 	err = innodb_api_set_tpl(new_tpl, meta_info, col_info,
 				 key, len, append_buf, total_len,
 				 new_cas, exp, flags, column_used,
 				 engine->enable_binlog
-				 ? cursor_data->mysql_tbl : NULL,
+				 ? cursor_data->myblockchain_tbl : NULL,
 				 true);
 
 	if (err == DB_SUCCESS) {
@@ -1476,7 +1476,7 @@ innodb_api_link(
 
 		if (engine->enable_binlog) {
 			handler_binlog_row(cursor_data->thd,
-					   cursor_data->mysql_tbl,
+					   cursor_data->myblockchain_tbl,
 					   HDL_UPDATE);
 		}
 	}
@@ -1544,7 +1544,7 @@ innodb_api_arithmetic(
 			create_new = true;
 			goto create_new_value;
 		} else {
-			/* cursor_data->mysql_tbl can't be created.
+			/* cursor_data->myblockchain_tbl can't be created.
 			So safe to return here */
 			return(ENGINE_KEY_ENOENT);
 		}
@@ -1553,8 +1553,8 @@ innodb_api_arithmetic(
 	/* Save the original value, this would be an update */
 	if (engine->enable_binlog) {
 		innodb_api_setup_hdl_rec(&result, col_info,
-					 cursor_data->mysql_tbl);
-		handler_store_record(cursor_data->mysql_tbl);
+					 cursor_data->myblockchain_tbl);
+		handler_store_record(cursor_data->myblockchain_tbl);
 	}
 
 	/* If we have multiple value columns, the column to append the
@@ -1620,7 +1620,7 @@ create_new_value:
 
 	new_tpl = ib_cb_read_tuple_create(cursor_data->crsr);
 
-	assert(!cursor_data->mysql_tbl || engine->enable_binlog
+	assert(!cursor_data->myblockchain_tbl || engine->enable_binlog
 	       || engine->enable_mdl);
 
 	/* The cas, exp and flags field are not changing, so use the
@@ -1632,7 +1632,7 @@ create_new_value:
 				 result.col_value[MCI_COL_FLAG].value_int,
 				 column_used,
 				 engine->enable_binlog
-				 ? cursor_data->mysql_tbl : NULL,
+				 ? cursor_data->myblockchain_tbl : NULL,
 				 true);
 
 	if (err != DB_SUCCESS) {
@@ -1646,7 +1646,7 @@ create_new_value:
 
 		if (engine->enable_binlog) {
 			handler_binlog_row(cursor_data->thd,
-					   cursor_data->mysql_tbl, HDL_INSERT);
+					   cursor_data->myblockchain_tbl, HDL_INSERT);
 		}
 	} else {
 		err = ib_cb_update_row(srch_crsr, old_tpl, new_tpl);
@@ -1654,7 +1654,7 @@ create_new_value:
 
 		if (engine->enable_binlog) {
 			handler_binlog_row(cursor_data->thd,
-					   cursor_data->mysql_tbl, HDL_UPDATE);
+					   cursor_data->myblockchain_tbl, HDL_UPDATE);
 		}
 	}
 
@@ -1806,7 +1806,7 @@ innodb_api_flush(
 	innodb_engine_t*	engine,	/*!< in: InnoDB Memcached engine */
 	innodb_conn_data_t*	conn_data,/*!< in/out: cursor affiliated
 					with a connection */
-	const char*		dbname,	/*!< in: database name */
+	const char*		dbname,	/*!< in: blockchain name */
 	const char*		name)	/*!< in: table name */
 {
 	ib_err_t	err = DB_SUCCESS;
@@ -1889,18 +1889,18 @@ innodb_reset_conn(
 
 		if (commit) {
 			if (has_binlog && conn_data->thd
-			    && conn_data->mysql_tbl) {
+			    && conn_data->myblockchain_tbl) {
 				handler_binlog_commit(conn_data->thd,
-						      conn_data->mysql_tbl);
+						      conn_data->myblockchain_tbl);
 			}
 
 			ib_cb_cursor_commit_trx(
 				ib_crsr, conn_data->crsr_trx);
 		} else {
 			if (has_binlog && conn_data->thd
-			    && conn_data->mysql_tbl) {
+			    && conn_data->myblockchain_tbl) {
 				handler_binlog_rollback(conn_data->thd,
-							conn_data->mysql_tbl);
+							conn_data->myblockchain_tbl);
 			}
 
 			ib_cb_trx_rollback(conn_data->crsr_trx);

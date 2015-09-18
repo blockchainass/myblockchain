@@ -80,7 +80,7 @@ typedef struct st_stack
 ** Can be compiled with the qsort2_cmp compare function
 ** Store ranges on stack to avoid recursion
 ** Use insert sort on small ranges
-** Optimize for sorting of pointers (used often by MySQL)
+** Optimize for sorting of pointers (used often by MyBlockchain)
 ** Use median comparison to find partition element
 *****************************************************************************/
 

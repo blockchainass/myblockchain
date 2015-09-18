@@ -313,7 +313,7 @@ TEST_F(GetDiagnosticsTest, StatementInformation)
 }
 
 
-// GET DIAGNOSTICS CONDITION 1 @var1 = MYSQL_ERRNO, @var2 = MESSAGE_TEXT;
+// GET DIAGNOSTICS CONDITION 1 @var1 = MYBLOCKCHAIN_ERRNO, @var2 = MESSAGE_TEXT;
 TEST_F(GetDiagnosticsTest, ConditionInformation)
 {
   Item *var;
@@ -331,10 +331,10 @@ TEST_F(GetDiagnosticsTest, ConditionInformation)
   // from the one that generated the error
   thd()->reset_for_next_command();
 
-  // var1 will receive the value of MYSQL_ERRNO
+  // var1 will receive the value of MYBLOCKCHAIN_ERRNO
   var= new (mem_root) Item_func_get_user_var(var_name1);
   diag_info_item= new (mem_root)
-    Condition_information_item(Condition_information_item::MYSQL_ERRNO, var);
+    Condition_information_item(Condition_information_item::MYBLOCKCHAIN_ERRNO, var);
   EXPECT_FALSE(items.push_back(diag_info_item));
 
   // var2 will receive the value of MESSAGE_TEXT
@@ -382,7 +382,7 @@ Item *get_cond_info_item(THD *thd,
   // Simulate GET DIAGNOSTICS as a new command
   thd->reset_for_next_command();
 
-  // var1 will receive the value of MYSQL_ERRNO
+  // var1 will receive the value of MYBLOCKCHAIN_ERRNO
   var= new (mem_root) Item_func_get_user_var(var_name);
   diag_info_item= new (mem_root) Condition_information_item(name, var);
   EXPECT_FALSE(items.push_back(diag_info_item));
@@ -413,7 +413,7 @@ TEST_F(GetDiagnosticsTest, ConditionInformationClassOrigin)
   Item *var;
   String str;
 
-  // "MySQL" origin
+  // "MyBlockchain" origin
   push_warning_printf(thd(), Sql_condition::SL_WARNING,
                       ER_XAER_NOTA, "Unknown XID");
 
@@ -424,12 +424,12 @@ TEST_F(GetDiagnosticsTest, ConditionInformationClassOrigin)
   // Condition 1 CLASS_ORIGIN
   var= get_cond_info_item(thd(), 1, Condition_information_item::CLASS_ORIGIN);
   EXPECT_EQ(&str, var->val_str(&str));
-  EXPECT_STREQ("MySQL", str.c_ptr_safe());
+  EXPECT_STREQ("MyBlockchain", str.c_ptr_safe());
 
   // Condition 1 SUBCLASS_ORIGIN
   var= get_cond_info_item(thd(), 1, Condition_information_item::SUBCLASS_ORIGIN);
   EXPECT_EQ(&str, var->val_str(&str));
-  EXPECT_STREQ("MySQL", str.c_ptr_safe());
+  EXPECT_STREQ("MyBlockchain", str.c_ptr_safe());
 
   // Condition 2 CLASS_ORIGIN
   var= get_cond_info_item(thd(), 2, Condition_information_item::CLASS_ORIGIN);
@@ -488,7 +488,7 @@ TEST_F(GetDiagnosticsTest, PushDiagnosticsArea)
   Item *var;
   String str;
 
-  // "MySQL" origin
+  // "MyBlockchain" origin
   push_warning_printf(thd(), Sql_condition::SL_WARNING,
                       ER_XAER_NOTA, "Unknown XID");
 
@@ -506,12 +506,12 @@ TEST_F(GetDiagnosticsTest, PushDiagnosticsArea)
   // Condition 1 CLASS_ORIGIN
   var= get_cond_info_item(thd(), 1, Condition_information_item::CLASS_ORIGIN);
   EXPECT_EQ(&str, var->val_str(&str));
-  EXPECT_STREQ("MySQL", str.c_ptr_safe());
+  EXPECT_STREQ("MyBlockchain", str.c_ptr_safe());
 
   // Condition 1 SUBCLASS_ORIGIN
   var= get_cond_info_item(thd(), 1, Condition_information_item::SUBCLASS_ORIGIN);
   EXPECT_EQ(&str, var->val_str(&str));
-  EXPECT_STREQ("MySQL", str.c_ptr_safe());
+  EXPECT_STREQ("MyBlockchain", str.c_ptr_safe());
 
   // Condition 2 CLASS_ORIGIN
   var= get_cond_info_item(thd(), 2, Condition_information_item::CLASS_ORIGIN);

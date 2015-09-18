@@ -15,17 +15,17 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
  */
 
-package com.mysql.clusterj.jdbc;
+package com.myblockchain.clusterj.jdbc;
 
-import com.mysql.clusterj.core.metadata.AbstractDomainFieldHandlerImpl;
-import com.mysql.clusterj.core.store.Table;
-import com.mysql.clusterj.core.util.I18NHelper;
-import com.mysql.clusterj.core.util.Logger;
-import com.mysql.clusterj.core.util.LoggerFactoryService;
+import com.myblockchain.clusterj.core.metadata.AbstractDomainFieldHandlerImpl;
+import com.myblockchain.clusterj.core.store.Table;
+import com.myblockchain.clusterj.core.util.I18NHelper;
+import com.myblockchain.clusterj.core.util.Logger;
+import com.myblockchain.clusterj.core.util.LoggerFactoryService;
 
 /** An instance of this class handles a column of a table. Most of the behavior
  * is in the superclass, which is common to all implementations. The constructor
- * determines which type is used for the Java representation of the database type.
+ * determines which type is used for the Java representation of the blockchain type.
  */
 public class DomainFieldHandlerImpl extends AbstractDomainFieldHandlerImpl {
 
@@ -40,7 +40,7 @@ public class DomainFieldHandlerImpl extends AbstractDomainFieldHandlerImpl {
     }
 
     public DomainFieldHandlerImpl(DomainTypeHandlerImpl<?> domainTypeHandler,
-            Table table, int fieldNumber, com.mysql.clusterj.core.store.Column column) {
+            Table table, int fieldNumber, com.myblockchain.clusterj.core.store.Column column) {
         this.domainTypeHandler = domainTypeHandler;
         this.fieldNumber = fieldNumber;
         this.name = column.getName();

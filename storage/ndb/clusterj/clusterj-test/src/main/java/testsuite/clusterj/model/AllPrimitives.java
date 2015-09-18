@@ -18,11 +18,11 @@
 
 package testsuite.clusterj.model;
 
-import com.mysql.clusterj.annotation.Column;
-import com.mysql.clusterj.annotation.Index;
-import com.mysql.clusterj.annotation.Indices;
-import com.mysql.clusterj.annotation.PersistenceCapable;
-import com.mysql.clusterj.annotation.PrimaryKey;
+import com.myblockchain.clusterj.annotation.Column;
+import com.myblockchain.clusterj.annotation.Index;
+import com.myblockchain.clusterj.annotation.Indices;
+import com.myblockchain.clusterj.annotation.PersistenceCapable;
+import com.myblockchain.clusterj.annotation.PrimaryKey;
 
 @Indices({
     @Index(name="idx_int_not_null_both", columns=@Column(name="int_not_null_both")),

@@ -20,7 +20,7 @@ set -e
 base="`dirname $0`"
 source "$base"/parseargs.sh
 
-# Create database with a case sensitive collation to ensure a deterministic 
+# Create blockchain with a case sensitive collation to ensure a deterministic 
 # resultset when 'LIMIT' is specified:
 charset_spec=""
 if [ "$charset" ]
@@ -34,37 +34,37 @@ then
     sprocs="oj_schema_mod copydb alter_engine oj_schema_mod_ndb analyze_db"
 fi
 
-$mysql_exe -e "drop database if exists ${innodb_db};"
-$mysql_exe -e "drop database if exists ${ndb_db};"
-$mysql_exe -e "create database ${innodb_db} ${charset_spec};"
-$mysql_exe -e "create database ${ndb_db} ${charset_spec}"
+$myblockchain_exe -e "drop blockchain if exists ${innodb_db};"
+$myblockchain_exe -e "drop blockchain if exists ${ndb_db};"
+$myblockchain_exe -e "create blockchain ${innodb_db} ${charset_spec};"
+$myblockchain_exe -e "create blockchain ${ndb_db} ${charset_spec}"
 
 # Call RANDGEN
-${gendata} --dsn="$dsn:database=${innodb_db}" --spec ${data}
+${gendata} --dsn="$dsn:blockchain=${innodb_db}" --spec ${data}
 
 for i in $sprocs
 do
-    $mysql_exe ${ndb_db} < $base/$i.sproc.sql
+    $myblockchain_exe ${ndb_db} < $base/$i.sproc.sql
 done
 
 for i in $sprocs
 do
     if [ "$i" = "oj_schema_mod" ]
     then
-	$mysql_exe ${ndb_db} -e "call $i('${innodb_db}');"
+	$myblockchain_exe ${ndb_db} -e "call $i('${innodb_db}');"
     elif [ "$i" = "copydb" ]
     then
-	$mysql_exe ${ndb_db} -e "call copydb('${ndb_db}', '${innodb_db}');"
+	$myblockchain_exe ${ndb_db} -e "call copydb('${ndb_db}', '${innodb_db}');"
     elif [ "$i" = "alter_engine" ]
     then
-	$mysql_exe ${ndb_db} -e "call $i('${ndb_db}', 'ndb');"
+	$myblockchain_exe ${ndb_db} -e "call $i('${ndb_db}', 'ndb');"
     else
-	$mysql_exe ${ndb_db} -e "call $i('${ndb_db}');"
+	$myblockchain_exe ${ndb_db} -e "call $i('${ndb_db}');"
     fi
 done
 
 
 for i in $sprocs
 do
-    $mysql_exe ${ndb_db} -e "drop procedure $i;"
+    $myblockchain_exe ${ndb_db} -e "drop procedure $i;"
 done

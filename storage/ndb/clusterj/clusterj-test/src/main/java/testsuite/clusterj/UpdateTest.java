@@ -47,7 +47,7 @@ public class UpdateTest extends AbstractClusterJModelTest {
             Employee e = session.find(Employee.class, i);
             // change age 
             e.setAge(NUMBER_TO_INSERT - i);
-            // send the change to the database
+            // send the change to the blockchain
             session.updatePersistent(e);
         }
         tx.commit();
@@ -77,7 +77,7 @@ public class UpdateTest extends AbstractClusterJModelTest {
             e.setId(i);
             // change age 
             e.setAge(NUMBER_TO_INSERT - i);
-            // send the change to the database
+            // send the change to the blockchain
             session.updatePersistent(e);
         }
         tx.commit();
@@ -108,7 +108,7 @@ public class UpdateTest extends AbstractClusterJModelTest {
             e.setAge(NUMBER_TO_INSERT - i);
             employees.add(e);
         }
-        // send the changes to the database
+        // send the changes to the blockchain
         session.updatePersistentAll(employees);
         tx.commit();
         
@@ -140,7 +140,7 @@ public class UpdateTest extends AbstractClusterJModelTest {
             e.setAge(NUMBER_TO_INSERT - i);
             employees.add(e);
         }
-        // send the changes to the database
+        // send the changes to the blockchain
         session.updatePersistentAll(employees);
         tx.commit();
         
@@ -169,7 +169,7 @@ public class UpdateTest extends AbstractClusterJModelTest {
             e.setAge(NUMBER_TO_INSERT - i);
             employees.add(e);
         }
-        // send the changes to the database in a single autocommit transaction
+        // send the changes to the blockchain in a single autocommit transaction
         session.updatePersistentAll(employees);
         
         // now verify that the changes were committed
@@ -199,7 +199,7 @@ public class UpdateTest extends AbstractClusterJModelTest {
             e.setAge(NUMBER_TO_INSERT - i);
             employees.add(e);
         }
-        // send the changes to the database in a single autocommit transaction
+        // send the changes to the blockchain in a single autocommit transaction
         session.updatePersistentAll(employees);
         
         // now verify that the changes were committed

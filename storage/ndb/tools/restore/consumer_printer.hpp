@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2004-2006 MySQL AB
+   Copyright (C) 2004-2006 MyBlockchain AB
     All rights reserved. Use is subject to license terms.
 
    This program is free software; you can redistribute it and/or modify
@@ -40,8 +40,8 @@ public:
   }
   
   virtual bool table(const TableS &);
-#ifdef USE_MYSQL
-  virtual bool table(const TableS &, MYSQL* mysqlp);
+#ifdef USE_MYBLOCKCHAIN
+  virtual bool table(const TableS &, MYBLOCKCHAIN* myblockchainp);
 #endif
   virtual void tuple(const TupleS &, Uint32 fragId);
   virtual void logEntry(const LogEntry &);

@@ -24,7 +24,7 @@ import java.sql.Types;
 
 import org.junit.Ignore;
 
-/** Test that mysql session variable ndb_coordinated_transaction_id can be
+/** Test that myblockchain session variable ndb_coordinated_transaction_id can be
  * read and written by jdbc.
  */
 @Ignore

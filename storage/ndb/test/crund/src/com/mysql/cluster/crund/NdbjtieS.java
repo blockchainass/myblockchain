@@ -15,7 +15,7 @@
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-package com.mysql.cluster.crund;
+package com.myblockchain.cluster.crund;
 
 import java.util.Properties;
 
@@ -30,25 +30,25 @@ import java.nio.charset.CharsetDecoder;
 import java.nio.charset.CoderResult;
 import java.nio.charset.CharacterCodingException;
 
-import com.mysql.ndbjtie.ndbapi.Ndb_cluster_connection;
-import com.mysql.ndbjtie.ndbapi.Ndb;
-import com.mysql.ndbjtie.ndbapi.NdbDictionary.Dictionary;
-import com.mysql.ndbjtie.ndbapi.NdbDictionary.TableConst;
-import com.mysql.ndbjtie.ndbapi.NdbDictionary.Table;
-import com.mysql.ndbjtie.ndbapi.NdbDictionary.ColumnConst;
-import com.mysql.ndbjtie.ndbapi.NdbDictionary.IndexConst;
-import com.mysql.ndbjtie.ndbapi.NdbErrorConst;
-import com.mysql.ndbjtie.ndbapi.NdbError;
-import com.mysql.ndbjtie.ndbapi.NdbTransaction;
-import com.mysql.ndbjtie.ndbapi.NdbOperation;
-import com.mysql.ndbjtie.ndbapi.NdbScanOperation;
-import com.mysql.ndbjtie.ndbapi.NdbRecAttr;
+import com.myblockchain.ndbjtie.ndbapi.Ndb_cluster_connection;
+import com.myblockchain.ndbjtie.ndbapi.Ndb;
+import com.myblockchain.ndbjtie.ndbapi.NdbDictionary.Dictionary;
+import com.myblockchain.ndbjtie.ndbapi.NdbDictionary.TableConst;
+import com.myblockchain.ndbjtie.ndbapi.NdbDictionary.Table;
+import com.myblockchain.ndbjtie.ndbapi.NdbDictionary.ColumnConst;
+import com.myblockchain.ndbjtie.ndbapi.NdbDictionary.IndexConst;
+import com.myblockchain.ndbjtie.ndbapi.NdbErrorConst;
+import com.myblockchain.ndbjtie.ndbapi.NdbError;
+import com.myblockchain.ndbjtie.ndbapi.NdbTransaction;
+import com.myblockchain.ndbjtie.ndbapi.NdbOperation;
+import com.myblockchain.ndbjtie.ndbapi.NdbScanOperation;
+import com.myblockchain.ndbjtie.ndbapi.NdbRecAttr;
 
-import com.mysql.ndbjtie.ndbapi.NdbOperationConst.LockMode;
-import com.mysql.ndbjtie.ndbapi.NdbTransaction.ExecType;
-import com.mysql.ndbjtie.ndbapi.NdbOperationConst.AbortOption;
+import com.myblockchain.ndbjtie.ndbapi.NdbOperationConst.LockMode;
+import com.myblockchain.ndbjtie.ndbapi.NdbTransaction.ExecType;
+import com.myblockchain.ndbjtie.ndbapi.NdbOperationConst.AbortOption;
 
-import com.mysql.cluster.crund.CrundDriver.XMode;
+import com.myblockchain.cluster.crund.CrundDriver.XMode;
 
 class NdbjtieS extends CrundSLoad {
     // NDB settings
@@ -120,7 +120,7 @@ class NdbjtieS extends CrundSLoad {
     static protected final CharsetEncoder csEncoder;
     static protected final CharsetDecoder csDecoder;
     static {
-        // default charset for mysql is "ISO-8859-1" ("US-ASCII", "UTF-8")
+        // default charset for myblockchain is "ISO-8859-1" ("US-ASCII", "UTF-8")
         cs = Charset.forName("ISO-8859-1");
         csDecoder = cs.newDecoder();
         csEncoder = cs.newEncoder();
@@ -154,7 +154,7 @@ class NdbjtieS extends CrundSLoad {
         mgmdConnect = props.getProperty("ndb.mgmdConnect", "localhost");
         assert mgmdConnect != null;
 
-        // the database
+        // the blockchain
         catalog = props.getProperty("ndb.catalog", "crunddb");
         assert catalog != null;
 
@@ -248,8 +248,8 @@ class NdbjtieS extends CrundSLoad {
         }
         out.println("      [ok]");
 
-        // connect to database
-        out.print("connecting to database ...");
+        // connect to blockchain
+        out.print("connecting to blockchain ...");
         ndb = Ndb.create(mgmd, catalog, schema);
         final int max_no_tx = 10; // maximum number of parallel tx (<=1024)
         // note each scan or index scan operation uses one extra transaction
@@ -293,7 +293,7 @@ class NdbjtieS extends CrundSLoad {
 
         closeModel();
 
-        out.print("closing database connection ...");
+        out.print("closing blockchain connection ...");
         out.flush();
         Ndb.delete(ndb);
         ndb = null;

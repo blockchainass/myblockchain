@@ -13,7 +13,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA 
 
-# This file includes build settings used for MySQL release
+# This file includes build settings used for MyBlockchain release
 
 INCLUDE(CheckIncludeFiles)
 INCLUDE(CheckLibraryExists)
@@ -22,7 +22,7 @@ OPTION(DEBUG_EXTNAME "" ON)
 OPTION(ENABLED_LOCAL_INFILE "" ON)
 
 IF(NOT COMPILATION_COMMENT)
-  SET(COMPILATION_COMMENT "MySQL Community Server (GPL)")
+  SET(COMPILATION_COMMENT "MyBlockchain Community Server (GPL)")
 ENDIF()
 
 IF(WIN32)
@@ -60,11 +60,11 @@ ENDIF()
 
 # Release builds on Solaris need to do an extra build to compile the
 # client libraries with Sun Studio. The release build script will replace
-# those libraries and the corresponding mysql_config before making the
+# those libraries and the corresponding myblockchain_config before making the
 # final package.
-# But *this* mysql_config is still relevant for the embedded library
+# But *this* myblockchain_config is still relevant for the embedded library
 # which will not be rebuilt, so we ensure we make a copy of it.
 
 IF(CMAKE_SYSTEM_NAME MATCHES "SunOS" AND CMAKE_COMPILER_IS_GNUCC)
-  SET(COPY_MYSQL_CONFIG 1 CACHE BOOL "")
+  SET(COPY_MYBLOCKCHAIN_CONFIG 1 CACHE BOOL "")
 ENDIF()

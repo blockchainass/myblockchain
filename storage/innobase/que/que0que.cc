@@ -209,7 +209,7 @@ que_thr_end_lock_wait(
 	ut_ad(thr != NULL);
 
 	ut_ad(trx->lock.que_state == TRX_QUE_LOCK_WAIT);
-	/* In MySQL this is the only possible state here */
+	/* In MyBlockchain this is the only possible state here */
 	ut_a(thr->state == QUE_THR_LOCK_WAIT);
 
 	was_active = thr->is_active;
@@ -220,7 +220,7 @@ que_thr_end_lock_wait(
 
 	trx->lock.wait_thr = NULL;
 
-	/* In MySQL we let the OS thread (not just the query thread) to wait
+	/* In MyBlockchain we let the OS thread (not just the query thread) to wait
 	for the lock to be released: */
 
 	return((!was_active && thr != NULL) ? thr : NULL);
@@ -484,10 +484,10 @@ que_graph_free_recursive(
 			   ("QUE_NODE_UPDATE: %p, processed_cascades: %p",
 			    upd, upd->processed_cascades));
 
-		if (upd->in_mysql_interface) {
+		if (upd->in_myblockchain_interface) {
 
-			btr_pcur_free_for_mysql(upd->pcur);
-			upd->in_mysql_interface = FALSE;
+			btr_pcur_free_for_myblockchain(upd->pcur);
+			upd->in_myblockchain_interface = FALSE;
 		}
 
 		if (upd->cascade_top) {
@@ -641,7 +641,7 @@ que_thr_node_step(
 Moves a thread from another state to the QUE_THR_RUNNING state. Increments
 the n_active_thrs counters of the query graph and transaction if thr was
 not active.
-***NOTE***: This and ..._mysql are  the only functions in which such a
+***NOTE***: This and ..._myblockchain are  the only functions in which such a
 transition is allowed to happen! */
 static
 void
@@ -698,7 +698,7 @@ que_thr_stop(
 	} else if (trx->error_state != DB_SUCCESS
 		   && trx->error_state != DB_LOCK_WAIT) {
 
-		/* Error handling built for the MySQL interface */
+		/* Error handling built for the MyBlockchain interface */
 		thr->state = QUE_THR_COMPLETED;
 
 	} else if (graph->fork_type == QUE_FORK_ROLLBACK) {
@@ -717,7 +717,7 @@ que_thr_stop(
 Decrements the query thread reference counts in the query graph and the
 transaction.
 *** NOTE ***:
-This and que_thr_stop_for_mysql are the only functions where the reference
+This and que_thr_stop_for_myblockchain are the only functions where the reference
 count can be decremented and this function may only be called from inside
 que_run_threads! These restrictions exist to make the rollback code easier
 to maintain. */
@@ -757,7 +757,7 @@ que_thr_dec_refer_count(
 			/* fprintf(stderr,
 		       		"Wait already ended: trx: %p\n", trx); */
 
-			/* Normally srv_suspend_mysql_thread resets
+			/* Normally srv_suspend_myblockchain_thread resets
 			the state to DB_SUCCESS before waiting, but
 			in this case we have to do it here,
 			otherwise nobody does it. */
@@ -780,12 +780,12 @@ que_thr_dec_refer_count(
 }
 
 /**********************************************************************//**
-A patch for MySQL used to 'stop' a dummy query thread used in MySQL. The
+A patch for MyBlockchain used to 'stop' a dummy query thread used in MyBlockchain. The
 query thread is stopped and made inactive, except in the case where
 it was put to the lock wait state in lock0lock.cc, but the lock has already
 been granted or the transaction chosen as a victim in deadlock resolution. */
 void
-que_thr_stop_for_mysql(
+que_thr_stop_for_myblockchain(
 /*===================*/
 	que_thr_t*	thr)	/*!< in: query thread */
 {
@@ -800,7 +800,7 @@ que_thr_stop_for_mysql(
 		if (trx->error_state != DB_SUCCESS
 		    && trx->error_state != DB_LOCK_WAIT) {
 
-			/* Error handling built for the MySQL interface */
+			/* Error handling built for the MyBlockchain interface */
 			thr->state = QUE_THR_COMPLETED;
 		} else {
 			/* It must have been a lock wait but the lock was
@@ -830,7 +830,7 @@ Moves a thread from another state to the QUE_THR_RUNNING state. Increments
 the n_active_thrs counters of the query graph and transaction if thr was
 not active. */
 void
-que_thr_move_to_run_state_for_mysql(
+que_thr_move_to_run_state_for_myblockchain(
 /*================================*/
 	que_thr_t*	thr,	/*!< in: an query thread */
 	trx_t*		trx)	/*!< in: transaction */
@@ -850,10 +850,10 @@ que_thr_move_to_run_state_for_mysql(
 }
 
 /**********************************************************************//**
-A patch for MySQL used to 'stop' a dummy query thread used in MySQL
+A patch for MyBlockchain used to 'stop' a dummy query thread used in MyBlockchain
 select, when there is no error or lock wait. */
 void
-que_thr_stop_for_mysql_no_error(
+que_thr_stop_for_myblockchain_no_error(
 /*============================*/
 	que_thr_t*	thr,	/*!< in: query thread */
 	trx_t*		trx)	/*!< in: transaction */
@@ -1223,7 +1223,7 @@ que_eval_sql(
 	graph->trx = trx;
 	trx->graph = NULL;
 
-	graph->fork_type = QUE_FORK_MYSQL_INTERFACE;
+	graph->fork_type = QUE_FORK_MYBLOCKCHAIN_INTERFACE;
 
 	ut_a(thr = que_fork_start_command(graph));
 

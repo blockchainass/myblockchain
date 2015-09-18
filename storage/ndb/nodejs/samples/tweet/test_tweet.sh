@@ -59,7 +59,7 @@ node tweet start server 7800 &
   curl http://localhost:7800/tweets-about/aqueduct
   curl http://localhost:7800/tweets-at/uncle_claudius 
 
-  # Now delete everyone.  Afterwards the database will be empty
+  # Now delete everyone.  Afterwards the blockchain will be empty
   # due to cascading deletes.
   curl -X DELETE http://localhost:7800/user/caligula
   curl -X DELETE http://localhost:7800/user/uncle_claudius

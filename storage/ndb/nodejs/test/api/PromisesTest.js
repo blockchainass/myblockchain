@@ -27,10 +27,10 @@ var good_properties = global.test_conn_properties;
 
 var bad_properties = {
   "implementation"    : global.test_conn_properties.implementation,
-  "mysql_host"        : "localhost",
-  "mysql_port"        : "3306",
-  "mysql_user"        : "_BAD_USER_",
-  "mysql_password"    : "_NOT_A_REAL_PASSWORD!_", 
+  "myblockchain_host"        : "localhost",
+  "myblockchain_port"        : "3306",
+  "myblockchain_user"        : "_BAD_USER_",
+  "myblockchain_password"    : "_NOT_A_REAL_PASSWORD!_", 
   "ndb_connectstring" : "this_host_does_not_exist"
 };
 

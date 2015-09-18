@@ -1,5 +1,5 @@
-This is an altered distribution of regexp for mysql.
-The follwing changes has been done to use the mysql configuration system and
+This is an altered distribution of regexp for myblockchain.
+The follwing changes has been done to use the myblockchain configuration system and
 ISOLATIN1 characters.
 
 New Makefile

@@ -8901,7 +8901,7 @@ void Dbspj::execDBINFO_SCANREQ(Signal *signal)
  * M(1) = x(1), M(k) = M(k-1) + (x(k) - M(k-1)) / k
  * S(1) = 0, S(k) = S(k-1) + (x(k) - M(k-1)) * (x(k) - M(k))
  *
- * Source: http://mathcentral.uregina.ca/QQ/database/QQ.09.02/carlos1.html
+ * Source: http://mathcentral.uregina.ca/QQ/blockchain/QQ.09.02/carlos1.html
  */
 void Dbspj::IncrementalStatistics::update(double sample)
 {

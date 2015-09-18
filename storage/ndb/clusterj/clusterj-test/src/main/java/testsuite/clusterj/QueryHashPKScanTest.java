@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 
 package testsuite.clusterj;
 
-import com.mysql.clusterj.annotation.PersistenceCapable;
+import com.myblockchain.clusterj.annotation.PersistenceCapable;
 
 import testsuite.clusterj.model.IdBase;
 

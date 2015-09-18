@@ -16,11 +16,11 @@
    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-package com.mysql.clusterj.openjpatest;
+package com.myblockchain.clusterj.openjpatest;
 
-import com.mysql.clusterj.jpatest.AbstractJPABaseTest;
-import com.mysql.clusterj.jpatest.model.A;
-import com.mysql.clusterj.jpatest.model.B0;
+import com.myblockchain.clusterj.jpatest.AbstractJPABaseTest;
+import com.myblockchain.clusterj.jpatest.model.A;
+import com.myblockchain.clusterj.jpatest.model.B0;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;

@@ -86,8 +86,8 @@ struct row_events_statements
 
 
   /** Column MESSAGE_TEXT. */
-  char m_message_text[MYSQL_ERRMSG_SIZE+1];
-  /** Column MYSQL_ERRNO. */
+  char m_message_text[MYBLOCKCHAIN_ERRMSG_SIZE+1];
+  /** Column MYBLOCKCHAIN_ERRNO. */
   uint m_sql_errno;
   /** Column RETURNED_SQLSTATE. */
   char m_sqlstate[SQLSTATE_LENGTH];

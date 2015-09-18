@@ -274,7 +274,7 @@ row_ins_sec_index_entry_by_modify(
 		made to the clustered index, and completed the
 		secondary index creation before we got here. In this
 		case, the change would already be there. The CREATE
-		INDEX should be waiting for a MySQL meta-data lock
+		INDEX should be waiting for a MyBlockchain meta-data lock
 		upgrade at least until this INSERT or UPDATE
 		returns. After that point, set_committed(true)
 		would be invoked in commit_inplace_alter_table(). */
@@ -630,12 +630,12 @@ row_ins_cascade_calc_update_vec(
 					if (mbminlen == 1
 					    && dtype_get_charset_coll(
 						    col->prtype)
-					    == DATA_MYSQL_BINARY_CHARSET_COLL) {
+					    == DATA_MYBLOCKCHAIN_BINARY_CHARSET_COLL) {
 						/* Do not pad BINARY columns */
 						return(ULINT_UNDEFINED);
 					}
 
-					row_mysql_pad_col(mbminlen,
+					row_myblockchain_pad_col(mbminlen,
 							  pad, pad_len);
 					dfield_set_data(&ufield->new_val,
 							padded_data, min_size);
@@ -917,7 +917,7 @@ row_ins_invalidate_query_cache(
 	que_thr_t*	thr,		/*!< in: query thread whose run_node
 					is an update node */
 	const char*	name)		/*!< in: table name prefixed with
-					database name and a '/' character */
+					blockchain name and a '/' character */
 {
 	ulint	len = strlen(name) + 1;
 	innobase_invalidate_query_cache(thr_get_trx(thr), name, len);
@@ -970,7 +970,7 @@ row_ins_foreign_check_on_constraint(
 	trx = thr_get_trx(thr);
 
 	/* Since we are going to delete or update a row, we have to invalidate
-	the MySQL query cache for table. A deadlock of threads is not possible
+	the MyBlockchain query cache for table. A deadlock of threads is not possible
 	here because the caller of this function does not hold any latches with
 	the mutex rank above the lock_sys_t::mutex. The query cache mutex
 	has a rank just above the lock_sys_t::mutex. */
@@ -1003,7 +1003,7 @@ row_ins_foreign_check_on_constraint(
 		DBUG_RETURN(DB_ROW_IS_REFERENCED);
 	}
 
-	cascade = row_create_update_node_for_mysql(table, node->cascade_heap);
+	cascade = row_create_update_node_for_myblockchain(table, node->cascade_heap);
 	que_node_set_parent(cascade, node);
 
 	/* For the cascaded operation, all the update nodes are allocated in
@@ -1114,7 +1114,7 @@ row_ins_foreign_check_on_constraint(
 			rec_print(stderr, clust_rec, clust_index);
 			fputs("\n"
 			      "InnoDB: Submit a detailed bug report to"
-			      " http://bugs.mysql.com\n", stderr);
+			      " http://bugs.myblockchain.com\n", stderr);
 			ut_ad(0);
 			err = DB_SUCCESS;
 
@@ -1296,11 +1296,11 @@ row_ins_foreign_check_on_constraint(
 	will prevent other users from dropping or ALTERing the table when we
 	release the latch. */
 
-	row_mysql_unfreeze_data_dictionary(thr_get_trx(thr));
+	row_myblockchain_unfreeze_data_dictionary(thr_get_trx(thr));
 
 	DEBUG_SYNC_C("innodb_dml_cascade_dict_unfreeze");
 
-	row_mysql_freeze_data_dictionary(thr_get_trx(thr));
+	row_myblockchain_freeze_data_dictionary(thr_get_trx(thr));
 
 	mtr_start(mtr);
 
@@ -1703,7 +1703,7 @@ do_possible_lock_wait:
 
 		trx->error_state = err;
 
-		que_thr_stop_for_mysql(thr);
+		que_thr_stop_for_myblockchain(thr);
 
 		thr->lock_state = QUE_THR_LOCK_ROW;
 
@@ -1783,7 +1783,7 @@ row_ins_check_foreign_constraints(
 
 	trx = thr_get_trx(thr);
 
-	DEBUG_SYNC_C_IF_THD(thr_get_trx(thr)->mysql_thd,
+	DEBUG_SYNC_C_IF_THD(thr_get_trx(thr)->myblockchain_thd,
 			    "foreign_constraint_check_for_ins");
 
 	for (dict_foreign_set::iterator it = table->foreign_set.begin();
@@ -1807,7 +1807,7 @@ row_ins_check_foreign_constraints(
 			if (0 == trx->dict_operation_lock_mode) {
 				got_s_lock = TRUE;
 
-				row_mysql_freeze_data_dictionary(trx);
+				row_myblockchain_freeze_data_dictionary(trx);
 			}
 
 			/* NOTE that if the thread ends up waiting for a lock
@@ -1822,7 +1822,7 @@ row_ins_check_foreign_constraints(
 					err = DB_DICT_CHANGED;);
 
 			if (got_s_lock) {
-				row_mysql_unfreeze_data_dictionary(trx);
+				row_myblockchain_unfreeze_data_dictionary(trx);
 			}
 
 			if (ref_table != NULL) {
@@ -2171,7 +2171,7 @@ row_ins_duplicate_error_in_clust(
 				? LOCK_REC_NOT_GAP : LOCK_ORDINARY;
 
 			/* We set a lock on the possible duplicate: this
-			is needed in logical logging of MySQL to make
+			is needed in logical logging of MyBlockchain to make
 			sure that in roll-forward we get the same duplicate
 			errors as in original execution */
 
@@ -2508,7 +2508,7 @@ err_exit:
 					LSN_MAX, TRUE););
 			err = row_ins_index_entry_big_rec(
 				entry, big_rec, offsets, &offsets_heap, index,
-				thr_get_trx(thr)->mysql_thd,
+				thr_get_trx(thr)->myblockchain_thd,
 				__FILE__, __LINE__);
 			dtuple_convert_back_big_rec(index, entry, big_rec);
 		} else {
@@ -2643,7 +2643,7 @@ row_ins_sorted_clust_index_entry(
 
 			err = row_ins_index_entry_big_rec(
 				entry, big_rec, offsets, &offsets_heap, index,
-				thr_get_trx(thr)->mysql_thd, __FILE__, __LINE__);
+				thr_get_trx(thr)->myblockchain_thd, __FILE__, __LINE__);
 
 			dtuple_convert_back_big_rec(index, entry, big_rec);
 
@@ -3186,7 +3186,7 @@ row_ins_clust_index_entry(
 	}
 
 
-	DEBUG_SYNC_C_IF_THD(thr_get_trx(thr)->mysql_thd,
+	DEBUG_SYNC_C_IF_THD(thr_get_trx(thr)->myblockchain_thd,
 			    "after_row_ins_clust_index_entry_leaf");
 
 	if (err != DB_FAIL) {
@@ -3464,7 +3464,7 @@ row_ins_index_entry_step(
 
 	err = row_ins_index_entry(node->index, node->entry, thr);
 
-	DEBUG_SYNC_C_IF_THD(thr_get_trx(thr)->mysql_thd,
+	DEBUG_SYNC_C_IF_THD(thr_get_trx(thr)->myblockchain_thd,
 			    "after_row_ins_index_entry_step");
 
 	DBUG_RETURN(err);
@@ -3728,7 +3728,7 @@ row_ins_step(
 
 	/* If this is the first time this node is executed (or when
 	execution resumes after wait for the table IX lock), set an
-	IX lock on the table and reset the possible select node. MySQL's
+	IX lock on the table and reset the possible select node. MyBlockchain's
 	partitioned table code may also call an insert within the same
 	SQL statement AFTER it has used this table handle to do a search.
 	This happens, for example, when a row update moves it to another

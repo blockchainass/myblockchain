@@ -26,7 +26,7 @@
 
 #include <opt_trace.h>
 #include <mysys_err.h>                          // for testing of OOM
-#include "mysqld.h"                             // system_charset_info
+#include "myblockchaind.h"                             // system_charset_info
 #ifdef HAVE_SYS_WAIT_H
 #include <sys/wait.h>                           // for WEXITSTATUS
 #endif
@@ -924,7 +924,7 @@ TEST_F(TraceContentTest, NonUtf8)
       We pass the non-utf8-compliant string to add_utf8() (violating the
       API). We get it back unchanged. The trace system could try to be robust,
       detecting and sanitizing wrong characters (replacing them with '?'); but
-      it does not bother, as the MySQL Server normally does not violate the
+      it does not bother, as the MyBlockchain Server normally does not violate the
       API.
     */
     oto.add_utf8("somekey", all_chars, sizeof(all_chars) - 1);

@@ -37,7 +37,7 @@ var path             = require("path"),
 
 stats_module.register(stats, "spi","ndb","NdbConnection");
 
-/* NdbConnection represents a single connection to MySQL Cluster.
+/* NdbConnection represents a single connection to MyBlockchain Cluster.
    This connection may be shared by multiple DBConnectionPool objects 
    (for instance with different connection properties, or from different
    application modules).  Over in NdbConnectionPool.js, a table manages
@@ -141,7 +141,7 @@ NdbConnection.prototype.getAsyncContext = function() {
   }
   else if(this.asyncNdbContext == null) {
     udebug.log_notice("NDB Async API support is disabled at build-time for " +
-                      "MySQL Cluster 7.3.1 - 7.3.2.  Async API will not be used."
+                      "MyBlockchain Cluster 7.3.1 - 7.3.2.  Async API will not be used."
                      );
     this.asyncNdbContext = false;
   }

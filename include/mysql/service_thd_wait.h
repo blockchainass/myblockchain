@@ -13,11 +13,11 @@
    along with this program; if not, write to the Free Software
    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA */
 
-#ifndef MYSQL_SERVICE_THD_WAIT_INCLUDED
-#define MYSQL_SERVICE_THD_WAIT_INCLUDED
+#ifndef MYBLOCKCHAIN_SERVICE_THD_WAIT_INCLUDED
+#define MYBLOCKCHAIN_SERVICE_THD_WAIT_INCLUDED
 
 /**
-  @file include/mysql/service_thd_wait.h
+  @file include/myblockchain/service_thd_wait.h
   This service provides functions for plugins and storage engines to report
   when they are going to sleep/stall.
   
@@ -48,9 +48,9 @@
 
 #ifdef __cplusplus
 class THD;
-#define MYSQL_THD THD*
+#define MYBLOCKCHAIN_THD THD*
 #else
-#define MYSQL_THD void*
+#define MYBLOCKCHAIN_THD void*
 #endif
 
 #ifdef __cplusplus
@@ -89,11 +89,11 @@ typedef enum _thd_wait_type_e {
 } thd_wait_type;
 
 extern struct thd_wait_service_st {
-  void (*thd_wait_begin_func)(MYSQL_THD, int);
-  void (*thd_wait_end_func)(MYSQL_THD);
+  void (*thd_wait_begin_func)(MYBLOCKCHAIN_THD, int);
+  void (*thd_wait_end_func)(MYBLOCKCHAIN_THD);
 } *thd_wait_service;
 
-#ifdef MYSQL_DYNAMIC_PLUGIN
+#ifdef MYBLOCKCHAIN_DYNAMIC_PLUGIN
 
 #define thd_wait_begin(_THD, _WAIT_TYPE) \
   thd_wait_service->thd_wait_begin_func(_THD, _WAIT_TYPE)
@@ -101,8 +101,8 @@ extern struct thd_wait_service_st {
 
 #else
 
-void thd_wait_begin(MYSQL_THD thd, int wait_type);
-void thd_wait_end(MYSQL_THD thd);
+void thd_wait_begin(MYBLOCKCHAIN_THD thd, int wait_type);
+void thd_wait_end(MYBLOCKCHAIN_THD thd);
 
 #endif
 

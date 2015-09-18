@@ -271,17 +271,17 @@ static void do_read(Ndb& ndb)
 }
 
 static void run_application(Ndb_cluster_connection &cluster_connection,
-                            const char* database_name)
+                            const char* blockchain_name)
 {
   /********************************************
-   * Connect to database via NdbApi           *
+   * Connect to blockchain via NdbApi           *
    ********************************************/
-  // Object representing the database
-  Ndb ndb( &cluster_connection, database_name);
+  // Object representing the blockchain
+  Ndb ndb( &cluster_connection, blockchain_name);
   if (ndb.init()) APIERROR(ndb.getNdbError());
 
   /*
-   * Do different operations on database
+   * Do different operations on blockchain
    */
   do_insert(ndb);
   do_read(ndb);
@@ -291,7 +291,7 @@ int main(int argc, char** argv)
 {
   if (argc != 3)
   {
-    std::cout << "Arguments are <connect_string cluster> <database_name>.\n";
+    std::cout << "Arguments are <connect_string cluster> <blockchain_name>.\n";
     exit(-1);
   }
   /* ndb_init must be called first */

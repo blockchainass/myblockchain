@@ -185,7 +185,7 @@ exports.tests.push(smokeTest);
 // ****** SOURCES FILES TO CHECK ********** //
 
 checkDirectory(mynode.fs.adapter_dir, "impl/common");
-checkDirectory(mynode.fs.adapter_dir, "impl/mysql");
+checkDirectory(mynode.fs.adapter_dir, "impl/myblockchain");
 checkDirectory(mynode.fs.adapter_dir, "impl/ndb");
 checkDirectory(mynode.fs.adapter_dir, "api");
 
@@ -227,7 +227,7 @@ ignore("NdbConnectionPool.js",17,"Expected a conditional expression and instead 
 ignore("LintTest.js",14,"Expected a conditional expression and instead saw an assignment.");
 ignore("TableMapping.js",3,"The body of a for in should be wrapped in an if statement to filter unwanted properties from the prototype.");
 ignore("stats.js",13,"Expected '{' and instead saw 'r'.");
-ignore("MySQLDictionary.js",7,"Missing 'break' after 'case'.");
+ignore("MyBlockchainDictionary.js",7,"Missing 'break' after 'case'.");
 
 ignore("UserContext.js", 33, "Unexpected \'\\.\'.");
 ignore("UserContext.js", 7, "Confusing use of \'!\'.");

@@ -17,15 +17,15 @@ this program; if not, write to the Free Software Foundation, Inc.,
 *****************************************************************************/
 
 /**************************************************//**
-@file include/row0mysql.h
-Interface between Innobase row operations and MySQL.
+@file include/row0myblockchain.h
+Interface between Innobase row operations and MyBlockchain.
 Contains also create table and other data dictionary operations.
 
 Created 9/17/2000 Heikki Tuuri
 *******************************************************/
 
-#ifndef row0mysql_h
-#define row0mysql_h
+#ifndef row0myblockchain_h
+#define row0myblockchain_h
 
 #include "ha_prototypes.h"
 
@@ -48,37 +48,37 @@ struct row_prebuilt_t;
 /*******************************************************************//**
 Frees the blob heap in prebuilt when no longer needed. */
 void
-row_mysql_prebuilt_free_blob_heap(
+row_myblockchain_prebuilt_free_blob_heap(
 /*==============================*/
 	row_prebuilt_t*	prebuilt);	/*!< in: prebuilt struct of a
 					ha_innobase:: table handle */
 /*******************************************************************//**
-Stores a >= 5.0.3 format true VARCHAR length to dest, in the MySQL row
+Stores a >= 5.0.3 format true VARCHAR length to dest, in the MyBlockchain row
 format.
 @return pointer to the data, we skip the 1 or 2 bytes at the start
 that are used to store the len */
 byte*
-row_mysql_store_true_var_len(
+row_myblockchain_store_true_var_len(
 /*=========================*/
 	byte*	dest,	/*!< in: where to store */
 	ulint	len,	/*!< in: length, must fit in two bytes */
 	ulint	lenlen);/*!< in: storage length of len: either 1 or 2 bytes */
 /*******************************************************************//**
-Reads a >= 5.0.3 format true VARCHAR length, in the MySQL row format, and
+Reads a >= 5.0.3 format true VARCHAR length, in the MyBlockchain row format, and
 returns a pointer to the data.
 @return pointer to the data, we skip the 1 or 2 bytes at the start
 that are used to store the len */
 const byte*
-row_mysql_read_true_varchar(
+row_myblockchain_read_true_varchar(
 /*========================*/
 	ulint*		len,	/*!< out: variable-length field length */
-	const byte*	field,	/*!< in: field in the MySQL format */
+	const byte*	field,	/*!< in: field in the MyBlockchain format */
 	ulint		lenlen);/*!< in: storage length of len: either 1
 				or 2 bytes */
 /*******************************************************************//**
-Stores a reference to a BLOB in the MySQL format. */
+Stores a reference to a BLOB in the MyBlockchain format. */
 void
-row_mysql_store_blob_ref(
+row_myblockchain_store_blob_ref(
 /*=====================*/
 	byte*		dest,	/*!< in: where to store */
 	ulint		col_len,/*!< in: dest buffer size: determines into
@@ -89,23 +89,23 @@ row_mysql_store_blob_ref(
 				is SQL NULL this should be NULL pointer */
 	ulint		len);	/*!< in: BLOB length; if the value to store
 				is SQL NULL this should be 0; remember
-				also to set the NULL bit in the MySQL record
+				also to set the NULL bit in the MyBlockchain record
 				header! */
 /*******************************************************************//**
-Reads a reference to a BLOB in the MySQL format.
+Reads a reference to a BLOB in the MyBlockchain format.
 @return pointer to BLOB data */
 const byte*
-row_mysql_read_blob_ref(
+row_myblockchain_read_blob_ref(
 /*====================*/
 	ulint*		len,		/*!< out: BLOB length */
 	const byte*	ref,		/*!< in: BLOB reference in the
-					MySQL format */
+					MyBlockchain format */
 	ulint		col_len);	/*!< in: BLOB reference length
 					(not BLOB length) */
 /*******************************************************************//**
-Converts InnoDB geometry data format to MySQL data format. */
+Converts InnoDB geometry data format to MyBlockchain data format. */
 void
-row_mysql_store_geometry(
+row_myblockchain_store_geometry(
 /*=====================*/
 	byte*		dest,		/*!< in/out: where to store */
 	ulint		dest_len,	/*!< in: dest buffer size: determines into
@@ -116,24 +116,24 @@ row_mysql_store_geometry(
 					is SQL NULL this should be NULL pointer */
 	ulint		src_len);	/*!< in: geometry length; if the value to store
 					is SQL NULL this should be 0; remember
-					also to set the NULL bit in the MySQL record
+					also to set the NULL bit in the MyBlockchain record
 					header! */
 /*******************************************************************//**
-Reads a reference to a geometry data in the MySQL format.
+Reads a reference to a geometry data in the MyBlockchain format.
 @return pointer to geometry data */
 const byte*
-row_mysql_read_geometry(
+row_myblockchain_read_geometry(
 /*====================*/
 	ulint*		len,		/*!< out: geometry data length */
 	const byte*	ref,		/*!< in: reference in the
-					MySQL format */
+					MyBlockchain format */
 	ulint		col_len)	/*!< in: BLOB reference length
 					(not BLOB length) */
 	__attribute__((nonnull(1,2), warn_unused_result));
 /**************************************************************//**
 Pad a column with spaces. */
 void
-row_mysql_pad_col(
+row_myblockchain_pad_col(
 /*==============*/
 	ulint	mbminlen,	/*!< in: minimum size of a character,
 				in bytes */
@@ -141,12 +141,12 @@ row_mysql_pad_col(
 	ulint	len);		/*!< in: number of bytes to pad */
 
 /**************************************************************//**
-Stores a non-SQL-NULL field given in the MySQL format in the InnoDB format.
-The counterpart of this function is row_sel_field_store_in_mysql_format() in
+Stores a non-SQL-NULL field given in the MyBlockchain format in the InnoDB format.
+The counterpart of this function is row_sel_field_store_in_myblockchain_format() in
 row0sel.cc.
 @return up to which byte we used buf in the conversion */
 byte*
-row_mysql_store_col_in_innobase_format(
+row_myblockchain_store_col_in_innobase_format(
 /*===================================*/
 	dfield_t*	dfield,		/*!< in/out: dfield where dtype
 					information must be already set when
@@ -157,31 +157,31 @@ row_mysql_store_col_in_innobase_format(
 					may also get a pointer to 'buf',
 					therefore do not discard this as long
 					as dfield is used! */
-	ibool		row_format_col,	/*!< TRUE if the mysql_data is from
-					a MySQL row, FALSE if from a MySQL
+	ibool		row_format_col,	/*!< TRUE if the myblockchain_data is from
+					a MyBlockchain row, FALSE if from a MyBlockchain
 					key value;
-					in MySQL, a true VARCHAR storage
+					in MyBlockchain, a true VARCHAR storage
 					format differs in a row and in a
 					key value: in a key value the length
 					is always stored in 2 bytes! */
-	const byte*	mysql_data,	/*!< in: MySQL column value, not
+	const byte*	myblockchain_data,	/*!< in: MyBlockchain column value, not
 					SQL NULL; NOTE that dfield may also
-					get a pointer to mysql_data,
+					get a pointer to myblockchain_data,
 					therefore do not discard this as long
 					as dfield is used! */
-	ulint		col_len,	/*!< in: MySQL column length; NOTE that
+	ulint		col_len,	/*!< in: MyBlockchain column length; NOTE that
 					this is the storage length of the
-					column in the MySQL format row, not
+					column in the MyBlockchain format row, not
 					necessarily the length of the actual
 					payload data; if the column is a true
 					VARCHAR then this is irrelevant */
 	ulint		comp);		/*!< in: nonzero=compact format */
 /****************************************************************//**
-Handles user errors and lock waits detected by the database engine.
+Handles user errors and lock waits detected by the blockchain engine.
 @return true if it was a lock wait and we should continue running the
 query thread */
 bool
-row_mysql_handle_errors(
+row_myblockchain_handle_errors(
 /*====================*/
 	dberr_t*	new_err,/*!< out: possible new error encountered in
 				rollback, or the old error which was
@@ -191,16 +191,16 @@ row_mysql_handle_errors(
 	trx_savept_t*	savept)	/*!< in: savepoint, or NULL */
 	__attribute__((nonnull(1,2)));
 /********************************************************************//**
-Create a prebuilt struct for a MySQL table handle.
+Create a prebuilt struct for a MyBlockchain table handle.
 @return own: a prebuilt struct */
 row_prebuilt_t*
 row_create_prebuilt(
 /*================*/
 	dict_table_t*	table,		/*!< in: Innobase table handle */
-	ulint		mysql_row_len);	/*!< in: length in bytes of a row in
-					the MySQL format */
+	ulint		myblockchain_row_len);	/*!< in: length in bytes of a row in
+					the MyBlockchain format */
 /********************************************************************//**
-Free a prebuilt struct for a MySQL table handle. */
+Free a prebuilt struct for a MyBlockchain table handle. */
 void
 row_prebuilt_free(
 /*==============*/
@@ -213,7 +213,7 @@ void
 row_update_prebuilt_trx(
 /*====================*/
 	row_prebuilt_t*	prebuilt,	/*!< in/out: prebuilt struct
-					in MySQL handle */
+					in MyBlockchain handle */
 	trx_t*		trx);		/*!< in: transaction handle */
 /*********************************************************************//**
 Sets an AUTO_INC type lock on the table mentioned in prebuilt. The
@@ -223,18 +223,18 @@ It is not compatible with another AUTO_INC or exclusive lock on the
 table.
 @return error code or DB_SUCCESS */
 dberr_t
-row_lock_table_autoinc_for_mysql(
+row_lock_table_autoinc_for_myblockchain(
 /*=============================*/
-	row_prebuilt_t*	prebuilt)	/*!< in: prebuilt struct in the MySQL
+	row_prebuilt_t*	prebuilt)	/*!< in: prebuilt struct in the MyBlockchain
 					table handle */
 	__attribute__((nonnull, warn_unused_result));
 /*********************************************************************//**
 Sets a table lock on the table mentioned in prebuilt.
 @return error code or DB_SUCCESS */
 dberr_t
-row_lock_table_for_mysql(
+row_lock_table_for_myblockchain(
 /*=====================*/
-	row_prebuilt_t*	prebuilt,	/*!< in: prebuilt struct in the MySQL
+	row_prebuilt_t*	prebuilt,	/*!< in: prebuilt struct in the MyBlockchain
 					table handle */
 	dict_table_t*	table,		/*!< in: table to lock, or NULL
 					if prebuilt->table should be
@@ -244,13 +244,13 @@ row_lock_table_for_mysql(
 					(ignored if table==NULL) */
 	__attribute__((nonnull(1)));
 
-/** Does an insert for MySQL.
-@param[in]	mysql_rec	row in the MySQL format
-@param[in,out]	prebuilt	prebuilt struct in MySQL handle
+/** Does an insert for MyBlockchain.
+@param[in]	myblockchain_rec	row in the MyBlockchain format
+@param[in,out]	prebuilt	prebuilt struct in MyBlockchain handle
 @return error code or DB_SUCCESS*/
 dberr_t
-row_insert_for_mysql(
-	const byte*		mysql_rec,
+row_insert_for_myblockchain(
+	const byte*		myblockchain_rec,
 	row_prebuilt_t*		prebuilt)
 	__attribute__((warn_unused_result));
 
@@ -259,7 +259,7 @@ Builds a dummy query graph used in selects. */
 void
 row_prebuild_sel_graph(
 /*===================*/
-	row_prebuilt_t*	prebuilt);	/*!< in: prebuilt struct in MySQL
+	row_prebuilt_t*	prebuilt);	/*!< in: prebuilt struct in MyBlockchain
 					handle */
 /*********************************************************************//**
 Gets pointer to a prebuilt update vector used in updates. If the update
@@ -269,7 +269,7 @@ first builds it.
 upd_t*
 row_get_prebuilt_update_vector(
 /*===========================*/
-	row_prebuilt_t*	prebuilt);	/*!< in: prebuilt struct in MySQL
+	row_prebuilt_t*	prebuilt);	/*!< in: prebuilt struct in MyBlockchain
 					handle */
 /*********************************************************************//**
 Checks if a table is such that we automatically created a clustered
@@ -280,13 +280,13 @@ row_table_got_default_clust_index(
 /*==============================*/
 	const dict_table_t*	table);	/*!< in: table */
 
-/** Does an update or delete of a row for MySQL.
-@param[in]	mysql_rec	row in the MySQL format
-@param[in,out]	prebuilt	prebuilt struct in MySQL handle
+/** Does an update or delete of a row for MyBlockchain.
+@param[in]	myblockchain_rec	row in the MyBlockchain format
+@param[in,out]	prebuilt	prebuilt struct in MyBlockchain handle
 @return error code or DB_SUCCESS */
 dberr_t
-row_update_for_mysql(
-	const byte*		mysql_rec,
+row_update_for_myblockchain(
+	const byte*		myblockchain_rec,
 	row_prebuilt_t*		prebuilt)
 	__attribute__((warn_unused_result));
 
@@ -300,39 +300,39 @@ row_delete_all_rows(
 
 /** This can only be used when srv_locks_unsafe_for_binlog is TRUE or this
 session is using a READ COMMITTED or READ UNCOMMITTED isolation level.
-Before calling this function row_search_for_mysql() must have
+Before calling this function row_search_for_myblockchain() must have
 initialized prebuilt->new_rec_locks to store the information which new
 record locks really were set. This function removes a newly set
 clustered index record lock under prebuilt->pcur or
 prebuilt->clust_pcur.  Thus, this implements a 'mini-rollback' that
 releases the latest clustered index record lock we set.
-@param[in,out]	prebuilt		prebuilt struct in MySQL handle
+@param[in,out]	prebuilt		prebuilt struct in MyBlockchain handle
 @param[in]	has_latches_on_recs	TRUE if called so that we have the
 					latches on the records under pcur
 					and clust_pcur, and we do not need
 					to reposition the cursors. */
 void
-row_unlock_for_mysql(
+row_unlock_for_myblockchain(
 	row_prebuilt_t*	prebuilt,
 	ibool		has_latches_on_recs);
 
 /*********************************************************************//**
 Checks if a table name contains the string "/#sql" which denotes temporary
-tables in MySQL.
+tables in MyBlockchain.
 @return true if temporary table */
 bool
-row_is_mysql_tmp_table_name(
+row_is_myblockchain_tmp_table_name(
 /*========================*/
 	const char*	name) __attribute__((warn_unused_result));
 				/*!< in: table name in the form
-				'database/tablename' */
+				'blockchain/tablename' */
 
 /*********************************************************************//**
-Creates an query graph node of 'update' type to be used in the MySQL
+Creates an query graph node of 'update' type to be used in the MyBlockchain
 interface.
 @return own: update node */
 upd_node_t*
-row_create_update_node_for_mysql(
+row_create_update_node_for_myblockchain(
 /*=============================*/
 	dict_table_t*	table,	/*!< in: table to update */
 	mem_heap_t*	heap);	/*!< in: mem heap from which allocated */
@@ -340,42 +340,42 @@ row_create_update_node_for_mysql(
 Locks the data dictionary exclusively for performing a table create or other
 data dictionary modification operation. */
 void
-row_mysql_lock_data_dictionary_func(
+row_myblockchain_lock_data_dictionary_func(
 /*================================*/
 	trx_t*		trx,	/*!< in/out: transaction */
 	const char*	file,	/*!< in: file name */
 	ulint		line);	/*!< in: line number */
-#define row_mysql_lock_data_dictionary(trx)				\
-	row_mysql_lock_data_dictionary_func(trx, __FILE__, __LINE__)
+#define row_myblockchain_lock_data_dictionary(trx)				\
+	row_myblockchain_lock_data_dictionary_func(trx, __FILE__, __LINE__)
 /*********************************************************************//**
 Unlocks the data dictionary exclusive lock. */
 void
-row_mysql_unlock_data_dictionary(
+row_myblockchain_unlock_data_dictionary(
 /*=============================*/
 	trx_t*	trx);	/*!< in/out: transaction */
 /*********************************************************************//**
 Locks the data dictionary in shared mode from modifications, for performing
-foreign key check, rollback, or other operation invisible to MySQL. */
+foreign key check, rollback, or other operation invisible to MyBlockchain. */
 void
-row_mysql_freeze_data_dictionary_func(
+row_myblockchain_freeze_data_dictionary_func(
 /*==================================*/
 	trx_t*		trx,	/*!< in/out: transaction */
 	const char*	file,	/*!< in: file name */
 	ulint		line);	/*!< in: line number */
-#define row_mysql_freeze_data_dictionary(trx)				\
-	row_mysql_freeze_data_dictionary_func(trx, __FILE__, __LINE__)
+#define row_myblockchain_freeze_data_dictionary(trx)				\
+	row_myblockchain_freeze_data_dictionary_func(trx, __FILE__, __LINE__)
 /*********************************************************************//**
 Unlocks the data dictionary shared lock. */
 void
-row_mysql_unfreeze_data_dictionary(
+row_myblockchain_unfreeze_data_dictionary(
 /*===============================*/
 	trx_t*	trx);	/*!< in/out: transaction */
 /*********************************************************************//**
-Creates a table for MySQL. On failure the transaction will be rolled back
+Creates a table for MyBlockchain. On failure the transaction will be rolled back
 and the 'table' object will be freed.
 @return error code or DB_SUCCESS */
 dberr_t
-row_create_table_for_mysql(
+row_create_table_for_myblockchain(
 /*=======================*/
 	dict_table_t*	table,	/*!< in, own: table definition
 				(will be freed, or on DB_SUCCESS
@@ -387,12 +387,12 @@ row_create_table_for_mysql(
 	bool		commit)	/*!< in: if true, commit the transaction */
 	__attribute__((warn_unused_result));
 /*********************************************************************//**
-Does an index creation operation for MySQL. TODO: currently failure
+Does an index creation operation for MyBlockchain. TODO: currently failure
 to create an index results in dropping the whole table! This is no problem
 currently as all indexes must be created at the same time as the table.
 @return error number or DB_SUCCESS */
 dberr_t
-row_create_index_for_mysql(
+row_create_index_for_myblockchain(
 /*=======================*/
 	dict_index_t*	index,		/*!< in, own: index definition
 					(will be freed) */
@@ -417,9 +417,9 @@ fields than mentioned in the constraint.
 @param[in]	sql_string	table create statement where
 				foreign keys are declared like:
 				FOREIGN KEY (a, b) REFERENCES table2(c, d),
-				table2 can be written also with the database
+				table2 can be written also with the blockchain
 				name before it: test.table2; the default
-				database id the database of parameter name
+				blockchain id the blockchain of parameter name
 @param[in]	sql_length	length of sql_string
 @param[in]	name		table full name in normalized form
 @param[in]	is_temp_table	true if table is temporary
@@ -443,7 +443,7 @@ we must drop in background after queries to them have ended. Such lazy
 dropping of tables is needed in ALTER TABLE on Unix.
 @return how many tables dropped + remaining tables in list */
 ulint
-row_drop_tables_for_mysql_in_background(void);
+row_drop_tables_for_myblockchain_in_background(void);
 /*=========================================*/
 /*********************************************************************//**
 Get the background drop list length. NOTE: the caller must own the kernel
@@ -457,7 +457,7 @@ row_get_background_drop_list_len_low(void);
 Sets an exclusive lock on a table.
 @return error code or DB_SUCCESS */
 dberr_t
-row_mysql_lock_table(
+row_myblockchain_lock_table(
 /*=================*/
 	trx_t*		trx,		/*!< in/out: transaction */
 	dict_table_t*	table,		/*!< in: table to lock */
@@ -466,25 +466,25 @@ row_mysql_lock_table(
 	__attribute__((nonnull, warn_unused_result));
 
 /*********************************************************************//**
-Truncates a table for MySQL.
+Truncates a table for MyBlockchain.
 @return error code or DB_SUCCESS */
 dberr_t
-row_truncate_table_for_mysql(
+row_truncate_table_for_myblockchain(
 /*=========================*/
 	dict_table_t*	table,	/*!< in: table handle */
 	trx_t*		trx)	/*!< in: transaction handle */
 	__attribute__((nonnull, warn_unused_result));
 /*********************************************************************//**
-Drops a table for MySQL.  If the data dictionary was not already locked
+Drops a table for MyBlockchain.  If the data dictionary was not already locked
 by the transaction, the transaction will be committed.  Otherwise, the
 data dictionary will remain locked.
 @return error code or DB_SUCCESS */
 dberr_t
-row_drop_table_for_mysql(
+row_drop_table_for_myblockchain(
 /*=====================*/
 	const char*	name,	/*!< in: table name */
 	trx_t*		trx,	/*!< in: dictionary transaction handle */
-	bool		drop_db,/*!< in: true=dropping whole database */
+	bool		drop_db,/*!< in: true=dropping whole blockchain */
 	bool		nonatomic = true,
 				/*!< in: whether it is permitted
 				to release and reacquire dict_operation_lock */
@@ -493,7 +493,7 @@ row_drop_table_for_mysql(
 /*********************************************************************//**
 Drop all temporary tables during crash recovery. */
 void
-row_mysql_drop_temp_tables(void);
+row_myblockchain_drop_temp_tables(void);
 /*============================*/
 
 /*********************************************************************//**
@@ -502,7 +502,7 @@ means that this function deletes the .ibd file and assigns a new table id for
 the table. Also the flag table->ibd_file_missing is set TRUE.
 @return error code or DB_SUCCESS */
 dberr_t
-row_discard_tablespace_for_mysql(
+row_discard_tablespace_for_myblockchain(
 /*=============================*/
 	const char*	name,	/*!< in: table name */
 	trx_t*		trx)	/*!< in: transaction handle */
@@ -512,28 +512,28 @@ Imports a tablespace. The space id in the .ibd file must match the space id
 of the table in the data dictionary.
 @return error code or DB_SUCCESS */
 dberr_t
-row_import_tablespace_for_mysql(
+row_import_tablespace_for_myblockchain(
 /*============================*/
 	dict_table_t*	table,		/*!< in/out: table */
-	row_prebuilt_t*	prebuilt)	/*!< in: prebuilt struct in MySQL */
+	row_prebuilt_t*	prebuilt)	/*!< in: prebuilt struct in MyBlockchain */
         __attribute__((nonnull, warn_unused_result));
 
-/** Drop a database for MySQL.
-@param[in]	name	database name which ends at '/'
+/** Drop a blockchain for MyBlockchain.
+@param[in]	name	blockchain name which ends at '/'
 @param[in]	trx	transaction handle
 @param[out]	found	number of dropped tables/partitions
 @return error code or DB_SUCCESS */
 dberr_t
-row_drop_database_for_mysql(
+row_drop_blockchain_for_myblockchain(
 	const char*	name,
 	trx_t*		trx,
 	ulint*		found);
 
 /*********************************************************************//**
-Renames a table for MySQL.
+Renames a table for MyBlockchain.
 @return error code or DB_SUCCESS */
 dberr_t
-row_rename_table_for_mysql(
+row_rename_table_for_myblockchain(
 /*=======================*/
 	const char*	old_name,	/*!< in: old table name */
 	const char*	new_name,	/*!< in: new table name */
@@ -541,13 +541,13 @@ row_rename_table_for_mysql(
 	bool		commit)		/*!< in: whether to commit trx */
 	__attribute__((nonnull, warn_unused_result));
 
-/** Renames a partitioned table for MySQL.
+/** Renames a partitioned table for MyBlockchain.
 @param[in]	old_name	Old table name.
 @param[in]	new_name	New table name.
 @param[in,out]	trx		Transaction.
 @return error code or DB_SUCCESS */
 dberr_t
-row_rename_partitions_for_mysql(
+row_rename_partitions_for_myblockchain(
 	const char*	old_name,
 	const char*	new_name,
 	trx_t*		trx)
@@ -560,10 +560,10 @@ unique constraint is not broken, and calculates the number of index entries
 in the read view of the current transaction.
 @return DB_SUCCESS or other error */
 dberr_t
-row_scan_index_for_mysql(
+row_scan_index_for_myblockchain(
 /*=====================*/
 	row_prebuilt_t*		prebuilt,	/*!< in: prebuilt struct
-						in MySQL handle */
+						in MyBlockchain handle */
 	const dict_index_t*	index,		/*!< in: index */
 	bool			check_keys,	/*!< in: true=check for mis-
 						ordered or duplicate records,
@@ -574,66 +574,66 @@ row_scan_index_for_mysql(
 /*********************************************************************//**
 Initialize this module */
 void
-row_mysql_init(void);
+row_myblockchain_init(void);
 /*================*/
 
 /*********************************************************************//**
 Close this module */
 void
-row_mysql_close(void);
+row_myblockchain_close(void);
 /*=================*/
 
 /*********************************************************************//**
 Reassigns the table identifier of a table.
 @return error code or DB_SUCCESS */
 dberr_t
-row_mysql_table_id_reassign(
+row_myblockchain_table_id_reassign(
 /*========================*/
 	dict_table_t*	table,	/*!< in/out: table */
 	trx_t*		trx,	/*!< in/out: transaction */
 	table_id_t*	new_id) /*!< out: new table id */
         __attribute__((nonnull, warn_unused_result));
 
-/* A struct describing a place for an individual column in the MySQL
+/* A struct describing a place for an individual column in the MyBlockchain
 row format which is presented to the table handler in ha_innobase.
 This template struct is used to speed up row transformations between
-Innobase and MySQL. */
+Innobase and MyBlockchain. */
 
-struct mysql_row_templ_t {
+struct myblockchain_row_templ_t {
 	ulint	col_no;			/*!< column number of the column */
 	ulint	rec_field_no;		/*!< field number of the column in an
 					Innobase record in the current index;
 					not defined if template_type is
-					ROW_MYSQL_WHOLE_ROW */
+					ROW_MYBLOCKCHAIN_WHOLE_ROW */
 	ulint	clust_rec_field_no;	/*!< field number of the column in an
 					Innobase record in the clustered index;
 					not defined if template_type is
-					ROW_MYSQL_WHOLE_ROW */
+					ROW_MYBLOCKCHAIN_WHOLE_ROW */
 	ulint	icp_rec_field_no;	/*!< field number of the column in an
 					Innobase record in the current index;
 					not defined unless
 					index condition pushdown is used */
-	ulint	mysql_col_offset;	/*!< offset of the column in the MySQL
+	ulint	myblockchain_col_offset;	/*!< offset of the column in the MyBlockchain
 					row format */
-	ulint	mysql_col_len;		/*!< length of the column in the MySQL
+	ulint	myblockchain_col_len;		/*!< length of the column in the MyBlockchain
 					row format */
-	ulint	mysql_null_byte_offset;	/*!< MySQL NULL bit byte offset in a
-					MySQL record */
-	ulint	mysql_null_bit_mask;	/*!< bit mask to get the NULL bit,
+	ulint	myblockchain_null_byte_offset;	/*!< MyBlockchain NULL bit byte offset in a
+					MyBlockchain record */
+	ulint	myblockchain_null_bit_mask;	/*!< bit mask to get the NULL bit,
 					zero if column cannot be NULL */
 	ulint	type;			/*!< column type in Innobase mtype
 					numbers DATA_CHAR... */
-	ulint	mysql_type;		/*!< MySQL type code; this is always
+	ulint	myblockchain_type;		/*!< MyBlockchain type code; this is always
 					< 256 */
-	ulint	mysql_length_bytes;	/*!< if mysql_type
-					== DATA_MYSQL_TRUE_VARCHAR, this tells
+	ulint	myblockchain_length_bytes;	/*!< if myblockchain_type
+					== DATA_MYBLOCKCHAIN_TRUE_VARCHAR, this tells
 					whether we should use 1 or 2 bytes to
-					store the MySQL true VARCHAR data
-					length at the start of row in the MySQL
-					format (NOTE that the MySQL key value
+					store the MyBlockchain true VARCHAR data
+					length at the start of row in the MyBlockchain
+					format (NOTE that the MyBlockchain key value
 					format always uses 2 bytes for the data
 					len) */
-	ulint	charset;		/*!< MySQL charset-collation code
+	ulint	charset;		/*!< MyBlockchain charset-collation code
 					of the column, or zero */
 	ulint	mbminlen;		/*!< minimum length of a char, in bytes,
 					or zero if not a char type */
@@ -645,15 +645,15 @@ struct mysql_row_templ_t {
 	ulint	is_virtual;		/*!< if a column is a virtual column */
 };
 
-#define MYSQL_FETCH_CACHE_SIZE		8
+#define MYBLOCKCHAIN_FETCH_CACHE_SIZE		8
 /* After fetching this many rows, we start caching them in fetch_cache */
-#define MYSQL_FETCH_CACHE_THRESHOLD	4
+#define MYBLOCKCHAIN_FETCH_CACHE_THRESHOLD	4
 
 #define ROW_PREBUILT_ALLOCATED	78540783
 #define ROW_PREBUILT_FREED	26423527
 
 /** A struct for (sometimes lazily) prebuilt structures in an Innobase table
-handle used within MySQL; these are used to save CPU time. */
+handle used within MyBlockchain; these are used to save CPU time. */
 
 struct row_prebuilt_t {
 	ulint		magic_n;	/*!< this magic number is set to
@@ -670,35 +670,35 @@ struct row_prebuilt_t {
 					create a consistent read view etc. */
 	unsigned	clust_index_was_generated:1;
 					/*!< if the user did not define a
-					primary key in MySQL, then Innobase
+					primary key in MyBlockchain, then Innobase
 					automatically generated a clustered
 					index where the ordering column is
 					the row id: in this case this flag
 					is set to TRUE */
 	unsigned	index_usable:1;	/*!< caches the value of
 					row_merge_is_index_usable(trx,index) */
-	unsigned	read_just_key:1;/*!< set to 1 when MySQL calls
+	unsigned	read_just_key:1;/*!< set to 1 when MyBlockchain calls
 					ha_innobase::extra with the
 					argument HA_EXTRA_KEYREAD; it is enough
 					to read just columns defined in
 					the index (i.e., no read of the
 					clustered index record necessary) */
 	unsigned	used_in_HANDLER:1;/*!< TRUE if we have been using this
-					handle in a MySQL HANDLER low level
+					handle in a MyBlockchain HANDLER low level
 					index cursor command: then we must
 					store the pcur position even in a
 					unique search from a clustered index,
 					because HANDLER allows NEXT and PREV
 					in such a situation */
-	unsigned	template_type:2;/*!< ROW_MYSQL_WHOLE_ROW,
-					ROW_MYSQL_REC_FIELDS,
-					ROW_MYSQL_DUMMY_TEMPLATE, or
-					ROW_MYSQL_NO_TEMPLATE */
+	unsigned	template_type:2;/*!< ROW_MYBLOCKCHAIN_WHOLE_ROW,
+					ROW_MYBLOCKCHAIN_REC_FIELDS,
+					ROW_MYBLOCKCHAIN_DUMMY_TEMPLATE, or
+					ROW_MYBLOCKCHAIN_NO_TEMPLATE */
 	unsigned	n_template:10;	/*!< number of elements in the
 					template */
 	unsigned	null_bitmap_len:10;/*!< number of bytes in the SQL NULL
 					bitmap at the start of a row in the
-					MySQL format */
+					MyBlockchain format */
 	unsigned	need_to_access_clustered:1; /*!< if we are fetching
 					columns through a secondary index
 					and at least one column is not in
@@ -706,7 +706,7 @@ struct row_prebuilt_t {
 					set to TRUE */
 	unsigned	templ_contains_blob:1;/*!< TRUE if the template contains
 					a column with DATA_LARGE_MTYPE(
-					get_innobase_type_from_mysql_type())
+					get_innobase_type_from_myblockchain_type())
 					is TRUE;
 					not to be confused with InnoDB
 					externally stored columns
@@ -717,8 +717,8 @@ struct row_prebuilt_t {
 					DATA_POINT as non-BLOB type, the
 					templ_contains_blob can't tell us
 					if there is DATA_POINT */
-	mysql_row_templ_t* mysql_template;/*!< template used to transform
-					rows fast between MySQL and Innobase
+	myblockchain_row_templ_t* myblockchain_template;/*!< template used to transform
+					rows fast between MyBlockchain and Innobase
 					formats; memory for this template
 					is not allocated from 'heap' */
 	mem_heap_t*	heap;		/*!< memory heap from which
@@ -728,10 +728,10 @@ struct row_prebuilt_t {
 					used to perform inserts
 					to the table */
 	byte*		ins_upd_rec_buff;/*!< buffer for storing data converted
-					to the Innobase format from the MySQL
+					to the Innobase format from the MyBlockchain
 					format */
 	const byte*	default_rec;	/*!< the default values of all columns
-					(a "default row") in MySQL format */
+					(a "default row") in MyBlockchain format */
 	ulint		hint_need_to_fetch_extra_cols;
 					/*!< normally this is set to 0; if this
 					is set to ROW_RETRIEVE_PRIMARY_KEY,
@@ -790,13 +790,13 @@ struct row_prebuilt_t {
 					this field will be set to
 					ROW_READ_DID_SEMI_CONSISTENT to
 					indicate that.	If the row does not
-					match the WHERE condition, MySQL will
+					match the WHERE condition, MyBlockchain will
 					invoke handler::unlock_row() to
 					clear the flag back to
 					ROW_READ_TRY_SEMI_CONSISTENT and
 					to simply skip the row.	 If
 					the row matches, the next call to
-					row_search_for_mysql() will lock
+					row_search_for_myblockchain() will lock
 					the row.
 					This eliminates lock waits in some
 					cases; note that this breaks
@@ -806,27 +806,27 @@ struct row_prebuilt_t {
 					TRUE or session is using READ
 					COMMITTED or READ UNCOMMITTED
 					isolation level, set in
-					row_search_for_mysql() if we set a new
+					row_search_for_myblockchain() if we set a new
 					record lock on the secondary
 					or clustered index; this is
-					used in row_unlock_for_mysql()
+					used in row_unlock_for_myblockchain()
 					when releasing the lock under
 					the cursor if we determine
 					after retrieving the row that
 					it does not need to be locked
 					('mini-rollback') */
-	ulint		mysql_prefix_len;/*!< byte offset of the end of
+	ulint		myblockchain_prefix_len;/*!< byte offset of the end of
 					the last requested column */
-	ulint		mysql_row_len;	/*!< length in bytes of a row in the
-					MySQL format */
+	ulint		myblockchain_row_len;	/*!< length in bytes of a row in the
+					MyBlockchain format */
 	ulint		n_rows_fetched;	/*!< number of rows fetched after
 					positioning the current cursor */
 	ulint		fetch_direction;/*!< ROW_SEL_NEXT or ROW_SEL_PREV */
-	byte*		fetch_cache[MYSQL_FETCH_CACHE_SIZE];
+	byte*		fetch_cache[MYBLOCKCHAIN_FETCH_CACHE_SIZE];
 					/*!< a cache for fetched rows if we
 					fetch many rows from the same cursor:
 					it saves CPU time to fetch them in a
-					batch; we reserve mysql_row_len
+					batch; we reserve myblockchain_row_len
 					bytes for each such row; these
 					pointers point 4 bytes past the
 					allocated mem buf start, because
@@ -834,7 +834,7 @@ struct row_prebuilt_t {
 					start and at the end */
 	ibool		keep_other_fields_on_keyread; /*!< when using fetch
 					cache with HA_EXTRA_KEYREAD, don't
-					overwrite other fields in mysql row
+					overwrite other fields in myblockchain row
 					row buffer.*/
 	ulint		fetch_cache_first;/*!< position of the first not yet
 					fetched row in fetch_cache */
@@ -855,13 +855,13 @@ struct row_prebuilt_t {
 					greater than or equal to 1. Required to
 					calculate the next value */
 	ulonglong	autoinc_offset; /*!< The offset passed to
-					get_auto_increment() by MySQL. Required
+					get_auto_increment() by MyBlockchain. Required
 					to calculate the next value */
 	dberr_t		autoinc_error;	/*!< The actual error code encountered
 					while trying to init or read the
 					autoinc value from the table. We
 					store it here so that we can return
-					it to MySQL */
+					it to MyBlockchain */
 	/*----------------------*/
 	void*		idx_cond;	/*!< In ICP, pointer to a ha_innobase,
 					passed to innobase_index_cond().
@@ -887,10 +887,10 @@ struct row_prebuilt_t {
 	innodb_session_t*
 			session;	/*!< InnoDB session handler. */
 	byte*		srch_key_val1;  /*!< buffer used in converting
-					search key values from MySQL format
+					search key values from MyBlockchain format
 					to InnoDB format.*/
 	byte*		srch_key_val2;  /*!< buffer used in converting
-					search key values from MySQL format
+					search key values from MyBlockchain format
 					to InnoDB format.*/
 	uint		srch_key_val_len; /*!< Size of search key */
 	/** Disable prefetch. */
@@ -898,7 +898,7 @@ struct row_prebuilt_t {
 
 };
 
-/** Callback for row_mysql_sys_index_iterate() */
+/** Callback for row_myblockchain_sys_index_iterate() */
 struct SysIndexCallback {
 	virtual ~SysIndexCallback() { }
 
@@ -912,7 +912,7 @@ struct SysIndexCallback {
 @param[in,out]	row		the data row
 @param[in]	col		virtual column
 @param[in]	index		index on the virtual column
-@param[in,out]	my_rec		MySQL record to store the rows
+@param[in,out]	my_rec		MyBlockchain record to store the rows
 @param[in,out]	local_heap	heap memory for processing large data etc.
 @param[in]	heap		memory heap that copies the actual index row
 @param[in]	in_purge	whether this is called by purge
@@ -929,10 +929,10 @@ innobase_get_computed_value(
 
 #define ROW_PREBUILT_FETCH_MAGIC_N	465765687
 
-#define ROW_MYSQL_WHOLE_ROW	0
-#define ROW_MYSQL_REC_FIELDS	1
-#define ROW_MYSQL_NO_TEMPLATE	2
-#define ROW_MYSQL_DUMMY_TEMPLATE 3	/* dummy template used in
+#define ROW_MYBLOCKCHAIN_WHOLE_ROW	0
+#define ROW_MYBLOCKCHAIN_REC_FIELDS	1
+#define ROW_MYBLOCKCHAIN_NO_TEMPLATE	2
+#define ROW_MYBLOCKCHAIN_DUMMY_TEMPLATE 3	/* dummy template used in
 					row_scan_and_check_index */
 
 /* Values for hint_need_to_fetch_extra_cols */
@@ -945,7 +945,7 @@ innobase_get_computed_value(
 #define ROW_READ_DID_SEMI_CONSISTENT	2
 
 #ifndef UNIV_NONINL
-#include "row0mysql.ic"
+#include "row0myblockchain.ic"
 #endif
 
-#endif /* row0mysql.h */
+#endif /* row0myblockchain.h */

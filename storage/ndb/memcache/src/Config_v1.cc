@@ -121,7 +121,7 @@ int config_v1::get_server_role_id() {
   }
   else {
     logger->log(LOG_WARNING, 0, "\nServer role \"%s\" not found in "
-                "configuration database.\n\n", conf.server_role);
+                "configuration blockchain.\n\n", conf.server_role);
   }
   
   tx->close();
@@ -364,11 +364,11 @@ TableSpec * config_v1::get_container_record(char *name) {
       op.copyValue(COL_STORE_VALUE + 7, val);
       container->exp_column = strdup(val);
     }    
-    DEBUG_PRINT("\"%s\" found in database (%s).", name, table);
+    DEBUG_PRINT("\"%s\" found in blockchain (%s).", name, table);
   }
   else {
     container = 0;
-    logger->log(LOG_WARNING, 0, "\"%s\" NOT FOUND in database.\n", name);
+    logger->log(LOG_WARNING, 0, "\"%s\" NOT FOUND in blockchain.\n", name);
   }
   
   tx->close();

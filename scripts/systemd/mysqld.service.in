@@ -13,11 +13,11 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 #
-# systemd service file for MySQL forking server
+# systemd service file for MyBlockchain forking server
 #
 
 [Unit]
-Description=MySQL Server
+Description=MyBlockchain Server
 After=network.target
 After=syslog.target
 
@@ -25,27 +25,27 @@ After=syslog.target
 WantedBy=multi-user.target
 
 [Service]
-User=@MYSQLD_USER@
-Group=@MYSQLD_USER@
+User=@MYBLOCKCHAIND_USER@
+Group=@MYBLOCKCHAIND_USER@
 
 Type=forking
 
-PIDFile=@SYSTEMD_PID_DIR@/mysqld.pid
+PIDFile=@SYSTEMD_PID_DIR@/myblockchaind.pid
 
-# Disable service start and stop timeout logic of systemd for mysqld service.
+# Disable service start and stop timeout logic of systemd for myblockchaind service.
 TimeoutSec=0
 
 # Execute pre and post scripts as root
 PermissionsStartOnly=true
 
 # Needed to create system tables
-ExecStartPre=@bindir@/mysqld_pre_systemd
+ExecStartPre=@bindir@/myblockchaind_pre_systemd
 
 # Start main service
-ExecStart=@libexecdir@/mysqld --daemonize $MYSQLD_OPTS
+ExecStart=@libexecdir@/myblockchaind --daemonize $MYBLOCKCHAIND_OPTS
 
 # Use this to switch malloc implementation
-EnvironmentFile=-/etc/sysconfig/mysql
+EnvironmentFile=-/etc/sysconfig/myblockchain
 
 # Sets open_files_limit
 LimitNOFILE = 5000

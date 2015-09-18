@@ -1,0 +1,8 @@
+call myblockchain.myblockchain_cluster_move_privileges();
+select myblockchain.myblockchain_cluster_privileges_are_distributed();
+myblockchain.myblockchain_cluster_privileges_are_distributed()
+1
+CREATE USER 'billy1'@'127.0.0.1' IDENTIFIED by 'mypass';
+SELECT USER();
+USER()
+billy1@localhost

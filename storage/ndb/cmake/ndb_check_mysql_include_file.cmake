@@ -13,16 +13,16 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-MACRO(NDB_CHECK_MYSQL_INCLUDE_FILE INCLUDE VARIABLE)
+MACRO(NDB_CHECK_MYBLOCKCHAIN_INCLUDE_FILE INCLUDE VARIABLE)
   IF("${VARIABLE}" MATCHES "^${VARIABLE}$")
-    SET(_msg "Looking for MySQL include file ${INCLUDE}")
+    SET(_msg "Looking for MyBlockchain include file ${INCLUDE}")
     MESSAGE(STATUS "${_msg}")
     IF(EXISTS "${CMAKE_SOURCE_DIR}/include/${INCLUDE}")
       MESSAGE(STATUS "${_msg} - found")
-      SET(${VARIABLE} 1 CACHE INTERNAL "Have MySQL include ${INCLUDE}")
+      SET(${VARIABLE} 1 CACHE INTERNAL "Have MyBlockchain include ${INCLUDE}")
     ELSE()
       MESSAGE(STATUS "${_msg} - not found")
-      SET(${VARIABLE} "" CACHE INTERNAL "Have MySQL include ${INCLUDE}")
+      SET(${VARIABLE} "" CACHE INTERNAL "Have MyBlockchain include ${INCLUDE}")
     ENDIF()
   ENDIF()
 ENDMACRO()

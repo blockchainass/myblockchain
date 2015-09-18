@@ -29,7 +29,7 @@ function TestData(id) {
   }
 }
 
-var mapping = new mynode.TableMapping("mysql56times");
+var mapping = new mynode.TableMapping("myblockchain56times");
 mapping.mapField("id");
 mapping.mapField("Time1", "a");
 mapping.mapField("Datetime2", "b");

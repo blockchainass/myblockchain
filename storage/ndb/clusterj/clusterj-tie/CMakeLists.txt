@@ -13,7 +13,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-FILE(GLOB JAVA_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/main/java/com/mysql/clusterj/tie/*.java)
+FILE(GLOB JAVA_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/main/java/com/myblockchain/clusterj/tie/*.java)
 
 SET ( CLASSPATH 
   target/classes

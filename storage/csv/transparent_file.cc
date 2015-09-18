@@ -13,7 +13,7 @@
   along with this program; if not, write to the Free Software
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA */
 
-#include <mysql/psi/mysql_file.h>
+#include <myblockchain/psi/myblockchain_file.h>
 #include "transparent_file.h"
 #include "my_sys.h"          // MY_WME, MY_ALLOW_ZERO_PTR, MY_SEEK_SET
 
@@ -35,9 +35,9 @@ void Transparent_file::init_buff(File filedes_arg)
   filedes= filedes_arg;
   /* read the beginning of the file */
   lower_bound= 0;
-  mysql_file_seek(filedes, 0, MY_SEEK_SET, MYF(0));
+  myblockchain_file_seek(filedes, 0, MY_SEEK_SET, MYF(0));
   if (filedes && buff)
-    upper_bound= mysql_file_read(filedes, buff, buff_size, MYF(0));
+    upper_bound= myblockchain_file_read(filedes, buff, buff_size, MYF(0));
 }
 
 uchar *Transparent_file::ptr()
@@ -63,7 +63,7 @@ my_off_t Transparent_file::read_next()
      No need to seek here, as the file managed by Transparent_file class
      always points to upper_bound byte
   */
-  if ((bytes_read= mysql_file_read(filedes, buff, buff_size, MYF(0)))
+  if ((bytes_read= myblockchain_file_read(filedes, buff, buff_size, MYF(0)))
       == MY_FILE_ERROR)
     return (my_off_t) -1;
 
@@ -86,9 +86,9 @@ char Transparent_file::get_value(my_off_t offset)
   if ((lower_bound <= offset) && (((my_off_t) offset) < upper_bound))
     return buff[offset - lower_bound];
 
-  mysql_file_seek(filedes, offset, MY_SEEK_SET, MYF(0));
+  myblockchain_file_seek(filedes, offset, MY_SEEK_SET, MYF(0));
   /* read appropriate portion of the file */
-  if ((bytes_read= mysql_file_read(filedes, buff, buff_size,
+  if ((bytes_read= myblockchain_file_read(filedes, buff, buff_size,
                                    MYF(0))) == MY_FILE_ERROR)
     return 0;
 

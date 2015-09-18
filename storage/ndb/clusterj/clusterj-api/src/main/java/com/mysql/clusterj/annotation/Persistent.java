@@ -16,7 +16,7 @@
    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-package com.mysql.clusterj.annotation;
+package com.myblockchain.clusterj.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

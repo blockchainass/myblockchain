@@ -28,7 +28,7 @@ Smart ALTER TABLE
 #include <sql_lex.h>
 #include <sql_class.h>
 #include <sql_table.h>
-#include <mysql/plugin.h>
+#include <myblockchain/plugin.h>
 
 /* Include necessary InnoDB headers */
 #include "btr0sea.h"
@@ -116,7 +116,7 @@ struct ha_innobase_inplace_ctx : public inplace_alter_handler_ctx
 	row_prebuilt_t*	prebuilt;
 	/** InnoDB indexes being created */
 	dict_index_t**	add_index;
-	/** MySQL key numbers for the InnoDB indexes that are being created */
+	/** MyBlockchain key numbers for the InnoDB indexes that are being created */
 	const ulint*	add_key_numbers;
 	/** number of InnoDB indexes being created */
 	ulint		num_to_add_index;
@@ -205,7 +205,7 @@ struct ha_innobase_inplace_ctx : public inplace_alter_handler_ctx
 		col_map (0), col_names (col_names_arg),
 		add_autoinc (add_autoinc_arg),
 		add_cols (0),
-		sequence(prebuilt->trx->mysql_thd,
+		sequence(prebuilt->trx->myblockchain_thd,
 			 autoinc_col_min_value_arg, autoinc_col_max_value_arg),
 		max_autoinc (0),
 		tmp_name (0),
@@ -326,7 +326,7 @@ my_error_innodb(
 }
 
 /** Determine if fulltext indexes exist in a given table.
-@param table MySQL table
+@param table MyBlockchain table
 @return whether fulltext indexes exist on the table */
 static
 bool
@@ -344,7 +344,7 @@ innobase_fulltext_exist(
 }
 
 /** Determine if spatial indexes exist in a given table.
-@param table MySQL table
+@param table MyBlockchain table
 @return whether spatial indexes exist on the table */
 static
 bool
@@ -427,7 +427,7 @@ ha_innobase::check_if_supported_inplace_alter(
 	}
 
 	if (altered_table->s->fields > REC_MAX_N_USER_FIELDS) {
-		/* Deny the inplace ALTER TABLE. MySQL will try to
+		/* Deny the inplace ALTER TABLE. MyBlockchain will try to
 		re-create the table and ha_innobase::create() will
 		return an error too. This is how we effectively
 		deny adding too many columns to a table. */
@@ -501,7 +501,7 @@ ha_innobase::check_if_supported_inplace_alter(
 	     & Alter_inplace_info::ALTER_COLUMN_NULLABLE)) {
 		const uint my_primary_key = altered_table->s->primary_key;
 
-		/* See if MYSQL table has no pk but we do. */
+		/* See if MYBLOCKCHAIN table has no pk but we do. */
 		if (UNIV_UNLIKELY(my_primary_key >= MAX_KEY)
 		    && !row_table_got_default_clust_index(m_prebuilt->table)) {
 			ha_alter_info->unsupported_reason = innobase_get_err_msg(
@@ -759,9 +759,9 @@ innobase_init_foreign(
         if (constraint_name) {
                 ulint   db_len;
 
-                /* Catenate 'databasename/' to the constraint name specified
+                /* Catenate 'blockchainname/' to the constraint name specified
                 by the user: we conceive the constraint as belonging to the
-                same MySQL 'database' as the table itself. We store the name
+                same MyBlockchain 'blockchain' as the table itself. We store the name
                 to foreign->id. */
 
                 db_len = dict_get_db_name_len(table->name.m_name);
@@ -859,7 +859,7 @@ innobase_set_foreign_key_option(
 /*============================*/
 	dict_foreign_t*	foreign,	/*!< in:InnoDB Foreign key */
 	Foreign_key*	fk_key)		/*!< in: Foreign key info from
-					MySQL */
+					MyBlockchain */
 {
 	ut_ad(!foreign->type);
 
@@ -929,10 +929,10 @@ no_match:
 				goto no_match;
 			}
 
-			/* The MySQL pack length contains 1 or 2 bytes
+			/* The MyBlockchain pack length contains 1 or 2 bytes
 			length field for a true VARCHAR. */
 
-			if (key_part.field->type() == MYSQL_TYPE_VARCHAR) {
+			if (key_part.field->type() == MYBLOCKCHAIN_TYPE_VARCHAR) {
 				col_len -= static_cast<const Field_varstring*>(
 					key_part.field)->length_bytes;
 			}
@@ -1006,7 +1006,7 @@ next_rec:
 }
 
 /*************************************************************//**
-Create InnoDB foreign key structure from MySQL alter_info
+Create InnoDB foreign key structure from MyBlockchain alter_info
 @retval true if successful
 @retval false on error (will call my_error()) */
 static __attribute__((nonnull(1,2,3,7,8), warn_unused_result))
@@ -1081,7 +1081,7 @@ innobase_get_foreign_key_info(
 				drop_index, n_drop_index,
 				column_names, i);
 
-			/* MySQL would add a index in the creation
+			/* MyBlockchain would add a index in the creation
 			list if no such index for foreign table,
 			so we have to use DBUG_EXECUTE_IF to simulate
 			the scenario */
@@ -1258,16 +1258,16 @@ err_exit:
 }
 
 /*************************************************************//**
-Copies an InnoDB column to a MySQL field.  This function is
-adapted from row_sel_field_store_in_mysql_format(). */
+Copies an InnoDB column to a MyBlockchain field.  This function is
+adapted from row_sel_field_store_in_myblockchain_format(). */
 static
 void
-innobase_col_to_mysql(
+innobase_col_to_myblockchain(
 /*==================*/
 	const dict_col_t*	col,	/*!< in: InnoDB column */
 	const uchar*		data,	/*!< in: InnoDB column data */
 	ulint			len,	/*!< in: length of data, in bytes */
-	Field*			field)	/*!< in/out: MySQL field */
+	Field*			field)	/*!< in/out: MyBlockchain field */
 {
 	uchar*	ptr;
 	uchar*	dest	= field->ptr;
@@ -1291,16 +1291,16 @@ innobase_col_to_mysql(
 		break;
 
 	case DATA_VARCHAR:
-	case DATA_VARMYSQL:
+	case DATA_VARMYBLOCKCHAIN:
 	case DATA_BINARY:
 		field->reset();
 
-		if (field->type() == MYSQL_TYPE_VARCHAR) {
+		if (field->type() == MYBLOCKCHAIN_TYPE_VARCHAR) {
 			/* This is a >= 5.0.3 type true VARCHAR. Store the
 			length of the data to the first byte or the first
 			two bytes of dest. */
 
-			dest = row_mysql_store_true_var_len(
+			dest = row_myblockchain_store_true_var_len(
 				dest, len, flen - field->key_length());
 		}
 
@@ -1311,13 +1311,13 @@ innobase_col_to_mysql(
 	case DATA_VAR_POINT:
 	case DATA_GEOMETRY:
 	case DATA_BLOB:
-		/* Skip MySQL BLOBs when reporting an erroneous row
+		/* Skip MyBlockchain BLOBs when reporting an erroneous row
 		during index creation or table rebuild. */
 		field->set_null();
 		break;
 
 #ifdef UNIV_DEBUG
-	case DATA_MYSQL:
+	case DATA_MYBLOCKCHAIN:
 		ut_ad(flen >= len);
 		ut_ad(DATA_MBMAXLEN(col->mbminmaxlen)
 		      >= DATA_MBMINLEN(col->mbminmaxlen));
@@ -1327,14 +1327,14 @@ innobase_col_to_mysql(
 	default:
 	case DATA_SYS_CHILD:
 	case DATA_SYS:
-		/* These column types should never be shipped to MySQL. */
+		/* These column types should never be shipped to MyBlockchain. */
 		ut_ad(0);
 
 	case DATA_FLOAT:
 	case DATA_DOUBLE:
 	case DATA_DECIMAL:
 	case DATA_POINT:
-		/* Above are the valid column types for MySQL data. */
+		/* Above are the valid column types for MyBlockchain data. */
 		ut_ad(flen == len);
 		/* fall through */
 	case DATA_FIXBINARY:
@@ -1352,9 +1352,9 @@ innobase_col_to_mysql(
 /*************************************************************//**
 Copies an InnoDB record to table->record[0]. */
 void
-innobase_rec_to_mysql(
+innobase_rec_to_myblockchain(
 /*==================*/
-	struct TABLE*		table,	/*!< in/out: MySQL table */
+	struct TABLE*		table,	/*!< in/out: MyBlockchain table */
 	const rec_t*		rec,	/*!< in: record */
 	const dict_index_t*	index,	/*!< in: index */
 	const ulint*		offsets)/*!< in: rec_get_offsets(
@@ -1394,7 +1394,7 @@ null_field:
 
 		field->set_notnull();
 
-		innobase_col_to_mysql(
+		innobase_col_to_myblockchain(
 			dict_field_get_col(
 				dict_index_get_nth_field(index, ipos)),
 			ifield, ilen, field);
@@ -1404,9 +1404,9 @@ null_field:
 /*************************************************************//**
 Copies an InnoDB index entry to table->record[0]. */
 void
-innobase_fields_to_mysql(
+innobase_fields_to_myblockchain(
 /*=====================*/
-	struct TABLE*		table,	/*!< in/out: MySQL table */
+	struct TABLE*		table,	/*!< in/out: MyBlockchain table */
 	const dict_index_t*	index,	/*!< in: InnoDB index */
 	const dfield_t*		fields)	/*!< in: InnoDB index fields */
 {
@@ -1445,7 +1445,7 @@ innobase_fields_to_mysql(
 
 			const dfield_t*	df	= &fields[ipos];
 
-			innobase_col_to_mysql(
+			innobase_col_to_myblockchain(
 				dict_field_get_col(
 					dict_index_get_nth_field(index, ipos)),
 				static_cast<const uchar*>(dfield_get_data(df)),
@@ -1457,9 +1457,9 @@ innobase_fields_to_mysql(
 /*************************************************************//**
 Copies an InnoDB row to table->record[0]. */
 void
-innobase_row_to_mysql(
+innobase_row_to_myblockchain(
 /*==================*/
-	struct TABLE*		table,	/*!< in/out: MySQL table */
+	struct TABLE*		table,	/*!< in/out: MyBlockchain table */
 	const dict_table_t*	itab,	/*!< in: InnoDB table */
 	const dtuple_t*		row)	/*!< in: InnoDB row */
 {
@@ -1482,7 +1482,7 @@ innobase_row_to_mysql(
 		} else {
 			field->set_notnull();
 
-			innobase_col_to_mysql(
+			innobase_col_to_myblockchain(
 				dict_table_get_nth_col(itab, i),
 				static_cast<const uchar*>(dfield_get_data(df)),
 				dfield_get_len(df), field);
@@ -1495,7 +1495,7 @@ Resets table->record[0]. */
 void
 innobase_rec_reset(
 /*===============*/
-	TABLE*			table)		/*!< in/out: MySQL table */
+	TABLE*			table)		/*!< in/out: MyBlockchain table */
 {
 	uint	n_fields	= table->s->fields;
 	uint	i;
@@ -1559,7 +1559,7 @@ innobase_check_index_keys(
 		3. "RENAME INDEX x TO y" is given. Should allow the operation.
 		4. "DROP INDEX x, RENAME INDEX x TO y" is given. Should allow
 		the operation, since no name clash occurs. In this particular
-		case MySQL cancels the operation without calling InnoDB
+		case MyBlockchain cancels the operation without calling InnoDB
 		methods. */
 
 		if (index) {
@@ -1604,7 +1604,7 @@ name_ok:
 				= key_part1.field;
 			ibool			is_unsigned;
 
-			switch (get_innobase_type_from_mysql_type(
+			switch (get_innobase_type_from_myblockchain_type(
 					&is_unsigned, field)) {
 			default:
 				break;
@@ -1612,11 +1612,11 @@ name_ok:
 			case DATA_FLOAT:
 			case DATA_DOUBLE:
 			case DATA_DECIMAL:
-				/* Check that MySQL does not try to
+				/* Check that MyBlockchain does not try to
 				create a column prefix index field on
 				an inappropriate data type. */
 
-				if (field->type() == MYSQL_TYPE_VARCHAR) {
+				if (field->type() == MYBLOCKCHAIN_TYPE_VARCHAR) {
 					if (key_part1.length
 					    >= field->pack_length()
 					    - ((Field_varstring*) field)
@@ -1657,10 +1657,10 @@ name_ok:
 }
 
 /** Create index field definition for key part
-@param[in]	altered_table		MySQL table that is being altered,
+@param[in]	altered_table		MyBlockchain table that is being altered,
 					or NULL if a new clustered index
 					is not being created
-@param[in]	key_part		MySQL key definition
+@param[in]	key_part		MyBlockchain key definition
 @param[in,out]	index_field		index field
 @param[in]	new_clustered		new cluster */
 static
@@ -1692,7 +1692,7 @@ innobase_create_index_field_def(
 		}
 	}
 
-	col_type = get_innobase_type_from_mysql_type(
+	col_type = get_innobase_type_from_myblockchain_type(
 		&is_unsigned, field);
 
 	if (!field->stored_in_db && field->gcol_info) {
@@ -1705,8 +1705,8 @@ innobase_create_index_field_def(
 
 	if (DATA_LARGE_MTYPE(col_type)
 	    || (key_part->length < field->pack_length()
-		&& field->type() != MYSQL_TYPE_VARCHAR)
-	    || (field->type() == MYSQL_TYPE_VARCHAR
+		&& field->type() != MYBLOCKCHAIN_TYPE_VARCHAR)
+	    || (field->type() == MYBLOCKCHAIN_TYPE_VARCHAR
 		&& key_part->length < field->pack_length()
 			- ((Field_varstring*) field)->length_bytes)) {
 
@@ -1719,9 +1719,9 @@ innobase_create_index_field_def(
 }
 
 /** Create index definition for key
-@param[in]	altered_table		MySQL table that is being altered
+@param[in]	altered_table		MyBlockchain table that is being altered
 @param[in]	keys			key definitions
-@param[in]	key_number		MySQL key number
+@param[in]	key_number		MyBlockchain key number
 @param[in]	new_clustered		true if generating a new clustered
 index on the table
 @param[in]	key_clustered		true if this is the new clustered index
@@ -1780,7 +1780,7 @@ innobase_create_index_def(
 					plugin_ref	parser =
 						altered_table->key_info[j].parser;
 					index->parser =
-						static_cast<st_mysql_ftparser*>(
+						static_cast<st_myblockchain_ftparser*>(
 						plugin_decl(parser)->info);
 
 					index->is_ngram = strncmp(
@@ -1843,7 +1843,7 @@ innobase_fts_check_doc_id_col(
 	const dict_table_t*	table,  /*!< in: InnoDB table with
 					fulltext index */
 	const TABLE*		altered_table,
-					/*!< in: MySQL table with
+					/*!< in: MyBlockchain table with
 					fulltext index */
 	ulint*			fts_doc_col_no)
 					/*!< out: The column number for
@@ -1866,7 +1866,7 @@ innobase_fts_check_doc_id_col(
 		if (strcmp(field->field_name, FTS_DOC_ID_COL_NAME)) {
 			my_error(ER_WRONG_COLUMN_NAME, MYF(0),
 				 field->field_name);
-		} else if (field->type() != MYSQL_TYPE_LONGLONG
+		} else if (field->type() != MYBLOCKCHAIN_TYPE_LONGLONG
 			   || field->pack_length() != 8
 			   || field->real_maybe_null()
 			   || !(field->flags & UNSIGNED_FLAG)) {
@@ -1893,7 +1893,7 @@ innobase_fts_check_doc_id_col(
 			col = dict_table_get_nth_col(table, i);
 
 			/* Because the FTS_DOC_ID does not exist in
-			the MySQL data dictionary, this must be the
+			the MyBlockchain data dictionary, this must be the
 			internally created FTS_DOC_ID column. */
 			ut_ad(col->mtype == DATA_INT);
 			ut_ad(col->len == 8);
@@ -1916,7 +1916,7 @@ enum fts_doc_id_index_enum
 innobase_fts_check_doc_id_index(
 /*============================*/
 	const dict_table_t*	table,		/*!< in: table definition */
-	const TABLE*		altered_table,	/*!< in: MySQL table
+	const TABLE*		altered_table,	/*!< in: MyBlockchain table
 						that is being altered */
 	ulint*			fts_doc_col_no)	/*!< out: The column number for
 						Doc ID, or ULINT_UNDEFINED
@@ -1996,7 +1996,7 @@ innobase_fts_check_doc_id_index(
 }
 /*******************************************************************//**
 Check whether the table has a unique index with FTS_DOC_ID_INDEX_NAME
-on the Doc ID column in MySQL create index definition.
+on the Doc ID column in MyBlockchain create index definition.
 @return FTS_EXIST_DOC_ID_INDEX if there exists the FTS_DOC_ID index,
 FTS_INCORRECT_DOC_ID_INDEX if the FTS_DOC_ID index is of wrong format */
 enum fts_doc_id_index_enum
@@ -2039,7 +2039,7 @@ IF a new primary key is defined for the table THEN
 
 ELSE
 
-	1) All new indexes in the order they arrive from MySQL
+	1) All new indexes in the order they arrive from MyBlockchain
 
 ENDIF
 
@@ -2054,7 +2054,7 @@ innobase_create_key_defs(
 	const Alter_inplace_info*	ha_alter_info,
 			/*!< in: alter operation */
 	const TABLE*			altered_table,
-			/*!< in: MySQL table that is being altered */
+			/*!< in: MyBlockchain table that is being altered */
 	ulint&				n_add,
 			/*!< in/out: number of indexes to be created */
 	ulint&				n_fts_add,
@@ -2092,7 +2092,7 @@ innobase_create_key_defs(
 
 	/* If there is a UNIQUE INDEX consisting entirely of NOT NULL
 	columns and if the index does not contain column prefix(es)
-	(only prefix/part of the column is indexed), MySQL will treat the
+	(only prefix/part of the column is indexed), MyBlockchain will treat the
 	index as a PRIMARY KEY unless the table already has one. */
 
 	if (n_add > 0 && !new_primary && got_default_clust
@@ -2243,7 +2243,7 @@ created_clustered:
 		index->name = FTS_DOC_ID_INDEX_NAME;
 		index->rebuild = rebuild;
 
-		/* TODO: assign a real MySQL key number for this */
+		/* TODO: assign a real MyBlockchain key number for this */
 		index->key_number = ULINT_UNDEFINED;
 		n_add++;
 	}
@@ -2307,18 +2307,18 @@ void
 online_retry_drop_indexes(
 /*======================*/
 	dict_table_t*	table,		/*!< in/out: table */
-	THD*		user_thd)	/*!< in/out: MySQL connection */
+	THD*		user_thd)	/*!< in/out: MyBlockchain connection */
 {
 	if (table->drop_aborted) {
 		trx_t*	trx = innobase_trx_allocate(user_thd);
 
 		trx_start_for_ddl(trx, TRX_DICT_OP_INDEX);
 
-		row_mysql_lock_data_dictionary(trx);
+		row_myblockchain_lock_data_dictionary(trx);
 		online_retry_drop_indexes_low(table, trx);
-		trx_commit_for_mysql(trx);
-		row_mysql_unlock_data_dictionary(trx);
-		trx_free_for_mysql(trx);
+		trx_commit_for_myblockchain(trx);
+		row_myblockchain_unlock_data_dictionary(trx);
+		trx_free_for_myblockchain(trx);
 	}
 
 	ut_d(mutex_enter(&dict_sys->mutex));
@@ -2352,7 +2352,7 @@ online_retry_drop_indexes_with_trx(
 		trx_start_for_ddl(trx, TRX_DICT_OP_INDEX);
 
 		online_retry_drop_indexes_low(table, trx);
-		trx_commit_for_mysql(trx);
+		trx_commit_for_myblockchain(trx);
 	}
 }
 
@@ -2480,8 +2480,8 @@ innobase_check_foreigns_low(
 /** Determines if an InnoDB FOREIGN KEY constraint depends on a
 column that is being dropped or modified to NOT NULL.
 @param ha_alter_info Data used during in-place alter
-@param altered_table MySQL table that is being altered
-@param old_table MySQL table as it is before the ALTER operation
+@param altered_table MyBlockchain table that is being altered
+@param old_table MyBlockchain table as it is before the ALTER operation
 @param user_table InnoDB table as it is before the ALTER operation
 @param drop_fk constraints being dropped
 @param n_drop_fk number of constraints that are being dropped
@@ -2527,13 +2527,13 @@ innobase_check_foreigns(
 	return(false);
 }
 
-/** Get the default POINT value in MySQL format
+/** Get the default POINT value in MyBlockchain format
 @param[in]	heap	memory heap where allocated
-@param[in]	length	length of MySQL format
-@return mysql format data */
+@param[in]	length	length of MyBlockchain format
+@return myblockchain format data */
 static
 const byte*
-innobase_build_default_mysql_point(
+innobase_build_default_myblockchain_point(
 	mem_heap_t*	heap,
 	ulint		length)
 {
@@ -2545,7 +2545,7 @@ innobase_build_default_mysql_point(
 	ulint   len = get_wkb_of_default_point(SPDIMS, wkb, DATA_POINT_LEN);
 	ut_ad(len == DATA_POINT_LEN);
 
-	row_mysql_store_blob_ref(buf, length, wkb, len);
+	row_myblockchain_store_blob_ref(buf, length, wkb, len);
 
 	return(buf);
 }
@@ -2554,7 +2554,7 @@ innobase_build_default_mysql_point(
 
 @param heap Memory heap where allocated
 @param dfield InnoDB data field to copy to
-@param field MySQL value for the column
+@param field MyBlockchain value for the column
 @param comp nonzero if in compact format */
 static __attribute__((nonnull))
 void
@@ -2574,7 +2574,7 @@ innobase_build_col_map_add(
 
 	byte*	buf	= static_cast<byte*>(mem_heap_alloc(heap, size));
 
-	const byte*	mysql_data = field->ptr;
+	const byte*	myblockchain_data = field->ptr;
 
 	if (dfield_get_type(dfield)->mtype == DATA_POINT) {
 		/** If the DATA_POINT field is NOT NULL, we need to
@@ -2583,21 +2583,21 @@ innobase_build_col_map_add(
 		geom types. Server doesn't provide the default value, and
 		we would use POINT(0 0) here instead. */
 
-		mysql_data = innobase_build_default_mysql_point(heap, size);
+		myblockchain_data = innobase_build_default_myblockchain_point(heap, size);
 	}
 
-	row_mysql_store_col_in_innobase_format(
-		dfield, buf, true, mysql_data, size, comp);
+	row_myblockchain_store_col_in_innobase_format(
+		dfield, buf, true, myblockchain_data, size, comp);
 }
 
 /** Construct the translation table for reordering, dropping or
 adding columns.
 
 @param ha_alter_info Data used during in-place alter
-@param altered_table MySQL table that is being altered
-@param table MySQL table as it is before the ALTER operation
-@param new_table InnoDB table corresponding to MySQL altered_table
-@param old_table InnoDB table corresponding to MYSQL table
+@param altered_table MyBlockchain table that is being altered
+@param table MyBlockchain table as it is before the ALTER operation
+@param new_table InnoDB table corresponding to MyBlockchain altered_table
+@param old_table InnoDB table corresponding to MYBLOCKCHAIN table
 @param add_cols Default values for ADD COLUMN, or NULL if no ADD COLUMN
 @param heap Memory heap where allocated
 @return array of integers, mapping column numbers in the table
@@ -2769,8 +2769,8 @@ innobase_drop_fts_index_table(
 
 /** Get the new non-virtual column names if any columns were renamed
 @param ha_alter_info	Data used during in-place alter
-@param altered_table	MySQL table that is being altered
-@param table		MySQL table as it is before the ALTER operation
+@param altered_table	MyBlockchain table that is being altered
+@param table		MyBlockchain table as it is before the ALTER operation
 @param user_table	InnoDB table as it is before the ALTER operation
 @param heap		Memory heap for the allocation
 @return array of new column names in rebuilt_table, or NULL if not renamed */
@@ -2981,7 +2981,7 @@ innobase_update_gis_column_type(
 }
 
 /** Check if we are creating spatial indexes on GIS columns, which are
-legacy columns from earlier MySQL, such as 5.6. If so, we have to update
+legacy columns from earlier MyBlockchain, such as 5.6. If so, we have to update
 the mtypes of the old GIS columns to DATA_GEOMETRY.
 In 5.6, we store GIS columns as DATA_BLOB in InnoDB layer, it will introduce
 confusion when we run latest server on older data. That's why we need to
@@ -3054,8 +3054,8 @@ innobase_check_gis_columns(
 
 /** Collect virtual column info for its addition
 @param[in] ha_alter_info	Data used during in-place alter
-@param[in] altered_table	MySQL table that is being altered to
-@param[in] table		MySQL table as it is before the ALTER operation
+@param[in] altered_table	MyBlockchain table that is being altered to
+@param[in] table		MyBlockchain table as it is before the ALTER operation
 @retval true Failure
 @retval false Success */
 static
@@ -3113,7 +3113,7 @@ prepare_inplace_add_virtual(
 		field =  altered_table->field[i - 1];
 
 		ulint           col_type
-                                = get_innobase_type_from_mysql_type(
+                                = get_innobase_type_from_myblockchain_type(
                                         &is_unsigned, field);
 
 		if (!field->gcol_info || field->stored_in_db) {
@@ -3152,7 +3152,7 @@ prepare_inplace_add_virtual(
 			charset_no = 0;
 		}
 
-		if (field->type() == MYSQL_TYPE_VARCHAR) {
+		if (field->type() == MYBLOCKCHAIN_TYPE_VARCHAR) {
 			uint32  length_bytes
 				= static_cast<const Field_varstring*>(
 					field)->length_bytes;
@@ -3193,8 +3193,8 @@ prepare_inplace_add_virtual(
 
 /** Collect virtual column info for its addition
 @param[in] ha_alter_info	Data used during in-place alter
-@param[in] altered_table	MySQL table that is being altered to
-@param[in] table		MySQL table as it is before the ALTER operation
+@param[in] altered_table	MyBlockchain table that is being altered to
+@param[in] table		MyBlockchain table as it is before the ALTER operation
 @retval true Failure
 @retval false Success */
 static
@@ -3252,7 +3252,7 @@ prepare_inplace_drop_virtual(
 		field =  table->field[old_i];
 
 		ulint           col_type
-                                = get_innobase_type_from_mysql_type(
+                                = get_innobase_type_from_myblockchain_type(
                                         &is_unsigned, field);
 
 		if (!field->gcol_info || field->stored_in_db) {
@@ -3291,7 +3291,7 @@ prepare_inplace_drop_virtual(
 			charset_no = 0;
 		}
 
-		if (field->type() == MYSQL_TYPE_VARCHAR) {
+		if (field->type() == MYBLOCKCHAIN_TYPE_VARCHAR) {
 			uint32  length_bytes
 				= static_cast<const Field_varstring*>(
 					field)->length_bytes;
@@ -3317,7 +3317,7 @@ prepare_inplace_drop_virtual(
 
 		ctx->drop_vcol_name[j] = field->field_name;
 
-		dict_v_col_t*	v_col = dict_table_get_nth_v_col_mysql(
+		dict_v_col_t*	v_col = dict_table_get_nth_v_col_myblockchain(
 					ctx->old_table, old_i);
 		ctx->drop_vcol[j].v_pos = v_col->v_pos;
 		j++;
@@ -3447,8 +3447,8 @@ innobase_update_n_virtual(
 
 /** Update system table for adding virtual column(s)
 @param[in]	ha_alter_info	Data used during in-place alter
-@param[in]	altered_table	MySQL table that is being altered
-@param[in]	table		MySQL table as it is before the ALTER operation
+@param[in]	altered_table	MyBlockchain table that is being altered
+@param[in]	table		MyBlockchain table as it is before the ALTER operation
 @param[in]	user_table	InnoDB table
 @param[in]	trx		transaction
 @retval true Failure
@@ -3602,7 +3602,7 @@ innobase_drop_one_virtual_sys_columns(
 		return(error);
 	}
 
-	dict_v_col_t*	v_col = dict_table_get_nth_v_col_mysql(
+	dict_v_col_t*	v_col = dict_table_get_nth_v_col_myblockchain(
 				table, drop_col->ind);
 
 	for (ulint i = v_col->v_pos + 1; i < table->n_v_cols; i++) {
@@ -3659,8 +3659,8 @@ innobase_drop_one_virtual_sys_virtual(
 
 /** Update system table for dropping virtual column(s)
 @param[in]	ha_alter_info	Data used during in-place alter
-@param[in]	altered_table	MySQL table that is being altered
-@param[in]	table		MySQL table as it is before the ALTER operation
+@param[in]	altered_table	MyBlockchain table that is being altered
+@param[in]	table		MyBlockchain table as it is before the ALTER operation
 @param[in]	user_table	InnoDB table
 @param[in]	trx		transaction
 @retval true Failure
@@ -3724,9 +3724,9 @@ innobase_drop_virtual_try(
 while preparing ALTER TABLE.
 
 @param ha_alter_info Data used during in-place alter
-@param altered_table MySQL table that is being altered
-@param old_table MySQL table as it is before the ALTER operation
-@param table_name Table name in MySQL
+@param altered_table MyBlockchain table that is being altered
+@param old_table MyBlockchain table as it is before the ALTER operation
+@param table_name Table name in MyBlockchain
 @param flags Table and tablespace flags
 @param flags2 Additional table flags
 @param fts_doc_id_col The column number of FTS_DOC_ID
@@ -3751,7 +3751,7 @@ prepare_inplace_alter_table_dict(
 	bool			add_fts_doc_id_idx)
 {
 	bool			dict_locked	= false;
-	ulint*			add_key_nums;	/* MySQL key numbers */
+	ulint*			add_key_nums;	/* MyBlockchain key numbers */
 	index_def_t*		index_defs;	/* index definitions */
 	dict_table_t*		user_table;
 	dict_index_t*		fts_index	= NULL;
@@ -3812,7 +3812,7 @@ prepare_inplace_alter_table_dict(
 
 	/* Create a background transaction for the operations on
 	the data dictionary tables. */
-	ctx->trx = innobase_trx_allocate(ctx->prebuilt->trx->mysql_thd);
+	ctx->trx = innobase_trx_allocate(ctx->prebuilt->trx->myblockchain_thd);
 
 	trx_start_for_ddl(ctx->trx, TRX_DICT_OP_INDEX);
 
@@ -3847,7 +3847,7 @@ prepare_inplace_alter_table_dict(
 		check_if_supported_inplace_alter(). */
 		ut_ad(0);
 		my_error(ER_NOT_SUPPORTED_YET, MYF(0),
-			 thd_query_unsafe(ctx->prebuilt->trx->mysql_thd).str);
+			 thd_query_unsafe(ctx->prebuilt->trx->myblockchain_thd).str);
 		goto error_handled;
 	}
 
@@ -3890,7 +3890,7 @@ prepare_inplace_alter_table_dict(
 	/* Latch the InnoDB data dictionary exclusively so that no deadlocks
 	or lock waits can happen in it during an index create operation. */
 
-	row_mysql_lock_data_dictionary(ctx->trx);
+	row_myblockchain_lock_data_dictionary(ctx->trx);
 	dict_locked = true;
 
 	/* Wait for background stats processing to stop using the table that
@@ -3993,7 +3993,7 @@ prepare_inplace_alter_table_dict(
 			ulint		field_type
 				= (ulint) field->type();
 			ulint		col_type
-				= get_innobase_type_from_mysql_type(
+				= get_innobase_type_from_myblockchain_type(
 					&is_unsigned, field);
 			ulint		charset_no;
 			ulint		col_len;
@@ -4031,13 +4031,13 @@ prepare_inplace_alter_table_dict(
 
 			col_len = field->pack_length();
 
-			/* The MySQL pack length contains 1 or 2 bytes
+			/* The MyBlockchain pack length contains 1 or 2 bytes
 			length field for a true VARCHAR. Let us
 			subtract that, so that the InnoDB column
 			length in the InnoDB data dictionary is the
 			real maximum byte length of the actual data. */
 
-			if (field->type() == MYSQL_TYPE_VARCHAR) {
+			if (field->type() == MYBLOCKCHAIN_TYPE_VARCHAR) {
 				uint32	length_bytes
 					= static_cast<const Field_varstring*>(
 						field)->length_bytes;
@@ -4117,7 +4117,7 @@ prepare_inplace_alter_table_dict(
                         compression = NULL;
                 }
 
-		error = row_create_table_for_mysql(
+		error = row_create_table_for_myblockchain(
 			ctx->new_table, compression, ctx->trx, false);
 
 		switch (error) {
@@ -4125,7 +4125,7 @@ prepare_inplace_alter_table_dict(
 		case DB_IO_NO_PUNCH_HOLE_FS:
 
 			push_warning_printf(
-				ctx->prebuilt->trx->mysql_thd,
+				ctx->prebuilt->trx->myblockchain_thd,
 				Sql_condition::SL_WARNING,
 				HA_ERR_UNSUPPORTED,
 				"XPunch hole not supported by the file system. "
@@ -4389,7 +4389,7 @@ op_ok:
 
 			error = innobase_fts_load_stopword(
 				ctx->new_table, ctx->trx,
-				ctx->prebuilt->trx->mysql_thd)
+				ctx->prebuilt->trx->myblockchain_thd)
 				? DB_SUCCESS : DB_ERROR;
 			ctx->new_table->fts->fts_status
 				&= ~TABLE_DICT_LOCKED;
@@ -4406,13 +4406,13 @@ op_ok:
 
 	/* Commit the data dictionary transaction in order to release
 	the table locks on the system tables.  This means that if
-	MySQL crashes while creating a new primary key inside
+	MyBlockchain crashes while creating a new primary key inside
 	row_merge_build_indexes(), ctx->new_table will not be dropped
 	by trx_rollback_active().  It will have to be recovered or
-	dropped by the database administrator. */
-	trx_commit_for_mysql(ctx->trx);
+	dropped by the blockchain administrator. */
+	trx_commit_for_myblockchain(ctx->trx);
 
-	row_mysql_unlock_data_dictionary(ctx->trx);
+	row_myblockchain_unlock_data_dictionary(ctx->trx);
 	dict_locked = false;
 
 	ut_a(ctx->trx->lock.n_active_thrs == 0);
@@ -4449,7 +4449,7 @@ error_handled:
 	ctx->trx->error_state = DB_SUCCESS;
 
 	if (!dict_locked) {
-		row_mysql_lock_data_dictionary(ctx->trx);
+		row_myblockchain_lock_data_dictionary(ctx->trx);
 	}
 
 	if (new_clustered) {
@@ -4481,7 +4481,7 @@ error_handled:
 			rw_lock_x_unlock(&clust_index->lock);
 		}
 
-		trx_commit_for_mysql(ctx->trx);
+		trx_commit_for_myblockchain(ctx->trx);
 		/* n_ref_count must be 1, because purge cannot
 		be executing on this very table as we are
 		holding dict_operation_lock X-latch. */
@@ -4491,7 +4491,7 @@ error_handled:
 	} else {
 		ut_ad(!ctx->need_rebuild());
 		row_merge_drop_indexes(ctx->trx, user_table, TRUE);
-		trx_commit_for_mysql(ctx->trx);
+		trx_commit_for_myblockchain(ctx->trx);
 	}
 
 	ut_d(dict_table_check_for_dup_indexes(user_table, CHECK_ALL_COMPLETE));
@@ -4507,10 +4507,10 @@ err_exit:
 	}
 #endif /* UNIV_DEBUG */
 
-	row_mysql_unlock_data_dictionary(ctx->trx);
+	row_myblockchain_unlock_data_dictionary(ctx->trx);
 
-	trx_free_for_mysql(ctx->trx);
-	trx_commit_for_mysql(ctx->prebuilt->trx);
+	trx_free_for_myblockchain(ctx->trx);
+	trx_commit_for_myblockchain(ctx->prebuilt->trx);
 
 	delete ctx;
 	ha_alter_info->handler_ctx = NULL;
@@ -4984,7 +4984,7 @@ check_if_ok_to_rename:
 			const char*	s = m_prebuilt->table->col_names;
 			unsigned j;
 			/* Skip user columns.
-			MySQL should have checked these already.
+			MyBlockchain should have checked these already.
 			We want to allow renaming of c1 to c2, c2 to c1. */
 			for (j = 0; j < table->s->fields; j++) {
 				if (!innobase_is_v_fld(table->field[j])) {
@@ -5131,7 +5131,7 @@ check_if_ok_to_rename:
 				const char* fid = strchr(foreign->id, '/');
 
 				DBUG_ASSERT(fid);
-				/* If no database/ prefix was present in
+				/* If no blockchain/ prefix was present in
 				the FOREIGN KEY constraint name, compare
 				to the full constraint name. */
 				fid = fid ? fid + 1 : foreign->id;
@@ -5219,7 +5219,7 @@ found_fk:
 					    system_charset_info,
 					    FTS_DOC_ID_INDEX_NAME,
 					    table->key_info[i].name)) {
-					/* The index exists in the MySQL
+					/* The index exists in the MyBlockchain
 					data dictionary. Do not drop it,
 					even though it is no longer needed
 					by InnoDB fulltext search. */
@@ -5235,7 +5235,7 @@ check_if_can_drop_indexes:
 
 		/* Prevent a race condition between DROP INDEX and
 		CREATE TABLE adding FOREIGN KEY constraints. */
-		row_mysql_lock_data_dictionary(m_prebuilt->trx);
+		row_myblockchain_lock_data_dictionary(m_prebuilt->trx);
 
 		if (!n_drop_index) {
 			drop_index = NULL;
@@ -5254,7 +5254,7 @@ check_if_can_drop_indexes:
 				ha_alter_info, index,
 				indexed_table, col_names,
 				m_prebuilt->trx, drop_fk, n_drop_fk)) {
-				row_mysql_unlock_data_dictionary(
+				row_myblockchain_unlock_data_dictionary(
 					m_prebuilt->trx);
 				m_prebuilt->trx->error_info = index;
 				print_error(HA_ERR_DROP_INDEX_FK,
@@ -5270,12 +5270,12 @@ check_if_can_drop_indexes:
 			    ha_alter_info, drop_primary,
 			    indexed_table, col_names,
 			    m_prebuilt->trx, drop_fk, n_drop_fk)) {
-			row_mysql_unlock_data_dictionary(m_prebuilt->trx);
+			row_myblockchain_unlock_data_dictionary(m_prebuilt->trx);
 			print_error(HA_ERR_DROP_INDEX_FK, MYF(0));
 			goto err_exit;
 		}
 
-		row_mysql_unlock_data_dictionary(m_prebuilt->trx);
+		row_myblockchain_unlock_data_dictionary(m_prebuilt->trx);
 	} else {
 		drop_index = NULL;
 	}
@@ -5332,7 +5332,7 @@ check_if_can_drop_indexes:
 			    add_fk, &n_add_fk, m_prebuilt->trx)) {
 err_exit:
 			if (n_drop_index) {
-				row_mysql_lock_data_dictionary(m_prebuilt->trx);
+				row_myblockchain_lock_data_dictionary(m_prebuilt->trx);
 
 				/* Clear the to_be_dropped flags, which might
 				have been set at this point. */
@@ -5341,7 +5341,7 @@ err_exit:
 					drop_index[i]->to_be_dropped = 0;
 				}
 
-				row_mysql_unlock_data_dictionary(
+				row_myblockchain_unlock_data_dictionary(
 					m_prebuilt->trx);
 			}
 
@@ -5468,7 +5468,7 @@ found_col:
 	}
 
 	DBUG_ASSERT(heap);
-	DBUG_ASSERT(m_user_thd == m_prebuilt->trx->mysql_thd);
+	DBUG_ASSERT(m_user_thd == m_prebuilt->trx->myblockchain_thd);
 	DBUG_ASSERT(!ha_alter_info->handler_ctx);
 
 	ha_alter_info->handler_ctx = new ha_innobase_inplace_ctx(
@@ -5757,7 +5757,7 @@ rollback_inplace_alter_table(
 	}
 
 	trx_start_for_ddl(ctx->trx, TRX_DICT_OP_INDEX);
-	row_mysql_lock_data_dictionary(ctx->trx);
+	row_myblockchain_lock_data_dictionary(ctx->trx);
 
 	if (ctx->need_rebuild()) {
 		dberr_t	err = DB_SUCCESS;
@@ -5802,9 +5802,9 @@ rollback_inplace_alter_table(
 			prebuilt->table, table, FALSE, ctx->trx);
 	}
 
-	trx_commit_for_mysql(ctx->trx);
-	row_mysql_unlock_data_dictionary(ctx->trx);
-	trx_free_for_mysql(ctx->trx);
+	trx_commit_for_myblockchain(ctx->trx);
+	row_myblockchain_unlock_data_dictionary(ctx->trx);
+	trx_free_for_myblockchain(ctx->trx);
 
 func_exit:
 #ifndef DBUG_OFF
@@ -5825,7 +5825,7 @@ func_exit:
 		}
 
 		if (ctx->num_to_drop_index) {
-			row_mysql_lock_data_dictionary(prebuilt->trx);
+			row_myblockchain_lock_data_dictionary(prebuilt->trx);
 
 			/* Clear the to_be_dropped flags
 			in the data dictionary cache.
@@ -5838,18 +5838,18 @@ func_exit:
 				index->to_be_dropped = 0;
 			}
 
-			row_mysql_unlock_data_dictionary(prebuilt->trx);
+			row_myblockchain_unlock_data_dictionary(prebuilt->trx);
 		}
 	}
 
-	trx_commit_for_mysql(prebuilt->trx);
+	trx_commit_for_myblockchain(prebuilt->trx);
 	MONITOR_ATOMIC_DEC(MONITOR_PENDING_ALTER_TABLE);
 	DBUG_RETURN(fail);
 }
 
 /** Drop a FOREIGN KEY constraint from the data dictionary tables.
 @param trx data dictionary transaction
-@param table_name Table name in MySQL
+@param table_name Table name in MyBlockchain
 @param foreign_id Foreign key constraint identifier
 @retval true Failure
 @retval false Success */
@@ -5901,7 +5901,7 @@ innobase_drop_foreign_try(
 /** Rename a column in the data dictionary tables.
 @param[in] user_table	InnoDB table that was being altered
 @param[in] trx		data dictionary transaction
-@param[in] table_name	Table name in MySQL
+@param[in] table_name	Table name in MyBlockchain
 @param[in] nth_col	0-based index of the column
 @param[in] from		old column name
 @param[in] to		new column name
@@ -6113,7 +6113,7 @@ rename_foreign:
 @param ctx In-place ALTER TABLE context
 @param table the TABLE
 @param trx data dictionary transaction
-@param table_name Table name in MySQL
+@param table_name Table name in MyBlockchain
 @retval true Failure
 @retval false Success */
 static __attribute__((nonnull, warn_unused_result))
@@ -6178,7 +6178,7 @@ processed_field:
 /** Enlarge a column in the data dictionary tables.
 @param user_table InnoDB table that was being altered
 @param trx data dictionary transaction
-@param table_name Table name in MySQL
+@param table_name Table name in MyBlockchain
 @param nth_col 0-based index of the column
 @param new_len new column length, in bytes
 @retval true Failure
@@ -6205,7 +6205,7 @@ innobase_enlarge_column_try(
 	ut_ad(dict_table_get_nth_col(user_table, nth_col)->len < new_len);
 #ifdef UNIV_DEBUG
 	switch (dict_table_get_nth_col(user_table, nth_col)->mtype) {
-	case DATA_MYSQL:
+	case DATA_MYBLOCKCHAIN:
 		/* NOTE: we could allow this when !(prtype & DATA_BINARY_TYPE)
 		and ROW_FORMAT is not REDUNDANT and mbminlen<mbmaxlen.
 		That is, we treat a UTF-8 CHAR(n) column somewhat like
@@ -6213,7 +6213,7 @@ innobase_enlarge_column_try(
 		ut_error;
 	case DATA_BINARY:
 	case DATA_VARCHAR:
-	case DATA_VARMYSQL:
+	case DATA_VARMYBLOCKCHAIN:
 	case DATA_DECIMAL:
 	case DATA_BLOB:
 		break;
@@ -6257,7 +6257,7 @@ innobase_enlarge_column_try(
 @param table the TABLE
 @param user_table InnoDB table that was being altered
 @param trx data dictionary transaction
-@param table_name Table name in MySQL
+@param table_name Table name in MyBlockchain
 @retval true Failure
 @retval false Success */
 static __attribute__((nonnull, warn_unused_result))
@@ -6360,8 +6360,8 @@ innobase_rename_or_enlarge_columns_cache(
 /** Get the auto-increment value of the table on commit.
 @param ha_alter_info Data used during in-place alter
 @param ctx In-place ALTER TABLE context
-@param altered_table MySQL table that is being altered
-@param old_table MySQL table as it is before the ALTER operation
+@param altered_table MyBlockchain table that is being altered
+@param old_table MyBlockchain table as it is before the ALTER operation
 @return the next auto-increment value (0 if not present) */
 static __attribute__((nonnull, warn_unused_result))
 ulonglong
@@ -6440,7 +6440,7 @@ but do not touch the data dictionary cache.
 @param ha_alter_info Data used during in-place alter
 @param ctx In-place ALTER TABLE context
 @param trx Data dictionary transaction
-@param table_name Table name in MySQL
+@param table_name Table name in MyBlockchain
 @retval true Failure
 @retval false Success
 */
@@ -6525,7 +6525,7 @@ innobase_update_foreign_try(
 /** Update the foreign key constraint definitions in the data dictionary cache
 after the changes to data dictionary tables were committed.
 @param ctx	In-place ALTER TABLE context
-@param user_thd	MySQL connection
+@param user_thd	MyBlockchain connection
 @return		InnoDB error code (should always be DB_SUCCESS) */
 static __attribute__((nonnull, warn_unused_result))
 dberr_t
@@ -6634,10 +6634,10 @@ and inplace_alter_table() inside the data dictionary tables,
 when rebuilding the table.
 @param ha_alter_info Data used during in-place alter
 @param ctx In-place ALTER TABLE context
-@param altered_table MySQL table that is being altered
-@param old_table MySQL table as it is before the ALTER operation
+@param altered_table MyBlockchain table that is being altered
+@param old_table MyBlockchain table as it is before the ALTER operation
 @param trx Data dictionary transaction
-@param table_name Table name in MySQL
+@param table_name Table name in MyBlockchain
 @retval true Failure
 @retval false Success
 */
@@ -6841,9 +6841,9 @@ and inplace_alter_table() inside the data dictionary tables,
 when not rebuilding the table.
 @param ha_alter_info Data used during in-place alter
 @param ctx In-place ALTER TABLE context
-@param old_table MySQL table as it is before the ALTER operation
+@param old_table MyBlockchain table as it is before the ALTER operation
 @param trx Data dictionary transaction
-@param table_name Table name in MySQL
+@param table_name Table name in MyBlockchain
 @retval true Failure
 @retval false Success
 */
@@ -7074,7 +7074,7 @@ commit_cache_norebuild(
 			dict_index_remove_from_cache(index->table, index);
 		}
 
-		trx_commit_for_mysql(trx);
+		trx_commit_for_myblockchain(trx);
 	}
 
 	ctx->new_table->fts_doc_id_index
@@ -7093,9 +7093,9 @@ Remove statistics for dropped indexes, add statistics for created indexes
 and rename statistics for renamed indexes.
 @param ha_alter_info Data used during in-place alter
 @param ctx In-place ALTER TABLE context
-@param altered_table MySQL table that is being altered
-@param table_name Table name in MySQL
-@param thd MySQL connection
+@param altered_table MyBlockchain table that is being altered
+@param table_name Table name in MyBlockchain
+@param thd MyBlockchain connection
 */
 static
 void
@@ -7191,8 +7191,8 @@ alter_stats_norebuild(
 Remove statistics for dropped indexes, add statistics for created indexes
 and rename statistics for renamed indexes.
 @param table InnoDB table that was rebuilt by ALTER TABLE
-@param table_name Table name in MySQL
-@param thd MySQL connection
+@param table_name Table name in MyBlockchain
+@param thd MyBlockchain connection
 */
 static
 void
@@ -7341,7 +7341,7 @@ ha_innobase::commit_inplace_alter_table(
 			= static_cast<ha_innobase_inplace_ctx*>(*pctx);
 
 		if (ctx->trx) {
-			trx_free_for_mysql(ctx->trx);
+			trx_free_for_myblockchain(ctx->trx);
 			ctx->trx = NULL;
 		}
 	}
@@ -7355,11 +7355,11 @@ ha_innobase::commit_inplace_alter_table(
 
 		/* Exclusively lock the table, to ensure that no other
 		transaction is holding locks on the table while we
-		change the table definition. The MySQL meta-data lock
+		change the table definition. The MyBlockchain meta-data lock
 		should normally guarantee that no conflicting locks
 		exist. However, FOREIGN KEY constraints checks and any
 		transactions collected during crash recovery could be
-		holding InnoDB locks only, not MySQL locks. */
+		holding InnoDB locks only, not MyBlockchain locks. */
 
 		dberr_t error = row_merge_lock_table(
 			m_prebuilt->trx, ctx->old_table, LOCK_X);
@@ -7406,7 +7406,7 @@ ha_innobase::commit_inplace_alter_table(
 	trx_start_for_ddl(trx, TRX_DICT_OP_INDEX);
 	/* Latch the InnoDB data dictionary exclusively so that no deadlocks
 	or lock waits can happen in it during the data dictionary operation. */
-	row_mysql_lock_data_dictionary(trx);
+	row_myblockchain_lock_data_dictionary(trx);
 
 	ut_ad(log_append_on_checkpoint(NULL) == NULL);
 
@@ -7488,9 +7488,9 @@ ha_innobase::commit_inplace_alter_table(
 	/* Commit or roll back the changes to the data dictionary. */
 
 	if (fail) {
-		trx_rollback_for_mysql(trx);
+		trx_rollback_for_myblockchain(trx);
 	} else if (!new_clustered) {
-		trx_commit_for_mysql(trx);
+		trx_commit_for_myblockchain(trx);
 	} else {
 		mtr_t	mtr;
 		mtr_start(&mtr);
@@ -7510,7 +7510,7 @@ ha_innobase::commit_inplace_alter_table(
 				/* Out of memory. */
 				mtr.set_log_mode(MTR_LOG_NO_REDO);
 				mtr_commit(&mtr);
-				trx_rollback_for_mysql(trx);
+				trx_rollback_for_myblockchain(trx);
 				fail = true;
 			}
 			DBUG_INJECT_CRASH("ib_commit_inplace_crash",
@@ -7559,7 +7559,7 @@ ha_innobase::commit_inplace_alter_table(
 		}
 
 		/* If server crashes here, the dictionary in
-		InnoDB and MySQL will differ.  The .ibd files
+		InnoDB and MyBlockchain will differ.  The .ibd files
 		and the .frm files must be swapped manually by
 		the administrator. No loss of data. */
 		DBUG_EXECUTE_IF("innodb_alter_commit_crash_after_commit",
@@ -7598,7 +7598,7 @@ ha_innobase::commit_inplace_alter_table(
 
 				dict_table_close_and_drop(trx, ctx->new_table);
 
-				trx_commit_for_mysql(trx);
+				trx_commit_for_myblockchain(trx);
 				ctx->new_table = NULL;
 			} else {
 				/* We failed, but did not rebuild the table.
@@ -7608,7 +7608,7 @@ ha_innobase::commit_inplace_alter_table(
 				trx_start_for_ddl(trx, TRX_DICT_OP_INDEX);
 				innobase_rollback_sec_index(
 					ctx->new_table, table, TRUE, trx);
-				trx_commit_for_mysql(trx);
+				trx_commit_for_myblockchain(trx);
 			}
 			DBUG_INJECT_CRASH("ib_commit_inplace_crash_fail",
 					  crash_fail_inject_count++);
@@ -7709,14 +7709,14 @@ foreign_fail:
 					  crash_fail_inject_count++);
 		}
 
-		row_mysql_unlock_data_dictionary(trx);
-		trx_free_for_mysql(trx);
+		row_myblockchain_unlock_data_dictionary(trx);
+		trx_free_for_myblockchain(trx);
 		DBUG_RETURN(true);
 	}
 
 	if (ctx0->num_to_drop_vcol || ctx0->num_to_add_vcol) {
 
-		trx_commit_for_mysql(m_prebuilt->trx);
+		trx_commit_for_myblockchain(m_prebuilt->trx);
 
 		if (btr_search_enabled) {
 			btr_search_disable(false);
@@ -7732,13 +7732,13 @@ foreign_fail:
 		dict_table_remove_from_cache(m_prebuilt->table);
 		m_prebuilt->table = dict_table_open_on_name(
 			tb_name, TRUE, TRUE, DICT_ERR_IGNORE_NONE);
-		row_mysql_unlock_data_dictionary(trx);
-		trx_free_for_mysql(trx);
+		row_myblockchain_unlock_data_dictionary(trx);
+		trx_free_for_myblockchain(trx);
 		MONITOR_ATOMIC_DEC(MONITOR_PENDING_ALTER_TABLE);
 		DBUG_RETURN(false);
 	}
 	/* Release the table locks. */
-	trx_commit_for_mysql(m_prebuilt->trx);
+	trx_commit_for_myblockchain(m_prebuilt->trx);
 
 	DBUG_EXECUTE_IF("ib_ddl_crash_after_user_trx_commit", DBUG_SUICIDE(););
 
@@ -7848,7 +7848,7 @@ foreign_fail:
 			with ctx->tmp_name may be recovered. */
 			trx_start_for_ddl(trx, TRX_DICT_OP_TABLE);
 			row_merge_drop_table(trx, ctx->old_table);
-			trx_commit_for_mysql(trx);
+			trx_commit_for_myblockchain(trx);
 
 			/* Rebuild the prebuilt object. */
 			ctx->prebuilt = row_create_prebuilt(
@@ -7864,8 +7864,8 @@ foreign_fail:
 				  crash_inject_count++);
 	}
 
-	row_mysql_unlock_data_dictionary(trx);
-	trx_free_for_mysql(trx);
+	row_myblockchain_unlock_data_dictionary(trx);
+	trx_free_for_myblockchain(trx);
 
 	/* TODO: The following code could be executed
 	while allowing concurrent access to the table
@@ -7970,7 +7970,7 @@ public:
 };
 
 /** Check if supported inplace alter table.
-@param[in]	altered_table	Altered MySQL table.
+@param[in]	altered_table	Altered MyBlockchain table.
 @param[in]	ha_alter_info	Information about inplace operations to do.
 @return	Lock level, not supported or error */
 enum_alter_inplace_result

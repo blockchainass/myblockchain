@@ -13,12 +13,12 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-# Add executable plus some additional MySQL specific stuff
+# Add executable plus some additional MyBlockchain specific stuff
 # Usage (same as for standard CMake's ADD_EXECUTABLE)
 #
-# MYSQL_ADD_EXECUTABLE(target source1...sourceN)
+# MYBLOCKCHAIN_ADD_EXECUTABLE(target source1...sourceN)
 #
-# MySQL specifics:
+# MyBlockchain specifics:
 # - instruct CPack to install executable under ${CMAKE_INSTALL_PREFIX}/bin directory
 # On Windows :
 # - add version resource
@@ -26,9 +26,9 @@
 
 INCLUDE(cmake_parse_arguments)
 
-FUNCTION (MYSQL_ADD_EXECUTABLE)
+FUNCTION (MYBLOCKCHAIN_ADD_EXECUTABLE)
   # Pass-through arguments for ADD_EXECUTABLE
-  MYSQL_PARSE_ARGUMENTS(ARG
+  MYBLOCKCHAIN_PARSE_ARGUMENTS(ARG
    "WIN32;MACOSX_BUNDLE;EXCLUDE_FROM_ALL;DESTINATION;COMPONENT"
    ""
    ${ARGN}
@@ -46,11 +46,11 @@ FUNCTION (MYSQL_ADD_EXECUTABLE)
     ENDIF()
     IF(ARG_COMPONENT)
       SET(COMP COMPONENT ${ARG_COMPONENT})
-    ELSEIF(MYSQL_INSTALL_COMPONENT)
-      SET(COMP COMPONENT ${MYSQL_INSTALL_COMPONENT})
+    ELSEIF(MYBLOCKCHAIN_INSTALL_COMPONENT)
+      SET(COMP COMPONENT ${MYBLOCKCHAIN_INSTALL_COMPONENT})
     ELSE()
       SET(COMP COMPONENT Client)
     ENDIF()
-    MYSQL_INSTALL_TARGETS(${target} DESTINATION ${ARG_DESTINATION} ${COMP})
+    MYBLOCKCHAIN_INSTALL_TARGETS(${target} DESTINATION ${ARG_DESTINATION} ${COMP})
   ENDIF()
 ENDFUNCTION()

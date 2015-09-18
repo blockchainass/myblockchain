@@ -49,29 +49,29 @@ static
 struct proc_option f_options[] = {
   { "--FileSystemPath=",     atrt_process::AP_NDBD, 0 }
   ,{ "--PortNumber=",        atrt_process::AP_NDB_MGMD, 0 }
-  ,{ "--datadir=",     atrt_process::AP_MYSQLD, 0 }
-  ,{ "--socket=",      atrt_process::AP_MYSQLD | atrt_process::AP_CLIENT, 0 }
-  ,{ "--port=",        atrt_process::AP_MYSQLD | atrt_process::AP_CLIENT, 0 }
+  ,{ "--datadir=",     atrt_process::AP_MYBLOCKCHAIND, 0 }
+  ,{ "--socket=",      atrt_process::AP_MYBLOCKCHAIND | atrt_process::AP_CLIENT, 0 }
+  ,{ "--port=",        atrt_process::AP_MYBLOCKCHAIND | atrt_process::AP_CLIENT, 0 }
   ,{ "--host=",        atrt_process::AP_CLIENT, 0 }
-  ,{ "--server-id=",   atrt_process::AP_MYSQLD, PO_REP }
-  ,{ "--log-bin",      atrt_process::AP_MYSQLD, PO_REP_MASTER }
-  ,{ "--master-host=", atrt_process::AP_MYSQLD, PO_REP_SLAVE }
-  ,{ "--master-port=", atrt_process::AP_MYSQLD, PO_REP_SLAVE }
-  ,{ "--master-user=", atrt_process::AP_MYSQLD, PO_REP_SLAVE }
-  ,{ "--master-password=", atrt_process::AP_MYSQLD, PO_REP_SLAVE }
-  ,{ "--ndb-connectstring=", atrt_process::AP_MYSQLD | atrt_process::AP_CLUSTER
+  ,{ "--server-id=",   atrt_process::AP_MYBLOCKCHAIND, PO_REP }
+  ,{ "--log-bin",      atrt_process::AP_MYBLOCKCHAIND, PO_REP_MASTER }
+  ,{ "--master-host=", atrt_process::AP_MYBLOCKCHAIND, PO_REP_SLAVE }
+  ,{ "--master-port=", atrt_process::AP_MYBLOCKCHAIND, PO_REP_SLAVE }
+  ,{ "--master-user=", atrt_process::AP_MYBLOCKCHAIND, PO_REP_SLAVE }
+  ,{ "--master-password=", atrt_process::AP_MYBLOCKCHAIND, PO_REP_SLAVE }
+  ,{ "--ndb-connectstring=", atrt_process::AP_MYBLOCKCHAIND | atrt_process::AP_CLUSTER
      ,PO_NDB }
-  ,{ "--ndbcluster", atrt_process::AP_MYSQLD, PO_NDB }
+  ,{ "--ndbcluster", atrt_process::AP_MYBLOCKCHAIND, PO_NDB }
   ,{ 0, 0, 0 }
 };
 const char * ndbcs = "--ndb-connectstring=";
 
 bool
-setup_config(atrt_config& config, const char* atrt_mysqld)
+setup_config(atrt_config& config, const char* atrt_myblockchaind)
 {
   BaseString tmp(g_clusters);
   
-  if (atrt_mysqld)
+  if (atrt_myblockchaind)
   {
     tmp.appfmt(",.atrt");
   }
@@ -124,7 +124,7 @@ setup_config(atrt_config& config, const char* atrt_mysqld)
       { atrt_process::AP_NDBD, "--ndbd=", 0 },
       { atrt_process::AP_NDB_API, "--ndbapi=", 0 },
       { atrt_process::AP_NDB_API, "--api=", 0 },
-      { atrt_process::AP_MYSQLD, "--mysqld=", 0 },
+      { atrt_process::AP_MYBLOCKCHAIND, "--myblockchaind=", 0 },
       { atrt_process::AP_ALL, 0, 0}
     };
 
@@ -148,13 +148,13 @@ setup_config(atrt_config& config, const char* atrt_mysqld)
     if (strcmp(clusters[i].c_str(), ".atrt") == 0)
     {
       /**
-       * Only use a mysqld...
+       * Only use a myblockchaind...
        */
       proc_args[0].value = 0;
       proc_args[1].value = 0;
       proc_args[2].value = 0;      
       proc_args[3].value = 0;      
-      proc_args[4].value = atrt_mysqld;
+      proc_args[4].value = atrt_myblockchaind;
     }
 
     /**
@@ -181,7 +181,7 @@ setup_config(atrt_config& config, const char* atrt_mysqld)
       int argc = 1;
       const char * argv[] = { "atrt", 0, 0 };
       argv[argc++] = buf.c_str();
-      const char *groups[] = { "mysql_cluster", 0 };
+      const char *groups[] = { "myblockchain_cluster", 0 };
       char ** tmp = (char**)argv;
       ret = load_defaults(g_my_cnf, groups, &argc, &tmp);
       
@@ -268,8 +268,8 @@ load_process(atrt_config& config, atrt_cluster& cluster,
   proc.m_proc.m_stderr = "2>&1";
   proc.m_proc.m_runas = proc.m_host->m_user;
   proc.m_proc.m_ulimit = "c:unlimited";
-  proc.m_proc.m_env.assfmt("MYSQL_BASE_DIR=%s", g_prefix);
-  proc.m_proc.m_env.appfmt(" MYSQL_HOME=%s", g_basedir);
+  proc.m_proc.m_env.assfmt("MYBLOCKCHAIN_BASE_DIR=%s", g_prefix);
+  proc.m_proc.m_env.appfmt(" MYBLOCKCHAIN_HOME=%s", g_basedir);
   proc.m_proc.m_env.appfmt(" ATRT_PID=%u", (unsigned)proc_no);
   proc.m_proc.m_shutdown_options = "";
 
@@ -278,9 +278,9 @@ load_process(atrt_config& config, atrt_cluster& cluster,
      * In 5.5...binaries aren't compiled with rpath
      * So we need an explicit LD_LIBRARY_PATH
      *
-     * Use path from libmysqlclient.so
+     * Use path from libmyblockchainclient.so
      */
-    char * dir = dirname(g_libmysqlclient_so_path);
+    char * dir = dirname(g_libmyblockchainclient_so_path);
 #if defined(__MACH__)
     proc.m_proc.m_env.appfmt(" DYLD_LIBRARY_PATH=%s", dir);
 #else
@@ -315,12 +315,12 @@ load_process(atrt_config& config, atrt_cluster& cluster,
     buf[0].assfmt("--defaults-group-suffix=%s", cluster.m_name.c_str());
     argv[argc++] = buf[0].c_str();
     break;
-  case atrt_process::AP_MYSQLD:
+  case atrt_process::AP_MYBLOCKCHAIND:
     if (g_fix_nodeid)
       proc.m_nodeid= cluster.m_next_nodeid++;
 
-    groups[0] = "mysqld";
-    groups[1] = "mysql_cluster";
+    groups[0] = "myblockchaind";
+    groups[1] = "myblockchain_cluster";
     buf[0].assfmt("--defaults-group-suffix=.%u%s",idx,cluster.m_name.c_str());
     argv[argc++] = buf[0].c_str();
     break;
@@ -365,7 +365,7 @@ load_process(atrt_config& config, atrt_cluster& cluster,
     proc.m_proc.m_args.appfmt(" --ndb-nodeid=%u", proc.m_nodeid);
     proc.m_proc.m_cwd.assfmt("%sndb_mgmd.%u", dir.c_str(), proc.m_index);
     proc.m_proc.m_args.appfmt(" --configdir=%s", proc.m_proc.m_cwd.c_str());
-    proc.m_proc.m_env.appfmt(" MYSQL_GROUP_SUFFIX=%s", 
+    proc.m_proc.m_env.appfmt(" MYBLOCKCHAIN_GROUP_SUFFIX=%s", 
 			     cluster.m_name.c_str());
     break;
   } 
@@ -393,14 +393,14 @@ load_process(atrt_config& config, atrt_cluster& cluster,
     if (g_fix_nodeid)
       proc.m_proc.m_args.appfmt(" --ndb-nodeid=%u", proc.m_nodeid);
     proc.m_proc.m_cwd.assfmt("%sndbd.%u", dir.c_str(), proc.m_index);
-    proc.m_proc.m_env.appfmt(" MYSQL_GROUP_SUFFIX=%s", 
+    proc.m_proc.m_env.appfmt(" MYBLOCKCHAIN_GROUP_SUFFIX=%s", 
 			     cluster.m_name.c_str());
     break;
   } 
-  case atrt_process::AP_MYSQLD:
+  case atrt_process::AP_MYBLOCKCHAIND:
   {
-    proc.m_proc.m_name.assfmt("%u-%s", proc_no, "mysqld");
-    proc.m_proc.m_path.assign(g_mysqld_bin_path);
+    proc.m_proc.m_name.assfmt("%u-%s", proc_no, "myblockchaind");
+    proc.m_proc.m_path.assign(g_myblockchaind_bin_path);
     proc.m_proc.m_args.assfmt("--defaults-file=%s/my.cnf",
 			      proc.m_host->m_basedir.c_str());
     proc.m_proc.m_args.appfmt(" --defaults-group-suffix=.%d%s",
@@ -416,9 +416,9 @@ load_process(atrt_config& config, atrt_cluster& cluster,
       proc.m_proc.m_args.appfmt(" %s=%s", ndbcs, val);
     }
 
-    proc.m_proc.m_cwd.appfmt("%smysqld.%u", dir.c_str(), proc.m_index);
+    proc.m_proc.m_cwd.appfmt("%smyblockchaind.%u", dir.c_str(), proc.m_index);
     proc.m_proc.m_shutdown_options = "SIGKILL"; // not nice
-    proc.m_proc.m_env.appfmt(" MYSQL_GROUP_SUFFIX=.%u%s", 
+    proc.m_proc.m_env.appfmt(" MYBLOCKCHAIN_GROUP_SUFFIX=.%u%s", 
 			     proc.m_index,
 			     cluster.m_name.c_str());
     break;
@@ -429,17 +429,17 @@ load_process(atrt_config& config, atrt_cluster& cluster,
     proc.m_proc.m_path = "";
     proc.m_proc.m_args = "";
     proc.m_proc.m_cwd.appfmt("%sndb_api.%u", dir.c_str(), proc.m_index);
-    proc.m_proc.m_env.appfmt(" MYSQL_GROUP_SUFFIX=%s", 
+    proc.m_proc.m_env.appfmt(" MYBLOCKCHAIN_GROUP_SUFFIX=%s", 
 			     cluster.m_name.c_str());
     break;
   } 
   case atrt_process::AP_CLIENT:
   {
-    proc.m_proc.m_name.assfmt("%u-%s", proc_no, "mysql");
+    proc.m_proc.m_name.assfmt("%u-%s", proc_no, "myblockchain");
     proc.m_proc.m_path = "";
     proc.m_proc.m_args = "";
     proc.m_proc.m_cwd.appfmt("%s/client.%u", dir.c_str(), proc.m_index);
-    proc.m_proc.m_env.appfmt(" MYSQL_GROUP_SUFFIX=.%d%s", 
+    proc.m_proc.m_env.appfmt(" MYBLOCKCHAIN_GROUP_SUFFIX=.%d%s", 
 			     proc.m_index,
 			     cluster.m_name.c_str());
     break;
@@ -450,10 +450,10 @@ load_process(atrt_config& config, atrt_cluster& cluster,
     return false;
   }
   
-  if (type == atrt_process::AP_MYSQLD)
+  if (type == atrt_process::AP_MYBLOCKCHAIND)
   {
     /**
-     * Add a client for each mysqld
+     * Add a client for each myblockchaind
      */
     if (!load_process(config, cluster, atrt_process::AP_CLIENT, idx, hostname))
     {
@@ -463,7 +463,7 @@ load_process(atrt_config& config, atrt_cluster& cluster,
   
   if (type == atrt_process::AP_CLIENT)
   {
-    proc.m_mysqld = cluster.m_processes[cluster.m_processes.size()-2];
+    proc.m_myblockchaind = cluster.m_processes[cluster.m_processes.size()-2];
   }
   
   return true;
@@ -520,13 +520,13 @@ static
 proc_rule f_rules[] = 
 {
   { atrt_process::AP_CLUSTER, pr_check_features, 0 }
-  ,{ atrt_process::AP_MYSQLD, pr_check_replication, 0 }
+  ,{ atrt_process::AP_MYBLOCKCHAIND, pr_check_replication, 0 }
   ,{ (atrt_process::AP_ALL & ~atrt_process::AP_CLIENT), pr_proc_options, 
      ~(PO_REP | PO_NDB) }
   ,{ (atrt_process::AP_ALL & ~atrt_process::AP_CLIENT), pr_proc_options, PO_REP }
   ,{ atrt_process::AP_CLIENT, pr_fix_client, 0 }
   ,{ atrt_process::AP_CLUSTER, pr_fix_ndb_connectstring, 0 }
-  ,{ atrt_process::AP_MYSQLD, pr_set_ndb_connectstring, 0 }
+  ,{ atrt_process::AP_MYBLOCKCHAIND, pr_set_ndb_connectstring, 0 }
   ,{ atrt_process::AP_ALL, pr_check_proc, 0 }
   ,{ 0, 0, 0 }
 };
@@ -650,8 +650,8 @@ pr_check_replication(Properties& props, proc_rule_ctx& ctx, int)
       return false;
       }
       
-      atrt_process* src = find(config, atrt_process::AP_MYSQLD,rep[0].c_str());
-      atrt_process* dst = find(config, atrt_process::AP_MYSQLD,rep[1].c_str());
+      atrt_process* src = find(config, atrt_process::AP_MYBLOCKCHAIND,rep[0].c_str());
+      atrt_process* dst = find(config, atrt_process::AP_MYBLOCKCHAIND,rep[1].c_str());
       
       if (src == 0 || dst == 0)
       {
@@ -691,7 +691,7 @@ pr_check_features(Properties& props, proc_rule_ctx& ctx, int)
   {
     if (cluster.m_processes[i]->m_type == atrt_process::AP_NDB_MGMD ||
 	cluster.m_processes[i]->m_type == atrt_process::AP_NDB_API ||
-	cluster.m_processes[i]->m_type == atrt_process::AP_MYSQLD ||
+	cluster.m_processes[i]->m_type == atrt_process::AP_MYBLOCKCHAIND ||
 	cluster.m_processes[i]->m_type == atrt_process::AP_NDBD)
     {
       features |= atrt_options::AO_NDBCLUSTER;
@@ -718,7 +718,7 @@ pr_fix_client(Properties& props, proc_rule_ctx& ctx, int)
   const char * val, *name = "--host=";
   if (!proc.m_options.m_loaded.get(name, &val))
   {
-    val = proc.m_mysqld->m_host->m_hostname.c_str();
+    val = proc.m_myblockchaind->m_host->m_hostname.c_str();
     proc.m_options.m_loaded.put(name, val);
     proc.m_options.m_generated.put(name, val);
   }
@@ -732,7 +732,7 @@ pr_fix_client(Properties& props, proc_rule_ctx& ctx, int)
       const char * val;
       if (!proc.m_options.m_loaded.get(name, &val))
       {
-	require(proc.m_mysqld->m_options.m_loaded.get(name, &val));
+	require(proc.m_myblockchaind->m_options.m_loaded.get(name, &val));
 	proc.m_options.m_loaded.put(name, val);
 	proc.m_options.m_generated.put(name, val);
       }
@@ -803,7 +803,7 @@ generate(atrt_process& proc, const char * name, Properties& props)
     const char * sock = 0;
     if (g_default_ports)
     {
-      sock = "/tmp/mysql.sock";
+      sock = "/tmp/myblockchain.sock";
       atrt_host * host = proc.m_host;
       for (unsigned i = 0; i<host->m_processes.size(); i++)
       {
@@ -822,7 +822,7 @@ generate(atrt_process& proc, const char * name, Properties& props)
     BaseString tmp;
     if (sock == 0)
     {
-      tmp.assfmt("%s/mysql.sock", proc.m_proc.m_cwd.c_str());
+      tmp.assfmt("%s/myblockchain.sock", proc.m_proc.m_cwd.c_str());
       sock = tmp.c_str();
     }
     
@@ -1032,8 +1032,8 @@ operator<<(NdbOut& out, const atrt_process& proc)
   case atrt_process::AP_NDBD: 
     out << "ndbd";
     break;
-  case atrt_process::AP_MYSQLD:
-    out << "mysqld";
+  case atrt_process::AP_MYBLOCKCHAIND:
+    out << "myblockchaind";
     break;
   case atrt_process::AP_NDB_API:
     out << "ndbapi";
@@ -1069,7 +1069,7 @@ operator<<(NdbOut& out, const atrt_process& proc)
   proc.m_proc.m_stderr = "2>&1";
   proc.m_proc.m_runas = proc.m_host->m_user;
   proc.m_proc.m_ulimit = "c:unlimited";
-  proc.m_proc.m_env.assfmt("MYSQL_BASE_DIR=%s", dir);
+  proc.m_proc.m_env.assfmt("MYBLOCKCHAIN_BASE_DIR=%s", dir);
   proc.m_proc.m_shutdown_options = "";
 #endif
   

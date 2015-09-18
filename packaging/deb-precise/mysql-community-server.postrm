@@ -21,14 +21,14 @@ then
 fi
 
 place_upstart_job_back () {
-	if [ -e "/var/lib/mysql/.mysql.conf.backup" ];
+	if [ -e "/var/lib/myblockchain/.myblockchain.conf.backup" ];
 	then
-		mv /var/lib/mysql/.mysql.conf.backup /etc/init/mysql.conf
+		mv /var/lib/myblockchain/.myblockchain.conf.backup /etc/init/myblockchain.conf
 	fi
 }
 
 get_pcount () {
-	PSCOUNT=$(ps -ef | grep "/usr/sbin/mysqld" | wc -l)
+	PSCOUNT=$(ps -ef | grep "/usr/sbin/myblockchaind" | wc -l)
 	echo "${PSCOUNT}"
 }
 
@@ -71,41 +71,41 @@ case "$1" in
 
 	place_upstart_job_back
 
-	MYSQLDATA=/var/lib/mysql
-	MYSQLFILES=/var/lib/mysql-files
-	MYSQLLOG=/var/log/mysql
-	MYSQLRUN=/var/run/mysqld
+	MYBLOCKCHAINDATA=/var/lib/myblockchain
+	MYBLOCKCHAINFILES=/var/lib/myblockchain-files
+	MYBLOCKCHAINLOG=/var/log/myblockchain
+	MYBLOCKCHAINRUN=/var/run/myblockchaind
 
 	server_stop
 
-	db_input high mysql-community-server/remove-data-dir || true
+	db_input high myblockchain-community-server/remove-data-dir || true
 	db_go
-	db_get mysql-community-server/remove-data-dir && RMDATADIR=${RET}
+	db_get myblockchain-community-server/remove-data-dir && RMDATADIR=${RET}
 	if [ "${RMDATADIR}" = "true" ];
 	then
-		if [ -d ${MYSQLRUN} ] || [ -L ${MYSQLRUN} ];
+		if [ -d ${MYBLOCKCHAINRUN} ] || [ -L ${MYBLOCKCHAINRUN} ];
 		then
-			rm -rf ${MYSQLRUN}
+			rm -rf ${MYBLOCKCHAINRUN}
 		fi
 
-		if [ -d ${MYSQLLOG} ] || [ -L ${MYSQLLOG} ];
+		if [ -d ${MYBLOCKCHAINLOG} ] || [ -L ${MYBLOCKCHAINLOG} ];
 		then
-			rm -rf ${MYSQLLOG}
+			rm -rf ${MYBLOCKCHAINLOG}
 		fi
 
-		if [ -d ${MYSQLDATA} ] || [ -L ${MYSQLDATA} ];
+		if [ -d ${MYBLOCKCHAINDATA} ] || [ -L ${MYBLOCKCHAINDATA} ];
 		then
-			rm -rf ${MYSQLDATA}
+			rm -rf ${MYBLOCKCHAINDATA}
 		fi
 
-		if [ -d ${MYSQLFILES} ] || [ -L ${MYSQLFILES} ];
+		if [ -d ${MYBLOCKCHAINFILES} ] || [ -L ${MYBLOCKCHAINFILES} ];
 		then
-			rm -rf ${MYSQLFILES}
+			rm -rf ${MYBLOCKCHAINFILES}
 		fi
 
-		if getent passwd mysql >/dev/null;
+		if getent passwd myblockchain >/dev/null;
 		then
-			userdel mysql
+			userdel myblockchain
 		fi
 	fi
 
@@ -118,33 +118,33 @@ case "$1" in
 
 	place_upstart_job_back
 
-	if [ -x "/etc/init.d/mysql" ];
+	if [ -x "/etc/init.d/myblockchain" ];
 	then
-		invoke-rc.d mysql start || exit $?
+		invoke-rc.d myblockchain start || exit $?
 	else
-	        if [ -d ${MYSQLRUN} ] || [ -L ${MYSQLRUN} ];
+	        if [ -d ${MYBLOCKCHAINRUN} ] || [ -L ${MYBLOCKCHAINRUN} ];
 		then
-			rm -rf ${MYSQLRUN}
+			rm -rf ${MYBLOCKCHAINRUN}
 		fi
 
-		if [ -d ${MYSQLLOG} ] || [ -L ${MYSQLLOG} ];
+		if [ -d ${MYBLOCKCHAINLOG} ] || [ -L ${MYBLOCKCHAINLOG} ];
 		then
-			rm -rf ${MYSQLLOG}
+			rm -rf ${MYBLOCKCHAINLOG}
 		fi
 
-		if [ -d ${MYSQLDATA} ] || [ -L ${MYSQLDATA} ];
+		if [ -d ${MYBLOCKCHAINDATA} ] || [ -L ${MYBLOCKCHAINDATA} ];
 		then
-			rm -rf ${MYSQLDATA}
+			rm -rf ${MYBLOCKCHAINDATA}
 		fi
 
-		if [ -d ${MYSQLFILES} ] || [ -L ${MYSQLFILES} ];
+		if [ -d ${MYBLOCKCHAINFILES} ] || [ -L ${MYBLOCKCHAINFILES} ];
 		then
-			rm -rf ${MYSQLFILES}
+			rm -rf ${MYBLOCKCHAINFILES}
 		fi
 
-		if getent passwd mysql >/dev/null;
+		if getent passwd myblockchain >/dev/null;
 		then
-			userdel mysql
+			userdel myblockchain
 		fi
 	fi
 

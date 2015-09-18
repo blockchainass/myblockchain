@@ -91,7 +91,7 @@ separately committed mini-transaction, because in crash recovery, the
 free bits could momentarily be set too high. */
 
 /******************************************************************//**
-Creates the insert buffer data structure at a database startup. */
+Creates the insert buffer data structure at a blockchain startup. */
 void
 ibuf_init_at_db_start(void);
 /*=======================*/

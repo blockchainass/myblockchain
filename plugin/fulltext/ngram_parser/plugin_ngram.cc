@@ -32,10 +32,10 @@ static int	ngram_token_size;
 static
 int
 ngram_parse(
-	MYSQL_FTPARSER_PARAM*	param,
+	MYBLOCKCHAIN_FTPARSER_PARAM*	param,
 	const char*		doc,
 	int			len,
-	MYSQL_FTPARSER_BOOLEAN_INFO*
+	MYBLOCKCHAIN_FTPARSER_BOOLEAN_INFO*
 				bool_info)
 {
 	const CHARSET_INFO*	cs = param->cs;
@@ -77,7 +77,7 @@ ngram_parse(
 		if (n_chars == ngram_token_size) {
 			/* Add a ngram */
 			bool_info->position = start - doc;
-			ret = param->mysql_add_word(
+			ret = param->myblockchain_add_word(
 				param, start, next - start, bool_info);
 			RETURN_IF_ERROR(ret);
 
@@ -93,13 +93,13 @@ ngram_parse(
 	2. STOPWORD MODE: we should handle unigram when matching phrase.
 	Note: only when the document char len is less than ngram_token_size. */
 	switch (param->mode) {
-	case MYSQL_FTPARSER_FULL_BOOLEAN_INFO:
-	case MYSQL_FTPARSER_WITH_STOPWORDS:
+	case MYBLOCKCHAIN_FTPARSER_FULL_BOOLEAN_INFO:
+	case MYBLOCKCHAIN_FTPARSER_WITH_STOPWORDS:
 		if (n_chars > 0 && is_first) {
 			DBUG_ASSERT(next > start);
 			DBUG_ASSERT(n_chars < ngram_token_size);
 
-			ret = param->mysql_add_word(
+			ret = param->myblockchain_add_word(
 				param, start, next - start, bool_info);
 		}
 		break;
@@ -150,12 +150,12 @@ ngram_get_token_size(
 static
 int
 ngram_term_convert(
-	MYSQL_FTPARSER_PARAM*		param,
+	MYBLOCKCHAIN_FTPARSER_PARAM*		param,
 	const char*			token,
 	int				len,
-	MYSQL_FTPARSER_BOOLEAN_INFO*	bool_info)
+	MYBLOCKCHAIN_FTPARSER_BOOLEAN_INFO*	bool_info)
 {
-	MYSQL_FTPARSER_BOOLEAN_INFO token_info =
+	MYBLOCKCHAIN_FTPARSER_BOOLEAN_INFO token_info =
 		{ FT_TOKEN_WORD, 0, 0, 0, 0, 0, ' ', 0};
 	const CHARSET_INFO* cs = param->cs;
 	int	token_size;
@@ -173,20 +173,20 @@ ngram_term_convert(
 
 	token_size = ngram_get_token_size(cs, token, len);
 	if (bool_info->trunc && token_size < ngram_token_size) {
-		ret = param->mysql_add_word(param,  const_cast<char*>(token),
+		ret = param->myblockchain_add_word(param,  const_cast<char*>(token),
 					    len, bool_info);
 	} else {
 		bool_info->type = FT_TOKEN_LEFT_PAREN;
 		bool_info->quot = reinterpret_cast<char*>(1);
 
-		ret = param->mysql_add_word(param, NULL, 0, bool_info);
+		ret = param->myblockchain_add_word(param, NULL, 0, bool_info);
 		RETURN_IF_ERROR(ret);
 
 		ret = ngram_parse(param, token, len, &token_info);
 		RETURN_IF_ERROR(ret);
 
 		bool_info->type = FT_TOKEN_RIGHT_PAREN;
-		ret = param->mysql_add_word(param, NULL, 0, bool_info);
+		ret = param->myblockchain_add_word(param, NULL, 0, bool_info);
 
 		DBUG_ASSERT(bool_info->quot == NULL);
 		bool_info->type = FT_TOKEN_WORD;
@@ -202,9 +202,9 @@ ngram_term_convert(
 static
 int
 ngram_parser_parse(
-	MYSQL_FTPARSER_PARAM* param)
+	MYBLOCKCHAIN_FTPARSER_PARAM* param)
 {
-	MYSQL_FTPARSER_BOOLEAN_INFO	bool_info =
+	MYBLOCKCHAIN_FTPARSER_BOOLEAN_INFO	bool_info =
 		{ FT_TOKEN_WORD, 0, 0, 0, 0, 0, ' ', 0};
 	const CHARSET_INFO*		cs = param->cs;
 	uchar**		start = reinterpret_cast<uchar**>(&param->doc);
@@ -213,14 +213,14 @@ ngram_parser_parse(
 	int		ret = 0;
 
 	switch (param->mode) {
-	case MYSQL_FTPARSER_SIMPLE_MODE:
-	case MYSQL_FTPARSER_WITH_STOPWORDS:
+	case MYBLOCKCHAIN_FTPARSER_SIMPLE_MODE:
+	case MYBLOCKCHAIN_FTPARSER_WITH_STOPWORDS:
 		ret = ngram_parse(param, param->doc,
 				  param->length, &bool_info);
 
 		break;
 
-	case MYSQL_FTPARSER_FULL_BOOLEAN_INFO:
+	case MYBLOCKCHAIN_FTPARSER_FULL_BOOLEAN_INFO:
 		/* Ngram parser cannot handle query in boolean mode, so we
 		first parse query into words with boolean info, then we parse
 		the words into ngram. */
@@ -245,7 +245,7 @@ ngram_parser_parse(
 						== FT_TOKEN_WORD);
 				}
 			} else {
-				ret = param->mysql_add_word(
+				ret = param->myblockchain_add_word(
 					param,
 					reinterpret_cast<char*>(word.pos),
 					word.len,
@@ -262,30 +262,30 @@ ngram_parser_parse(
 }
 
 /** Fulltext ngram parser */
-static struct st_mysql_ftparser ngram_parser_descriptor =
+static struct st_myblockchain_ftparser ngram_parser_descriptor =
 {
-	MYSQL_FTPARSER_INTERFACE_VERSION,
+	MYBLOCKCHAIN_FTPARSER_INTERFACE_VERSION,
 	ngram_parser_parse,
 	0,
 	0
 };
 
-static MYSQL_SYSVAR_INT(token_size, ngram_token_size,
+static MYBLOCKCHAIN_SYSVAR_INT(token_size, ngram_token_size,
   PLUGIN_VAR_READONLY,
   "InnoDB ngram full text plugin parser token size in characters",
   NULL, NULL, 2, 1, 10, 0);
 
 /** Ngram plugin system variables */
-static struct st_mysql_sys_var* ngram_system_variables[] =
+static struct st_myblockchain_sys_var* ngram_system_variables[] =
 {
-	MYSQL_SYSVAR(token_size),
+	MYBLOCKCHAIN_SYSVAR(token_size),
 	NULL
 };
 
 /** Ngram plugin descriptor */
-mysql_declare_plugin(ngram_parser)
+myblockchain_declare_plugin(ngram_parser)
 {
-	MYSQL_FTPARSER_PLUGIN,		/*!< type	*/
+	MYBLOCKCHAIN_FTPARSER_PLUGIN,		/*!< type	*/
 	&ngram_parser_descriptor,	/*!< descriptor	*/
 	"ngram",			/*!< name	*/
 	"Oracle Corp",			/*!< author	*/
@@ -299,4 +299,4 @@ mysql_declare_plugin(ngram_parser)
 	NULL,
 	0,
 }
-mysql_declare_plugin_end;
+myblockchain_declare_plugin_end;

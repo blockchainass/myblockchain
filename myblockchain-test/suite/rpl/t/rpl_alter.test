@@ -1,0 +1,18 @@
+source include/master-slave.inc;
+create blockchain myblockchaintest;
+
+create table myblockchaintest.t1 (n int PRIMARY KEY);
+alter table myblockchaintest.t1 add m int;
+insert into myblockchaintest.t1 values (1,2);
+create table myblockchaintest.t2 (n int PRIMARY KEY);
+insert into myblockchaintest.t2 values (45);
+rename table myblockchaintest.t2 to myblockchaintest.t3, myblockchaintest.t1 to myblockchaintest.t2;
+--source include/rpl_sync.inc
+select * from myblockchaintest.t2;
+select * from myblockchaintest.t3;
+connection master;
+drop blockchain myblockchaintest;
+--source include/rpl_sync.inc
+
+# End of 4.1 tests
+--source include/rpl_end.inc

@@ -15,39 +15,39 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
  */
 
-package com.mysql.clusterj.tie;
+package com.myblockchain.clusterj.tie;
 
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.util.List;
 
-import com.mysql.ndbjtie.ndbapi.Ndb;
-import com.mysql.ndbjtie.ndbapi.Ndb.Key_part_ptr;
-import com.mysql.ndbjtie.ndbapi.Ndb.Key_part_ptrArray;
+import com.myblockchain.ndbjtie.ndbapi.Ndb;
+import com.myblockchain.ndbjtie.ndbapi.Ndb.Key_part_ptr;
+import com.myblockchain.ndbjtie.ndbapi.Ndb.Key_part_ptrArray;
 
-import com.mysql.ndbjtie.ndbapi.NdbErrorConst;
-import com.mysql.ndbjtie.ndbapi.NdbInterpretedCode;
-import com.mysql.ndbjtie.ndbapi.NdbScanFilter;
-import com.mysql.ndbjtie.ndbapi.NdbTransaction;
-import com.mysql.ndbjtie.ndbapi.NdbDictionary.Dictionary;
-import com.mysql.ndbjtie.ndbapi.NdbDictionary.TableConst;
-import com.mysql.ndbjtie.ndbapi.NdbIndexScanOperation.IndexBound;
-import com.mysql.ndbjtie.ndbapi.NdbScanOperation.ScanOptions;
+import com.myblockchain.ndbjtie.ndbapi.NdbErrorConst;
+import com.myblockchain.ndbjtie.ndbapi.NdbInterpretedCode;
+import com.myblockchain.ndbjtie.ndbapi.NdbScanFilter;
+import com.myblockchain.ndbjtie.ndbapi.NdbTransaction;
+import com.myblockchain.ndbjtie.ndbapi.NdbDictionary.Dictionary;
+import com.myblockchain.ndbjtie.ndbapi.NdbDictionary.TableConst;
+import com.myblockchain.ndbjtie.ndbapi.NdbIndexScanOperation.IndexBound;
+import com.myblockchain.ndbjtie.ndbapi.NdbScanOperation.ScanOptions;
 
-import com.mysql.clusterj.ClusterJDatastoreException;
-import com.mysql.clusterj.ClusterJFatalInternalException;
-import com.mysql.clusterj.ClusterJUserException;
-import com.mysql.clusterj.core.store.ClusterTransaction;
-import com.mysql.clusterj.core.store.Table;
+import com.myblockchain.clusterj.ClusterJDatastoreException;
+import com.myblockchain.clusterj.ClusterJFatalInternalException;
+import com.myblockchain.clusterj.ClusterJUserException;
+import com.myblockchain.clusterj.core.store.ClusterTransaction;
+import com.myblockchain.clusterj.core.store.Table;
 
-import com.mysql.clusterj.core.util.I18NHelper;
-import com.mysql.clusterj.core.util.Logger;
-import com.mysql.clusterj.core.util.LoggerFactoryService;
+import com.myblockchain.clusterj.core.util.I18NHelper;
+import com.myblockchain.clusterj.core.util.Logger;
+import com.myblockchain.clusterj.core.util.LoggerFactoryService;
 
 /**
  *
  */
-class DbImpl implements com.mysql.clusterj.core.store.Db {
+class DbImpl implements com.myblockchain.clusterj.core.store.Db {
 
     /** My message translator */
     static final I18NHelper local = I18NHelper.getInstance(DbImpl.class);
@@ -180,7 +180,7 @@ class DbImpl implements com.mysql.clusterj.core.store.Db {
         clusterConnection.close(this);
     }
 
-    public com.mysql.clusterj.core.store.Dictionary getDictionary() {
+    public com.myblockchain.clusterj.core.store.Dictionary getDictionary() {
         return dictionary;
     }
 

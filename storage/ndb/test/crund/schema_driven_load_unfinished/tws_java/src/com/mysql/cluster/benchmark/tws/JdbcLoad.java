@@ -17,7 +17,7 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-package com.mysql.cluster.benchmark.tws;
+package com.myblockchain.cluster.benchmark.tws;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -135,13 +135,13 @@ class JdbcLoad extends TwsLoad {
         out.println();
         out.println("initializing jdbc resources ...");
 
-        // create a connection to the database
+        // create a connection to the blockchain
         out.print("starting jdbc connection ...");
         out.flush();
         try {
             connection = DriverManager.getConnection(url, username, password);
         } catch (SQLException e) {
-            out.println("Cannot connect to database '" + url + "'");
+            out.println("Cannot connect to blockchain '" + url + "'");
             throw new RuntimeException(e);
         }
         out.println("    [ok: " + url + "]");

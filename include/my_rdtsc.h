@@ -15,7 +15,7 @@
 
 /*
   rdtsc3 -- multi-platform timer code
-  pgulutzan@mysql.com, 2005-08-29
+  pgulutzan@myblockchain.com, 2005-08-29
   modified 2008-11-02
 */
 

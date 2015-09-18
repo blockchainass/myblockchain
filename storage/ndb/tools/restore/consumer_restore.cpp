@@ -43,7 +43,7 @@ extern BaseString g_options;
 extern unsigned int opt_no_binlog;
 extern bool ga_skip_broken_objects;
 
-extern Properties g_rewrite_databases;
+extern Properties g_rewrite_blockchains;
 
 bool BackupRestore::m_preserve_trailing_spaces = false;
 
@@ -917,7 +917,7 @@ match_blob(const char * name){
 }
 
 /**
- * Extracts the database, schema, and table name from an internal table name;
+ * Extracts the blockchain, schema, and table name from an internal table name;
  * prints an error message and returns false in case of a format violation.
  */
 static
@@ -962,13 +962,13 @@ dissect_index_name(const char * qualified_index_name,
 }
 
 /**
- * Assigns the new name for a database, if and only if to be rewritten.
+ * Assigns the new name for a blockchain, if and only if to be rewritten.
  */
 static
 void
-check_rewrite_database(BaseString & db_name) {
+check_rewrite_blockchain(BaseString & db_name) {
   const char * new_db_name;
-  if (g_rewrite_databases.get(db_name.c_str(), &new_db_name))
+  if (g_rewrite_blockchains.get(db_name.c_str(), &new_db_name))
     db_name.assign(new_db_name);
 }
 
@@ -1287,7 +1287,7 @@ BackupRestore::rebuild_indexes(const TableS& table)
   if (!dissect_table_name(tablename, db_name, schema_name, table_name)) {
     return false;
   }
-  check_rewrite_database(db_name);
+  check_rewrite_blockchain(db_name);
 
   m_ndb->setDatabaseName(db_name.c_str());
   m_ndb->setSchemaName(schema_name.c_str());
@@ -2230,7 +2230,7 @@ BackupRestore::table_compatible_check(TableS & tableS)
   if (!dissect_table_name(tablename, db_name, schema_name, table_name)) {
     return false;
   }
-  check_rewrite_database(db_name);
+  check_rewrite_blockchain(db_name);
 
   m_ndb->setDatabaseName(db_name.c_str());
   m_ndb->setSchemaName(schema_name.c_str());
@@ -2583,8 +2583,8 @@ BackupRestore::createSystable(const TableS & tables){
   if (!dissect_table_name(tablename, db_name, schema_name, table_name)) {
     return false;
   }
-  // do not rewrite database for system tables:
-  // check_rewrite_database(db_name);
+  // do not rewrite blockchain for system tables:
+  // check_rewrite_blockchain(db_name);
 
   m_ndb->setDatabaseName(db_name.c_str());
   m_ndb->setSchemaName(schema_name.c_str());
@@ -2619,7 +2619,7 @@ BackupRestore::table(const TableS & table){
   if (!dissect_table_name(name, db_name, schema_name, table_name)) {
     return false;
   }
-  check_rewrite_database(db_name);
+  check_rewrite_blockchain(db_name);
 
   m_ndb->setDatabaseName(db_name.c_str());
   m_ndb->setSchemaName(schema_name.c_str());
@@ -2685,7 +2685,7 @@ BackupRestore::table(const TableS & table){
 
     /**
      * Force of varpart was introduced in 5.1.18, telco 6.1.7 and 6.2.1
-     * Since default from mysqld is to add force of varpart (disable with
+     * Since default from myblockchaind is to add force of varpart (disable with
      * ROW_FORMAT=FIXED) we force varpart onto tables when they are restored
      * from backups taken with older versions. This will be wrong if
      * ROW_FORMAT=FIXED was used on original table, however the likelyhood of
@@ -2758,7 +2758,7 @@ BackupRestore::table(const TableS & table){
   {
     if (tab->getFrmData())
     {
-      // a MySQL Server table is restored, thus an event should be created
+      // a MyBlockchain Server table is restored, thus an event should be created
       BaseString event_name("REPL$");
       event_name.append(db_name.c_str());
       event_name.append("/");
@@ -2782,7 +2782,7 @@ BackupRestore::table(const TableS & table){
       if (has_blobs)
         my_event.mergeEvents(true);
 
-      while ( dict->createEvent(my_event) ) // Add event to database
+      while ( dict->createEvent(my_event) ) // Add event to blockchain
       {
 	if (dict->getNdbError().classification == NdbError::SchemaObjectExists)
 	{
@@ -2848,7 +2848,7 @@ BackupRestore::endOfTables(){
                             db_name, schema_name, table_name)) {
       return false;
     }
-    check_rewrite_database(db_name);
+    check_rewrite_blockchain(db_name);
 
     m_ndb->setDatabaseName(db_name.c_str());
     m_ndb->setSchemaName(schema_name.c_str());
@@ -3889,7 +3889,7 @@ BackupRestore::check_compat_text_to_text(const NDBCOL &old_col,
    // TEXT/MEDIUMTEXT/LONGTEXT to TINYTEXT conversion is potentially lossy at the 
    // Ndb level because there is a hard limit on the TINYTEXT size.
    // TEXT/MEDIUMTEXT/LONGTEXT is not lossy at the Ndb level, but can be at the 
-   // MySQL level.
+   // MyBlockchain level.
    // Both conversions require the lossy switch, but they are not lossy in the same way.
     return ACT_STAGING_LOSSY;
   }

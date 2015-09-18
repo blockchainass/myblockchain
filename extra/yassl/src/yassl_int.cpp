@@ -72,7 +72,7 @@
 #endif // YASSL_PURE_C
 
 /* for the definition of get_tty_password() */
-#include <mysql/get_password.h>
+#include <myblockchain/get_password.h>
 
 namespace yaSSL {
 
@@ -1962,7 +1962,7 @@ bool SSL_METHOD::multipleProtocol() const
 
 
 /** Implement a my_strdup replacement, so we can reuse get_password() */
-extern "C" char *yassl_mysql_strdup(const char *from, int)
+extern "C" char *yassl_myblockchain_strdup(const char *from, int)
 {
   return from ? strdup(from) : NULL;
 }
@@ -1977,8 +1977,8 @@ default_password_callback(char * buffer, int size_arg, int rwflag,
   char *passwd;
   size_t passwd_len, size= (size_t) size_arg;
 
-  passwd= ::yassl_mysql_get_tty_password_ext("Enter PEM pass phrase:", 
-                                             yassl_mysql_strdup);
+  passwd= ::yassl_myblockchain_get_tty_password_ext("Enter PEM pass phrase:", 
+                                             yassl_myblockchain_strdup);
 
   if (!passwd)
     return 0;

@@ -16,13 +16,13 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
  */
 
-package com.mysql.clusterj.bindings;
+package com.myblockchain.clusterj.bindings;
 
-import com.mysql.cluster.ndbj.NdbApiException;
-import com.mysql.cluster.ndbj.NdbScanOperation;
-import com.mysql.clusterj.ClusterJDatastoreException;
-import com.mysql.clusterj.core.store.ScanFilter;
-import com.mysql.clusterj.core.store.ScanOperation;
+import com.myblockchain.cluster.ndbj.NdbApiException;
+import com.myblockchain.cluster.ndbj.NdbScanOperation;
+import com.myblockchain.clusterj.ClusterJDatastoreException;
+import com.myblockchain.clusterj.core.store.ScanFilter;
+import com.myblockchain.clusterj.core.store.ScanOperation;
 
 /**
  *

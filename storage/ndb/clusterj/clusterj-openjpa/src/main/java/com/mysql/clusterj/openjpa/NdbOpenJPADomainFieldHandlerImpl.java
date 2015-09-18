@@ -15,34 +15,34 @@
    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-package com.mysql.clusterj.openjpa;
+package com.myblockchain.clusterj.openjpa;
 
-import com.mysql.clusterj.ClusterJException;
-import com.mysql.clusterj.ClusterJFatalInternalException;
-import com.mysql.clusterj.ClusterJUserException;
+import com.myblockchain.clusterj.ClusterJException;
+import com.myblockchain.clusterj.ClusterJFatalInternalException;
+import com.myblockchain.clusterj.ClusterJUserException;
 
-import com.mysql.clusterj.core.metadata.AbstractDomainFieldHandlerImpl;
-import com.mysql.clusterj.core.query.QueryDomainTypeImpl;
-import com.mysql.clusterj.core.spi.DomainTypeHandler;
-import com.mysql.clusterj.core.spi.QueryExecutionContext;
-import com.mysql.clusterj.core.spi.SessionSPI;
-import com.mysql.clusterj.core.spi.ValueHandler;
-import com.mysql.clusterj.core.store.IndexScanOperation;
-import com.mysql.clusterj.core.store.IndexScanOperation.BoundType;
-import com.mysql.clusterj.core.store.Dictionary;
-import com.mysql.clusterj.core.store.Operation;
-import com.mysql.clusterj.core.store.PartitionKey;
-import com.mysql.clusterj.core.store.ResultData;
-import com.mysql.clusterj.core.store.ScanFilter;
-import com.mysql.clusterj.core.store.Table;
-import com.mysql.clusterj.core.store.ScanFilter.BinaryCondition;
-import com.mysql.clusterj.core.util.I18NHelper;
-import com.mysql.clusterj.core.util.Logger;
-import com.mysql.clusterj.core.util.LoggerFactoryService;
+import com.myblockchain.clusterj.core.metadata.AbstractDomainFieldHandlerImpl;
+import com.myblockchain.clusterj.core.query.QueryDomainTypeImpl;
+import com.myblockchain.clusterj.core.spi.DomainTypeHandler;
+import com.myblockchain.clusterj.core.spi.QueryExecutionContext;
+import com.myblockchain.clusterj.core.spi.SessionSPI;
+import com.myblockchain.clusterj.core.spi.ValueHandler;
+import com.myblockchain.clusterj.core.store.IndexScanOperation;
+import com.myblockchain.clusterj.core.store.IndexScanOperation.BoundType;
+import com.myblockchain.clusterj.core.store.Dictionary;
+import com.myblockchain.clusterj.core.store.Operation;
+import com.myblockchain.clusterj.core.store.PartitionKey;
+import com.myblockchain.clusterj.core.store.ResultData;
+import com.myblockchain.clusterj.core.store.ScanFilter;
+import com.myblockchain.clusterj.core.store.Table;
+import com.myblockchain.clusterj.core.store.ScanFilter.BinaryCondition;
+import com.myblockchain.clusterj.core.util.I18NHelper;
+import com.myblockchain.clusterj.core.util.Logger;
+import com.myblockchain.clusterj.core.util.LoggerFactoryService;
 
-import com.mysql.clusterj.query.Predicate;
-import com.mysql.clusterj.query.PredicateOperand;
-import com.mysql.clusterj.query.QueryDomainType;
+import com.myblockchain.clusterj.query.Predicate;
+import com.myblockchain.clusterj.query.PredicateOperand;
+import com.myblockchain.clusterj.query.QueryDomainType;
 
 import java.lang.reflect.Field;
 import java.sql.SQLException;
@@ -81,7 +81,7 @@ public class NdbOpenJPADomainFieldHandlerImpl extends AbstractDomainFieldHandler
     /** My logger */
     static final Logger logger = LoggerFactoryService.getFactory().getInstance(NdbOpenJPADomainFieldHandlerImpl.class);
 
-    private static com.mysql.clusterj.core.store.Column[] emptyStoreColumns = new com.mysql.clusterj.core.store.Column[] {};
+    private static com.myblockchain.clusterj.core.store.Column[] emptyStoreColumns = new com.myblockchain.clusterj.core.store.Column[] {};
     /** The openjpa field mapping for this field */
     private FieldMapping fieldMapping;
     /** For single-column mappings, the mapped column */
@@ -119,7 +119,7 @@ public class NdbOpenJPADomainFieldHandlerImpl extends AbstractDomainFieldHandler
     private Column[] columns;
 
     /** The store Columns mapped by this relationship */
-    private com.mysql.clusterj.core.store.Column[] storeColumns = emptyStoreColumns;
+    private com.myblockchain.clusterj.core.store.Column[] storeColumns = emptyStoreColumns;
 
     /** The name of the related field */
     private String relatedFieldName;
@@ -184,7 +184,7 @@ public class NdbOpenJPADomainFieldHandlerImpl extends AbstractDomainFieldHandler
                     setUnsupported(message);
                     return;
                 }
-                this.storeColumns = new com.mysql.clusterj.core.store.Column[] {storeColumn};
+                this.storeColumns = new com.myblockchain.clusterj.core.store.Column[] {storeColumn};
                 charsetName = storeColumn.getCharsetName();
                 // set up the default object operation handler for the column type
                 // TODO this might better use the "Class type;" field in superclass
@@ -262,7 +262,7 @@ public class NdbOpenJPADomainFieldHandlerImpl extends AbstractDomainFieldHandler
                     setUnsupported(message);
                     return;
                 }
-                this.storeColumns = new com.mysql.clusterj.core.store.Column[] {storeColumn};
+                this.storeColumns = new com.myblockchain.clusterj.core.store.Column[] {storeColumn};
                 // set up the default object operation handler for the column type
                 this.javaType = column.getJavaType();
                 this.javaTypeName = NdbOpenJPAUtility.getJavaTypeName(javaType);
@@ -302,13 +302,13 @@ public class NdbOpenJPADomainFieldHandlerImpl extends AbstractDomainFieldHandler
                     // create the domain field handlers for each column
                     this.compositeDomainFieldHandlers = new NdbOpenJPADomainFieldHandlerImpl[columns.length];
                     this.columnNames = new String[columns.length];
-                    this.storeColumns = new com.mysql.clusterj.core.store.Column[columns.length];
+                    this.storeColumns = new com.myblockchain.clusterj.core.store.Column[columns.length];
                     for (int i = 0; i < columns.length; ++i) {
                         StringBuffer detailMessage = new StringBuffer();
                         Column localColumn = columns[i];
                         String localColumnName = localColumn.getName();
                         Table table = domainTypeHandler.getTable();
-                        com.mysql.clusterj.core.store.Column localStoreColumn = table.getColumn(localColumnName);
+                        com.myblockchain.clusterj.core.store.Column localStoreColumn = table.getColumn(localColumnName);
                         if (localStoreColumn == null) {
                             message = local.message("ERR_No_Column", name, table.getName(), localColumnName);
                             logger.info(message);
@@ -1228,7 +1228,7 @@ public class NdbOpenJPADomainFieldHandlerImpl extends AbstractDomainFieldHandler
 
     };
 
-    public com.mysql.clusterj.core.store.Column[] getStoreColumns() {
+    public com.myblockchain.clusterj.core.store.Column[] getStoreColumns() {
         return storeColumns;
     }
 

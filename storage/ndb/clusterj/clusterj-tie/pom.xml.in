@@ -23,12 +23,12 @@
   </properties>
 
   <parent>
-    <groupId>com.mysql.clusterj</groupId>
+    <groupId>com.myblockchain.clusterj</groupId>
     <artifactId>clusterj-aggregate</artifactId>
     <version>@JAVA_NDB_VERSION@@JAVA_MVN_SUFFIX@</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <groupId>com.mysql.clusterj</groupId>
+  <groupId>com.myblockchain.clusterj</groupId>
   <artifactId>clusterj-tie</artifactId>
   <packaging>bundle</packaging>
   <version>@JAVA_NDB_VERSION@@JAVA_MVN_SUFFIX@</version>
@@ -121,8 +121,8 @@
         <extensions>true</extensions>
         <configuration>
           <instructions>
-            <Export-Package>com.mysql.clusterj.tie.*</Export-Package>
-            <Import-Package>com.mysql.clusterj,com.mysql.clusterj.core, com.mysql.clusterj.core.metadata,com.mysql.clusterj.core.store,com.mysql.clusterj.core.spi,com.mysql.clusterj.core.util,com.mysql.ndbjtie.mysql,com.mysql.ndbjtie.ndbapi</Import-Package>
+            <Export-Package>com.myblockchain.clusterj.tie.*</Export-Package>
+            <Import-Package>com.myblockchain.clusterj,com.myblockchain.clusterj.core, com.myblockchain.clusterj.core.metadata,com.myblockchain.clusterj.core.store,com.myblockchain.clusterj.core.spi,com.myblockchain.clusterj.core.util,com.myblockchain.ndbjtie.myblockchain,com.myblockchain.ndbjtie.ndbapi</Import-Package>
           </instructions>
         </configuration>
       </plugin>
@@ -130,12 +130,12 @@
   </build>   
   <dependencies>
     <dependency>
-      <groupId>com.mysql.clusterj</groupId>
+      <groupId>com.myblockchain.clusterj</groupId>
       <artifactId>clusterj-api</artifactId>
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>com.mysql.clusterj</groupId>
+      <groupId>com.myblockchain.clusterj</groupId>
       <artifactId>clusterj-core</artifactId>
       <scope>compile</scope>
     </dependency>
@@ -146,17 +146,17 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>com.mysql.clusterj</groupId>
+      <groupId>com.myblockchain.clusterj</groupId>
       <artifactId>clusterj-unit</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>mysql</groupId>
-      <artifactId>mysql-connector-java</artifactId>
+      <groupId>myblockchain</groupId>
+      <artifactId>myblockchain-connector-java</artifactId>
       <scope>provided</scope>
     </dependency>
     <dependency>
-    	<groupId>com.mysql.clusterj</groupId>
+    	<groupId>com.myblockchain.clusterj</groupId>
     	<artifactId>clusterj-test</artifactId>
     	<scope>test</scope>
     </dependency>

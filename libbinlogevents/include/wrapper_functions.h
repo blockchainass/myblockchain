@@ -19,7 +19,7 @@
   @brief Contains wrapper functions for memory allocation and deallocation.
   This includes generic functions to be called from the binlogevent library,
   which call the appropriate corresponding function, depending on whether
-  the library is compiled independently, or with the MySQL server.
+  the library is compiled independently, or with the MyBlockchain server.
 */
 
 #ifndef WRAPPER_FUNCTIONS_INCLUDED
@@ -87,7 +87,7 @@ inline char *strndup (const char *s, size_t n)
   This is a wrapper function, and returns a pointer to a new string which is
   a duplicate of the input string. The terminating Null character is added.
 
-  If compiled with MySQL server,the strndup function from the mysys library is
+  If compiled with MyBlockchain server,the strndup function from the mysys library is
   called, which allow instrumenting memory allocated. Else, the standard
   string function is called.
 
@@ -136,13 +136,13 @@ inline void* bapi_memdup(const void* source, size_t len)
   This is a wrapper function inorder to  allocate memory from the heap
   in the binlogevent library.
 
-  If compiled with the MySQL server, and memory is allocated using memory
+  If compiled with the MyBlockchain server, and memory is allocated using memory
   allocating methods from the mysys library, my_malloc is called. Otherwise,
   the standard malloc() is called from the function.
 
   @param size         Size of the memory to be allocated.
   @param key_to_int   A mapping from the PSI_memory_key to an enum
-  @param flags        flags to pass to MySQL server my_malloc functions
+  @param flags        flags to pass to MyBlockchain server my_malloc functions
   @return Void pointer to the allocated chunk of memory
 */
 inline void * bapi_malloc(size_t size, int flags)
@@ -161,7 +161,7 @@ inline void * bapi_malloc(size_t size, int flags)
   This is a wrapper function inorder to free the memory allocated from the heap
   in the binlogevent library.
 
-  If compiled with the MySQL server, and memory is allocated using memory
+  If compiled with the MyBlockchain server, and memory is allocated using memory
   allocating methods from the mysys library, my_free is called. Otherwise,
   the standard free() is called from the function.
 

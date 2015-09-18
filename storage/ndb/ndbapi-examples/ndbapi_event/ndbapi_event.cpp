@@ -69,12 +69,12 @@
  * another process (e.g. flexBench -l 0 -stdtables).
  * We want to monitor what happens with column values.
  *
- * Or using the mysql client:
+ * Or using the myblockchain client:
  *
- * shell> mysql -u root
- * mysql> create database ndb_examples;
- * mysql> use ndb_examples;
- * mysql> create table t0
+ * shell> myblockchain -u root
+ * myblockchain> create blockchain ndb_examples;
+ * myblockchain> use ndb_examples;
+ * myblockchain> create table t0
           (c0 int, c1 int, c2 char(4), c3 char(4), c4 text,
           primary key(c0, c2)) engine ndb charset latin1;
  *
@@ -168,7 +168,7 @@ int main(int argc, char** argv)
   }
 
   Ndb* myNdb= new Ndb(cluster_connection,
-		      "ndb_examples");  // Object representing the database
+		      "ndb_examples");  // Object representing the blockchain
 
   if (myNdb->init() == -1) APIERROR(myNdb->getNdbError());
 
@@ -315,7 +315,7 @@ int main(int argc, char** argv)
   {
     NdbDictionary::Dictionary *myDict = myNdb->getDictionary();
     if (!myDict) APIERROR(myNdb->getNdbError());
-    // remove event from database
+    // remove event from blockchain
     if (myDict->dropEvent(eventName)) APIERROR(myDict->getNdbError());
   }
 
@@ -347,7 +347,7 @@ int myCreateEvent(Ndb* myNdb,
   myEvent.addEventColumns(noEventColumnNames, eventColumnNames);
   myEvent.mergeEvents(merge_events);
 
-  // Add event to database
+  // Add event to blockchain
   if (myDict->createEvent(myEvent) == 0)
     myEvent.print();
   else if (myDict->getNdbError().classification ==
@@ -356,7 +356,7 @@ int myCreateEvent(Ndb* myNdb,
     printf("dropping Event...\n");
     if (myDict->dropEvent(eventName)) APIERROR(myDict->getNdbError());
     // try again
-    // Add event to database
+    // Add event to blockchain
     if ( myDict->createEvent(myEvent)) APIERROR(myDict->getNdbError());
   } else
     APIERROR(myDict->getNdbError());

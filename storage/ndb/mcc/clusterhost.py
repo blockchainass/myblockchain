@@ -117,7 +117,7 @@ class HostInfo(object):
 #             _logger.debug('localhost and remote are similar type, apply local paths')
 #             _logger.debug('remote env: '+str(self.ch.env))
 #             reply['hostRes']['installdir'] = request_handler.basedir
-#             reply['hostRes']['datadir'] = self.pm.join(self.pm.expanduser('~'), 'MySQL_Cluster')
+#             reply['hostRes']['datadir'] = self.pm.join(self.pm.expanduser('~'), 'MyBlockchain_Cluster')
 
 #         return reply
     

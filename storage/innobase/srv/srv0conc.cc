@@ -38,11 +38,11 @@ Created 2011/04/18 Sunny Bains
 *******************************************************/
 
 #include "ha_prototypes.h"
-#include <mysql/service_thd_wait.h>
+#include <myblockchain/service_thd_wait.h>
 
 #include "srv0srv.h"
 #include "trx0trx.h"
-#include "row0mysql.h"
+#include "row0myblockchain.h"
 #include "dict0dict.h"
 
 /** Number of times a thread is allowed to enter InnoDB within the same
@@ -56,7 +56,7 @@ ulong	srv_thread_sleep_delay	= 10000;
 
 
 /** We are prepared for a situation that we have this many threads waiting for
-a semaphore inside InnoDB. innobase_start_or_create_for_mysql() sets the
+a semaphore inside InnoDB. innobase_start_or_create_for_myblockchain() sets the
 value. */
 
 ulint	srv_max_n_threads	= 0;
@@ -119,7 +119,7 @@ srv_conc_enter_innodb_with_atomics(
 					to enter InnoDB */
 {
 	ulint	n_sleeps = 0;
-	ibool	notified_mysql = FALSE;
+	ibool	notified_myblockchain = FALSE;
 
 	ut_a(!trx->declared_to_be_inside_innodb);
 
@@ -128,12 +128,12 @@ srv_conc_enter_innodb_with_atomics(
 
 		if (srv_thread_concurrency == 0) {
 
-			if (notified_mysql) {
+			if (notified_myblockchain) {
 
 				(void) os_atomic_decrement_lint(
 					&srv_conc.n_waiting, 1);
 
-				thd_wait_end(trx->mysql_thd);
+				thd_wait_end(trx->myblockchain_thd);
 			}
 
 			return;
@@ -150,12 +150,12 @@ srv_conc_enter_innodb_with_atomics(
 
 				srv_enter_innodb_with_tickets(trx);
 
-				if (notified_mysql) {
+				if (notified_myblockchain) {
 
 					(void) os_atomic_decrement_lint(
 						&srv_conc.n_waiting, 1);
 
-					thd_wait_end(trx->mysql_thd);
+					thd_wait_end(trx->myblockchain_thd);
 				}
 
 				if (srv_adaptive_max_sleep_delay > 0) {
@@ -180,7 +180,7 @@ srv_conc_enter_innodb_with_atomics(
 				&srv_conc.n_active, 1);
 		}
 
-		if (!notified_mysql) {
+		if (!notified_myblockchain) {
 			(void) os_atomic_increment_lint(
 				&srv_conc.n_waiting, 1);
 
@@ -191,9 +191,9 @@ srv_conc_enter_innodb_with_atomics(
 				trx_search_latch_release_if_reserved(trx);
 			}
 
-			thd_wait_begin(trx->mysql_thd, THD_WAIT_USER_LOCK);
+			thd_wait_begin(trx->myblockchain_thd, THD_WAIT_USER_LOCK);
 
-			notified_mysql = TRUE;
+			notified_myblockchain = TRUE;
 		}
 
 		DEBUG_SYNC_C("user_thread_waiting");
@@ -296,8 +296,8 @@ srv_conc_force_exit_innodb(
 	trx_t*	trx)	/*!< in: transaction object associated with the
 			thread */
 {
-	if ((trx->mysql_thd != NULL
-	     && thd_is_replication_slave_thread(trx->mysql_thd))
+	if ((trx->myblockchain_thd != NULL
+	     && thd_is_replication_slave_thread(trx->myblockchain_thd))
 	    || trx->declared_to_be_inside_innodb == FALSE) {
 
 		return;

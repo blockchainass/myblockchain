@@ -74,7 +74,7 @@
  These steps are all currently are performed in NdbOperation.js 
  
  Application: 
-   * a row is read from the database into buffer op.buffers.row 
+   * a row is read from the blockchain into buffer op.buffers.row 
    * The operation's read valule is set to a newly constructed VO:
      op.result.value = new VOC(op.buffers.row);
    * The user's constructor is called on the new value:

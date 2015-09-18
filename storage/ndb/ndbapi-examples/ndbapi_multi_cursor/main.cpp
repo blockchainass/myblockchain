@@ -16,7 +16,7 @@
 /**************************************************************
  *
  * NOTE THAT THIS TOOL CAN ONLY BE RUN AGAINST THE EMPLOYEES DATABASE 
- * TABLES WHICH IS A SEPERATE DOWNLOAD AVAILABLE AT WWW.MYSQL.COM.
+ * TABLES WHICH IS A SEPERATE DOWNLOAD AVAILABLE AT WWW.MYBLOCKCHAIN.COM.
  **************************************************************/
 
 
@@ -29,8 +29,8 @@
 #ifdef _WIN32
 #include <winsock2.h>
 #endif
-#include <mysql.h>
-#include <mysqld_error.h>
+#include <myblockchain.h>
+#include <myblockchaind_error.h>
 #include <NdbApi.hpp>
 
 #include "NdbQueryBuilder.hpp"
@@ -45,8 +45,8 @@
   std::cout << "Error in " << __FILE__ << ", line: " << __LINE__ \
             << ", code: " << code \
             << ", msg: " << msg << "." << std::endl
-#define MYSQLERROR(mysql) { \
-  PRINT_ERROR(mysql_errno(&mysql),mysql_error(&mysql)); \
+#define MYBLOCKCHAINERROR(myblockchain) { \
+  PRINT_ERROR(myblockchain_errno(&myblockchain),myblockchain_error(&myblockchain)); \
   exit(-1); }
 #define PRINT_APIERROR(error) { \
   PRINT_ERROR((error).code,(error).message); }
@@ -165,65 +165,65 @@ const char* salariesDef =
 " ENGINE=NDB";
 
 
-int createEmployeeDb(MYSQL& mysql)
+int createEmployeeDb(MYBLOCKCHAIN& myblockchain)
 {
   if (true)
   {
-    mysql_query(&mysql, "DROP DATABASE employees");
+    myblockchain_query(&myblockchain, "DROP DATABASE employees");
     printf("Dropped existing employees DB\n");
-    mysql_query(&mysql, "CREATE DATABASE employees");
-    mysql_commit(&mysql);
+    myblockchain_query(&myblockchain, "CREATE DATABASE employees");
+    myblockchain_commit(&myblockchain);
     printf("Created new employees DB\n");
 
-    if (mysql_query(&mysql, "USE employees") != 0) MYSQLERROR(mysql);
-    mysql_commit(&mysql);
+    if (myblockchain_query(&myblockchain, "USE employees") != 0) MYBLOCKCHAINERROR(myblockchain);
+    myblockchain_commit(&myblockchain);
     printf("USE employees DB\n");
 
-    if (mysql_query(&mysql, employeeDef) != 0) MYSQLERROR(mysql);
-    mysql_commit(&mysql);
+    if (myblockchain_query(&myblockchain, employeeDef) != 0) MYBLOCKCHAINERROR(myblockchain);
+    myblockchain_commit(&myblockchain);
     printf("Created 'employee' table\n");
 
-    if (mysql_query(&mysql, departmentsDef) != 0) MYSQLERROR(mysql);
-    mysql_commit(&mysql);
+    if (myblockchain_query(&myblockchain, departmentsDef) != 0) MYBLOCKCHAINERROR(myblockchain);
+    myblockchain_commit(&myblockchain);
     printf("Created 'departments' table\n");
 
-    if (mysql_query(&mysql, dept_managerDef) != 0) MYSQLERROR(mysql);
-    mysql_commit(&mysql);
+    if (myblockchain_query(&myblockchain, dept_managerDef) != 0) MYBLOCKCHAINERROR(myblockchain);
+    myblockchain_commit(&myblockchain);
     printf("Created 'dept_manager' table\n");
 
-    if (mysql_query(&mysql, dept_empDef) != 0) MYSQLERROR(mysql);
-    mysql_commit(&mysql);
+    if (myblockchain_query(&myblockchain, dept_empDef) != 0) MYBLOCKCHAINERROR(myblockchain);
+    myblockchain_commit(&myblockchain);
     printf("Created 'dept_emp' table\n");
 
-    if (mysql_query(&mysql, titlesDef) != 0) MYSQLERROR(mysql);
-    mysql_commit(&mysql);
+    if (myblockchain_query(&myblockchain, titlesDef) != 0) MYBLOCKCHAINERROR(myblockchain);
+    myblockchain_commit(&myblockchain);
     printf("Created 'titles' table\n");
 
-    if (mysql_query(&mysql, salariesDef) != 0) MYSQLERROR(mysql);
-    mysql_commit(&mysql);
+    if (myblockchain_query(&myblockchain, salariesDef) != 0) MYBLOCKCHAINERROR(myblockchain);
+    myblockchain_commit(&myblockchain);
     printf("Created 'salaries' table\n");
 
 
     printf("Insert simple test data\n");
 
-    if (mysql_query(&mysql, "Insert into dept_manager(dept_no,emp_no,my_key) values ('d005',110567,110567)") != 0) MYSQLERROR(mysql);
-    mysql_commit(&mysql);
-    if (mysql_query(&mysql, "Insert into dept_manager(dept_no,emp_no,my_key) values ('c005',11057,11067)") != 0) MYSQLERROR(mysql);
-    mysql_commit(&mysql);
-    if (mysql_query(&mysql, "Insert into dept_manager(dept_no,emp_no,my_key) values ('e005',210567,210567)") != 0) MYSQLERROR(mysql);
-    mysql_commit(&mysql);
+    if (myblockchain_query(&myblockchain, "Insert into dept_manager(dept_no,emp_no,my_key) values ('d005',110567,110567)") != 0) MYBLOCKCHAINERROR(myblockchain);
+    myblockchain_commit(&myblockchain);
+    if (myblockchain_query(&myblockchain, "Insert into dept_manager(dept_no,emp_no,my_key) values ('c005',11057,11067)") != 0) MYBLOCKCHAINERROR(myblockchain);
+    myblockchain_commit(&myblockchain);
+    if (myblockchain_query(&myblockchain, "Insert into dept_manager(dept_no,emp_no,my_key) values ('e005',210567,210567)") != 0) MYBLOCKCHAINERROR(myblockchain);
+    myblockchain_commit(&myblockchain);
 
-    if (mysql_query(&mysql, "Insert into dept_manager(dept_no,emp_no,my_key) values ('f005',210568,210568)") != 0) MYSQLERROR(mysql);
-    mysql_commit(&mysql);
-    if (mysql_query(&mysql, "Insert into dept_manager(dept_no,emp_no,my_key) values ('g005',210569,210569)") != 0) MYSQLERROR(mysql);
-    mysql_commit(&mysql);
-    if (mysql_query(&mysql, "Insert into dept_manager(dept_no,emp_no,my_key) values ('h005',210560,210560)") != 0) MYSQLERROR(mysql);
-    mysql_commit(&mysql);
-    if (mysql_query(&mysql, "Insert into dept_manager(dept_no,emp_no,my_key) values ('i005',210561,210561)") != 0) MYSQLERROR(mysql);
-    mysql_commit(&mysql);
+    if (myblockchain_query(&myblockchain, "Insert into dept_manager(dept_no,emp_no,my_key) values ('f005',210568,210568)") != 0) MYBLOCKCHAINERROR(myblockchain);
+    myblockchain_commit(&myblockchain);
+    if (myblockchain_query(&myblockchain, "Insert into dept_manager(dept_no,emp_no,my_key) values ('g005',210569,210569)") != 0) MYBLOCKCHAINERROR(myblockchain);
+    myblockchain_commit(&myblockchain);
+    if (myblockchain_query(&myblockchain, "Insert into dept_manager(dept_no,emp_no,my_key) values ('h005',210560,210560)") != 0) MYBLOCKCHAINERROR(myblockchain);
+    myblockchain_commit(&myblockchain);
+    if (myblockchain_query(&myblockchain, "Insert into dept_manager(dept_no,emp_no,my_key) values ('i005',210561,210561)") != 0) MYBLOCKCHAINERROR(myblockchain);
+    myblockchain_commit(&myblockchain);
 
-    if (mysql_query(&mysql, "Insert into employees(emp_no,dept_no) values (110567,'d005')") != 0) MYSQLERROR(mysql);
-    mysql_commit(&mysql);
+    if (myblockchain_query(&myblockchain, "Insert into employees(emp_no,dept_no) values (110567,'d005')") != 0) MYBLOCKCHAINERROR(myblockchain);
+    myblockchain_commit(&myblockchain);
 
   }
 
@@ -1051,7 +1051,7 @@ int
 main(int argc, const char** argv){
   if(argc!=4){
     std::cout << "Usage: " << argv[0] 
-              << " <mysql IP address> <mysql port> <cluster connect string>" 
+              << " <myblockchain IP address> <myblockchain port> <cluster connect string>" 
               << std::endl;
     exit(-1);
   }
@@ -1062,21 +1062,21 @@ main(int argc, const char** argv){
   //extern const char *my_progname;
   //NDB_INIT(argv[0]);
   ndb_init();
-  MYSQL mysql;
-  if(!mysql_init(&mysql)){
-    std::cout << "mysql_init() failed:" << std::endl;
+  MYBLOCKCHAIN myblockchain;
+  if(!myblockchain_init(&myblockchain)){
+    std::cout << "myblockchain_init() failed:" << std::endl;
   }
-  if(!mysql_real_connect(&mysql, host, "root", "", "",
+  if(!myblockchain_real_connect(&myblockchain, host, "root", "", "",
                          port, NULL, 0)){
-    std::cout << "mysql_real_connect() failed:" << std::endl;
+    std::cout << "myblockchain_real_connect() failed:" << std::endl;
   }
 
 
-  if (!createEmployeeDb(mysql))
+  if (!createEmployeeDb(myblockchain))
   {  std::cout << "Create of employee DB failed" << std::endl;
     exit(-1);
   }
-  mysql_close(&mysql);
+  myblockchain_close(&myblockchain);
 
   /**************************************************************
    * Connect to ndb cluster                                     *

@@ -20,12 +20,12 @@
 
 #include "abstract_output_writer_wrapper.h"
 #include "i_data_formatter.h"
-#include "abstract_mysql_chain_element_extension.h"
+#include "abstract_myblockchain_chain_element_extension.h"
 #include "abstract_plain_sql_object_dump_task.h"
 #include "dump_start_dump_task.h"
 #include "dump_end_dump_task.h"
-#include "database_start_dump_task.h"
-#include "database_end_dump_task.h"
+#include "blockchain_start_dump_task.h"
+#include "blockchain_end_dump_task.h"
 #include "table_definition_dump_task.h"
 #include "table_deferred_indexes_dump_task.h"
 #include "row_group_dump_task.h"
@@ -40,7 +40,7 @@ namespace Dump{
  */
 class Sql_formatter
   : public Abstract_output_writer_wrapper,
-  public Abstract_mysql_chain_element_extension,
+  public Abstract_myblockchain_chain_element_extension,
   public virtual I_data_formatter
 {
 public:
@@ -64,8 +64,8 @@ private:
 
   void format_dump_end(Dump_end_dump_task* dump_start_dump_task);
 
-  void format_database_start(
-    Database_start_dump_task* database_definition_dump_task);
+  void format_blockchain_start(
+    Database_start_dump_task* blockchain_definition_dump_task);
 
   void format_table_definition(
     Table_definition_dump_task* table_definition_dump_task);

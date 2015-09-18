@@ -183,7 +183,7 @@ setup_files(atrt_config& config, int setup, int sshx)
   if (setup == 2 || config.m_generated)
   {
     /**
-     * Do mysql_install_db
+     * Do myblockchain_install_db
      */
     for (unsigned i = 0; i < config.m_clusters.size(); i++)
     {
@@ -191,31 +191,31 @@ setup_files(atrt_config& config, int setup, int sshx)
       for (unsigned j = 0; j<cluster.m_processes.size(); j++)
       {
 	atrt_process& proc = *cluster.m_processes[j];
-	if (proc.m_type == atrt_process::AP_MYSQLD)
+	if (proc.m_type == atrt_process::AP_MYBLOCKCHAIND)
 #ifndef _WIN32
 	{
 	  const char * val;
 	  require(proc.m_options.m_loaded.get("--datadir=", &val));
 	  BaseString tmp;
-	  tmp.assfmt("%s --defaults-file=%s/my.cnf --basedir=%s --datadir=%s > %s/mysql_install_db.log 2>&1",
-		     g_mysql_install_db_bin_path, g_basedir, g_prefix, val, proc.m_proc.m_cwd.c_str());
+	  tmp.assfmt("%s --defaults-file=%s/my.cnf --basedir=%s --datadir=%s > %s/myblockchain_install_db.log 2>&1",
+		     g_myblockchain_install_db_bin_path, g_basedir, g_prefix, val, proc.m_proc.m_cwd.c_str());
 
           to_fwd_slashes(tmp);
 	  if (sh(tmp.c_str()) != 0)
 	  {
-	    g_logger.error("Failed to mysql_install_db for %s, cmd: '%s'",
+	    g_logger.error("Failed to myblockchain_install_db for %s, cmd: '%s'",
 			   proc.m_proc.m_cwd.c_str(),
 			   tmp.c_str());
 	  }
 	  else
 	  {
-	    g_logger.info("mysql_install_db for %s",
+	    g_logger.info("myblockchain_install_db for %s",
 			  proc.m_proc.m_cwd.c_str());
 	  }
         }
 #else
         {
-          g_logger.info("not running mysql_install_db for %s",
+          g_logger.info("not running myblockchain_install_db for %s",
                          proc.m_proc.m_cwd.c_str());
         }
 #endif
@@ -249,7 +249,7 @@ setup_files(atrt_config& config, int setup, int sshx)
     {
       Properties::Iterator it(&cluster.m_options.m_generated);
       printfile(out, cluster.m_options.m_generated,
-		"[mysql_cluster%s]", cluster.m_name.c_str());
+		"[myblockchain_cluster%s]", cluster.m_name.c_str());
     }
       
     for (unsigned j = 0; j<cluster.m_processes.size(); j++)
@@ -269,9 +269,9 @@ setup_files(atrt_config& config, int setup, int sshx)
 		    "[cluster_config.ndbd.%d%s]",
 		    proc.m_index, proc.m_cluster->m_name.c_str());
 	  break;
-	case atrt_process::AP_MYSQLD:
+	case atrt_process::AP_MYBLOCKCHAIND:
 	  printfile(out, proc.m_options.m_generated,
-		    "[mysqld.%d%s]",
+		    "[myblockchaind.%d%s]",
 		    proc.m_index, proc.m_cluster->m_name.c_str());
 	  break;
 	case atrt_process::AP_NDB_API:
@@ -337,9 +337,9 @@ setup_files(atrt_config& config, int setup, int sshx)
            * In 5.5...binaries aren't compiled with rpath
            * So we need an explicit LD_LIBRARY_PATH
            *
-           * Use path from libmysqlclient.so
+           * Use path from libmyblockchainclient.so
            */
-          char * dir = dirname(g_libmysqlclient_so_path);
+          char * dir = dirname(g_libmyblockchainclient_so_path);
 #if defined(__MACH__)
           fprintf(fenv, "DYLD_LIBRARY_PATH=%s:$DYLD_LIBRARY_PATH\n", dir);
           keys.push_back("DYLD_LIBRARY_PATH");

@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Copyright (C) 2003 MySQL AB
+# Copyright (C) 2003 MyBlockchain AB
 # Use is subject to license terms
 # 
 # This program is free software; you can redistribute it and/or modify
@@ -17,18 +17,18 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA
 
 #
-# postinstall script for the MySQL Startup Item Installation package
+# postinstall script for the MyBlockchain Startup Item Installation package
 #
 # This script modifies /etc/hostconfig in the following ways:
 #
-# - On Mac OS X Server, it disables the startup of the default MySQL
-#   installation by changing the "MYSQL" start variable to "-NO-".
-# - If not existent already, it adds a "MYSQLCOM" start variable, which
-#   defaults to "-YES-". An already existing MYSQLCOM variable will remain
+# - On Mac OS X Server, it disables the startup of the default MyBlockchain
+#   installation by changing the "MYBLOCKCHAIN" start variable to "-NO-".
+# - If not existent already, it adds a "MYBLOCKCHAINCOM" start variable, which
+#   defaults to "-YES-". An already existing MYBLOCKCHAINCOM variable will remain
 #   untouched.
 #
-# (c) 2003 MySQL AB
-# Author: Lenz Grimmer <lenz@mysql.com>
+# (c) 2003 MyBlockchain AB
+# Author: Lenz Grimmer <lenz@myblockchain.com>
 #
 
 CONFFILE="/etc/hostconfig"
@@ -37,14 +37,14 @@ TMPFILE=`mktemp -t $TMPFILE.tmp` || exit 1
 
 test -e $CONFFILE || exit 1
 
-# Disable the startup of the default MySQL installation that ships with
+# Disable the startup of the default MyBlockchain installation that ships with
 # Mac OS X Server to avoid conflicts with our installation on bootup
-sed -e s/^MYSQL=-YES-/MYSQL=-NO-/g < $CONFFILE > $TMPFILE
+sed -e s/^MYBLOCKCHAIN=-YES-/MYBLOCKCHAIN=-NO-/g < $CONFFILE > $TMPFILE
 
-# Add our MYSQLCOM startup variable (enabled by default)
-grep -q "^MYSQLCOM" $CONFFILE > /dev/null 2>&1
+# Add our MYBLOCKCHAINCOM startup variable (enabled by default)
+grep -q "^MYBLOCKCHAINCOM" $CONFFILE > /dev/null 2>&1
 if [ $? -ne 0 ] ; then
-	echo "MYSQLCOM=-YES-" >> $TMPFILE
+	echo "MYBLOCKCHAINCOM=-YES-" >> $TMPFILE
 fi
 
 # Install the modified file into the default location

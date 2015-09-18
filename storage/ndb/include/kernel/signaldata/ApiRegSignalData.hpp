@@ -40,7 +40,7 @@ public:
 private:
   Uint32 ref;
   Uint32 version; // Version of API node
-  Uint32 mysql_version;
+  Uint32 myblockchain_version;
 };
 
 /**
@@ -68,7 +68,7 @@ private:
   Uint32 ref; // Qmgr ref
   Uint32 version; // Version of NDB node
   Uint32 errorCode;
-  Uint32 mysql_version;
+  Uint32 myblockchain_version;
 };
 
 /**
@@ -92,7 +92,7 @@ private:
   Uint32 qmgrRef;
   Uint32 version; // Version of NDB node
   Uint32 apiHeartbeatFrequency;
-  Uint32 mysql_version;
+  Uint32 myblockchain_version;
   Uint32 minDbVersion;
   NodeStatePOD nodeState;
 };

@@ -55,7 +55,7 @@ public:
 */
 class ha_example: public handler
 {
-  THR_LOCK_DATA lock;      ///< MySQL lock
+  THR_LOCK_DATA lock;      ///< MyBlockchain lock
   Example_share *share;    ///< Shared lock info
   Example_share *get_share(); ///< Get the share
 
@@ -102,7 +102,7 @@ public:
 
       @details
     part is the key part to check. First key part is 0.
-    If all_parts is set, MySQL wants to know the flags for the combined
+    If all_parts is set, MyBlockchain wants to know the flags for the combined
     index, up to and including 'part'.
   */
   ulong index_flags(uint inx, uint part, bool all_parts) const
@@ -114,15 +114,15 @@ public:
     unireg.cc will call max_supported_record_length(), max_supported_keys(),
     max_supported_key_parts(), uint max_supported_key_length()
     to make sure that the storage engine can handle the data it is about to
-    send. Return *real* limits of your storage engine here; MySQL will do
-    min(your_limits, MySQL_limits) automatically.
+    send. Return *real* limits of your storage engine here; MyBlockchain will do
+    min(your_limits, MyBlockchain_limits) automatically.
    */
   uint max_supported_record_length() const { return HA_MAX_REC_LENGTH; }
 
   /** @brief
     unireg.cc will call this to make sure that the storage engine can handle
     the data it is about to send. Return *real* limits of your storage engine
-    here; MySQL will do min(your_limits, MySQL_limits) automatically.
+    here; MyBlockchain will do min(your_limits, MyBlockchain_limits) automatically.
 
       @details
     There is no need to implement ..._key_... methods if your engine doesn't
@@ -133,7 +133,7 @@ public:
   /** @brief
     unireg.cc will call this to make sure that the storage engine can handle
     the data it is about to send. Return *real* limits of your storage engine
-    here; MySQL will do min(your_limits, MySQL_limits) automatically.
+    here; MyBlockchain will do min(your_limits, MyBlockchain_limits) automatically.
 
       @details
     There is no need to implement ..._key_... methods if your engine doesn't
@@ -144,7 +144,7 @@ public:
   /** @brief
     unireg.cc will call this to make sure that the storage engine can handle
     the data it is about to send. Return *real* limits of your storage engine
-    here; MySQL will do min(your_limits, MySQL_limits) automatically.
+    here; MyBlockchain will do min(your_limits, MyBlockchain_limits) automatically.
 
       @details
     There is no need to implement ..._key_... methods if your engine doesn't
@@ -167,7 +167,7 @@ public:
     Everything below are methods that we implement in ha_example.cc.
 
     Most of these methods are not obligatory, skip them and
-    MySQL will treat them as not implemented
+    MyBlockchain will treat them as not implemented
   */
   /** @brief
     We implement this in ha_example.cc; it's a required method.
@@ -181,50 +181,50 @@ public:
 
   /** @brief
     We implement this in ha_example.cc. It's not an obligatory method;
-    skip it and and MySQL will treat it as not implemented.
+    skip it and and MyBlockchain will treat it as not implemented.
   */
   int write_row(uchar *buf);
 
   /** @brief
     We implement this in ha_example.cc. It's not an obligatory method;
-    skip it and and MySQL will treat it as not implemented.
+    skip it and and MyBlockchain will treat it as not implemented.
   */
   int update_row(const uchar *old_data, uchar *new_data);
 
   /** @brief
     We implement this in ha_example.cc. It's not an obligatory method;
-    skip it and and MySQL will treat it as not implemented.
+    skip it and and MyBlockchain will treat it as not implemented.
   */
   int delete_row(const uchar *buf);
 
   /** @brief
     We implement this in ha_example.cc. It's not an obligatory method;
-    skip it and and MySQL will treat it as not implemented.
+    skip it and and MyBlockchain will treat it as not implemented.
   */
   int index_read_map(uchar *buf, const uchar *key,
                      key_part_map keypart_map, enum ha_rkey_function find_flag);
 
   /** @brief
     We implement this in ha_example.cc. It's not an obligatory method;
-    skip it and and MySQL will treat it as not implemented.
+    skip it and and MyBlockchain will treat it as not implemented.
   */
   int index_next(uchar *buf);
 
   /** @brief
     We implement this in ha_example.cc. It's not an obligatory method;
-    skip it and and MySQL will treat it as not implemented.
+    skip it and and MyBlockchain will treat it as not implemented.
   */
   int index_prev(uchar *buf);
 
   /** @brief
     We implement this in ha_example.cc. It's not an obligatory method;
-    skip it and and MySQL will treat it as not implemented.
+    skip it and and MyBlockchain will treat it as not implemented.
   */
   int index_first(uchar *buf);
 
   /** @brief
     We implement this in ha_example.cc. It's not an obligatory method;
-    skip it and and MySQL will treat it as not implemented.
+    skip it and and MyBlockchain will treat it as not implemented.
   */
   int index_last(uchar *buf);
 

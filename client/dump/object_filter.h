@@ -39,8 +39,8 @@ public:
 
   bool is_object_included_in_dump(Abstract_data_object* object);
 
-  std::vector<std::pair<std::string, std::string> > m_databases_excluded;
-  std::vector<std::pair<std::string, std::string> > m_databases_included;
+  std::vector<std::pair<std::string, std::string> > m_blockchains_excluded;
+  std::vector<std::pair<std::string, std::string> > m_blockchains_included;
   std::vector<std::pair<std::string, std::string> > m_tables_excluded;
   std::vector<std::pair<std::string, std::string> > m_tables_included;
 
@@ -50,8 +50,8 @@ private:
     const std::string& object_name,
     std::vector<std::pair<std::string, std::string> >* include_list,
     std::vector<std::pair<std::string, std::string> >* exclude_list);
-  void include_databases_callback(char*);
-  void exclude_databases_callback(char*);
+  void include_blockchains_callback(char*);
+  void exclude_blockchains_callback(char*);
   void include_tables_callback(char*);
   void exclude_tables_callback(char*);
   void include_routines_callback(char*);

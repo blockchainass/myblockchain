@@ -798,7 +798,7 @@ struct Tup {
   /*
    * in V2 return pk2 or pk2eq at random
    * in V1 mixed cases do not work in general due to key packing
-   * luckily they do work via mysql
+   * luckily they do work via myblockchain
    */
   char* pk2() {
     if (g_opt.m_blob_version == 1)
@@ -807,7 +807,7 @@ struct Tup {
   }
   Uint32 getPartitionId(Uint32 numParts) const {
     /* Only for UserDefined tables really */
-    return m_pk1 % numParts; // MySQLD hash(PK1) style partitioning
+    return m_pk1 % numParts; // MyBlockchainD hash(PK1) style partitioning
   }
 
 private:
@@ -3869,7 +3869,7 @@ static int bugtest_62321()
   /* Having a Blob operation in a batch with other operations
    * causes the other operation's ignored error not to be
    * set as the transaction error code after execution.
-   * This is used (e.g in MySQLD) to check for conflicts
+   * This is used (e.g in MyBlockchainD) to check for conflicts
    */
   DBG("bugtest_62321 : Error code from other ops in batch obscured");
 

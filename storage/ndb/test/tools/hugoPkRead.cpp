@@ -64,7 +64,7 @@ int main(int argc, const char** argv){
     { "stats", 's', arg_flag, &_stats, "report latency per batch", "stats" },
     { "batch", 'b', arg_integer, &_batch, "batch value(not 0)", "batch" },
     { "records", 'r', arg_integer, &_records, "Number of records", "records" },
-    { "database", 'd', arg_string, &_dbname, "Name of database", "dbname" },
+    { "blockchain", 'd', arg_string, &_dbname, "Name of blockchain", "dbname" },
     { "rand", 0, arg_flag, &_rand, "Read random records within range","rand"},
     { "usage", '?', arg_flag, &_help, "Print help", "" }
   };

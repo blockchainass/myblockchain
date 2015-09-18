@@ -17,7 +17,7 @@
 
 package testsuite.clusterj;
 
-import com.mysql.clusterj.ClusterJException;
+import com.myblockchain.clusterj.ClusterJException;
 
 import testsuite.clusterj.model.CharsetLatin1;
 

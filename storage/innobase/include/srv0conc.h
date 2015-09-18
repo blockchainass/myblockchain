@@ -41,7 +41,7 @@ Created 2011/04/18 Sunny Bains
 #define srv_conc_h
 
 /** We are prepared for a situation that we have this many threads waiting for
-a semaphore inside InnoDB. innobase_start_or_create_for_mysql() sets the
+a semaphore inside InnoDB. innobase_start_or_create_for_myblockchain() sets the
 value. */
 
 extern	ulint	srv_max_n_threads;

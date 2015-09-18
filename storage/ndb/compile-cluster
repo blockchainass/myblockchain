@@ -17,8 +17,8 @@
 
 # -*- cperl -*-
 #
-# MySQL Cluster compile script to bridge the gap between
-# different build systems in different versions of MySQL Server
+# MyBlockchain Cluster compile script to bridge the gap between
+# different build systems in different versions of MyBlockchain Server
 #
 # This script is intended for internal use
 #
@@ -46,7 +46,7 @@ my $opt_parse_log;
 Getopt::Long::Configure("pass_through");
 GetOptions(
 
-  # Build MySQL Server and NDB with debug
+  # Build MyBlockchain Server and NDB with debug
   'debug!' => \$opt_debug,
   'with-debug:s' => sub { $opt_debug = 1; },
   'build-type=s' => \$opt_build_type,
@@ -134,7 +134,7 @@ if(defined $ENV{"CXXFLAGS"} and $ENV{"CXXFLAGS"} =~ "-fno-exceptions")
   {
     print("compile-cluster: debug build requested\n");
     push(@args, "-DWITH_DEBUG=1");
-    push(@args, "-DMYSQL_MAINTAINER_MODE=0");
+    push(@args, "-DMYBLOCKCHAIN_MAINTAINER_MODE=0");
   }
 
   if ($opt_vanilla)
@@ -143,12 +143,12 @@ if(defined $ENV{"CXXFLAGS"} and $ENV{"CXXFLAGS"} =~ "-fno-exceptions")
     print("compile-cluster: vanilla build requested, no sugar\n");
 
     # Turn off automatic detection of WITH_NDBCLUSTER
-    # in MySQL Cluster version(i.e when version string ends in -ndb-Y.Y.Y)
+    # in MyBlockchain Cluster version(i.e when version string ends in -ndb-Y.Y.Y)
     push(@args, "-DWITH_NDB_DEFAULT_PLUGIN_DETECT=0");
   }
   else
   {
-    # Hardcoded options controlling how to build MySQL Server
+    # Hardcoded options controlling how to build MyBlockchain Server
     push(@args, "-DWITH_SSL=bundled"); # Consistent error messages
 
     # Hardcoded options controlling how to build NDB
@@ -219,7 +219,7 @@ if(defined $ENV{"CXXFLAGS"} and $ENV{"CXXFLAGS"} =~ "-fno-exceptions")
   my $opt_with_zlib_dir;
   my $opt_with_ssl;
   my $opt_localstatedir;
-  my $opt_mysql_maintainer_mode;
+  my $opt_myblockchain_maintainer_mode;
   my $opt_with_gcov;
   my $opt_with_comment;
   my $opt_with_plugins;
@@ -237,7 +237,7 @@ if(defined $ENV{"CXXFLAGS"} and $ENV{"CXXFLAGS"} =~ "-fno-exceptions")
     'with-zlib-dir=s' => \$opt_with_zlib_dir,
     'with-ssl:s' => \$opt_with_ssl,
     'localstatedir=s' => \$opt_localstatedir,
-    'mysql-maintainer-mode=s' => \$opt_mysql_maintainer_mode,
+    'myblockchain-maintainer-mode=s' => \$opt_myblockchain_maintainer_mode,
     'with-gcov' => \$opt_with_gcov,
     'with-comment=s' => \$opt_with_comment,
     'with-plugins=s' => \$opt_with_plugins,
@@ -278,12 +278,12 @@ if(defined $ENV{"CXXFLAGS"} and $ENV{"CXXFLAGS"} =~ "-fno-exceptions")
   }
   if ($opt_localstatedir)
   {
-    push(@args, "-DMYSQL_DATADIR=$opt_localstatedir"); 
+    push(@args, "-DMYBLOCKCHAIN_DATADIR=$opt_localstatedir"); 
   }
-  if ($opt_mysql_maintainer_mode)
+  if ($opt_myblockchain_maintainer_mode)
   {
-    push(@args, "-DMYSQL_MAINTAINER_MODE=" .
-                 ($opt_mysql_maintainer_mode =~ /enable/ ? "1" : "0"));
+    push(@args, "-DMYBLOCKCHAIN_MAINTAINER_MODE=" .
+                 ($opt_myblockchain_maintainer_mode =~ /enable/ ? "1" : "0"));
   }
   if ($opt_with_gcov)
   {

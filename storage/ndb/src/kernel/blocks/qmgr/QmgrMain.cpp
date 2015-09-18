@@ -474,7 +474,7 @@ void Qmgr::execCONNECT_REP(Signal* signal)
   {
     jam();
     setNodeInfo(connectedNodeId).m_version = 0;
-    setNodeInfo(connectedNodeId).m_mysql_version = 0;
+    setNodeInfo(connectedNodeId).m_myblockchain_version = 0;
   }
 
   c_connectedNodes.set(connectedNodeId);
@@ -624,7 +624,7 @@ Qmgr::execREAD_NODESREF(Signal* signal)
  *
  * When receiving CM_REGCONF the new node will send CM_NODEINFOREQ with
  * information about version of the binary, number of LDM workers and
- * MySQL version of binary.
+ * MyBlockchain version of binary.
  *
  * The nodes already included in the heartbeat protocol will wait until it
  * receives both the CM_ADD(prepare) from the president and the
@@ -788,7 +788,7 @@ Qmgr::sendCmRegReq(Signal * signal, Uint32 nodeId){
   req->blockRef = reference();
   req->nodeId = getOwnNodeId();
   req->version = NDB_VERSION;
-  req->mysql_version = NDB_MYSQL_VERSION_D;
+  req->myblockchain_version = NDB_MYBLOCKCHAIN_VERSION_D;
   req->latest_gci = c_start.m_latest_gci;
   req->start_type = c_start.m_start_type;
   c_start.m_skip_nodes.copyto(NdbNodeBitmask::Size, req->skip_nodes);
@@ -858,7 +858,7 @@ void Qmgr::execCM_REGREQ(Signal* signal)
   CmRegReq * const cmRegReq = (CmRegReq *)&signal->theData[0];
   const BlockReference Tblockref = cmRegReq->blockRef;
   const Uint32 startingVersion = cmRegReq->version;
-  Uint32 startingMysqlVersion = cmRegReq->mysql_version;
+  Uint32 startingMysqlVersion = cmRegReq->myblockchain_version;
   addNodePtr.i = cmRegReq->nodeId;
   Uint32 gci = 1;
   Uint32 start_type = ~0;
@@ -1087,7 +1087,7 @@ void Qmgr::execCM_REGREQ(Signal* signal)
   UintR TdynId = (++c_maxDynamicId) & 0xFFFF;
   TdynId |= (addNodePtr.p->hbOrder << 16);
   setNodeInfo(addNodePtr.i).m_version = startingVersion;
-  setNodeInfo(addNodePtr.i).m_mysql_version = startingMysqlVersion;
+  setNodeInfo(addNodePtr.i).m_myblockchain_version = startingMysqlVersion;
   recompute_version_info(NodeInfo::DB, startingVersion);
   addNodePtr.p->ndynamicId = TdynId;
   
@@ -1098,7 +1098,7 @@ void Qmgr::execCM_REGREQ(Signal* signal)
   cmRegConf->presidentBlockRef = reference();
   cmRegConf->presidentNodeId   = getOwnNodeId();
   cmRegConf->presidentVersion  = getNodeInfo(getOwnNodeId()).m_version;
-  cmRegConf->presidentMysqlVersion = getNodeInfo(getOwnNodeId()).m_mysql_version;
+  cmRegConf->presidentMysqlVersion = getNodeInfo(getOwnNodeId()).m_myblockchain_version;
   cmRegConf->dynamicId         = TdynId;
   c_clusterNodes.copyto(NdbNodeBitmask::Size, cmRegConf->allNdbNodes);
   sendSignal(Tblockref, GSN_CM_REGCONF, signal, 
@@ -1357,7 +1357,7 @@ Qmgr::sendCmNodeInfoReq(Signal* signal, Uint32 nodeId, const NodeRec * self){
   req->nodeId = getOwnNodeId();
   req->dynamicId = self->ndynamicId;
   req->version = getNodeInfo(getOwnNodeId()).m_version;
-  req->mysql_version = getNodeInfo(getOwnNodeId()).m_mysql_version;
+  req->myblockchain_version = getNodeInfo(getOwnNodeId()).m_myblockchain_version;
   req->lqh_workers = getNodeInfo(getOwnNodeId()).m_lqh_workers;
   const Uint32 ref = calcQmgrBlockRef(nodeId);
   sendSignal(ref,GSN_CM_NODEINFOREQ, signal, CmNodeInfoReq::SignalLength, JBB);
@@ -1967,12 +1967,12 @@ void Qmgr::execCM_NODEINFOCONF(Signal* signal)
   const Uint32 nodeId = conf->nodeId;
   const Uint32 dynamicId = conf->dynamicId;
   const Uint32 version = conf->version;
-  Uint32 mysql_version = conf->mysql_version;
+  Uint32 myblockchain_version = conf->myblockchain_version;
   Uint32 lqh_workers = conf->lqh_workers;
   if (version < NDBD_SPLIT_VERSION)
   {
     jam();
-    mysql_version = 0;
+    myblockchain_version = 0;
   }
   if (version < NDBD_MT_LQH_VERSION)
   {
@@ -1996,7 +1996,7 @@ void Qmgr::execCM_NODEINFOCONF(Signal* signal)
   replyNodePtr.p->ndynamicId = dynamicId;
   replyNodePtr.p->blockRef = signal->getSendersBlockRef();
   setNodeInfo(replyNodePtr.i).m_version = version;
-  setNodeInfo(replyNodePtr.i).m_mysql_version = mysql_version;
+  setNodeInfo(replyNodePtr.i).m_myblockchain_version = myblockchain_version;
   setNodeInfo(replyNodePtr.i).m_lqh_workers = lqh_workers;
 
   recompute_version_info(NodeInfo::DB, version);
@@ -2052,10 +2052,10 @@ void Qmgr::execCM_NODEINFOREQ(Signal* signal)
   addNodePtr.p->blockRef = signal->getSendersBlockRef();
   setNodeInfo(addNodePtr.i).m_version = req->version;
 
-  Uint32 mysql_version = req->mysql_version;
+  Uint32 myblockchain_version = req->myblockchain_version;
   if (req->version < NDBD_SPLIT_VERSION)
-    mysql_version = 0;
-  setNodeInfo(addNodePtr.i).m_mysql_version = mysql_version;
+    myblockchain_version = 0;
+  setNodeInfo(addNodePtr.i).m_myblockchain_version = myblockchain_version;
 
   Uint32 lqh_workers = req->lqh_workers;
   if (req->version < NDBD_MT_LQH_VERSION)
@@ -2122,7 +2122,7 @@ Qmgr::cmAddPrepare(Signal* signal, NodeRecPtr nodePtr, const NodeRec * self){
   conf->nodeId = getOwnNodeId();
   conf->dynamicId = self->ndynamicId;
   conf->version = getNodeInfo(getOwnNodeId()).m_version;
-  conf->mysql_version = getNodeInfo(getOwnNodeId()).m_mysql_version;
+  conf->myblockchain_version = getNodeInfo(getOwnNodeId()).m_myblockchain_version;
   conf->lqh_workers = getNodeInfo(getOwnNodeId()).m_lqh_workers;
   sendSignal(nodePtr.p->blockRef, GSN_CM_NODEINFOCONF, signal,
 	     CmNodeInfoConf::SignalLength, JBB);
@@ -2442,7 +2442,7 @@ void Qmgr::execCM_ACKADD(Signal* signal)
     cmAdd->requestType = CmAdd::AddCommit;
     cmAdd->startingNodeId = addNodePtr.i; 
     cmAdd->startingVersion = getNodeInfo(addNodePtr.i).m_version;
-    cmAdd->startingMysqlVersion = getNodeInfo(addNodePtr.i).m_mysql_version;
+    cmAdd->startingMysqlVersion = getNodeInfo(addNodePtr.i).m_myblockchain_version;
     NodeReceiverGroup rg(QMGR, c_clusterNodes);
     sendSignal(rg, GSN_CM_ADD, signal, CmAdd::SignalLength, JBA);
     DEBUG_START2(GSN_CM_ADD, rg, "AddCommit");
@@ -2463,7 +2463,7 @@ void Qmgr::execCM_ACKADD(Signal* signal)
     cmAdd->requestType = CmAdd::CommitNew;
     cmAdd->startingNodeId = addNodePtr.i; 
     cmAdd->startingVersion = getNodeInfo(addNodePtr.i).m_version;
-    cmAdd->startingMysqlVersion = getNodeInfo(addNodePtr.i).m_mysql_version;
+    cmAdd->startingMysqlVersion = getNodeInfo(addNodePtr.i).m_myblockchain_version;
     sendSignal(calcQmgrBlockRef(addNodePtr.i), GSN_CM_ADD, signal, 
 	       CmAdd::SignalLength, JBA);
     DEBUG_START(GSN_CM_ADD, addNodePtr.i, "CommitNew");
@@ -2701,7 +2701,7 @@ void Qmgr::initData(Signal* signal)
     arbitRec.method = ArbitRec::DISABLED;
   }
 
-  setNodeInfo(getOwnNodeId()).m_mysql_version = NDB_MYSQL_VERSION_D;
+  setNodeInfo(getOwnNodeId()).m_myblockchain_version = NDB_MYBLOCKCHAIN_VERSION_D;
 
   ndb_mgm_configuration_iterator * iter =
     m_ctx.m_config.getClusterConfigIterator();
@@ -3669,9 +3669,9 @@ void Qmgr::execAPI_REGREQ(Signal* signal)
   const Uint32 version = req->version;
   const BlockReference ref = req->ref;
   
-  Uint32 mysql_version = req->mysql_version;
+  Uint32 myblockchain_version = req->myblockchain_version;
   if (version < NDBD_SPLIT_VERSION)
-    mysql_version = 0;
+    myblockchain_version = 0;
 
   NodeRecPtr apiNodePtr;
   apiNodePtr.i = refToNode(ref);
@@ -3734,9 +3734,9 @@ void Qmgr::execAPI_REGREQ(Signal* signal)
     char buf[NDB_VERSION_STRING_BUF_SZ];
     infoEvent("Connection attempt from %s id=%d with %s "
 	      "incompatible with %s%s",
-	      type == NodeInfo::API ? "api or mysqld" : "management server",
+	      type == NodeInfo::API ? "api or myblockchaind" : "management server",
 	      apiNodePtr.i,
-	      ndbGetVersionString(version, mysql_version, 0,
+	      ndbGetVersionString(version, myblockchain_version, 0,
                                   buf, 
                                   sizeof(buf)),
 	      NDB_VERSION_STRING,
@@ -3747,7 +3747,7 @@ void Qmgr::execAPI_REGREQ(Signal* signal)
   }
 
   setNodeInfo(apiNodePtr.i).m_version = version;
-  setNodeInfo(apiNodePtr.i).m_mysql_version = mysql_version;
+  setNodeInfo(apiNodePtr.i).m_myblockchain_version = myblockchain_version;
   set_hb_count(apiNodePtr.i) = 0;
 
   NodeState state = getNodeState();
@@ -3889,7 +3889,7 @@ Qmgr::sendApiRegConf(Signal *signal, Uint32 node)
   apiRegConf->qmgrRef = reference();
   apiRegConf->apiHeartbeatFrequency = (chbApiDelay / 10);
   apiRegConf->version = NDB_VERSION;
-  apiRegConf->mysql_version = NDB_MYSQL_VERSION_D;
+  apiRegConf->myblockchain_version = NDB_MYBLOCKCHAIN_VERSION_D;
   apiRegConf->nodeState = getNodeState();
   {
     NodeRecPtr nodePtr;
@@ -3956,14 +3956,14 @@ Qmgr::execAPI_VERSION_REQ(Signal * signal) {
   if(getNodeInfo(nodeId).m_connected)
   {
     conf->version = getNodeInfo(nodeId).m_version;
-    conf->mysql_version = getNodeInfo(nodeId).m_mysql_version;
+    conf->myblockchain_version = getNodeInfo(nodeId).m_myblockchain_version;
     struct in_addr in= globalTransporterRegistry.get_connect_address(nodeId);
     conf->m_inet_addr= in.s_addr;
   }
   else
   {
     conf->version =  0;
-    conf->mysql_version =  0;
+    conf->myblockchain_version =  0;
     conf->m_inet_addr= 0;
   }
   conf->nodeId = nodeId;
@@ -4077,7 +4077,7 @@ Qmgr::sendApiRegRef(Signal* signal, Uint32 Tref, ApiRegRef::ErrorCode err){
   ApiRegRef* ref = (ApiRegRef*)signal->getDataPtrSend();
   ref->ref = reference();
   ref->version = NDB_VERSION;
-  ref->mysql_version = NDB_MYSQL_VERSION_D;
+  ref->myblockchain_version = NDB_MYBLOCKCHAIN_VERSION_D;
   ref->errorCode = err;
   sendSignal(Tref, GSN_API_REGREF, signal, ApiRegRef::SignalLength, JBB);
 }
@@ -5326,7 +5326,7 @@ Uint32 Qmgr::getArbitTimeout()
 }
 
 /**
- * Start arbitration thread when we are president and database
+ * Start arbitration thread when we are president and blockchain
  * is opened for the first time.
  *
  * XXX  Do arbitration check just like on node failure.  Since

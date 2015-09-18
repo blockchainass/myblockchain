@@ -129,7 +129,7 @@ public class BatchTest extends AbstractClusterJModelTest {
             verifyEmployee(rs, id);
             actuals.add(id);
         }
-        errorIfNotEqual("Wrong number of instances in database.", expecteds, actuals);
+        errorIfNotEqual("Wrong number of instances in blockchain.", expecteds, actuals);
     }
 
     private void verifyEmployee(ResultSet rs, int id) {

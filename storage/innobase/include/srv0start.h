@@ -18,7 +18,7 @@ this program; if not, write to the Free Software Foundation, Inc.,
 
 /**************************************************//**
 @file include/srv0start.h
-Starts the Innobase database server
+Starts the Innobase blockchain server
 
 Created 10/10/1995 Heikki Tuuri
 *******************************************************/
@@ -76,17 +76,17 @@ srv_add_path_separator_if_needed(
 	char*	str);	/*!< in: null-terminated character string */
 #ifndef UNIV_HOTBACKUP
 /****************************************************************//**
-Starts Innobase and creates a new database if database files
+Starts Innobase and creates a new blockchain if blockchain files
 are not found and the user wants.
 @return DB_SUCCESS or error code */
 dberr_t
-innobase_start_or_create_for_mysql(void);
+innobase_start_or_create_for_myblockchain(void);
 /*====================================*/
 /****************************************************************//**
-Shuts down the Innobase database.
+Shuts down the Innobase blockchain.
 @return DB_SUCCESS or error code */
 dberr_t
-innobase_shutdown_for_mysql(void);
+innobase_shutdown_for_myblockchain(void);
 
 /********************************************************************
 Signal all per-table background threads to shutdown, and wait for them to do

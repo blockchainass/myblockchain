@@ -70,8 +70,8 @@ function showStatsOnExit() {
 
 function main() {
   var properties = new mynode.ConnectionProperties(process.argv[2]);
-  properties.database = "jscrund";
-  properties.mysql_user = "root";
+  properties.blockchain = "jscrund";
+  properties.myblockchain_user = "root";
   process.on('SIGINT', showStatsOnExit); 
   process.on('SIGUSR1', stats.peek);
   mynode.connect(properties, null, startWebServer);

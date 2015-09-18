@@ -14,7 +14,7 @@
    51 Franklin Street, Suite 500, Boston, MA 02110-1335 USA */
 
 // First include (the generated) my_config.h, to get correct platform defines,
-// then gtest.h (before any other MySQL headers), to avoid min() macros etc ...
+// then gtest.h (before any other MyBlockchain headers), to avoid min() macros etc ...
 #include "my_config.h"
 #include <gtest/gtest.h>
 
@@ -42,16 +42,16 @@ TEST_F(CreateFieldTest, init)
   // To do: Add all possible precisions.
   Item_func_now_local *now= new Item_func_now_local(0);
 
-  Mock_create_field field_definition_none(MYSQL_TYPE_TIMESTAMP, NULL, NULL);
+  Mock_create_field field_definition_none(MYBLOCKCHAIN_TYPE_TIMESTAMP, NULL, NULL);
   EXPECT_EQ(Field::NONE, field_definition_none.unireg_check);
 
-  Mock_create_field field_definition_dn(MYSQL_TYPE_TIMESTAMP, now, NULL);
+  Mock_create_field field_definition_dn(MYBLOCKCHAIN_TYPE_TIMESTAMP, now, NULL);
   EXPECT_EQ(Field::TIMESTAMP_DN_FIELD, field_definition_dn.unireg_check);
 
-  Mock_create_field field_definition_dnun(MYSQL_TYPE_TIMESTAMP, now, now);
+  Mock_create_field field_definition_dnun(MYBLOCKCHAIN_TYPE_TIMESTAMP, now, now);
   EXPECT_EQ(Field::TIMESTAMP_DNUN_FIELD, field_definition_dnun.unireg_check);
 
-  Mock_create_field field_definition_un(MYSQL_TYPE_TIMESTAMP, NULL, now);
+  Mock_create_field field_definition_un(MYBLOCKCHAIN_TYPE_TIMESTAMP, NULL, now);
   EXPECT_EQ(Field::TIMESTAMP_UN_FIELD, field_definition_un.unireg_check);
 }
 

@@ -26,8 +26,8 @@
         -a Number of attributes, default 25
         -c Number of tables, default 1
 	-s Size of each attribute, default 1
-	-simple Use simple read to read from database
-        -dirty Use dirty read to read from database
+	-simple Use simple read to read from blockchain
+        -dirty Use dirty read to read from blockchain
 	-write Use writeTuple to write to db
 	-r Number of records to Hammer
         -no_table_create Don't create tables in db

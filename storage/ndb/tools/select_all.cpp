@@ -42,7 +42,7 @@ static const char* _delimiter = "\t";
 static int _header, _parallelism, _useHexFormat, _lock,
   _order, _descending;
 
-const char *load_default_groups[]= { "mysql_cluster",0 };
+const char *load_default_groups[]= { "myblockchain_cluster",0 };
 
 static int _tup = 0;
 static int _dumpDisk = 0;
@@ -55,7 +55,7 @@ static int use_author = 0;
 static struct my_option my_long_options[] =
 {
   NDB_STD_OPTS("ndb_select_all"),
-  { "database", 'd', "Name of database table is in",
+  { "blockchain", 'd', "Name of blockchain table is in",
     (uchar**) &_dbname, (uchar**) &_dbname, 0,
     GET_STR, REQUIRED_ARG, 0, 0, 0, 0, 0, 0 },
   { "parallelism", 'p', "parallelism",

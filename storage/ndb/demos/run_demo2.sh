@@ -1,15 +1,15 @@
 #!/bin/sh
-if [ -z "$MYSQLCLUSTER_TOP" ]; then
-  echo "MYSQLCLUSTER_TOP not set"
+if [ -z "$MYBLOCKCHAINCLUSTER_TOP" ]; then
+  echo "MYBLOCKCHAINCLUSTER_TOP not set"
   exit 1
 fi
-if [ -d "$MYSQLCLUSTER_TOP/ndb" ]; then :; else
-  echo "$MYSQLCLUSTER_TOP/ndb directory does not exist"
+if [ -d "$MYBLOCKCHAINCLUSTER_TOP/ndb" ]; then :; else
+  echo "$MYBLOCKCHAINCLUSTER_TOP/ndb directory does not exist"
   exit 1
 fi
 NDB_CONNECTSTRING=
 NDB_HOME=
-ndb_demo=$MYSQLCLUSTER_TOP/ndb/demos
+ndb_demo=$MYBLOCKCHAINCLUSTER_TOP/ndb/demos
 
 # Edit file system path
 
@@ -28,12 +28,12 @@ fi
 
 #xterm -T "Demo 2 NDB Management Server" -geometry 80x10 -xrm *.hold:true -e mgmtsrvr -c config.ini &
 
-# Start database node 
+# Start blockchain node 
 
 cd $ndb_demo/2-node/2-db-2
 xterm -T "Demo 2 NDB Cluster DB Node 2" -geometry 80x10 -xrm *.hold:true -e ndb -i &
 
-# Start database node 
+# Start blockchain node 
 
 cd $ndb_demo/2-node/2-db-3
 xterm -T "Demo 2 NDB Cluster DB Node 3"  -geometry 80x10 -xrm *.hold:true -e ndb -i &

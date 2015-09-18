@@ -36,7 +36,7 @@ extern unsigned int rpl_semi_sync_master_wait_for_slave_count;
 struct TranxNode {
   char             log_name_[FN_REFLEN];
   my_off_t         log_pos_;
-  mysql_cond_t     cond;
+  myblockchain_cond_t     cond;
   int              n_waiters;
   struct TranxNode *next_;            /* the next node in the sorted list */
   struct TranxNode *hash_next_;    /* the next node during hash collision */
@@ -257,7 +257,7 @@ private:
       ++block_num;
 
       for (int i=0; i< BLOCK_TRANX_NODES; i++)
-        mysql_cond_init(key_ss_cond_COND_binlog_send_,
+        myblockchain_cond_init(key_ss_cond_COND_binlog_send_,
                         &current_block->nodes[i].cond);
 
       return 0;
@@ -272,7 +272,7 @@ private:
   void free_block(Block *block)
   {
     for (int i=0; i< BLOCK_TRANX_NODES; i++)
-      mysql_cond_destroy(&block->nodes[i].cond);
+      myblockchain_cond_destroy(&block->nodes[i].cond);
     my_free(block);
     --block_num;
   }
@@ -323,7 +323,7 @@ private:
   TranxNode      **trx_htb_;        /* A hash table on active transactions. */
 
   int              num_entries_;              /* maximum hash table entries */
-  mysql_mutex_t *lock_;                                     /* mutex lock */
+  myblockchain_mutex_t *lock_;                                     /* mutex lock */
 
   inline void assert_lock_owner();
 
@@ -351,7 +351,7 @@ public:
                                     my_off_t log_file_pos);
   TranxNode* find_active_tranx_node(const char *log_file_name,
                                     my_off_t log_file_pos);
-  ActiveTranx(mysql_mutex_t *lock, unsigned long trace_level);
+  ActiveTranx(myblockchain_mutex_t *lock, unsigned long trace_level);
   ~ActiveTranx();
 
   /* Insert an active transaction node with the specified position.
@@ -596,10 +596,10 @@ class ReplSemiSyncMaster
 
   /* Mutex that protects the following state variables and the active
    * transaction list.
-   * Under no cirumstances we can acquire mysql_bin_log.LOCK_log if we are
+   * Under no cirumstances we can acquire myblockchain_bin_log.LOCK_log if we are
    * already holding LOCK_binlog_ because it can cause deadlocks.
    */
-  mysql_mutex_t LOCK_binlog_;
+  myblockchain_mutex_t LOCK_binlog_;
 
   /* This is set to true when reply_file_name_ contains meaningful data. */
   bool            reply_file_name_inited_;
@@ -689,7 +689,7 @@ public:
     wait_timeout_ = wait_timeout;
   }
 
-  /* Initialize this class after MySQL parameters are initialized. this
+  /* Initialize this class after MyBlockchain parameters are initialized. this
    * function should be called once at bootstrap time.
    */
   int initObject();

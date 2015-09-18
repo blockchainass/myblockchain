@@ -1,0 +1,113 @@
+drop table if exists `�ԣ�`;
+drop table if exists `�ԣ�`;
+drop table if exists `�ԣ�`;
+drop table if exists `�ԣ�`;
+drop table if exists `�ԣ�`;
+drop table if exists `�ԣ�`;
+drop table if exists `�ԣ�`;
+drop table if exists `�ԣ�`;
+drop table if exists `�ԣ�`;
+SET NAMES ujis;
+SET character_set_blockchain = ucs2;
+Warnings:
+Warning	1681	Updating 'character_set_blockchain' is deprecated. It will be made read-only in a future release.
+SET collation_connection = ucs2_general_ci;
+CREATE TABLE `�ԣ�` (`�ã�` char(5), INDEX(`�ã�`)) DEFAULT CHARSET = ucs2 engine = innodb;
+CREATE TABLE `�ԣ�` (`�ã�` char(5), INDEX(`�ã�`)) DEFAULT CHARSET = ucs2 engine = innodb;
+CREATE TABLE `�ԣ�` (`�ã�` char(5), INDEX(`�ã�`)) DEFAULT CHARSET = ucs2 engine = innodb;
+CREATE TABLE `�ԣ�` (`�ã�` char(5), INDEX(`�ã�`)) DEFAULT CHARSET = ucs2 engine = myisam;
+CREATE TABLE `�ԣ�` (`�ã�` char(5), INDEX(`�ã�`)) DEFAULT CHARSET = ucs2 engine = myisam;
+CREATE TABLE `�ԣ�` (`�ã�` char(5), INDEX(`�ã�`)) DEFAULT CHARSET = ucs2 engine = myisam;
+CREATE TABLE `�ԣ�` (`�ã�` char(5), INDEX(`�ã�`)) DEFAULT CHARSET = ucs2 engine = MEMORY;
+CREATE TABLE `�ԣ�` (`�ã�` char(5), INDEX(`�ã�`)) DEFAULT CHARSET = ucs2 engine = MEMORY;
+CREATE TABLE `�ԣ�` (`�ã�` char(5), INDEX(`�ã�`)) DEFAULT CHARSET = ucs2 engine = MEMORY;
+INSERT INTO `�ԣ�` VALUES ('����������'),('��������'),('������'),('����'),('��'),('');
+INSERT INTO `�ԣ�` VALUES ('����������'),('��������'),('������'),('����'),('��'),('');
+INSERT INTO `�ԣ�` VALUES ('��܏�ݏ�ޏ�ߏ��'),('��܏�ݏ�ޏ��'),('��܏�ݏ��'),('��܏��'),('���'),('');
+INSERT INTO `�ԣ�` VALUES ('����������'),('��������'),('������'),('����'),('��'),('');
+INSERT INTO `�ԣ�` VALUES ('����������'),('��������'),('������'),('����'),('��'),('');
+INSERT INTO `�ԣ�` VALUES ('��܏�ݏ�ޏ�ߏ��'),('��܏�ݏ�ޏ��'),('��܏�ݏ��'),('��܏��'),('���'),('');
+INSERT INTO `�ԣ�` VALUES ('����������'),('��������'),('������'),('����'),('��'),('');
+INSERT INTO `�ԣ�` VALUES ('����������'),('��������'),('������'),('����'),('��'),('');
+INSERT INTO `�ԣ�` VALUES ('��܏�ݏ�ޏ�ߏ��'),('��܏�ݏ�ޏ��'),('��܏�ݏ��'),('��܏��'),('���'),('');
+SELECT `�ã�`, LENGTH(`�ã�`) FROM `�ԣ�`;
+�ã�	LENGTH(`�ã�`)
+	0
+��	2
+����	4
+������	6
+��������	8
+����������	10
+SELECT `�ã�`, LENGTH(`�ã�`) FROM `�ԣ�`;
+�ã�	LENGTH(`�ã�`)
+	0
+��	2
+����	4
+������	6
+��������	8
+����������	10
+SELECT `�ã�`, LENGTH(`�ã�`) FROM `�ԣ�`;
+�ã�	LENGTH(`�ã�`)
+	0
+���	2
+��܏��	4
+��܏�ݏ��	6
+��܏�ݏ�ޏ��	8
+��܏�ݏ�ޏ�ߏ��	10
+SELECT `�ã�`, LENGTH(`�ã�`) FROM `�ԣ�`;
+�ã�	LENGTH(`�ã�`)
+	0
+��	2
+����	4
+������	6
+��������	8
+����������	10
+SELECT `�ã�`, LENGTH(`�ã�`) FROM `�ԣ�`;
+�ã�	LENGTH(`�ã�`)
+	0
+��	2
+����	4
+������	6
+��������	8
+����������	10
+SELECT `�ã�`, LENGTH(`�ã�`) FROM `�ԣ�`;
+�ã�	LENGTH(`�ã�`)
+	0
+���	2
+��܏��	4
+��܏�ݏ��	6
+��܏�ݏ�ޏ��	8
+��܏�ݏ�ޏ�ߏ��	10
+SELECT `�ã�`, LENGTH(`�ã�`) FROM `�ԣ�`;
+�ã�	LENGTH(`�ã�`)
+����������	10
+��������	8
+������	6
+����	4
+��	2
+	0
+SELECT `�ã�`, LENGTH(`�ã�`) FROM `�ԣ�`;
+�ã�	LENGTH(`�ã�`)
+����������	10
+��������	8
+������	6
+����	4
+��	2
+	0
+SELECT `�ã�`, LENGTH(`�ã�`) FROM `�ԣ�`;
+�ã�	LENGTH(`�ã�`)
+��܏�ݏ�ޏ�ߏ��	10
+��܏�ݏ�ޏ��	8
+��܏�ݏ��	6
+��܏��	4
+���	2
+	0
+DROP TABLE `�ԣ�`;
+DROP TABLE `�ԣ�`;
+DROP TABLE `�ԣ�`;
+DROP TABLE `�ԣ�`;
+DROP TABLE `�ԣ�`;
+DROP TABLE `�ԣ�`;
+DROP TABLE `�ԣ�`;
+DROP TABLE `�ԣ�`;
+DROP TABLE `�ԣ�`;

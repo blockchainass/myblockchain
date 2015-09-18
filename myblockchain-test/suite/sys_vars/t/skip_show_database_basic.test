@@ -1,0 +1,20 @@
+#
+# only global
+#
+select @@global.skip_show_blockchain;
+--error ER_INCORRECT_GLOBAL_LOCAL_VAR
+select @@session.skip_show_blockchain;
+show global variables like 'skip_show_blockchain';
+show session variables like 'skip_show_blockchain';
+--disable_warnings
+select * from information_schema.global_variables where variable_name='skip_show_blockchain';
+select * from information_schema.session_variables where variable_name='skip_show_blockchain';
+--enable_warnings
+
+#
+# show that it's read-only
+#
+--error ER_INCORRECT_GLOBAL_LOCAL_VAR
+set global skip_show_blockchain=1;
+--error ER_INCORRECT_GLOBAL_LOCAL_VAR
+set session skip_show_blockchain=1;

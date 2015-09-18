@@ -21,9 +21,9 @@
   Prefixed with the binary's name (sans .exe, where applicable,
   and without path, both to keep our test cases sane).
   The name is intended to aid debugging by clarifying which
-  binary reported an error, especially in cases like mysql_upgrade
+  binary reported an error, especially in cases like myblockchain_upgrade
   which calls several other tools whose messages should be
-  distinguishable from each other's, and from mysql_upgrade's.
+  distinguishable from each other's, and from myblockchain_upgrade's.
 
   This is low-level, in most cases, you should use my_message_local()
   instead (which by default goes through my_message_local_stderr(),

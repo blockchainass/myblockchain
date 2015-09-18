@@ -8,9 +8,9 @@
 var NdbDefaultConnectionProperties = {
   "implementation"    : "ndb",            // This must always be "ndb".
  
-  "ndb_connectstring" : "localhost:1186", // MySQL Cluster Connect String
-  "database"          : "test",           // MySQL Database name
-  "mysql_user"        : "root",
+  "ndb_connectstring" : "localhost:1186", // MyBlockchain Cluster Connect String
+  "blockchain"          : "test",           // MyBlockchain Database name
+  "myblockchain_user"        : "root",
 
   /* The next 3 properties control the behavior when opening a connection. */
   "ndb_connect_retries" : 4,         // if < 0, keep trying forever

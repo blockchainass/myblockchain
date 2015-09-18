@@ -15,7 +15,7 @@
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-package com.mysql.cluster.crund;
+package com.myblockchain.cluster.crund;
 
 import java.util.Properties;
 import java.util.Collection;
@@ -30,7 +30,7 @@ import javax.persistence.Query;
 import javax.persistence.FlushModeType;
 //import javax.persistence.PersistenceContextType; // XXX only by injection
 
-import com.mysql.cluster.crund.CrundDriver.XMode;
+import com.myblockchain.cluster.crund.CrundDriver.XMode;
 
 /**
  * The JPA benchmark implementation.
@@ -113,7 +113,7 @@ public class JpaAB extends CrundLoad {
 
         brokerFactory = props.getProperty("openjpa.BrokerFactory");
         ndbConnectString = props.getProperty("openjpa.ndb.connectString");
-        ndbDatabase = props.getProperty("openjpa.ndb.database");
+        ndbDatabase = props.getProperty("openjpa.ndb.blockchain");
         if ("ndb".equals(brokerFactory)) {
             if (ndbConnectString == null) {
                 throw new RuntimeException("Missing property: "
@@ -121,7 +121,7 @@ public class JpaAB extends CrundLoad {
             }
             if (ndbDatabase == null) {
                 throw new RuntimeException("Missing property: "
-                                           + "openjpa.ndb.database");
+                                           + "openjpa.ndb.blockchain");
             }
         }
 
@@ -150,7 +150,7 @@ public class JpaAB extends CrundLoad {
         out.println("openjpa.ConnectionRetainMode:   " + connectionRetainMode);
         out.println("openjpa.BrokerFactory:          " + brokerFactory);
         out.println("openjpa.ndb.connectString:      " + ndbConnectString);
-        out.println("openjpa.ndb.database:           " + ndbDatabase);
+        out.println("openjpa.ndb.blockchain:           " + ndbDatabase);
     }
 
     public void init() throws Exception {
@@ -213,7 +213,7 @@ public class JpaAB extends CrundLoad {
             case each :
             case bulk :
                 // Approach: control when persistent context is flushed,
-                // i.e., at commit for 1 database roundtrip only.
+                // i.e., at commit for 1 blockchain roundtrip only.
                 //
                 // JPA's mechanisms for bulk updates are numerous but not all
                 // are generically applicable here:
@@ -271,7 +271,7 @@ public class JpaAB extends CrundLoad {
             case bulk :
                 // Approach: simulate generic bulk reads by preloading extent
                 // into persistent context; subsequent reads/queries will then
-                // execute without database roundtrips.
+                // execute without blockchain roundtrips.
                 //
                 // JPA's mechanisms for bulk reads are numerous yet many
                 // are not generically applicable here:

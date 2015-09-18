@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# Copyright (C) 2000, 2001 MySQL AB
+# Copyright (C) 2000, 2001 MyBlockchain AB
 # Use is subject to license terms
 # 
 # This program is free software; you can redistribute it and/or modify
@@ -49,12 +49,12 @@ $secondtable = "bench_f2";
 $start_time=new Benchmark;
 if (!$opt_skip_create)
 {
-  $dbh = DBI->connect("DBI:mysql:$opt_db:$opt_host",
+  $dbh = DBI->connect("DBI:myblockchain:$opt_db:$opt_host",
 		      $opt_user, $opt_password,
 		    { PrintError => 0}) || die $DBI::errstr;
   $dbh->do("drop table if exists $firsttable, $secondtable");
 
-  print "Creating tables $firsttable and $secondtable in database $opt_db\n";
+  print "Creating tables $firsttable and $secondtable in blockchain $opt_db\n";
   $dbh->do("create table $firsttable (id int(7) not null, thread tinyint not null, info varchar(32), marker char(1), primary key(id,thread))") or die $DBI::errstr;
   $dbh->do("create table $secondtable (id int(7) not null, thread tinyint not null, row int(3) not null,value double, primary key(id,thread,row)) delay_key_write=1") or die $DBI::errstr;
   $dbh->disconnect; $dbh=0;	# Close handler
@@ -79,7 +79,7 @@ while (($pid=wait()) != -1)
 
 if (!$opt_skip_delete && !$errors)
 {
-  $dbh = DBI->connect("DBI:mysql:$opt_db:$opt_host",
+  $dbh = DBI->connect("DBI:myblockchain:$opt_db:$opt_host",
 		      $opt_user, $opt_password,
 		    { PrintError => 0}) || die $DBI::errstr;
   $dbh->do("drop table $firsttable,$secondtable");
@@ -100,7 +100,7 @@ sub insert_in_bench1
 {
   my ($dbh,$rows,$found,$i);
 
-  $dbh = DBI->connect("DBI:mysql:$opt_db:$opt_host",
+  $dbh = DBI->connect("DBI:myblockchain:$opt_db:$opt_host",
 		      $opt_user, $opt_password,
 		    { PrintError => 0}) || die $DBI::errstr;
   $rows=$found=0;
@@ -123,7 +123,7 @@ sub insert_in_bench2
 {
   my ($dbh,$rows,$found,$i);
 
-  $dbh = DBI->connect("DBI:mysql:$opt_db:$opt_host",
+  $dbh = DBI->connect("DBI:myblockchain:$opt_db:$opt_host",
 		      $opt_user, $opt_password,
 		    { PrintError => 0}) || die $DBI::errstr;
   $rows=$found=0;
@@ -149,7 +149,7 @@ sub repair_and_check
       $table);
   $found1=$found2=0; $last_found1=$last_found2= -1;
 
-  $dbh = DBI->connect("DBI:mysql:$opt_db:$opt_host",
+  $dbh = DBI->connect("DBI:myblockchain:$opt_db:$opt_host",
 		      $opt_user, $opt_password,
 		    { PrintError => 0}) || die $DBI::errstr;
 

@@ -16,7 +16,7 @@
    51 Franklin Street, Suite 500, Boston, MA 02110-1335 USA */
 
 #include "my_global.h"
-#include <mysql/service_parser.h>
+#include <myblockchain/service_parser.h>
 #include <string>
 #include <vector>
 
@@ -41,13 +41,13 @@ namespace services
 class Session
 {
 public:
-  Session(MYSQL_THD current_session);
+  Session(MYBLOCKCHAIN_THD current_session);
 
-  MYSQL_THD thd() { return m_current_session; }
+  MYBLOCKCHAIN_THD thd() { return m_current_session; }
 
 private:
-  MYSQL_THD m_previous_session;
-  MYSQL_THD m_current_session;
+  MYBLOCKCHAIN_THD m_previous_session;
+  MYBLOCKCHAIN_THD m_current_session;
 };
 
 class Digest
@@ -62,7 +62,7 @@ public:
     @retval false Server reported success.
     @retval true Server reported failure.
   */
-  bool load(MYSQL_THD thd);
+  bool load(MYBLOCKCHAIN_THD thd);
 
   /// Needed because we use a C hash table to store digests.
   const uchar *c_ptr() const { return m_buf; }
@@ -71,7 +71,7 @@ public:
 class Literal_visitor
 {
 public:
-  virtual bool visit(MYSQL_ITEM item) = 0;
+  virtual bool visit(MYBLOCKCHAIN_ITEM item) = 0;
 };
 
 
@@ -106,25 +106,25 @@ public:
 
 std::string print_digest(const uchar *digest);
 
-void set_current_database(MYSQL_THD thd, const std::string &db);
+void set_current_blockchain(MYBLOCKCHAIN_THD thd, const std::string &db);
 
-bool parse(MYSQL_THD thd, const std::string &query, bool is_prepared,
+bool parse(MYBLOCKCHAIN_THD thd, const std::string &query, bool is_prepared,
            Condition_handler *handler);
 
-bool parse(MYSQL_THD thd, const std::string &query, bool is_prepared);
+bool parse(MYBLOCKCHAIN_THD thd, const std::string &query, bool is_prepared);
 
-bool is_select_statement(MYSQL_THD thd);
+bool is_select_statement(MYBLOCKCHAIN_THD thd);
 
-int get_number_params(MYSQL_THD thd);
+int get_number_params(MYBLOCKCHAIN_THD thd);
 
-bool visit_parse_tree(MYSQL_THD thd, Literal_visitor *visitor);
+bool visit_parse_tree(MYBLOCKCHAIN_THD thd, Literal_visitor *visitor);
 
 /// Prints an Item as an std::string.
-std::string print_item(MYSQL_ITEM item);
+std::string print_item(MYBLOCKCHAIN_ITEM item);
 
-std::string get_current_query_normalized(MYSQL_THD thd);
+std::string get_current_query_normalized(MYBLOCKCHAIN_THD thd);
 
-std::vector<int> get_parameter_positions(MYSQL_THD thd);
+std::vector<int> get_parameter_positions(MYBLOCKCHAIN_THD thd);
 }
 
 #endif // SERVICES_INCLUDED

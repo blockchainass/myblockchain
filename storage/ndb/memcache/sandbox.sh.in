@@ -9,7 +9,7 @@ bindir=@INSTALL_BINDIR@
 libexecdir=@INSTALL_SBINDIR@
 libdir=@INSTALL_LIBDIR@
 scriptsdir=@INSTALL_SCRIPTDIR@
-sharedir=@INSTALL_MYSQLSHAREDIR@
+sharedir=@INSTALL_MYBLOCKCHAINSHAREDIR@
 memcachedbin=@MEMCACHED_BIN_PATH@
 
 SOURCE_DIR=$sourcedir
@@ -36,8 +36,8 @@ if test -d $BUILD_DIR
   MGM_CLIENT_DIR=$BUILD_DIR/storage/ndb/src/mgmclient
   MGM_SERVER_DIR=$BUILD_DIR/storage/ndb/src/mgmsrv
   NDBD_DIR=$BUILD_DIR/storage/ndb/src/kernel
-  MYSQL_CLIENT_DIR=$BUILD_DIR/client
-  MYSQL_SERVER_DIR=$BUILD_DIR/scripts
+  MYBLOCKCHAIN_CLIENT_DIR=$BUILD_DIR/client
+  MYBLOCKCHAIN_SERVER_DIR=$BUILD_DIR/scripts
   ENGINE_SO_DIR=$BUILD_DIR/storage/ndb/memcache
   METADATA_DIR=$BUILD_DIR/scripts/
   SCRIPTS_DIR=$INSTALL_DIR/$scriptsdir    # See NOTE below
@@ -47,27 +47,27 @@ if test -d $BUILD_DIR
   MGM_CLIENT_DIR=$INSTALL_DIR/$libexecdir
   MGM_SERVER_DIR=$INSTALL_DIR/$libexecdir
   NDBD_DIR=$INSTALL_DIR/$libexecdir
-  MYSQL_CLIENT_DIR=$INSTALL_DIR/$bindir
-  MYSQL_SERVER_DIR=$INSTALL_DIR/$libexecdir
+  MYBLOCKCHAIN_CLIENT_DIR=$INSTALL_DIR/$bindir
+  MYBLOCKCHAIN_SERVER_DIR=$INSTALL_DIR/$libexecdir
   ENGINE_SO_DIR=$INSTALL_DIR/$libdir
   METADATA_DIR=$sharedir/memcache-api
   SCRIPTS_DIR=$INSTALL_DIR/$scriptsdir
 fi
 
 ## NOTE.
-##  mysql_install_db only works from an installed copy.
-##  mtr fixes this by reimplementing mysql_install_db internally.
+##  myblockchain_install_db only works from an installed copy.
+##  mtr fixes this by reimplementing myblockchain_install_db internally.
 ##  Our solution for now is to hope we find a copy in the install_dir
  
 test_paths() {
   test_exec_path $MGM_CLIENT_DIR ndb_mgm
   test_exec_path $MGM_SERVER_DIR ndb_mgmd
-  test_exec_path $MYSQL_CLIENT_DIR mysql
-  test_exec_path $MYSQL_CLIENT_DIR mysqladmin
-  test_exec_path $MYSQL_SERVER_DIR mysqld_safe
+  test_exec_path $MYBLOCKCHAIN_CLIENT_DIR myblockchain
+  test_exec_path $MYBLOCKCHAIN_CLIENT_DIR myblockchainadmin
+  test_exec_path $MYBLOCKCHAIN_SERVER_DIR myblockchaind_safe
   test_exec_path $NDBD_DIR ndbd
   test_exec_path $MEMCACHED_DIR memcached
-  test_exec_path $SCRIPTS_DIR mysql_install_db
+  test_exec_path $SCRIPTS_DIR myblockchain_install_db
   test_read_path $ENGINE_SO_DIR ndb_engine.so
   test_read_path $METADATA_DIR ndb_memcache_metadata.sql
 }
@@ -97,10 +97,10 @@ build_dirs() {
 }
 
 write_my_cnf() {
-  ( echo "[mysqld]"
+  ( echo "[myblockchaind]"
     echo "ndbcluster"
     echo "datadir=$HOME_BASE/sandbox/data"
-    echo "pid-file=$HOME_BASE/sandbox/mysqld.pid"
+    echo "pid-file=$HOME_BASE/sandbox/myblockchaind.pid"
     echo "user=$MYSELF"
     echo "innodb_log_file_size=1M"
     echo
@@ -136,21 +136,21 @@ write_cluster_ini() {
 
 do_install_db() {
   OUTFILE=`mktemp`
-  $SCRIPTS_DIR/mysql_install_db \
+  $SCRIPTS_DIR/myblockchain_install_db \
     --basedir=$INSTALL_DIR --datadir=$HOME_BASE/sandbox/data \
     --skip-name-resolve --user=$MYSELF > $OUTFILE
-  if test ! -d $HOME_BASE/sandbox/data/mysql 
-    then echo "Failed: mysql_install_db did not work:"
+  if test ! -d $HOME_BASE/sandbox/data/myblockchain 
+    then echo "Failed: myblockchain_install_db did not work:"
     cat $OUTFILE
     rm $OUTFILE
     exit    
-    else echo "Created MySQL System Tables"
+    else echo "Created MyBlockchain System Tables"
     rm $OUTFILE
   fi
 }
 
-wait_for_mysql_ready() {
-  while ! $MYSQL_CLIENT_DIR/mysqladmin -s ping 
+wait_for_myblockchain_ready() {
+  while ! $MYBLOCKCHAIN_CLIENT_DIR/myblockchainadmin -s ping 
     do
       sleep 1
       echo waiting
@@ -173,14 +173,14 @@ start_ndbd() {
   sleep 5
 }
 
-start_mysql_server() {
-  $MYSQL_SERVER_DIR/mysqld_safe --defaults-file=$HOME_BASE/sandbox/my.cnf &
+start_myblockchain_server() {
+  $MYBLOCKCHAIN_SERVER_DIR/myblockchaind_safe --defaults-file=$HOME_BASE/sandbox/my.cnf &
   sleep 3
-  wait_for_mysql_ready
+  wait_for_myblockchain_ready
 }
 
-mysqld_is_running() {  
-   test_pid mysqld.pid
+myblockchaind_is_running() {  
+   test_pid myblockchaind.pid
 }
 
 mgm_server_is_running() {  
@@ -205,8 +205,8 @@ test_pid() {
 load_metadata() {
   echo Loading NDB Memcache configuration data
   DDL_SCRIPT=$METADATA_DIR/ndb_memcache_metadata.sql
-  $MYSQL_CLIENT_DIR/mysql --connect-timeout=10 -u root < $DDL_SCRIPT || TRY_AGAIN=1
-  test "$TRY_AGAIN" = "1" && $MYSQL_CLIENT_DIR/mysql --connect-timeout=10 \
+  $MYBLOCKCHAIN_CLIENT_DIR/myblockchain --connect-timeout=10 -u root < $DDL_SCRIPT || TRY_AGAIN=1
+  test "$TRY_AGAIN" = "1" && $MYBLOCKCHAIN_CLIENT_DIR/myblockchain --connect-timeout=10 \
     -u root < $DDL_SCRIPT
 }
 
@@ -221,8 +221,8 @@ stop_memcached() {
   test -n "$SERVERPID" && kill $SERVERPID
 }
 
-stop_mysqld() {
-  $MYSQL_CLIENT_DIR/mysqladmin -u root shutdown
+stop_myblockchaind() {
+  $MYBLOCKCHAIN_CLIENT_DIR/myblockchainadmin -u root shutdown
 }
 
 stop_mgm_server() {
@@ -235,13 +235,13 @@ final_message() {
   echo "Sandbox directory is $HOME_BASE/sandbox"
   echo "Memcached is $MEMCACHED_DIR/memcached"
   echo 
-  echo "Use \"sh sandbox.sh stop\" to stop memcached & MySQL Cluster"
+  echo "Use \"sh sandbox.sh stop\" to stop memcached & MyBlockchain Cluster"
   echo 
 }
 
 usage() {
-  echo "sandbox.sh start [ndb_mgmd | ndbd | mysql | memcached]"
-  echo "           stop  [ndb_mgmd | mysql | memcached]"
+  echo "sandbox.sh start [ndb_mgmd | ndbd | myblockchain | memcached]"
+  echo "           stop  [ndb_mgmd | myblockchain | memcached]"
   echo "           status"
   echo
   exit
@@ -256,9 +256,9 @@ cmd_status() {
     then echo "[ndbd]       running"
     else echo "[ndbd]       stopped"
   fi
-  if mysqld_is_running
-    then echo "[mysqld]     running"
-    else echo "[mysqld]     stopped"
+  if myblockchaind_is_running
+    then echo "[myblockchaind]     running"
+    else echo "[myblockchaind]     stopped"
   fi
   if memcached_is_running
     then echo "[memcached]  running"
@@ -268,20 +268,20 @@ cmd_status() {
 
 cmd_stop() {
   test "$1" = "memcached"  &&   stop_memcached   &&  exit
-  test "$1" = "mysqld"     &&   stop_mysqld      &&  exit
+  test "$1" = "myblockchaind"     &&   stop_myblockchaind      &&  exit
   test "$1" = "ndb_mgmd"   &&   stop_mgm_server  &&  exit
 
   test "$1" = ""  ||   usage
 
   # stop all
-  mysqld_is_running        &&   stop_mysqld
+  myblockchaind_is_running        &&   stop_myblockchaind
   memcached_is_running     &&   stop_memcached
   mgm_server_is_running    &&   stop_mgm_server
 }  
 
 cmd_start() {
   test "$1" = "memcached"  &&  start_memcached    && exit
-  test "$1" = "mysqld"     &&  start_mysql_server && exit
+  test "$1" = "myblockchaind"     &&  start_myblockchain_server && exit
   test "$1" = "ndbd"       &&  start_ndbd         && exit
   test "$1" = "ndb_mgmd"   &&  start_mgm_server   && exit
 
@@ -291,10 +291,10 @@ cmd_start() {
   test -d sandbox                     ||  build_dirs
   test -f sandbox/my.cnf              ||  write_my_cnf
   test -f sandbox/cluster.ini         ||  write_cluster_ini
-  test -d sandbox/data/mysql          ||  do_install_db
+  test -d sandbox/data/myblockchain          ||  do_install_db
   mgm_server_is_running               ||  start_mgm_server
   ndbd_is_running                     ||  start_ndbd 
-  mysqld_is_running                   ||  start_mysql_server  
+  myblockchaind_is_running                   ||  start_myblockchain_server  
   test -d sandbox/data/ndbmemcache    ||  load_metadata  
   memcached_is_running                ||  start_memcached
 

@@ -7,26 +7,26 @@ VERSION = '0.35'
 
 def set_options(opt):
   opt.tool_options('compiler_cxx')
-  opt.add_option('--mysql', action='store')
+  opt.add_option('--myblockchain', action='store')
 
 def configure(conf):
   import Options
   
-  if(Options.options.mysql):
-    mysql_path = Options.options.mysql
+  if(Options.options.myblockchain):
+    myblockchain_path = Options.options.myblockchain
   else:
     infile = open('./config.waf', 'r')
-    mysql_path = infile.read()
+    myblockchain_path = infile.read()
  
-  mysql_path = string.rstrip(mysql_path)     
-  my_lib = mysql_path + "/lib/"
-  my_inc = mysql_path + "/include/"
+  myblockchain_path = string.rstrip(myblockchain_path)     
+  my_lib = myblockchain_path + "/lib/"
+  my_inc = myblockchain_path + "/include/"
 
-  if os.path.isdir(my_lib + "/mysql"):
-    my_lib = my_lib + "/mysql"
+  if os.path.isdir(my_lib + "/myblockchain"):
+    my_lib = my_lib + "/myblockchain"
  
-  if os.path.isdir(my_inc + "mysql/storage"):
-    my_inc = my_inc + "mysql/"
+  if os.path.isdir(my_inc + "myblockchain/storage"):
+    my_inc = my_inc + "myblockchain/"
   
   ndb_inc = my_inc + "/storage/ndb"
  

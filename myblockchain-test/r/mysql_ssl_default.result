@@ -1,0 +1,29 @@
+#
+# WL#7712 Support SSL by default in libmyblockchain
+#
+# verify that myblockchain default connect with ssl channel when using TCP/IP
+# connection
+Variable_name	Value
+Ssl_cipher	DHE-RSA-AES256-SHA
+# verify that myblockchain --skip-ssl connect with unencrypted channel
+Variable_name	Value
+Ssl_cipher	
+# verify that myblockchain --ssl=0 connect with unencrypted channel
+Variable_name	Value
+Ssl_cipher	
+# verify that myblockchain --ssl=1 connect with ssl channel
+Variable_name	Value
+Ssl_cipher	DHE-RSA-AES256-SHA
+CREATE USER u1@localhost IDENTIFIED BY 'secret' REQUIRE SSL;
+# verify that myblockchainadmin default connect with ssl channel
+myblockchainadmin: [Warning] Using a password on the command line interface can be insecure.
+myblockchaind is alive
+# verify that myblockchain_show default connect with ssl channel
+myblockchainshow: [Warning] Using a password on the command line interface can be insecure.
++--------------------+
+|     Databases      |
++--------------------+
+| information_schema |
+| test               |
++--------------------+
+DROP USER u1@localhost;

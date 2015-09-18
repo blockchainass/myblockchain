@@ -16,20 +16,20 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
  */
 
-package com.mysql.clusterj.bindings;
+package com.myblockchain.clusterj.bindings;
 
-import com.mysql.cluster.ndbj.NdbApiException;
-import com.mysql.cluster.ndbj.NdbScanFilter;
+import com.myblockchain.cluster.ndbj.NdbApiException;
+import com.myblockchain.cluster.ndbj.NdbScanFilter;
 
-import com.mysql.clusterj.ClusterJDatastoreException;
+import com.myblockchain.clusterj.ClusterJDatastoreException;
 
-import com.mysql.clusterj.ClusterJFatalInternalException;
-import com.mysql.clusterj.core.store.Column;
-import com.mysql.clusterj.core.store.ScanFilter;
+import com.myblockchain.clusterj.ClusterJFatalInternalException;
+import com.myblockchain.clusterj.core.store.Column;
+import com.myblockchain.clusterj.core.store.ScanFilter;
 
-import com.mysql.clusterj.core.util.I18NHelper;
-import com.mysql.clusterj.core.util.Logger;
-import com.mysql.clusterj.core.util.LoggerFactoryService;
+import com.myblockchain.clusterj.core.util.I18NHelper;
+import com.myblockchain.clusterj.core.util.Logger;
+import com.myblockchain.clusterj.core.util.LoggerFactoryService;
 
 import java.sql.Date;
 import java.sql.Time;

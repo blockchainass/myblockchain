@@ -19,22 +19,22 @@
 */
 
 
-/* MySQLTime is a lossless interchange format 
-   between JavaScript and MySQL TIME and DATETIME columns.
+/* MyBlockchainTime is a lossless interchange format 
+   between JavaScript and MyBlockchain TIME and DATETIME columns.
    
-   For a Converter that uses MySQLTime, see NdbDatetimeConverter.js    
+   For a Converter that uses MyBlockchainTime, see NdbDatetimeConverter.js    
 */
 
 "use strict";
 
-function MySQLTime() {
+function MyBlockchainTime() {
 }
 
 /* In general we would declare all properties in the constructor. 
    Here, though, we put them in the prototype, so that only explicitly
    set ones reach the code in NdbTypeEncoders.cpp
 */
-MySQLTime.prototype = {
+MyBlockchainTime.prototype = {
   sign     : +1,
   year     : 0,
   month    : 0,
@@ -47,7 +47,7 @@ MySQLTime.prototype = {
   valid    : true  /* If false, TypeEncoder will reject value */
 };
 
-MySQLTime.prototype.initializeFromTimeString = function(jsValue) {
+MyBlockchainTime.prototype.initializeFromTimeString = function(jsValue) {
   var numValue = "";
   var decimalPart = "";
   var decimalLength = 0;
@@ -76,7 +76,7 @@ MySQLTime.prototype.initializeFromTimeString = function(jsValue) {
     else if(c === ':') {
       colons++;
     } else if((cc > 64 && cc < 91) || (cc > 96 && cc < 123)) {
-      /* MySQL truncates a time string where it sees a letter */
+      /* MyBlockchain truncates a time string where it sees a letter */
       pos = jsValue.length;
     }
     pos++;
@@ -118,7 +118,7 @@ MySQLTime.prototype.initializeFromTimeString = function(jsValue) {
   return this;
 };
 
-MySQLTime.prototype.initializeFromDateTimeString = function(jsValue) {
+MyBlockchainTime.prototype.initializeFromDateTimeString = function(jsValue) {
   // split date from time separated by blank
   var parts = jsValue.split(' ');
   this.initializeFromDateString(parts[0]);
@@ -126,7 +126,7 @@ MySQLTime.prototype.initializeFromDateTimeString = function(jsValue) {
   return this;
 };
 
-MySQLTime.prototype.initializeFromDateString = function(jsValue) {
+MyBlockchainTime.prototype.initializeFromDateString = function(jsValue) {
   var parts = jsValue.split(/[\W_]/);   // split on a non-word or an underscore
   this.year = parts[0];
   this.month = parts[1];
@@ -134,7 +134,7 @@ MySQLTime.prototype.initializeFromDateString = function(jsValue) {
   return this;
 };
 
-MySQLTime.prototype.initializeFromJsDateUTC = function(jsdate) {
+MyBlockchainTime.prototype.initializeFromJsDateUTC = function(jsdate) {
   this.year     = jsdate.getUTCFullYear();
   this.month    = jsdate.getUTCMonth() + 1;
   this.day      = jsdate.getUTCDate();
@@ -145,7 +145,7 @@ MySQLTime.prototype.initializeFromJsDateUTC = function(jsdate) {
   return this;
 };
 
-MySQLTime.prototype.initializeFromJsDateLocal = function(jsdate) {
+MyBlockchainTime.prototype.initializeFromJsDateLocal = function(jsdate) {
   this.year     = jsdate.getFullYear();
   this.month    = jsdate.getMonth() + 1;
   this.day      = jsdate.getDate();
@@ -156,24 +156,24 @@ MySQLTime.prototype.initializeFromJsDateLocal = function(jsdate) {
   return this;
 };
 
-MySQLTime.prototype.toJsDateUTC = function() {
+MyBlockchainTime.prototype.toJsDateUTC = function() {
   var utcdate = Date.UTC(this.year, this.month - 1, this.day,
                          this.hour, this.minute, this.second,
                          this.microsec / 1000);
   return new Date(utcdate);
 };
 
-MySQLTime.prototype.toJsDateLocal = function() {
+MyBlockchainTime.prototype.toJsDateLocal = function() {
   return new Date(this.year, this.month - 1, this.day,
                   this.hour, this.minute, this.second,
                   this.microsec / 1000);
 };
 
-MySQLTime.prototype.toDateTimeString = function() {
+MyBlockchainTime.prototype.toDateTimeString = function() {
   return this.toDateString() + ' ' + this.toTimeString();
 };
 
-MySQLTime.prototype.toTimeString = function() {
+MyBlockchainTime.prototype.toTimeString = function() {
   var strTime = "";
   var fsec = this.microsec;
   var fsp = this.fsp;
@@ -206,7 +206,7 @@ MySQLTime.prototype.toTimeString = function() {
   return strTime;
 };
 
-MySQLTime.prototype.toDateString = function() {
+MyBlockchainTime.prototype.toDateString = function() {
   var month = this.month;
   var day = this.day;
   if(month < 10) month = "0" + month;
@@ -214,12 +214,12 @@ MySQLTime.prototype.toDateString = function() {
   return this.year + "-" + month + "-" + day;
 };
 
-MySQLTime.initializeFromNdb = function(dbTime) {
-  dbTime.toJsDateUTC = MySQLTime.prototype.toJsDateUTC;
-  dbTime.toJsDateLocal = MySQLTime.prototype.toJsDateLocal;
-  dbTime.toTimeString = MySQLTime.prototype.toTimeString;
-  dbTime.toDateString = MySQLTime.prototype.toDateString;
+MyBlockchainTime.initializeFromNdb = function(dbTime) {
+  dbTime.toJsDateUTC = MyBlockchainTime.prototype.toJsDateUTC;
+  dbTime.toJsDateLocal = MyBlockchainTime.prototype.toJsDateLocal;
+  dbTime.toTimeString = MyBlockchainTime.prototype.toTimeString;
+  dbTime.toDateString = MyBlockchainTime.prototype.toDateString;
   return dbTime;
 };
 
-module.exports = MySQLTime;
+module.exports = MyBlockchainTime;

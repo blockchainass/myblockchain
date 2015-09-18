@@ -15,7 +15,7 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
  */
 
-package com.mysql.clusterj.jdbc.antlr;
+package com.myblockchain.clusterj.jdbc.antlr;
 
 import org.antlr.runtime.IntStream;
 import org.antlr.runtime.NoViableAltException;
@@ -32,9 +32,9 @@ import java.util.logging.Logger;
 /**
  * Author: kroepke
  */
-public abstract class MySQLParser extends Parser implements RecognizerErrorDelegate {
+public abstract class MyBlockchainParser extends Parser implements RecognizerErrorDelegate {
 
-    private static final Logger log = Logger.getLogger(MySQLParser.class.getName());
+    private static final Logger log = Logger.getLogger(MyBlockchainParser.class.getName());
     
     private ErrorListener errorListener;
 
@@ -42,12 +42,12 @@ public abstract class MySQLParser extends Parser implements RecognizerErrorDeleg
         return t.toString();
     }
 
-    public MySQLParser(TokenStream input) {
+    public MyBlockchainParser(TokenStream input) {
         super(input);
         errorListener = new BaseErrorListener(this);
     }
 
-    public MySQLParser(TokenStream input, RecognizerSharedState state) {
+    public MyBlockchainParser(TokenStream input, RecognizerSharedState state) {
         super(input, state);
         errorListener = new BaseErrorListener(this);
     }

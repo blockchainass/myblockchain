@@ -23,16 +23,16 @@
   This is the standard TypeConverter class used with DATETIME columns 
   in the Ndb Adapter.
   
-  DATETIME columns are read and written using a MySQLTime structure,
+  DATETIME columns are read and written using a MyBlockchainTime structure,
   which provides lossless interchange.
   
-  This Converter converts between MySQLTime and standard JavaScript Date.  
+  This Converter converts between MyBlockchainTime and standard JavaScript Date.  
 
   While convenient, such a conversion can result in lost precision. 
-  JavaSCript Date supports millisecond precision, while MySQL DATETIME
+  JavaSCript Date supports millisecond precision, while MyBlockchain DATETIME
   can support up to microsecond precision.
 
-  An application can override this converter and use MySQLTime directly:
+  An application can override this converter and use MyBlockchainTime directly:
     sessionFactory.registerTypeConverter("DATETIME", null);
   
   Or replace this converter with a custom one:
@@ -42,15 +42,15 @@
 
 
 var path = require("path"),
-    MySQLTime = require(path.join(mynode.fs.spi_dir,"common","MySQLTime.js")),
+    MyBlockchainTime = require(path.join(mynode.fs.spi_dir,"common","MyBlockchainTime.js")),
     udebug = unified_debug.getLogger("NdbDatetimeConverter.js");
 
 
 exports.toDB = function(jsdate) {
-  return new MySQLTime().initializeFromJsDateLocal(jsdate);
+  return new MyBlockchainTime().initializeFromJsDateLocal(jsdate);
 };
 
 exports.fromDB = function(dbTime) {
-  return MySQLTime.initializeFromNdb(dbTime).toJsDateLocal();
+  return MyBlockchainTime.initializeFromNdb(dbTime).toJsDateLocal();
 };
 

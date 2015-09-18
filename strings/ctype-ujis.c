@@ -1,4 +1,4 @@
-/* Copyright (c) 2002 MySQL AB & tommy@valley.ne.jp
+/* Copyright (c) 2002 MyBlockchain AB & tommy@valley.ne.jp
    Copyright (c) 2002, 2014, Oracle and/or its affiliates. All rights reserved.
    
    This library is free software; you can redistribute it and/or

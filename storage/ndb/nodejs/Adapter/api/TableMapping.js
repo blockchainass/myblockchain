@@ -212,7 +212,7 @@ function isStringOrStringArray(arg) {
 var tableMappingProperties = {
   "error"         : isString,
   "table"         : isNonEmptyString,
-  "database"      : isString, 
+  "blockchain"      : isString, 
   "mapAllColumns" : isBool,
   "field"         : isValidFieldMapping,
   "fields"        : isValidFieldMappingArray,
@@ -278,10 +278,10 @@ function TableMapping(tableNameOrLiteral) {
     case 'string':
       var parts = tableNameOrLiteral.split(".");
       if (parts[2] || tableNameOrLiteral.indexOf(' ') !== -1) {
-        this.error = 'MappingError: tableName must contain one or two parts: [database.]table';
+        this.error = 'MappingError: tableName must contain one or two parts: [blockchain.]table';
         this.table = parts[0];
       } else if(parts[0] && parts[1]) {
-        this.database = parts[0];
+        this.blockchain = parts[0];
         this.table = parts[1];
       }
       else {

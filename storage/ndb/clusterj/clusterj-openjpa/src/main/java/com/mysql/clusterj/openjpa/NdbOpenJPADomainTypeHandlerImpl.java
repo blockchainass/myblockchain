@@ -15,7 +15,7 @@
    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-package com.mysql.clusterj.openjpa;
+package com.myblockchain.clusterj.openjpa;
 
 import java.lang.reflect.Modifier;
 import java.sql.SQLException;
@@ -32,23 +32,23 @@ import org.apache.openjpa.jdbc.meta.FieldMapping;
 import org.apache.openjpa.kernel.OpenJPAStateManager;
 import org.apache.openjpa.kernel.PCState;
 
-import com.mysql.clusterj.ClusterJFatalInternalException;
-import com.mysql.clusterj.core.CacheManager;
-import com.mysql.clusterj.core.metadata.IndexHandlerImpl;
-import com.mysql.clusterj.core.metadata.KeyValueHandlerImpl;
-import com.mysql.clusterj.core.query.CandidateIndexImpl;
-import com.mysql.clusterj.core.spi.DomainFieldHandler;
-import com.mysql.clusterj.core.spi.DomainTypeHandler;
-import com.mysql.clusterj.core.spi.ValueHandler;
-import com.mysql.clusterj.core.store.Db;
-import com.mysql.clusterj.core.store.Dictionary;
-import com.mysql.clusterj.core.store.Operation;
-import com.mysql.clusterj.core.store.PartitionKey;
-import com.mysql.clusterj.core.store.ResultData;
-import com.mysql.clusterj.core.store.Table;
-import com.mysql.clusterj.core.util.I18NHelper;
-import com.mysql.clusterj.core.util.Logger;
-import com.mysql.clusterj.core.util.LoggerFactoryService;
+import com.myblockchain.clusterj.ClusterJFatalInternalException;
+import com.myblockchain.clusterj.core.CacheManager;
+import com.myblockchain.clusterj.core.metadata.IndexHandlerImpl;
+import com.myblockchain.clusterj.core.metadata.KeyValueHandlerImpl;
+import com.myblockchain.clusterj.core.query.CandidateIndexImpl;
+import com.myblockchain.clusterj.core.spi.DomainFieldHandler;
+import com.myblockchain.clusterj.core.spi.DomainTypeHandler;
+import com.myblockchain.clusterj.core.spi.ValueHandler;
+import com.myblockchain.clusterj.core.store.Db;
+import com.myblockchain.clusterj.core.store.Dictionary;
+import com.myblockchain.clusterj.core.store.Operation;
+import com.myblockchain.clusterj.core.store.PartitionKey;
+import com.myblockchain.clusterj.core.store.ResultData;
+import com.myblockchain.clusterj.core.store.Table;
+import com.myblockchain.clusterj.core.util.I18NHelper;
+import com.myblockchain.clusterj.core.util.Logger;
+import com.myblockchain.clusterj.core.util.LoggerFactoryService;
 
 /**
  *
@@ -77,8 +77,8 @@ public class NdbOpenJPADomainTypeHandlerImpl<T> implements DomainTypeHandler<T> 
     private NdbOpenJPADomainFieldHandlerImpl[] fieldHandlers;
 
     /** All columns in the mapped table. */
-    private Set<com.mysql.clusterj.core.store.Column> allStoreColumns = 
-        new HashSet<com.mysql.clusterj.core.store.Column>();
+    private Set<com.myblockchain.clusterj.core.store.Column> allStoreColumns = 
+        new HashSet<com.myblockchain.clusterj.core.store.Column>();
 
     /** The indexes defined for this domain type */
     private List<IndexHandlerImpl> indexHandlerImpls = new ArrayList<IndexHandlerImpl>();
@@ -176,7 +176,7 @@ public class NdbOpenJPADomainTypeHandlerImpl<T> implements DomainTypeHandler<T> 
                 setUnsupported(fmd.getReason());
             } else {
                 // add column names to allColumnNames
-                for (com.mysql.clusterj.core.store.Column column: fmd.getStoreColumns()) {
+                for (com.myblockchain.clusterj.core.store.Column column: fmd.getStoreColumns()) {
                     allStoreColumns.add(column);
                 }
                 if (fmd.isPrimaryKey()) {
@@ -500,16 +500,16 @@ public class NdbOpenJPADomainTypeHandlerImpl<T> implements DomainTypeHandler<T> 
     /** Get StoreColumns for fields identified by the BitSet
      * 
      */
-    public Set<com.mysql.clusterj.core.store.Column> getStoreColumns(BitSet fields) {
+    public Set<com.myblockchain.clusterj.core.store.Column> getStoreColumns(BitSet fields) {
         // iterate the fields and save the columns in a Set
         if (fields == null) {
             return allStoreColumns;
         }
-        Set<com.mysql.clusterj.core.store.Column> result = 
-            new HashSet<com.mysql.clusterj.core.store.Column>();
+        Set<com.myblockchain.clusterj.core.store.Column> result = 
+            new HashSet<com.myblockchain.clusterj.core.store.Column>();
         for (int i=fields.nextSetBit(0); i>=0; i=fields.nextSetBit(i+1)) {
             NdbOpenJPADomainFieldHandlerImpl fieldHandler = fieldHandlers[i];
-            for (com.mysql.clusterj.core.store.Column column: fieldHandler.getStoreColumns()) {
+            for (com.myblockchain.clusterj.core.store.Column column: fieldHandler.getStoreColumns()) {
                 result.add(column);
             }
         }
@@ -556,7 +556,7 @@ public class NdbOpenJPADomainTypeHandlerImpl<T> implements DomainTypeHandler<T> 
         return result;
     }
 
-    public com.mysql.clusterj.core.store.Table getTable() {
+    public com.myblockchain.clusterj.core.store.Table getTable() {
         return storeTable;
     }
 

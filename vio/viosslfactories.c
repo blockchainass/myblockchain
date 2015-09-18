@@ -188,7 +188,7 @@ static PSI_rwlock_info openssl_rwlocks[]=
 
 typedef struct CRYPTO_dynlock_value
 {
-  mysql_rwlock_t lock;
+  myblockchain_rwlock_t lock;
 } openssl_lock_t;
 
 
@@ -210,16 +210,16 @@ static void openssl_lock(int mode, openssl_lock_t *lock,
   switch (mode) {
     case CRYPTO_LOCK|CRYPTO_READ:
       what = "read lock";
-      err= mysql_rwlock_rdlock(&lock->lock);
+      err= myblockchain_rwlock_rdlock(&lock->lock);
       break;
     case CRYPTO_LOCK|CRYPTO_WRITE:
       what = "write lock";
-      err= mysql_rwlock_wrlock(&lock->lock);
+      err= myblockchain_rwlock_wrlock(&lock->lock);
       break;
     case CRYPTO_UNLOCK|CRYPTO_READ:
     case CRYPTO_UNLOCK|CRYPTO_WRITE:
       what = "unlock";
-      err= mysql_rwlock_unlock(&lock->lock);
+      err= myblockchain_rwlock_unlock(&lock->lock);
       break;
     default:
       /* Unknown locking mode. */
@@ -272,9 +272,9 @@ static openssl_lock_t *openssl_dynlock_create(const char *file
     my_malloc(PSI_NOT_INSTRUMENTED,sizeof(openssl_lock_t),MYF(0));
 
 #ifdef HAVE_PSI_INTERFACE
-  mysql_rwlock_init(key_rwlock_openssl, &lock->lock);
+  myblockchain_rwlock_init(key_rwlock_openssl, &lock->lock);
 #else
-  mysql_rwlock_init(0, &lock->lock);
+  myblockchain_rwlock_init(0, &lock->lock);
 #endif
   return lock;
 }
@@ -286,7 +286,7 @@ static void openssl_dynlock_destroy(openssl_lock_t *lock,
 {
   DBUG_PRINT("info", ("openssl_dynlock_destroy: %s:%d", file, line));
 
-  mysql_rwlock_destroy(&lock->lock);
+  myblockchain_rwlock_destroy(&lock->lock);
   my_free(lock);
 }
 
@@ -303,16 +303,16 @@ static void init_ssl_locks()
 #ifdef HAVE_PSI_INTERFACE
   const char* category= "sql";
   int count= array_elements(openssl_rwlocks);
-  mysql_rwlock_register(category, openssl_rwlocks, count);
+  myblockchain_rwlock_register(category, openssl_rwlocks, count);
 #endif
 
   openssl_stdlocks= (openssl_lock_t*) OPENSSL_malloc(CRYPTO_num_locks() *
     sizeof(openssl_lock_t));
   for (i= 0; i < CRYPTO_num_locks(); ++i)
 #ifdef HAVE_PSI_INTERFACE
-    mysql_rwlock_init(key_rwlock_openssl, &openssl_stdlocks[i].lock);
+    myblockchain_rwlock_init(key_rwlock_openssl, &openssl_stdlocks[i].lock);
 #else
-    mysql_rwlock_init(0, &openssl_stdlocks[i].lock);
+    myblockchain_rwlock_init(0, &openssl_stdlocks[i].lock);
 #endif
 }
 
@@ -349,7 +349,7 @@ void vio_ssl_end()
     deinit_lock_callback_functions();
 
     for (; i < CRYPTO_num_locks(); ++i)
-      mysql_rwlock_destroy(&openssl_stdlocks[i].lock);
+      myblockchain_rwlock_destroy(&openssl_stdlocks[i].lock);
     OPENSSL_free(openssl_stdlocks);
 
     ssl_initialized= FALSE;

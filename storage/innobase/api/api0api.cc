@@ -232,7 +232,7 @@ ib_open_table_by_id(
 	table_id = tid;
 
 	if (!locked) {
-		dict_mutex_enter_for_mysql();
+		dict_mutex_enter_for_myblockchain();
 	}
 
 	table = dict_table_open_on_id(table_id, TRUE, DICT_TABLE_OP_NORMAL);
@@ -242,7 +242,7 @@ ib_open_table_by_id(
 	}
 
 	if (!locked) {
-		dict_mutex_exit_for_mysql();
+		dict_mutex_exit_for_myblockchain();
 	}
 
 	return(table);
@@ -292,7 +292,7 @@ ib_lookup_table_by_name(
 /********************************************************************//**
 Increments innobase_active_counter and every INNOBASE_WAKE_INTERVALth
 time calls srv_active_wake_master_thread. This function should be used
-when a single database operation may introduce a small need for
+when a single blockchain operation may introduce a small need for
 server utility activity, like checkpointing. */
 UNIV_INLINE
 void
@@ -552,7 +552,7 @@ ib_trx_start(
 
 	/* FIXME: This is a place holder, we should add an arg that comes
 	from the client. */
-	trx->mysql_thd = static_cast<THD*>(thd);
+	trx->myblockchain_thd = static_cast<THD*>(thd);
 
 	return(err);
 }
@@ -573,7 +573,7 @@ ib_trx_begin(
 	trx_t*		trx;
 	ib_bool_t	started;
 
-	trx = trx_allocate_for_mysql();
+	trx = trx_allocate_for_myblockchain();
 
 	started = ib_trx_start(static_cast<ib_trx_t>(trx), ib_trx_level,
 			       read_write, auto_commit, NULL);
@@ -616,7 +616,7 @@ ib_trx_release(
 	trx_t*		trx = (trx_t*) ib_trx;
 
 	ut_ad(trx != NULL);
-	trx_free_for_mysql(trx);
+	trx_free_for_myblockchain(trx);
 
 	return(DB_SUCCESS);
 }
@@ -655,7 +655,7 @@ ib_trx_rollback(
 	ib_err_t	err;
 	trx_t*		trx = (trx_t*) ib_trx;
 
-	err = static_cast<ib_err_t>(trx_rollback_for_mysql(trx));
+	err = static_cast<ib_err_t>(trx_rollback_for_myblockchain(trx));
 
         /* It should always succeed */
         ut_a(err == DB_SUCCESS);
@@ -681,11 +681,11 @@ ib_to_lower_case(
 
 /*****************************************************************//**
 Normalizes a table name string. A normalized name consists of the
-database name catenated to '/' and table name. An example:
-test/mytable. On Windows normalization puts both the database name and the
+blockchain name catenated to '/' and table name. An example:
+test/mytable. On Windows normalization puts both the blockchain name and the
 table name always to lower case. This function can be called for system
-tables and they don't have a database component. For tables that don't have
-a database component, we don't normalize them to lower case on Windows.
+tables and they don't have a blockchain component. For tables that don't have
+a blockchain component, we don't normalize them to lower case on Windows.
 The assumption is that they are system tables that reside in the system
 table space. */
 static
@@ -814,7 +814,7 @@ ib_create_cursor(
 		ut_a(prebuilt->index != NULL);
 
 		if (prebuilt->trx != NULL) {
-			++prebuilt->trx->n_mysql_tables_in_use;
+			++prebuilt->trx->n_myblockchain_tables_in_use;
 
 			 prebuilt->index_usable =
 				row_merge_is_index_usable(
@@ -979,7 +979,7 @@ ib_cursor_open_table(
 		if (!ib_schema_lock_is_exclusive(ib_trx)) {
 			table = ib_open_table_by_name(normalized_name);
 		} else {
-			/* NOTE: We do not acquire MySQL metadata lock */
+			/* NOTE: We do not acquire MyBlockchain metadata lock */
 			table = ib_lookup_table_by_name(normalized_name);
 		}
 	} else {
@@ -1033,9 +1033,9 @@ ib_cursor_reset(
 	row_prebuilt_t*	prebuilt = cursor->prebuilt;
 
 	if (cursor->valid_trx && prebuilt->trx != NULL
-	    && prebuilt->trx->n_mysql_tables_in_use > 0) {
+	    && prebuilt->trx->n_myblockchain_tables_in_use > 0) {
 
-		--prebuilt->trx->n_mysql_tables_in_use;
+		--prebuilt->trx->n_myblockchain_tables_in_use;
 	}
 
 	/* The fields in this data structure are allocated from
@@ -1119,8 +1119,8 @@ ib_cursor_close(
 
 	/* The transaction could have been detached from the cursor. */
 	if (cursor->valid_trx && trx != NULL
-	    && trx->n_mysql_tables_in_use > 0) {
-		--trx->n_mysql_tables_in_use;
+	    && trx->n_myblockchain_tables_in_use > 0) {
+		--trx->n_myblockchain_tables_in_use;
 	}
 
 	row_prebuilt_free(prebuilt, FALSE);
@@ -1177,7 +1177,7 @@ ib_insert_row_with_lock_retry(
 		err = trx->error_state;
 
 		if (err != DB_SUCCESS) {
-			que_thr_stop_for_mysql(thr);
+			que_thr_stop_for_myblockchain(thr);
 
 			thr->lock_state = QUE_THR_LOCK_ROW;
 			lock_wait = static_cast<ib_bool_t>(
@@ -1213,12 +1213,12 @@ ib_execute_insert_query_graph(
 
 	thr = que_fork_get_first_thr(ins_graph);
 
-	que_thr_move_to_run_state_for_mysql(thr, trx);
+	que_thr_move_to_run_state_for_myblockchain(thr, trx);
 
 	err = ib_insert_row_with_lock_retry(thr, node, &savept);
 
 	if (err == DB_SUCCESS) {
-		que_thr_stop_for_mysql_no_error(thr, trx);
+		que_thr_stop_for_myblockchain_no_error(thr, trx);
 
 		dict_table_n_rows_inc(table);
 
@@ -1369,7 +1369,7 @@ ib_update_vector_create(
 
 	if (node->upd == NULL) {
 		node->upd = static_cast<upd_node_t*>(
-			row_create_update_node_for_mysql(table, heap));
+			row_create_update_node_for_myblockchain(table, heap));
 	}
 
 	grph->upd = static_cast<que_fork_t*>(
@@ -1509,7 +1509,7 @@ ib_update_row_with_lock_retry(
 		err = trx->error_state;
 
 		if (err != DB_SUCCESS) {
-			que_thr_stop_for_mysql(thr);
+			que_thr_stop_for_myblockchain(thr);
 
 			if (err != DB_RECORD_NOT_FOUND) {
 				thr->lock_state = QUE_THR_LOCK_ROW;
@@ -1563,13 +1563,13 @@ ib_execute_update_query_graph(
 
 	node->state = UPD_NODE_UPDATE_CLUSTERED;
 
-	que_thr_move_to_run_state_for_mysql(thr, trx);
+	que_thr_move_to_run_state_for_myblockchain(thr, trx);
 
 	err = ib_update_row_with_lock_retry(thr, node, &savept);
 
 	if (err == DB_SUCCESS) {
 
-		que_thr_stop_for_mysql_no_error(thr, trx);
+		que_thr_stop_for_myblockchain_no_error(thr, trx);
 
 		if (node->is_delete) {
 
@@ -1792,7 +1792,7 @@ ib_cursor_read_row(
 
 	ut_a(trx_is_started(cursor->prebuilt->trx));
 
-	/* When searching with IB_EXACT_MATCH set, row_search_for_mysql()
+	/* When searching with IB_EXACT_MATCH set, row_search_for_myblockchain()
 	will not position the persistent cursor but will copy the record
 	found into the row cache. It should be the only entry. */
 	if (!ib_cursor_is_positioned(ib_crsr) ) {
@@ -1862,11 +1862,11 @@ ib_cursor_position(
 
 	buf = static_cast<unsigned char*>(ut_malloc_nokey(UNIV_PAGE_SIZE));
 
-	/* We want to position at one of the ends, row_search_for_mysql()
+	/* We want to position at one of the ends, row_search_for_myblockchain()
 	uses the search_tuple fields to work out what to do. */
 	dtuple_set_n_fields(prebuilt->search_tuple, 0);
 
-	err = static_cast<ib_err_t>(row_search_for_mysql(
+	err = static_cast<ib_err_t>(row_search_for_myblockchain(
 		buf, static_cast<page_cur_mode_t>(mode), prebuilt, 0, 0));
 
 	ut_free(buf);
@@ -1903,7 +1903,7 @@ ib_cursor_next(
         /* We want to move to the next record */
         dtuple_set_n_fields(prebuilt->search_tuple, 0);
 
-        err = static_cast<ib_err_t>(row_search_for_mysql(
+        err = static_cast<ib_err_t>(row_search_for_myblockchain(
 		buf, PAGE_CUR_G, prebuilt, 0, ROW_SEL_NEXT));
 
         return(err);
@@ -1951,7 +1951,7 @@ ib_cursor_moveto(
 
 	buf = static_cast<unsigned char*>(ut_malloc_nokey(UNIV_PAGE_SIZE));
 
-	err = static_cast<ib_err_t>(row_search_for_mysql(
+	err = static_cast<ib_err_t>(row_search_for_myblockchain(
 		buf, static_cast<page_cur_mode_t>(ib_srch_mode), prebuilt,
 		cursor->match_mode, 0));
 
@@ -2002,8 +2002,8 @@ ib_col_is_capped(
 	return(static_cast<ib_err_t>(
 		(dtype_get_mtype(dtype) == DATA_VARCHAR
 		|| dtype_get_mtype(dtype) == DATA_CHAR
-		|| dtype_get_mtype(dtype) == DATA_MYSQL
-		|| dtype_get_mtype(dtype) == DATA_VARMYSQL
+		|| dtype_get_mtype(dtype) == DATA_MYBLOCKCHAIN
+		|| dtype_get_mtype(dtype) == DATA_VARMYBLOCKCHAIN
 		|| dtype_get_mtype(dtype) == DATA_FIXBINARY
 		|| dtype_get_mtype(dtype) == DATA_BINARY
 		|| dtype_get_mtype(dtype) == DATA_POINT)
@@ -2128,8 +2128,8 @@ ib_col_set_value(
 		}
 		break;
 
-	case DATA_MYSQL:
-	case DATA_VARMYSQL: {
+	case DATA_MYBLOCKCHAIN:
+	case DATA_VARMYBLOCKCHAIN: {
 		ulint		cset;
 		CHARSET_INFO*	cs;
 		int		error = 0;
@@ -2163,9 +2163,9 @@ ib_col_set_value(
 		In this case, the data will be truncated to empty.*/
 		memcpy(dst, src, len);
 
-		/* For DATA_MYSQL, need to pad the unused
+		/* For DATA_MYBLOCKCHAIN, need to pad the unused
 		space with spaces. */
-		if (dtype_get_mtype(dtype) == DATA_MYSQL) {
+		if (dtype_get_mtype(dtype) == DATA_MYBLOCKCHAIN) {
 			ulint		n_chars;
 
 			if (len < col_len) {
@@ -2180,7 +2180,7 @@ ib_col_set_value(
 			}
 
 			/* Why we should do below? See function
-			row_mysql_store_col_in_innobase_format */
+			row_myblockchain_store_col_in_innobase_format */
 
 			ut_a(!(dtype_get_len(dtype)
 				% dtype_get_mbmaxlen(dtype)));
@@ -2439,7 +2439,7 @@ ib_col_get_meta_low(
 	prtype = (ib_u16_t) dtype_get_prtype(dfield_get_type(dfield));
 
 	ib_col_meta->attr = ib_col_get_attr(prtype);
-	ib_col_meta->client_type = prtype & DATA_MYSQL_TYPE_MASK;
+	ib_col_meta->client_type = prtype & DATA_MYBLOCKCHAIN_TYPE_MASK;
 
 	return(static_cast<ib_ulint_t>(data_len));
 }
@@ -2903,11 +2903,11 @@ ib_table_get_id(
 {
 	ib_err_t	err;
 
-	dict_mutex_enter_for_mysql();
+	dict_mutex_enter_for_myblockchain();
 
 	err = ib_table_get_id_low(table_name, table_id);
 
-	dict_mutex_exit_for_mysql();
+	dict_mutex_exit_for_myblockchain();
 
 	return(err);
 }
@@ -3032,8 +3032,8 @@ ib_cursor_unlock(
 	ib_cursor_t*	cursor = (ib_cursor_t*) ib_crsr;
 	row_prebuilt_t*	prebuilt = cursor->prebuilt;
 
-	if (prebuilt->trx->mysql_n_tables_locked > 0) {
-		--prebuilt->trx->mysql_n_tables_locked;
+	if (prebuilt->trx->myblockchain_n_tables_locked > 0) {
+		--prebuilt->trx->myblockchain_n_tables_locked;
 	} else {
 		err = DB_ERROR;
 	}
@@ -3236,7 +3236,7 @@ ib_cursor_truncate(
 		/* This function currently commits the transaction
 		on success. */
 		err = static_cast<ib_err_t>(
-			row_truncate_table_for_mysql(table, trx));
+			row_truncate_table_for_myblockchain(table, trx));
 
 		if (err == DB_SUCCESS) {
 			*table_id = (table->id);
@@ -3264,7 +3264,7 @@ ib_table_truncate(
 
 	ib_trx = ib_trx_begin(IB_TRX_SERIALIZABLE, true, false);
 
-	dict_mutex_enter_for_mysql();
+	dict_mutex_enter_for_myblockchain();
 
 	table = dict_table_open_on_name(table_name, TRUE, FALSE,
 					DICT_ERR_IGNORE_NONE);
@@ -3284,7 +3284,7 @@ ib_table_truncate(
 		table->memcached_sync_count = 0;
 	}
 
-	dict_mutex_exit_for_mysql();
+	dict_mutex_exit_for_myblockchain();
 
 	if (err == DB_SUCCESS) {
 		trunc_err = ib_cursor_truncate(&ib_crsr, table_id);
@@ -3310,11 +3310,11 @@ ib_table_truncate(
 
 	/* Set the memcached_sync_count back. */
 	if (table != NULL && memcached_sync != 0) {
-		dict_mutex_enter_for_mysql();
+		dict_mutex_enter_for_myblockchain();
 
 		table->memcached_sync_count = memcached_sync;
 
-		dict_mutex_exit_for_mysql();
+		dict_mutex_exit_for_myblockchain();
 	}
 
         return(trunc_err);

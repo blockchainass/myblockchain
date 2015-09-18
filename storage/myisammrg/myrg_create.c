@@ -32,7 +32,7 @@ int myrg_create(const char *name, const char **table_names,
   DBUG_ENTER("myrg_create");
 
   errpos=0;
-  if ((file= mysql_file_create(rg_key_file_MRG,
+  if ((file= myblockchain_file_create(rg_key_file_MRG,
                                fn_format(buff, name, "", MYRG_NAME_EXT,
                                          MY_UNPACK_FILENAME|MY_APPEND_EXT), 0,
                                O_RDWR | O_EXCL | O_NOFOLLOW, MYF(MY_WME))) < 0)
@@ -47,7 +47,7 @@ int myrg_create(const char *name, const char **table_names,
 	fn_same(buff,name,4);
       *(end=strend(buff))='\n';
       end[1]=0;
-      if (mysql_file_write(file, (uchar*) buff, (uint) (end-buff+1),
+      if (myblockchain_file_write(file, (uchar*) buff, (uint) (end-buff+1),
                            MYF(MY_WME | MY_NABP)))
 	goto err;
     }
@@ -56,11 +56,11 @@ int myrg_create(const char *name, const char **table_names,
   {
     end=strxmov(buff,"#INSERT_METHOD=",
 		get_type(&merge_insert_method,insert_method-1),"\n",NullS);
-    if (mysql_file_write(file, (uchar*) buff, (uint) (end-buff),
+    if (myblockchain_file_write(file, (uchar*) buff, (uint) (end-buff),
                          MYF(MY_WME | MY_NABP)))
         goto err;
   }
-  if (mysql_file_close(file, MYF(0)))
+  if (myblockchain_file_close(file, MYF(0)))
     goto err;
   DBUG_RETURN(0);
 
@@ -68,7 +68,7 @@ err:
   save_errno=my_errno ? my_errno : -1;
   switch (errpos) {
   case 1:
-    (void) mysql_file_close(file, MYF(0));
+    (void) myblockchain_file_close(file, MYF(0));
   }
   DBUG_RETURN(my_errno=save_errno);
 } /* myrg_create */

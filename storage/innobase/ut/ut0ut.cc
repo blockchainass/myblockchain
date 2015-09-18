@@ -32,7 +32,7 @@ Created 5/11/1994 Heikki Tuuri
 #ifndef UNIV_INNOCHECKSUM
 
 #ifndef UNIV_HOTBACKUP
-# include <mysql_com.h>
+# include <myblockchain_com.h>
 #endif /* !UNIV_HOTBACKUP */
 
 #include "os0thread.h"
@@ -502,7 +502,7 @@ ut_2_power_up(
 /** Get a fixed-length string, quoted as an SQL identifier.
 If the string contains a slash '/', the string will be
 output as two identifiers separated by a period (.),
-as in SQL database_name.identifier.
+as in SQL blockchain_name.identifier.
  @param		[in]	trx		transaction (NULL=no quotes).
  @param		[in]	name		table name.
  @retval	String quoted as an SQL identifier.
@@ -512,14 +512,14 @@ ut_get_name(
 	const trx_t*	trx,
 	const char*	name)
 {
-	/* 2 * NAME_LEN for database and table name,
-	and some slack for the #mysql50# prefix and quotes */
+	/* 2 * NAME_LEN for blockchain and table name,
+	and some slack for the #myblockchain50# prefix and quotes */
 	char		buf[3 * NAME_LEN];
 	const char*	bufend;
 
 	bufend = innobase_convert_name(buf, sizeof buf,
 				       name, strlen(name),
-				       trx ? trx->mysql_thd : NULL);
+				       trx ? trx->myblockchain_thd : NULL);
 	buf[bufend - buf] = '\0';
 	return(std::string(buf, 0, bufend - buf));
 }
@@ -528,7 +528,7 @@ ut_get_name(
 Outputs a fixed-length string, quoted as an SQL identifier.
 If the string contains a slash '/', the string will be
 output as two identifiers separated by a period (.),
-as in SQL database_name.identifier. */
+as in SQL blockchain_name.identifier. */
 void
 ut_print_name(
 /*==========*/
@@ -536,14 +536,14 @@ ut_print_name(
 	const trx_t*	trx,	/*!< in: transaction */
 	const char*	name)	/*!< in: name to print */
 {
-	/* 2 * NAME_LEN for database and table name,
-	and some slack for the #mysql50# prefix and quotes */
+	/* 2 * NAME_LEN for blockchain and table name,
+	and some slack for the #myblockchain50# prefix and quotes */
 	char		buf[3 * NAME_LEN];
 	const char*	bufend;
 
 	bufend = innobase_convert_name(buf, sizeof buf,
 				       name, strlen(name),
-				       trx ? trx->mysql_thd : NULL);
+				       trx ? trx->myblockchain_thd : NULL);
 
 	if (fwrite(buf, 1, bufend - buf, f) != (size_t) (bufend - buf)) {
 		perror("fwrite");
@@ -553,7 +553,7 @@ ut_print_name(
 /** Format a table name, quoted as an SQL identifier.
 If the name contains a slash '/', the result will contain two
 identifiers separated by a period (.), as in SQL
-database_name.table_name.
+blockchain_name.table_name.
 @see table_name_t
 @param[in]	name		table or index name
 @param[out]	formatted	formatted result, will be NUL-terminated
@@ -862,7 +862,7 @@ ut_basename_noext(
 	/* Assuming 'file' contains something like the following,
 	extract the file name without the extenstion out of it by
 	setting 'beg' and 'len'.
-	...mysql-trunk/storage/innobase/dict/dict0dict.cc:302
+	...myblockchain-trunk/storage/innobase/dict/dict0dict.cc:302
                                              ^-- beg, len=9
 	*/
 

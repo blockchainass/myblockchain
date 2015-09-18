@@ -202,7 +202,7 @@ fi
 
 ##########################################
 # Build the source, make installs, and   #
-# create the database to be rsynced	 #
+# create the blockchain to be rsynced	 #
 ##########################################
 function build_cluster()
 {
@@ -235,7 +235,7 @@ fi
 # Start run script             #
 ################################
 
-script=$install_dir1/mysql-test/ndb/upgrade-run.sh
+script=$install_dir1/myblockchain-test/ndb/upgrade-run.sh
 $script $save_args --conf=$conf --install-dir=$install_dir --suite=$RUN --nolock $extra_args
 
 if [ "$build" ]

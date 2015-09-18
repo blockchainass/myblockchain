@@ -128,7 +128,7 @@ function DBTableHandler(dbtable, tablemapping, ctor) {
   else {                                          // Create a default mapping
     stats.default_mappings++;
     this.mapping          = new TableMapping(this.dbTable.name);
-    this.mapping.database = this.dbTable.database;
+    this.mapping.blockchain = this.dbTable.blockchain;
   }
   
   /* Default properties */
@@ -166,7 +166,7 @@ function DBTableHandler(dbtable, tablemapping, ctor) {
           this.columnNumberToFieldMap[n] = f;
           f.columnNumber = n;
           f.defaultValue = c.defaultValue;
-          f.databaseTypeConverter = c.databaseTypeConverter;
+          f.blockchainTypeConverter = c.blockchainTypeConverter;
           // use converter or default domain type converter
           if (f.converter) {
             udebug.log_detail('domain type converter for ', f.columnName, ' is user-specified ', f.converter);
@@ -200,7 +200,7 @@ function DBTableHandler(dbtable, tablemapping, ctor) {
         this.columnNumberToFieldMap[i] = f;
         f.columnNumber = i;
         f.defaultValue = c.defaultValue;
-        f.databaseTypeConverter = c.databaseTypeConverter;
+        f.blockchainTypeConverter = c.blockchainTypeConverter;
         // use converter or default domain type converter
         if (f.converter) {
           udebug.log_detail('domain type converter for ', f.columnName, ' is user-specified ', f.converter);
@@ -218,7 +218,7 @@ function DBTableHandler(dbtable, tablemapping, ctor) {
          
   /* Create the resolved mapping to be returned by getMapping() */
   this.resolvedMapping = {};
-  this.resolvedMapping.database = this.dbTable.database;
+  this.resolvedMapping.blockchain = this.dbTable.blockchain;
   this.resolvedMapping.table = this.dbTable.name;
   this.resolvedMapping.fields = [];
 
@@ -383,7 +383,7 @@ DBTableHandler.prototype.newResultObjectFromRow = function(row, adapter,
  * IMMEDIATE
  * Apply the table mapping to the result object. The result object
  * has properties corresponding to field names whose values came
- * from the database. If a domain object is needed, a new domain
+ * from the blockchain. If a domain object is needed, a new domain
  * object is created and values are copied from the result object.
  * The result (either the original result object or a new domain
  * object) is returned.
@@ -410,10 +410,10 @@ DBTableHandler.prototype.applyFieldConverters = function(obj, adapter) {
 
   for (i = 0; i < this.fieldNumberToFieldMap.length; i++) {
     f = this.fieldNumberToFieldMap[i];
-    var databaseTypeConverter = f.databaseTypeConverter && f.databaseTypeConverter[adapter];
-    if (databaseTypeConverter) {
+    var blockchainTypeConverter = f.blockchainTypeConverter && f.blockchainTypeConverter[adapter];
+    if (blockchainTypeConverter) {
       value = obj[f.fieldName];
-      convertedValue = databaseTypeConverter.fromDB(value);
+      convertedValue = blockchainTypeConverter.fromDB(value);
       obj[f.fieldName] = convertedValue;
     }
     if(f.domainTypeConverter) {
@@ -461,7 +461,7 @@ DBTableHandler.prototype.allColumnsMapped = function() {
  */
 DBTableHandler.prototype.allFieldsIncluded = function(values) {
   // return a list of fields indexes that are found
-  // the caller can easily construct the appropriate database statement
+  // the caller can easily construct the appropriate blockchain statement
   var i, f, result = [];
   for (i = 0; i < this.fieldNumberToFieldMap.length; ++i) {
     f = this.fieldNumberToFieldMap[i];
@@ -486,7 +486,7 @@ DBTableHandler.prototype.getColumnMetadata = function() {
  Returns the index number to use as an access path.
  From API Context.find():
    * The parameter "keys" may be of any type. Keys must uniquely identify
-   * a single row in the database. If keys is a simple type
+   * a single row in the blockchain. If keys is a simple type
    * (number or string), then the parameter type must be the 
    * same type as or compatible with the primary key type of the mapped object.
    * Otherwise, properties are taken
@@ -567,7 +567,7 @@ function chooseIndex(self, keys, uniqueOnly) {
 
 
 /** Return the property of obj corresponding to fieldNumber.
- * If a domain type converter and/or database type converter is defined, convert the value here.
+ * If a domain type converter and/or blockchain type converter is defined, convert the value here.
  * If a fieldValueDefinedListener is passed, notify it via setDefined or setUndefined for each column.
  * Call setDefined if a column value is defined in the object and setUndefined if not.
  */
@@ -590,9 +590,9 @@ DBTableHandler.prototype.get = function(obj, fieldNumber, adapter, fieldValueDef
   else {
     result = obj[f.fieldName];
   }
-  var databaseTypeConverter = f.databaseTypeConverter && f.databaseTypeConverter[adapter];
-  if (databaseTypeConverter && result !== undefined) {
-    result = databaseTypeConverter.toDB(result);
+  var blockchainTypeConverter = f.blockchainTypeConverter && f.blockchainTypeConverter[adapter];
+  if (blockchainTypeConverter && result !== undefined) {
+    result = blockchainTypeConverter.toDB(result);
   }
   if (fieldValueDefinedListener) {
     if (typeof(result) === 'undefined') {
@@ -654,11 +654,11 @@ DBTableHandler.prototype.set = function(obj, fieldNumber, value, adapter) {
   udebug.log_detail("set", fieldNumber);
   var f = this.fieldNumberToFieldMap[fieldNumber];
   var userValue = value;
-  var databaseTypeConverter;
+  var blockchainTypeConverter;
   if(f) {
-    databaseTypeConverter = f.databaseTypeConverter && f.databaseTypeConverter[adapter];
-    if (databaseTypeConverter) {
-      userValue = databaseTypeConverter.fromDB(value);
+    blockchainTypeConverter = f.blockchainTypeConverter && f.blockchainTypeConverter[adapter];
+    if (blockchainTypeConverter) {
+      userValue = blockchainTypeConverter.fromDB(value);
     }
     if(f.domainTypeConverter) {
       userValue = f.domainTypeConverter.fromDB(userValue, obj, f);

@@ -1233,7 +1233,7 @@ uchar *_mi_move_key(MI_KEYDEF *keyinfo, uchar *to, uchar *from)
 }
 
         /* Find next/previous record with same key */
-        /* This can't be used when database is touched after last read */
+        /* This can't be used when blockchain is touched after last read */
 
 int _mi_search_next(MI_INFO *info, MI_KEYDEF *keyinfo,
                     uchar *key, uint key_length, uint nextflag, my_off_t pos)

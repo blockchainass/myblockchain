@@ -23,7 +23,7 @@ Comparison services for records
 Created 7/1/1994 Heikki Tuuri
 ************************************************************************/
 
-#include <mysql_com.h>
+#include <myblockchain_com.h>
 
 /** Compare two data fields.
 @param[in] dfield1 data field; must have type field set
@@ -106,15 +106,15 @@ cmp_dfield_dfield_like_prefix(
 	type = dfield_get_type(dfield1);
 
 #ifdef UNIV_DEBUG
-	switch (type->prtype & DATA_MYSQL_TYPE_MASK) {
-	case MYSQL_TYPE_BIT:
-	case MYSQL_TYPE_STRING:
-	case MYSQL_TYPE_VAR_STRING:
-	case MYSQL_TYPE_TINY_BLOB:
-	case MYSQL_TYPE_MEDIUM_BLOB:
-	case MYSQL_TYPE_BLOB:
-	case MYSQL_TYPE_LONG_BLOB:
-	case MYSQL_TYPE_VARCHAR:
+	switch (type->prtype & DATA_MYBLOCKCHAIN_TYPE_MASK) {
+	case MYBLOCKCHAIN_TYPE_BIT:
+	case MYBLOCKCHAIN_TYPE_STRING:
+	case MYBLOCKCHAIN_TYPE_VAR_STRING:
+	case MYBLOCKCHAIN_TYPE_TINY_BLOB:
+	case MYBLOCKCHAIN_TYPE_MEDIUM_BLOB:
+	case MYBLOCKCHAIN_TYPE_BLOB:
+	case MYBLOCKCHAIN_TYPE_LONG_BLOB:
+	case MYBLOCKCHAIN_TYPE_VARCHAR:
 		break;
 	default:
 		ut_error;

@@ -14,14 +14,14 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/include
-                    ${CMAKE_SOURCE_DIR}/include/mysql
+                    ${CMAKE_SOURCE_DIR}/include/myblockchain
                     ${CMAKE_SOURCE_DIR}/regex
                     ${CMAKE_SOURCE_DIR}/sql
                     ${SSL_INCLUDE_DIRS}
                     ${CMAKE_SOURCE_DIR}/unittest/mytap
                     ${CMAKE_SOURCE_DIR}/storage/perfschema)
 
-ADD_DEFINITIONS(-DMYSQL_SERVER ${SSL_DEFINES})
+ADD_DEFINITIONS(-DMYBLOCKCHAIN_SERVER ${SSL_DEFINES})
 
 ADD_CONVENIENCE_LIBRARY(pfs_server_stubs pfs_server_stubs.cc)
 
@@ -50,7 +50,7 @@ FOREACH(testname ${tests})
 ENDFOREACH()
 
 IF(WIN32)
-  SET(MYSQLD_EXTRA_SOURCES ${CMAKE_SOURCE_DIR}/sql/nt_servc.cc)
+  SET(MYBLOCKCHAIND_EXTRA_SOURCES ${CMAKE_SOURCE_DIR}/sql/nt_servc.cc)
 ENDIF()
 
 # We need the server libs to test the blob parser.
@@ -60,12 +60,12 @@ ADD_EXECUTABLE(pfs_connect_attr-t
   pfs_connect_attr-t.cc
   ${CMAKE_BINARY_DIR}/sql/sql_builtin.cc
   ${CMAKE_SOURCE_DIR}/mysys/string.c
-  ${MYSQLD_EXTRA_SOURCES}
+  ${MYBLOCKCHAIND_EXTRA_SOURCES}
 )
 ADD_DEPENDENCIES(pfs_connect_attr-t GenServerSource)
 TARGET_LINK_LIBRARIES(pfs_connect_attr-t mytap perfschema)
 # We need to explicitly link in everything referenced in sql/sql_builtin.cc
-TARGET_LINK_LIBRARIES(pfs_connect_attr-t ${MYSQLD_STATIC_PLUGIN_LIBS})
+TARGET_LINK_LIBRARIES(pfs_connect_attr-t ${MYBLOCKCHAIND_STATIC_PLUGIN_LIBS})
 TARGET_LINK_LIBRARIES(pfs_connect_attr-t sql binlog rpl master slave sql)
 TARGET_LINK_LIBRARIES(pfs_connect_attr-t mysys mysys_ssl)
 TARGET_LINK_LIBRARIES(pfs_connect_attr-t vio ${SSL_LIBRARIES})

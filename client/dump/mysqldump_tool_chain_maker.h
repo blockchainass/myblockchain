@@ -15,18 +15,18 @@
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifndef MYSQLDUMP_TOOL_CHAIN_MAKER_INCLUDED
-#define MYSQLDUMP_TOOL_CHAIN_MAKER_INCLUDED
+#ifndef MYBLOCKCHAINDUMP_TOOL_CHAIN_MAKER_INCLUDED
+#define MYBLOCKCHAINDUMP_TOOL_CHAIN_MAKER_INCLUDED
 
-#include "mysql_object_reader.h"
+#include "myblockchain_object_reader.h"
 #include "object_queue.h"
 #include "i_chain_maker.h"
 #include "i_object_reader.h"
 #include "i_dump_task.h"
 #include "chain_data.h"
 #include "abstract_chain_element.h"
-#include "abstract_mysql_chain_element_extension.h"
-#include "mysqldump_tool_chain_maker_options.h"
+#include "abstract_myblockchain_chain_element_extension.h"
+#include "myblockchaindump_tool_chain_maker_options.h"
 #include <map>
 #include <vector>
 
@@ -40,7 +40,7 @@ namespace Dump{
   implementation.
  */
 class Mysqldump_tool_chain_maker : public I_chain_maker,
-  public Abstract_chain_element, public Abstract_mysql_chain_element_extension
+  public Abstract_chain_element, public Abstract_myblockchain_chain_element_extension
 {
 public:
   Mysqldump_tool_chain_maker(
@@ -57,7 +57,7 @@ public:
   void delete_chain(uint64 chain_id, I_object_reader* chain);
 
 private:
-  void mysql_thread_callback(bool is_starting);
+  void myblockchain_thread_callback(bool is_starting);
 
   Mysqldump_tool_chain_maker_options* m_options;
 

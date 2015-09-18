@@ -31,7 +31,7 @@ typedef struct st_archive_record_buffer {
 class Archive_share : public Handler_share
 {
 public:
-  mysql_mutex_t mutex;
+  myblockchain_mutex_t mutex;
   THR_LOCK lock;
   azio_stream archive_write;     /* Archive file we are working with */
   ha_rows rows_recorded;    /* Number of rows in tables */
@@ -48,12 +48,12 @@ public:
                               this));
     if (archive_write_open)
     {
-      mysql_mutex_lock(&mutex);
+      myblockchain_mutex_lock(&mutex);
       (void) close_archive_writer();
-      mysql_mutex_unlock(&mutex);
+      myblockchain_mutex_unlock(&mutex);
     }
     thr_lock_delete(&lock);
-    mysql_mutex_destroy(&mutex);
+    myblockchain_mutex_destroy(&mutex);
   }
   int init_archive_writer();
   void close_archive_writer();
@@ -71,7 +71,7 @@ public:
 
 class ha_archive: public handler
 {
-  THR_LOCK_DATA lock;        /* MySQL lock */
+  THR_LOCK_DATA lock;        /* MyBlockchain lock */
   Archive_share *share;      /* Shared lock info */
 
   azio_stream archive;            /* Archive file we are working with */

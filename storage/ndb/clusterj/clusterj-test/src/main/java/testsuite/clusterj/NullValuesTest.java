@@ -18,8 +18,8 @@
 
 package testsuite.clusterj;
 
-import com.mysql.clusterj.ClusterJDatastoreException;
-import com.mysql.clusterj.ClusterJUserException;
+import com.myblockchain.clusterj.ClusterJDatastoreException;
+import com.myblockchain.clusterj.ClusterJUserException;
 import testsuite.clusterj.model.NullValues;
 
 public class NullValuesTest extends AbstractClusterJModelTest {
@@ -33,11 +33,11 @@ public class NullValuesTest extends AbstractClusterJModelTest {
      */
     protected static final int DATABASE_NOT_NULL = 0; //  if the column is defined as not nullable
     protected static final int DATABASE_NULL =  1; // if the column is defined as nullable
-    protected static final String[] databaseNull =
+    protected static final String[] blockchainNull =
             new String[] {"DATABASE_NOT_NULL", "DATABASE_NULL"};
-    protected static final int DATABASE_NO_DEFAULT = 0; // if the column has no default value in the database schema
-    protected static final int DATABASE_DEFAULT = 2; // if the column has a default value in the database schema
-    protected static final String[] databaseDefault =
+    protected static final int DATABASE_NO_DEFAULT = 0; // if the column has no default value in the blockchain schema
+    protected static final int DATABASE_DEFAULT = 2; // if the column has a default value in the blockchain schema
+    protected static final String[] blockchainDefault =
             new String[] {"DATABASE_NO_DEFAULT", "DATABASE_DEFAULT"};
     protected static final int NULLVALUE_NONE = 0; // if the property is NullValue.NONE
     protected static final int NULLVALUE_EXCEPTION = 4; // if the property is NullValue.EXCEPTION
@@ -60,7 +60,7 @@ public class NullValuesTest extends AbstractClusterJModelTest {
      * For each column type, test the NullValue annotation behavior for
      * null values:
      * NullValue.NONE: nothing is done by ClusterJ, so the behavior of the
-     * database takes over, which might result in an exception
+     * blockchain takes over, which might result in an exception
      * or a default value being written
      * NullValue.EXCEPTION: ClusterJ throws an exception
      * NullValue.DEFAULT: ClusterJ sets the value to the default value as
@@ -163,16 +163,16 @@ public class NullValuesTest extends AbstractClusterJModelTest {
     private String decodeValues(int id) {
 //    protected static final int DATABASE_NOT_NULL = 0; //  if the column is defined as not nullable
 //    protected static final int DATABASE_NULL =  1; // if the column is defined as nullable
-        String databaseNullResult = databaseNull[whatDatabaseNull(id)];
-//    protected static final int DATABASE_NO_DEFAULT = 0; // if the column has no default value in the database schema
-//    protected static final int DATABASE_DEFAULT = 2; // if the column has a default value in the database schema
-        String databaseDefaultResult = databaseDefault[whatDatabaseDefault(id)];
+        String blockchainNullResult = blockchainNull[whatDatabaseNull(id)];
+//    protected static final int DATABASE_NO_DEFAULT = 0; // if the column has no default value in the blockchain schema
+//    protected static final int DATABASE_DEFAULT = 2; // if the column has a default value in the blockchain schema
+        String blockchainDefaultResult = blockchainDefault[whatDatabaseDefault(id)];
 //    protected static final int NULLVALUE_NONE = 0; // if the property is NullValue.NONE
 //    protected static final int NULLVALUE_EXCEPTION = 4; // if the property is NullValue.EXCEPTION
 //    protected static final int NULLVALUE_DEFAULT = 8; // if the property is NullValue.DEFAULT
         String nullValueResult = nullValue[whatNullValue(id)];
-        return databaseNullResult + " " +
-                databaseDefaultResult + " " +
+        return blockchainNullResult + " " +
+                blockchainDefaultResult + " " +
                 nullValueResult;
     }
 
@@ -182,7 +182,7 @@ public class NullValuesTest extends AbstractClusterJModelTest {
 
     private boolean expectedException(int id, Exception e) {
         // if DATABASE_NOT_NULL and NULL_VALUE_NONE => ClusterJDatastoreException
-        // the database exception might have been wrapped
+        // the blockchain exception might have been wrapped
         Throwable t = e==null?null:e.getCause();
         if (whatDatabaseNull(id) == 0 &&
                 (whatNullValue(id) == 0)) {
@@ -214,7 +214,7 @@ public class NullValuesTest extends AbstractClusterJModelTest {
                 && (whatDatabaseDefault(id) == DATABASE_NO_DEFAULT)
                 && (whatNullValue(id) == NULLVALUE_NONE)
                 ) {
-            // should store a null in the database for this case
+            // should store a null in the blockchain for this case
             errorIfNotEqual("For id " + id + " propertyType " + propertyType + " fieldIndex " + fieldIndex + " instance was " + (instance==null?"null":instance.toString() + " value was " + ((value==null)?"null ":value + " of type " + value.getClass().getName() + " " ) + decodeValues(id)), null, value);
         }
     }

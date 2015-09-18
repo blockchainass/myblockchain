@@ -14,7 +14,7 @@
    Inc., 51 Franklin Street, Suite 500, Boston, MA 02110-1335 USA */
 
 
-/* This file includes constants used with all databases */
+/* This file includes constants used with all blockchains */
 
 #ifndef _my_base_h
 #define _my_base_h
@@ -54,7 +54,7 @@
   complete-field prefix of a key value as the search
   key. HA_READ_PREFIX and HA_READ_PREFIX_LAST could also take a
   partial-field prefix, but currently (4.0.10) they are only used with
-  complete-field prefixes. MySQL uses a padding trick to implement
+  complete-field prefixes. MyBlockchain uses a padding trick to implement
   LIKE 'abc%' queries.
 
   NOTE that in InnoDB HA_READ_PREFIX_LAST will NOT work with a
@@ -107,7 +107,7 @@ enum ha_extra_function {
   HA_EXTRA_NO_CACHE=4,			/* End caching of records (def) */
   HA_EXTRA_NO_READCHECK=5,		/* No readcheck on update */
   HA_EXTRA_READCHECK=6,			/* Use readcheck (def) */
-  HA_EXTRA_KEYREAD=7,			/* Read only key to database */
+  HA_EXTRA_KEYREAD=7,			/* Read only key to blockchain */
   HA_EXTRA_NO_KEYREAD=8,		/* Normal read of records (def) */
   HA_EXTRA_NO_USER_CHANGE=9,		/* No user is allowed to write */
   HA_EXTRA_KEY_CACHE=10,
@@ -203,7 +203,7 @@ enum ha_extra_function {
 	/* The following is parameter to ha_panic() */
 
 enum ha_panic_function {
-  HA_PANIC_CLOSE,			/* Close all databases */
+  HA_PANIC_CLOSE,			/* Close all blockchains */
   HA_PANIC_WRITE,			/* Unlock and write status */
   HA_PANIC_READ				/* Lock and read keyinfo */
 };
@@ -257,7 +257,7 @@ enum ha_base_keytype {
 /*
   Key contains partial segments.
 
-  This flag is internal to the MySQL server by design. It is not supposed
+  This flag is internal to the MyBlockchain server by design. It is not supposed
   neither to be saved in FRM-files, nor to be passed to storage engines.
   It is intended to pass information into internal static sort_keys(KEY *,
   KEY *) function.
@@ -293,7 +293,7 @@ enum ha_base_keytype {
 	/* These flags can be added to key-seg-flag */
 
 #define HA_SPACE_PACK		 1	/* Pack space in key-seg */
-#define HA_PART_KEY_SEG		 4	/* Used by MySQL for part-key-cols */
+#define HA_PART_KEY_SEG		 4	/* Used by MyBlockchain for part-key-cols */
 #define HA_VAR_LENGTH_PART	 8
 #define HA_NULL_PART		 16
 #define HA_BLOB_PART		 32
@@ -307,7 +307,7 @@ enum ha_base_keytype {
 #define HA_END_SPACE_ARE_EQUAL	 512
 #define HA_BIT_PART		1024
 
-	/* optionbits for database */
+	/* optionbits for blockchain */
 #define HA_OPTION_PACK_RECORD		1
 #define HA_OPTION_PACK_KEYS		2
 #define HA_OPTION_COMPRESS_RECORD	4
@@ -315,7 +315,7 @@ enum ha_base_keytype {
 #define HA_OPTION_TMP_TABLE		16
 #define HA_OPTION_CHECKSUM		32
 #define HA_OPTION_DELAY_KEY_WRITE	64
-#define HA_OPTION_NO_PACK_KEYS		128  /* Reserved for MySQL */
+#define HA_OPTION_NO_PACK_KEYS		128  /* Reserved for MyBlockchain */
 #define HA_OPTION_CREATE_FROM_ENGINE    256
 #define HA_OPTION_RELIES_ON_SQL_LAYER   512
 #define HA_OPTION_NULL_FIELDS		1024
@@ -350,7 +350,7 @@ is the global server default. */
 /*
   The following flags (OR-ed) are passed to handler::info() method.
   The method copies misc handler information out of the storage engine
-  to data structures accessible from MySQL
+  to data structures accessible from MyBlockchain
 
   Same flags are also passed down to mi_status, myrg_status, etc.
 */
@@ -510,7 +510,7 @@ is the global server default. */
 typedef ulong key_part_map;
 #define HA_WHOLE_KEY  (~(key_part_map)0)
 
-	/* Intern constants in databases */
+	/* Intern constants in blockchains */
 
 	/* bits in _search */
 #define SEARCH_FIND	1

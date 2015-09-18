@@ -31,12 +31,12 @@
   </properties>
 
   <parent>
-    <groupId>com.mysql.clusterj</groupId>
+    <groupId>com.myblockchain.clusterj</groupId>
     <artifactId>clusterj-aggregate</artifactId>
     <version>@JAVA_NDB_VERSION@@JAVA_MVN_SUFFIX@</version>
   </parent>
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.mysql.clusterj</groupId>
+    <groupId>com.myblockchain.clusterj</groupId>
     <artifactId>clusterj-jpatest</artifactId>
     <version>@JAVA_NDB_VERSION@@JAVA_MVN_SUFFIX@</version>
     <packaging>jar</packaging>
@@ -93,7 +93,7 @@
         <extensions>true</extensions>
         <configuration>
           <instructions>
-            <Export-Package>com.mysql.clusterj.*</Export-Package>
+            <Export-Package>com.myblockchain.clusterj.*</Export-Package>
             <Import-Package></Import-Package>
           </instructions>
         </configuration>
@@ -124,7 +124,7 @@
         <artifactId>openjpa</artifactId>
       </dependency>
       <dependency>
-      <groupId>com.mysql.clusterj</groupId>
+      <groupId>com.myblockchain.clusterj</groupId>
       <artifactId>clusterj-unit</artifactId>
         <scope>compile</scope>
       </dependency>

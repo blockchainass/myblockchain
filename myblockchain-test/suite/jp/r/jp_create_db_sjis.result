@@ -1,0 +1,26 @@
+SET NAMES sjis;
+SET character_set_blockchain = sjis;
+Warnings:
+Warning	1681	Updating 'character_set_blockchain' is deprecated. It will be made read-only in a future release.
+drop blockchain if exists `��ݺ�`;
+drop blockchain if exists `���{��`;
+drop blockchain if exists `�\�\�\`;
+CREATE DATABASE `��ݺ�`;
+CREATE DATABASE `���{��`;
+CREATE DATABASE `�\�\�\`;
+SELECT schema_name from information_schema.schemata where schema_name <> 'mtr';
+schema_name
+information_schema
+�\�\�\
+���{��
+��ݺ�
+myblockchain
+performance_schema
+sys
+test
+USE `��ݺ�`;
+USE `���{��`;
+USE `�\�\�\`;
+DROP DATABASE `��ݺ�`;
+DROP DATABASE `���{��`;
+DROP DATABASE `�\�\�\`;

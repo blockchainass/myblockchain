@@ -26,10 +26,10 @@
  * Example:
  *  // To make everything written to g_eventLogger also
  *   // end up in Windows event log
- *  g_eventLogger->createEventLoghandler("MySQL Cluster Management Server");
+ *  g_eventLogger->createEventLoghandler("MyBlockchain Cluster Management Server");
  *
  * // To log a message(normally an error) before g_eventLogger has been created
- * EventLogHandler::printf(LL_ERROR, "MySQL Cluster Management Server",
+ * EventLogHandler::printf(LL_ERROR, "MyBlockchain Cluster Management Server",
  *                         "Failed to create shutdown event, error: %d", err); 
  */
 class EventLogHandler : public LogHandler

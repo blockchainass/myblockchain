@@ -23,23 +23,23 @@
 #include <memory>
 #include <iostream>
 #include "sql_string.h"
-#include "mysqld_error.h"
+#include "myblockchaind_error.h"
 #include "my_default.h"
-#include "check/mysqlcheck.h"
-#include "../scripts/mysql_fix_privilege_tables_sql.c"
+#include "check/myblockchaincheck.h"
+#include "../scripts/myblockchain_fix_privilege_tables_sql.c"
 #include "../scripts/sql_commands_sys_schema.h"
 
 #include "base/abstract_connection_program.h"
 #include "base/abstract_options_provider.h"
 #include "base/show_variable_query_extractor.h"
-#include "base/mysql_query_runner.h"
+#include "base/myblockchain_query_runner.h"
 
 using std::string;
 using std::vector;
 using namespace Mysql::Tools::Base;
 using std::stringstream;
 
-int mysql_check_errors;
+int myblockchain_check_errors;
 
 const int SYS_TABLE_COUNT = 1;
 const int SYS_VIEW_COUNT = 91;
@@ -48,17 +48,17 @@ const int SYS_FUNCTION_COUNT = 14;
 const int SYS_PROCEDURE_COUNT = 22;
 
 /**
-  Error callback to be called from mysql_check functionality.
+  Error callback to be called from myblockchain_check functionality.
  */
-static void mysql_check_error_callback(MYSQL *mysql, string when)
+static void myblockchain_check_error_callback(MYBLOCKCHAIN *myblockchain, string when)
 {
-  mysql_check_errors= 1;
+  myblockchain_check_errors= 1;
 }
 
 const char *load_default_groups[]=
 {
   "client", /* Read settings how to connect to server */
-  "mysql_upgrade", /* Read special settings for mysql_upgrade*/
+  "myblockchain_upgrade", /* Read special settings for myblockchain_upgrade*/
   0
 };
 
@@ -75,23 +75,23 @@ enum exit_codes
   EXIT_INIT_ERROR = 1,
   EXIT_ALREADY_UPGRADED = 2,
   EXIT_BAD_VERSION = 3,
-  EXIT_MYSQL_CHECK_ERROR = 4,
+  EXIT_MYBLOCKCHAIN_CHECK_ERROR = 4,
   EXIT_UPGRADING_QUERIES_ERROR = 5,
 };
 
 
 class Mysql_connection_holder
 {
-  MYSQL* m_mysql_connection;
+  MYBLOCKCHAIN* m_myblockchain_connection;
 
 public:
-  explicit Mysql_connection_holder(MYSQL *mysql_connection)
-    : m_mysql_connection(mysql_connection)
+  explicit Mysql_connection_holder(MYBLOCKCHAIN *myblockchain_connection)
+    : m_myblockchain_connection(myblockchain_connection)
   { }
 
   ~Mysql_connection_holder()
   {
-    mysql_close(this->m_mysql_connection);
+    myblockchain_close(this->m_myblockchain_connection);
   }
 };
 
@@ -101,7 +101,7 @@ class Program : public Base::Abstract_connection_program
 public:
   Program()
     : Abstract_connection_program(),
-    m_mysql_connection(NULL),
+    m_myblockchain_connection(NULL),
     m_temporary_verbose(false)
   {}
 
@@ -117,7 +117,7 @@ public:
 
   string get_description()
   {
-    return "MySQL utility for upgrading databases to new MySQL versions.";
+    return "MyBlockchain utility for upgrading blockchains to new MyBlockchain versions.";
   }
 
   /**
@@ -125,7 +125,7 @@ public:
     EXIT_INIT_ERROR - Initialization error.
     EXIT_ALREADY_UPGRADED - Server already upgraded.
     EXIT_BAD_VERSION - Bad server version.
-    EXIT_MYSQL_CHECK_ERROR - Error during calling mysql_check functionality.
+    EXIT_MYBLOCKCHAIN_CHECK_ERROR - Error during calling myblockchain_check functionality.
     EXIT_UPGRADING_QUERIES_ERROR - Error during execution of upgrading queries.
    */
   int execute(vector<string> positional_options)
@@ -136,45 +136,45 @@ public:
     */
     setbuf(stdout, NULL);
 
-    this->m_mysql_connection= this->create_connection();
-    // Remember to call mysql_close()
-    Mysql_connection_holder connection_holder(m_mysql_connection);
-    this->m_query_runner= new Mysql_query_runner(this->m_mysql_connection);
+    this->m_myblockchain_connection= this->create_connection();
+    // Remember to call myblockchain_close()
+    Mysql_connection_holder connection_holder(m_myblockchain_connection);
+    this->m_query_runner= new Mysql_query_runner(this->m_myblockchain_connection);
     this->m_query_runner->add_message_callback(new Instance_callback
       <int64, const Message_data&, Program>(this, &Program::process_error));
 
     /*
       Master and slave should be upgraded separately. All statements executed
-      by mysql_upgrade will not be binlogged.
+      by myblockchain_upgrade will not be binlogged.
       'SET SQL_LOG_BIN=0' is executed before any other statements.
      */
     if (this->m_upgrade_systables_only)
     {
-      printf("The --upgrade-system-tables option was used, databases won't be "
+      printf("The --upgrade-system-tables option was used, blockchains won't be "
         "touched.\n");
     }
     if (!this->m_write_binlog)
     {
-      if (mysql_query(this->m_mysql_connection, "SET SQL_LOG_BIN=0") != 0)
+      if (myblockchain_query(this->m_myblockchain_connection, "SET SQL_LOG_BIN=0") != 0)
       {
         return this->print_error(1, "Cannot setup server variables.");
       }
     }
 
-    if (mysql_query(this->m_mysql_connection, "USE mysql") != 0)
+    if (myblockchain_query(this->m_myblockchain_connection, "USE myblockchain") != 0)
     {
-      return this->print_error(1, "Cannot select database.");
+      return this->print_error(1, "Cannot select blockchain.");
     }
 
     /*
-      Read the mysql_upgrade_info file to check if mysql_upgrade
-      already has been run for this installation of MySQL
+      Read the myblockchain_upgrade_info file to check if myblockchain_upgrade
+      already has been run for this installation of MyBlockchain
     */
     if (this->m_ignore_errors == false && this->is_upgrade_already_done())
     {
-      printf("This installation of MySQL is already upgraded to %s, "
-             "use --force if you still need to run mysql_upgrade\n",
-             MYSQL_SERVER_VERSION);
+      printf("This installation of MyBlockchain is already upgraded to %s, "
+             "use --force if you still need to run myblockchain_upgrade\n",
+             MYBLOCKCHAIN_SERVER_VERSION);
       return EXIT_ALREADY_UPGRADED;
     }
 
@@ -182,9 +182,9 @@ public:
       return EXIT_BAD_VERSION;
 
     /*
-      Run "mysql_fix_privilege_tables.sql" and "mysqlcheck".
+      Run "myblockchain_fix_privilege_tables.sql" and "myblockchaincheck".
 
-      First, upgrade all tables in the system database and then check
+      First, upgrade all tables in the system blockchain and then check
       them.
 
       The order is important here because we might encounter really old
@@ -194,7 +194,7 @@ public:
       the new ones. In the process it will attempt to create a table with
       NULLable columns which is not supported by CSV engine nowadays.
 
-      After that, run mysqlcheck on all tables.
+      After that, run myblockchaincheck on all tables.
     */
     if (this->run_sql_fix_privilege_tables() != 0)
     {
@@ -203,15 +203,15 @@ public:
 
     if (this->m_upgrade_systables_only == false)
     {
-      this->print_verbose_message("Checking system database.");
+      this->print_verbose_message("Checking system blockchain.");
 
-      if (this->run_mysqlcheck_mysql_db_fixnames() != 0)
+      if (this->run_myblockchaincheck_myblockchain_db_fixnames() != 0)
       {
-        return this->print_error(EXIT_MYSQL_CHECK_ERROR, "Error during call to mysql_check.");
+        return this->print_error(EXIT_MYBLOCKCHAIN_CHECK_ERROR, "Error during call to myblockchain_check.");
       }
-      if (this->run_mysqlcheck_mysql_db_upgrade() != 0)
+      if (this->run_myblockchaincheck_myblockchain_db_upgrade() != 0)
       {
-        return this->print_error(EXIT_MYSQL_CHECK_ERROR, "Error during call to mysql_check.");
+        return this->print_error(EXIT_MYBLOCKCHAIN_CHECK_ERROR, "Error during call to myblockchain_check.");
       }
     }
 
@@ -223,7 +223,7 @@ public:
         exist but the schema does, then raise an error rather than
         overwriting/adding to the existing schema
       */
-      if (mysql_query(this->m_mysql_connection, "USE sys") != 0)
+      if (myblockchain_query(this->m_myblockchain_connection, "USE sys") != 0)
       {
         if (this->run_sys_schema_upgrade() != 0)
         {
@@ -231,19 +231,19 @@ public:
         }
       } else {
         /* If the version is smaller, upgrade */
-        if (mysql_query(this->m_mysql_connection, "SELECT * FROM sys.version") != 0)
+        if (myblockchain_query(this->m_myblockchain_connection, "SELECT * FROM sys.version") != 0)
         {
           return this->print_error(EXIT_UPGRADING_QUERIES_ERROR,
               "A sys schema exists with no sys.version view. "
               "If you have a user created sys schema, this must be "
               "renamed for the upgrade to succeed.");
         } else {
-          MYSQL_RES *result = mysql_store_result(this->m_mysql_connection);
+          MYBLOCKCHAIN_RES *result = myblockchain_store_result(this->m_myblockchain_connection);
           if (result)
           {
-            MYSQL_ROW row;
+            MYBLOCKCHAIN_ROW row;
 
-            while ((row = mysql_fetch_row(result)))
+            while ((row = myblockchain_fetch_row(result)))
             {
                 ulong sys_version = calc_server_version(row[0]);
                 if (sys_version >= calc_server_version(SYS_SCHEMA_VERSION))
@@ -261,7 +261,7 @@ public:
                   }
                 }
             }
-            mysql_free_result(result);
+            myblockchain_free_result(result);
           } else {
             return this->print_error(EXIT_UPGRADING_QUERIES_ERROR,
                 "A sys schema exists with a sys.version view, but it returns no results.");
@@ -270,24 +270,24 @@ public:
         /* 
            The version may be the same, but in some upgrade scenarios 
            such as importing a 5.6 dump in to a fresh 5.7 install that 
-           includes the mysql schema, and then running mysql_upgrade,
+           includes the myblockchain schema, and then running myblockchain_upgrade,
            the functions/procedures will be removed.
 
            In this case, we check for the expected counts of objects, 
            and if those do not match, we just re-install the schema.
         */
-        if (mysql_query(this->m_mysql_connection, 
+        if (myblockchain_query(this->m_myblockchain_connection, 
           "SELECT COUNT(*) FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = 'sys' AND TABLE_TYPE = 'BASE TABLE'") != 0)
         {
           return this->print_error(EXIT_UPGRADING_QUERIES_ERROR,
               "Query against INFORMATION_SCHEMA.TABLES failed when checking the sys schema.");
         } else {
-          MYSQL_RES *result = mysql_store_result(this->m_mysql_connection);
+          MYBLOCKCHAIN_RES *result = myblockchain_store_result(this->m_myblockchain_connection);
           if (result)
           {
-            MYSQL_ROW row;
+            MYBLOCKCHAIN_ROW row;
 
-            while ((row = mysql_fetch_row(result)))
+            while ((row = myblockchain_fetch_row(result)))
             {
                 if (SYS_TABLE_COUNT != atoi(row[0]))
                 {
@@ -302,22 +302,22 @@ public:
                 }
             }
 
-            mysql_free_result(result);
+            myblockchain_free_result(result);
           }
         }
 
-        if (mysql_query(this->m_mysql_connection, 
+        if (myblockchain_query(this->m_myblockchain_connection, 
           "SELECT COUNT(*) FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = 'sys' AND TABLE_TYPE = 'VIEW'") != 0)
         {
           return this->print_error(EXIT_UPGRADING_QUERIES_ERROR,
               "Query against INFORMATION_SCHEMA.TABLES failed when checking the sys schema.");
         } else {
-          MYSQL_RES *result = mysql_store_result(this->m_mysql_connection);
+          MYBLOCKCHAIN_RES *result = myblockchain_store_result(this->m_myblockchain_connection);
           if (result)
           {
-            MYSQL_ROW row;
+            MYBLOCKCHAIN_ROW row;
 
-            while ((row = mysql_fetch_row(result)))
+            while ((row = myblockchain_fetch_row(result)))
             {
                 if (SYS_VIEW_COUNT != atoi(row[0]))
                 {
@@ -332,22 +332,22 @@ public:
                 }
             }
 
-            mysql_free_result(result);
+            myblockchain_free_result(result);
           }
         }
 
-        if (mysql_query(this->m_mysql_connection, 
+        if (myblockchain_query(this->m_myblockchain_connection, 
           "SELECT COUNT(*) FROM INFORMATION_SCHEMA.TRIGGERS WHERE TRIGGER_SCHEMA = 'sys'") != 0)
         {
           return this->print_error(EXIT_UPGRADING_QUERIES_ERROR,
               "Query against INFORMATION_SCHEMA.TABLES failed when checking the sys schema.");
         } else {
-          MYSQL_RES *result = mysql_store_result(this->m_mysql_connection);
+          MYBLOCKCHAIN_RES *result = myblockchain_store_result(this->m_myblockchain_connection);
           if (result)
           {
-            MYSQL_ROW row;
+            MYBLOCKCHAIN_ROW row;
 
-            while ((row = mysql_fetch_row(result)))
+            while ((row = myblockchain_fetch_row(result)))
             {
                 if (SYS_TRIGGER_COUNT != atoi(row[0]))
                 {
@@ -362,22 +362,22 @@ public:
                 }
             }
 
-            mysql_free_result(result);
+            myblockchain_free_result(result);
           }
         }
 
-        if (mysql_query(this->m_mysql_connection, 
+        if (myblockchain_query(this->m_myblockchain_connection, 
           "SELECT COUNT(*) FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_SCHEMA = 'sys' AND ROUTINE_TYPE = 'FUNCTION'") != 0)
         {
           return this->print_error(EXIT_UPGRADING_QUERIES_ERROR,
               "Query against INFORMATION_SCHEMA.TABLES failed when checking the sys schema.");
         } else {
-          MYSQL_RES *result = mysql_store_result(this->m_mysql_connection);
+          MYBLOCKCHAIN_RES *result = myblockchain_store_result(this->m_myblockchain_connection);
           if (result)
           {
-            MYSQL_ROW row;
+            MYBLOCKCHAIN_ROW row;
 
-            while ((row = mysql_fetch_row(result)))
+            while ((row = myblockchain_fetch_row(result)))
             {
                 if (SYS_FUNCTION_COUNT != atoi(row[0]))
                 {
@@ -392,22 +392,22 @@ public:
                 }
             }
 
-            mysql_free_result(result);
+            myblockchain_free_result(result);
           }
         }
 
-        if (mysql_query(this->m_mysql_connection, 
+        if (myblockchain_query(this->m_myblockchain_connection, 
           "SELECT COUNT(*) FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_SCHEMA = 'sys' AND ROUTINE_TYPE = 'PROCEDURE'") != 0)
         {
           return this->print_error(EXIT_UPGRADING_QUERIES_ERROR,
               "Query against INFORMATION_SCHEMA.TABLES failed when checking the sys schema.");
         } else {
-          MYSQL_RES *result = mysql_store_result(this->m_mysql_connection);
+          MYBLOCKCHAIN_RES *result = myblockchain_store_result(this->m_myblockchain_connection);
           if (result)
           {
-            MYSQL_ROW row;
+            MYBLOCKCHAIN_ROW row;
 
-            while ((row = mysql_fetch_row(result)))
+            while ((row = myblockchain_fetch_row(result)))
             {
                 if (SYS_PROCEDURE_COUNT != atoi(row[0]))
                 {
@@ -422,14 +422,14 @@ public:
                 }
             }
 
-            mysql_free_result(result);
+            myblockchain_free_result(result);
           }
         }
 
       }
-      if (mysql_query(this->m_mysql_connection, "USE mysql") != 0)
+      if (myblockchain_query(this->m_myblockchain_connection, "USE myblockchain") != 0)
       {
-        return this->print_error(1, "Cannot select mysql database.");
+        return this->print_error(1, "Cannot select myblockchain blockchain.");
       }
     } else {
       this->print_verbose_message("Skipping installation/upgrade of the sys schema.");
@@ -437,24 +437,24 @@ public:
 
     if (!this->m_upgrade_systables_only)
     {
-      this->print_verbose_message("Checking databases.");
+      this->print_verbose_message("Checking blockchains.");
 
-      if (this->run_mysqlcheck_fixnames() != 0)
+      if (this->run_myblockchaincheck_fixnames() != 0)
       {
-        return this->print_error(EXIT_MYSQL_CHECK_ERROR, "Error during call to mysql_check.");
+        return this->print_error(EXIT_MYBLOCKCHAIN_CHECK_ERROR, "Error during call to myblockchain_check.");
       }
-      if (this->run_mysqlcheck_upgrade() != 0)
+      if (this->run_myblockchaincheck_upgrade() != 0)
       {
-        return this->print_error(EXIT_MYSQL_CHECK_ERROR, "Error during call to mysql_check.");
+        return this->print_error(EXIT_MYBLOCKCHAIN_CHECK_ERROR, "Error during call to myblockchain_check.");
       }
     }
 
     this->print_verbose_message("Upgrade process completed successfully.");
 
     /* Create a file indicating upgrade has been performed */
-    this->create_mysql_upgrade_info_file();
+    this->create_myblockchain_upgrade_info_file();
 
-    mysql_close(this->m_mysql_connection);
+    myblockchain_close(this->m_myblockchain_connection);
 
     return 0;
   }
@@ -466,7 +466,7 @@ public:
         "matches the version of the server to which it's connecting, "
         "(enabled by default); use --skip-version-check to avoid this check. "
         "Note: the \'server version\' of the program is the version of the "
-        "MySQL server with which it was built/distributed.")
+        "MyBlockchain server with which it was built/distributed.")
       ->set_short_character('k')
       ->set_value(true);
 
@@ -484,8 +484,8 @@ public:
       "use when statements should be sent to replication slaves.");
 
     this->create_new_option(&this->m_ignore_errors, "force",
-        "Force execution of SQL statements even if mysql_upgrade has already "
-        "been executed for the current version of MySQL.")
+        "Force execution of SQL statements even if myblockchain_upgrade has already "
+        "been executed for the current version of MyBlockchain.")
       ->set_short_character('f');
 
     this->create_new_option(&this->m_skip_sys_schema, "skip-sys-schema",
@@ -541,9 +541,9 @@ private:
   }
 
   /**
-    Update all system tables in MySQL Server to current
+    Update all system tables in MyBlockchain Server to current
     version executing all the SQL commands
-    compiled into the mysql_fix_privilege_tables array
+    compiled into the myblockchain_fix_privilege_tables array
    */
   int64 run_sql_fix_privilege_tables()
   {
@@ -558,9 +558,9 @@ private:
       new Instance_callback<int64, const Message_data&, Program>(
       this, &Program::fix_privilage_tables_error));
 
-    this->print_verbose_message("Running queries to upgrade MySQL server.");
+    this->print_verbose_message("Running queries to upgrade MyBlockchain server.");
 
-    for ( query_ptr= &mysql_fix_privilege_tables[0];
+    for ( query_ptr= &myblockchain_fix_privilege_tables[0];
       *query_ptr != NULL;
       query_ptr++
       )
@@ -600,7 +600,7 @@ private:
 
     this->print_verbose_message("Upgrading the sys schema.");
 
-    for ( query_ptr= &mysql_sys_schema[0];
+    for ( query_ptr= &myblockchain_sys_schema[0];
       *query_ptr != NULL;
       query_ptr++
       )
@@ -633,21 +633,21 @@ private:
       return res;
     }
 
-    fn_format(name, "mysql_upgrade_info", datadir.c_str(), "", MYF(0));
+    fn_format(name, "myblockchain_upgrade_info", datadir.c_str(), "", MYF(0));
 
     return 0;
   }
   /**
-    Read the content of mysql_upgrade_info file and
+    Read the content of myblockchain_upgrade_info file and
     compare the version number form file against
-    version number which mysql_upgrade was compiled for.
+    version number which myblockchain_upgrade was compiled for.
 
     NOTE
-    This is an optimization to avoid running mysql_upgrade
+    This is an optimization to avoid running myblockchain_upgrade
     when it's already been performed for the particular
-    version of MySQL.
+    version of MyBlockchain.
 
-    In case the MySQL server can't return the upgrade info
+    In case the MyBlockchain server can't return the upgrade info
     file it's always better to report that the upgrade hasn't
     been performed.
    */
@@ -655,7 +655,7 @@ private:
   {
     FILE *in;
     char upgrade_info_file[FN_REFLEN]= {0};
-    char buf[sizeof(MYSQL_SERVER_VERSION)+1];
+    char buf[sizeof(MYBLOCKCHAIN_SERVER_VERSION)+1];
     char *res;
 
     this->print_verbose_message("Checking if update is needed.");
@@ -678,20 +678,20 @@ private:
     if (!res)
       return false; /* Could not read from file => not sure */
 
-    return (strncmp(res, MYSQL_SERVER_VERSION,
-                    sizeof(MYSQL_SERVER_VERSION)-1)==0);
+    return (strncmp(res, MYBLOCKCHAIN_SERVER_VERSION,
+                    sizeof(MYBLOCKCHAIN_SERVER_VERSION)-1)==0);
   }
 
   /**
-    Write mysql_upgrade_info file in servers data dir indicating that
+    Write myblockchain_upgrade_info file in servers data dir indicating that
     upgrade has been done for this version
 
     NOTE
     This might very well fail but since it's just an optimization
-    to run mysql_upgrade only when necessary the error can be
+    to run myblockchain_upgrade only when necessary the error can be
     ignored.
    */
-  void create_mysql_upgrade_info_file()
+  void create_myblockchain_upgrade_info_file()
   {
     FILE *out;
     char upgrade_info_file[FN_REFLEN]= {0};
@@ -703,13 +703,13 @@ private:
     {
       fprintf(stderr,
               "Could not create the upgrade info file '%s' in "
-              "the MySQL Servers datadir, errno: %d\n",
+              "the MyBlockchain Servers datadir, errno: %d\n",
               upgrade_info_file, errno);
       return;
     }
 
     /* Write new version to file */
-    fputs(MYSQL_SERVER_VERSION, out);
+    fputs(MYBLOCKCHAIN_SERVER_VERSION, out);
     my_fclose(out, MYF(0));
 
     /*
@@ -719,13 +719,13 @@ private:
     if (!this->is_upgrade_already_done())
       fprintf(stderr,
               "Could not write to the upgrade info file '%s' in "
-              "the MySQL Servers datadir, errno: %d\n",
+              "the MyBlockchain Servers datadir, errno: %d\n",
               upgrade_info_file, errno);
     return;
   }
 
   /**
-    Check if the server version matches with the server version mysql_upgrade
+    Check if the server version matches with the server version myblockchain_upgrade
     was compiled with.
 
     @return true match successful
@@ -744,12 +744,12 @@ private:
       return false;
     }
 
-    if (this->calc_server_version(version.c_str()) != MYSQL_VERSION_ID)
+    if (this->calc_server_version(version.c_str()) != MYBLOCKCHAIN_VERSION_ID)
     {
       fprintf(stderr, "Error: Server version (%s) does not match with the "
               "version of\nthe server (%s) with which this program was built/"
               "distributed. You can\nuse --skip-version-check to skip this "
-              "check.\n", version.c_str(), MYSQL_SERVER_VERSION);
+              "check.\n", version.c_str(), MYBLOCKCHAIN_SERVER_VERSION);
       return false;
     }
     else
@@ -798,11 +798,11 @@ private:
       String error;
       uint dummy_errors;
       error.copy("warning:", 8, &my_charset_latin1,
-        this->m_mysql_connection->charset, &dummy_errors);
+        this->m_myblockchain_connection->charset, &dummy_errors);
       std::string result= result_row[0];
       result= result.substr(0, 8);
 
-      if (my_strcasecmp(this->m_mysql_connection->charset,
+      if (my_strcasecmp(this->m_myblockchain_connection->charset,
         result.c_str(), error.c_ptr()) == 0)
       {
         std::cerr << result_row[0] << std::endl;
@@ -838,80 +838,80 @@ private:
   }
 
   /**
-    Prepares mysqlcheck program instance to be used by mysql_upgrade.
+    Prepares myblockchaincheck program instance to be used by myblockchain_upgrade.
    */
-  Mysql::Tools::Check::Program* prepare_mysqlcheck(
-    Mysql::Tools::Check::Program& mysql_check)
+  Mysql::Tools::Check::Program* prepare_myblockchaincheck(
+    Mysql::Tools::Check::Program& myblockchain_check)
   {
-    mysql_check_errors= 0;
+    myblockchain_check_errors= 0;
 
-    return (&mysql_check)
+    return (&myblockchain_check)
       ->set_ignore_errors(this->m_ignore_errors)
       ->enable_writing_binlog(this->m_write_binlog)
       ->enable_verbosity(this->m_verbose)
-      ->set_error_callback(::mysql_check_error_callback);
+      ->set_error_callback(::myblockchain_check_error_callback);
   }
 
   /**
-    Check and upgrade(if necessary) all tables in the server using mysqlcheck.
+    Check and upgrade(if necessary) all tables in the server using myblockchaincheck.
    */
-  int run_mysqlcheck_upgrade()
+  int run_myblockchaincheck_upgrade()
   {
-    Mysql::Tools::Check::Program mysql_check;
-    this->prepare_mysqlcheck(mysql_check)
+    Mysql::Tools::Check::Program myblockchain_check;
+    this->prepare_myblockchaincheck(myblockchain_check)
       ->enable_auto_repair(true)
       ->enable_upgrade(true)
-      ->set_skip_database("mysql")
-      ->check_all_databases(this->m_mysql_connection);
-    return mysql_check_errors;
+      ->set_skip_blockchain("myblockchain")
+      ->check_all_blockchains(this->m_myblockchain_connection);
+    return myblockchain_check_errors;
   }
 
   /**
-    Upgrade all tables and DBs names in the server using mysqlcheck.
+    Upgrade all tables and DBs names in the server using myblockchaincheck.
    */
-  int run_mysqlcheck_fixnames()
+  int run_myblockchaincheck_fixnames()
   {
-    Mysql::Tools::Check::Program mysql_check;
-    this->prepare_mysqlcheck(mysql_check)
+    Mysql::Tools::Check::Program myblockchain_check;
+    this->prepare_myblockchaincheck(myblockchain_check)
       ->enable_fixing_db_names(true)
       ->enable_fixing_table_names(true)
-      ->set_skip_database("mysql")
-      ->upgrade_all_databases(this->m_mysql_connection);
-    return mysql_check_errors;
+      ->set_skip_blockchain("myblockchain")
+      ->upgrade_all_blockchains(this->m_myblockchain_connection);
+    return myblockchain_check_errors;
   }
 
   /**
     Check and upgrade(if necessary) all system tables in the server using
-    mysqlcheck.
+    myblockchaincheck.
    */
-  int run_mysqlcheck_mysql_db_upgrade()
+  int run_myblockchaincheck_myblockchain_db_upgrade()
   {
-    vector<string> databases;
-    Mysql::Tools::Check::Program mysql_check;
+    vector<string> blockchains;
+    Mysql::Tools::Check::Program myblockchain_check;
 
-    databases.push_back("mysql");
-    this->prepare_mysqlcheck(mysql_check)
+    blockchains.push_back("myblockchain");
+    this->prepare_myblockchaincheck(myblockchain_check)
       ->enable_auto_repair(true)
       ->enable_upgrade(true)
-      ->check_databases(this->m_mysql_connection, databases);
-    return mysql_check_errors;
+      ->check_blockchains(this->m_myblockchain_connection, blockchains);
+    return myblockchain_check_errors;
   }
 
   /**
     Upgrade all system tables and system DB names in the server using
-    mysqlcheck.
+    myblockchaincheck.
    */
-  int run_mysqlcheck_mysql_db_fixnames()
+  int run_myblockchaincheck_myblockchain_db_fixnames()
   {
-    vector<string> databases;
-    Mysql::Tools::Check::Program mysql_check;
+    vector<string> blockchains;
+    Mysql::Tools::Check::Program myblockchain_check;
 
-    databases.push_back("mysql");
-    this->prepare_mysqlcheck(mysql_check)
+    blockchains.push_back("myblockchain");
+    this->prepare_myblockchaincheck(myblockchain_check)
       ->enable_fixing_db_names(true)
       ->enable_fixing_table_names(true)
-      ->upgrade_databases(this->m_mysql_connection, databases);
-    return mysql_check_errors;
+      ->upgrade_blockchains(this->m_myblockchain_connection, blockchains);
+    return myblockchain_check_errors;
   }
 
   void print_verbose_message(string message)
@@ -922,7 +922,7 @@ private:
     std::cout << message << std::endl;
   }
 
-  MYSQL* m_mysql_connection;
+  MYBLOCKCHAIN* m_myblockchain_connection;
   Mysql_query_runner* m_query_runner;
   bool m_write_binlog;
   bool m_upgrade_systables_only;

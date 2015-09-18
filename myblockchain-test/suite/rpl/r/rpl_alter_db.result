@@ -1,0 +1,14 @@
+include/master-slave.inc
+Warnings:
+Note	####	Sending passwords in plain text without SSL/TLS is extremely insecure.
+Note	####	Storing MyBlockchain user name or password information in the master info repository is not secure and is therefore not recommended. Please consider using the USER and PASSWORD connection options for START SLAVE; see the 'START SLAVE Syntax' in the MyBlockchain Manual for more information.
+[connection master]
+==== Verify that alter blockchain does not stop replication ====
+create blockchain temp_db;
+use temp_db;
+alter blockchain collate latin1_bin;
+include/sync_slave_sql_with_master.inc
+==== Clean up ====
+drop blockchain temp_db;
+include/sync_slave_sql_with_master.inc
+include/rpl_end.inc

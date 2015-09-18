@@ -16,9 +16,9 @@
    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-package com.mysql.clusterj.openjpatest;
+package com.myblockchain.clusterj.openjpatest;
 
-public class EmbeddedTest extends com.mysql.clusterj.jpatest.EmbeddedTest {
+public class EmbeddedTest extends com.myblockchain.clusterj.jpatest.EmbeddedTest {
 
     /** Override setup so that no setup occurs for this test. */
     @Override

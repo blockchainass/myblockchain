@@ -13,4 +13,4 @@
 # this program; if not, write to the Free Software Foundation, Inc., 51
 # Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 
-d @SYSTEMD_PID_DIR@ 0755 @MYSQLD_USER@ @MYSQLD_USER@  -
+d @SYSTEMD_PID_DIR@ 0755 @MYBLOCKCHAIND_USER@ @MYBLOCKCHAIND_USER@  -

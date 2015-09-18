@@ -16,7 +16,7 @@
 #ifndef MY_THREAD_LOCAL_INCLUDED
 #define MY_THREAD_LOCAL_INCLUDED
 
-#include "mysql/psi/mysql_thread.h"
+#include "myblockchain/psi/myblockchain_thread.h"
 
 C_MODE_START
 
@@ -78,7 +78,7 @@ struct st_my_thread_var
 */
   int thr_winerr;
 #endif
-  mysql_cond_t suspend;
+  myblockchain_cond_t suspend;
   my_thread_id id;
   int volatile abort;
   struct st_my_thread_var *next,**prev;

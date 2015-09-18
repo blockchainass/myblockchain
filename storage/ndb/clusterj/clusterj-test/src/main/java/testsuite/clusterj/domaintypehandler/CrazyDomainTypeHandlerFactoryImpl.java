@@ -17,21 +17,21 @@
 
 package testsuite.clusterj.domaintypehandler;
 
-import com.mysql.clusterj.core.CacheManager;
-import com.mysql.clusterj.core.query.CandidateIndexImpl;
-import com.mysql.clusterj.core.spi.DomainFieldHandler;
-import com.mysql.clusterj.core.spi.DomainTypeHandler;
-import com.mysql.clusterj.core.spi.DomainTypeHandlerFactory;
-import com.mysql.clusterj.core.spi.ValueHandler;
-import com.mysql.clusterj.core.spi.ValueHandlerFactory;
-import com.mysql.clusterj.core.store.ClusterTransaction;
-import com.mysql.clusterj.core.store.Column;
-import com.mysql.clusterj.core.store.Db;
-import com.mysql.clusterj.core.store.Dictionary;
-import com.mysql.clusterj.core.store.Operation;
-import com.mysql.clusterj.core.store.PartitionKey;
-import com.mysql.clusterj.core.store.ResultData;
-import com.mysql.clusterj.core.store.Table;
+import com.myblockchain.clusterj.core.CacheManager;
+import com.myblockchain.clusterj.core.query.CandidateIndexImpl;
+import com.myblockchain.clusterj.core.spi.DomainFieldHandler;
+import com.myblockchain.clusterj.core.spi.DomainTypeHandler;
+import com.myblockchain.clusterj.core.spi.DomainTypeHandlerFactory;
+import com.myblockchain.clusterj.core.spi.ValueHandler;
+import com.myblockchain.clusterj.core.spi.ValueHandlerFactory;
+import com.myblockchain.clusterj.core.store.ClusterTransaction;
+import com.myblockchain.clusterj.core.store.Column;
+import com.myblockchain.clusterj.core.store.Db;
+import com.myblockchain.clusterj.core.store.Dictionary;
+import com.myblockchain.clusterj.core.store.Operation;
+import com.myblockchain.clusterj.core.store.PartitionKey;
+import com.myblockchain.clusterj.core.store.ResultData;
+import com.myblockchain.clusterj.core.store.Table;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;

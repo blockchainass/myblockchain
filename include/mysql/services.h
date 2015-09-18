@@ -1,4 +1,4 @@
-#ifndef MYSQL_SERVICES_INCLUDED
+#ifndef MYBLOCKCHAIN_SERVICES_INCLUDED
 /* Copyright (c) 2009, 2015, Oracle and/or its affiliates. All rights reserved.
 
    This program is free software; you can redistribute it and/or modify
@@ -18,26 +18,26 @@
 extern "C" {
 #endif
 
-#include <mysql/service_my_snprintf.h>
-#include <mysql/service_thd_alloc.h>
-#include <mysql/service_thd_wait.h>
-#include <mysql/service_thread_scheduler.h>
-#include <mysql/service_my_plugin_log.h>
-#include <mysql/service_mysql_string.h>
-#include <mysql/service_mysql_alloc.h>
-#include <mysql/service_mysql_password_policy.h>
-#include <mysql/service_parser.h>
-#include <mysql/service_rpl_transaction_ctx.h>
-#include <mysql/service_rpl_transaction_write_set.h>
-#include <mysql/service_locking.h>
+#include <myblockchain/service_my_snprintf.h>
+#include <myblockchain/service_thd_alloc.h>
+#include <myblockchain/service_thd_wait.h>
+#include <myblockchain/service_thread_scheduler.h>
+#include <myblockchain/service_my_plugin_log.h>
+#include <myblockchain/service_myblockchain_string.h>
+#include <myblockchain/service_myblockchain_alloc.h>
+#include <myblockchain/service_myblockchain_password_policy.h>
+#include <myblockchain/service_parser.h>
+#include <myblockchain/service_rpl_transaction_ctx.h>
+#include <myblockchain/service_rpl_transaction_write_set.h>
+#include <myblockchain/service_locking.h>
 
 #ifdef __cplusplus
 }
 #endif
 
 #ifdef __cplusplus
-#include <mysql/service_rules_table.h>
+#include <myblockchain/service_rules_table.h>
 #endif
 
-#define MYSQL_SERVICES_INCLUDED
-#endif /* MYSQL_SERVICES_INCLUDED */
+#define MYBLOCKCHAIN_SERVICES_INCLUDED
+#endif /* MYBLOCKCHAIN_SERVICES_INCLUDED */

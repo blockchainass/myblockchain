@@ -5,7 +5,7 @@ clusters = .4node
 
 [ndb_mgmd]
 
-[mysqld]
+[myblockchaind]
 innodb
 skip-bdb
 

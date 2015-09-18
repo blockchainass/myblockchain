@@ -113,7 +113,7 @@ Table_map_event::Table_map_event(const char *buf, unsigned int event_len,
   unsigned char const *const ptr_dblen= (unsigned char const*)vpart + 0;
   m_dblen= *(unsigned char*) ptr_dblen;
 
-  /* Length of database name + counter + terminating null */
+  /* Length of blockchain name + counter + terminating null */
   unsigned char const *const ptr_tbllen= ptr_dblen + m_dblen + 2;
   m_tbllen= *(unsigned char*) ptr_tbllen;
 

@@ -59,7 +59,7 @@
    DBUG_RETURN(b);\
 }
 
-int ndb_dictionary_is_mysqld = 0;
+int ndb_dictionary_is_myblockchaind = 0;
 
 bool
 is_ndb_blob_table(const char* name, Uint32* ptab_id, Uint32* pcol_no)
@@ -614,7 +614,7 @@ NdbTableImpl::init(){
   m_primaryTableId= RNIL;
   m_internalName.clear();
   m_externalName.clear();
-  m_mysqlName.clear();
+  m_myblockchainName.clear();
   m_frm.clear();
   m_fd.clear();
   m_range.clear();
@@ -1209,9 +1209,9 @@ NdbTableImpl::updateMysqlName()
   Vector<BaseString> v;
   if (m_internalName.split(v,"/") == 3)
   {
-    return !m_mysqlName.assfmt("%s/%s",v[0].c_str(),v[2].c_str());
+    return !m_myblockchainName.assfmt("%s/%s",v[0].c_str(),v[2].c_str());
   }
-  return !m_mysqlName.assign("");
+  return !m_myblockchainName.assign("");
 }
 
 int
@@ -2133,14 +2133,14 @@ NdbDictionaryImpl::getIndexTable(NdbIndexImpl * index,
   NdbTableImpl *index_table;
   const BaseString internalName(
     m_ndb.internalize_index_name(table, index->getName()));
-  // Get index table in system database
+  // Get index table in system blockchain
   m_ndb.setDatabaseName(NDB_SYSTEM_DATABASE);
   index_table= getTable(m_ndb.externalizeTableName(internalName.c_str()));
   m_ndb.setDatabaseName(current_db);
   if (!index_table)
   {
     // Index table not found
-    // Try geting index table in current database (old format)
+    // Try geting index table in current blockchain (old format)
     index_table= getTable(m_ndb.externalizeTableName(internalName.c_str()));    
   }
   return index_table;
@@ -2811,7 +2811,7 @@ NdbDictInterface::parseTableInfo(NdbTableImpl ** ret,
 
   /*
     We specifically don't get tablespace data and range/list arrays here
-    since those are known by the MySQL Server through analysing the
+    since those are known by the MyBlockchain Server through analysing the
     frm file.
     Fragment Data contains the real node group mapping and the fragment
     identities used for each fragment. At the moment we have no need for
@@ -3984,7 +3984,7 @@ NdbDictionaryImpl::dropTable(const char * name)
 {
   DBUG_ENTER("NdbDictionaryImpl::dropTable");
   DBUG_PRINT("enter",("name: %s", name));
-  ASSERT_NOT_MYSQLD;
+  ASSERT_NOT_MYBLOCKCHAIND;
   NdbTableImpl * tab = getTable(name);
   if(tab == 0){
     DBUG_RETURN(-1);
@@ -4469,7 +4469,7 @@ NdbDictInterface::create_index_obj_from_table(NdbIndexImpl** dst,
 int
 NdbDictionaryImpl::createIndex(NdbIndexImpl &ix, bool offline)
 {
-  ASSERT_NOT_MYSQLD;
+  ASSERT_NOT_MYBLOCKCHAIND;
   NdbTableImpl* tab = getTable(ix.getTable());
   if(tab == 0){
     m_error.code = 4249;
@@ -4709,7 +4709,7 @@ NdbDictionaryImpl::dropIndex(const char * indexName,
 			     const char * tableName,
                              bool ignoreFKs)
 {
-  ASSERT_NOT_MYSQLD;
+  ASSERT_NOT_MYBLOCKCHAIND;
   NdbIndexImpl * idx = getIndex(indexName, tableName);
   if (idx == 0) {
     m_error.code = 4243;
@@ -6015,10 +6015,10 @@ NdbDictInterface::unpackListTables(NdbDictionary::Dictionary::List& list,
       getApiConstant(ltd->getTableStore(), objectStoreMapping, 0);
     element.temp = ltd->getTableTemp();
     // table or index name
-    BaseString databaseName;
+    BaseString blockchainName;
     BaseString schemaName;
     BaseString objectName;
-    if (!databaseName || !schemaName || !objectName)
+    if (!blockchainName || !schemaName || !objectName)
     {
       m_error.code= 4000;
       return -1;
@@ -6035,7 +6035,7 @@ NdbDictInterface::unpackListTables(NdbDictionary::Dictionary::List& list,
         return -1;
       }
       memcpy(indexName, (char *) tableNames, size);
-      if (!(databaseName = Ndb::getDatabaseFromInternalName(indexName)) ||
+      if (!(blockchainName = Ndb::getDatabaseFromInternalName(indexName)) ||
           !(schemaName = Ndb::getSchemaFromInternalName(indexName)))
       {
         delete [] indexName;
@@ -6054,7 +6054,7 @@ NdbDictInterface::unpackListTables(NdbDictionary::Dictionary::List& list,
         return -1;
       }
       memcpy(tableName, (char *) tableNames, size);
-      if (!(databaseName = Ndb::getDatabaseFromInternalName(tableName)) ||
+      if (!(blockchainName = Ndb::getDatabaseFromInternalName(tableName)) ||
           !(schemaName = Ndb::getSchemaFromInternalName(tableName)))
       {
         delete [] tableName;
@@ -6080,14 +6080,14 @@ NdbDictInterface::unpackListTables(NdbDictionary::Dictionary::List& list,
       }
       delete [] otherName;
     }
-    if (!(element.database = new char[databaseName.length() + 1]) ||
+    if (!(element.blockchain = new char[blockchainName.length() + 1]) ||
         !(element.schema = new char[schemaName.length() + 1]) ||
         !(element.name = new char[objectName.length() + 1]))
     {
       m_error.code= 4000;
       return -1;
     }
-    strcpy(element.database, databaseName.c_str());
+    strcpy(element.blockchain, blockchainName.c_str());
     strcpy(element.schema, schemaName.c_str());
     strcpy(element.name, objectName.c_str());
     count++;
@@ -6144,10 +6144,10 @@ NdbDictInterface::unpackOldListTables(NdbDictionary::Dictionary::List& list,
     element.temp = OldListTablesConf::getTableTemp(d);
     // table or index name
     Uint32 n = (data[pos++] + 3) >> 2;
-    BaseString databaseName;
+    BaseString blockchainName;
     BaseString schemaName;
     BaseString objectName;
-    if (!databaseName || !schemaName || !objectName)
+    if (!blockchainName || !schemaName || !objectName)
     {
       m_error.code= 4000;
       return -1;
@@ -6161,7 +6161,7 @@ NdbDictInterface::unpackOldListTables(NdbDictionary::Dictionary::List& list,
         return -1;
       }
       memcpy(indexName, &data[pos], n << 2);
-      if (!(databaseName = Ndb::getDatabaseFromInternalName(indexName)) ||
+      if (!(blockchainName = Ndb::getDatabaseFromInternalName(indexName)) ||
           !(schemaName = Ndb::getSchemaFromInternalName(indexName)))
       {
         delete [] indexName;
@@ -6179,7 +6179,7 @@ NdbDictInterface::unpackOldListTables(NdbDictionary::Dictionary::List& list,
         return -1;
       }
       memcpy(tableName, &data[pos], n << 2);
-      if (!(databaseName = Ndb::getDatabaseFromInternalName(tableName)) ||
+      if (!(blockchainName = Ndb::getDatabaseFromInternalName(tableName)) ||
           !(schemaName = Ndb::getSchemaFromInternalName(tableName)))
       {
         delete [] tableName;
@@ -6204,14 +6204,14 @@ NdbDictInterface::unpackOldListTables(NdbDictionary::Dictionary::List& list,
       }
       delete [] otherName;
     }
-    if (!(element.database = new char[databaseName.length() + 1]) ||
+    if (!(element.blockchain = new char[blockchainName.length() + 1]) ||
         !(element.schema = new char[schemaName.length() + 1]) ||
         !(element.name = new char[objectName.length() + 1]))
     {
       m_error.code= 4000;
       return -1;
     }
-    strcpy(element.database, databaseName.c_str());
+    strcpy(element.blockchain, blockchainName.c_str());
     strcpy(element.schema, schemaName.c_str());
     strcpy(element.name, objectName.c_str());
     pos += n;
@@ -6853,7 +6853,7 @@ NdbDictionaryImpl::validateRecordSpec(const NdbDictionary::RecordSpecification *
       }
       else
       {
-        /* MySQLD Bit format puts 'fractional' part of bit types 
+        /* MyBlockchainD Bit format puts 'fractional' part of bit types 
          * in with the null bits - so there's 1 optional Null 
          * bit followed by n (max 7) databits, at position 
          * given by the nullbit offsets.  Then the rest of
@@ -6867,7 +6867,7 @@ NdbDictionaryImpl::validateRecordSpec(const NdbDictionary::RecordSpecification *
     }
 
     /* Does the element itself have any bytes?
-     * (MySQLD bit format may have all data as 'null bits'
+     * (MyBlockchainD bit format may have all data as 'null bits'
      */
     if (elementByteLength)
     {
@@ -7617,7 +7617,7 @@ NdbRecord::copyMask(Uint32 *dst, const unsigned char *src) const
 }
 
 void
-NdbRecord::Attr::get_mysqld_bitfield(const char *src_row, char *dst_buffer) const
+NdbRecord::Attr::get_myblockchaind_bitfield(const char *src_row, char *dst_buffer) const
 {
   assert(flags & IsMysqldBitfield);
   Uint64 bits;
@@ -7639,7 +7639,7 @@ NdbRecord::Attr::get_mysqld_bitfield(const char *src_row, char *dst_buffer) cons
   else
     bits= 0;
 
-  /* Copy whole bytes. The mysqld format stored bit fields big-endian. */
+  /* Copy whole bytes. The myblockchaind format stored bit fields big-endian. */
   assert(remaining_bits <= 64);
   const unsigned char *src_ptr= (const unsigned char *)&src_row[offset];
   while (remaining_bits >= 8)
@@ -7658,7 +7658,7 @@ NdbRecord::Attr::get_mysqld_bitfield(const char *src_row, char *dst_buffer) cons
 }
 
 void
-NdbRecord::Attr::put_mysqld_bitfield(char *dst_row, const char *src_buffer) const
+NdbRecord::Attr::put_myblockchaind_bitfield(char *dst_row, const char *src_buffer) const
 {
   assert(flags & IsMysqldBitfield);
   char *dst_ptr= &dst_row[offset];
@@ -7672,7 +7672,7 @@ NdbRecord::Attr::put_mysqld_bitfield(char *dst_row, const char *src_buffer) cons
     bits|= ((Uint64)small_bits) << 32;
   }
 
-  /* Copy whole bytes. The mysqld format stores bitfields big-endian. */
+  /* Copy whole bytes. The myblockchaind format stores bitfields big-endian. */
   Uint32 remaining_bits= bitCount;
   assert(remaining_bits <= 64);
   dst_ptr+= remaining_bits/8;

@@ -13,15 +13,15 @@
   along with this program; if not, write to the Free Software Foundation,
   51 Franklin Street, Suite 500, Boston, MA 02110-1335 USA */
 
-#ifndef MYSQL_IDLE_H
-#define MYSQL_IDLE_H
+#ifndef MYBLOCKCHAIN_IDLE_H
+#define MYBLOCKCHAIN_IDLE_H
 
 /**
-  @file mysql/psi/mysql_idle.h
+  @file myblockchain/psi/myblockchain_idle.h
   Instrumentation helpers for idle waits.
 */
 
-#include "mysql/psi/psi.h"
+#include "myblockchain/psi/psi.h"
 
 #ifndef PSI_IDLE_CALL
 #define PSI_IDLE_CALL(M) PSI_DYNAMIC_CALL(M)
@@ -34,43 +34,43 @@
 */
 
 /**
-  @def MYSQL_START_IDLE_WAIT
+  @def MYBLOCKCHAIN_START_IDLE_WAIT
   Instrumentation helper for table io_waits.
   This instrumentation marks the start of a wait event.
   @param LOCKER the locker
   @param STATE the locker state
-  @sa MYSQL_END_IDLE_WAIT.
+  @sa MYBLOCKCHAIN_END_IDLE_WAIT.
 */
 #ifdef HAVE_PSI_IDLE_INTERFACE
-  #define MYSQL_START_IDLE_WAIT(LOCKER, STATE) \
-    LOCKER= inline_mysql_start_idle_wait(STATE, __FILE__, __LINE__)
+  #define MYBLOCKCHAIN_START_IDLE_WAIT(LOCKER, STATE) \
+    LOCKER= inline_myblockchain_start_idle_wait(STATE, __FILE__, __LINE__)
 #else
-  #define MYSQL_START_IDLE_WAIT(LOCKER, STATE) \
+  #define MYBLOCKCHAIN_START_IDLE_WAIT(LOCKER, STATE) \
     do {} while (0)
 #endif
 
 /**
-  @def MYSQL_END_IDLE_WAIT
+  @def MYBLOCKCHAIN_END_IDLE_WAIT
   Instrumentation helper for idle waits.
   This instrumentation marks the end of a wait event.
   @param LOCKER the locker
-  @sa MYSQL_START_IDLE_WAIT.
+  @sa MYBLOCKCHAIN_START_IDLE_WAIT.
 */
 #ifdef HAVE_PSI_IDLE_INTERFACE
-  #define MYSQL_END_IDLE_WAIT(LOCKER) \
-    inline_mysql_end_idle_wait(LOCKER)
+  #define MYBLOCKCHAIN_END_IDLE_WAIT(LOCKER) \
+    inline_myblockchain_end_idle_wait(LOCKER)
 #else
-  #define MYSQL_END_IDLE_WAIT(LOCKER) \
+  #define MYBLOCKCHAIN_END_IDLE_WAIT(LOCKER) \
     do {} while (0)
 #endif
 
 #ifdef HAVE_PSI_IDLE_INTERFACE
 /**
-  Instrumentation calls for MYSQL_START_IDLE_WAIT.
-  @sa MYSQL_END_IDLE_WAIT.
+  Instrumentation calls for MYBLOCKCHAIN_START_IDLE_WAIT.
+  @sa MYBLOCKCHAIN_END_IDLE_WAIT.
 */
 static inline struct PSI_idle_locker *
-inline_mysql_start_idle_wait(PSI_idle_locker_state *state,
+inline_myblockchain_start_idle_wait(PSI_idle_locker_state *state,
                              const char *src_file, int src_line)
 {
   struct PSI_idle_locker *locker;
@@ -79,11 +79,11 @@ inline_mysql_start_idle_wait(PSI_idle_locker_state *state,
 }
 
 /**
-  Instrumentation calls for MYSQL_END_IDLE_WAIT.
-  @sa MYSQL_START_IDLE_WAIT.
+  Instrumentation calls for MYBLOCKCHAIN_END_IDLE_WAIT.
+  @sa MYBLOCKCHAIN_START_IDLE_WAIT.
 */
 static inline void
-inline_mysql_end_idle_wait(struct PSI_idle_locker *locker)
+inline_myblockchain_end_idle_wait(struct PSI_idle_locker *locker)
 {
   if (likely(locker != NULL))
     PSI_IDLE_CALL(end_idle_wait)(locker);

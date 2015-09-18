@@ -1,5 +1,5 @@
 ATRT_USAGE_README.txt
-Author: Serge Kozlov, MySQL
+Author: Serge Kozlov, MyBlockchain
 Date: 03/23/2006
 
 Contents
@@ -27,7 +27,7 @@ then add one or more -v arguments:
 	atrt -v -v --log-file=log.txt --testcase-file=atrt_test_case_file
 
 If the test case file contains two or more test we can add -r options for 
-preventing stopping testing if one test fails (like --force for mysql-test-run)
+preventing stopping testing if one test fails (like --force for myblockchain-test-run)
 
 	atrt -v -v -r --log-file=log.txt --testcase-file=atrt_test_case_file
 
@@ -41,7 +41,7 @@ available in this document in section atrt command line options
   2.Results.
   ==========
 
-  Unlike mysql-test-run frame work atrt doesn't inform to console passed/failed 
+  Unlike myblockchain-test-run frame work atrt doesn't inform to console passed/failed 
 status of tests. You need to use --log-file option and look into log file for 
 getting information about status of tests. When atrt finished you can look into 
 log file defined --log-file option. It's main source of information about how 
@@ -49,7 +49,7 @@ were performed atrt tests. Below added the examples of content of log-file for
 different failures (except example 1 for passed test). Examples include 
 probable cases with reasons and recommended solutions and cover not test issues 
 only but mistakes of atrt configuration or cluster settings. As ATRT testcase 
-file used simple test included in MySQL installation:
+file used simple test included in MyBlockchain installation:
 
 	max-time: 600
 	cmd: testBasic
@@ -59,7 +59,7 @@ file used simple test included in MySQL installation:
 Of course these examples don't cover all possible failures but at least most 
 probable and often appearing.
 Note: Before start atrt I recommend try to run selected cluster configuration 
-by manual and make sure that it can work: enough to run mgmd, ndbd, mysqld and 
+by manual and make sure that it can work: enough to run mgmd, ndbd, myblockchaind and 
 look via mgm to status of these nodes
 
 Example 1. Test passed
@@ -152,7 +152,7 @@ Solution: Check configuration of ndb nodes.
 Example 8. Test failed.
 Reason: test application not found.
 Solution: Correct file name in ATRT test case file and make sure that the file 
-exists in $MYSQL_DIR/bin directory.
+exists in $MYBLOCKCHAIN_DIR/bin directory.
 
 2006-03-02 20:21:54 [ndb_atrt] INFO     -- Starting...
 2006-03-02 20:21:54 [ndb_atrt] INFO     -- Connecting to hosts
@@ -170,7 +170,7 @@ Probable reasons:
 * itself test failed
 * timeout reached
 Solution: Since mgmd/ndbd nodes started properly in such case then try to 
-investigate log files in result/X.api/, result/X.mysqld, result/X.mysql 
+investigate log files in result/X.api/, result/X.myblockchaind, result/X.myblockchain 
 directories.
 
 2006-03-02 19:59:35 [ndb_atrt] INFO     -- Setup path not specified, using /home/ndbdev/skozlov/asetup

@@ -339,11 +339,11 @@ innodb_bk_thread(
 
 				innodb_reset_conn(conn_data, true, true,
 					innodb_eng->enable_binlog);
-				if(conn_data->mysql_tbl) {
+				if(conn_data->myblockchain_tbl) {
 					handler_unlock_table(conn_data->thd,
-							     conn_data->mysql_tbl,
+							     conn_data->myblockchain_tbl,
 							     HDL_READ);
-					conn_data->mysql_tbl = NULL;
+					conn_data->myblockchain_tbl = NULL;
 				}
 
 				/*Close the data cursor */
@@ -410,7 +410,7 @@ next_item:
 
 	bk_thd_exited = true;
 
-	/* Change to its original state before close the MySQL THD */
+	/* Change to its original state before close the MyBlockchain THD */
 	if (thd) {
 		handler_thd_attach(thd, NULL);
 		handler_close_thd(thd);
@@ -519,17 +519,17 @@ extern void handler_close_thd(void*);
 Close table using handler functions.
 @param conn_data	cursor information of connection */
 void
-innodb_close_mysql_table(
+innodb_close_myblockchain_table(
 /*=====================*/
 	innodb_conn_data_t*     conn_data)	/*!< in: connection
 							 cursor*/
 {
-	if (conn_data->mysql_tbl) {
+	if (conn_data->myblockchain_tbl) {
 		assert(conn_data->thd);
 		handler_unlock_table(conn_data->thd,
-				     conn_data->mysql_tbl,
+				     conn_data->myblockchain_tbl,
 				     HDL_READ);
-                conn_data->mysql_tbl = NULL;
+                conn_data->myblockchain_tbl = NULL;
 	}
 
 	if (conn_data->thd) {
@@ -584,7 +584,7 @@ innodb_conn_clean_data(
 		conn_data->crsr_trx = NULL;
 	}
 
-	innodb_close_mysql_table(conn_data);
+	innodb_close_myblockchain_table(conn_data);
 
 	if (conn_data->tpl) {
 		ib_cb_tuple_delete(conn_data->tpl);
@@ -781,13 +781,13 @@ enum conn_mode {
 
 
 /*******************************************************************//**
-Opens mysql table if enable_binlog or enable_mdl is set
+Opens myblockchain table if enable_binlog or enable_mdl is set
 @param conn_data	connection cursor data
 @param conn_optioin	read or write operation
 @param engine		Innodb memcached engine
 @returns DB_SUCCESS on success and DB_ERROR on failure */
 ib_err_t
-innodb_open_mysql_table(
+innodb_open_myblockchain_table(
 /*====================*/
 	innodb_conn_data_t*     conn_data,	/*!< in/out:Connection cursor data */
 	int                     conn_option,	/*!< in: Read or write operation */
@@ -798,7 +798,7 @@ innodb_open_mysql_table(
 	conn_data->is_waiting_for_mdl = true;
 
 	/* Close the table before opening it again */
-	innodb_close_mysql_table(conn_data);
+	innodb_close_myblockchain_table(conn_data);
 
 	if (conn_option == CONN_MODE_READ) {
                conn_data->is_waiting_for_mdl = false;
@@ -812,8 +812,8 @@ innodb_open_mysql_table(
 		}
 	}
 
-	if (!conn_data->mysql_tbl) {
-		conn_data->mysql_tbl =
+	if (!conn_data->myblockchain_tbl) {
+		conn_data->myblockchain_tbl =
 			handler_open_table(
 				conn_data->thd,
 				meta_info->col_info[CONTAINER_DB].col_name,
@@ -822,7 +822,7 @@ innodb_open_mysql_table(
 	}
 	conn_data->is_waiting_for_mdl = false;
 
-	if(!conn_data->mysql_tbl) {
+	if(!conn_data->myblockchain_tbl) {
 		return(DB_LOCK_WAIT);
 	}
 
@@ -931,7 +931,7 @@ have_conn:
 	    release_mdl_lock &&
 	    (engine->enable_binlog || engine->enable_mdl)) {
 		if ( DB_SUCCESS !=
-			innodb_open_mysql_table(conn_data,
+			innodb_open_myblockchain_table(conn_data,
 						conn_option,
 						engine)){
 			UNLOCK_CURRENT_CONN_IF_NOT_LOCKED(
@@ -1386,7 +1386,7 @@ innodb_remove(
 	}
 
 	/* In the binary protocol there is such a thing as a CAS delete.
-	This is the CAS check. If we will also be deleting from the database,
+	This is the CAS check. If we will also be deleting from the blockchain,
 	there are two possibilities:
 	  1: The CAS matches; perform the delete.
 	  2: The CAS doesn't match; delete the item because it's stale.

@@ -15,5 +15,5 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA */
 
 #include <service_versions.h>
-SERVICE_VERSION *mysql_password_policy_service= (void*)VERSION_mysql_password_policy;
+SERVICE_VERSION *myblockchain_password_policy_service= (void*)VERSION_myblockchain_password_policy;
 

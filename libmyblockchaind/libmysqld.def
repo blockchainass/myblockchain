@@ -1,0 +1,128 @@
+;   Copyright (c) 2015, Oracle and/or its affiliates. All rights reserved.
+;
+;   This program is free software; you can redistribute it and/or modify
+;   it under the terms of the GNU General Public License as published by
+;   the Free Software Foundation.
+;
+;   There are special exceptions to the terms and conditions of the GPL as it
+;   is applied to this software.
+;
+;   This program is distributed in the hope that it will be useful,
+;   but WITHOUT ANY WARRANTY; without even the implied warranty of
+;   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;   GNU General Public License for more details.
+;
+;   You should have received a copy of the GNU General Public License
+;   along with this program; if not, write to the Free Software
+;   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
+
+LIBRARY		LIBMYBLOCKCHAIND
+DESCRIPTION	'MyBlockchain 5.1 Embedded Server Library'
+VERSION		5.1
+EXPORTS
+	myblockchain_thread_end
+	myblockchain_thread_init
+	myodbc_remove_escape
+	myblockchain_affected_rows
+	myblockchain_autocommit
+	myblockchain_change_user
+	myblockchain_character_set_name
+	myblockchain_close
+	myblockchain_commit
+	myblockchain_data_seek
+	myblockchain_debug
+	myblockchain_dump_debug_info
+	myblockchain_eof
+	myblockchain_errno
+	myblockchain_error
+	myblockchain_escape_string
+	myblockchain_hex_string
+	myblockchain_fetch_field
+	myblockchain_fetch_field_direct
+	myblockchain_fetch_fields
+	myblockchain_fetch_lengths
+	myblockchain_fetch_row
+	myblockchain_field_count
+	myblockchain_field_seek
+	myblockchain_field_tell
+	myblockchain_free_result
+	myblockchain_get_character_set_info
+	myblockchain_get_client_info
+	myblockchain_get_host_info
+	myblockchain_get_proto_info
+	myblockchain_get_server_info
+	myblockchain_get_client_version
+	myblockchain_get_ssl_cipher
+	myblockchain_info
+	myblockchain_init
+	myblockchain_insert_id
+	myblockchain_kill
+	myblockchain_set_server_option
+	myblockchain_list_dbs
+	myblockchain_list_fields
+	myblockchain_list_processes
+	myblockchain_list_tables
+	myblockchain_more_results
+	myblockchain_next_result
+	myblockchain_num_fields
+	myblockchain_num_rows
+	myblockchain_options
+	myblockchain_ping
+	myblockchain_query
+	myblockchain_read_query_result
+	myblockchain_real_connect
+	myblockchain_real_escape_string
+	myblockchain_real_escape_string_quote
+	myblockchain_real_query
+	myblockchain_refresh
+	myblockchain_rollback
+	myblockchain_row_seek
+	myblockchain_row_tell
+	myblockchain_select_db
+	myblockchain_send_query
+	myblockchain_shutdown
+	myblockchain_ssl_set
+	myblockchain_stat
+	myblockchain_store_result
+	myblockchain_sqlstate
+	myblockchain_thread_id
+	myblockchain_thread_safe
+	myblockchain_use_result
+	myblockchain_warning_count
+	myblockchain_server_end
+	myblockchain_server_init
+	get_tty_password
+	myblockchain_get_server_version
+	myblockchain_set_character_set
+	myblockchain_sqlstate
+	myblockchain_get_parameters
+	myblockchain_stmt_bind_param
+	myblockchain_stmt_bind_result
+	myblockchain_stmt_execute
+	myblockchain_stmt_fetch
+	myblockchain_stmt_fetch_column
+	myblockchain_stmt_param_count
+	myblockchain_stmt_param_metadata
+	myblockchain_stmt_result_metadata
+	myblockchain_stmt_send_long_data
+	myblockchain_stmt_affected_rows
+	myblockchain_stmt_close
+	myblockchain_stmt_reset
+	myblockchain_stmt_data_seek
+	myblockchain_stmt_errno
+	myblockchain_stmt_error
+	myblockchain_stmt_free_result
+	myblockchain_stmt_num_rows
+	myblockchain_stmt_row_seek
+	myblockchain_stmt_row_tell
+	myblockchain_stmt_store_result
+	myblockchain_stmt_sqlstate
+	myblockchain_stmt_prepare
+	myblockchain_stmt_init
+	myblockchain_stmt_insert_id
+	myblockchain_stmt_attr_get
+	myblockchain_stmt_attr_set
+	myblockchain_stmt_field_count
+	myblockchain_stmt_next_result
+	myblockchain_reset_connection
+	myblockchain_get_option

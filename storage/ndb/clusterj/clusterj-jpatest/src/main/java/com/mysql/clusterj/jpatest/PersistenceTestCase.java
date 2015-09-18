@@ -16,7 +16,7 @@
    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-package com.mysql.clusterj.jpatest;
+package com.myblockchain.clusterj.jpatest;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -71,8 +71,8 @@ public abstract class PersistenceTestCase
      */
     protected String getPersistenceUnitName() {
         String puName = System.getProperty(
-                "com.mysql.clusterj.jpa.PersistenceUnit", "ndb");
-        if (puName.length() == 0 || puName.equals("${com.mysql.clusterj.jpa.PersistenceUnit}")) {
+                "com.myblockchain.clusterj.jpa.PersistenceUnit", "ndb");
+        if (puName.length() == 0 || puName.equals("${com.myblockchain.clusterj.jpa.PersistenceUnit}")) {
             return "ndb";
         } else {
             return puName;

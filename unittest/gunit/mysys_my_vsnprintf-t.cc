@@ -43,8 +43,8 @@ TEST(Mysys, Vsnprintf)
 
   test1("Format specifier s works",
         "Format specifier s %s", "works");
-  test1("Format specifier b works (mysql extension)",
-        "Format specifier b %.5b (mysql extension)", "works!!!");
+  test1("Format specifier b works (myblockchain extension)",
+        "Format specifier b %.5b (myblockchain extension)", "works!!!");
   test1("Format specifier c !",
         "Format specifier c %c", '!');
   test1("Format specifier d 1",
@@ -77,8 +77,8 @@ TEST(Mysys, Vsnprintf)
   test1("Precision works for strings <abcde>",
         "Precision works for strings <%.5s>", "abcdef!");
 
-  test1("Flag '`' (backtick) works: `abcd` `op``q` (mysql extension)",
-        "Flag '`' (backtick) works: %`s %`.4s (mysql extension)",
+  test1("Flag '`' (backtick) works: `abcd` `op``q` (myblockchain extension)",
+        "Flag '`' (backtick) works: %`s %`.4s (myblockchain extension)",
         "abcd", "op`qrst");
 
   test1("Length modifiers work: 1 * -1 * 2 * 3",

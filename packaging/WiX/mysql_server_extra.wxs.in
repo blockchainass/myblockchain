@@ -21,29 +21,29 @@
     <DirectoryRef Id='INSTALLDIR'>
     <Directory Id="DesktopFolder"/>
     <Directory Id="ProgramMenuFolder">
-      <Directory Id="MysqlProgramMenuFolder" Name="MySQL">
-        <Directory Id="MysqlProductMenuFolder" Name="MySQL Server @MAJOR_VERSION@.@MINOR_VERSION@">
+      <Directory Id="MysqlProgramMenuFolder" Name="MyBlockchain">
+        <Directory Id="MysqlProductMenuFolder" Name="MyBlockchain Server @MAJOR_VERSION@.@MINOR_VERSION@">
           <Component Id="MysqlProductMenuFolder" Guid="*" @WixWin64@>
-            <!-- Include a shortcut to the mysql command line client -->
+            <!-- Include a shortcut to the myblockchain command line client -->
             <Shortcut Id="MysqlCommandLineShellShortcut"
-                      Name="MySQL @MAJOR_VERSION@.@MINOR_VERSION@ Command Line Client"
-                      Description="The MySQL Command Line Shell"
+                      Name="MyBlockchain @MAJOR_VERSION@.@MINOR_VERSION@ Command Line Client"
+                      Description="The MyBlockchain Command Line Shell"
                       Icon="Icon.MysqlCmdShell"
-                      Target="[D.bin]mysql.exe"
+                      Target="[D.bin]myblockchain.exe"
                       Arguments='"--defaults-file=[INSTALLDIR]my.ini" "-uroot" "-p"'
                       WorkingDirectory="D.bin"/>
             <?if "@MAJOR_VERSION@.@MINOR_VERSION@" != "5.5" ?>
-            <!-- Include another shortcut to the mysql command line client with a different name -->
+            <!-- Include another shortcut to the myblockchain command line client with a different name -->
               <Shortcut Id="MysqlCommandLineShellShortcutUnicode"
-                      Name="MySQL @MAJOR_VERSION@.@MINOR_VERSION@ Command Line Client - Unicode"
-                      Description="The MySQL Command Line Shell in UTF8 Mode"
+                      Name="MyBlockchain @MAJOR_VERSION@.@MINOR_VERSION@ Command Line Client - Unicode"
+                      Description="The MyBlockchain Command Line Shell in UTF8 Mode"
                       Icon="Icon.MysqlCmdShell"
-                      Target="[D.bin]mysql.exe"
+                      Target="[D.bin]myblockchain.exe"
                       Arguments='"--defaults-file=[INSTALLDIR]my.ini" "-uroot" "-p" "--default-character-set=utf8"'
                       WorkingDirectory="D.bin"/>
             <!-- Write Console settings for applications with this name to the registry -->
               <RegistryKey Root="HKCU" 
-                           Key="Console\MySQL @MAJOR_VERSION@.@MINOR_VERSION@ Command Line Client - Unicode"
+                           Key="Console\MyBlockchain @MAJOR_VERSION@.@MINOR_VERSION@ Command Line Client - Unicode"
                            Action="createAndRemoveOnUninstall">
                 <RegistryValue Type="string" Name="FaceName" Value="Lucida Console"/>
                 <RegistryValue Type="integer" Name="FontWeight" Value="400"/>
@@ -52,7 +52,7 @@
             <!-- Make sure this gets deleted on uninstall -->
             <RemoveFolder Id="MysqlProductMenuFolder" Directory="MysqlProductMenuFolder" On="uninstall"/>
             <RemoveFolder Id="MysqlProgramMenuFolder" Directory="MysqlProgramMenuFolder" On="uninstall"/>
-            <RegistryValue Root="HKCU" Key="Software\MySQL AB\MySQL Server @MAJOR_VERSION@.@MINOR_VERSION@" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
+            <RegistryValue Root="HKCU" Key="Software\MyBlockchain AB\MyBlockchain Server @MAJOR_VERSION@.@MINOR_VERSION@" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
           </Component>
         </Directory>
       </Directory>
@@ -63,13 +63,13 @@
     </Feature>    
       
     <!-- Registry -->
-    <!-- We still use "MySQL AB" because we don't want to break software that expects it -->
+    <!-- We still use "MyBlockchain AB" because we don't want to break software that expects it -->
     <DirectoryRef Id='TARGETDIR'>
     <Component Id="RegKeys" Guid="*">
       <RegistryKey
-        Id='MySQLKey'
+        Id='MyBlockchainKey'
         Root='HKLM'
-        Key='SOFTWARE\MySQL AB\[ProductName]'
+        Key='SOFTWARE\MyBlockchain AB\[ProductName]'
         Action='createAndRemoveOnUninstall'>
         <RegistryValue
           Type='string'

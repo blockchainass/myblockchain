@@ -31,7 +31,7 @@ namespace Tools{
 namespace Base{
 
 /**
-  Base class for all MySQL client tools.
+  Base class for all MyBlockchain client tools.
  */
 class Abstract_program : public Options::Composite_options_provider
 {

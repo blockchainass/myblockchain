@@ -38,7 +38,7 @@ namespace binary_log
   @class Query_event
 
   A @c Query_event is created for each query that modifies the
-  database, unless the query is logged row-based.
+  blockchain, unless the query is logged row-based.
 
   @section Query_event_binary_format Binary format
 
@@ -74,7 +74,7 @@ namespace binary_log
   <tr>
     <td>db_len</td>
     <td>1 byte integer</td>
-    <td>The length of the name of the currently selected database.</td>
+    <td>The length of the name of the currently selected blockchain.</td>
   </tr>
 
   <tr>
@@ -112,7 +112,7 @@ namespace binary_log
     <td>Zero or more status variables.  Each status variable consists
     of one byte identifying the variable stored, followed by the value
     of the variable.  The possible variables are listed separately in
-    the table @ref Table_query_event_status_vars "below".  MySQL
+    the table @ref Table_query_event_status_vars "below".  MyBlockchain
     always writes events in the order defined below; however, it is
     capable of reading them in any order.  </td>
   </tr>
@@ -120,7 +120,7 @@ namespace binary_log
   <tr>
     <td>m_db</td>
     <td>db_len + 1</td>
-    <td>The currently selected database, as a null-terminated string.
+    <td>The currently selected blockchain, as a null-terminated string.
 
     (The trailing zero is redundant since the length is already known;
     it is db_len from Post-Header.)
@@ -165,7 +165,7 @@ namespace binary_log
 
     These flags correspond to the SQL variables SQL_AUTO_IS_NULL,
     FOREIGN_KEY_CHECKS, UNIQUE_CHECKS, and AUTOCOMMIT, documented in
-    the "SET Syntax" section of the MySQL Manual.
+    the "SET Syntax" section of the MyBlockchain Manual.
 
     This field is always written to the binlog in version >= 5.0, and
     never written in version < 5.0.
@@ -177,7 +177,7 @@ namespace binary_log
     <td>Q_SQL_MODE_CODE == 1</td>
     <td>8 byte bitfield</td>
     <td>The @c sql_mode variable.  See the section "SQL Modes" in the
-    MySQL manual, and see sql_class.h for a list of the possible
+    MyBlockchain manual, and see sql_class.h for a list of the possible
     flags. Currently (2007-10-04), the following flags are available:
     <pre>
     MODE_REAL_AS_FLOAT==0x1
@@ -196,9 +196,9 @@ namespace binary_log
     MODE_NO_KEY_OPTIONS==0x2000
     MODE_NO_TABLE_OPTIONS==0x4000
     MODE_NO_FIELD_OPTIONS==0x8000
-    MODE_MYSQL323==0x10000
-    MODE_MYSQL323==0x20000
-    MODE_MYSQL40==0x40000
+    MODE_MYBLOCKCHAIN323==0x10000
+    MODE_MYBLOCKCHAIN323==0x20000
+    MODE_MYBLOCKCHAIN40==0x40000
     MODE_ANSI==0x80000
     MODE_NO_AUTO_VALUE_ON_ZERO==0x100000
     MODE_NO_BACKSLASH_ESCAPES==0x200000
@@ -228,9 +228,9 @@ namespace binary_log
     <td>Variable-length string: the length in bytes (1 byte) followed
     by the characters (at most 255 bytes)
     </td>
-    <td>Stores the client's current catalog.  Every database belongs
+    <td>Stores the client's current catalog.  Every blockchain belongs
     to a catalog, the same way that every table belongs to a
-    database.  Currently, there is only one catalog, "std".
+    blockchain.  Currently, there is only one catalog, "std".
 
     This field is written if the length of the catalog is > 0;
     otherwise it is not written.
@@ -244,7 +244,7 @@ namespace binary_log
 
     <td>The two variables auto_increment_increment and
     auto_increment_offset, in that order.  For more information, see
-    "System variables" in the MySQL manual.
+    "System variables" in the MyBlockchain manual.
 
     This field is written if auto_increment > 1.  Otherwise, it is not
     written.
@@ -262,10 +262,10 @@ namespace binary_log
     collation_connection identifies the character set and collation
     that the master converts the query to when it receives it; this is
     useful when comparing literal strings.  collation_server is the
-    default character set and collation used when a new database is
+    default character set and collation used when a new blockchain is
     created.
 
-    See also "Connection Character Sets and Collations" in the MySQL
+    See also "Connection Character Sets and Collations" in the MyBlockchain
     5.1 manual.
 
     All three variables are codes identifying a (character set,
@@ -286,8 +286,8 @@ namespace binary_log
     by the characters (at most 255 bytes).
     <td>The time_zone of the master.
 
-    See also "System Variables" and "MySQL Server Time Zone Support"
-    in the MySQL manual.
+    See also "System Variables" and "MyBlockchain Server Time Zone Support"
+    in the MyBlockchain manual.
 
     This field is written if the length of the time zone string is >
     0; otherwise, it is not written.
@@ -307,27 +307,27 @@ namespace binary_log
   </tr>
 
   <tr>
-    <td>charset_database_number</td>
+    <td>charset_blockchain_number</td>
     <td>Q_CHARSET_DATABASE_CODE == 8</td>
     <td>2 byte integer</td>
 
-    <td>The value of the collation_database system variable (in the
-    source code stored in @c thd->variables.collation_database), which
+    <td>The value of the collation_blockchain system variable (in the
+    source code stored in @c thd->variables.collation_blockchain), which
     holds the code for a (character set, collation) pair as described
     above (see Q_CHARSET_CODE).
 
-    collation_database was used in old versions (???WHEN).  Its value
+    collation_blockchain was used in old versions (???WHEN).  Its value
     was loaded when issuing a "use db" query and could be changed by
-    issuing a "SET collation_database=xxx" query.  It used to affect
+    issuing a "SET collation_blockchain=xxx" query.  It used to affect
     the "LOAD DATA INFILE" and "CREATE TABLE" commands.
 
     In newer versions, "CREATE TABLE" has been changed to take the
-    character set from the database of the created table, rather than
-    the character set of the current database.  This makes a
-    difference when creating a table in another database than the
+    character set from the blockchain of the created table, rather than
+    the character set of the current blockchain.  This makes a
+    difference when creating a table in another blockchain than the
     current one.  "LOAD DATA INFILE" has not yet changed to do this,
     but there are plans to eventually do it, and to make
-    collation_database read-only.
+    collation_blockchain read-only.
 
     This field is written if it is not 0.
     </td>
@@ -384,7 +384,7 @@ namespace binary_log
     <td>mts_accessed_dbs</td>
     <td>Q_UPDATED_DB_NAMES == 12</td>
     <td>1 byte character, and a 2-D array</td>
-    <td>The total number and the names to of the databases accessed is stored,
+    <td>The total number and the names to of the blockchains accessed is stored,
         to be propagated to the slave in order to facilitate the parallel
         applying of the Query events.
     </td>
@@ -404,7 +404,7 @@ namespace binary_log
   * Status vars were introduced in version 5.0.  To read earlier
   versions correctly, check the length of the Post-Header.
 
-  * The status variable Q_CATALOG_CODE == 2 existed in MySQL 5.0.x,
+  * The status variable Q_CATALOG_CODE == 2 existed in MyBlockchain 5.0.x,
   where 0<=x<=3.  It was identical to Q_CATALOG_CODE, except that the
   string had a trailing '\0'.  The '\0' was removed in 5.0.4 since it
   was redundant (the string length is stored before the string).  The
@@ -437,7 +437,7 @@ public:
     Q_FLAGS2_CODE= 0,
     Q_SQL_MODE_CODE,
     /*
-      Q_CATALOG_CODE is catalog with end zero stored; it is used only by MySQL
+      Q_CATALOG_CODE is catalog with end zero stored; it is used only by MyBlockchain
       5.0.x where 0<=x<=3. We have to keep it to be able to replicate these
       old masters.
     */
@@ -446,7 +446,7 @@ public:
     Q_CHARSET_CODE,
     Q_TIME_ZONE_CODE,
     /*
-      Q_CATALOG_NZ_CODE is catalog withOUT end zero stored; it is used by MySQL
+      Q_CATALOG_NZ_CODE is catalog withOUT end zero stored; it is used by MyBlockchain
       5.0.x where x>=4. Saves one byte in every Query_event in binlog,
       compared to Q_CATALOG_CODE. The reason we didn't simply re-use
       Q_CATALOG_CODE is that then a 5.0.3 slave of this 5.0.x (x>=4)
@@ -461,7 +461,7 @@ public:
     Q_INVOKER,
     /*
       Q_UPDATED_DB_NAMES status variable collects information of accessed
-      databases i.e. the total number and the names to be propagated to the
+      blockchains i.e. the total number and the names to be propagated to the
       slave in order to facilitate the parallel applying of the Query events.
     */
     Q_UPDATED_DB_NAMES,
@@ -492,7 +492,7 @@ protected:
   const char* host;
   size_t host_len;
 
-  /* Required by the MySQL server class Log_event::Query_event */
+  /* Required by the MyBlockchain server class Log_event::Query_event */
   unsigned long data_len;
   /* Pointer to the end of the buffer shown below */
   uint64_t query_data_written;
@@ -565,7 +565,7 @@ public:
   */
   size_t catalog_len;                    // <= 255 char; 0 means uninited
   uint16_t lc_time_names_number; /* 0 means en_US */
-  uint16_t charset_database_number;
+  uint16_t charset_blockchain_number;
   /*
     map for tables that will be updated for a multi-table update query
     statement, for other query statements, this will be zero.
@@ -596,7 +596,7 @@ public:
     TERNARY_ON
   } explicit_defaults_ts;
   /*
-    number of updated databases by the query and their names. This info
+    number of updated blockchains by the query and their names. This info
     is requested by both Coordinator and Worker.
   */
   unsigned char mts_accessed_dbs;
@@ -952,7 +952,7 @@ public:
   }
 
   /**
-    Constructor receives a packet from the MySQL master or the binary
+    Constructor receives a packet from the MyBlockchain master or the binary
     log and decodes it to create an Intvar_event.
 
     @param buf                Contains the serialized event.

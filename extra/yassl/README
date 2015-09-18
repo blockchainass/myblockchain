@@ -685,17 +685,17 @@ The example server and client are compatible with openssl.
 
 **********************
 
-Building yassl into mysql on linux:
+Building yassl into myblockchain on linux:
 
-Testing was done using mysql version 4.0.17.
+Testing was done using myblockchain version 4.0.17.
 
 alter openssl_libs in the configure file, line 21056. Change '-lssl -lcrypto'
 to '-lyassl -lcryptopp -lcmapi -lcmlasn -lctil -lc++asn1'.
 
-see build/config_command for the configure command used to configure mysql
+see build/config_command for the configure command used to configure myblockchain
 please change /home/touska/ to the relevant directory of course.
 
-add yassl/lib to the LD_LIBRARY_PATH because libmysql/conf_to_src does not
+add yassl/lib to the LD_LIBRARY_PATH because libmyblockchain/conf_to_src does not
 use the ssl lib directory though it does use the ssl libraries.
 
 make

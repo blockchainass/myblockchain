@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2007 MySQL AB, 2010 Sun Microsystems, Inc.
+   Copyright (C) 2007 MyBlockchain AB, 2010 Sun Microsystems, Inc.
     All rights reserved. Use is subject to license terms.
 
    This program is free software; you can redistribute it and/or modify
@@ -35,20 +35,20 @@
  *
  */
 
-#include <mysql.h>
+#include <myblockchain.h>
 #include <NdbApi.hpp>
 // Used for cout
 #include <stdio.h>
 #include <NdbOut.hpp>
 
-static void run_application(MYSQL &, Ndb_cluster_connection &);
+static void run_application(MYBLOCKCHAIN &, Ndb_cluster_connection &);
 
 #define PRINT_ERROR(code,msg) \
   ndbout << "Error in " << __FILE__ << ", line: " << __LINE__ \
             << ", code: " << code \
             << ", msg: " << msg << "." << endl
-#define MYSQLERROR(mysql) { \
-  PRINT_ERROR(mysql_errno(&mysql),mysql_error(&mysql)); \
+#define MYBLOCKCHAINERROR(myblockchain) { \
+  PRINT_ERROR(myblockchain_errno(&myblockchain),myblockchain_error(&myblockchain)); \
   exit(-1); }
 #define APIERROR(error) { \
   PRINT_ERROR(error.code,error.message); \
@@ -59,7 +59,7 @@ int main()
   // ndb_init must be called first
   ndb_init();
 
-  // connect to mysql server and cluster and run application
+  // connect to myblockchain server and cluster and run application
   {
     // Object representing the cluster
     Ndb_cluster_connection cluster_connection;
@@ -80,53 +80,53 @@ int main()
       exit(-1);
     }
 
-    // connect to mysql server
-    MYSQL mysql;
-    if ( !mysql_init(&mysql) ) {
-      ndbout << "mysql_init failed\n";
+    // connect to myblockchain server
+    MYBLOCKCHAIN myblockchain;
+    if ( !myblockchain_init(&myblockchain) ) {
+      ndbout << "myblockchain_init failed\n";
       exit(-1);
     }
-    if ( !mysql_real_connect(&mysql, "localhost", "root", "", "",
-			     3306, "/tmp/mysql.sock", 0) )
-      MYSQLERROR(mysql);
+    if ( !myblockchain_real_connect(&myblockchain, "localhost", "root", "", "",
+			     3306, "/tmp/myblockchain.sock", 0) )
+      MYBLOCKCHAINERROR(myblockchain);
     
     // run the application code
-    run_application(mysql, cluster_connection);
+    run_application(myblockchain, cluster_connection);
   }
 
   ndb_end(0);
 
   ndbout << "\nTo drop created table use:\n"
-	    << "echo \"drop table MYTABLENAME\" | mysql TEST_DB_1 -u root\n";
+	    << "echo \"drop table MYTABLENAME\" | myblockchain TEST_DB_1 -u root\n";
 
   return 0;
 }
 
-static void create_table(MYSQL &);
+static void create_table(MYBLOCKCHAIN &);
 static void do_insert(Ndb &);
 static void do_update(Ndb &);
 static void do_delete(Ndb &);
 static void do_read(Ndb &);
 
-static void run_application(MYSQL &mysql,
+static void run_application(MYBLOCKCHAIN &myblockchain,
 			    Ndb_cluster_connection &cluster_connection)
 {
   /********************************************
-   * Connect to database via mysql-c          *
+   * Connect to blockchain via myblockchain-c          *
    ********************************************/
-  mysql_query(&mysql, "CREATE DATABASE TEST_DB_1");
-  if (mysql_query(&mysql, "USE TEST_DB_1") != 0) MYSQLERROR(mysql);
-  create_table(mysql);
+  myblockchain_query(&myblockchain, "CREATE DATABASE TEST_DB_1");
+  if (myblockchain_query(&myblockchain, "USE TEST_DB_1") != 0) MYBLOCKCHAINERROR(myblockchain);
+  create_table(myblockchain);
 
   /********************************************
-   * Connect to database via NdbApi           *
+   * Connect to blockchain via NdbApi           *
    ********************************************/
-  // Object representing the database
+  // Object representing the blockchain
   Ndb myNdb( &cluster_connection, "TEST_DB_1" );
   if (myNdb.init()) APIERROR(myNdb.getNdbError());
 
   /*
-   * Do different operations on database
+   * Do different operations on blockchain
    */
   do_insert(myNdb);
   do_update(myNdb);
@@ -137,15 +137,15 @@ static void run_application(MYSQL &mysql,
 /*********************************************************
  * Create a table named MYTABLENAME if it does not exist *
  *********************************************************/
-static void create_table(MYSQL &mysql)
+static void create_table(MYBLOCKCHAIN &myblockchain)
 {
-  if (mysql_query(&mysql, 
+  if (myblockchain_query(&myblockchain, 
 		  "CREATE TABLE"
 		  "  MYTABLENAME"
 		  "    (ATTR1 INT UNSIGNED NOT NULL PRIMARY KEY,"
 		  "     ATTR2 INT UNSIGNED NOT NULL)"
 		  "  ENGINE=NDB"))
-    MYSQLERROR(mysql);
+    MYBLOCKCHAINERROR(myblockchain);
 }
 
 /**************************************************************************

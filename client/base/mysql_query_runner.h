@@ -15,11 +15,11 @@
    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifndef MYSQL_QUERY_RUNNER_INCLUDED
-#define MYSQL_QUERY_RUNNER_INCLUDED
+#ifndef MYBLOCKCHAIN_QUERY_RUNNER_INCLUDED
+#define MYBLOCKCHAIN_QUERY_RUNNER_INCLUDED
 
 #include "my_global.h"
-#include "mysql.h"
+#include "myblockchain.h"
 #include "mutex.h"
 #include "i_callable.h"
 #include "message_data.h"
@@ -33,7 +33,7 @@ namespace Tools{
 namespace Base{
 
 /**
-  Helper class to run SQL query on existing MySQL database server connection,
+  Helper class to run SQL query on existing MyBlockchain blockchain server connection,
   receive all data and all errors, warnings and notes returned during query
   execution. All acquired information is passed to set of callbacks to make
   data flows more customizable.
@@ -44,9 +44,9 @@ public:
   class Row;
 
   /**
-    Standard constructor based on MySQL connection.
+    Standard constructor based on MyBlockchain connection.
    */
-  Mysql_query_runner(MYSQL* connection);
+  Mysql_query_runner(MYBLOCKCHAIN* connection);
   /**
     Copy constructor.
    */
@@ -122,15 +122,15 @@ public:
    */
   static void cleanup_result(std::vector<const Row*>* result);
 
-  MYSQL* get_low_level_connection() const;
+  MYBLOCKCHAIN* get_low_level_connection() const;
 
   class Row
   {
   public:
     class Iterator;
 
-    Row(MYSQL_RES* mysql_result_info, unsigned int column_count,
-        MYSQL_ROW row);
+    Row(MYBLOCKCHAIN_RES* myblockchain_result_info, unsigned int column_count,
+        MYBLOCKCHAIN_ROW row);
     ~Row();
     std::string operator[] (std::size_t index) const;
     void push_back(char* buff, std::size_t length);
@@ -140,7 +140,7 @@ public:
     std::size_t size() const;
     Iterator begin() const;
     Iterator end() const;
-    MYSQL_RES* get_mysql_result_info() const;
+    MYBLOCKCHAIN_RES* get_myblockchain_result_info() const;
 
     class Iterator
     {
@@ -168,7 +168,7 @@ public:
     std::size_t m_buffer_capacity;
     // Actual buffer size
     std::size_t m_buffer_size;
-    MYSQL_RES* m_mysql_result_info;
+    MYBLOCKCHAIN_RES* m_myblockchain_result_info;
   };
 
 private:
@@ -178,17 +178,17 @@ private:
   */
   int64 run_query_unguarded(std::string query);
   /**
-    Creates error message from mysql_errno and mysql_error and passes it to
+    Creates error message from myblockchain_errno and myblockchain_error and passes it to
     callbacks.
    */
-  int64 report_mysql_error();
+  int64 report_myblockchain_error();
   /**
-    Creates error message from mysql_errno and mysql_error and passes it to
+    Creates error message from myblockchain_errno and myblockchain_error and passes it to
     callbacks.
    */
   int64 report_message(Message_data message);
   /**
-    Returns parsed Message_type from given MySQL severity string.
+    Returns parsed Message_type from given MyBlockchain severity string.
    */
   Message_type get_message_type_from_severity(std::string severity);
 
@@ -214,7 +214,7 @@ private:
    */
   my_boost::atomic<bool>* m_is_processing;
 
-  MYSQL* m_connection;
+  MYBLOCKCHAIN* m_connection;
 };
 
 }

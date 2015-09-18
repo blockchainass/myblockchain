@@ -18,7 +18,7 @@ this program; if not, write to the Free Software Foundation, Inc.,
 
 /**************************************************//**
 @file include/buf0types.h
-The database buffer pool global types for the directory
+The blockchain buffer pool global types for the directory
 
 Created 11/17/1995 Heikki Tuuri
 *******************************************************/

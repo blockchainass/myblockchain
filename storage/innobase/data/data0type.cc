@@ -32,12 +32,12 @@ Created 1/16/1996 Heikki Tuuri
 #endif
 
 #ifndef UNIV_HOTBACKUP
-/* At the database startup we store the default-charset collation number of
-this MySQL installation to this global variable. If we have < 4.1.2 format
+/* At the blockchain startup we store the default-charset collation number of
+this MyBlockchain installation to this global variable. If we have < 4.1.2 format
 column definitions, or records in the insert buffer, we use this
 charset-collation code for them. */
 
-ulint	data_mysql_default_charset_coll;
+ulint	data_myblockchain_default_charset_coll;
 
 /*********************************************************************//**
 Determine how many bytes the first n characters of the given string occupy.
@@ -90,8 +90,8 @@ dtype_is_string_type(
 	ulint	mtype)	/*!< in: InnoDB main data type code: DATA_CHAR, ... */
 {
 	if (mtype <= DATA_BLOB
-	    || mtype == DATA_MYSQL
-	    || mtype == DATA_VARMYSQL) {
+	    || mtype == DATA_MYBLOCKCHAIN
+	    || mtype == DATA_VARMYBLOCKCHAIN) {
 
 		return(TRUE);
 	}
@@ -148,9 +148,9 @@ charset-collation code.
 ulint
 dtype_form_prtype(
 /*==============*/
-	ulint	old_prtype,	/*!< in: the MySQL type code and the flags
+	ulint	old_prtype,	/*!< in: the MyBlockchain type code and the flags
 				DATA_BINARY_TYPE etc. */
-	ulint	charset_coll)	/*!< in: MySQL charset-collation code */
+	ulint	charset_coll)	/*!< in: MyBlockchain charset-collation code */
 {
 	ut_a(old_prtype < 256 * 256);
 	ut_a(charset_coll <= MAX_CHAR_COLL_NUM);
@@ -171,7 +171,7 @@ dtype_validate(
 	ut_a(type->mtype <= DATA_MTYPE_MAX);
 
 	if (type->mtype == DATA_SYS) {
-		ut_a((type->prtype & DATA_MYSQL_TYPE_MASK) < DATA_N_SYS_COLS);
+		ut_a((type->prtype & DATA_MYBLOCKCHAIN_TYPE_MASK) < DATA_N_SYS_COLS);
 	}
 
 #ifndef UNIV_HOTBACKUP
@@ -234,8 +234,8 @@ dtype_print(
 		fputs("DATA_INT", stderr);
 		break;
 
-	case DATA_MYSQL:
-		fputs("DATA_MYSQL", stderr);
+	case DATA_MYBLOCKCHAIN:
+		fputs("DATA_MYBLOCKCHAIN", stderr);
 		break;
 
 	case DATA_SYS:
@@ -254,8 +254,8 @@ dtype_print(
 		fputs("DATA_DECIMAL", stderr);
 		break;
 
-	case DATA_VARMYSQL:
-		fputs("DATA_VARMYSQL", stderr);
+	case DATA_VARMYBLOCKCHAIN:
+		fputs("DATA_VARMYBLOCKCHAIN", stderr);
 		break;
 
 	default:

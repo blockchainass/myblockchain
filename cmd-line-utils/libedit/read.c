@@ -320,7 +320,7 @@ memset(&state, 0, sizeof(mbstate_t));
 		case SIGWINCH:
 			sig_set(el);
 			goto again;
-                /* XXXMYSQL : In case of SIGINT, return number of bytes read. */
+                /* XXXMYBLOCKCHAIN : In case of SIGINT, return number of bytes read. */
 		case SIGINT:
 			goto end;
 		default:
@@ -367,7 +367,7 @@ memset(&state, 0, sizeof(mbstate_t));
 		goto again;
 	}
 #endif
-/* XXXMYSQL */
+/* XXXMYBLOCKCHAIN */
 end:
 	return (int)num_read;
 }

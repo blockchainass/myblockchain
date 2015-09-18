@@ -17,11 +17,11 @@
 
 package testsuite.clusterj;
 
-import com.mysql.clusterj.ClusterJDatastoreException;
-import com.mysql.clusterj.ClusterJUserException;
-import com.mysql.clusterj.ColumnMetadata;
-import com.mysql.clusterj.DynamicObject;
-import com.mysql.clusterj.annotation.PersistenceCapable;
+import com.myblockchain.clusterj.ClusterJDatastoreException;
+import com.myblockchain.clusterj.ClusterJUserException;
+import com.myblockchain.clusterj.ColumnMetadata;
+import com.myblockchain.clusterj.DynamicObject;
+import com.myblockchain.clusterj.annotation.PersistenceCapable;
 
 import testsuite.clusterj.model.StringTypes;
 

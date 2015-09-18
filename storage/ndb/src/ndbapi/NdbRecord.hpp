@@ -82,10 +82,10 @@ public:
     IsBlob= 0x40,
     /* 
        Flag for special handling of short varchar for index keys, which is
-       used by mysqld to avoid converting index key rows.
+       used by myblockchaind to avoid converting index key rows.
     */
     IsMysqldShrinkVarchar= 0x80,
-    /* Bitfield stored in the internal mysqld format. */
+    /* Bitfield stored in the internal myblockchaind format. */
     IsMysqldBitfield= 0x100,
     /*
       Bit field maps only null bits.
@@ -176,13 +176,13 @@ public:
       return true;
     }
     /*
-      Accessing mysqld format bitfields.
+      Accessing myblockchaind format bitfields.
       For internal use in myqsld.
-      In mysqld, fractional bytes of each bit field are stored inside the
+      In myblockchaind, fractional bytes of each bit field are stored inside the
       null bytes area.
     */
-    void get_mysqld_bitfield(const char *src_row, char *dst_buffer) const;
-    void put_mysqld_bitfield(char *dst_row, const char *src_buffer) const;
+    void get_myblockchaind_bitfield(const char *src_row, char *dst_buffer) const;
+    void put_myblockchaind_bitfield(char *dst_row, const char *src_buffer) const;
   };
 
   /*

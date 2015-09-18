@@ -49,7 +49,7 @@ bool
 mecab_parser_check_and_set_charset(
 	const char*	charset)
 {
-	/* Array used to map mecab charset to mysql charset. */
+	/* Array used to map mecab charset to myblockchain charset. */
 	static const int	mecab_charset_count = 4;
 	static const char*	mecab_charset_values[mecab_charset_count][2] = {
 		{"euc-jp",	"ujis"},
@@ -175,13 +175,13 @@ static
 int
 mecab_parse(
 	MeCab::Lattice*		mecab_lattice,
-	MYSQL_FTPARSER_PARAM*	param,
+	MYBLOCKCHAIN_FTPARSER_PARAM*	param,
 	char*			doc,
 	int			len,
-	MYSQL_FTPARSER_BOOLEAN_INFO*
+	MYBLOCKCHAIN_FTPARSER_BOOLEAN_INFO*
 				bool_info)
 {
-	static MYSQL_FTPARSER_BOOLEAN_INFO token_info =
+	static MYBLOCKCHAIN_FTPARSER_BOOLEAN_INFO token_info =
 		{ FT_TOKEN_WORD, 0, 0, 0, 0, 0, ' ', 0};
 	int	position = 0;
 	int	token_num = 0;
@@ -202,7 +202,7 @@ mecab_parse(
 		return(1);
 	}
 
-	if (param->mode == MYSQL_FTPARSER_FULL_BOOLEAN_INFO) {
+	if (param->mode == MYBLOCKCHAIN_FTPARSER_FULL_BOOLEAN_INFO) {
 		for (const MeCab::Node* node = mecab_lattice->bos_node();
 		     node != NULL; node = node->next) {
 			token_num += 1;
@@ -215,7 +215,7 @@ mecab_parse(
 			bool_info->type = FT_TOKEN_LEFT_PAREN;
 			bool_info->quot = reinterpret_cast<char*>(1);
 
-			ret = param->mysql_add_word(param, NULL, 0, bool_info);
+			ret = param->myblockchain_add_word(param, NULL, 0, bool_info);
 			if (ret != 0) {
 				return(ret);
 			}
@@ -227,14 +227,14 @@ mecab_parse(
 		bool_info->position = position;
 		position += node->rlength;
 
-		param->mysql_add_word(param, const_cast<char*>(node->surface),
+		param->myblockchain_add_word(param, const_cast<char*>(node->surface),
 				      node->length,
 				      term_converted ? &token_info : bool_info);
 	}
 
 	if (term_converted) {
 		bool_info->type = FT_TOKEN_RIGHT_PAREN;
-		ret = param->mysql_add_word(param, NULL, 0, bool_info);
+		ret = param->myblockchain_add_word(param, NULL, 0, bool_info);
 
 		DBUG_ASSERT(bool_info->quot == NULL);
 		bool_info->type = FT_TOKEN_WORD;
@@ -250,10 +250,10 @@ mecab_parse(
 static
 int
 mecab_parser_parse(
-	MYSQL_FTPARSER_PARAM*	param)
+	MYBLOCKCHAIN_FTPARSER_PARAM*	param)
 {
 	MeCab::Lattice*			mecab_lattice = NULL;
-	MYSQL_FTPARSER_BOOLEAN_INFO	bool_info =
+	MYBLOCKCHAIN_FTPARSER_BOOLEAN_INFO	bool_info =
 		{ FT_TOKEN_WORD, 0, 0, 0, 0, 0, ' ', 0};
 	int		ret = 0;
 	const char*	csname = NULL;
@@ -306,14 +306,14 @@ mecab_parser_parse(
 	doc[doc_length]= '\0';
 
 	switch(param->mode) {
-	case MYSQL_FTPARSER_SIMPLE_MODE:
-	case MYSQL_FTPARSER_WITH_STOPWORDS:
+	case MYBLOCKCHAIN_FTPARSER_SIMPLE_MODE:
+	case MYBLOCKCHAIN_FTPARSER_WITH_STOPWORDS:
 		ret = mecab_parse(mecab_lattice, param, doc,
 				  doc_length, &bool_info);
 
 		break;
 
-	case MYSQL_FTPARSER_FULL_BOOLEAN_INFO:
+	case MYBLOCKCHAIN_FTPARSER_FULL_BOOLEAN_INFO:
 		uchar*		start = reinterpret_cast<uchar*>(doc);
 		uchar*		end = start + doc_length;
 		FT_WORD		word = {NULL, 0, 0};
@@ -329,7 +329,7 @@ mecab_parser_parse(
 					word.len,
 					&bool_info);
 			} else {
-				ret = param->mysql_add_word(
+				ret = param->myblockchain_add_word(
 					param,
 					reinterpret_cast<char*>(word.pos),
 					word.len,
@@ -349,36 +349,36 @@ mecab_parser_parse(
 }
 
 /** Fulltext MeCab Parser Descriptor*/
-static struct st_mysql_ftparser mecab_parser_descriptor =
+static struct st_myblockchain_ftparser mecab_parser_descriptor =
 {
-	MYSQL_FTPARSER_INTERFACE_VERSION,
+	MYBLOCKCHAIN_FTPARSER_INTERFACE_VERSION,
 	mecab_parser_parse,
 	0,
 	0
 };
 
 /* MeCab plugin status variables */
-static struct st_mysql_show_var mecab_status[] =
+static struct st_myblockchain_show_var mecab_status[] =
 {
 	{"mecab_charset", mecab_charset, SHOW_CHAR, SHOW_SCOPE_GLOBAL},
-	{0, 0, enum_mysql_show_type(0), SHOW_SCOPE_GLOBAL}
+	{0, 0, enum_myblockchain_show_type(0), SHOW_SCOPE_GLOBAL}
 };
 
-static MYSQL_SYSVAR_STR(rc_file, mecab_rc_file,
+static MYBLOCKCHAIN_SYSVAR_STR(rc_file, mecab_rc_file,
   PLUGIN_VAR_READONLY,
   "MECABRC file path",
   NULL, NULL, NULL);
 
 /* MeCab plugin system variables */
-static struct st_mysql_sys_var* mecab_system_variables[]= {
-	MYSQL_SYSVAR(rc_file),
+static struct st_myblockchain_sys_var* mecab_system_variables[]= {
+	MYBLOCKCHAIN_SYSVAR(rc_file),
 	NULL
 };
 
 /* MeCab plugin descriptor */
-mysql_declare_plugin(mecab_parser)
+myblockchain_declare_plugin(mecab_parser)
 {
-	MYSQL_FTPARSER_PLUGIN,		/*!< type	*/
+	MYBLOCKCHAIN_FTPARSER_PLUGIN,		/*!< type	*/
 	&mecab_parser_descriptor,	/*!< descriptor	*/
 	"mecab",			/*!< name	*/
 	"Oracle Corp",			/*!< author	*/
@@ -392,4 +392,4 @@ mysql_declare_plugin(mecab_parser)
 	NULL,
 	0,
 }
-mysql_declare_plugin_end;
+myblockchain_declare_plugin_end;

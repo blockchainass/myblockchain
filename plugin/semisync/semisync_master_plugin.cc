@@ -237,53 +237,53 @@ C_MODE_END
 /*
   semisync system variables
  */
-static void fix_rpl_semi_sync_master_timeout(MYSQL_THD thd,
+static void fix_rpl_semi_sync_master_timeout(MYBLOCKCHAIN_THD thd,
 				      SYS_VAR *var,
 				      void *ptr,
 				      const void *val);
 
-static void fix_rpl_semi_sync_master_trace_level(MYSQL_THD thd,
+static void fix_rpl_semi_sync_master_trace_level(MYBLOCKCHAIN_THD thd,
 					  SYS_VAR *var,
 					  void *ptr,
 					  const void *val);
 
-static void fix_rpl_semi_sync_master_wait_no_slave(MYSQL_THD thd,
+static void fix_rpl_semi_sync_master_wait_no_slave(MYBLOCKCHAIN_THD thd,
 				      SYS_VAR *var,
 				      void *ptr,
 				      const void *val);
 
-static void fix_rpl_semi_sync_master_enabled(MYSQL_THD thd,
+static void fix_rpl_semi_sync_master_enabled(MYBLOCKCHAIN_THD thd,
 				      SYS_VAR *var,
 				      void *ptr,
 				      const void *val);
 
-static void fix_rpl_semi_sync_master_wait_for_slave_count(MYSQL_THD thd,
+static void fix_rpl_semi_sync_master_wait_for_slave_count(MYBLOCKCHAIN_THD thd,
                                                           SYS_VAR *var,
                                                           void *ptr,
                                                           const void *val);
 
-static MYSQL_SYSVAR_BOOL(enabled, rpl_semi_sync_master_enabled,
+static MYBLOCKCHAIN_SYSVAR_BOOL(enabled, rpl_semi_sync_master_enabled,
   PLUGIN_VAR_OPCMDARG,
  "Enable semi-synchronous replication master (disabled by default). ",
   NULL, 			// check
   &fix_rpl_semi_sync_master_enabled,	// update
   0);
 
-static MYSQL_SYSVAR_ULONG(timeout, rpl_semi_sync_master_timeout,
+static MYBLOCKCHAIN_SYSVAR_ULONG(timeout, rpl_semi_sync_master_timeout,
   PLUGIN_VAR_OPCMDARG,
  "The timeout value (in ms) for semi-synchronous replication in the master",
   NULL, 			// check
   fix_rpl_semi_sync_master_timeout,	// update
   10000, 0, ~0UL, 1);
 
-static MYSQL_SYSVAR_BOOL(wait_no_slave, rpl_semi_sync_master_wait_no_slave,
+static MYBLOCKCHAIN_SYSVAR_BOOL(wait_no_slave, rpl_semi_sync_master_wait_no_slave,
   PLUGIN_VAR_OPCMDARG,
  "Wait until timeout when no semi-synchronous replication slave available (enabled by default). ",
   NULL, 			// check
   &fix_rpl_semi_sync_master_wait_no_slave,  // update
   1);
 
-static MYSQL_SYSVAR_ULONG(trace_level, rpl_semi_sync_master_trace_level,
+static MYBLOCKCHAIN_SYSVAR_ULONG(trace_level, rpl_semi_sync_master_trace_level,
   PLUGIN_VAR_OPCMDARG,
  "The tracing level for semi-sync replication.",
   NULL,				  // check
@@ -297,7 +297,7 @@ static TYPELIB wait_point_typelib= {
   wait_point_names,
   NULL
 };
-static MYSQL_SYSVAR_ENUM(
+static MYBLOCKCHAIN_SYSVAR_ENUM(
   wait_point,                      /* name     */
   rpl_semi_sync_master_wait_point, /* var      */
   PLUGIN_VAR_OPCMDARG,             /* flags    */
@@ -316,7 +316,7 @@ static MYSQL_SYSVAR_ENUM(
   &wait_point_typelib              /* typelib  */
 );
 
-static MYSQL_SYSVAR_UINT(wait_for_slave_count,   /* name  */
+static MYBLOCKCHAIN_SYSVAR_UINT(wait_for_slave_count,   /* name  */
   rpl_semi_sync_master_wait_for_slave_count,     /* var   */
   PLUGIN_VAR_OPCMDARG,                           /* flags */
   "How many slaves the events should be replicated to. Semisynchronous "
@@ -327,15 +327,15 @@ static MYSQL_SYSVAR_UINT(wait_for_slave_count,   /* name  */
   1, 1, 65535, 1);
 
 static SYS_VAR* semi_sync_master_system_vars[]= {
-  MYSQL_SYSVAR(enabled),
-  MYSQL_SYSVAR(timeout),
-  MYSQL_SYSVAR(wait_no_slave),
-  MYSQL_SYSVAR(trace_level),
-  MYSQL_SYSVAR(wait_point),
-  MYSQL_SYSVAR(wait_for_slave_count),
+  MYBLOCKCHAIN_SYSVAR(enabled),
+  MYBLOCKCHAIN_SYSVAR(timeout),
+  MYBLOCKCHAIN_SYSVAR(wait_no_slave),
+  MYBLOCKCHAIN_SYSVAR(trace_level),
+  MYBLOCKCHAIN_SYSVAR(wait_point),
+  MYBLOCKCHAIN_SYSVAR(wait_for_slave_count),
   NULL,
 };
-static void fix_rpl_semi_sync_master_timeout(MYSQL_THD thd,
+static void fix_rpl_semi_sync_master_timeout(MYBLOCKCHAIN_THD thd,
 				      SYS_VAR *var,
 				      void *ptr,
 				      const void *val)
@@ -345,7 +345,7 @@ static void fix_rpl_semi_sync_master_timeout(MYSQL_THD thd,
   return;
 }
 
-static void fix_rpl_semi_sync_master_trace_level(MYSQL_THD thd,
+static void fix_rpl_semi_sync_master_trace_level(MYBLOCKCHAIN_THD thd,
 					  SYS_VAR *var,
 					  void *ptr,
 					  const void *val)
@@ -356,7 +356,7 @@ static void fix_rpl_semi_sync_master_trace_level(MYSQL_THD thd,
   return;
 }
 
-static void fix_rpl_semi_sync_master_enabled(MYSQL_THD thd,
+static void fix_rpl_semi_sync_master_enabled(MYBLOCKCHAIN_THD thd,
 				      SYS_VAR *var,
 				      void *ptr,
 				      const void *val)
@@ -382,7 +382,7 @@ static void fix_rpl_semi_sync_master_enabled(MYSQL_THD thd,
   return;
 }
 
-static void fix_rpl_semi_sync_master_wait_for_slave_count(MYSQL_THD thd,
+static void fix_rpl_semi_sync_master_wait_for_slave_count(MYBLOCKCHAIN_THD thd,
                                                           SYS_VAR *var,
                                                           void *ptr,
                                                           const void *val)
@@ -391,7 +391,7 @@ static void fix_rpl_semi_sync_master_wait_for_slave_count(MYSQL_THD thd,
   return;
 }
 
-static void fix_rpl_semi_sync_master_wait_no_slave(MYSQL_THD thd,
+static void fix_rpl_semi_sync_master_wait_no_slave(MYBLOCKCHAIN_THD thd,
 				      SYS_VAR *var,
 				      void *ptr,
 				      const void *val)
@@ -437,7 +437,7 @@ Binlog_transmit_observer transmit_observer = {
   rpl_semi_sync_master_show_##name
 
 #define DEF_SHOW_FUNC(name, show_type)					\
-  static  int SHOW_FNAME(name)(MYSQL_THD thd, SHOW_VAR *var, char *buff) \
+  static  int SHOW_FNAME(name)(MYBLOCKCHAIN_THD thd, SHOW_VAR *var, char *buff) \
   {									\
     repl_semisync.setExportStats();					\
     var->type= show_type;						\
@@ -562,19 +562,19 @@ static void init_semisync_psi_keys(void)
   int count;
 
   count= array_elements(all_semisync_mutexes);
-  mysql_mutex_register(category, all_semisync_mutexes, count);
+  myblockchain_mutex_register(category, all_semisync_mutexes, count);
 
   count= array_elements(all_semisync_conds);
-  mysql_cond_register(category, all_semisync_conds, count);
+  myblockchain_cond_register(category, all_semisync_conds, count);
 
   count= array_elements(all_semisync_stages);
-  mysql_stage_register(category, all_semisync_stages, count);
+  myblockchain_stage_register(category, all_semisync_stages, count);
 
   count= array_elements(all_semisync_memory);
-  mysql_memory_register(category, all_semisync_memory, count);
+  myblockchain_memory_register(category, all_semisync_memory, count);
 
   count= array_elements(all_semisync_threads);
-  mysql_thread_register(category, all_semisync_threads, count);
+  myblockchain_thread_register(category, all_semisync_threads, count);
 }
 #endif /* HAVE_PSI_INTERFACE */
 
@@ -625,15 +625,15 @@ static int semi_sync_master_plugin_deinit(void *p)
 }
 
 struct Mysql_replication semi_sync_master_plugin= {
-  MYSQL_REPLICATION_INTERFACE_VERSION
+  MYBLOCKCHAIN_REPLICATION_INTERFACE_VERSION
 };
 
 /*
   Plugin library descriptor
 */
-mysql_declare_plugin(semi_sync_master)
+myblockchain_declare_plugin(semi_sync_master)
 {
-  MYSQL_REPLICATION_PLUGIN,
+  MYBLOCKCHAIN_REPLICATION_PLUGIN,
   &semi_sync_master_plugin,
   "rpl_semi_sync_master",
   "He Zhenxing",
@@ -647,4 +647,4 @@ mysql_declare_plugin(semi_sync_master)
   NULL,                         /* config options */
   0,                            /* flags */
 }
-mysql_declare_plugin_end;
+myblockchain_declare_plugin_end;

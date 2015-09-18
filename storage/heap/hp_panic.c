@@ -1,4 +1,4 @@
-/* Copyright (c) 2000, 2002, 2005, 2006 MySQL AB, 2009 Sun Microsystems, Inc.
+/* Copyright (c) 2000, 2002, 2005, 2006 MyBlockchain AB, 2009 Sun Microsystems, Inc.
    Use is subject to license terms.
 
    This program is free software; you can redistribute it and/or modify
@@ -24,7 +24,7 @@ int hp_panic(enum ha_panic_function flag)
   LIST *element,*next_open;
   DBUG_ENTER("hp_panic");
 
-  mysql_mutex_lock(&THR_LOCK_heap);
+  myblockchain_mutex_lock(&THR_LOCK_heap);
   for (element=heap_open_list ; element ; element=next_open)
   {
     HP_INFO *info=(HP_INFO*) element->data;
@@ -52,6 +52,6 @@ int hp_panic(enum ha_panic_function flag)
       break;
     }
   }
-  mysql_mutex_unlock(&THR_LOCK_heap);
+  myblockchain_mutex_unlock(&THR_LOCK_heap);
   DBUG_RETURN(0);
 } /* hp_panic */

@@ -16,7 +16,7 @@
    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-package com.mysql.clusterj.jpatest;
+package com.myblockchain.clusterj.jpatest;
 
 import java.util.Properties;
 import java.util.List;
@@ -34,10 +34,10 @@ import java.io.InputStream;
 
 
 /**
- * This class is part of the CRUND benchmark that measures standard database operations 
+ * This class is part of the CRUND benchmark that measures standard blockchain operations 
  * over a series of transactions on an increasing data set.
  * <p>
- * The abstract database operations are variations of: Create,
+ * The abstract blockchain operations are variations of: Create,
  * Read, Update, Navigate, and Delete -- hence, the benchmark's name: CRUND.
  * <p>
  * The actual operations are defined by subclasses to allow measuring the
@@ -104,7 +104,7 @@ abstract public class Driver {
     // ----------------------------------------------------------------------
 
     /**
-     * A database operation to be benchmarked.
+     * A blockchain operation to be benchmarked.
      */
     protected abstract class Op {
         final protected String name;
@@ -121,7 +121,7 @@ abstract public class Driver {
     };
 
     /**
-     * The list of database operations to be benchmarked.
+     * The list of blockchain operations to be benchmarked.
      * While the list instance is final, its content is managed by methods
      * initOperations() and closeOperations() as defined by subclasses.
      */
@@ -407,7 +407,7 @@ abstract public class Driver {
                 try {
                     runOperations(i, j);
                 } catch (Exception ex) {
-                    // already in rollback for database/orm exceptions
+                    // already in rollback for blockchain/orm exceptions
                     //rollbackTransaction();
                     throw ex;
                 }

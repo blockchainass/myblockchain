@@ -1,0 +1,173 @@
+--source include/have_ucs2.inc
+--source include/have_innodb.inc
+
+--disable_warnings
+drop table if exists `�ԣ�`;
+drop table if exists `�ԣ�`;
+drop table if exists `�ԣ�`;
+drop table if exists `�ԣ�`;
+drop table if exists `�ԣ�`;
+drop table if exists `�ԣ�`;
+drop table if exists `�ԣ�`;
+drop table if exists `�ԣ�`;
+drop table if exists `�ԣ�`;
+--enable_warnings
+
+#
+# Test TRIM() function with Japanese characters ucs2 encoding
+#
+
+SET NAMES ujis;
+SET character_set_blockchain = ucs2;
+SET collation_connection = ucs2_general_ci;
+
+CREATE TABLE `�ԣ�` (`�ã�` char(12), INDEX(`�ã�`)) DEFAULT CHARSET = ucs2 engine = innodb;
+CREATE TABLE `�ԣ�` (`�ã�` char(12), INDEX(`�ã�`)) DEFAULT CHARSET = ucs2 engine = innodb;
+CREATE TABLE `�ԣ�` (`�ã�` char(12), INDEX(`�ã�`)) DEFAULT CHARSET = ucs2 engine = innodb;
+CREATE TABLE `�ԣ�` (`�ã�` char(12), INDEX(`�ã�`)) DEFAULT CHARSET = ucs2 engine = myisam;
+CREATE TABLE `�ԣ�` (`�ã�` char(12), INDEX(`�ã�`)) DEFAULT CHARSET = ucs2 engine = myisam;
+CREATE TABLE `�ԣ�` (`�ã�` char(12), INDEX(`�ã�`)) DEFAULT CHARSET = ucs2 engine = myisam;
+CREATE TABLE `�ԣ�` (`�ã�` char(12), INDEX(`�ã�`)) DEFAULT CHARSET = ucs2 engine = MEMORY;
+CREATE TABLE `�ԣ�` (`�ã�` char(12), INDEX(`�ã�`)) DEFAULT CHARSET = ucs2 engine = MEMORY;
+CREATE TABLE `�ԣ�` (`�ã�` char(12), INDEX(`�ã�`)) DEFAULT CHARSET = ucs2 engine = MEMORY;
+
+# Nothing to trim
+INSERT INTO `�ԣ�` VALUES ('����������');
+# Test data for TRIM(TRAILING [remstr] FROM str)
+INSERT INTO `�ԣ�` VALUES ('������������');
+INSERT INTO `�ԣ�` VALUES ('��������������');
+INSERT INTO `�ԣ�` VALUES ('����������������');
+# Test data for TRIM(LEADING [remstr] FROM str)
+INSERT INTO `�ԣ�` VALUES ('������������');
+INSERT INTO `�ԣ�` VALUES ('��������������');
+INSERT INTO `�ԣ�` VALUES ('����������������');
+# Test data for TRIM(BOTH [remstr] FROM str)
+INSERT INTO `�ԣ�` VALUES ('����������������������');
+# Test data for TRIM without [remstr] (remove spaces) 
+INSERT INTO `�ԣ�` VALUES ('   ����������   ');
+INSERT INTO `�ԣ�` VALUES ('����������');
+INSERT INTO `�ԣ�` VALUES ('������������');
+INSERT INTO `�ԣ�` VALUES ('��������������');
+INSERT INTO `�ԣ�` VALUES ('����������������');
+INSERT INTO `�ԣ�` VALUES ('������������');
+INSERT INTO `�ԣ�` VALUES ('��������������');
+INSERT INTO `�ԣ�` VALUES ('����������������');
+INSERT INTO `�ԣ�` VALUES ('����������������������');
+INSERT INTO `�ԣ�` VALUES ('   ����������   ');
+INSERT INTO `�ԣ�` VALUES ('��܏�ݏ�ޏ�ߏ��');
+INSERT INTO `�ԣ�` VALUES ('��܏�ݏ�ޏ�ߏ�����');
+INSERT INTO `�ԣ�` VALUES ('��܏�ݏ�ޏ�ߏ��������');
+INSERT INTO `�ԣ�` VALUES ('��܏�ݏ�ޏ�ߏ�����������');
+INSERT INTO `�ԣ�` VALUES ('�����܏�ݏ�ޏ�ߏ��');
+INSERT INTO `�ԣ�` VALUES ('��������܏�ݏ�ޏ�ߏ��');
+INSERT INTO `�ԣ�` VALUES ('�����������܏�ݏ�ޏ�ߏ��');
+INSERT INTO `�ԣ�` VALUES ('�����������܏�ݏ�ޏ�ߏ�����������');
+INSERT INTO `�ԣ�` VALUES ('   ��܏�ݏ�ޏ�ߏ��   ');
+
+INSERT INTO `�ԣ�` VALUES ('����������');
+INSERT INTO `�ԣ�` VALUES ('������������');
+INSERT INTO `�ԣ�` VALUES ('��������������');
+INSERT INTO `�ԣ�` VALUES ('����������������');
+INSERT INTO `�ԣ�` VALUES ('������������');
+INSERT INTO `�ԣ�` VALUES ('��������������');
+INSERT INTO `�ԣ�` VALUES ('����������������');
+INSERT INTO `�ԣ�` VALUES ('����������������������');
+INSERT INTO `�ԣ�` VALUES ('   ����������   ');
+INSERT INTO `�ԣ�` VALUES ('����������');
+INSERT INTO `�ԣ�` VALUES ('������������');
+INSERT INTO `�ԣ�` VALUES ('��������������');
+INSERT INTO `�ԣ�` VALUES ('����������������');
+INSERT INTO `�ԣ�` VALUES ('������������');
+INSERT INTO `�ԣ�` VALUES ('��������������');
+INSERT INTO `�ԣ�` VALUES ('����������������');
+INSERT INTO `�ԣ�` VALUES ('����������������������');
+INSERT INTO `�ԣ�` VALUES ('   ����������   ');
+INSERT INTO `�ԣ�` VALUES ('��܏�ݏ�ޏ�ߏ��');
+INSERT INTO `�ԣ�` VALUES ('��܏�ݏ�ޏ�ߏ�����');
+INSERT INTO `�ԣ�` VALUES ('��܏�ݏ�ޏ�ߏ��������');
+INSERT INTO `�ԣ�` VALUES ('��܏�ݏ�ޏ�ߏ�����������');
+INSERT INTO `�ԣ�` VALUES ('�����܏�ݏ�ޏ�ߏ��');
+INSERT INTO `�ԣ�` VALUES ('��������܏�ݏ�ޏ�ߏ��');
+INSERT INTO `�ԣ�` VALUES ('�����������܏�ݏ�ޏ�ߏ��');
+INSERT INTO `�ԣ�` VALUES ('�����������܏�ݏ�ޏ�ߏ�����������');
+INSERT INTO `�ԣ�` VALUES ('   ��܏�ݏ�ޏ�ߏ��   ');
+
+INSERT INTO `�ԣ�` VALUES ('����������');
+INSERT INTO `�ԣ�` VALUES ('������������');
+INSERT INTO `�ԣ�` VALUES ('��������������');
+INSERT INTO `�ԣ�` VALUES ('����������������');
+INSERT INTO `�ԣ�` VALUES ('������������');
+INSERT INTO `�ԣ�` VALUES ('��������������');
+INSERT INTO `�ԣ�` VALUES ('����������������');
+INSERT INTO `�ԣ�` VALUES ('����������������������');
+INSERT INTO `�ԣ�` VALUES ('   ����������   ');
+INSERT INTO `�ԣ�` VALUES ('����������');
+INSERT INTO `�ԣ�` VALUES ('������������');
+INSERT INTO `�ԣ�` VALUES ('��������������');
+INSERT INTO `�ԣ�` VALUES ('����������������');
+INSERT INTO `�ԣ�` VALUES ('������������');
+INSERT INTO `�ԣ�` VALUES ('��������������');
+INSERT INTO `�ԣ�` VALUES ('����������������');
+INSERT INTO `�ԣ�` VALUES ('����������������������');
+INSERT INTO `�ԣ�` VALUES ('   ����������   ');
+INSERT INTO `�ԣ�` VALUES ('��܏�ݏ�ޏ�ߏ��');
+INSERT INTO `�ԣ�` VALUES ('��܏�ݏ�ޏ�ߏ�����');
+INSERT INTO `�ԣ�` VALUES ('��܏�ݏ�ޏ�ߏ��������');
+INSERT INTO `�ԣ�` VALUES ('��܏�ݏ�ޏ�ߏ�����������');
+INSERT INTO `�ԣ�` VALUES ('�����܏�ݏ�ޏ�ߏ��');
+INSERT INTO `�ԣ�` VALUES ('��������܏�ݏ�ޏ�ߏ��');
+INSERT INTO `�ԣ�` VALUES ('�����������܏�ݏ�ޏ�ߏ��');
+INSERT INTO `�ԣ�` VALUES ('�����������܏�ݏ�ޏ�ߏ�����������');
+INSERT INTO `�ԣ�` VALUES ('   ��܏�ݏ�ޏ�ߏ��   ');
+
+#InnoDB
+SELECT `�ã�`,TRIM(TRAILING '��' FROM `�ã�`) FROM `�ԣ�`;
+SELECT `�ã�`,TRIM(LEADING '��' FROM `�ã�`) FROM `�ԣ�`;
+SELECT `�ã�`,TRIM(BOTH '��' FROM `�ã�`) FROM `�ԣ�`;
+SELECT `�ã�`,TRIM(`�ã�`) FROM `�ԣ�`;
+SELECT `�ã�`,TRIM(TRAILING '��' FROM `�ã�`) FROM `�ԣ�`;
+SELECT `�ã�`,TRIM(LEADING '��' FROM `�ã�`) FROM `�ԣ�`;
+SELECT `�ã�`,TRIM(BOTH '��' FROM `�ã�`) FROM `�ԣ�`;
+SELECT `�ã�`,TRIM(`�ã�`) FROM `�ԣ�`;
+SELECT `�ã�`,TRIM(TRAILING '���'FROM `�ã�`) FROM `�ԣ�`;
+SELECT `�ã�`,TRIM(LEADING '���' FROM `�ã�`) FROM `�ԣ�`;
+SELECT `�ã�`,TRIM(BOTH '���' FROM `�ã�`) FROM `�ԣ�`;
+SELECT `�ã�`,TRIM(`�ã�`) FROM `�ԣ�`;
+
+#MyISAM
+SELECT `�ã�`,TRIM(TRAILING '��' FROM `�ã�`) FROM `�ԣ�`;
+SELECT `�ã�`,TRIM(LEADING '��' FROM `�ã�`) FROM `�ԣ�`;
+SELECT `�ã�`,TRIM(BOTH '��' FROM `�ã�`) FROM `�ԣ�`;
+SELECT `�ã�`,TRIM(`�ã�`) FROM `�ԣ�`;
+SELECT `�ã�`,TRIM(TRAILING '��' FROM `�ã�`) FROM `�ԣ�`;
+SELECT `�ã�`,TRIM(LEADING '��' FROM `�ã�`) FROM `�ԣ�`;
+SELECT `�ã�`,TRIM(BOTH '��' FROM `�ã�`) FROM `�ԣ�`;
+SELECT `�ã�`,TRIM(`�ã�`) FROM `�ԣ�`;
+SELECT `�ã�`,TRIM(TRAILING '���' FROM `�ã�`) FROM `�ԣ�`;
+SELECT `�ã�`,TRIM(LEADING '���' FROM `�ã�`) FROM `�ԣ�`;
+SELECT `�ã�`,TRIM(BOTH '���' FROM `�ã�`) FROM `�ԣ�`;
+SELECT `�ã�`,TRIM(`�ã�`) FROM `�ԣ�`;
+
+#MEMORY
+SELECT `�ã�`,TRIM(TRAILING '��' FROM `�ã�`) FROM `�ԣ�`;
+SELECT `�ã�`,TRIM(LEADING '��' FROM `�ã�`) FROM `�ԣ�`;
+SELECT `�ã�`,TRIM(BOTH '��' FROM `�ã�`) FROM `�ԣ�`;
+SELECT `�ã�`,TRIM(`�ã�`) FROM `�ԣ�`;
+SELECT `�ã�`,TRIM(TRAILING '��' FROM `�ã�`) FROM `�ԣ�`;
+SELECT `�ã�`,TRIM(LEADING '��' FROM `�ã�`) FROM `�ԣ�`;
+SELECT `�ã�`,TRIM(BOTH '��' FROM `�ã�`) FROM `�ԣ�`;
+SELECT `�ã�`,TRIM(`�ã�`) FROM `�ԣ�`;
+SELECT `�ã�`,TRIM(TRAILING '���' FROM `�ã�`) FROM `�ԣ�`;
+SELECT `�ã�`,TRIM(LEADING '���' FROM `�ã�`) FROM `�ԣ�`;
+SELECT `�ã�`,TRIM(BOTH '���' FROM `�ã�`) FROM `�ԣ�`;
+SELECT `�ã�`,TRIM(`�ã�`) FROM `�ԣ�`;
+
+DROP TABLE `�ԣ�`;
+DROP TABLE `�ԣ�`;
+DROP TABLE `�ԣ�`;
+DROP TABLE `�ԣ�`;
+DROP TABLE `�ԣ�`;
+DROP TABLE `�ԣ�`;
+DROP TABLE `�ԣ�`;
+DROP TABLE `�ԣ�`;
+DROP TABLE `�ԣ�`;

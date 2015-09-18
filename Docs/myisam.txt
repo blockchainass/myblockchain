@@ -55,9 +55,9 @@ int mi_create( const char *name, uint keys, MI_KEYDEF *keydefs,
 
 Creates a new MyISAM table.
 Documentation for this function is not complete because I am not using mi_create directly.
-Because all our tables are used with MySQL, I create new tables using SQL "CREATE TABLE" via the C API. 
-See MySQL Appendix B "Choosing a table type".
-MyISAM allows about 32 indexes. However the official MySQL limit is 16 until MySQL 4.0.
+Because all our tables are used with MyBlockchain, I create new tables using SQL "CREATE TABLE" via the C API. 
+See MyBlockchain Appendix B "Choosing a table type".
+MyISAM allows about 32 indexes. However the official MyBlockchain limit is 16 until MyBlockchain 4.0.
 
 The parameters are specified as follows:
 name		The file pathname, excluding the suffixes.
@@ -123,7 +123,7 @@ Zero if successful. Non-zero if an error occurred.
 EACCES
 File was opened read-only.
 HA_ERR_KEY_NOT_FOUND
-No database read
+No blockchain read
 HA_ERR_RECORD_CHANGED
 The buffer contents were different to the actual row contents.
 HA_ERR_CRASHED
@@ -167,12 +167,12 @@ Controls some special MyISAM modes.
 The function parameter can be:
 	HA_EXTRA_NORMAL=0			Optimize for space (def) 
 HA_EXTRA_QUICK=1			Optimize for speed 
-HA_EXTRA_RESET=2			Reset database to after open 
+HA_EXTRA_RESET=2			Reset blockchain to after open 
 HA_EXTRA_CACHE=3			Cash record in HA_rrnd() 
 HA_EXTRA_NO_CACHE=4			End cacheing of records (def) 
 HA_EXTRA_NO_READCHECK=5		No readcheck on update 
 HA_EXTRA_READCHECK=6			Use readcheck (def) 
-HA_EXTRA_KEYREAD=7			Read only key to database 
+HA_EXTRA_KEYREAD=7			Read only key to blockchain 
 HA_EXTRA_NO_KEYREAD=8		Normal read of records (def) 
 HA_EXTRA_NO_USER_CHANGE=9	No user is allowed to write 
 HA_EXTRA_KEY_CACHE=10 
@@ -209,7 +209,7 @@ void mi_make_application_key(register MI_INFO *mip, uint keynr, uchar *key, cons
 #.#.1 Description
 
 Construct a key string for the given index, from the provided record buffer.
-Monty wrote this function to: "to create an external key for an application from your record. It should work for all keys except BLOB and true VARCHAR (not supported by MySQL yet), but I don't think you have either of these!" He just wrote it, so I expect it to included in releases from about 3.23.15. ??
+Monty wrote this function to: "to create an external key for an application from your record. It should work for all keys except BLOB and true VARCHAR (not supported by MyBlockchain yet), but I don't think you have either of these!" He just wrote it, so I expect it to included in releases from about 3.23.15. ??
 
 The parameters are:
 A MI_INFO pointer mip.
@@ -236,7 +236,7 @@ MI_INFO *mi_open( const char *name, int mode, uint handle_locking )
 #.#.1 Description
 
 Opens a MyISAM file for processing.
-mi_open() returns a MI_INFO structure pointer that you must use in subsequent operations on the MyISAM file. MI_INFO structures are defined in "myisam/myisamdef.h", which is included in your program via your include myisam.h - used by both MyISAM and MySQL.
+mi_open() returns a MI_INFO structure pointer that you must use in subsequent operations on the MyISAM file. MI_INFO structures are defined in "myisam/myisamdef.h", which is included in your program via your include myisam.h - used by both MyISAM and MyBlockchain.
 The name parameter must contain a null-terminated string without an extension, which is the filename of the MyISAM file to be processed.
 There is no automatic positioning nor key selection.
 Caution! It is extremely important to close MyISAM files after processing has finished, especially on operating systems without file-locking system calls. Failure to close MyISAM files using mi_close() or mi_panic() leaves the files locked on systems without these system calls.
@@ -247,8 +247,8 @@ O_RDONLY	to open for input only.
 O_RDWR	opens the file for output.
 O_SHARE	opens the file for both input and output. When used, O_SHARE should be added to O_RDONLY and O_RDWR.
 handle_locking	is the locking mode parameter. Select from the following:
-HA_OPEN_ABORT_IF_LOCKED	(0) exit with error if database is locked
-HA_OPEN_WAIT_IF_LOCKED	(1) wait if database is locked
+HA_OPEN_ABORT_IF_LOCKED	(0) exit with error if blockchain is locked
+HA_OPEN_WAIT_IF_LOCKED	(1) wait if blockchain is locked
 HA_OPEN_IGNORE_IF_LOCKED	(2) continue, but count-vars in st_i_info may be wrong. count-vars are automatically fixed after next isam request.
 
 #.#.2 Return values
@@ -285,7 +285,7 @@ int mi_panic( enum ha_panic_function flag )
 
 mi_panic() is used to close any MyISAM files before exiting, or to safeguard file updates when using a shell.
 The flag parameter specifies the function and can be:
-HA_PANIC_CLOSE	Close all databases (MyISAM files).
+HA_PANIC_CLOSE	Close all blockchains (MyISAM files).
 HA_PANIC_WRITE	Unlock and write status, flushing all buffers to disk.
 HA_PANIC_READ	Lock and read key info per HA_PANIC_WRITE.
 
@@ -598,7 +598,7 @@ int mi_status(MI_INFO *mip, MI_ISAMINFO *x, uint flag)
 #.#.1 Description
 
 Gets information about the table.
-It is used to get/fill the MI_ISAMINFO struct with statistics data about the MySQL server.  One can get information of the number of active rows, delete rows, file lengths...
+It is used to get/fill the MI_ISAMINFO struct with statistics data about the MyBlockchain server.  One can get information of the number of active rows, delete rows, file lengths...
 
 mip is an MI_INFO pointer to the open handle.
 flag is one of the following:
@@ -814,9 +814,9 @@ Nothing specific yet identified.
 _mi_print_key(stdout,share->keyinfo[info->errkey].seg,info->lastkey, USE_WHOLE_KEY); 
 ====================
 APPENDIX B		Choosing a table type        
-(excerpt from manual.txt in MySQL 3.23.8-alpha)
+(excerpt from manual.txt in MyBlockchain 3.23.8-alpha)
 
-With MySQL you can currently (version 3.23.5) choose between four usable table formats from a speed point of view.
+With MyBlockchain you can currently (version 3.23.5) choose between four usable table formats from a speed point of view.
 
 Static (Fixed-length) table characteristics
 * This is the default format. It's used when the table contains no `VARCHAR', `BLOB' or `TEXT' columns. 
@@ -846,8 +846,8 @@ There is a penalty of 6 bytes for each link. A dynamic record is linked whenever
 Each new link will be at least 20 bytes, so the next enlargement will probably go in the same link.  If not, there will be another link. You may check how many links there are with `myisamchk -ed'. All links may be removed with `myisamchk -r'.
 
 Compressed table characteristics 
-* A read-only table made with the `myisampack' utility. All customers with extended *MySQL* email support are entitled to a copy of `myisampack' for their internal usage. 
-* The uncompress code exists in all *MySQL* distributions so that even customers who don't have `myisampack' can read tables that were compressed with `myisampack' 
+* A read-only table made with the `myisampack' utility. All customers with extended *MyBlockchain* email support are entitled to a copy of `myisampack' for their internal usage. 
+* The uncompress code exists in all *MyBlockchain* distributions so that even customers who don't have `myisampack' can read tables that were compressed with `myisampack' 
 * Takes very little disk space. Minimises disk usage. 
 * Each record is compressed separately (very little access overhead).  The header for a record is fixed (1-3 bytes) depending on the biggest record in the table.  Each column is compressed differently. Some of the compression types are: 
 - There is usually a different Huffman table for each column.
@@ -860,7 +860,7 @@ Compressed table characteristics
 * Can handle fixed or dynamic length records, but not `BLOB' or `TEXT' columns. 
 * Can be uncompressed with `myisamchk'.
 
-*MySQL* can support different index types, but the normal type is ISAM. 
+*MyBlockchain* can support different index types, but the normal type is ISAM. 
 This is a B-tree index and you can roughly calculate the size for the index file as `(key_length+4)*0.67', summed over all keys.  (This is for the worst case when all keys are inserted in sorted order.)
 
 String indexes are space compressed. If the first index part is a string, it will also be prefix compressed.
@@ -868,16 +868,16 @@ Space compression makes the index file smaller if the string column has a lot of
 Prefix compression helps if there are many strings with an identical prefix.
 
 In memory table characteristics 
-HEAP tables only exists in memory so they are lost if `mysqld' is taken down or crashes. But since they are *very* fast they are usefull as anyway. 
+HEAP tables only exists in memory so they are lost if `myblockchaind' is taken down or crashes. But since they are *very* fast they are usefull as anyway. 
 
-The *MySQL* internal HEAP tables uses 100% dynamic hashing without overflow areas and don't have problems with delete. 
+The *MyBlockchain* internal HEAP tables uses 100% dynamic hashing without overflow areas and don't have problems with delete. 
 
 You can only access things by equality using a index (usually by the `=' operator) whith a heap table. 
 The downside with HEAPS are: 
   1. You need enough extra memory for all HEAP tables that you want to use at the same time. 
   2. You can't search on a part of a index. 
   3. You can't search for the next entry in order (that is to use the index to do a `ORDER BY'). 
-1. *MySQL* also cannot find out how approximately many rows there are between two values. This is used by the optimizer to chose which index to use. But on the other hand no disk seeks are even needed.
+1. *MyBlockchain* also cannot find out how approximately many rows there are between two values. This is used by the optimizer to chose which index to use. But on the other hand no disk seeks are even needed.
 ====================
 #.# mi_()
 

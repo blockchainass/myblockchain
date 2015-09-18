@@ -17,10 +17,10 @@
 
 package testsuite.clusterj.model;
 
-import com.mysql.clusterj.annotation.Column;
-import com.mysql.clusterj.annotation.Index;
-import com.mysql.clusterj.annotation.PersistenceCapable;
-import com.mysql.clusterj.annotation.PrimaryKey;
+import com.myblockchain.clusterj.annotation.Column;
+import com.myblockchain.clusterj.annotation.Index;
+import com.myblockchain.clusterj.annotation.PersistenceCapable;
+import com.myblockchain.clusterj.annotation.PrimaryKey;
 
 /** Schema
  *

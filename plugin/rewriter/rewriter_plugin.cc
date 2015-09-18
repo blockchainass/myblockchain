@@ -20,13 +20,13 @@
 #include "rewriter.h"
 
 #include <my_global.h>
-#include <mysql/plugin_audit.h>
-#include <mysql/psi/mysql_thread.h>
-#include <mysql/service_my_plugin_log.h>
+#include <myblockchain/plugin_audit.h>
+#include <myblockchain/psi/myblockchain_thread.h>
+#include <myblockchain/service_my_plugin_log.h>
 #include <my_atomic.h>
 #include <my_sys.h>
 #include "services.h"
-#include "mysqld_error.h"
+#include "myblockchaind_error.h"
 #include "template_utils.h"
 #include <algorithm>
 
@@ -56,9 +56,9 @@ static const char *MESSAGE_OOM= "Out of memory.";
 
 static const size_t MAX_QUERY_LENGTH_IN_LOG= 100;
 
-static MYSQL_PLUGIN plugin_info;
+static MYBLOCKCHAIN_PLUGIN plugin_info;
 
-static mysql_rwlock_t LOCK_table;
+static myblockchain_rwlock_t LOCK_table;
 static Rewriter* rewriter;
 
 /// @name Status variables for the plugin.
@@ -78,7 +78,7 @@ static long long status_var_number_reloads;
 
 #define PLUGIN_NAME "Rewriter"
 
-static st_mysql_show_var rewriter_plugin_status_vars[]=
+static st_myblockchain_show_var rewriter_plugin_status_vars[]=
 {
   {PLUGIN_NAME "_number_rewritten_queries",
      pointer_cast<char*>(&status_var_number_rewritten_queries), SHOW_LONGLONG, SHOW_SCOPE_GLOBAL},
@@ -102,21 +102,21 @@ static int sys_var_verbose;
 static my_bool sys_var_enabled;
 
 /// Updater function for the status variable ..._verbose.
-static void update_verbose(MYSQL_THD, struct st_mysql_sys_var *, void *,
+static void update_verbose(MYBLOCKCHAIN_THD, struct st_myblockchain_sys_var *, void *,
                            const void *save)
 {
   sys_var_verbose= *static_cast<const int*>(save);
 }
 
 /// Updater function for the status variable ..._enabled.
-static void update_enabled(MYSQL_THD, struct st_mysql_sys_var *, void *,
+static void update_enabled(MYBLOCKCHAIN_THD, struct st_myblockchain_sys_var *, void *,
                            const void *value)
 {
   sys_var_enabled= *static_cast<const int*>(value);
 }
 
 
-static MYSQL_SYSVAR_INT(verbose,              // Name.
+static MYBLOCKCHAIN_SYSVAR_INT(verbose,              // Name.
                         sys_var_verbose,      // Variable.
                         PLUGIN_VAR_NOCMDARG,  // Not a command-line argument.
                         "Tells " PLUGIN_NAME " how verbose it should be.",
@@ -128,7 +128,7 @@ static MYSQL_SYSVAR_INT(verbose,              // Name.
                         1                     // Block size.
 );
 
-static MYSQL_SYSVAR_BOOL(enabled,              // Name.
+static MYBLOCKCHAIN_SYSVAR_BOOL(enabled,              // Name.
                          sys_var_enabled,      // Variable.
                          PLUGIN_VAR_NOCMDARG,  // Not a command-line argument.
                          "Whether queries should actually be rewritten.",
@@ -137,36 +137,36 @@ static MYSQL_SYSVAR_BOOL(enabled,              // Name.
                          1                     // Default value.
 );
 
-struct st_mysql_sys_var* rewriter_plugin_sys_vars[]=
+struct st_myblockchain_sys_var* rewriter_plugin_sys_vars[]=
 {
-  MYSQL_SYSVAR(verbose),
-  MYSQL_SYSVAR(enabled),
+  MYBLOCKCHAIN_SYSVAR(verbose),
+  MYBLOCKCHAIN_SYSVAR(enabled),
   NULL
 };
 
-MYSQL_PLUGIN get_rewriter_plugin_info() { return plugin_info; }
+MYBLOCKCHAIN_PLUGIN get_rewriter_plugin_info() { return plugin_info; }
 
 /// @name Plugin declaration.
 ///@{
 
-static void rewrite_query_notify(MYSQL_THD thd, unsigned int event_class,
+static void rewrite_query_notify(MYBLOCKCHAIN_THD thd, unsigned int event_class,
                                  const void *event);
-static int rewriter_plugin_init(MYSQL_PLUGIN plugin_ref);
+static int rewriter_plugin_init(MYBLOCKCHAIN_PLUGIN plugin_ref);
 static int rewriter_plugin_deinit(void*);
 
 /* Audit plugin descriptor */
-static struct st_mysql_audit rewrite_query_descriptor=
+static struct st_myblockchain_audit rewrite_query_descriptor=
 {
-  MYSQL_AUDIT_INTERFACE_VERSION,                    /* interface version */
+  MYBLOCKCHAIN_AUDIT_INTERFACE_VERSION,                    /* interface version */
   NULL,                                             /* release_thd()     */
   rewrite_query_notify,                             /* event_notify()    */
-  { MYSQL_AUDIT_PARSE_CLASSMASK }                   /* class mask        */
+  { MYBLOCKCHAIN_AUDIT_PARSE_CLASSMASK }                   /* class mask        */
 };
 
 /* Plugin descriptor */
-mysql_declare_plugin(audit_log)
+myblockchain_declare_plugin(audit_log)
 {
-    MYSQL_AUDIT_PLUGIN,             /* plugin type                   */
+    MYBLOCKCHAIN_AUDIT_PLUGIN,             /* plugin type                   */
     &rewrite_query_descriptor,      /* type specific descriptor      */
     PLUGIN_NAME,                    /* plugin name                   */
     "Oracle",                       /* author                        */
@@ -182,7 +182,7 @@ mysql_declare_plugin(audit_log)
     NULL,                           /* reserverd                     */
     0                               /* flags                         */
 }
-mysql_declare_plugin_end;
+myblockchain_declare_plugin_end;
 
 ///@}
 
@@ -201,17 +201,17 @@ static void init_rewriter_psi_keys()
   int count;
 
   count= array_elements(all_rewrite_rwlocks);
-  mysql_rwlock_register(category, all_rewrite_rwlocks, count);
+  myblockchain_rwlock_register(category, all_rewrite_rwlocks, count);
 }
 #endif
 
 
-static int rewriter_plugin_init(MYSQL_PLUGIN plugin_ref)
+static int rewriter_plugin_init(MYBLOCKCHAIN_PLUGIN plugin_ref)
 {
 #ifdef HAVE_PSI_INTERFACE
   init_rewriter_psi_keys();
 #endif
-  mysql_rwlock_init(key_rwlock_LOCK_table_, &LOCK_table);
+  myblockchain_rwlock_init(key_rwlock_LOCK_table_, &LOCK_table);
   plugin_info= plugin_ref;
   status_var_number_rewritten_queries= 0;
   status_var_reload_error= false;
@@ -231,7 +231,7 @@ static int rewriter_plugin_deinit(void*)
 {
   plugin_info= NULL;
   delete rewriter;
-  mysql_rwlock_destroy(&LOCK_table);
+  myblockchain_rwlock_destroy(&LOCK_table);
   return 0;
 }
 
@@ -240,7 +240,7 @@ static int rewriter_plugin_deinit(void*)
   Reloads the rules into the in-memory table. This function assumes that the
   appropriate lock is already taken and doesn't concern itself with locks.
 */
-bool reload(MYSQL_THD thd)
+bool reload(MYBLOCKCHAIN_THD thd)
 {
   const char *message= NULL;
   try {
@@ -269,14 +269,14 @@ bool reload(MYSQL_THD thd)
 }
 
 
-bool lock_and_reload(MYSQL_THD thd)
+bool lock_and_reload(MYBLOCKCHAIN_THD thd)
 {
-  mysql_rwlock_wrlock(&LOCK_table);
+  myblockchain_rwlock_wrlock(&LOCK_table);
   status_var_reload_error= reload(thd);
   status_var_number_loaded_rules= rewriter->get_number_loaded_rules();
   ++status_var_number_reloads;
   needs_initial_load= false;
-  mysql_rwlock_unlock(&LOCK_table);
+  myblockchain_rwlock_unlock(&LOCK_table);
 
   return status_var_reload_error;
 }
@@ -284,12 +284,12 @@ bool lock_and_reload(MYSQL_THD thd)
 
 bool refresh_rules_table()
 {
-  MYSQL_THD thd= mysql_parser_current_session();
+  MYBLOCKCHAIN_THD thd= myblockchain_parser_current_session();
   return lock_and_reload(thd);
 }
 
 
-static string shorten_query(MYSQL_LEX_STRING query)
+static string shorten_query(MYBLOCKCHAIN_LEX_STRING query)
 {
   static const string ellipsis = "...";
   string shortened_query(query.str,
@@ -304,12 +304,12 @@ static string shorten_query(MYSQL_LEX_STRING query)
   Writes a message in the log saying that the query did not get
   rewritten. (Only if verbose level is high enough.)
 */
-static void log_nonrewritten_query(MYSQL_THD thd, const uchar *digest_buf,
+static void log_nonrewritten_query(MYBLOCKCHAIN_THD thd, const uchar *digest_buf,
                                    Rewrite_result result)
 {
   if (sys_var_verbose >= 2)
   {
-    string query= shorten_query(mysql_parser_get_query(thd));
+    string query= shorten_query(myblockchain_parser_get_query(thd));
     string digest= services::print_digest(digest_buf);
     string message;
     message.append("Statement \"");
@@ -332,26 +332,26 @@ static void log_nonrewritten_query(MYSQL_THD thd, const uchar *digest_buf,
   query when the plugin is active. The function extracts the digest of the
   query. If the digest matches an existing rewrite rule, it is executed.
 */
-static void rewrite_query_notify(MYSQL_THD thd, unsigned int event_class,
+static void rewrite_query_notify(MYBLOCKCHAIN_THD thd, unsigned int event_class,
                                  const void *event)
 {
-  DBUG_ASSERT(event_class == MYSQL_AUDIT_PARSE_CLASS);
+  DBUG_ASSERT(event_class == MYBLOCKCHAIN_AUDIT_PARSE_CLASS);
 
-  const struct mysql_event_parse *event_parse=
-    static_cast<const struct mysql_event_parse *>(event);
+  const struct myblockchain_event_parse *event_parse=
+    static_cast<const struct myblockchain_event_parse *>(event);
 
-  if (event_parse->event_subclass != MYSQL_AUDIT_POSTPARSE || !sys_var_enabled)
+  if (event_parse->event_subclass != MYBLOCKCHAIN_AUDIT_POSTPARSE || !sys_var_enabled)
     return;
 
   uchar digest[PARSER_SERVICE_DIGEST_LENGTH];
 
-  if (mysql_parser_get_statement_digest(thd, digest))
+  if (myblockchain_parser_get_statement_digest(thd, digest))
     return;
 
   if (needs_initial_load)
     lock_and_reload(thd);
 
-  mysql_rwlock_rdlock(&LOCK_table);
+  myblockchain_rwlock_rdlock(&LOCK_table);
 
   Rewrite_result rewrite_result;
   try
@@ -363,7 +363,7 @@ static void rewrite_query_notify(MYSQL_THD thd, unsigned int event_class,
     my_plugin_log_message(&plugin_info, MY_ERROR_LEVEL, MESSAGE_OOM);
   }
 
-  mysql_rwlock_unlock(&LOCK_table);
+  myblockchain_rwlock_unlock(&LOCK_table);
 
   int parse_error= 0;
   if (!rewrite_result.was_rewritten)
@@ -378,7 +378,7 @@ static void rewrite_query_notify(MYSQL_THD thd, unsigned int event_class,
     if (parse_error != 0)
       my_plugin_log_message(&plugin_info, MY_ERROR_LEVEL,
                             "Rewritten query failed to parse:%s\n",
-                            mysql_parser_get_query(thd).str);
+                            myblockchain_parser_get_query(thd).str);
 
     my_atomic_add64(&status_var_number_rewritten_queries, 1);
   }

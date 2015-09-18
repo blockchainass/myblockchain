@@ -21,7 +21,7 @@
 #include <m_ctype.h>
 #include <my_tree.h>
 #include <queues.h>
-#include <mysql/plugin.h>
+#include <myblockchain/plugin.h>
 
 #define true_word_char(ctype, character) \
                       ((ctype) & (_MY_U | _MY_L | _MY_NMR) || \
@@ -104,7 +104,7 @@ int is_stopword(char *word, uint len);
 uint _ft_make_key(MI_INFO *, uint , uchar *, FT_WORD *, my_off_t);
 
 uchar ft_get_word(const CHARSET_INFO *, uchar **, uchar *, FT_WORD *,
-                  MYSQL_FTPARSER_BOOLEAN_INFO *);
+                  MYBLOCKCHAIN_FTPARSER_BOOLEAN_INFO *);
 uchar ft_simple_get_word(const CHARSET_INFO *, uchar **, const uchar *,
                          FT_WORD *, my_bool);
 
@@ -119,12 +119,12 @@ void _mi_ft_segiterator_dummy_init(const uchar *, uint, FT_SEG_ITERATOR *);
 uint _mi_ft_segiterator(FT_SEG_ITERATOR *);
 
 void ft_parse_init(TREE *, const CHARSET_INFO *);
-int ft_parse(TREE *, uchar *, int, struct st_mysql_ftparser *parser,
-             MYSQL_FTPARSER_PARAM *, MEM_ROOT *);
+int ft_parse(TREE *, uchar *, int, struct st_myblockchain_ftparser *parser,
+             MYBLOCKCHAIN_FTPARSER_PARAM *, MEM_ROOT *);
 FT_WORD * ft_linearize(TREE *, MEM_ROOT *);
 FT_WORD * _mi_ft_parserecord(MI_INFO *, uint, const uchar *, MEM_ROOT *);
 uint _mi_ft_parse(TREE *, MI_INFO *, uint, const uchar *,
-                  MYSQL_FTPARSER_PARAM *, MEM_ROOT *);
+                  MYBLOCKCHAIN_FTPARSER_PARAM *, MEM_ROOT *);
 
 FT_INFO *ft_init_nlq_search(MI_INFO *, uint, uchar *, uint, uint, uchar *);
 FT_INFO *ft_init_boolean_search(MI_INFO *, uint, uchar *, uint,
@@ -145,8 +145,8 @@ void ft_boolean_close_search(FT_INFO *);
 float ft_boolean_get_relevance(FT_INFO *);
 my_off_t ft_boolean_get_docid(FT_INFO *);
 void ft_boolean_reinit_search(FT_INFO *);
-MYSQL_FTPARSER_PARAM* ftparser_alloc_param(MI_INFO *info);
-extern MYSQL_FTPARSER_PARAM *ftparser_call_initializer(MI_INFO *info,
+MYBLOCKCHAIN_FTPARSER_PARAM* ftparser_alloc_param(MI_INFO *info);
+extern MYBLOCKCHAIN_FTPARSER_PARAM *ftparser_call_initializer(MI_INFO *info,
                                                        uint keynr,
                                                        uint paramnr);
 extern void ftparser_call_deinitializer(MI_INFO *info);

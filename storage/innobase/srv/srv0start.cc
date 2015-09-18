@@ -33,7 +33,7 @@ this program; if not, write to the Free Software Foundation, Inc.,
 
 /********************************************************************//**
 @file srv/srv0start.cc
-Starts the InnoDB database server
+Starts the InnoDB blockchain server
 
 Created 2/16/1996 Heikki Tuuri
 *************************************************************************/
@@ -42,9 +42,9 @@ Created 2/16/1996 Heikki Tuuri
 
 #include "ha_prototypes.h"
 
-#include "mysqld.h"
-#include "mysql/psi/mysql_stage.h"
-#include "mysql/psi/psi.h"
+#include "myblockchaind.h"
+#include "myblockchain/psi/myblockchain_stage.h"
+#include "myblockchain/psi/psi.h"
 
 #include "row0ftsort.h"
 #include "ut0mem.h"
@@ -96,7 +96,7 @@ Created 2/16/1996 Heikki Tuuri
 # include "row0sel.h"
 # include "row0upd.h"
 # include "row0row.h"
-# include "row0mysql.h"
+# include "row0myblockchain.h"
 # include "row0trunc.h"
 # include "btr0pcur.h"
 # include "os0event.h"
@@ -129,7 +129,7 @@ bool	srv_is_being_started = false;
 bool	srv_sys_tablespaces_open = false;
 /** TRUE if the server was successfully started */
 ibool	srv_was_started = FALSE;
-/** TRUE if innobase_start_or_create_for_mysql() has been called */
+/** TRUE if innobase_start_or_create_for_myblockchain() has been called */
 static ibool	srv_start_has_been_called = FALSE;
 
 /** Bit flags for tracking background thread creation. They are used to
@@ -174,18 +174,18 @@ static const ulint MIN_EXPECTED_TABLESPACE_SIZE = 5 * 1024 * 1024;
 
 #ifdef UNIV_PFS_THREAD
 /* Keys to register InnoDB threads with performance schema */
-mysql_pfs_key_t	buf_dump_thread_key;
-mysql_pfs_key_t	dict_stats_thread_key;
-mysql_pfs_key_t	io_handler_thread_key;
-mysql_pfs_key_t	io_ibuf_thread_key;
-mysql_pfs_key_t	io_log_thread_key;
-mysql_pfs_key_t	io_read_thread_key;
-mysql_pfs_key_t	io_write_thread_key;
-mysql_pfs_key_t	srv_error_monitor_thread_key;
-mysql_pfs_key_t	srv_lock_timeout_thread_key;
-mysql_pfs_key_t	srv_master_thread_key;
-mysql_pfs_key_t	srv_monitor_thread_key;
-mysql_pfs_key_t	srv_purge_thread_key;
+myblockchain_pfs_key_t	buf_dump_thread_key;
+myblockchain_pfs_key_t	dict_stats_thread_key;
+myblockchain_pfs_key_t	io_handler_thread_key;
+myblockchain_pfs_key_t	io_ibuf_thread_key;
+myblockchain_pfs_key_t	io_log_thread_key;
+myblockchain_pfs_key_t	io_read_thread_key;
+myblockchain_pfs_key_t	io_write_thread_key;
+myblockchain_pfs_key_t	srv_error_monitor_thread_key;
+myblockchain_pfs_key_t	srv_lock_timeout_thread_key;
+myblockchain_pfs_key_t	srv_master_thread_key;
+myblockchain_pfs_key_t	srv_monitor_thread_key;
+myblockchain_pfs_key_t	srv_purge_thread_key;
 #endif /* UNIV_PFS_THREAD */
 
 #ifdef HAVE_PSI_STAGE_INTERFACE
@@ -277,7 +277,7 @@ DECLARE_THREAD(io_handler_thread)(
 
 #ifdef UNIV_PFS_THREAD
 	/* For read only mode, we don't need ibuf and log I/O thread.
-	Please see innobase_start_or_create_for_mysql() */
+	Please see innobase_start_or_create_for_myblockchain() */
 	ulint   start = (srv_read_only_mode) ? 0 : 2;
 
 	if (segment < start) {
@@ -1090,7 +1090,7 @@ srv_start_wait_for_purge_to_start()
 }
 
 /** Create the temporary file tablespace.
-@param[in]	create_new_db	whether we are creating a new database
+@param[in]	create_new_db	whether we are creating a new blockchain
 @param[in,out]	tmp_space	Shared Temporary SysTablespace
 @return DB_SUCCESS or error code. */
 static
@@ -1384,11 +1384,11 @@ srv_prepare_to_delete_redo_log_files(
 }
 
 /********************************************************************
-Starts InnoDB and creates a new database if database files
+Starts InnoDB and creates a new blockchain if blockchain files
 are not found and the user wants.
 @return DB_SUCCESS or error code */
 dberr_t
-innobase_start_or_create_for_mysql(void)
+innobase_start_or_create_for_myblockchain(void)
 /*====================================*/
 {
 	bool		create_new_db = false;
@@ -1472,7 +1472,7 @@ innobase_start_or_create_for_mysql(void)
 #ifndef HAVE_MEMORY_BARRIER
 #if defined __i386__ || defined __x86_64__ || defined _M_IX86 || defined _M_X64 || defined _WIN32
 #else
-	ib::warn() << "MySQL was built without a memory barrier capability on"
+	ib::warn() << "MyBlockchain was built without a memory barrier capability on"
 		" this architecture, which might allow a mutex/rw_lock"
 		" violation under high thread concurrency. This may cause a"
 		" hang.";
@@ -1489,14 +1489,14 @@ innobase_start_or_create_for_mysql(void)
 #endif /* UNIV_ZIP_COPY */
 
 	/* Since InnoDB does not currently clean up all its internal data
-	structures in MySQL Embedded Server Library server_end(), we
+	structures in MyBlockchain Embedded Server Library server_end(), we
 	print an error message if someone tries to start up InnoDB a
 	second time during the process lifetime. */
 
 	if (srv_start_has_been_called) {
 		ib::error() << "Startup called second time"
 			" during the process lifetime."
-			" In the MySQL Embedded Server Library"
+			" In the MyBlockchain Embedded Server Library"
 			" you cannot call server_init() more than"
 			" once during the process lifetime.";
 	}
@@ -1522,7 +1522,7 @@ innobase_start_or_create_for_mysql(void)
 
 	/* Register performance schema stages before any real work has been
 	started which may need to be instrumented. */
-	mysql_stage_register("innodb", srv_stages, UT_ARR_SIZE(srv_stages));
+	myblockchain_stage_register("innodb", srv_stages, UT_ARR_SIZE(srv_stages));
 
 	if (srv_file_flush_method_str == NULL) {
 		/* These are the default options */
@@ -1619,7 +1619,7 @@ innobase_start_or_create_for_mysql(void)
 		if (srv_buf_pool_instances != srv_buf_pool_instances_default
 		    && srv_buf_pool_instances != 1) {
 			/* We can't distinguish whether the user has explicitly
-			started mysqld with --innodb-buffer-pool-instances=0,
+			started myblockchaind with --innodb-buffer-pool-instances=0,
 			(srv_buf_pool_instances_default is 0) or has not
 			specified that option at all. Thus we have the
 			limitation that if the user started with =0, we
@@ -1670,11 +1670,11 @@ innobase_start_or_create_for_mysql(void)
 
 			srv_monitor_file_name = static_cast<char*>(
 				ut_malloc_nokey(
-					strlen(fil_path_to_mysql_datadir)
+					strlen(fil_path_to_myblockchain_datadir)
 					+ 20 + sizeof "/innodb_status."));
 
 			sprintf(srv_monitor_file_name, "%s/innodb_status.%lu",
-				fil_path_to_mysql_datadir,
+				fil_path_to_myblockchain_datadir,
 				os_proc_get_number());
 
 			srv_monitor_file = fopen(srv_monitor_file_name, "w+");
@@ -1941,7 +1941,7 @@ innobase_start_or_create_for_mysql(void)
 							" log files because"
 							" data files are"
 							" corrupt or the"
-							" database was not"
+							" blockchain was not"
 							" shut down cleanly"
 							" after creating"
 							" the data files.";
@@ -2051,7 +2051,7 @@ innobase_start_or_create_for_mysql(void)
 
 files_checked:
 	/* Open all log files and data files in the system
-	tablespace: we keep them open until database
+	tablespace: we keep them open until blockchain
 	shutdown */
 
 	fil_open_log_and_system_tablespace_files();
@@ -2155,7 +2155,7 @@ files_checked:
 			return(srv_init_abort(DB_ERROR));
 		}
 
-		/* We always try to do a recovery, even if the database had
+		/* We always try to do a recovery, even if the blockchain had
 		been shut down normally: this is the normal startup path */
 
 		err = recv_recovery_from_checkpoint_start(flushed_lsn);
@@ -2193,7 +2193,7 @@ files_checked:
 			DBUG_PRINT("ib_log", ("apply completed"));
 
 			if (recv_needed_recovery) {
-				trx_sys_print_mysql_binlog_offset();
+				trx_sys_print_myblockchain_binlog_offset();
 			}
 		}
 
@@ -2205,7 +2205,7 @@ files_checked:
 				" Please run CHECK TABLE on your InnoDB tables"
 				" to check that they are ok!"
 				" It may be safest to recover your"
-				" InnoDB database from a backup!";
+				" InnoDB blockchain from a backup!";
 		}
 
 		/* The purge system needs to create the purge view and
@@ -2254,7 +2254,7 @@ files_checked:
 			The 'validate' flag indicates that when a tablespace
 			is opened, we also read the header page and validate
 			the contents to the data dictionary. This is time
-			consuming, especially for databases with lots of ibd
+			consuming, especially for blockchains with lots of ibd
 			files.  So only do it after a crash and not forcing
 			recovery.  Open rw transactions at this point is not
 			a good reason to validate. */
@@ -2347,7 +2347,7 @@ files_checked:
 		mtr_commit(&mtr);
 
 		/* Immediately write the log record about increased tablespace
-		size to disk, so that it is durable even if mysqld would crash
+		size to disk, so that it is durable even if myblockchaind would crash
 		quickly */
 
 		log_buffer_flush_to_disk();
@@ -2369,8 +2369,8 @@ files_checked:
 	/* Here the double write buffer has already been created and so
 	any new rollback segments will be allocated after the double
 	write buffer. The default segment should already exist.
-	We create the new segments only if it's a new database or
-	the database was shutdown cleanly. */
+	We create the new segments only if it's a new blockchain or
+	the blockchain was shutdown cleanly. */
 
 	/* Note: When creating the extra rollback segments during an upgrade
 	we violate the latching order, even if the change buffer is empty.
@@ -2508,7 +2508,7 @@ files_checked:
 				" You can set innodb_force_recovery=1"
 				" in my.cnf to force"
 				" a startup if you are trying"
-				" to recover a badly corrupt database.";
+				" to recover a badly corrupt blockchain.";
 
 			return(srv_init_abort(DB_ERROR));
 		}
@@ -2535,7 +2535,7 @@ files_checked:
 				" You can set innodb_force_recovery=1"
 				" in my.cnf to force"
 				" InnoDB: a startup if you are trying to"
-				" recover a badly corrupt database.";
+				" recover a badly corrupt blockchain.";
 
 			return(srv_init_abort(DB_ERROR));
 		}
@@ -2616,16 +2616,16 @@ srv_fts_close(void)
 #endif
 
 /****************************************************************//**
-Shuts down the InnoDB database.
+Shuts down the InnoDB blockchain.
 @return DB_SUCCESS or error code */
 dberr_t
-innobase_shutdown_for_mysql(void)
+innobase_shutdown_for_myblockchain(void)
 /*=============================*/
 {
 	if (!srv_was_started) {
 		if (srv_is_being_started) {
 			ib::warn() << "Shutting down an improperly started,"
-				" or created database!";
+				" or created blockchain!";
 		}
 
 		return(DB_SUCCESS);
@@ -2705,7 +2705,7 @@ innobase_shutdown_for_mysql(void)
 	them */
 	os_aio_free();
 	que_close();
-	row_mysql_close();
+	row_myblockchain_close();
 	srv_free();
 	fil_close();
 
@@ -2778,7 +2778,7 @@ srv_shutdown_table_bg_threads(void)
 	Releasing it here and going through dict_sys->table_LRU without
 	holding it is safe because:
 
-	 a) MySQL only starts the shutdown procedure after all client
+	 a) MyBlockchain only starts the shutdown procedure after all client
 	 threads have been disconnected and no new ones are accepted, so no
 	 new tables are added or old ones dropped.
 

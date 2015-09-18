@@ -18,7 +18,7 @@
 #include <ndb_global.h>
 #include <ndb_opts.h>
 
-// copied from mysql.cc to get readline
+// copied from myblockchain.cc to get readline
 extern "C" {
 #if defined(_WIN32)
 #include <conio.h>
@@ -39,7 +39,7 @@ extern "C" int write_history(const char *command);
 
 #include "ndb_mgmclient.hpp"
 
-const char *load_default_groups[]= { "mysql_cluster","ndb_mgm",0 };
+const char *load_default_groups[]= { "myblockchain_cluster","ndb_mgm",0 };
 
 
 static Ndb_mgmclient* com;

@@ -13,10 +13,10 @@
    along with this program; if not, write to the Free Software
    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA */
 
-#ifndef MYSQL_SERVICE_RPL_TRANSACTION_CTX_INCLUDED
+#ifndef MYBLOCKCHAIN_SERVICE_RPL_TRANSACTION_CTX_INCLUDED
 
 /**
-  @file include/mysql/service_rpl_transaction_ctx.h
+  @file include/myblockchain/service_rpl_transaction_ctx.h
   This service provides a function for plugins to report if a transaction of a
   given THD should continue or be aborted.
 
@@ -27,7 +27,7 @@
     Rpl_transaction_ctx::is_transaction_rollback() check.
 */
 
-#ifndef MYSQL_ABI_CHECK
+#ifndef MYBLOCKCHAIN_ABI_CHECK
 #include <stdlib.h>
 #endif
 
@@ -62,7 +62,7 @@ extern struct rpl_transaction_ctx_service_st {
   int (*set_transaction_ctx)(Transaction_termination_ctx transaction_termination_ctx);
 } *rpl_transaction_ctx_service;
 
-#ifdef MYSQL_DYNAMIC_PLUGIN
+#ifdef MYBLOCKCHAIN_DYNAMIC_PLUGIN
 
 #define set_transaction_ctx(transaction_termination_ctx) \
   (rpl_transaction_ctx_service->set_transaction_ctx((transaction_termination_ctx)))
@@ -77,5 +77,5 @@ int set_transaction_ctx(Transaction_termination_ctx transaction_termination_ctx)
 }
 #endif
 
-#define MYSQL_SERVICE_RPL_TRANSACTION_CTX_INCLUDED
+#define MYBLOCKCHAIN_SERVICE_RPL_TRANSACTION_CTX_INCLUDED
 #endif

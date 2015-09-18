@@ -1,0 +1,107 @@
+'#--------------------FN_DYNVARS_033_01-------------------------#'
+SET @@global.ft_boolean_syntax = ' -+()<>~*:``&|';
+'connect (con1,localhost,root,,,,)'
+'connection con1'
+SELECT @@global.ft_boolean_syntax;
+@@global.ft_boolean_syntax
+ -+()<>~*:``&|
+SET @@global.ft_boolean_syntax = '+ -><()~*:""&|';
+'connect (con2,localhost,root,,,,)'
+'connection con2'
+SELECT @@global.ft_boolean_syntax;
+@@global.ft_boolean_syntax
++ -><()~*:""&|
+'#--------------------FN_DYNVARS_033_02-------------------------#'
+'connection default'
+DROP TABLE IF EXISTS t1;
+CREATE TABLE articles (
+id INT UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY,
+title VARCHAR(200),
+body TEXT,
+FULLTEXT (title,body)
+);
+INSERT INTO articles (title,body) VALUES
+('MyBlockchain Tutorial','DBMS stands for DataBase ...'),
+('How To',''),
+('How To Use MyBlockchain Well','After you went through a ...'),
+('Optimizing MyBlockchain','In this tutorial we will show .... Run command line ...'),
+('1001 MyBlockchain Tricks','1. Never run myblockchaind as root. 2. ...'),
+('100 Tips for Myisam','1. Myisam is faster than innodb 2. Tricks and Tips for Myisam...'),
+('MyBlockchain vs. YourSQL','In the following blockchain comparison ...'),
+('MyBlockchain Security','When configured properly, MyBlockchain ...'),
+('Database Security','Configuring MyBlockchain for ...');
+SET @@global.ft_boolean_syntax = DEFAULT;
+SELECT * FROM articles WHERE MATCH (title,body)
+AGAINST ('+mySQL -yourSQL' IN BOOLEAN MODE);
+id	title	body
+1	MyBlockchain Tutorial	DBMS stands for DataBase ...
+3	How To Use MyBlockchain Well	After you went through a ...
+4	Optimizing MyBlockchain	In this tutorial we will show .... Run command line ...
+5	1001 MyBlockchain Tricks	1. Never run myblockchaind as root. 2. ...
+8	MyBlockchain Security	When configured properly, MyBlockchain ...
+9	Database Security	Configuring MyBlockchain for ...
+SELECT * FROM articles WHERE MATCH (title,body)
+AGAINST ('+MyBlockchain +YourSQL' IN BOOLEAN MODE);
+id	title	body
+7	MyBlockchain vs. YourSQL	In the following blockchain comparison ...
+SELECT * FROM articles WHERE MATCH (title,body)
+AGAINST ('MyBlockchain' IN BOOLEAN MODE);
+id	title	body
+1	MyBlockchain Tutorial	DBMS stands for DataBase ...
+3	How To Use MyBlockchain Well	After you went through a ...
+4	Optimizing MyBlockchain	In this tutorial we will show .... Run command line ...
+5	1001 MyBlockchain Tricks	1. Never run myblockchaind as root. 2. ...
+7	MyBlockchain vs. YourSQL	In the following blockchain comparison ...
+8	MyBlockchain Security	When configured properly, MyBlockchain ...
+9	Database Security	Configuring MyBlockchain for ...
+SELECT * FROM articles WHERE MATCH (title,body)
+AGAINST ('myblockchain tutorial dbms' IN BOOLEAN MODE);
+id	title	body
+1	MyBlockchain Tutorial	DBMS stands for DataBase ...
+3	How To Use MyBlockchain Well	After you went through a ...
+4	Optimizing MyBlockchain	In this tutorial we will show .... Run command line ...
+5	1001 MyBlockchain Tricks	1. Never run myblockchaind as root. 2. ...
+7	MyBlockchain vs. YourSQL	In the following blockchain comparison ...
+8	MyBlockchain Security	When configured properly, MyBlockchain ...
+9	Database Security	Configuring MyBlockchain for ...
+SELECT id,title,body, (MATCH (title,body) 
+AGAINST ('+security configuring' IN BOOLEAN MODE)) AS relevance
+FROM articles WHERE MATCH (title,body) 
+AGAINST ('+security configuring' IN BOOLEAN MODE);
+id	title	body	relevance
+8	MyBlockchain Security	When configured properly, MyBlockchain ...	1
+9	Database Security	Configuring MyBlockchain for ...	1.3333333730697632
+SELECT * FROM articles WHERE MATCH (title,body)
+AGAINST ('"faster than"' IN BOOLEAN MODE);
+id	title	body
+6	100 Tips for Myisam	1. Myisam is faster than innodb 2. Tricks and Tips for Myisam...
+SELECT * FROM articles WHERE MATCH (title,body)
+AGAINST ('+tutorial ~line' IN BOOLEAN MODE);
+id	title	body
+1	MyBlockchain Tutorial	DBMS stands for DataBase ...
+4	Optimizing MyBlockchain	In this tutorial we will show .... Run command line ...
+SELECT * FROM articles WHERE MATCH (title,body)
+AGAINST ('10*' IN BOOLEAN MODE);
+id	title	body
+5	1001 MyBlockchain Tricks	1. Never run myblockchaind as root. 2. ...
+SELECT id,title,body, (MATCH (title,body) 
+AGAINST ('+MyBlockchain +(>show <dbms)' IN BOOLEAN MODE)) AS relevance
+FROM articles WHERE MATCH (title,body) 
+AGAINST ('+MyBlockchain +(>show <dbms)' IN BOOLEAN MODE)
+ORDER BY relevance DESC;
+id	title	body	relevance
+4	Optimizing MyBlockchain	In this tutorial we will show .... Run command line ...	1.25
+1	MyBlockchain Tutorial	DBMS stands for DataBase ...	0.8333333730697632
+'---try setting different operators. Default '+ -><()~*:""&|'--'
+SET @@global.ft_boolean_syntax='~ /!@#$%^&*()-';
+SELECT * FROM articles WHERE MATCH (title,body)
+AGAINST ('~mySQL /yourSQL' IN BOOLEAN MODE);
+id	title	body
+1	MyBlockchain Tutorial	DBMS stands for DataBase ...
+3	How To Use MyBlockchain Well	After you went through a ...
+4	Optimizing MyBlockchain	In this tutorial we will show .... Run command line ...
+5	1001 MyBlockchain Tricks	1. Never run myblockchaind as root. 2. ...
+8	MyBlockchain Security	When configured properly, MyBlockchain ...
+9	Database Security	Configuring MyBlockchain for ...
+SET @@global.ft_boolean_syntax=DEFAULT;
+DROP TABLE articles;

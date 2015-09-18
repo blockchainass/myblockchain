@@ -72,7 +72,7 @@ MACRO(COULD_NOT_FIND_BOOST)
   ECHO_BOOST_VARIABLES()
   RESET_BOOST_VARIABLES()
   MESSAGE(STATUS "Could not find (the correct version of) boost.")
-  MESSAGE(STATUS "MySQL currently requires ${BOOST_PACKAGE_NAME}\n")
+  MESSAGE(STATUS "MyBlockchain currently requires ${BOOST_PACKAGE_NAME}\n")
   MESSAGE(FATAL_ERROR
     "You can download it with -DDOWNLOAD_BOOST=1 -DWITH_BOOST=<directory>\n"
     "This CMake script will look for boost in <directory>. "

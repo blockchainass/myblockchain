@@ -36,5 +36,5 @@ ENDIF()
 
 # This is used for the version_compile_machine variable.
 IF(CMAKE_SIZEOF_VOID_P MATCHES 8)
-  SET(MYSQL_MACHINE_TYPE "x86_64")
+  SET(MYBLOCKCHAIN_MACHINE_TYPE "x86_64")
 ENDIF()

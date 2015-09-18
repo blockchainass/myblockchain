@@ -938,8 +938,8 @@ RemoteDatafile::set_link_filepath(const char* path)
 }
 
 /** Creates a new InnoDB Symbolic Link (ISL) file.  It is always created
-under the 'datadir' of MySQL. The datadir is the directory of a
-running mysqld program. We can refer to it by simply using the path ".".
+under the 'datadir' of MyBlockchain. The datadir is the directory of a
+running myblockchaind program. We can refer to it by simply using the path ".".
 @param[in]	name		tablespace name
 @param[in]	filepath	remote filepath of tablespace datafile
 @param[in]	is_shared	true for general tablespace,
@@ -974,7 +974,7 @@ RemoteDatafile::create_link_file(
 
 		Folder	folder(filepath, len);
 
-		if (folder_mysql_datadir == folder) {
+		if (folder_myblockchain_datadir == folder) {
 			/* File is in the datadir. */
 			return(DB_SUCCESS);
 		}
@@ -1075,10 +1075,10 @@ RemoteDatafile::delete_link_file(
 }
 
 /** Read an InnoDB Symbolic Link (ISL) file by name.
-It is always created under the datadir of MySQL.
+It is always created under the datadir of MyBlockchain.
 For file-per-table tablespaces, the isl file is expected to be
-in a 'database' directory and called 'tablename.isl'.
-For general tablespaces, there will be no 'database' directory.
+in a 'blockchain' directory and called 'tablename.isl'.
+For general tablespaces, there will be no 'blockchain' directory.
 The 'basename.isl' will be in the datadir.
 The caller must free the memory returned if it is not null.
 @param[in]	link_filepath	filepath of the ISL file

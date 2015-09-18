@@ -1,0 +1,39 @@
+# This one assumes we are ignoring updates on table myblockchaintest_foo, but doing
+# the ones on all other tables
+--source include/not_group_replication_plugin.inc
+source include/master-slave.inc;
+connection slave;
+
+#
+# For this test we must be in the test blockchain
+#
+use test;
+
+--disable_warnings
+drop table if exists myblockchaintest_foo;
+drop table if exists myblockchaintest_bar;
+--enable_warnings
+
+create table myblockchaintest_foo (n int);
+insert into myblockchaintest_foo values(4);
+connection master;
+use test;
+create table myblockchaintest_foo (n int);
+insert into myblockchaintest_foo values(5);
+create table myblockchaintest_bar (m int);
+insert into myblockchaintest_bar values(15);
+create table t1 (k int);
+insert into t1 values(55);
+save_master_pos;
+connection slave;
+sync_with_master;
+select myblockchaintest_foo.n,myblockchaintest_bar.m,t1.k from myblockchaintest_foo,myblockchaintest_bar,t1;
+connection master;
+drop table myblockchaintest_foo,myblockchaintest_bar,t1;
+save_master_pos;
+connection slave;
+sync_with_master;
+drop table myblockchaintest_foo,myblockchaintest_bar,t1;
+
+# End of 4.1 tests
+--source include/rpl_end.inc

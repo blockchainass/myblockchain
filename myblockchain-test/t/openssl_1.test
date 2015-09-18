@@ -1,0 +1,279 @@
+
+# Tests for SSL connections, only run if myblockchaind is compiled
+# with support for SSL.
+
+-- source include/have_ssl_communication.inc
+
+# Save the initial number of concurrent sessions
+--source include/count_sessions.inc
+
+set @orig_sql_mode= @@sql_mode;
+set sql_mode= (select replace(@@sql_mode,'NO_AUTO_CREATE_USER',''));
+
+--disable_warnings
+drop table if exists t1;
+--enable_warnings
+create table t1(f1 int);
+insert into t1 values (5);
+
+grant select on test.* to ssl_user1@localhost require SSL;
+grant select on test.* to ssl_user2@localhost require cipher "DHE-RSA-AES256-SHA";
+grant select on test.* to ssl_user3@localhost require cipher "DHE-RSA-AES256-SHA" AND SUBJECT "/C=SE/ST=Stockholm/L=Stockholm/O=Oracle/OU=MyBlockchain/CN=Client";
+grant select on test.* to ssl_user4@localhost require cipher "DHE-RSA-AES256-SHA" AND SUBJECT "/C=SE/ST=Stockholm/L=Stockholm/O=Oracle/OU=MyBlockchain/CN=Client" ISSUER "/C=SE/ST=Stockholm/L=Stockholm/O=Oracle/OU=MyBlockchain/CN=CA";
+grant select on test.* to ssl_user5@localhost require cipher "DHE-RSA-AES256-SHA" AND SUBJECT "xxx";
+flush privileges;
+
+connect (con1,localhost,ssl_user1,,,,,SSL);
+connect (con2,localhost,ssl_user2,,,,,SSL);
+connect (con3,localhost,ssl_user3,,,,,SSL);
+connect (con4,localhost,ssl_user4,,,,,SSL);
+--replace_result $MASTER_MYSOCK MASTER_SOCKET $MASTER_MYPORT MASTER_PORT
+--error ER_ACCESS_DENIED_ERROR
+connect (con5,localhost,ssl_user5,,,,,SSL);
+
+connection con1;
+# Check ssl turned on
+SHOW STATUS LIKE 'Ssl_cipher';
+select * from t1;
+--error ER_TABLEACCESS_DENIED_ERROR
+delete from t1;
+
+connection con2;
+# Check ssl turned on
+SHOW STATUS LIKE 'Ssl_cipher';
+select * from t1;
+--error ER_TABLEACCESS_DENIED_ERROR
+delete from t1;
+
+connection con3;
+# Check ssl turned on
+SHOW STATUS LIKE 'Ssl_cipher';
+select * from t1;
+--error ER_TABLEACCESS_DENIED_ERROR
+delete from t1;
+
+connection con4;
+# Check ssl turned on
+SHOW STATUS LIKE 'Ssl_cipher';
+select * from t1;
+--error ER_TABLEACCESS_DENIED_ERROR
+delete from t1;
+
+connection default;
+disconnect con1;
+disconnect con2;
+disconnect con3;
+disconnect con4;
+drop user ssl_user1@localhost, ssl_user2@localhost,
+ssl_user3@localhost, ssl_user4@localhost, ssl_user5@localhost;
+
+drop table t1;
+
+# End of 4.1 tests
+
+#
+# Test that we can't open connection to server if we are using
+# a different cacert
+#
+--exec echo "this query should not execute;" > $MYBLOCKCHAINTEST_VARDIR/tmp/test.sql
+--replace_regex /2026 SSL connection error.*/2026 SSL connection error: xxxx/
+--error 1
+--exec $MYBLOCKCHAIN_TEST --ssl --ssl-ca=$MYBLOCKCHAIN_TEST_DIR/std_data/untrusted-cacert.pem --max-connect-retries=1 < $MYBLOCKCHAINTEST_VARDIR/tmp/test.sql 2>&1
+--echo
+
+#
+# Test that we can't open connection to server if we are using
+# a blank ca
+#
+--replace_regex /2026 SSL connection error.*/2026 SSL connection error: xxxx/
+--error 1
+--exec $MYBLOCKCHAIN_TEST --ssl --ssl-ca= --max-connect-retries=1 < $MYBLOCKCHAINTEST_VARDIR/tmp/test.sql 2>&1
+--echo
+
+#
+# Test that we can't open connection to server if we are using
+# a nonexistent ca file
+#
+--replace_regex /2026 SSL connection error.*/2026 SSL connection error: xxxx/
+--error 1
+--exec $MYBLOCKCHAIN_TEST --ssl --ssl-ca=nonexisting_file.pem --max-connect-retries=1 < $MYBLOCKCHAINTEST_VARDIR/tmp/test.sql 2>&1
+--echo
+
+#
+# Test that we can't open connection to server if we are using
+# a blank client-key
+#
+--error 1
+--exec $MYBLOCKCHAIN_TEST --ssl --ssl-key= --max-connect-retries=1 < $MYBLOCKCHAINTEST_VARDIR/tmp/test.sql 2>&1
+
+#
+# Test that we can't open connection to server if we are using
+# a blank client-cert
+#
+--error 1
+--exec $MYBLOCKCHAIN_TEST --ssl --ssl-cert= --max-connect-retries=1 < $MYBLOCKCHAINTEST_VARDIR/tmp/test.sql 2>&1
+
+#
+# Bug#21611 Slave can't connect when master-ssl-cipher specified
+# - Apparently selecting a cipher doesn't work at all
+# - Usa a cipher that both yaSSL and OpenSSL supports
+#
+--exec echo "SHOW STATUS LIKE 'Ssl_cipher'; exit;" > $MYBLOCKCHAINTEST_VARDIR/tmp/test.sql
+--exec $MYBLOCKCHAIN_TEST --ssl --ssl-cipher=DHE-RSA-AES256-SHA < $MYBLOCKCHAINTEST_VARDIR/tmp/test.sql 2>&1
+
+#
+# Bug#25309 SSL connections without CA certificate broken since MyBlockchain 5.0.23
+#
+# Test that we can open encrypted connection to server without
+# verification of servers certificate by setting both ca certificate
+# and ca path to NULL
+#
+--exec $MYBLOCKCHAIN --ssl --ssl-key=$MYBLOCKCHAIN_TEST_DIR/std_data/client-key.pem --ssl-cert=$MYBLOCKCHAIN_TEST_DIR/std_data/client-cert.pem -e "SHOW STATUS LIKE 'ssl_Cipher'" 2>&1
+--echo End of 5.0 tests
+
+#
+# Bug#26174 Server Crash: INSERT ... SELECT ... FROM I_S.GLOBAL_STATUS in
+# Event (see also information_schema.test for the other part of test for
+# this bug).
+#
+--disable_warnings
+DROP TABLE IF EXISTS thread_status;
+DROP EVENT IF EXISTS event_status;
+--enable_warnings
+
+SET GLOBAL event_scheduler=1;
+
+DELIMITER $$;
+
+CREATE EVENT event_status
+ ON SCHEDULE AT NOW()
+ ON COMPLETION NOT PRESERVE
+ DO
+BEGIN
+  CREATE TABLE thread_status
+  SELECT variable_name, variable_value
+  FROM information_schema.session_status
+  WHERE variable_name LIKE 'SSL_ACCEPTS' OR
+  variable_name LIKE 'SSL_CALLBACK_CACHE_HITS';
+END$$
+
+DELIMITER ;$$
+
+let $wait_condition=select count(*) = 0 from information_schema.events where event_name='event_status';
+--source include/wait_condition.inc
+
+# The actual value doesn't matter and can vary based on test ordering and on ssl library.
+--replace_column 2 #
+SELECT variable_name, variable_value FROM thread_status;
+
+DROP TABLE thread_status;
+SET GLOBAL event_scheduler=0;
+
+#
+# Test to connect using a list of ciphers
+#
+--exec echo "SHOW STATUS LIKE 'Ssl_cipher'; exit;" > $MYBLOCKCHAINTEST_VARDIR/tmp/test.sql
+--exec $MYBLOCKCHAIN_TEST --ssl --ssl-cipher=UNKNOWN-CIPHER:AES128-SHA < $MYBLOCKCHAINTEST_VARDIR/tmp/test.sql 2>&1
+
+
+# Test to connect using a specifi cipher
+#
+--exec echo "SHOW STATUS LIKE 'Ssl_cipher'; exit;" > $MYBLOCKCHAINTEST_VARDIR/tmp/test.sql
+--exec $MYBLOCKCHAIN_TEST --ssl --ssl-cipher=AES128-SHA < $MYBLOCKCHAINTEST_VARDIR/tmp/test.sql 2>&1
+
+# Test to connect using an unknown cipher
+#
+--exec echo "SHOW STATUS LIKE 'Ssl_cipher'; exit" > $MYBLOCKCHAINTEST_VARDIR/tmp/test.sql
+--error 1
+--exec $MYBLOCKCHAIN_TEST --ssl --ssl-cipher=UNKNOWN-CIPHER < $MYBLOCKCHAINTEST_VARDIR/tmp/test.sql 2>&1
+
+#
+# Bug#27669 myblockchaindump: SSL connection error when trying to connect
+#
+
+CREATE TABLE t1(a int);
+INSERT INTO t1 VALUES (1), (2);
+
+# Run myblockchaindump
+--exec $MYBLOCKCHAIN_DUMP --skip-create-options --skip-comments --ssl-key=$MYBLOCKCHAIN_TEST_DIR/std_data/client-key.pem --ssl-cert=$MYBLOCKCHAIN_TEST_DIR/std_data/client-cert.pem test t1
+
+--exec $MYBLOCKCHAIN_DUMP --skip-create-options --skip-comments --ssl-ca=$MYBLOCKCHAIN_TEST_DIR/std_data/cacert.pem --ssl-key=$MYBLOCKCHAIN_TEST_DIR/std_data/client-key.pem --ssl-cert=$MYBLOCKCHAIN_TEST_DIR/std_data/client-cert.pem test
+
+--exec $MYBLOCKCHAIN_DUMP --skip-create-options --skip-comments --ssl --ssl-ca=$MYBLOCKCHAIN_TEST_DIR/std_data/cacert.pem --ssl-key=$MYBLOCKCHAIN_TEST_DIR/std_data/client-key.pem --ssl-cert=$MYBLOCKCHAIN_TEST_DIR/std_data/client-cert.pem test
+
+# With wrong parameters
+--replace_result $MYBLOCKCHAIN_TEST_DIR MYBLOCKCHAIN_TEST_DIR
+--error 2
+--exec $MYBLOCKCHAIN_DUMP --skip-create-options --skip-comments --ssl --ssl-cert=$MYBLOCKCHAIN_TEST_DIR/std_data/client-cert.pem test 2>&1
+
+DROP TABLE t1;
+--remove_file $MYBLOCKCHAINTEST_VARDIR/tmp/test.sql
+
+#
+# Bug#39172 Asking for DH+non-RSA key with server set to use other key caused
+#           YaSSL to crash the server.
+#
+
+# Common ciphers to openssl and yassl
+--exec $MYBLOCKCHAIN --host=localhost -e "SHOW STATUS LIKE 'Ssl_cipher';" --ssl --ssl-cipher=DHE-RSA-AES256-SHA
+--exec $MYBLOCKCHAIN --host=localhost -e "SHOW STATUS LIKE 'Ssl_cipher';" --ssl --ssl-cipher=EDH-RSA-DES-CBC3-SHA
+--exec $MYBLOCKCHAIN --host=localhost -e "SHOW STATUS LIKE 'Ssl_cipher';" --ssl --ssl-cipher=AES256-SHA
+--exec $MYBLOCKCHAIN --host=localhost -e "SHOW STATUS LIKE 'Ssl_cipher';" --ssl --ssl-cipher=RC4-SHA
+--disable_query_log
+--disable_result_log
+
+# Below here caused crashes.  ################
+--error 1,0
+--exec $MYBLOCKCHAIN --host=localhost -e "SHOW STATUS LIKE 'Ssl-cipher';" --ssl --ssl-cipher=NOT----EXIST
+# These probably exist but the server's keys can't be used to accept these kinds of connections.
+--error 1,0
+--exec $MYBLOCKCHAIN --host=localhost -e "SHOW STATUS LIKE 'Ssl-cipher';" --ssl --ssl-cipher=DHE-DSS-AES128-RMD
+--error 1,0
+--exec $MYBLOCKCHAIN --host=localhost -e "SHOW STATUS LIKE 'Ssl-cipher';" --ssl --ssl-cipher=DHE-DSS-AES128-SHA
+--error 1,0
+--exec $MYBLOCKCHAIN --host=localhost -e "SHOW STATUS LIKE 'Ssl-cipher';" --ssl --ssl-cipher=DHE-DSS-AES256-RMD
+--error 1,0
+--exec $MYBLOCKCHAIN --host=localhost -e "SHOW STATUS LIKE 'Ssl-cipher';" --ssl --ssl-cipher=DHE-DSS-AES256-SHA
+--error 1,0
+--exec $MYBLOCKCHAIN --host=localhost -e "SHOW STATUS LIKE 'Ssl-cipher';" --ssl --ssl-cipher=DHE-DSS-DES-CBC3-RMD
+--error 1,0
+--exec $MYBLOCKCHAIN --host=localhost -e "SHOW STATUS LIKE 'Ssl-cipher';" --ssl --ssl-cipher=EDH-DSS-DES-CBC3-SHA
+--error 1,0
+--exec $MYBLOCKCHAIN --host=localhost -e "SHOW STATUS LIKE 'Ssl-cipher';" --ssl --ssl-cipher=EDH-DSS-DES-CBC-SHA
+# End of crashers.  ##########################
+
+# If this gives a result, then the bug is fixed.
+--enable_result_log
+--enable_query_log
+select 'is still running; no cipher request crashed the server' as result from dual;
+
+#
+# Bug#42158: leak: SSL_get_peer_certificate() doesn't have matching X509_free()
+#
+
+GRANT SELECT ON test.* TO bug42158@localhost REQUIRE X509;
+FLUSH PRIVILEGES;
+connect(con1,localhost,bug42158,,,,,SSL);
+SHOW STATUS LIKE 'Ssl_cipher';
+disconnect con1;
+connection default;
+DROP USER bug42158@localhost;
+
+set sql_mode= @orig_sql_mode;
+
+--echo End of 5.1 tests
+
+--echo #
+--echo # Bug #20648276: SSL-RELATED GLOBAL STATUS INFORMATION ONLY AVAILABLE
+--echo #  WHEN CONNECTED USING --SSL
+--echo #
+
+--echo # Must return empty
+--exec $MYBLOCKCHAIN --host=127.0.0.1 -P $MASTER_MYPORT --skip-ssl -e "SHOW STATUS LIKE 'Ssl-cipher';"
+--echo # Must return values for the certificate data
+--exec $MYBLOCKCHAIN --host=127.0.0.1 -P $MASTER_MYPORT --skip-ssl -e "SHOW STATUS LIKE 'Ssl_server_not%';"
+
+--echo End of 5.7 tests
+
+# Wait till we reached the initial number of concurrent sessions
+--source include/wait_until_count_sessions.inc

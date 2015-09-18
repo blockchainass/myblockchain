@@ -18,7 +18,7 @@
 
 
 /* Header file for my_aes.c */
-/* Wrapper to give simple interface for MySQL to AES standard encryption */
+/* Wrapper to give simple interface for MyBlockchain to AES standard encryption */
 
 C_MODE_START
 

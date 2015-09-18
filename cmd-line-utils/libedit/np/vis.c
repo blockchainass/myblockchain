@@ -60,7 +60,7 @@
 #if defined(LIBC_SCCS) && !defined(lint)
 #endif /* LIBC_SCCS and not lint */
 
-/* XXXMYSQL : Make compiler happy. */
+/* XXXMYBLOCKCHAIN : Make compiler happy. */
 #ifdef _LIBC
 #include "namespace.h"
 #endif
@@ -69,7 +69,7 @@
 
 #include <assert.h>
 /*
-  XXXMYSQL : Due to different versions of vis.h available,
+  XXXMYBLOCKCHAIN : Due to different versions of vis.h available,
              use the one bundled with libedit.
 */
 #include "np/vis.h"

@@ -34,7 +34,7 @@
 #include <stddef.h>
 #include <dlfcn.h>
 
-#include "memcached_mysql.h"
+#include "memcached_myblockchain.h"
 
 #define INNODB_MEMCACHED
 
@@ -6987,7 +6987,7 @@ my_strdupl(const char* str, int len)
 	return((char*) memcpy(s, str, len));
 }
 
-/** Function that messages MySQL config variable string to something
+/** Function that messages MyBlockchain config variable string to something
 that can be parsed by getopt() */
 static
 void

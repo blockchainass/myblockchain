@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2003-2006 MySQL AB, 2009 Sun Microsystems, Inc.
+   Copyright (C) 2003-2006 MyBlockchain AB, 2009 Sun Microsystems, Inc.
     All rights reserved. Use is subject to license terms.
 
    This program is free software; you can redistribute it and/or modify
@@ -201,7 +201,7 @@ struct NdbError {
   /**
    * Mysql error code
    */
-  int mysql_code;
+  int myblockchain_code;
 
   /**
    * Error message
@@ -223,7 +223,7 @@ struct NdbError {
     status = UnknownResult;
     classification = NoError;
     code = 0;
-    mysql_code = 0;
+    myblockchain_code = 0;
     message = 0;
     details = 0;
   }
@@ -231,7 +231,7 @@ struct NdbError {
     status = (NdbError::Status) ndberror.status;
     classification = (NdbError::Classification) ndberror.classification;
     code = ndberror.code;
-    mysql_code = ndberror.mysql_code;
+    myblockchain_code = ndberror.myblockchain_code;
     message = ndberror.message;
     details = ndberror.details;
   }
@@ -240,7 +240,7 @@ struct NdbError {
     ndberror.status = (ndberror_status_enum) status;
     ndberror.classification = (ndberror_classification_enum) classification;
     ndberror.code = code;
-    ndberror.mysql_code = mysql_code;
+    ndberror.myblockchain_code = myblockchain_code;
     ndberror.message = message;
     ndberror.details = details;
     return ndberror;

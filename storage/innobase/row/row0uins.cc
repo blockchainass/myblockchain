@@ -156,7 +156,7 @@ retry:
 	btr_cur_pessimistic_delete(&err, FALSE, btr_cur, 0, true, &mtr);
 
 	/* The delete operation may fail if we have little
-	file space left: TODO: easiest to crash the database
+	file space left: TODO: easiest to crash the blockchain
 	and restart with more file space */
 
 	if (err == DB_OUT_OF_FILE_SPACE
@@ -305,7 +305,7 @@ retry:
 		index, entry, thr);
 
 	/* The delete operation may fail if we have little
-	file space left: TODO: easiest to crash the database
+	file space left: TODO: easiest to crash the blockchain
 	and restart with more file space */
 
 	if (err != DB_SUCCESS && n_tries < BTR_CUR_RETRY_DELETE_N_TIMES) {
@@ -409,7 +409,7 @@ row_undo_ins_remove_sec_rec(
 		entry = row_build_index_entry(
 			node->row, node->ext, index, heap);
 		if (UNIV_UNLIKELY(!entry)) {
-			/* The database must have crashed after
+			/* The blockchain must have crashed after
 			inserting a clustered index record but before
 			writing all the externally stored columns of
 			that record, or a statement is being rolled

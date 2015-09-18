@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2008 MySQL AB
+   Copyright (C) 2008 MyBlockchain AB
     All rights reserved. Use is subject to license terms.
 
    This program is free software; you can redistribute it and/or modify
@@ -53,9 +53,9 @@ int runTestDbUtil(NDBT_Context* ctx, NDBT_Step* step){
   DbUtil sql("test");
 
   {
-    // Select all rows from mysql.user
+    // Select all rows from myblockchain.user
     SqlResultSet result;
-    if (!sql.doQuery("SELECT * FROM mysql.user", result))
+    if (!sql.doQuery("SELECT * FROM myblockchain.user", result))
       return NDBT_FAILED;
     // result.print();
 
@@ -78,17 +78,17 @@ int runTestDbUtil(NDBT_Context* ctx, NDBT_Step* step){
     // No column name, query should fail
     Properties args;
     SqlResultSet result;
-    if (sql.doQuery("SELECT * FROM mysql.user WHERE name=?", args, result))
+    if (sql.doQuery("SELECT * FROM myblockchain.user WHERE name=?", args, result))
       return NDBT_FAILED;
     result.print();
   }
 
   {
-    // Select nonexisiting rows from mysql.user
+    // Select nonexisiting rows from myblockchain.user
     Properties args;
     SqlResultSet result;
     args.put("0", "no_such_host");
-    if (!sql.doQuery("SELECT * FROM mysql.user WHERE host=?", args, result))
+    if (!sql.doQuery("SELECT * FROM myblockchain.user WHERE host=?", args, result))
       return NDBT_FAILED;
     ndbout << "no rows" << endl;
     result.print();
@@ -96,7 +96,7 @@ int runTestDbUtil(NDBT_Context* ctx, NDBT_Step* step){
     // Change args to an find one row
     args.clear();
     args.put("0", "localhost");
-    if (!sql.doQuery("SELECT host, user FROM mysql.user WHERE host=?",
+    if (!sql.doQuery("SELECT host, user FROM myblockchain.user WHERE host=?",
                      args, result))
       return NDBT_FAILED;
     result.print();

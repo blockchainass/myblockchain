@@ -290,7 +290,7 @@ const char*
 MgmtSrvr::check_configdir() const
 {
   if (m_opts.configdir &&
-      strcmp(m_opts.configdir, MYSQLCLUSTERDIR) != 0)
+      strcmp(m_opts.configdir, MYBLOCKCHAINCLUSTERDIR) != 0)
   {
     // Specified on commmand line
     if (access(m_opts.configdir, F_OK))
@@ -305,27 +305,27 @@ MgmtSrvr::check_configdir() const
   }
   else
   {
-    // Compiled in path MYSQLCLUSTERDIR
-    if (access(MYSQLCLUSTERDIR, F_OK))
+    // Compiled in path MYBLOCKCHAINCLUSTERDIR
+    if (access(MYBLOCKCHAINCLUSTERDIR, F_OK))
     {
       g_eventLogger->info("The default config directory '%s' "            \
                           "does not exist. Trying to create it...",
-                          MYSQLCLUSTERDIR);
+                          MYBLOCKCHAINCLUSTERDIR);
 
-      if (!NdbDir::create(MYSQLCLUSTERDIR) ||
-          access(MYSQLCLUSTERDIR, F_OK))
+      if (!NdbDir::create(MYBLOCKCHAINCLUSTERDIR) ||
+          access(MYBLOCKCHAINCLUSTERDIR, F_OK))
       {
         g_eventLogger->error("Could not create directory '%s'. "        \
                              "Either create it manually or "            \
                              "specify a different directory with "      \
                              "--configdir=<path>",
-                             MYSQLCLUSTERDIR);
+                             MYBLOCKCHAINCLUSTERDIR);
         return NULL;
       }
 
       g_eventLogger->info("Sucessfully created config directory");
     }
-    return MYSQLCLUSTERDIR;
+    return MYBLOCKCHAINCLUSTERDIR;
   }
 }
 
@@ -397,7 +397,7 @@ MgmtSrvr::start_transporter(const Config* config)
 
   /*
     Register ourself at TransporterFacade to be able to receive signals
-    and to be notified when a database process has died.
+    and to be notified when a blockchain process has died.
   */
   Uint32 res;
   if ((res = open(theFacade)) == 0)
@@ -693,7 +693,7 @@ MgmtSrvr::setClusterLog(const Config* config)
 
 #ifdef _WIN32
   /* Output to Windows event log */
-  g_eventLogger->createEventLogHandler("MySQL Cluster Management Server");
+  g_eventLogger->createEventLogHandler("MyBlockchain Cluster Management Server");
 #endif
 
   if (m_opts.verbose)
@@ -1009,7 +1009,7 @@ MgmtSrvr::report_unknown_signal(SimpleSignal *signal)
 }
 
 /*****************************************************************************
- * Starting and stopping database nodes
+ * Starting and stopping blockchain nodes
  ****************************************************************************/
 
 int 
@@ -1032,13 +1032,13 @@ MgmtSrvr::sendSTART_ORD(int nodeId)
 void
 MgmtSrvr::status_api(int nodeId,
                      ndb_mgm_node_status& node_status,
-                     Uint32& version, Uint32& mysql_version,
+                     Uint32& version, Uint32& myblockchain_version,
                      const char **address)
 {
   assert(getNodeType(nodeId) == NDB_MGM_NODE_TYPE_API);
-  assert(version == 0 && mysql_version == 0);
+  assert(version == 0 && myblockchain_version == 0);
 
-  if (sendVersionReq(nodeId, version, mysql_version, address) != 0)
+  if (sendVersionReq(nodeId, version, myblockchain_version, address) != 0)
   {
     // Couldn't get version from any NDB node.
     assert(version == 0);
@@ -1048,12 +1048,12 @@ MgmtSrvr::status_api(int nodeId,
 
   if (version)
   {
-    assert(mysql_version);
+    assert(myblockchain_version);
     node_status = NDB_MGM_NODE_STATUS_CONNECTED;
   }
   else
   {
-    assert(mysql_version == 0);
+    assert(myblockchain_version == 0);
     node_status = NDB_MGM_NODE_STATUS_NO_CONTACT;
   }
   return;
@@ -1063,7 +1063,7 @@ MgmtSrvr::status_api(int nodeId,
 int
 MgmtSrvr::sendVersionReq(int v_nodeId,
 			 Uint32 &version,
-			 Uint32& mysql_version,
+			 Uint32& myblockchain_version,
 			 const char **address)
 {
   SignalSender ss(theFacade);
@@ -1106,9 +1106,9 @@ MgmtSrvr::sendVersionReq(int v_nodeId,
       assert((int) conf->nodeId == v_nodeId);
 
       version = conf->version;
-      mysql_version = conf->mysql_version;
+      myblockchain_version = conf->myblockchain_version;
       if (version < NDBD_SPLIT_VERSION)
-	mysql_version = 0;
+	myblockchain_version = 0;
       struct in_addr in;
       in.s_addr= conf->m_inet_addr;
       *address= inet_ntoa(in);
@@ -1922,11 +1922,11 @@ int MgmtSrvr::restartNodes(const Vector<NodeId> &node_ids,
            NdbTick_Elapsed(startTime,NdbTick_getCurrentTicks()).milliSec() < waitTime)
     {
       Uint32 startPhase = 0, version = 0, dynamicId = 0, nodeGroup = 0;
-      Uint32 mysql_version = 0;
+      Uint32 myblockchain_version = 0;
       Uint32 connectCount = 0;
       bool system;
       const char *address= NULL;
-      status(nodeId, &s, &version, &mysql_version, &startPhase, 
+      status(nodeId, &s, &version, &myblockchain_version, &startPhase, 
              &system, &dynamicId, &nodeGroup, &connectCount, &address);
       NdbSleep_MilliSleep(100);  
     }
@@ -2020,11 +2020,11 @@ int MgmtSrvr::restartDB(bool nostart, bool initialStart,
            NdbTick_Elapsed(startTime,NdbTick_getCurrentTicks()).milliSec() < waitTime)
     {
       Uint32 startPhase = 0, version = 0, dynamicId = 0, nodeGroup = 0;
-      Uint32 mysql_version = 0;
+      Uint32 myblockchain_version = 0;
       Uint32 connectCount = 0;
       bool system;
       const char *address;
-      status(nodeId, &s, &version, &mysql_version, &startPhase, 
+      status(nodeId, &s, &version, &myblockchain_version, &startPhase, 
 	     &system, &dynamicId, &nodeGroup, &connectCount, &address);
       NdbSleep_MilliSleep(100);  
     }
@@ -2034,7 +2034,7 @@ int MgmtSrvr::restartDB(bool nostart, bool initialStart,
     return 0;
   
   /**
-   * Now we start all database nodes (i.e. we make them non-idle)
+   * Now we start all blockchain nodes (i.e. we make them non-idle)
    * We ignore the result we get from the start command.
    */
   nodeId = 0;
@@ -2105,7 +2105,7 @@ MgmtSrvr::exitSingleUser(int * stopCount, bool abort)
 void
 MgmtSrvr::status_mgmd(NodeId node_id,
                       ndb_mgm_node_status& node_status,
-                      Uint32& version, Uint32& mysql_version,
+                      Uint32& version, Uint32& myblockchain_version,
                       const char **address)
 {
   assert(getNodeType(node_id) == NDB_MGM_NODE_TYPE_MGM);
@@ -2114,19 +2114,19 @@ MgmtSrvr::status_mgmd(NodeId node_id,
   {
     /*
       Special case to get version of own node
-      - version and mysql_version is hardcoded
+      - version and myblockchain_version is hardcoded
       - address should be the address seen from ndbd(if it's connected)
         else use HostName from config
     */
-    Uint32 tmp_version = 0, tmp_mysql_version = 0;
-    sendVersionReq(node_id, tmp_version, tmp_mysql_version, address);
+    Uint32 tmp_version = 0, tmp_myblockchain_version = 0;
+    sendVersionReq(node_id, tmp_version, tmp_myblockchain_version, address);
     // Check that the version returned is equal to compiled in version
     assert(tmp_version == 0 ||
            (tmp_version == NDB_VERSION &&
-            tmp_mysql_version == NDB_MYSQL_VERSION_D));
+            tmp_myblockchain_version == NDB_MYBLOCKCHAIN_VERSION_D));
 
     version = NDB_VERSION;
-    mysql_version = NDB_MYSQL_VERSION_D;
+    myblockchain_version = NDB_MYBLOCKCHAIN_VERSION_D;
     if(!*address)
     {
       // No address returned from ndbd -> get HostName from config
@@ -2156,14 +2156,14 @@ MgmtSrvr::status_mgmd(NodeId node_id,
   if(node.is_connected())
   {
     version = node.m_info.m_version;
-    mysql_version = node.m_info.m_mysql_version;
+    myblockchain_version = node.m_info.m_myblockchain_version;
     node_status = NDB_MGM_NODE_STATUS_CONNECTED;
     *address= get_connect_address(node_id);
   }
   else
   {
     version = 0;
-    mysql_version = 0;
+    myblockchain_version = 0;
     node_status = NDB_MGM_NODE_STATUS_NO_CONTACT;
   }
 
@@ -2174,7 +2174,7 @@ int
 MgmtSrvr::status(int nodeId, 
                  ndb_mgm_node_status * _status, 
 		 Uint32 * version,
-		 Uint32 * mysql_version,
+		 Uint32 * myblockchain_version,
 		 Uint32 * _phase, 
 		 bool * _system,
 		 Uint32 * dynamic,
@@ -2184,12 +2184,12 @@ MgmtSrvr::status(int nodeId,
 {
   switch(getNodeType(nodeId)){
   case NDB_MGM_NODE_TYPE_API:
-    status_api(nodeId, *_status, *version, *mysql_version, address);
+    status_api(nodeId, *_status, *version, *myblockchain_version, address);
     return 0;
     break;
 
   case NDB_MGM_NODE_TYPE_MGM:
-    status_mgmd(nodeId, *_status, *version, *mysql_version, address);
+    status_mgmd(nodeId, *_status, *version, *myblockchain_version, address);
     return 0;
     break;
 
@@ -2211,7 +2211,7 @@ MgmtSrvr::status(int nodeId,
   }
 
   * version = node.m_info.m_version;
-  * mysql_version = node.m_info.m_mysql_version;
+  * myblockchain_version = node.m_info.m_myblockchain_version;
 
   *address= get_connect_address(nodeId);
 

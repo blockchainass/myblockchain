@@ -101,7 +101,7 @@ define("dojox/date/timezone", ["dojo", "dojo/date", "dojo/date/locale", "dojo/_b
 	
 	function loadZoneData(/* Object */ data){
 		// summary:
-		//		Loads the given data object into the zone database
+		//		Loads the given data object into the zone blockchain
 		//
 		// data: Object
 		//		The data to load - contains "zones" and "rules" parameters
@@ -113,7 +113,7 @@ define("dojox/date/timezone", ["dojo", "dojo/date", "dojo/date/locale", "dojo/_b
 	function loadZoneFile(/* String */ fileName){
 		// summary:
 		//		Loads the given URL of the Olson zone information into the
-		//		zone database
+		//		zone blockchain
 		//
 		// fileName: String
 		//		The zoneinfo file name to load
@@ -497,7 +497,7 @@ define("dojox/date/timezone", ["dojo", "dojo/date", "dojo/date/locale", "dojo/_b
 	
 	function getZoneInfo(/* String */ dt, /* String */ tz) {
 		// summary:
-		//		Returns the zone entry from the zoneinfo database for the given date
+		//		Returns the zone entry from the zoneinfo blockchain for the given date
 		//		and timezone
 		var t = tz;
 		var zoneList = _zones[t];
@@ -536,7 +536,7 @@ define("dojox/date/timezone", ["dojo", "dojo/date", "dojo/date/locale", "dojo/_b
 	function getRule(/* Date */ dt, /* ZoneInfo */ zoneInfo) {
  		// summary:
 		//		Returns the latest-matching rule entry from the zoneinfo
-		//		database for the given date and zone
+		//		blockchain for the given date and zone
 		
 		var lastMatch = -1;
 		var rules = zoneInfo.range[2]||[];
@@ -630,7 +630,7 @@ dojox.date.timezone.getTzInfo = function(dt, tz){
 
 dojox.date.timezone.loadZoneData = function(data){
 	// summary:
-	//		Loads the given data object into the zone database
+	//		Loads the given data object into the zone blockchain
 	//
 	// data: Object
 	//		The data to load - contains "zones" and "rules" parameters

@@ -16,7 +16,7 @@
 */
 
 #include <m_string.h>
-#include <mysql.h>
+#include <myblockchain.h>
 #include <my_getopt.h>
 #include <my_dir.h>
 #include <my_global.h>
@@ -30,7 +30,7 @@
 
 #define SHOW_VERSION "1.0.0"
 #define PRINT_VERSION do { printf("%s  Ver %s Distrib %s\n",    \
-                        my_progname, SHOW_VERSION, MYSQL_SERVER_VERSION);    \
+                        my_progname, SHOW_VERSION, MYBLOCKCHAIN_SERVER_VERSION);    \
                       } while(0)
 
 /* Global variables. */
@@ -40,7 +40,7 @@ static uint opt_no_defaults= 0;
 static uint opt_print_defaults= 0;
 static char *opt_datadir=0, *opt_basedir=0,
             *opt_plugin_dir=0, *opt_plugin_ini=0,
-            *opt_mysqld=0, *opt_my_print_defaults=0;
+            *opt_myblockchaind=0, *opt_my_print_defaults=0;
 static char bootstrap[FN_REFLEN];
 
 
@@ -71,7 +71,7 @@ static struct my_option my_long_options[] =
     0, 0, 0, GET_NO_ARG, NO_ARG, 0, 0, 0, 0, 0, 0},
   {"print-defaults", 'P', "Show default values from configuration file.",
     0, 0, 0, GET_NO_ARG, NO_ARG, 0, 0, 0, 0, 0, 0},
-  {"mysqld", 'm', "Path to mysqld executable. Example: /sbin/temp1/mysql/bin",
+  {"myblockchaind", 'm', "Path to myblockchaind executable. Example: /sbin/temp1/myblockchain/bin",
     0, 0, 0, GET_STR, REQUIRED_ARG, 0, 0, 0, 0, 0, 0},
   {"my-print-defaults", 'f', "Path to my_print_defaults executable. "
    "Example: /source/temp11/extra",
@@ -111,21 +111,21 @@ int main(int argc,char *argv[])
     a plugin. We begin by processing the command options then check the
     directories specified for --datadir, --basedir, --plugin-dir, and
     --plugin-ini (if specified). If the directories are Ok, we then look
-    for the mysqld executable and the plugin soname. Finally, we build a
+    for the myblockchaind executable and the plugin soname. Finally, we build a
     bootstrap command file for use in bootstraping the server.
     
     If any step fails, the method issues an error message and the tool exits.
     
       1) Parse, execute, and verify command options.
       2) Check access to directories.
-      3) Look for mysqld executable.
+      3) Look for myblockchaind executable.
       4) Look for the plugin.
       5) Build a bootstrap file with commands to enable or disable plugin.
       
   */
   if ((error= process_options(argc, argv, operation)) ||
       (error= check_access()) ||
-      (error= find_tool("mysqld" FN_EXEEXT, server_path)) ||
+      (error= find_tool("myblockchaind" FN_EXEEXT, server_path)) ||
       (error= find_plugin(tp_path)) ||
       (error= build_bootstrap_file(operation, bootstrap)))
     goto exit;
@@ -343,9 +343,9 @@ static int get_default_values()
       char *format_str= 0;
   
       if (has_spaces(tool_path) || has_spaces(defaults_file))
-        format_str = "\"%s mysqld > %s\"";
+        format_str = "\"%s myblockchaind > %s\"";
       else
-        format_str = "%s mysqld > %s";
+        format_str = "%s myblockchaind > %s";
   
       my_snprintf(defaults_cmd, sizeof(defaults_cmd), format_str,
                   add_quotes(tool_path), add_quotes(defaults_file));
@@ -356,7 +356,7 @@ static int get_default_values()
     }
 #else
     my_snprintf(defaults_cmd, sizeof(defaults_cmd),
-                "%s mysqld > %s", tool_path, defaults_file);
+                "%s myblockchaind > %s", tool_path, defaults_file);
 #endif
 
     /* Execute the command */
@@ -460,9 +460,9 @@ static void print_default_values(void)
   {
     printf("--plugin_ini=%s ", opt_plugin_ini);
   }
-  if (opt_mysqld)
+  if (opt_myblockchaind)
   {
-    printf("--mysqld=%s ", opt_mysqld);
+    printf("--myblockchaind=%s ", opt_myblockchaind);
   }
   if (opt_my_print_defaults)
   {
@@ -521,7 +521,7 @@ get_one_option(int optid,
                               argument, MYF(MY_FAE));
     break;
   case 'm':
-    opt_mysqld= my_strdup(PSI_NOT_INSTRUMENTED,
+    opt_myblockchaind= my_strdup(PSI_NOT_INSTRUMENTED,
                           argument, MYF(MY_FAE));
     break;
   case 'f':
@@ -635,7 +635,7 @@ static int search_paths(const char *base_path, const char *tool_name,
 
   static const char *paths[]= {
     "", "/share/",  "/scripts/", "/bin/", "/sbin/", "/libexec/",
-    "/mysql/", "/sql/",
+    "/myblockchain/", "/sql/",
   };
   for (i = 0 ; i < (int)array_elements(paths); i++)
   {
@@ -996,10 +996,10 @@ static int check_access()
             opt_plugin_ini);
     goto exit;
   }
-  if (opt_mysqld && (error= my_access(opt_mysqld, F_OK)))
+  if (opt_myblockchaind && (error= my_access(opt_myblockchaind, F_OK)))
   {
-    fprintf(stderr, "ERROR: Cannot access mysqld path '%s'.\n",
-            opt_mysqld);
+    fprintf(stderr, "ERROR: Cannot access myblockchaind path '%s'.\n",
+            opt_myblockchaind);
     goto exit;
   }
   if (opt_my_print_defaults && (error= my_access(opt_my_print_defaults, F_OK)))
@@ -1028,11 +1028,11 @@ static int find_tool(const char *tool_name, char *tool_path)
   int i= 0;
 
   const char *paths[]= {
-    opt_mysqld, opt_basedir, opt_my_print_defaults, "", 
-    "/usr", "/usr/local/mysql", "/usr/sbin", "/usr/share", 
+    opt_myblockchaind, opt_basedir, opt_my_print_defaults, "", 
+    "/usr", "/usr/local/myblockchain", "/usr/sbin", "/usr/share", 
     "/extra", "/extra/debug", "/../../extra/debug", 
     "/release/", "/extra/release", "/../../extra/release",
-    "/bin", "/usr/bin", "/mysql/bin"
+    "/bin", "/usr/bin", "/myblockchain/bin"
   };
   for (i= 0; i < (int)array_elements(paths); i++)
   {
@@ -1081,7 +1081,7 @@ static int find_plugin(char *tp_path)
   Build the bootstrap file.
   
   Create a new file and populate it with SQL commands to ENABLE or DISABLE
-  the plugin via REPLACE and DELETE operations on the mysql.plugin table.
+  the plugin via REPLACE and DELETE operations on the myblockchain.plugin table.
 
   param[in]  operation  The type of operation (ENABLE or DISABLE)
   param[out] bootstrap  A FILE* pointer
@@ -1102,7 +1102,7 @@ static int build_bootstrap_file(char *operation, char *bootstrap)
     statements are created. For DISABLE, DELETE statements are created. The
     values for these statements are derived from the plugin_data read from the
     <plugin_name>.ini configuration file. Once the file is built, a call to
-    mysqld is made in read only, bootstrap modes to read the SQL statements
+    myblockchaind is made in read only, bootstrap modes to read the SQL statements
     and execute them.
     
     Note: Replace was used so that if a user loads a newer version of a
@@ -1124,7 +1124,7 @@ static int build_bootstrap_file(char *operation, char *bootstrap)
   if (native_strcasecmp(operation, "enable") == 0)
   {
     int i= 0;
-    fprintf(file, "REPLACE INTO mysql.plugin VALUES ");
+    fprintf(file, "REPLACE INTO myblockchain.plugin VALUES ");
     for (i= 0; i < (int)array_elements(plugin_data.components); i++)
     {
       /* stop when we read the end of the symbol list - marked with NULL */
@@ -1148,7 +1148,7 @@ static int build_bootstrap_file(char *operation, char *bootstrap)
   else
   {
     fprintf(file,
-            "DELETE FROM mysql.plugin WHERE dl = '%s';", plugin_data.so_name);
+            "DELETE FROM myblockchain.plugin WHERE dl = '%s';", plugin_data.so_name);
     if (opt_verbose)
     {
       printf("# Disabling %s...\n", plugin_data.name);
@@ -1205,14 +1205,14 @@ exit:
 /**
   Bootstrap the server
   
-  Create a command line sequence to launch mysqld in bootstrap mode. This
-  will allow mysqld to launch a minimal server instance to read and
+  Create a command line sequence to launch myblockchaind in bootstrap mode. This
+  will allow myblockchaind to launch a minimal server instance to read and
   execute SQL commands from a file piped in (the bootstrap file). We use
   the --no-defaults option to skip reading values from the config file.
 
   The bootstrap mode skips loading of plugins and many other subsystems.
-  This allows the mysql_plugin tool to insert the correct rows into the
-  mysql.plugin table (for ENABLE) or delete the rows (for DISABLE). Once
+  This allows the myblockchain_plugin tool to insert the correct rows into the
+  myblockchain.plugin table (for ENABLE) or delete the rows (for DISABLE). Once
   the server is launched in normal mode, the plugin will be loaded
   (for ENABLE) or not loaded (for DISABLE). In this way, we avoid the
   (sometimes) complicated LOAD PLUGIN commands.

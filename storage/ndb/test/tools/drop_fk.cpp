@@ -30,8 +30,8 @@ main(int argc, const char** argv){
   int _help = 0;
 
   struct getargs args[] = {
-    { "database", 'd', arg_string, &_dbname, "dbname",
-      "Name of database table is in"},
+    { "blockchain", 'd', arg_string, &_dbname, "dbname",
+      "Name of blockchain table is in"},
     { "usage", '?', arg_flag, &_help, "Print help", "" }
   };
 

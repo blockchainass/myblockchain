@@ -1,0 +1,1 @@
+--secure_file_priv=$MYBLOCKCHAIN_TMP_DIR

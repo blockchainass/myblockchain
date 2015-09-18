@@ -307,11 +307,11 @@ static int drop_all_tables()
     switch (elt.type) {
     case NdbDictionary::Object::SystemTable:
     case NdbDictionary::Object::UserTable:
-      g_ndb->setDatabaseName(elt.database);
+      g_ndb->setDatabaseName(elt.blockchain);
       g_ndb->setSchemaName(elt.schema);
       if(dict->dropTable(elt.name) != 0){
 	g_err << "Failed to drop table: " 
-	      << elt.database << "/" << elt.schema << "/" << elt.name <<endl;
+	      << elt.blockchain << "/" << elt.schema << "/" << elt.name <<endl;
 	g_err << dict->getNdbError() << endl;
 	return -1;
       }

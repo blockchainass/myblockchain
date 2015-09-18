@@ -106,7 +106,7 @@
 */
 
 /* Iteration on THD from the sql layer. */
-#include "mysqld_thd_manager.h"
+#include "myblockchaind_thd_manager.h"
 #define PFS_VAR
 /* Class sys_var */
 #include "set_var.h"
@@ -123,7 +123,7 @@ extern Status_var_array all_status_vars;
 extern bool status_vars_inited;
 static const uint SYSVAR_MEMROOT_BLOCK_SIZE = 4096;
 
-extern mysql_mutex_t LOCK_plugin_delete;
+extern myblockchain_mutex_t LOCK_plugin_delete;
 
 class Find_THD_Impl;
 class Find_THD_variable;
@@ -146,7 +146,7 @@ public:
   size_t m_name_length;
   char m_value_str[SHOW_VAR_FUNC_BUFF_SIZE+1];
   size_t m_value_length;
-  enum_mysql_show_type m_type;
+  enum_myblockchain_show_type m_type;
   int m_scope;
   const CHARSET_INFO *m_charset;
 
@@ -202,7 +202,7 @@ public:
       return false;
 
     /* Hold this lock to keep THD during materialization. */
-    mysql_mutex_lock(&thd->LOCK_thd_data);
+    myblockchain_mutex_lock(&thd->LOCK_thd_data);
     return true;
   }
   void set_unsafe_thd(THD *unsafe_thd) { m_unsafe_thd= unsafe_thd; }
@@ -670,7 +670,7 @@ private:
   bool filter_by_name(const SHOW_VAR *show_var);
 
   /* Check if a variable has an aggregatable type. */
-  bool can_aggregate(enum_mysql_show_type variable_type);
+  bool can_aggregate(enum_myblockchain_show_type variable_type);
 
   /* Build status variable name with prefix. Return in the buffer provided. */
   char *make_show_var_name(const char* prefix, const char* name, char *name_buf, size_t buf_len);

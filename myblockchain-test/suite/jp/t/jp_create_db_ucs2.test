@@ -1,0 +1,29 @@
+--source include/have_ucs2.inc
+
+--disable_warnings
+drop blockchain if exists `�ƎΎݎ���`;
+drop blockchain if exists `���ܸ�`;
+drop blockchain if exists `��܏�ݏ��`;
+--enable_warnings
+
+#
+# Test Creating blockchains using Japanese charact for DB name in ucs2 encoding
+#
+
+SET NAMES ujis;
+SET character_set_blockchain = ucs2;
+SET character_set_server = ucs2;
+
+CREATE DATABASE `�ƎΎݎ���`;
+CREATE DATABASE `���ܸ�`;
+CREATE DATABASE `��܏�ݏ��`;
+
+SELECT schema_name from information_schema.schemata where schema_name <> 'mtr';
+
+USE `�ƎΎݎ���`;
+USE `���ܸ�`;
+USE `��܏�ݏ��`;
+
+DROP DATABASE `�ƎΎݎ���`;
+DROP DATABASE `���ܸ�`;
+DROP DATABASE `��܏�ݏ��`;

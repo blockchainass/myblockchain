@@ -119,8 +119,8 @@ extern "C" {
 
 typedef struct st_mi_isaminfo		/* Struct from h_info */
 {
-  ha_rows records;			/* Records in database */
-  ha_rows deleted;			/* Deleted records in database */
+  ha_rows records;			/* Records in blockchain */
+  ha_rows deleted;			/* Deleted records in blockchain */
   my_off_t recpos;			/* Pos for last used record */
   my_off_t newrecpos;			/* Pos if we write new record */
   my_off_t dupp_key_pos;		/* Position to record with dupp key */
@@ -183,7 +183,7 @@ typedef struct st_mi_keydef		/* Key definition with open & info */
   uint32 ftkey_nr;                      /* full-text index number */
 
   HA_KEYSEG *seg,*end;
-  struct st_mysql_ftparser *parser;     /* Fulltext [pre]parser */
+  struct st_myblockchain_ftparser *parser;     /* Fulltext [pre]parser */
   int (*bin_search)(struct st_myisam_info *info,struct st_mi_keydef *keyinfo,
 		    uchar *page,uchar *key,
 		    uint key_len,uint comp_flag,uchar * *ret_pos,
@@ -249,11 +249,11 @@ extern my_bool myisam_flush,myisam_delay_key_write,myisam_single_user;
 extern my_off_t myisam_max_temp_length;
 extern ulong myisam_data_pointer_size;
 
-/* usually used to check if a symlink points into the mysql data home */
+/* usually used to check if a symlink points into the myblockchain data home */
 /* which is normally forbidden                                        */
 extern int (*myisam_test_invalid_symlink)(const char *filename);
 extern ulonglong myisam_mmap_size, myisam_mmap_used;
-extern mysql_mutex_t THR_LOCK_myisam_mmap;
+extern myblockchain_mutex_t THR_LOCK_myisam_mmap;
 
 	/* Prototypes for myisam-functions */
 
@@ -280,7 +280,7 @@ extern int mi_update(struct st_myisam_info *file,const uchar *old,
 extern int mi_write(struct st_myisam_info *file,uchar *buff);
 extern my_off_t mi_position(struct st_myisam_info *file);
 extern int mi_status(struct st_myisam_info *info, MI_ISAMINFO *x, uint flag);
-extern int mi_lock_database(struct st_myisam_info *file,int lock_type);
+extern int mi_lock_blockchain(struct st_myisam_info *file,int lock_type);
 extern int mi_create(const char *name,uint keys,MI_KEYDEF *keydef,
 		     uint columns, MI_COLUMNDEF *columndef,
 		     uint uniques, MI_UNIQUEDEF *uniquedef,
@@ -300,7 +300,7 @@ extern ulong _mi_calc_blob_length(uint length , const uchar *pos);
 extern uint mi_get_pointer_length(ulonglong file_length, uint def);
 
 #define MEMMAP_EXTRA_MARGIN     7       /* Write this as a suffix for mmap file */
-/* this is used to pass to mysql_myisamchk_table */
+/* this is used to pass to myblockchain_myisamchk_table */
 
 #define   MYISAMCHK_REPAIR 1  /* equivalent to myisamchk -r */
 #define   MYISAMCHK_VERIFY 2  /* Verify, run repair if failure */
@@ -383,7 +383,7 @@ typedef struct st_mi_check_param
   const char *db_name, *table_name;
   const char *op_name;
   enum_mi_stats_method stats_method;
-  mysql_mutex_t print_msg_mutex;
+  myblockchain_mutex_t print_msg_mutex;
   my_bool need_print_msg_lock;
 } MI_CHECK;
 
@@ -408,8 +408,8 @@ typedef struct st_sort_info
   SORT_FT_BUF *ft_buf;
   /* sync things */
   uint got_error, threads_running;
-  mysql_mutex_t mutex;
-  mysql_cond_t  cond;
+  myblockchain_mutex_t mutex;
+  myblockchain_cond_t  cond;
 } SORT_INFO;
 
 /* functions in mi_check */

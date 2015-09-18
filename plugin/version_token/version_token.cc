@@ -13,15 +13,15 @@
    along with this program; if not, write to the Free Software
    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA */
 
-#define MYSQL_SERVER
+#define MYBLOCKCHAIN_SERVER
 #include <my_global.h>
-#include <mysql/plugin_audit.h>
+#include <myblockchain/plugin_audit.h>
 #include <m_string.h>
 #include <sql_class.h>
 #include <hash.h>
 #include <sstream>
 #include <errmsg.h>
-#include <mysql/service_locking.h>
+#include <myblockchain/service_locking.h>
 #include <locking_service.h>
 
 #ifdef WIN32
@@ -46,14 +46,14 @@ struct version_token_st {
 
 static HASH version_tokens_hash;
 
-static MYSQL_THDVAR_ULONG(session_number,
+static MYBLOCKCHAIN_THDVAR_ULONG(session_number,
                           PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
                           "Version number to assist with session tokens check",
                           NULL, NULL, 0L, 0, ((ulong) -1), 0);
 
 
-static void update_session_version_tokens(MYSQL_THD thd,
-                                          struct st_mysql_sys_var *var,
+static void update_session_version_tokens(MYBLOCKCHAIN_THD thd,
+                                          struct st_myblockchain_sys_var *var,
 					  void *var_ptr, const void *save)
 {
   THDVAR(thd, session_number)= 0;
@@ -62,14 +62,14 @@ static void update_session_version_tokens(MYSQL_THD thd,
 
 
 
-static MYSQL_THDVAR_STR(session,
+static MYBLOCKCHAIN_THDVAR_STR(session,
                         PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_MEMALLOC,
                         "Holds the session value for version tokens",
                         NULL, update_session_version_tokens, NULL);
 
 
 // Lock to be used for global variable hash.
-mysql_rwlock_t LOCK_vtoken_hash;
+myblockchain_rwlock_t LOCK_vtoken_hash;
 
 PSI_memory_key key_memory_vtoken;
 
@@ -334,8 +334,8 @@ static int parse_vtokens(char *input, enum command type)
       case CHECK_VTOKEN:
       {
 	version_token_st *token_obj;
-        char error_str[MYSQL_ERRMSG_SIZE];
-        if (!mysql_acquire_locking_service_locks(NULL, "version_token_locks",
+        char error_str[MYBLOCKCHAIN_ERRMSG_SIZE];
+        if (!myblockchain_acquire_locking_service_locks(NULL, "version_token_locks",
 	                                         (const char **) &(token_name.str), 1,
 					         LOCKING_SERVICE_READ, 1) && !vtokens_unchanged)
 	{
@@ -393,23 +393,23 @@ static int parse_vtokens(char *input, enum command type)
 
 // Plugin audit function to compare session version tokens
 // with the global ones.
-// TODO: Release locks in MYSQL_AUDIT_GENERAL_STATUS subclass.
-static void version_token_check(MYSQL_THD thd,
+// TODO: Release locks in MYBLOCKCHAIN_AUDIT_GENERAL_STATUS subclass.
+static void version_token_check(MYBLOCKCHAIN_THD thd,
                                 unsigned int event_class,
                                 const void *event __attribute__((unused)))
 {
   char *sess_var;
 
-  const struct mysql_event_general *event_general=
-    (const struct mysql_event_general *) event;
+  const struct myblockchain_event_general *event_general=
+    (const struct myblockchain_event_general *) event;
   const uchar *command= (const uchar *) event_general->general_command;
   unsigned int length= event_general->general_command_length;
 
-  DBUG_ASSERT(event_class == MYSQL_AUDIT_GENERAL_CLASS);
+  DBUG_ASSERT(event_class == MYBLOCKCHAIN_AUDIT_GENERAL_CLASS);
 
   switch (event_general->event_subclass)
   {
-    case MYSQL_AUDIT_GENERAL_LOG:
+    case MYBLOCKCHAIN_AUDIT_GENERAL_LOG:
     {
       /* Ignore all commands but COM_QUERY and COM_STMT_PREPARE */
       if (0 != my_charset_latin1.coll->strnncoll(&my_charset_latin1,
@@ -432,18 +432,18 @@ static void version_token_check(MYSQL_THD thd,
 	return;
 
       // Lock the hash before checking for values.
-      mysql_rwlock_rdlock(&LOCK_vtoken_hash);
+      myblockchain_rwlock_rdlock(&LOCK_vtoken_hash);
 
       parse_vtokens(sess_var, CHECK_VTOKEN);
 
       // Unlock hash
-      mysql_rwlock_unlock(&LOCK_vtoken_hash);
+      myblockchain_rwlock_unlock(&LOCK_vtoken_hash);
       my_free(sess_var);
       break;
     }
-    case MYSQL_AUDIT_GENERAL_STATUS:
+    case MYBLOCKCHAIN_AUDIT_GENERAL_STATUS:
     {
-      mysql_release_locking_service_locks(NULL, "version_token_locks");
+      myblockchain_release_locking_service_locks(NULL, "version_token_locks");
       break;
     }
     default:
@@ -454,12 +454,12 @@ static void version_token_check(MYSQL_THD thd,
 }
 
 
-static struct st_mysql_audit version_token_descriptor=
+static struct st_myblockchain_audit version_token_descriptor=
 {
-  MYSQL_AUDIT_INTERFACE_VERSION,                       /* interface version */
+  MYBLOCKCHAIN_AUDIT_INTERFACE_VERSION,                       /* interface version */
   NULL,                                                /* release_thd()     */
   version_token_check,                                 /* event_notify()    */
-  { (unsigned long) MYSQL_AUDIT_GENERAL_CLASSMASK }    /* class mask        */
+  { (unsigned long) MYBLOCKCHAIN_AUDIT_GENERAL_CLASSMASK }    /* class mask        */
 };
 
 
@@ -480,7 +480,7 @@ static int version_tokens_init(void *arg __attribute__((unused)))
                key_memory_vtoken);
 
   // Lock for hash.
-  mysql_rwlock_init(key_LOCK_vtoken_hash, &LOCK_vtoken_hash);
+  myblockchain_rwlock_init(key_LOCK_vtoken_hash, &LOCK_vtoken_hash);
   // Lock for version number.
   return 0;
 }
@@ -488,28 +488,28 @@ static int version_tokens_init(void *arg __attribute__((unused)))
 /** Plugin deinit. */
 static int version_tokens_deinit(void *arg __attribute__((unused)))
 {
-  mysql_rwlock_wrlock(&LOCK_vtoken_hash);
+  myblockchain_rwlock_wrlock(&LOCK_vtoken_hash);
   if (version_tokens_hash.records)
     my_hash_reset(&version_tokens_hash);
 
   my_hash_free(&version_tokens_hash);
-  mysql_rwlock_unlock(&LOCK_vtoken_hash);
+  myblockchain_rwlock_unlock(&LOCK_vtoken_hash);
 
   return 0;
 }
 
 
-static struct st_mysql_sys_var* system_variables[]={
-  MYSQL_SYSVAR(session_number),
-  MYSQL_SYSVAR(session),
+static struct st_myblockchain_sys_var* system_variables[]={
+  MYBLOCKCHAIN_SYSVAR(session_number),
+  MYBLOCKCHAIN_SYSVAR(session),
   NULL
 };
 
 
 // Declare plugin
-mysql_declare_plugin(version_tokens)
+myblockchain_declare_plugin(version_tokens)
 {
-  MYSQL_AUDIT_PLUGIN,                /* type                            */
+  MYBLOCKCHAIN_AUDIT_PLUGIN,                /* type                            */
   &version_token_descriptor,         /* descriptor                      */
   "version_tokens",                  /* name                            */
   "Oracle Corp",                     /* author                          */
@@ -523,7 +523,7 @@ mysql_declare_plugin(version_tokens)
   NULL,
   0
 }
-mysql_declare_plugin_end;
+myblockchain_declare_plugin_end;
 
 
 /*
@@ -570,7 +570,7 @@ PLUGIN_EXPORT char *version_tokens_set(UDF_INIT *initid, UDF_ARGS *args,
   int vtokens_count= 0;
   std::stringstream ss;
 
-  mysql_rwlock_wrlock(&LOCK_vtoken_hash);
+  myblockchain_rwlock_wrlock(&LOCK_vtoken_hash);
   if (len > 0)
   {
     // Separate copy for values to be inserted in hash.
@@ -604,7 +604,7 @@ PLUGIN_EXPORT char *version_tokens_set(UDF_INIT *initid, UDF_ARGS *args,
 
   my_atomic_add64((volatile int64 *) &session_number, 1);
 
-  mysql_rwlock_unlock(&LOCK_vtoken_hash);
+  myblockchain_rwlock_unlock(&LOCK_vtoken_hash);
 
   ss.getline(result, MAX_FIELD_WIDTH, '\0');
   *length= (unsigned long) ss.gcount();
@@ -673,7 +673,7 @@ PLUGIN_EXPORT char *version_tokens_edit(UDF_INIT *initid, UDF_ARGS *args,
     hash_str[len]= 0;
 
     // Hash built with its own copy of string.
-    mysql_rwlock_wrlock(&LOCK_vtoken_hash);
+    myblockchain_rwlock_wrlock(&LOCK_vtoken_hash);
 
     vtokens_count= parse_vtokens(hash_str, EDIT_VTOKEN);
 
@@ -682,7 +682,7 @@ PLUGIN_EXPORT char *version_tokens_edit(UDF_INIT *initid, UDF_ARGS *args,
     if (vtokens_count)
       my_atomic_add64((volatile int64 *) &session_number, 1);
 
-    mysql_rwlock_unlock(&LOCK_vtoken_hash);
+    myblockchain_rwlock_unlock(&LOCK_vtoken_hash);
     my_free(hash_str);
   }
   ss << vtokens_count << " version tokens updated.";
@@ -739,7 +739,7 @@ PLUGIN_EXPORT char *version_tokens_delete(UDF_INIT *initid, UDF_ARGS *args,
 
   char *input= args->args[0];
 
-  mysql_rwlock_wrlock(&LOCK_vtoken_hash);
+  myblockchain_rwlock_wrlock(&LOCK_vtoken_hash);
 
   if ((args->lengths[0] == 1) && (strncmp(input, "*", 1) == 0))
   {
@@ -749,7 +749,7 @@ PLUGIN_EXPORT char *version_tokens_delete(UDF_INIT *initid, UDF_ARGS *args,
       my_atomic_add64((volatile int64 *) &session_number, 1);
     }
     vtoken_string_length= 0;
-    mysql_rwlock_unlock(&LOCK_vtoken_hash);
+    myblockchain_rwlock_unlock(&LOCK_vtoken_hash);
     ss << "Version tokens list cleared.";
     ss.getline(result, MAX_FIELD_WIDTH, '\0');
     *length= (unsigned long) ss.gcount();
@@ -781,7 +781,7 @@ PLUGIN_EXPORT char *version_tokens_delete(UDF_INIT *initid, UDF_ARGS *args,
     my_atomic_add64((volatile int64 *) &session_number, 1);
   }
 
-  mysql_rwlock_unlock(&LOCK_vtoken_hash);
+  myblockchain_rwlock_unlock(&LOCK_vtoken_hash);
 
   ss << vtokens_count << " version tokens deleted.";
 
@@ -827,7 +827,7 @@ PLUGIN_EXPORT my_bool version_tokens_show_init(UDF_INIT *initid, UDF_ARGS *args,
     return true;
   }
 
-  mysql_rwlock_rdlock(&LOCK_vtoken_hash);
+  myblockchain_rwlock_rdlock(&LOCK_vtoken_hash);
 
   str_size= vtoken_string_length;
 
@@ -872,7 +872,7 @@ PLUGIN_EXPORT my_bool version_tokens_show_init(UDF_INIT *initid, UDF_ARGS *args,
   }
   else
     initid->ptr= NULL;
-  mysql_rwlock_unlock(&LOCK_vtoken_hash);
+  myblockchain_rwlock_unlock(&LOCK_vtoken_hash);
 
   return false;
 }

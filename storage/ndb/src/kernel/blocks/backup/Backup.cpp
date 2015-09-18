@@ -4457,7 +4457,7 @@ Backup::insertFileHeader(BackupFormat::FileType ft,
   header->BackupKey_1   = htonl(ptrP->backupKey[1]);
   header->ByteOrder     = 0x12345678;
   header->NdbVersion    = htonl(NDB_VERSION_D);
-  header->MySQLVersion  = htonl(NDB_MYSQL_VERSION_D);
+  header->MyBlockchainVersion  = htonl(NDB_MYBLOCKCHAIN_VERSION_D);
   
   buf.updateWritePtr(sz);
   return true;

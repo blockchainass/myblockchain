@@ -35,7 +35,7 @@ InnoDB Native API
 /** Whether binlog is enabled for applications using InnoDB APIs */
 extern my_bool                  ib_binlog_enabled;
 
-/** Whether MySQL MDL is enabled for applications using InnoDB APIs */
+/** Whether MyBlockchain MDL is enabled for applications using InnoDB APIs */
 extern my_bool                  ib_mdl_enabled;
 
 /** Whether InnoDB row lock is disabled for applications using InnoDB APIs */
@@ -48,7 +48,7 @@ extern ulong			ib_trx_level_setting;
 extern ulong			ib_bk_commit_interval;
 
 /********************************************************************
-Handles user errors and lock waits detected by the database engine.
+Handles user errors and lock waits detected by the blockchain engine.
 @return TRUE if it was a lock wait and we should continue running
 the query thread */
 ibool

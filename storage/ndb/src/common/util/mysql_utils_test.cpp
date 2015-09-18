@@ -27,7 +27,7 @@
 #include "CharsetMap.hpp"
 
 #include "my_sys.h"
-#include "mysql.h"
+#include "myblockchain.h"
 
 // need two levels of macro substitution
 #define STRINGIFY(x) #x
@@ -151,7 +151,7 @@ int test_decimal_conv()
 int test_charset_map()
 {
     printf("\n==== CharsetMap ====\n");
-    printf("init MySQL lib, CharsetMap...\n");
+    printf("init MyBlockchain lib, CharsetMap...\n");
     my_init();
     CharsetMap::init();
 
@@ -160,7 +160,7 @@ int test_charset_map()
     int utf8_num = csmap.getUTF8CharsetNumber();
     int utf16_num = csmap.getUTF16CharsetNumber();
 
-    /* If this mysql build does not include UTF-8 and either UCS-2 or UTF-16
+    /* If this myblockchain build does not include UTF-8 and either UCS-2 or UTF-16
        then the test suite must fail.
     */
     printf("UTF-8 charset num: %d     UTF-16 or UCS-2 charset num:  %d\n",
@@ -173,11 +173,11 @@ int test_charset_map()
     const char *utf8 = csmap.getName(utf8_num);
     CHECK(!strcmp(utf8,"UTF-8"));
 
-    /* MySQL 5.1 and earlier will have UCS-2 but later versions may have true
+    /* MyBlockchain 5.1 and earlier will have UCS-2 but later versions may have true
        UTF-16.  For information, print whether UTF-16 or UCS-2 is being used.
     */
     const char *utf16 = csmap.getMysqlName(csmap.getUTF16CharsetNumber());
-    printf("Using mysql's %s for UTF-16.\n", utf16);
+    printf("Using myblockchain's %s for UTF-16.\n", utf16);
 
     /* Now we're going to recode.
        We test with the string "ülker", which begins with the character
@@ -296,7 +296,7 @@ int main(int argc, const char** argv)
     // TAP: print number of tests to run
     plan(3);
 
-    // init MySQL lib
+    // init MyBlockchain lib
     if (my_init())
         BAIL_OUT("my_init() failed");
 

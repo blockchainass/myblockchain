@@ -20,17 +20,17 @@
 
 "use strict";
 
-var udebug = unified_debug.getLogger("mysql_service_provider.js"),
+var udebug = unified_debug.getLogger("myblockchain_service_provider.js"),
     path = require("path"),
     saved_err,
-    mysqlconnection,
-    mysqldictionary,
-    mysqlmetadatamanager = null;
+    myblockchainconnection,
+    myblockchaindictionary,
+    myblockchainmetadatamanager = null;
 
 try {
   /* Let unmet module dependencies be caught by loadRequiredModules() */
-  mysqlconnection = require("./MySQLConnectionPool.js");
-  mysqldictionary = require("./MySQLDictionary.js");
+  myblockchainconnection = require("./MyBlockchainConnectionPool.js");
+  myblockchaindictionary = require("./MyBlockchainDictionary.js");
 }
 catch(e) {
   saved_err = e;
@@ -39,10 +39,10 @@ catch(e) {
 exports.loadRequiredModules = function() {
   var error;
   try {
-    require("mysql");
+    require("myblockchain");
   }
   catch(e) {
-    error = new Error("Error loading mysql node_module: " + e.message);
+    error = new Error("Error loading myblockchain node_module: " + e.message);
     error.cause = e;
     throw error;
   }
@@ -56,18 +56,18 @@ exports.loadRequiredModules = function() {
 
 
 exports.getDefaultConnectionProperties = function() {
-  return require(path.join(mynode.fs.backend_doc_dir,"mysql_properties.js"));
+  return require(path.join(mynode.fs.backend_doc_dir,"myblockchain_properties.js"));
 };
 
 
 exports.getFactoryKey = function(properties) {
-  var socket = properties.mysql_socket;
+  var socket = properties.myblockchain_socket;
   if (!socket) {
-    socket = properties.mysql_host + ':' + properties.mysql_port;
+    socket = properties.myblockchain_host + ':' + properties.myblockchain_port;
   }
   // TODO: hash user and password to avoid security issue
   var key = properties.implementation + "://" + socket + 
-    "+" + properties.mysql_user + "<" + properties.mysql_password + ">";
+    "+" + properties.myblockchain_user + "<" + properties.myblockchain_password + ">";
   return key;
 };
 
@@ -76,8 +76,8 @@ exports.connect = function(properties, sessionFactory_callback) {
   //the caller of this function is the session factory
   var callback = sessionFactory_callback;
   // create the connection pool from the properties
-  var connectionPool = new mysqlconnection.DBConnectionPool(properties);
-  // connect to the database
+  var connectionPool = new myblockchainconnection.DBConnectionPool(properties);
+  // connect to the blockchain
   connectionPool.connect(function(err, connection) {
     callback(err, connectionPool);
   });
@@ -85,8 +85,8 @@ exports.connect = function(properties, sessionFactory_callback) {
 
 
 exports.getDBMetadataManager = function() {
-  if(! mysqlmetadatamanager) {
-    mysqlmetadatamanager = new mysqldictionary.MetadataManager();
+  if(! myblockchainmetadatamanager) {
+    myblockchainmetadatamanager = new myblockchaindictionary.MetadataManager();
   }
-  return mysqlmetadatamanager;
+  return myblockchainmetadatamanager;
 };

@@ -120,10 +120,10 @@ extern "C" void* test_timer_per_thread(void *arg)
   while (iter--)
     test_timer();
 
-  mysql_mutex_lock(&mutex);
+  myblockchain_mutex_lock(&mutex);
   if (!--running_threads)
-    mysql_cond_signal(&cond);
-  mysql_mutex_unlock(&mutex);
+    myblockchain_cond_signal(&cond);
+  myblockchain_mutex_unlock(&mutex);
 
   return NULL;
 }
@@ -267,8 +267,8 @@ TEST(Mysys, TestMultipleTimers)
 /* Test timer in multiple threads */
 TEST(Mysys, TestTimerPerThread)
 {
-  mysql_mutex_init(0, &mutex, 0);
-  mysql_cond_init(0, &cond);
+  myblockchain_mutex_init(0, &mutex, 0);
+  myblockchain_cond_init(0, &cond);
   my_thread_attr_init(&thr_attr);
 #ifndef _WIN32
   pthread_attr_setdetachstate(&thr_attr, PTHREAD_CREATE_DETACHED);
@@ -279,8 +279,8 @@ TEST(Mysys, TestTimerPerThread)
   test_concurrently("per-thread", test_timer_per_thread, THREADS, 5);
 
   my_timer_deinitialize();
-  mysql_mutex_destroy(&mutex);
-  mysql_cond_destroy(&cond);
+  myblockchain_mutex_destroy(&mutex);
+  myblockchain_cond_destroy(&cond);
   my_thread_attr_destroy(&thr_attr);
 }
 

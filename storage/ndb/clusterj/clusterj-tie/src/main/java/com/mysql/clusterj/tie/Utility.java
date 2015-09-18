@@ -15,7 +15,7 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
  */
 
-package com.mysql.clusterj.tie;
+package com.myblockchain.clusterj.tie;
 
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
@@ -37,19 +37,19 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
-import com.mysql.ndbjtie.mysql.CharsetMap;
-import com.mysql.ndbjtie.mysql.CharsetMapConst;
-import com.mysql.ndbjtie.mysql.Utils;
-import com.mysql.ndbjtie.ndbapi.NdbErrorConst;
-import com.mysql.ndbjtie.ndbapi.NdbRecAttr;
-import com.mysql.clusterj.ClusterJDatastoreException;
-import com.mysql.clusterj.ClusterJFatalInternalException;
-import com.mysql.clusterj.ClusterJUserException;
-import com.mysql.clusterj.core.store.Column;
-import com.mysql.clusterj.core.util.I18NHelper;
-import com.mysql.clusterj.core.util.Logger;
-import com.mysql.clusterj.core.util.LoggerFactoryService;
-import com.mysql.clusterj.tie.DbImpl.BufferManager;
+import com.myblockchain.ndbjtie.myblockchain.CharsetMap;
+import com.myblockchain.ndbjtie.myblockchain.CharsetMapConst;
+import com.myblockchain.ndbjtie.myblockchain.Utils;
+import com.myblockchain.ndbjtie.ndbapi.NdbErrorConst;
+import com.myblockchain.ndbjtie.ndbapi.NdbRecAttr;
+import com.myblockchain.clusterj.ClusterJDatastoreException;
+import com.myblockchain.clusterj.ClusterJFatalInternalException;
+import com.myblockchain.clusterj.ClusterJUserException;
+import com.myblockchain.clusterj.core.store.Column;
+import com.myblockchain.clusterj.core.util.I18NHelper;
+import com.myblockchain.clusterj.core.util.Logger;
+import com.myblockchain.clusterj.core.util.LoggerFactoryService;
+import com.myblockchain.clusterj.tie.DbImpl.BufferManager;
 
 /** This class provides utility methods.
  *
@@ -135,7 +135,7 @@ public class Utility {
     static {
         ClusterConnectionServiceImpl.loadSystemLibrary("ndbclient");
     }
-    static Class<?> charsetMapClass = loadClass("com.mysql.ndbjtie.mysql.CharsetMap");
+    static Class<?> charsetMapClass = loadClass("com.myblockchain.ndbjtie.myblockchain.CharsetMap");
     static Class<?> loadClass(String className) {
         try {
             return Class.forName(className);
@@ -145,7 +145,7 @@ public class Utility {
     }
 
     // TODO: change this to a weak reference so we can call delete on it when not needed
-    /** Note that mysql refers to charset number and charset name, but the number is
+    /** Note that myblockchain refers to charset number and charset name, but the number is
     * actually a collation number. The CharsetMap interface thus has methods like
     * getCharsetNumber(String charsetName) but what is returned is actually a collation number.
     */
@@ -171,16 +171,16 @@ public class Utility {
         }
     }
 
-    /** The maximum mysql collation (charset) number. This is hard coded in <mysql>/include/my_sys.h */
-    static int MAXIMUM_MYSQL_COLLATION_NUMBER = 256;
+    /** The maximum myblockchain collation (charset) number. This is hard coded in <myblockchain>/include/my_sys.h */
+    static int MAXIMUM_MYBLOCKCHAIN_COLLATION_NUMBER = 256;
 
-    /** The mysql collation number for the standard charset */
+    /** The myblockchain collation number for the standard charset */
     static int collationLatin1 = charsetMap.getCharsetNumber("latin1");
 
-    /** The mysql collation number for UTF16 */
+    /** The myblockchain collation number for UTF16 */
     static protected final int collationUTF16 = charsetMap.getUTF16CharsetNumber();
 
-    /** The mysql charset map */
+    /** The myblockchain charset map */
     public static CharsetMap getCharsetMap() {
         return charsetMap;
     }
@@ -193,25 +193,25 @@ public class Utility {
 
     /** Charset converters */
     private static CharsetConverter[] charsetConverters = 
-        new CharsetConverter[MAXIMUM_MYSQL_COLLATION_NUMBER + 1];
+        new CharsetConverter[MAXIMUM_MYBLOCKCHAIN_COLLATION_NUMBER + 1];
 
     /** Initialize the the array of charset converters and the map of known collations that share the same charset */
     static {
         Map<String, List<Integer>> workingCollationPeersMap = new TreeMap<String, List<Integer>>();
-        for (int collation = 1; collation <= MAXIMUM_MYSQL_COLLATION_NUMBER; ++collation) {
-            String mysqlName = charsetMap.getMysqlName(collation);
-            if (mysqlName != null) {
+        for (int collation = 1; collation <= MAXIMUM_MYBLOCKCHAIN_COLLATION_NUMBER; ++collation) {
+            String myblockchainName = charsetMap.getMysqlName(collation);
+            if (myblockchainName != null) {
                 if ((isMultibyteCollation(collation))) {
                     // multibyte collations all use the multibyte charset converter
                     charsetConverters[collation] = charsetConverterMultibyte;
                 } else {
                     // find out if this charset name is already used by another (peer) collation
-                    List<Integer> collations = workingCollationPeersMap.get(mysqlName);
+                    List<Integer> collations = workingCollationPeersMap.get(myblockchainName);
                     if (collations == null) {
                         // this is the first collation to use this charset name
                         collations = new ArrayList<Integer>(8);
                         collations.add(collation);
-                        workingCollationPeersMap.put(mysqlName, collations);
+                        workingCollationPeersMap.put(myblockchainName, collations);
                     } else {
                         // add this collation to the list of (peer) collations
                         collations.add(collation);
@@ -221,14 +221,14 @@ public class Utility {
         }
         
         for (Map.Entry<String, List<Integer>> workingCollationPeers: workingCollationPeersMap.entrySet()) {
-            String mysqlName = workingCollationPeers.getKey();
+            String myblockchainName = workingCollationPeers.getKey();
             List<Integer> collations = workingCollationPeers.getValue();
             int[] collationArray = new int[collations.size()];
             int i = 0;
             for (Integer collation: collations) {
                 collationArray[i++] = collation;
             }
-            collationPeersMap.put(mysqlName, collationArray);
+            collationPeersMap.put(myblockchainName, collationArray);
         }
         if (logger.isDetailEnabled()) {
             for (Map.Entry<String, int[]> collationEntry: collationPeersMap.entrySet()) {
@@ -1038,15 +1038,15 @@ public class Utility {
     protected static void throwError(Object returnCode, NdbErrorConst ndbError, String extra) {
         String message = ndbError.message();
         int code = ndbError.code();
-        int mysqlCode = ndbError.mysql_code();
+        int myblockchainCode = ndbError.myblockchain_code();
         int status = ndbError.status();
         int classification = ndbError.classification();
-        String msg = local.message("ERR_NdbJTie", returnCode, code, mysqlCode, 
+        String msg = local.message("ERR_NdbJTie", returnCode, code, myblockchainCode, 
                 status, classification, message, extra);
         if (!NonSevereErrorCodes .contains(code)) {
             logger.error(msg);
         }
-        throw new ClusterJDatastoreException(msg, code, mysqlCode, status, classification);
+        throw new ClusterJDatastoreException(msg, code, myblockchainCode, status, classification);
     }
 
     /** Convert the parameter value to a ByteBuffer that can be passed to ndbjtie.
@@ -1102,7 +1102,7 @@ public class Utility {
         }
     }
 
-    /** Convert a BigDecimal value to the binary decimal form used by MySQL.
+    /** Convert a BigDecimal value to the binary decimal form used by MyBlockchain.
      * Use the precision and scale of the column to convert. Values that don't fit
      * into the column throw a ClusterJUserException.
      * @param storeColumn the column metadata
@@ -1135,7 +1135,7 @@ public class Utility {
         return result;
     }
 
-    /** Convert a BigInteger value to the binary decimal form used by MySQL.
+    /** Convert a BigInteger value to the binary decimal form used by MyBlockchain.
      * Use the precision and scale of the column to convert. Values that don't fit
      * into the column throw a ClusterJUserException.
      * @param storeColumn the column metadata
@@ -1359,7 +1359,7 @@ public class Utility {
         byteBuffer.limit(limit);
     }
 
-    /** Pack milliseconds since the Epoch into an int in database Date format.
+    /** Pack milliseconds since the Epoch into an int in blockchain Date format.
      * The date is converted into a three-byte value encoded as
      * YYYYx16x32 + MMx32 + DD.
      * Add one to the month since Calendar month is 0-origin.
@@ -1377,7 +1377,7 @@ public class Utility {
         return date;
     }
 
-    /** Pack milliseconds since the Epoch into an int in database Time format.
+    /** Pack milliseconds since the Epoch into an int in blockchain Time format.
      * Subtract one from date to get number of days (date is 1 origin).
      * The time is converted into a three-byte value encoded as
      * DDx240000 + HHx10000 + MMx100 + SS.
@@ -1402,7 +1402,7 @@ public class Utility {
         return time;
     }
 
-    /** Pack milliseconds since the Epoch into a long in database Datetime format.
+    /** Pack milliseconds since the Epoch into a long in blockchain Datetime format.
      * The Datetime contains a eight-byte date and time packed as 
      * YYYYx10000000000 + MMx100000000 + DDx1000000 + HHx10000 + MMx100 + SS
      * Calendar month is 0 origin so add 1 to get packed month
@@ -1424,10 +1424,10 @@ public class Utility {
         return packedDatetime;
     }
 
-    /** Pack milliseconds since the Epoch into a long in database Datetime2 format.
-     * Reference: http://dev.mysql.com/doc/internals/en/date-and-time-data-type-representation.html
+    /** Pack milliseconds since the Epoch into a long in blockchain Datetime2 format.
+     * Reference: http://dev.myblockchain.com/doc/internals/en/date-and-time-data-type-representation.html
      * The packed datetime2 integer part is:
-     *  1 bit  sign (1= non-negative, 0= negative) [ALWAYS POSITIVE IN MYSQL 5.6]
+     *  1 bit  sign (1= non-negative, 0= negative) [ALWAYS POSITIVE IN MYBLOCKCHAIN 5.6]
      * 17 bits year*13+month (year 0-9999, month 1-12)
      *  5 bits day           (0-31)
      *  5 bits hour          (0-23)
@@ -1552,7 +1552,7 @@ public class Utility {
     protected static void throwOnTruncation() {
     }
 
-    /** Pack milliseconds since the Epoch into a long in database Time2 format.
+    /** Pack milliseconds since the Epoch into a long in blockchain Time2 format.
      *       1 bit sign (1= non-negative, 0= negative)
      *       1 bit unused (reserved for INTERVAL type)
      *      10 bits hour   (0-838)
@@ -1597,7 +1597,7 @@ public class Utility {
         return calendar.getTimeInMillis();
     }
 
-    /** Pack milliseconds since the Epoch into a long in database Timestamp2 format.
+    /** Pack milliseconds since the Epoch into a long in blockchain Timestamp2 format.
      * First four bytes are Unix time format: seconds since the epoch;
      * Fractional part is 0-3 bytes
      * @param millis milliseconds since the Epoch
@@ -1889,7 +1889,7 @@ public class Utility {
     }
 
     /** Encode a String into a ByteBuffer
-     * using the mysql native encoding method.
+     * using the myblockchain native encoding method.
      * @param string the String to encode
      * @param collation the collation
      * @param prefixLength the length of the length prefix
@@ -1978,7 +1978,7 @@ public class Utility {
                 // unlikely; only if collations are added beyond existing collation number
                 String charsetName = charsetMap.getName(collation);
                 logger.warn(local.message("ERR_Charset_Number_Too_Big", collation, charsetName, 
-                        MAXIMUM_MYSQL_COLLATION_NUMBER));
+                        MAXIMUM_MYBLOCKCHAIN_COLLATION_NUMBER));
                 return charsetConverterMultibyte;
             }
             CharsetConverter result = charsetConverters[collation];
@@ -2043,13 +2043,13 @@ public class Utility {
     protected static class MultiByteCharsetConverter implements CharsetConverter {
 
         /** Encode a String into a ByteBuffer. The input String is copied into a shared byte buffer.
-         * The buffer is encoded via the mysql recode method to a shared String storage buffer.
+         * The buffer is encoded via the myblockchain recode method to a shared String storage buffer.
          * If the output buffer is too small, a new buffer is allocated and the encoding is repeated.
          * @param input the input String
          * @param collation the charset number
          * @param prefixLength the prefix length (0, 1, or 2 depending on the type)
          * @param bufferManager the buffer manager with shared buffers
-         * @return a byte buffer positioned at zero with the data ready to send to the database
+         * @return a byte buffer positioned at zero with the data ready to send to the blockchain
          */
         public ByteBuffer encode(String columnName, CharSequence input, int collation, int prefixLength, BufferManager bufferManager) {
             // input length in bytes is twice String length
@@ -2089,7 +2089,7 @@ public class Utility {
             return null; // to make compiler happy; we never get here
         }
 
-        /** Decode a byte buffer into a String. The input is decoded by the mysql charset recode method
+        /** Decode a byte buffer into a String. The input is decoded by the myblockchain charset recode method
          * into a shared buffer. Then the shared buffer is used to create the result String.
          * The input byte buffer is positioned just past the length, and its limit is set to one past the
          * characters to decode.
@@ -2144,7 +2144,7 @@ public class Utility {
         private static byte[] allBytes = new byte[BYTE_RANGE];
         // The initial charToByteMap, with all char mappings mapped
         // to (byte) '?', so that unknown characters are mapped to '?'
-        // instead of '\0' (which means end-of-string to MySQL).
+        // instead of '\0' (which means end-of-string to MyBlockchain).
         private static byte[] unknownCharsMap = new byte[65536];
 
         static {
@@ -2196,7 +2196,7 @@ public class Utility {
          * @param collation the charset number
          * @param prefixLength the prefix length (0, 1, or 2 depending on the type)
          * @param bufferManager the buffer manager with shared buffers
-         * @return a byte buffer positioned at zero with the data ready to send to the database
+         * @return a byte buffer positioned at zero with the data ready to send to the blockchain
          */
         public ByteBuffer encode(String columnName, CharSequence input, int collation, int prefixLength, BufferManager bufferManager) {
             int length = input.length();
@@ -2335,7 +2335,7 @@ public class Utility {
      */
 
     /** Convert a long value from storage.
-     * The value stored in the database might be a time, timestamp, date, bit array,
+     * The value stored in the blockchain might be a time, timestamp, date, bit array,
      * or simply a long value. The converted value can be converted into a 
      * time, timestamp, date, bit array, or long value.
      */

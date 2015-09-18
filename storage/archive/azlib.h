@@ -1,5 +1,5 @@
 /*
-  This libary has been modified for use by the MySQL Archive Engine.
+  This libary has been modified for use by the MyBlockchain Archive Engine.
      -Brian Aker
 */
 
@@ -40,7 +40,7 @@
 #ifdef  __cplusplus
 extern "C" {
 #endif
-/* Start of MySQL Specific Information */
+/* Start of MyBlockchain Specific Information */
 
 /*
   ulonglong + ulonglong + ulonglong + ulonglong + uchar

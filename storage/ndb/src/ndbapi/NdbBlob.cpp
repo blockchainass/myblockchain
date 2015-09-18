@@ -662,7 +662,7 @@ NdbBlob::copyKeyFromRow(const NdbRecord *record, const char *row,
     const char *src;
     if (col->flags & NdbRecord::IsMysqldShrinkVarchar)
     {
-      /* Used to support special varchar format for mysqld keys. */
+      /* Used to support special varchar format for myblockchaind keys. */
       len_ok= col->shrink_varchar(row, len, buf);
       src= buf;
     }

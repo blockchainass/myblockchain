@@ -66,7 +66,7 @@ implementation.prototype.initialize = function(options, callback) {
       }
     }
 
-    impl.dbConnPool.getTableMetadata(options.properties.database, 
+    impl.dbConnPool.getTableMetadata(options.properties.blockchain, 
                                      mappings[n].prototype.mynode.mapping.table,
                                      impl.dbSession, gotMapping);
   }

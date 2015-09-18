@@ -19,8 +19,8 @@
 #define SHOW_VARIABLE_QUERY_EXTRACTOR_INCLUDED
 
 #include "i_callable.h"
-#include "base/mysql_query_runner.h"
-#include "mysql.h"
+#include "base/myblockchain_query_runner.h"
+#include "myblockchain.h"
 #include<string>
 #include<vector>
 
@@ -37,7 +37,7 @@ public:
   /**
     Extract the value of server variable.
 
-    @param[in] query_runner MySQL query runner to use.
+    @param[in] query_runner MyBlockchain query runner to use.
     @param[in] variable Name of variable to get value of.
     @param[out] value reference to String to store variable value to.
     @param[out] value reference to bool to store if variable was found.

@@ -15,12 +15,12 @@
    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-package com.mysql.clusterj.jpatest;
+package com.myblockchain.clusterj.jpatest;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import com.mysql.clusterj.jpatest.model.BytePK;
+import com.myblockchain.clusterj.jpatest.model.BytePK;
 
 public class BytePKTest extends AbstractJPABaseTest {
 

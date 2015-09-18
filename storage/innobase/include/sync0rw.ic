@@ -652,7 +652,7 @@ UNIV_INLINE
 void
 pfs_rw_lock_create_func(
 /*====================*/
-	mysql_pfs_key_t	key,		/*!< in: key registered with
+	myblockchain_pfs_key_t	key,		/*!< in: key registered with
 					performance schema */
 	rw_lock_t*	lock,		/*!< in/out: pointer to memory */
 # ifdef UNIV_DEBUG

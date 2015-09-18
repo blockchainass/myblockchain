@@ -5,9 +5,9 @@
 
 - How parsing and execution of queries work
 
-  In order to execute a query, the function sql_parse.cc:mysql_parse() is
+  In order to execute a query, the function sql_parse.cc:myblockchain_parse() is
   called, which in turn calls the parser (yyparse()) with an updated Lex
-  structure as the result. mysql_parse() then calls mysql_execute_command()
+  structure as the result. myblockchain_parse() then calls myblockchain_execute_command()
   which dispatches on the command code (in Lex) to the corresponding code for
   executing that particular query.
 
@@ -79,7 +79,7 @@
 
     - Utility functions (sp.{cc,h})
       This contains functions for creating, dropping and finding a stored
-      procedure in the mysql.proc table (or the internal cache).
+      procedure in the myblockchain.proc table (or the internal cache).
 
 
   - Parsing CREATE PROCEDURE ...
@@ -182,10 +182,10 @@
 
     As seen above, the entired definition string, including the "CREATE
     PROCEDURE" (or "FUNCTION") is kept. The procedure definition string is
-    stored in the table mysql.proc with the name and type as the key, the
+    stored in the table myblockchain.proc with the name and type as the key, the
     type being one of the enum ("procedure","function").
 
-    A PROCEDURE is just stored in the mysql.proc table. A FUNCTION has an
+    A PROCEDURE is just stored in the myblockchain.proc table. A FUNCTION has an
     additional requirement. They will be called in expressions with the same
     syntax as UDFs, so UDFs and stored FUNCTIONs share the namespace. Thus,
     we must make sure that we do not have UDFs and FUNCTIONs with the same
@@ -193,10 +193,10 @@
 
     This means that we can reparse the procedure as many time as we want.
     The first time, the resulting Lex is used to store the procedure in
-    the database (using the function sp.c:sp_create_procedure()).
+    the blockchain (using the function sp.c:sp_create_procedure()).
 
     The simplest way would be to just leave it at that, and re-read the
-    procedure from the database each time it is called. (And in fact, that's
+    procedure from the blockchain each time it is called. (And in fact, that's
     the way the earliest implementation will work.)
     However, this is not very efficient, and we can do better. The full
     implementation should work like this:
@@ -204,7 +204,7 @@
     1) Upon creation time, parse and store the procedure. Note that we still
        need to parse it to catch syntax errors, but we can't check if called
        procedures exists for instance.
-    2) Upon first CALL, read from the database, parse it, and cache the
+    2) Upon first CALL, read from the blockchain, parse it, and cache the
        resulting Lex in memory. This time we can do more error checking.
     3) Upon subsequent CALLs, use the cached Lex.
 
@@ -223,9 +223,9 @@
     sql_command SQLCOM_CALL, the procedure's name and the parameters are
     pushed to the Lex' value_list.
 
-    sql_parse.cc:mysql_execute_command() then uses sp.cc:sp_find() to
+    sql_parse.cc:myblockchain_execute_command() then uses sp.cc:sp_find() to
     get the sp_head for the procedure (which may have been read from the
-    database or feetched from the in-memory cache) and calls the sp_head's
+    blockchain or feetched from the in-memory cache) and calls the sp_head's
     method execute().
     Note: It's important that substatements called by the procedure do not
           do send_ok(). Fortunately, there is a flag in THD->net to disable
@@ -247,20 +247,20 @@
     5) On success, set the new values of the OUT and INOUT parameters in
        the caller's frame.
 
-    - USE database
+    - USE blockchain
 
       Before executing the instruction we also keeps the current default
-      database (if any). If this was changed during execution (i.e. a "USE"
-      statement has been executed), we restore the current database to the
+      blockchain (if any). If this was changed during execution (i.e. a "USE"
+      statement has been executed), we restore the current blockchain to the
       original.
 
       This is the most useful way to handle USE in procedures. If we didn't,
-      the caller would find himself in a different database after calling
+      the caller would find himself in a different blockchain after calling
       a function, which can be confusing.
-      Restoring the database also gives full freedom to the procedure writer:
+      Restoring the blockchain also gives full freedom to the procedure writer:
       - It's possible to write "general" procedures that are independent of
-        the actual database name.
-      - It's possible to write procedures that work on a particular database
+        the actual blockchain name.
+      - It's possible to write procedures that work on a particular blockchain
         by calling USE, without having to use fully qualified table names
         everywhere (which doesn't help if you want to call other, "general",
         procedures anyway).
@@ -317,26 +317,26 @@
       PROCEDURE is CALLed as statement by itself, a FUNCTION is invoked
       "on-the-fly" during the execution of *another* statement.
       This makes things a lot more complicated compared to CALL:
-      - We can't read and parse the FUNCTION from the mysql.proc table at the
+      - We can't read and parse the FUNCTION from the myblockchain.proc table at the
         point of invocation; the server requires that all tables used are
         opened and locked at the beginning of the query execution.
-      One "obvious" solution would be to simply push "mysql.proc" to the list
+      One "obvious" solution would be to simply push "myblockchain.proc" to the list
       of tables used by the query, but this implies a "join" with this table
       if the query is a select, so it doesn't work (and we can't exclude this
       table easily; since a priviledged used might in fact want to search
       the proc table).
       Another solution would of course be to allow the opening and closing
-      of the mysql.proc table during a query execution, but this it not
+      of the myblockchain.proc table during a query execution, but this it not
       possible at the present.
 
       So, the solution is to collect the names of the refered FUNCTIONs during
       parsing in the lex.
-      Then, before doing anything else in mysql_execute_command(), read all
-      functions from the database an keep them in the THD, where the function
+      Then, before doing anything else in myblockchain_execute_command(), read all
+      functions from the blockchain an keep them in the THD, where the function
       sp_find_function() can find them during the execution.
       Note: Even with an in-memory cache, we must still make sure that the
             functions are indeed read and cached at this point.
-      The code that read and cache functions from the database must also be
+      The code that read and cache functions from the blockchain must also be
       invoked recursively for each read FUNCTION to make sure we have *all* the
       functions we need.
 
@@ -351,15 +351,15 @@
     function and calling sp_drop() (both in sp.{cc,h}).
 
     DROP PROCEDURE/FUNCTION also supports the non-standard "IF EXISTS",
-    analogous to other DROP statements in MySQL.
+    analogous to other DROP statements in MyBlockchain.
 
 
   - Condition and Handlers
 
     Condition names are lexical entities and are kept in the parser context
     just like variables. But, condition are just "aliases" for SQLSTATE
-    strings, or mysqld error codes (which is a non-standard extension in
-    MySQL), and are only used during parsing.
+    strings, or myblockchaind error codes (which is a non-standard extension in
+    MyBlockchain), and are only used during parsing.
 
     Handlers comes in three types, CONTINUE, EXIT and UNDO. The latter is
     like an EXIT handler with an implicit rollback, and is currently not
@@ -469,12 +469,12 @@
   - Cursors
 
     For stored procedures to be really useful, you want to have cursors.
-    MySQL doesn't yet have "real" cursor support (with API and ODBC support,
+    MyBlockchain doesn't yet have "real" cursor support (with API and ODBC support,
     allowing updating, arbitrary scrolling, etc), but a simple asensitive,
     non-scrolling, read-only cursor can be implemented in SPs using the
     class Protocol_cursor.
     This class intecepts the creation and sending of results sets and instead
-    stores it in-memory, as MYSQL_FIELDS and MYSQL_ROWS (as in the client API).
+    stores it in-memory, as MYBLOCKCHAIN_FIELDS and MYBLOCKCHAIN_ROWS (as in the client API).
 
     To support this, we need the usual name binding support in sp_pcontext
     (similar to variables and conditions) to keep track on declared cursor
@@ -610,7 +610,7 @@
       {
         enum { number, state, warning, notfound, exception } type;
         char sqlstate[6];
-        uint mysqlerr;
+        uint myblockchainerr;
       } sp_cond_type_t;
 
       class sp_pcontext
@@ -792,7 +792,7 @@
 
         void init(LEX_STRING *name, LEX *lex, LEX_STRING *comment, char suid);
 
-        // Store this procedure in the database. This is a wrapper around
+        // Store this procedure in the blockchain. This is a wrapper around
         // the function sp_create_procedure().
         int create(THD *);
 
@@ -1010,27 +1010,27 @@
       // Finds a stored procedure given its name. Returns NULL if not found.
       sp_head *sp_find_procedure(THD *, LEX_STRING *name);
 
-      // Store the procedure 'name' in the database. 'def' is the complete
+      // Store the procedure 'name' in the blockchain. 'def' is the complete
       // definition string ("create procedure ...").
       int sp_create_procedure(THD *,
                               char *name, uint namelen,
                               char *def, uint deflen,
                               char *comment, uint commentlen, bool suid);
 
-      // Drop the procedure 'name' from the database.
+      // Drop the procedure 'name' from the blockchain.
       int sp_drop_procedure(THD *, char *name, uint namelen);
 
       // Finds a stored function given its name. Returns NULL if not found.
       sp_head *sp_find_function(THD *, LEX_STRING *name);
 
-      // Store the function 'name' in the database. 'def' is the complete
+      // Store the function 'name' in the blockchain. 'def' is the complete
       // definition string ("create function ...").
       int sp_create_function(THD *,
                              char *name, uint namelen,
                              char *def, uint deflen,
                              char *comment, uint commentlen, bool suid);
 
-      // Drop the function 'name' from the database.
+      // Drop the function 'name' from the blockchain.
       int sp_drop_function(THD *, char *name, uint namelen);
 
 
@@ -1053,7 +1053,7 @@
       void sp_cache_remove(sp_cache **cp, sp_head *sp);
 
 
-  - The mysql.proc schema:
+  - The myblockchain.proc schema:
 
     CREATE TABLE proc (
       db                char(64) binary DEFAULT '' NOT NULL,
@@ -1087,8 +1087,8 @@
                             'NO_KEY_OPTIONS',
                             'NO_TABLE_OPTIONS',
                             'NO_FIELD_OPTIONS',
-                            'MYSQL323',
-                            'MYSQL40',
+                            'MYBLOCKCHAIN323',
+                            'MYBLOCKCHAIN40',
                             'ANSI',
                             'NO_AUTO_VALUE_ON_ZERO'
                         ) DEFAULT 0 NOT NULL,

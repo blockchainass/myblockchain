@@ -14,12 +14,12 @@
    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA */
 
 /*
-  Lock databases against read or write.
+  Lock blockchains against read or write.
 */
 
 #include "myrg_def.h"
 
-int myrg_lock_database(MYRG_INFO *info, int lock_type)
+int myrg_lock_blockchain(MYRG_INFO *info, int lock_type)
 {
   int error,new_error;
   MYRG_TABLE *file;
@@ -36,13 +36,13 @@ int myrg_lock_database(MYRG_INFO *info, int lock_type)
      */
     (file->table)->owned_by_merge = TRUE;
 #endif
-    if ((new_error=mi_lock_database(file->table,lock_type)))
+    if ((new_error=mi_lock_blockchain(file->table,lock_type)))
     {
       error=new_error;
       if (lock_type != F_UNLCK)
       {
         while (--file >= info->open_tables)
-          mi_lock_database(file->table, F_UNLCK);
+          mi_lock_blockchain(file->table, F_UNLCK);
         break;
       }
     }

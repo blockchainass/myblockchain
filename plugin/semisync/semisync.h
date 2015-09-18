@@ -18,17 +18,17 @@
 #ifndef SEMISYNC_H
 #define SEMISYNC_H
 
-#define MYSQL_SERVER
+#define MYBLOCKCHAIN_SERVER
 #define HAVE_REPLICATION
 
 #include <my_global.h>
 #include <my_thread.h>
-#include <mysql/plugin.h>
+#include <myblockchain/plugin.h>
 #include <replication.h>
 #include "log.h"                                /* sql_print_information */
 
-typedef struct st_mysql_show_var SHOW_VAR;
-typedef struct st_mysql_sys_var SYS_VAR;
+typedef struct st_myblockchain_show_var SHOW_VAR;
+typedef struct st_myblockchain_sys_var SYS_VAR;
 
 
 /**

@@ -22,11 +22,11 @@
 */
 
 #ifdef WITH_PERFSCHEMA_STORAGE_ENGINE
-#ifdef MYSQL_SERVER
+#ifdef MYBLOCKCHAIN_SERVER
 #ifndef EMBEDDED_LIBRARY
-#ifndef MYSQL_DYNAMIC_PLUGIN
+#ifndef MYBLOCKCHAIN_DYNAMIC_PLUGIN
 
-#include "mysql/psi/psi.h"
+#include "myblockchain/psi/psi.h"
 
 #define PSI_IDLE_CALL(M) pfs_ ## M ## _v1
 
@@ -39,9 +39,9 @@ void pfs_end_idle_wait_v1(PSI_idle_locker* locker);
 
 C_MODE_END
 
-#endif /* MYSQL_DYNAMIC_PLUGIN */
+#endif /* MYBLOCKCHAIN_DYNAMIC_PLUGIN */
 #endif /* EMBEDDED_LIBRARY */
-#endif /* MYSQL_SERVER */
+#endif /* MYBLOCKCHAIN_SERVER */
 #endif /* WITH_PERFSCHEMA_STORAGE_ENGINE */
 
 #endif

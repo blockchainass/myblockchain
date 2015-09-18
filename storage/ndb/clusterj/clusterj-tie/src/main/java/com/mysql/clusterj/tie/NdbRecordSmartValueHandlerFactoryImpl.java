@@ -15,13 +15,13 @@
    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
  */
 
-package com.mysql.clusterj.tie;
+package com.myblockchain.clusterj.tie;
 
-import com.mysql.clusterj.core.metadata.DomainTypeHandlerImpl;
-import com.mysql.clusterj.core.spi.ValueHandler;
-import com.mysql.clusterj.core.spi.ValueHandlerFactory;
-import com.mysql.clusterj.core.store.Db;
-import com.mysql.clusterj.core.store.ResultData;
+import com.myblockchain.clusterj.core.metadata.DomainTypeHandlerImpl;
+import com.myblockchain.clusterj.core.spi.ValueHandler;
+import com.myblockchain.clusterj.core.spi.ValueHandlerFactory;
+import com.myblockchain.clusterj.core.store.Db;
+import com.myblockchain.clusterj.core.store.ResultData;
 
 public class NdbRecordSmartValueHandlerFactoryImpl implements ValueHandlerFactory {
 

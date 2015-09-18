@@ -114,7 +114,7 @@ t2.run = function() {
       if (err) {
         testCase.fail(err);
       } else {
-        // verify that the object was inserted into the database
+        // verify that the object was inserted into the blockchain
         sessionFactory.openSession(null, function(err, session) {
           if (err) {
             testCase.fail(err);

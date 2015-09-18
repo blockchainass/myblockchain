@@ -2503,7 +2503,7 @@ const char* _db_get_func_(void)
 #else
 
 /*
- * Dummy function, workaround for MySQL bug#14420 related
+ * Dummy function, workaround for MyBlockchain bug#14420 related
  * build failure on a platform where linking with an empty
  * archive fails.
  *

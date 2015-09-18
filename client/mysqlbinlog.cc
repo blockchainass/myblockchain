@@ -19,7 +19,7 @@
 
    TODO: print the catalog (some USE catalog.db ????).
 
-   Standalone program to read a MySQL binary log (or relay log).
+   Standalone program to read a MyBlockchain binary log (or relay log).
 
    Should be able to read any file of these categories, even with
    --start-position.
@@ -28,8 +28,8 @@
    Format_desc_of_slave, Rotate_of_master, Format_desc_of_master.
 */
 
-#define MYSQL_CLIENT
-#undef MYSQL_SERVER
+#define MYBLOCKCHAIN_CLIENT
+#undef MYBLOCKCHAIN_SERVER
 #include "client_priv.h"
 #include "my_default.h"
 #include <my_time.h>
@@ -70,11 +70,11 @@ using std::max;
 #define PROBE_HEADER_LEN	(EVENT_LEN_OFFSET+4)
 
 /*
-  Map containing the names of databases to be rewritten,
+  Map containing the names of blockchains to be rewritten,
   to a different one.
 */
 static
-std::map<std::string, std::string> map_mysqlbinlog_rewrite_db;
+std::map<std::string, std::string> map_myblockchainbinlog_rewrite_db;
 
 static bool
 rewrite_db(char **buf, ulong *buf_size,
@@ -84,8 +84,8 @@ rewrite_db(char **buf, ulong *buf_size,
   char* old_db= ptr + offset_db;
   uint old_db_len= (uint) ptr[offset_len];
   std::map<std::string, std::string>::iterator new_db_it=
-    map_mysqlbinlog_rewrite_db.find(std::string(old_db, old_db_len));
-  if (new_db_it == map_mysqlbinlog_rewrite_db.end())
+    map_myblockchainbinlog_rewrite_db.find(std::string(old_db, old_db_len));
+  if (new_db_it == map_myblockchainbinlog_rewrite_db.end())
     return false;
   const char *new_db=new_db_it->second.c_str();
   DBUG_ASSERT(new_db && new_db != old_db);
@@ -122,7 +122,7 @@ rewrite_db(char **buf, ulong *buf_size,
 }
 
 /**
-  Replace the database by another database in the buffer of a
+  Replace the blockchain by another blockchain in the buffer of a
   Table_map_log_event.
 
   The TABLE_MAP event buffer structure :
@@ -139,7 +139,7 @@ rewrite_db(char **buf, ulong *buf_size,
     |common_header|post_header|new_db_len|new_db|event data...   |
     +-------------+-----------+----------+------+----------------+
 
-  In case the new database name is longer than the old database
+  In case the new blockchain name is longer than the old blockchain
   length, it will reallocate the buffer.
 
   @param[in,out] buf                Pointer to event buffer to be processed
@@ -160,7 +160,7 @@ Table_map_log_event::rewrite_db_in_buffer(char **buf, ulong *event_len,
 }
 
 /**
-  Replace the database by another database in the buffer of a
+  Replace the blockchain by another blockchain in the buffer of a
   Query_log_event.
 
   The QUERY_EVENT buffer structure:
@@ -184,9 +184,9 @@ Table_map_log_event::rewrite_db_in_buffer(char **buf, ulong *event_len,
     +---------+---------+------+--------+--------+------+
 
   Thence we need to change the post header and the payload,
-  which is the one carrying the database name.
+  which is the one carrying the blockchain name.
 
-  In case the new database name is longer than the old database
+  In case the new blockchain name is longer than the old blockchain
   length, it will reallocate the buffer.
 
   @param[in,out] buf                Pointer to event buffer to be processed
@@ -215,7 +215,7 @@ Query_log_event::rewrite_db_in_buffer(char **buf, ulong *event_len,
     sv_len= uint2korr(ptr + common_header_len + Q_STATUS_VARS_LEN_OFFSET);
   }
 
-  /* now we have a pointer to the position where the database is. */
+  /* now we have a pointer to the position where the blockchain is. */
   uint offset_len= common_header_len + Q_DB_LEN_OFFSET;
   uint offset_db= common_header_len + query_header_len + sv_len;
 
@@ -230,7 +230,7 @@ static
 bool rewrite_db_filter(char **buf, ulong *event_len,
                        const Format_description_log_event *fde)
 {
-  if (map_mysqlbinlog_rewrite_db.empty())
+  if (map_myblockchainbinlog_rewrite_db.empty())
     return false;
 
   uint event_type= (uint)((*buf)[EVENT_TYPE_OFFSET]);
@@ -249,10 +249,10 @@ bool rewrite_db_filter(char **buf, ulong *event_len,
 }
 
 /*
-  The character set used should be equal to the one used in mysqld.cc for
+  The character set used should be equal to the one used in myblockchaind.cc for
   server rewrite-db
 */
-#define mysqld_charset &my_charset_latin1
+#define myblockchaind_charset &my_charset_latin1
 
 #define CLIENT_CAPABILITIES	(CLIENT_LONG_PASSWORD | CLIENT_LONG_FLAG | CLIENT_LOCAL_FILES)
 
@@ -285,7 +285,7 @@ Buff_ev *buff_ev(PSI_NOT_INSTRUMENTED);
 
 // needed by net_serv.c
 ulong bytes_sent = 0L, bytes_received = 0L;
-ulong mysqld_net_retry_count = 10L;
+ulong myblockchaind_net_retry_count = 10L;
 ulong open_files_limit;
 ulong opt_binlog_rows_event_max_size;
 uint test_flags = 0; 
@@ -293,11 +293,11 @@ static uint opt_protocol= 0;
 static FILE *result_file;
 
 #ifndef DBUG_OFF
-static const char* default_dbug_option = "d:t:o,/tmp/mysqlbinlog.trace";
+static const char* default_dbug_option = "d:t:o,/tmp/myblockchainbinlog.trace";
 #endif
-static const char *load_default_groups[]= { "mysqlbinlog","client",0 };
+static const char *load_default_groups[]= { "myblockchainbinlog","client",0 };
 
-static my_bool one_database=0, disable_log_bin= 0;
+static my_bool one_blockchain=0, disable_log_bin= 0;
 static my_bool opt_hexdump= 0;
 const char *base64_output_mode_names[]=
 {"NEVER", "AUTO", "UNSPEC", "DECODE-ROWS", NullS};
@@ -318,7 +318,7 @@ static enum enum_remote_proto {
   BINLOG_LOCAL= 2
 } opt_remote_proto= BINLOG_LOCAL;
 static char *opt_remote_proto_str= 0;
-static char *database= 0;
+static char *blockchain= 0;
 static char *output_file= 0;
 static char *rewrite= 0;
 static my_bool force_opt= 0, short_form= 0, idempotent_mode= 0;
@@ -353,7 +353,7 @@ static ulonglong start_position, stop_position;
 static char *start_datetime_str, *stop_datetime_str;
 static my_time_t start_datetime= 0, stop_datetime= MY_TIME_T_MAX;
 static ulonglong rec_count= 0;
-static MYSQL* mysql = NULL;
+static MYBLOCKCHAIN* myblockchain = NULL;
 static char* dirname_for_local_load= 0;
 static uint opt_server_id_bits = 0;
 static ulong opt_server_id_mask = 0;
@@ -638,7 +638,7 @@ Exit_status Load_log_processor::load_old_format_file(NET* net,
       }
       /*
 	we just need to send something, as the server will read but
-	not examine the packet - this is because mysql_load() sends 
+	not examine the packet - this is because myblockchain_load() sends 
 	an OK when it is done
       */
       break;
@@ -851,7 +851,7 @@ static Load_log_processor load_processor;
 
 /**
   Replace windows-style backslashes by forward slashes so it can be
-  consumed by the mysql client, which requires Unix path.
+  consumed by the myblockchain client, which requires Unix path.
 
   @todo This is only useful under windows, so may be ifdef'ed out on
   other systems.  /Sven
@@ -875,19 +875,19 @@ static void convert_path_to_forward_slashes(char *fname)
 
 
 /**
-  Indicates whether the given database should be filtered out,
-  according to the --database=X option.
+  Indicates whether the given blockchain should be filtered out,
+  according to the --blockchain=X option.
 
-  @param log_dbname Name of database.
+  @param log_dbname Name of blockchain.
 
-  @return nonzero if the database with the given name should be
+  @return nonzero if the blockchain with the given name should be
   filtered out, 0 otherwise.
 */
-static bool shall_skip_database(const char *log_dbname)
+static bool shall_skip_blockchain(const char *log_dbname)
 {
-  return one_database &&
+  return one_blockchain &&
          (log_dbname != NULL) &&
-         strcmp(log_dbname, database);
+         strcmp(log_dbname, blockchain);
 }
 
 
@@ -1075,7 +1075,7 @@ Exit_status process_event(PRINT_EVENT_INFO *print_event_info, Log_event *ev,
     {
       Query_log_event *qle= (Query_log_event*) ev;
       bool parent_query_skips=
-          !qle->is_trans_keyword() && shall_skip_database(qle->db);
+          !qle->is_trans_keyword() && shall_skip_blockchain(qle->db);
       bool ends_group= ((Query_log_event*) ev)->ends_group();
       bool starts_group= ((Query_log_event*) ev)->starts_group();
 
@@ -1107,7 +1107,7 @@ Exit_status process_event(PRINT_EVENT_INFO *print_event_info, Log_event *ev,
           /*
             For DDLs, print the COMMIT right away. 
           */
-          fprintf(result_file, "COMMIT /* added by mysqlbinlog */%s\n", print_event_info->delimiter);
+          fprintf(result_file, "COMMIT /* added by myblockchainbinlog */%s\n", print_event_info->delimiter);
           print_event_info->skipped_event_in_transaction= false;
           in_transaction= false;
         }
@@ -1180,7 +1180,7 @@ Exit_status process_event(PRINT_EVENT_INFO *print_event_info, Log_event *ev,
         related Append_block and Exec_load.
         Note that Load event from 3.23 is not tested.
       */
-      if (shall_skip_database(ce->db))
+      if (shall_skip_blockchain(ce->db))
       {
         print_event_info->skipped_event_in_transaction= true;
         goto end;                // Next event
@@ -1299,7 +1299,7 @@ Exit_status process_event(PRINT_EVENT_INFO *print_event_info, Log_event *ev,
         if (in_transaction)
         {
           my_b_printf(&print_event_info->head_cache,
-                      "ROLLBACK /* added by mysqlbinlog */ %s\n",
+                      "ROLLBACK /* added by myblockchainbinlog */ %s\n",
                       print_event_info->delimiter);
         }
         else if (print_event_info->is_gtid_next_set &&
@@ -1312,8 +1312,8 @@ Exit_status process_event(PRINT_EVENT_INFO *print_event_info, Log_event *ev,
             also along with ROLLBACK event.
           */
           my_b_printf(&print_event_info->head_cache,
-                      "BEGIN /*added by mysqlbinlog */ %s\n"
-                      "ROLLBACK /* added by mysqlbinlog */ %s\n",
+                      "BEGIN /*added by myblockchainbinlog */ %s\n"
+                      "ROLLBACK /* added by myblockchainbinlog */ %s\n",
                       print_event_info->delimiter,
                       print_event_info->delimiter);
         }
@@ -1343,7 +1343,7 @@ Exit_status process_event(PRINT_EVENT_INFO *print_event_info, Log_event *ev,
            LOG_EVENT_BINLOG_IN_USE_F))
       {
         error("Attempting to dump binlog '%s', which was not closed properly. "
-              "Most probably, mysqld is still writing it, or it crashed. "
+              "Most probably, myblockchaind is still writing it, or it crashed. "
               "Rerun with --force-if-open to ignore this problem.", logname);
         DBUG_RETURN(ERROR_STOP);
       }
@@ -1360,7 +1360,7 @@ Exit_status process_event(PRINT_EVENT_INFO *print_event_info, Log_event *ev,
     {
       Execute_load_query_log_event *exlq= (Execute_load_query_log_event*)ev;
       char *fname= load_processor.grab_fname(exlq->file_id);
-      if (shall_skip_database(exlq->db))
+      if (shall_skip_blockchain(exlq->db))
         print_event_info->skipped_event_in_transaction= true;
       else
       {
@@ -1387,7 +1387,7 @@ Exit_status process_event(PRINT_EVENT_INFO *print_event_info, Log_event *ev,
     case binary_log::TABLE_MAP_EVENT:
     {
       Table_map_log_event *map= ((Table_map_log_event *)ev);
-      if (shall_skip_database(map->get_db_name()))
+      if (shall_skip_blockchain(map->get_db_name()))
       {
         print_event_info->skipped_event_in_transaction= true;
         print_event_info->m_table_map_ignored.set_table(map->get_table_id(), map);
@@ -1535,7 +1535,7 @@ Exit_status process_event(PRINT_EVENT_INFO *print_event_info, Log_event *ev,
       print_event_info->is_gtid_next_set= true;
       print_event_info->is_gtid_next_valid= true;
       if (print_event_info->skipped_event_in_transaction == true)
-        fprintf(result_file, "COMMIT /* added by mysqlbinlog */%s\n", print_event_info->delimiter);
+        fprintf(result_file, "COMMIT /* added by myblockchainbinlog */%s\n", print_event_info->delimiter);
       print_event_info->skipped_event_in_transaction= false;
 
       ev->print(result_file, print_event_info);
@@ -1566,7 +1566,7 @@ Exit_status process_event(PRINT_EVENT_INFO *print_event_info, Log_event *ev,
         bool is_fake= (rev->common_header->when.tv_sec == 0);
         /*
           'in_transaction' flag is not set to true even after GTID_LOG_EVENT
-          of a transaction is seen. ('mysqlbinlog' tool assumes that there
+          of a transaction is seen. ('myblockchainbinlog' tool assumes that there
           is only one event per DDL transaction other than BEGIN and COMMIT
           events. Using 'in_transaction' flag and 'starts_group', 'ends_group'
           flags, DDL transaction generation is handled. Hence 'in_transaction'
@@ -1585,7 +1585,7 @@ Exit_status process_event(PRINT_EVENT_INFO *print_event_info, Log_event *ev,
             since there may be no gtids on the next one.
           */
           seen_gtids= false;
-          fprintf(result_file, "%sAUTOMATIC' /* added by mysqlbinlog */ %s\n",
+          fprintf(result_file, "%sAUTOMATIC' /* added by myblockchainbinlog */ %s\n",
                   Gtid_log_event::SET_STRING_PREFIX,
                   print_event_info->delimiter);
           print_event_info->is_gtid_next_set= false;
@@ -1598,8 +1598,8 @@ Exit_status process_event(PRINT_EVENT_INFO *print_event_info, Log_event *ev,
       break;
     }
     case binary_log::PREVIOUS_GTIDS_LOG_EVENT:
-      if (one_database && !opt_skip_gtids)
-        warning("The option --database has been used. It may filter "
+      if (one_blockchain && !opt_skip_gtids)
+        warning("The option --blockchain has been used. It may filter "
                 "parts of transactions, but will include the GTIDs in "
                 "any case. If you want to exclude or include transactions, "
                 "you should use the options --exclude-gtids or "
@@ -1656,7 +1656,7 @@ static struct my_option my_long_options[] =
    (uchar**) &opt_bind_addr, (uchar**) &opt_bind_addr, 0, GET_STR,
    REQUIRED_ARG, 0, 0, 0, 0, 0, 0},
   /*
-    mysqlbinlog needs charsets knowledge, to be able to convert a charset
+    myblockchainbinlog needs charsets knowledge, to be able to convert a charset
     number found in binlog to a charset name (to be able to print things
     like this:
     SET @`a`:=_cp850 0x4DFC6C6C6572 COLLATE `cp850_general_ci`;
@@ -1664,11 +1664,11 @@ static struct my_option my_long_options[] =
   {"character-sets-dir", OPT_CHARSETS_DIR,
    "Directory for character set files.", &charsets_dir,
    &charsets_dir, 0, GET_STR, REQUIRED_ARG, 0, 0, 0, 0, 0, 0},
-  {"database", 'd', "List entries for just this database (local log only).",
-   &database, &database, 0, GET_STR_ALLOC, REQUIRED_ARG,
+  {"blockchain", 'd', "List entries for just this blockchain (local log only).",
+   &blockchain, &blockchain, 0, GET_STR_ALLOC, REQUIRED_ARG,
    0, 0, 0, 0, 0, 0},
   {"rewrite-db", OPT_REWRITE_DB, "Rewrite the row event to point so that "
-   "it can be applied to a new database", &rewrite, &rewrite, 0,
+   "it can be applied to a new blockchain", &rewrite, &rewrite, 0,
    GET_STR_ALLOC, REQUIRED_ARG, 0, 0, 0, 0, 0, 0},
 #ifdef DBUG_OFF
    {"debug", '#', "This is a non-debug version. Catch this and exit.",
@@ -1693,7 +1693,7 @@ static struct my_option my_long_options[] =
    &opt_default_auth, &opt_default_auth, 0,
    GET_STR, REQUIRED_ARG, 0, 0, 0, 0, 0, 0},
   {"disable-log-bin", 'D', "Disable binary log. This is useful, if you "
-    "enabled --to-last-log and are sending the output to the same MySQL server. "
+    "enabled --to-last-log and are sending the output to the same MyBlockchain server. "
     "This way you could avoid an endless loop. You would also like to use it "
     "when restoring after a crash to avoid duplication of the statements you "
     "already have. NOTE: you will need a SUPER privilege to use this option.",
@@ -1724,22 +1724,22 @@ static struct my_option my_long_options[] =
     &opt_plugin_dir, &opt_plugin_dir, 0,
    GET_STR, REQUIRED_ARG, 0, 0, 0, 0, 0, 0},
   {"port", 'P', "Port number to use for connection or 0 for default to, in "
-   "order of preference, my.cnf, $MYSQL_TCP_PORT, "
-#if MYSQL_PORT_DEFAULT == 0
+   "order of preference, my.cnf, $MYBLOCKCHAIN_TCP_PORT, "
+#if MYBLOCKCHAIN_PORT_DEFAULT == 0
    "/etc/services, "
 #endif
-   "built-in default (" STRINGIFY_ARG(MYSQL_PORT) ").",
+   "built-in default (" STRINGIFY_ARG(MYBLOCKCHAIN_PORT) ").",
    &port, &port, 0, GET_INT, REQUIRED_ARG,
    0, 0, 0, 0, 0, 0},
-  {"protocol", OPT_MYSQL_PROTOCOL,
+  {"protocol", OPT_MYBLOCKCHAIN_PROTOCOL,
    "The protocol to use for connection (tcp, socket, pipe, memory).",
    0, 0, 0, GET_STR,  REQUIRED_ARG, 0, 0, 0, 0, 0, 0},
-  {"read-from-remote-server", 'R', "Read binary logs from a MySQL server. "
+  {"read-from-remote-server", 'R', "Read binary logs from a MyBlockchain server. "
    "This is an alias for read-from-remote-master=BINLOG-DUMP-NON-GTIDS.",
    &opt_remote_alias, &opt_remote_alias, 0, GET_BOOL, NO_ARG,
    0, 0, 0, 0, 0, 0},
   {"read-from-remote-master", OPT_REMOTE_PROTO,
-   "Read binary logs from a MySQL server through the COM_BINLOG_DUMP or "
+   "Read binary logs from a MyBlockchain server through the COM_BINLOG_DUMP or "
    "COM_BINLOG_DUMP_GTID commands by setting the option to either "
    "BINLOG-DUMP-NON-GTIDS or BINLOG-DUMP-GTIDS, respectively. If "
    "--read-from-remote-master=BINLOG-DUMP-GTIDS is combined with "
@@ -1789,7 +1789,7 @@ static struct my_option my_long_options[] =
   {"start-datetime", OPT_START_DATETIME,
    "Start reading the binlog at first event having a datetime equal or "
    "posterior to the argument; the argument must be a date and time "
-   "in the local time zone, in any format accepted by the MySQL server "
+   "in the local time zone, in any format accepted by the MyBlockchain server "
    "for DATETIME and TIMESTAMP types, for example: 2004-12-25 11:25:56 "
    "(you should probably use quotes for your shell to set it properly).",
    &start_datetime_str, &start_datetime_str,
@@ -1804,7 +1804,7 @@ static struct my_option my_long_options[] =
   {"stop-datetime", OPT_STOP_DATETIME,
    "Stop reading the binlog at first event having a datetime equal or "
    "posterior to the argument; the argument must be a date and time "
-   "in the local time zone, in any format accepted by the MySQL server "
+   "in the local time zone, in any format accepted by the MyBlockchain server "
    "for DATETIME and TIMESTAMP types, for example: 2004-12-25 11:25:56 "
    "(you should probably use quotes for your shell to set it properly).",
    &stop_datetime_str, &stop_datetime_str,
@@ -1833,7 +1833,7 @@ static struct my_option my_long_options[] =
    (ulonglong)(~(my_off_t)0), 0, 0, 0},
   {"to-last-log", 't', "Requires -R. Will not stop at the end of the "
    "requested binlog but rather continue printing until the end of the last "
-   "binlog of the MySQL server. If you send the output to the same MySQL "
+   "binlog of the MyBlockchain server. If you send the output to the same MyBlockchain "
    "server, that may lead to an endless loop.",
    &to_last_remote_log, &to_last_remote_log, 0, GET_BOOL,
    NO_ARG, 0, 0, 0, 0, 0, 0},
@@ -1862,17 +1862,17 @@ static struct my_option my_long_options[] =
    /* def_value 4GB */ UINT_MAX, /* min_value */ 256,
    /* max_value */ ULONG_MAX, /* sub_size */ 0,
    /* block_size */ 256, /* app_type */ 0},
-  {"skip-gtids", OPT_MYSQLBINLOG_SKIP_GTIDS,
+  {"skip-gtids", OPT_MYBLOCKCHAINBINLOG_SKIP_GTIDS,
    "Do not preserve Global Transaction Identifiers; instead make the server "
    "execute the transactions as if they were new.",
    &opt_skip_gtids, &opt_skip_gtids, 0,
    GET_BOOL, NO_ARG, 0, 0, 0, 0, 0, 0},
-  {"include-gtids", OPT_MYSQLBINLOG_INCLUDE_GTIDS,
+  {"include-gtids", OPT_MYBLOCKCHAINBINLOG_INCLUDE_GTIDS,
    "Print events whose Global Transaction Identifiers "
    "were provided.",
    &opt_include_gtids_str, &opt_include_gtids_str, 0,
    GET_STR_ALLOC, REQUIRED_ARG, 0, 0, 0, 0, 0, 0},
-  {"exclude-gtids", OPT_MYSQLBINLOG_EXCLUDE_GTIDS,
+  {"exclude-gtids", OPT_MYBLOCKCHAINBINLOG_EXCLUDE_GTIDS,
    "Print all events but those whose Global Transaction "
    "Identifiers were provided.",
    &opt_exclude_gtids_str, &opt_exclude_gtids_str, 0,
@@ -1949,7 +1949,7 @@ static void warning(const char *format,...)
 static void cleanup()
 {
   my_free(pass);
-  my_free(database);
+  my_free(blockchain);
   my_free(rewrite);
   my_free(host);
   my_free(user);
@@ -1963,8 +1963,8 @@ static void cleanup()
   delete buff_ev;
 
   delete glob_description_event;
-  if (mysql)
-    mysql_close(mysql);
+  if (myblockchain)
+    myblockchain_close(myblockchain);
 }
 
 
@@ -1979,8 +1979,8 @@ static void usage()
   print_version();
   puts(ORACLE_WELCOME_COPYRIGHT_NOTICE("2000"));
   printf("\
-Dumps a MySQL binary log in a format usable for viewing or for piping to\n\
-the mysql command line client.\n\n");
+Dumps a MyBlockchain binary log in a format usable for viewing or for piping to\n\
+the myblockchain command line client.\n\n");
   printf("Usage: %s [options] log-files\n", my_progname);
   /*
     Turn default for zombies off so that the help on how to 
@@ -2002,21 +2002,21 @@ the mysql command line client.\n\n");
 
 static my_time_t convert_str_to_timestamp(const char* str)
 {
-  MYSQL_TIME_STATUS status;
-  MYSQL_TIME l_time;
+  MYBLOCKCHAIN_TIME_STATUS status;
+  MYBLOCKCHAIN_TIME l_time;
   long dummy_my_timezone;
   my_bool dummy_in_dst_time_gap;
   /* We require a total specification (date AND time) */
   if (str_to_datetime(str, strlen(str), &l_time, 0, &status) ||
-      l_time.time_type != MYSQL_TIMESTAMP_DATETIME || status.warnings)
+      l_time.time_type != MYBLOCKCHAIN_TIMESTAMP_DATETIME || status.warnings)
   {
     error("Incorrect date and time argument: %s", str);
     exit(1);
   }
   /*
     Note that Feb 30th, Apr 31st cause no error messages and are mapped to
-    the next existing day, like in mysqld. Maybe this could be changed when
-    mysqld is changed too (with its "strict" mode?).
+    the next existing day, like in myblockchaind. Maybe this could be changed when
+    myblockchaind is changed too (with its "strict" mode?).
   */
   return
     my_system_gmt_sec(&l_time, &dummy_my_timezone, &dummy_in_dst_time_gap);
@@ -2036,34 +2036,34 @@ get_one_option(int optid, const struct my_option *opt __attribute__((unused)),
 #endif
 #include <sslopt-case.h>
   case 'd':
-    one_database = 1;
+    one_blockchain = 1;
     break;
   case OPT_REWRITE_DB:
   {
     char *from_db= argument, *p, *to_db;
     if (!(p= strstr(argument, "->")))
     {
-      sql_print_error("Bad syntax in mysqlbinlog-rewrite-db - missing '->'!\n");
+      sql_print_error("Bad syntax in myblockchainbinlog-rewrite-db - missing '->'!\n");
       return 1;
     }
     to_db= p + 2;
-    while(p > argument && my_isspace(mysqld_charset, p[-1]))
+    while(p > argument && my_isspace(myblockchaind_charset, p[-1]))
       p--;
     *p= 0;
     if (!*from_db)
     {
-      sql_print_error("Bad syntax in mysqlbinlog-rewrite-db - empty FROM db!\n");
+      sql_print_error("Bad syntax in myblockchainbinlog-rewrite-db - empty FROM db!\n");
       return 1;
     }
-    while (*to_db && my_isspace(mysqld_charset, *to_db))
+    while (*to_db && my_isspace(myblockchaind_charset, *to_db))
       to_db++;
     if (!*to_db)
     {
-      sql_print_error("Bad syntax in mysqlbinlog-rewrite-db - empty TO db!\n");
+      sql_print_error("Bad syntax in myblockchainbinlog-rewrite-db - empty TO db!\n");
       return 1;
     }
-    /* Add the database to the mapping */
-    map_mysqlbinlog_rewrite_db[from_db]= to_db;
+    /* Add the blockchain to the mapping */
+    map_myblockchainbinlog_rewrite_db[from_db]= to_db;
     break;
   }
   case 'p':
@@ -2090,7 +2090,7 @@ get_one_option(int optid, const struct my_option *opt __attribute__((unused)),
     opt_remote_proto= (enum_remote_proto)
       (find_type_or_exit(argument, &remote_proto_typelib, opt->name) - 1);
     break;
-  case OPT_MYSQL_PROTOCOL:
+  case OPT_MYBLOCKCHAIN_PROTOCOL:
     opt_protocol= find_type_or_exit(argument, &sql_protocol_typelib,
                                     opt->name);
     break;
@@ -2124,7 +2124,7 @@ get_one_option(int optid, const struct my_option *opt __attribute__((unused)),
     /* --secure-auth is a zombie option. */
     if (!opt_secure_auth)
     {
-      fprintf(stderr, "mysqlbinlog: [ERROR] --skip-secure-auth is not supported.\n");
+      fprintf(stderr, "myblockchainbinlog: [ERROR] --skip-secure-auth is not supported.\n");
       exit(1);
     }
     else
@@ -2155,7 +2155,7 @@ static int parse_args(int *argc, char*** argv)
 
 
 /**
-  Create and initialize the global mysql object, and connect to the
+  Create and initialize the global myblockchain object, and connect to the
   server.
 
   @retval ERROR_STOP An error occurred - the program should terminate.
@@ -2163,43 +2163,43 @@ static int parse_args(int *argc, char*** argv)
 */
 static Exit_status safe_connect()
 {
-  mysql= mysql_init(NULL);
+  myblockchain= myblockchain_init(NULL);
 
-  if (!mysql)
+  if (!myblockchain)
   {
-    error("Failed on mysql_init.");
+    error("Failed on myblockchain_init.");
     return ERROR_STOP;
   }
 
-  SSL_SET_OPTIONS(mysql);
+  SSL_SET_OPTIONS(myblockchain);
 
   if (opt_plugin_dir && *opt_plugin_dir)
-    mysql_options(mysql, MYSQL_PLUGIN_DIR, opt_plugin_dir);
+    myblockchain_options(myblockchain, MYBLOCKCHAIN_PLUGIN_DIR, opt_plugin_dir);
 
   if (opt_default_auth && *opt_default_auth)
-    mysql_options(mysql, MYSQL_DEFAULT_AUTH, opt_default_auth);
+    myblockchain_options(myblockchain, MYBLOCKCHAIN_DEFAULT_AUTH, opt_default_auth);
 
   if (opt_protocol)
-    mysql_options(mysql, MYSQL_OPT_PROTOCOL, (char*) &opt_protocol);
+    myblockchain_options(myblockchain, MYBLOCKCHAIN_OPT_PROTOCOL, (char*) &opt_protocol);
   if (opt_bind_addr)
-    mysql_options(mysql, MYSQL_OPT_BIND, opt_bind_addr);
+    myblockchain_options(myblockchain, MYBLOCKCHAIN_OPT_BIND, opt_bind_addr);
 #if defined (_WIN32) && !defined (EMBEDDED_LIBRARY)
   if (shared_memory_base_name)
-    mysql_options(mysql, MYSQL_SHARED_MEMORY_BASE_NAME,
+    myblockchain_options(myblockchain, MYBLOCKCHAIN_SHARED_MEMORY_BASE_NAME,
                   shared_memory_base_name);
 #endif
-  mysql_options(mysql, MYSQL_OPT_CONNECT_ATTR_RESET, 0);
-  mysql_options4(mysql, MYSQL_OPT_CONNECT_ATTR_ADD,
-                 "program_name", "mysqlbinlog");
-  mysql_options4(mysql, MYSQL_OPT_CONNECT_ATTR_ADD,
+  myblockchain_options(myblockchain, MYBLOCKCHAIN_OPT_CONNECT_ATTR_RESET, 0);
+  myblockchain_options4(myblockchain, MYBLOCKCHAIN_OPT_CONNECT_ATTR_ADD,
+                 "program_name", "myblockchainbinlog");
+  myblockchain_options4(myblockchain, MYBLOCKCHAIN_OPT_CONNECT_ATTR_ADD,
                 "_client_role", "binary_log_listener");
 
-  if (!mysql_real_connect(mysql, host, user, pass, 0, port, sock, 0))
+  if (!myblockchain_real_connect(myblockchain, host, user, pass, 0, port, sock, 0))
   {
-    error("Failed on connect: %s", mysql_error(mysql));
+    error("Failed on connect: %s", myblockchain_error(myblockchain));
     return ERROR_STOP;
   }
-  mysql->reconnect= 1;
+  myblockchain->reconnect= 1;
   return OK_CONTINUE;
 }
 
@@ -2300,11 +2300,11 @@ static Exit_status dump_multiple_logs(int argc, char **argv)
   if (!raw_mode)
   {
     if (print_event_info.skipped_event_in_transaction)
-      fprintf(result_file, "COMMIT /* added by mysqlbinlog */%s\n", print_event_info.delimiter);
+      fprintf(result_file, "COMMIT /* added by myblockchainbinlog */%s\n", print_event_info.delimiter);
 
     if (!print_event_info.is_gtid_next_valid)
     {
-      fprintf(result_file, "%sAUTOMATIC' /* added by mysqlbinlog */%s\n",
+      fprintf(result_file, "%sAUTOMATIC' /* added by myblockchainbinlog */%s\n",
               Gtid_log_event::SET_STRING_PREFIX,
               print_event_info.delimiter);
       print_event_info.is_gtid_next_set= false;
@@ -2330,18 +2330,18 @@ static Exit_status dump_multiple_logs(int argc, char **argv)
 static Exit_status check_master_version()
 {
   DBUG_ENTER("check_master_version");
-  MYSQL_RES* res = 0;
-  MYSQL_ROW row;
+  MYBLOCKCHAIN_RES* res = 0;
+  MYBLOCKCHAIN_ROW row;
   const char* version;
 
-  if (mysql_query(mysql, "SELECT VERSION()") ||
-      !(res = mysql_store_result(mysql)))
+  if (myblockchain_query(myblockchain, "SELECT VERSION()") ||
+      !(res = myblockchain_store_result(myblockchain)))
   {
     error("Could not find server version: "
-          "Query failed when checking master version: %s", mysql_error(mysql));
+          "Query failed when checking master version: %s", myblockchain_error(myblockchain));
     DBUG_RETURN(ERROR_STOP);
   }
-  if (!(row = mysql_fetch_row(res)))
+  if (!(row = myblockchain_fetch_row(res)))
   {
     error("Could not find server version: "
           "Master returned no rows for SELECT VERSION().");
@@ -2360,10 +2360,10 @@ static Exit_status check_master_version()
      necessary checksummed. 
      That preference is specified below.
   */
-  if (mysql_query(mysql, "SET @master_binlog_checksum='NONE'"))
+  if (myblockchain_query(myblockchain, "SET @master_binlog_checksum='NONE'"))
   {
     error("Could not notify master about checksum awareness."
-          "Master returned '%s'", mysql_error(mysql));
+          "Master returned '%s'", myblockchain_error(myblockchain));
     goto err;
   }
   delete glob_description_event;
@@ -2386,7 +2386,7 @@ static Exit_status check_master_version()
   default:
     glob_description_event= NULL;
     error("Could not find server version: "
-          "Master reported unrecognized MySQL version '%s'.", version);
+          "Master reported unrecognized MyBlockchain version '%s'.", version);
     goto err;
   }
   if (!glob_description_event || !glob_description_event->is_valid())
@@ -2395,11 +2395,11 @@ static Exit_status check_master_version()
     goto err;
   }
 
-  mysql_free_result(res);
+  myblockchain_free_result(res);
   DBUG_RETURN(OK_CONTINUE);
 
 err:
-  mysql_free_result(res);
+  myblockchain_free_result(res);
   DBUG_RETURN(ERROR_STOP);
 }
 
@@ -2449,14 +2449,14 @@ static Exit_status dump_remote_log_entries(PRINT_EVENT_INFO *print_event_info,
   */
   if ((retval= safe_connect()) != OK_CONTINUE)
     DBUG_RETURN(retval);
-  net= &mysql->net;
+  net= &myblockchain->net;
 
   if ((retval= check_master_version()) != OK_CONTINUE)
     DBUG_RETURN(retval);
 
   /*
     Fake a server ID to log continously. This will show as a
-    slave on the mysql server.
+    slave on the myblockchain server.
   */
   if (to_last_remote_log && stop_never)
   {
@@ -2552,7 +2552,7 @@ static Exit_status dump_remote_log_entries(PRINT_EVENT_INFO *print_event_info,
     DBUG_ASSERT(command_size == (allocation_size - 1));
   }
 
-  if (simple_command(mysql, command, command_buffer, command_size, 1))
+  if (simple_command(myblockchain, command, command_buffer, command_size, 1))
   {
     error("Got fatal error sending the log dump command.");
     my_free(command_buffer);
@@ -2566,10 +2566,10 @@ static Exit_status dump_remote_log_entries(PRINT_EVENT_INFO *print_event_info,
     Log_event *ev= NULL;
     Log_event_type type= binary_log::UNKNOWN_EVENT;
 
-    len= cli_safe_read(mysql, NULL);
+    len= cli_safe_read(myblockchain, NULL);
     if (len == packet_error)
     {
-      error("Got error reading packet from server: %s", mysql_error(mysql));
+      error("Got error reading packet from server: %s", myblockchain_error(myblockchain));
       DBUG_RETURN(ERROR_STOP);
     }
     if (len < 8 && net->read_pos[0] == 254)
@@ -2584,7 +2584,7 @@ static Exit_status dump_remote_log_entries(PRINT_EVENT_INFO *print_event_info,
     type= (Log_event_type) net->read_pos[1 + EVENT_TYPE_OFFSET];
 
     /*
-      Ignore HEARBEAT events. They can show up if mysqlbinlog is
+      Ignore HEARBEAT events. They can show up if myblockchainbinlog is
       running with:
 
         --read-from-remote-server
@@ -2667,7 +2667,7 @@ static Exit_status dump_remote_log_entries(PRINT_EVENT_INFO *print_event_info,
           }
           /*
              Reset the value of '# at pos' field shown against first event of
-             next binlog file (fake rotate) picked by mysqlbinlog --to-last-log
+             next binlog file (fake rotate) picked by myblockchainbinlog --to-last-log
          */
           old_off= start_position_mot;
           len= 1; // fake Rotate, so don't increment old_off
@@ -3122,8 +3122,8 @@ static int args_post_process(void)
 
   if (raw_mode)
   {
-    if (one_database)
-      warning("The --database option is ignored with --raw mode");
+    if (one_blockchain)
+      warning("The --blockchain option is ignored with --raw mode");
 
     if (opt_remote_proto == BINLOG_LOCAL)
     {
@@ -3311,7 +3311,7 @@ int main(int argc, char** argv)
               "/*!32316 SET @OLD_SQL_LOG_BIN=@@SQL_LOG_BIN, SQL_LOG_BIN=0*/;\n");
 
     /*
-      In mysqlbinlog|mysql, don't want mysql to be disconnected after each
+      In myblockchainbinlog|myblockchain, don't want myblockchain to be disconnected after each
       transaction (which would be the case with GLOBAL.COMPLETION_TYPE==2).
     */
     fprintf(result_file,
@@ -3342,7 +3342,7 @@ int main(int argc, char** argv)
       of transaction.
     */
     fprintf(result_file,
-          "# End of log file\nROLLBACK /* added by mysqlbinlog */;\n"
+          "# End of log file\nROLLBACK /* added by myblockchainbinlog */;\n"
           "/*!50003 SET COMPLETION_TYPE=@OLD_COMPLETION_TYPE*/;\n");
     if (disable_log_bin)
       fprintf(result_file, "/*!32316 SET SQL_LOG_BIN=@OLD_SQL_LOG_BIN*/;\n");
@@ -3358,7 +3358,7 @@ int main(int argc, char** argv)
 
   /*
     We should unset the RBR_EXEC_MODE since the user may concatenate output of
-    multiple runs of mysqlbinlog, all of which may not run in idempotent mode.
+    multiple runs of myblockchainbinlog, all of which may not run in idempotent mode.
    */
   if (idempotent_mode)
     fprintf(result_file,

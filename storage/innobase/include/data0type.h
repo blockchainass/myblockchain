@@ -28,8 +28,8 @@ Created 1/16/1996 Heikki Tuuri
 
 #include "univ.i"
 
-extern ulint	data_mysql_default_charset_coll;
-#define DATA_MYSQL_BINARY_CHARSET_COLL 63
+extern ulint	data_myblockchain_default_charset_coll;
+#define DATA_MYBLOCKCHAIN_BINARY_CHARSET_COLL 63
 
 /* SQL data type struct */
 struct dtype_t;
@@ -45,10 +45,10 @@ enum ib_like_t {
 #define DATA_MISSING	0	/* missing column */
 #define	DATA_VARCHAR	1	/* character varying of the
 				latin1_swedish_ci charset-collation; note
-				that the MySQL format for this, DATA_BINARY,
-				DATA_VARMYSQL, is also affected by whether the
+				that the MyBlockchain format for this, DATA_BINARY,
+				DATA_VARMYBLOCKCHAIN, is also affected by whether the
 				'precise type' contains
-				DATA_MYSQL_TRUE_VARCHAR */
+				DATA_MYBLOCKCHAIN_TRUE_VARCHAR */
 #define DATA_CHAR	2	/* fixed length character of the
 				latin1_swedish_ci charset-collation */
 #define DATA_FIXBINARY	3	/* binary string of fixed length */
@@ -69,10 +69,10 @@ binary strings */
 #define DATA_FLOAT	9
 #define DATA_DOUBLE	10
 #define DATA_DECIMAL	11	/* decimal number stored as an ASCII string */
-#define	DATA_VARMYSQL	12	/* any charset varying length char */
-#define	DATA_MYSQL	13	/* any charset fixed length char */
-				/* NOTE that 4.1.1 used DATA_MYSQL and
-				DATA_VARMYSQL for all character sets, and the
+#define	DATA_VARMYBLOCKCHAIN	12	/* any charset varying length char */
+#define	DATA_MYBLOCKCHAIN	13	/* any charset fixed length char */
+				/* NOTE that 4.1.1 used DATA_MYBLOCKCHAIN and
+				DATA_VARMYBLOCKCHAIN for all character sets, and the
 				charset-collation for tables created with it
 				can also be latin1_swedish_ci */
 
@@ -86,7 +86,7 @@ We use BLOB as underlying datatype for DATA_GEOMETRY and DATA_VAR_POINT
 while CHAR for DATA_POINT */
 #define DATA_GEOMETRY	14	/* geometry datatype of variable length */
 /* The following two are disabled temporarily, we won't create them in
-get_innobase_type_from_mysql_type().
+get_innobase_type_from_myblockchain_type().
 TODO: We will enable DATA_POINT/them when we come to the fixed-length POINT
 again. */
 #define DATA_POINT	15	/* geometry datatype of fixed length POINT */
@@ -101,41 +101,41 @@ again. */
 /*-------------------------------------------*/
 /* The 'PRECISE TYPE' of a column */
 /*
-Tables created by a MySQL user have the following convention:
+Tables created by a MyBlockchain user have the following convention:
 
-- In the least significant byte in the precise type we store the MySQL type
+- In the least significant byte in the precise type we store the MyBlockchain type
 code (not applicable for system columns).
 
 - In the second least significant byte we OR flags DATA_NOT_NULL,
 DATA_UNSIGNED, DATA_BINARY_TYPE.
 
 - In the third least significant byte of the precise type of string types we
-store the MySQL charset-collation code. In DATA_BLOB columns created with
+store the MyBlockchain charset-collation code. In DATA_BLOB columns created with
 < 4.0.14 we do not actually know if it is a BLOB or a TEXT column. Since there
 are no indexes on prefixes of BLOB or TEXT columns in < 4.0.14, this is no
 problem, though.
 
 Note that versions < 4.1.2 or < 5.0.1 did not store the charset code to the
-precise type, since the charset was always the default charset of the MySQL
+precise type, since the charset was always the default charset of the MyBlockchain
 installation. If the stored charset code is 0 in the system table SYS_COLUMNS
-of InnoDB, that means that the default charset of this MySQL installation
+of InnoDB, that means that the default charset of this MyBlockchain installation
 should be used.
 
 When loading a table definition from the system tables to the InnoDB data
 dictionary cache in main memory, InnoDB versions >= 4.1.2 and >= 5.0.1 check
 if the stored charset-collation is 0, and if that is the case and the type is
 a non-binary string, replace that 0 by the default charset-collation code of
-this MySQL installation. In short, in old tables, the charset-collation code
+this MyBlockchain installation. In short, in old tables, the charset-collation code
 in the system tables on disk can be 0, but in in-memory data structures
 (dtype_t), the charset-collation code is always != 0 for non-binary string
 types.
 
 In new tables, in binary string types, the charset-collation code is the
-MySQL code for the 'binary charset', that is, != 0.
+MyBlockchain code for the 'binary charset', that is, != 0.
 
 For binary string types and for DATA_CHAR, DATA_VARCHAR, and for those
 DATA_BLOB which are binary or have the charset-collation latin1_swedish_ci,
-InnoDB performs all comparisons internally, without resorting to the MySQL
+InnoDB performs all comparisons internally, without resorting to the MyBlockchain
 comparison functions. This is to save CPU time.
 
 InnoDB's own internal system tables have different precise types for their
@@ -143,13 +143,13 @@ columns, and for them the precise type is usually not used at all.
 */
 
 #define DATA_ENGLISH	4	/* English language character string: this
-				is a relic from pre-MySQL time and only used
+				is a relic from pre-MyBlockchain time and only used
 				for InnoDB's own system tables */
-#define DATA_ERROR	111	/* another relic from pre-MySQL time */
+#define DATA_ERROR	111	/* another relic from pre-MyBlockchain time */
 
-#define DATA_MYSQL_TYPE_MASK 255 /* AND with this mask to extract the MySQL
+#define DATA_MYBLOCKCHAIN_TYPE_MASK 255 /* AND with this mask to extract the MyBlockchain
 				 type from the precise type */
-#define DATA_MYSQL_TRUE_VARCHAR 15 /* MySQL type code for the >= 5.0.3
+#define DATA_MYBLOCKCHAIN_TRUE_VARCHAR 15 /* MyBlockchain type code for the >= 5.0.3
 				   format true VARCHAR */
 
 /* Precise data types for system columns and the length of those columns;
@@ -182,7 +182,7 @@ be less than 256 */
 #define	DATA_BINARY_TYPE 1024	/* if the data type is a binary character
 				string, this is ORed to the precise type:
 				this only holds for tables created with
-				>= MySQL-4.0.14 */
+				>= MyBlockchain-4.0.14 */
 /* #define	DATA_NONLATIN1	2048 This is a relic from < 4.1.2 and < 5.0.1.
 				In earlier versions this was set for some
 				BLOB columns.
@@ -192,8 +192,8 @@ be less than 256 */
 
 #define	DATA_LONG_TRUE_VARCHAR 4096	/* this is ORed to the precise data
 				type when the column is true VARCHAR where
-				MySQL uses 2 bytes to store the data len;
-				for shorter VARCHARs MySQL uses only 1 byte */
+				MyBlockchain uses 2 bytes to store the data len;
+				for shorter VARCHARs MyBlockchain uses only 1 byte */
 #define	DATA_VIRTUAL	8192	/* Virtual column */
 
 /*-------------------------------------------*/
@@ -261,11 +261,11 @@ the underling datatype of GEOMETRY(not DATA_POINT) data. */
 
 #ifndef UNIV_HOTBACKUP
 /*********************************************************************//**
-Gets the MySQL type code from a dtype.
-@return MySQL type code; this is NOT an InnoDB type code! */
+Gets the MyBlockchain type code from a dtype.
+@return MyBlockchain type code; this is NOT an InnoDB type code! */
 UNIV_INLINE
 ulint
-dtype_get_mysql_type(
+dtype_get_myblockchain_type(
 /*=================*/
 	const dtype_t*	type);	/*!< in: type struct */
 /*********************************************************************//**
@@ -363,8 +363,8 @@ dtype_get_mblen(
 	ulint*	mbmaxlen);	/*!< out: maximum length of a
 				multi-byte character */
 /*********************************************************************//**
-Gets the MySQL charset-collation code for MySQL string types.
-@return MySQL charset-collation code */
+Gets the MyBlockchain charset-collation code for MyBlockchain string types.
+@return MyBlockchain charset-collation code */
 UNIV_INLINE
 ulint
 dtype_get_charset_coll(
@@ -377,13 +377,13 @@ charset-collation code.
 ulint
 dtype_form_prtype(
 /*==============*/
-	ulint	old_prtype,	/*!< in: the MySQL type code and the flags
+	ulint	old_prtype,	/*!< in: the MyBlockchain type code and the flags
 				DATA_BINARY_TYPE etc. */
-	ulint	charset_coll);	/*!< in: MySQL charset-collation code */
+	ulint	charset_coll);	/*!< in: MyBlockchain charset-collation code */
 /*********************************************************************//**
-Determines if a MySQL string type is a subset of UTF-8.  This function
+Determines if a MyBlockchain string type is a subset of UTF-8.  This function
 may return false negatives, in case further character-set collation
-codes are introduced in MySQL later.
+codes are introduced in MyBlockchain later.
 @return TRUE if a subset of UTF-8 */
 UNIV_INLINE
 ibool
@@ -552,24 +552,24 @@ dtype_new_read_for_order_and_null_size()
 sym_tab_add_null_lit() */
 
 struct dtype_t{
-	unsigned	prtype:32;	/*!< precise type; MySQL data
+	unsigned	prtype:32;	/*!< precise type; MyBlockchain data
 					type, charset code, flags to
 					indicate nullability,
 					signedness, whether this is a
 					binary string, whether this is
-					a true VARCHAR where MySQL
+					a true VARCHAR where MyBlockchain
 					uses 2 bytes to store the length */
 	unsigned	mtype:8;	/*!< main data type */
 
 	/* the remaining fields do not affect alphabetical ordering: */
 
-	unsigned	len:16;		/*!< length; for MySQL data this
+	unsigned	len:16;		/*!< length; for MyBlockchain data this
 					is field->pack_length(),
 					except that for a >= 5.0.3
 					type true VARCHAR this is the
 					maximum byte length of the
 					string data (in addition to
-					the string, MySQL uses 1 or 2
+					the string, MyBlockchain uses 1 or 2
 					bytes to store the string length) */
 #ifndef UNIV_HOTBACKUP
 	unsigned	mbminmaxlen:5;	/*!< minimum and maximum length of a

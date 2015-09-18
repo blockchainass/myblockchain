@@ -18,13 +18,13 @@ this program; if not, write to the Free Software Foundation, Inc.,
 
 /**************************************************//**
 @file buf/buf0flu.cc
-The database buffer buf_pool flush algorithm
+The blockchain buffer buf_pool flush algorithm
 
 Created 11/11/1995 Heikki Tuuri
 *******************************************************/
 
 #include "ha_prototypes.h"
-#include <mysql/service_thd_wait.h>
+#include <myblockchain/service_thd_wait.h>
 
 #include "buf0flu.h"
 
@@ -85,7 +85,7 @@ static lsn_t lsn_avg_rate = 0;
 static lsn_t buf_flush_sync_lsn = 0;
 
 #ifdef UNIV_PFS_THREAD
-mysql_pfs_key_t page_cleaner_thread_key;
+myblockchain_pfs_key_t page_cleaner_thread_key;
 #endif /* UNIV_PFS_THREAD */
 
 /** Event to synchronise with the flushing. */
@@ -887,7 +887,7 @@ buf_flush_init_for_writing(
 	} else {
 		if (block != NULL && UNIV_PAGE_SIZE == 16384) {
 			/* The page type could be garbage in old files
-			created before MySQL 5.5. Such files always
+			created before MyBlockchain 5.5. Such files always
 			had a page size of 16 kilobytes. */
 			ulint	page_type = fil_page_get_type(page);
 			ulint	reset_type = page_type;
@@ -974,7 +974,7 @@ buf_flush_init_for_writing(
 	We can afford to store something other than
 	buf_calc_page_old_checksum() or BUF_NO_CHECKSUM_MAGIC in
 	this field because the file will not be readable by old
-	versions of MySQL/InnoDB anyway (older than MySQL 5.6.3) */
+	versions of MyBlockchain/InnoDB anyway (older than MyBlockchain 5.6.3) */
 
 	mach_write_to_4(page + UNIV_PAGE_SIZE - FIL_PAGE_END_LSN_OLD_CHKSUM,
 			checksum);
@@ -2991,7 +2991,7 @@ DECLARE_THREAD(buf_flush_page_cleaner_coordinator)(
 		ib::info() << "page_cleaner coordinator priority: "
 			<< buf_flush_page_cleaner_priority;
 	} else {
-		ib::info() << "If the mysqld execution user is authorized,"
+		ib::info() << "If the myblockchaind execution user is authorized,"
 		" page cleaner thread priority can be changed."
 		" See the man page of setpriority().";
 	}

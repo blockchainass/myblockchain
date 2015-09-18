@@ -19,7 +19,7 @@
   @file
 
   @brief
-  MySQL Configuration Utility
+  MyBlockchain Configuration Utility
 */
 
 /* ORACLE_WELCOME_COPYRIGHT_NOTICE */
@@ -33,7 +33,7 @@
 #include "my_default.h"
 #include "my_default_priv.h"
 
-#define MYSQL_CONFIG_EDITOR_VERSION "1.0"
+#define MYBLOCKCHAIN_CONFIG_EDITOR_VERSION "1.0"
 #define MY_LINE_MAX 4096
 #define MAX_COMMAND_LIMIT 100
 /*
@@ -109,7 +109,7 @@ struct my_command_data {
 };
 
 
-/* mysql_config_editor utility options. */
+/* myblockchain_config_editor utility options. */
 static struct my_option my_program_long_options[]=
 {
 #ifdef DBUG_OFF
@@ -217,7 +217,7 @@ my_program_get_one_option(int optid,
 {
   switch(optid) {
   case '#':
-    DBUG_PUSH(argument ? argument : "d:t:o,/tmp/mysql_config_editor.trace");
+    DBUG_PUSH(argument ? argument : "d:t:o,/tmp/myblockchain_config_editor.trace");
     break;
   case 'V':
     print_version();
@@ -736,14 +736,14 @@ static my_bool check_and_create_login_file(void)
   }
 
   /*
-    NOTE : MYSQL_TEST_LOGIN_FILE env must be a full path,
+    NOTE : MYBLOCKCHAIN_TEST_LOGIN_FILE env must be a full path,
     where the directory structure must exist. However the
     login file will be created if it does not exist.
   */
 #ifdef _WIN32
-  if (! (getenv("MYSQL_TEST_LOGIN_FILE")))
+  if (! (getenv("MYBLOCKCHAIN_TEST_LOGIN_FILE")))
   {
-    /* Check if 'MySQL' directory is in place. */
+    /* Check if 'MyBlockchain' directory is in place. */
     MY_STAT stat_info_dir;
     char login_dir[FN_REFLEN];
     size_t size;
@@ -1212,7 +1212,7 @@ static int encrypt_and_write_file(DYNAMIC_STRING *file_buf)
     if ((enc_len= my_aes_get_size(len + 1, my_aes_128_ecb)) >
         (MY_LINE_MAX - (int)MAX_CIPHER_STORE_LEN))
     {
-      my_perror("A parameter to mysql_config_editor exceeds the maximum "
+      my_perror("A parameter to myblockchain_config_editor exceeds the maximum "
                 "accepted length. Please review the data you've supplied "
                 "and try to shorten them permissible length.\n");
       goto error;
@@ -1464,7 +1464,7 @@ static void usage_command(int command)
 {
   print_version();
   puts(ORACLE_WELCOME_COPYRIGHT_NOTICE("2012"));
-  puts("MySQL Configuration Utility.");
+  puts("MyBlockchain Configuration Utility.");
   printf("\nDescription: %s\n", command_data[command].description);
   printf("Usage: %s [program options] [%s [command options]]\n",
          my_progname, command_data[command].name);
@@ -1477,7 +1477,7 @@ static void usage_program(void)
 {
   print_version();
   puts(ORACLE_WELCOME_COPYRIGHT_NOTICE("2012"));
-  puts("MySQL Configuration Utility.");
+  puts("MyBlockchain Configuration Utility.");
   printf("Usage: %s [program options] [command [command options]]\n",
          my_progname);
   my_print_help(my_program_long_options);
@@ -1495,7 +1495,7 @@ static void usage_program(void)
 
 static void print_version(void) {
   printf ("%s Ver %s Distrib %s, for %s on %s\n", my_progname,
-          MYSQL_CONFIG_EDITOR_VERSION, MYSQL_SERVER_VERSION,
+          MYBLOCKCHAIN_CONFIG_EDITOR_VERSION, MYBLOCKCHAIN_SERVER_VERSION,
           SYSTEM_TYPE, MACHINE_TYPE);
 }
 

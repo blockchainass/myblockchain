@@ -90,7 +90,7 @@ static int walk_and_match(FT_WORD *word, uint32 count, ALL_IN_ONE *aio)
   doc_cnt=0;
 
   if (share->concurrent_insert)
-    mysql_rwlock_rdlock(&share->key_root_lock[aio->keynr]);
+    myblockchain_rwlock_rdlock(&share->key_root_lock[aio->keynr]);
 
   key_root= share->state.key_root[aio->keynr];
 
@@ -104,7 +104,7 @@ static int walk_and_match(FT_WORD *word, uint32 count, ALL_IN_ONE *aio)
     ;
 
   if (share->concurrent_insert)
-    mysql_rwlock_unlock(&share->key_root_lock[aio->keynr]);
+    myblockchain_rwlock_unlock(&share->key_root_lock[aio->keynr]);
 
   info->update|= HA_STATE_AKTIV;              /* for _mi_test_if_changed() */
 
@@ -130,7 +130,7 @@ static int walk_and_match(FT_WORD *word, uint32 count, ALL_IN_ONE *aio)
       key_root=info->lastpos;
       keylen=0;
       if (share->concurrent_insert)
-        mysql_rwlock_rdlock(&share->key_root_lock[aio->keynr]);
+        myblockchain_rwlock_rdlock(&share->key_root_lock[aio->keynr]);
       r=_mi_search_first(info, keyinfo, key_root);
       goto do_skip;
     }
@@ -166,7 +166,7 @@ static int walk_and_match(FT_WORD *word, uint32 count, ALL_IN_ONE *aio)
       gweight=0;
 
     if (share->concurrent_insert)
-      mysql_rwlock_rdlock(&share->key_root_lock[aio->keynr]);
+      myblockchain_rwlock_rdlock(&share->key_root_lock[aio->keynr]);
 
     if (_mi_test_if_changed(info) == 0)
 	r=_mi_search_next(info, keyinfo, info->lastkey, info->lastkey_length,
@@ -181,7 +181,7 @@ do_skip:
                          SEARCH_BIGGER, key_root);
 
     if (share->concurrent_insert)
-      mysql_rwlock_unlock(&share->key_root_lock[aio->keynr]);
+      myblockchain_rwlock_unlock(&share->key_root_lock[aio->keynr]);
   }
   word->weight=gweight;
 
@@ -227,8 +227,8 @@ FT_INFO *ft_init_nlq_search(MI_INFO *info, uint keynr, uchar *query,
   FT_DOC     *dptr;
   FT_INFO    *dlist=NULL;
   my_off_t    saved_lastpos=info->lastpos;
-  struct st_mysql_ftparser *parser;
-  MYSQL_FTPARSER_PARAM *ftparser_param;
+  struct st_myblockchain_ftparser *parser;
+  MYBLOCKCHAIN_FTPARSER_PARAM *ftparser_param;
   DBUG_ENTER("ft_init_nlq_search");
 
 /* black magic ON */
@@ -274,7 +274,7 @@ FT_INFO *ft_init_nlq_search(MI_INFO *info, uint keynr, uchar *query,
       if (!(*info->read_record)(info,docid,record))
       {
         info->update|= HA_STATE_AKTIV;
-        ftparser_param->flags= MYSQL_FTFLAGS_NEED_COPY;
+        ftparser_param->flags= MYBLOCKCHAIN_FTFLAGS_NEED_COPY;
         if (unlikely(_mi_ft_parse(&wtree, info, keynr, record, ftparser_param,
                                   &wtree.mem_root)))
         {

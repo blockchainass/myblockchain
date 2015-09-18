@@ -15,7 +15,7 @@
    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-package com.mysql.clusterj.jpatest;
+package com.myblockchain.clusterj.jpatest;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -30,8 +30,8 @@ import javax.persistence.Query;
 
 import org.apache.openjpa.persistence.OpenJPAEntityManager;
 
-import com.mysql.clusterj.jpatest.model.Employee;
-import com.mysql.clusterj.jpatest.model.IdBase;
+import com.myblockchain.clusterj.jpatest.model.Employee;
+import com.myblockchain.clusterj.jpatest.model.IdBase;
 
 /**
  *
@@ -41,7 +41,7 @@ public abstract class AbstractJPABaseTest extends SingleEMTestCase {
     /** The local system default time zone, which is reset by resetLocalSystemDefaultTimeZone */
     protected static TimeZone localSystemTimeZone = TimeZone.getDefault();
 
-    /** The connection to the database */
+    /** The connection to the blockchain */
     protected Connection connection;
 
     /** The column descriptors */
@@ -252,7 +252,7 @@ public abstract class AbstractJPABaseTest extends SingleEMTestCase {
     }
 
     /** Reset the local system default time zone to the time zone used
-     * by the MySQL server. This guarantees that there is no time zone
+     * by the MyBlockchain server. This guarantees that there is no time zone
      * offset between the time zone in the client and the time zone
      * in the server.
      * @param connection2 

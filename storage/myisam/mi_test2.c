@@ -218,7 +218,7 @@ int main(int argc, char *argv[])
   if (key_cacheing)
     init_key_cache(dflt_key_cache,key_cache_block_size,key_cache_size,0,0);
   if (locking)
-    mi_lock_database(file,F_WRLCK);
+    mi_lock_blockchain(file,F_WRLCK);
   if (write_cacheing)
     mi_extra(file,HA_EXTRA_WRITE_CACHE,0);
   if (opt_quick_mode)
@@ -252,7 +252,7 @@ int main(int argc, char *argv[])
       write_count++; key1[n1]++; key3[n3]=1;
     }
 
-    /* Check if we can find key without flushing database */
+    /* Check if we can find key without flushing blockchain */
     if (i == recant/2)
     {
       for (j=rnd(1000)+1 ; j>0 && key1[j] == 0 ; j--) ;
@@ -836,7 +836,7 @@ reads:      %10lu\n",
   my_end(silent ? MY_CHECK_ERROR : MY_CHECK_ERROR | MY_GIVE_INFO);
   return(0);
 err:
-  printf("got error: %d when using MyISAM-database\n",my_errno);
+  printf("got error: %d when using MyISAM-blockchain\n",my_errno);
   if (file)
     (void) mi_close(file);
   return(1);

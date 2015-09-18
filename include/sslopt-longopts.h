@@ -44,7 +44,7 @@
     "Certificate revocation list path.",
    &opt_ssl_crlpath, &opt_ssl_crlpath, 0, GET_STR, REQUIRED_ARG,
    0, 0, 0, 0, 0, 0},
-#ifdef MYSQL_CLIENT
+#ifdef MYBLOCKCHAIN_CLIENT
   {"ssl-verify-server-cert", OPT_SSL_VERIFY_SERVER_CERT,
    "Verify server's \"Common Name\" in its cert against hostname used "
    "when connecting. This option is disabled by default.",

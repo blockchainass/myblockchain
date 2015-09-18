@@ -18,7 +18,7 @@
 #ifndef ROW_INCLUDED
 #define ROW_INCLUDED
 
-#include "base/mysql_query_runner.h"
+#include "base/myblockchain_query_runner.h"
 #include "i_data_object.h"
 
 namespace Mysql{

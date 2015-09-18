@@ -1,0 +1,1 @@
+--binlog-do-db=myblockchaintest_sisyfos --binlog-do-db=myblockchaintest_prometheus

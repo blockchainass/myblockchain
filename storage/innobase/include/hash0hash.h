@@ -37,7 +37,7 @@ struct hash_cell_t;
 
 typedef void*	hash_node_t;
 
-/* Fix Bug #13859: symbol collision between imap/mysql */
+/* Fix Bug #13859: symbol collision between imap/myblockchain */
 #define hash_create hash0_create
 
 /* Differnt types of hash_table based on the synchronization

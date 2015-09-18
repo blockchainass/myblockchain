@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# Copyright (c) 2002 MySQL AB, 2009 Sun Microsystems, Inc.
+# Copyright (c) 2002 MyBlockchain AB, 2009 Sun Microsystems, Inc.
 # Use is subject to license terms.
 # 
 # This program is free software; you can redistribute it and/or modify

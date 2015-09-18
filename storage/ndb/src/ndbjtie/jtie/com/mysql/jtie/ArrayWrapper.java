@@ -18,7 +18,7 @@
  * ArrayWrapper.java
  */
 
-package com.mysql.jtie;
+package com.myblockchain.jtie;
 
 /**
  * An interface to Java peer classes representing a C/C++ object array type.

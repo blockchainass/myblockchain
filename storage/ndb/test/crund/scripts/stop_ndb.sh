@@ -15,10 +15,10 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 
-if [ "$MYSQL_HOME" = "" ] ; then
+if [ "$MYBLOCKCHAIN_HOME" = "" ] ; then
   source ../env.properties
-  echo MYSQL_HOME=$MYSQL_HOME
-  PATH="$MYSQL_LIBEXEC:$MYSQL_BIN:$PATH"
+  echo MYBLOCKCHAIN_HOME=$MYBLOCKCHAIN_HOME
+  PATH="$MYBLOCKCHAIN_LIBEXEC:$MYBLOCKCHAIN_BIN:$PATH"
 fi
 
 #set -x

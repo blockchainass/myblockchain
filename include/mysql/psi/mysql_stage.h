@@ -13,15 +13,15 @@
   along with this program; if not, write to the Free Software
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA */
 
-#ifndef MYSQL_STAGE_H
-#define MYSQL_STAGE_H
+#ifndef MYBLOCKCHAIN_STAGE_H
+#define MYBLOCKCHAIN_STAGE_H
 
 /**
-  @file mysql/psi/mysql_stage.h
+  @file myblockchain/psi/myblockchain_stage.h
   Instrumentation helpers for stages.
 */
 
-#include "mysql/psi/psi.h"
+#include "myblockchain/psi/psi.h"
 
 #ifndef PSI_STAGE_CALL
 #define PSI_STAGE_CALL(M) PSI_DYNAMIC_CALL(M)
@@ -34,19 +34,19 @@
 */
 
 /**
-  @def mysql_stage_register(P1, P2, P3)
+  @def myblockchain_stage_register(P1, P2, P3)
   Stage registration.
 */
 #ifdef HAVE_PSI_STAGE_INTERFACE
-#define mysql_stage_register(P1, P2, P3) \
-  inline_mysql_stage_register(P1, P2, P3)
+#define myblockchain_stage_register(P1, P2, P3) \
+  inline_myblockchain_stage_register(P1, P2, P3)
 #else
-#define mysql_stage_register(P1, P2, P3) \
+#define myblockchain_stage_register(P1, P2, P3) \
   do {} while (0)
 #endif
 
 /**
-  @def MYSQL_SET_STAGE
+  @def MYBLOCKCHAIN_SET_STAGE
   Set the current stage.
   Use this API when the file and line
   is passed from the caller.
@@ -56,41 +56,41 @@
   @return the current stage progress
 */
 #ifdef HAVE_PSI_STAGE_INTERFACE
-  #define MYSQL_SET_STAGE(K, F, L) \
-    inline_mysql_set_stage(K, F, L)
+  #define MYBLOCKCHAIN_SET_STAGE(K, F, L) \
+    inline_myblockchain_set_stage(K, F, L)
 #else
-  #define MYSQL_SET_STAGE(K, F, L) \
+  #define MYBLOCKCHAIN_SET_STAGE(K, F, L) \
     NULL
 #endif
 
 /**
-  @def mysql_set_stage
+  @def myblockchain_set_stage
   Set the current stage.
   @param K the stage key
   @return the current stage progress
 */
 #ifdef HAVE_PSI_STAGE_INTERFACE
-  #define mysql_set_stage(K) \
-    inline_mysql_set_stage(K, __FILE__, __LINE__)
+  #define myblockchain_set_stage(K) \
+    inline_myblockchain_set_stage(K, __FILE__, __LINE__)
 #else
-  #define mysql_set_stage(K) \
+  #define myblockchain_set_stage(K) \
     NULL
 #endif
 
 /**
-  @def mysql_end_stage
+  @def myblockchain_end_stage
   End the last stage
 */
 #ifdef HAVE_PSI_STAGE_INTERFACE
-  #define mysql_end_stage \
-    inline_mysql_end_stage
+  #define myblockchain_end_stage \
+    inline_myblockchain_end_stage
 #else
-  #define mysql_end_stage \
+  #define myblockchain_end_stage \
   do {} while (0)
 #endif
 
 #ifdef HAVE_PSI_STAGE_INTERFACE
-static inline void inline_mysql_stage_register(
+static inline void inline_myblockchain_stage_register(
   const char *category, PSI_stage_info **info, int count)
 {
   PSI_STAGE_CALL(register_stage)(category, info, count);
@@ -99,7 +99,7 @@ static inline void inline_mysql_stage_register(
 
 #ifdef HAVE_PSI_STAGE_INTERFACE
 static inline PSI_stage_progress*
-inline_mysql_set_stage(PSI_stage_key key,
+inline_myblockchain_set_stage(PSI_stage_key key,
                        const char *src_file, int src_line)
 {
   return PSI_STAGE_CALL(start_stage)(key, src_file, src_line);
@@ -108,51 +108,51 @@ inline_mysql_set_stage(PSI_stage_key key,
 
 #ifdef HAVE_PSI_STAGE_INTERFACE
 static inline void
-inline_mysql_end_stage()
+inline_myblockchain_end_stage()
 {
   PSI_STAGE_CALL(end_stage)();
 }
 #endif
 
 #ifdef HAVE_PSI_STAGE_INTERFACE
-#define mysql_stage_set_work_completed(P1, P2) \
-  inline_mysql_stage_set_work_completed(P1, P2)
+#define myblockchain_stage_set_work_completed(P1, P2) \
+  inline_myblockchain_stage_set_work_completed(P1, P2)
 
-#define mysql_stage_get_work_completed(P1) \
-  inline_mysql_stage_get_work_completed(P1)
+#define myblockchain_stage_get_work_completed(P1) \
+  inline_myblockchain_stage_get_work_completed(P1)
 #else
-#define mysql_stage_set_work_completed(P1, P2) \
+#define myblockchain_stage_set_work_completed(P1, P2) \
   do {} while (0)
 
-#define mysql_stage_get_work_completed(P1) \
+#define myblockchain_stage_get_work_completed(P1) \
   do {} while (0)
 #endif
 
 #ifdef HAVE_PSI_STAGE_INTERFACE
-#define mysql_stage_inc_work_completed(P1, P2) \
-  inline_mysql_stage_inc_work_completed(P1, P2)
+#define myblockchain_stage_inc_work_completed(P1, P2) \
+  inline_myblockchain_stage_inc_work_completed(P1, P2)
 #else
-#define mysql_stage_inc_work_completed(P1, P2) \
+#define myblockchain_stage_inc_work_completed(P1, P2) \
   do {} while (0)
 #endif
 
 #ifdef HAVE_PSI_STAGE_INTERFACE
-#define mysql_stage_set_work_estimated(P1, P2) \
-  inline_mysql_stage_set_work_estimated(P1, P2)
+#define myblockchain_stage_set_work_estimated(P1, P2) \
+  inline_myblockchain_stage_set_work_estimated(P1, P2)
 
-#define mysql_stage_get_work_estimated(P1) \
-  inline_mysql_stage_get_work_estimated(P1)
+#define myblockchain_stage_get_work_estimated(P1) \
+  inline_myblockchain_stage_get_work_estimated(P1)
 #else
-#define mysql_stage_set_work_estimated(P1, P2) \
+#define myblockchain_stage_set_work_estimated(P1, P2) \
   do {} while (0)
 
-#define mysql_stage_get_work_estimated(P1) \
+#define myblockchain_stage_get_work_estimated(P1) \
   do {} while (0)
 #endif
 
 #ifdef HAVE_PSI_STAGE_INTERFACE
 static inline void
-inline_mysql_stage_set_work_completed(PSI_stage_progress *progress,
+inline_myblockchain_stage_set_work_completed(PSI_stage_progress *progress,
                                       ulonglong val)
 {
   if (progress != NULL)
@@ -160,7 +160,7 @@ inline_mysql_stage_set_work_completed(PSI_stage_progress *progress,
 }
 
 static inline ulonglong
-inline_mysql_stage_get_work_completed(PSI_stage_progress *progress)
+inline_myblockchain_stage_get_work_completed(PSI_stage_progress *progress)
 {
   return progress->m_work_completed;
 }
@@ -168,7 +168,7 @@ inline_mysql_stage_get_work_completed(PSI_stage_progress *progress)
 
 #ifdef HAVE_PSI_STAGE_INTERFACE
 static inline void
-inline_mysql_stage_inc_work_completed(PSI_stage_progress *progress,
+inline_myblockchain_stage_inc_work_completed(PSI_stage_progress *progress,
                                       ulonglong val)
 {
   if (progress != NULL)
@@ -178,7 +178,7 @@ inline_mysql_stage_inc_work_completed(PSI_stage_progress *progress,
 
 #ifdef HAVE_PSI_STAGE_INTERFACE
 static inline void
-inline_mysql_stage_set_work_estimated(PSI_stage_progress *progress,
+inline_myblockchain_stage_set_work_estimated(PSI_stage_progress *progress,
                                       ulonglong val)
 {
   if (progress != NULL)
@@ -186,7 +186,7 @@ inline_mysql_stage_set_work_estimated(PSI_stage_progress *progress,
 }
 
 static inline ulonglong
-inline_mysql_stage_get_work_estimated(PSI_stage_progress *progress)
+inline_myblockchain_stage_get_work_estimated(PSI_stage_progress *progress)
 {
   return progress->m_work_estimated;
 }

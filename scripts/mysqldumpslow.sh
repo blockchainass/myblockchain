@@ -17,7 +17,7 @@
 # Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
 # MA 02110-1301, USA
 
-# mysqldumpslow - parse and summarize the MySQL slow query log
+# myblockchaindumpslow - parse and summarize the MyBlockchain slow query log
 
 # Original version by Tim Bunce, sometime in 2000.
 # Further changes by Tim Bunce, 8th March 2001.
@@ -45,16 +45,16 @@ GetOptions(\%opt,
     'n=i',	# abstract numbers with at least n digits within names
     'g=s',	# grep: only consider stmts that include this string
     'h=s',	# hostname of db server for *-slow.log filename (can be wildcard)
-    'i=s',	# name of server instance (if using mysql.server startup script)
+    'i=s',	# name of server instance (if using myblockchain.server startup script)
     'l!',	# don't subtract lock time from total time
 ) or usage("bad option");
 
 $opt{'help'} and usage();
 
 unless (@ARGV) {
-    my $defaults   = `my_print_defaults mysqld`;
+    my $defaults   = `my_print_defaults myblockchaind`;
     my $basedir = ($defaults =~ m/--basedir=(.*)/)[0]
-	or die "Can't determine basedir from 'my_print_defaults mysqld' output: $defaults";
+	or die "Can't determine basedir from 'my_print_defaults myblockchaind' output: $defaults";
     warn "basedir=$basedir\n" if $opt{v};
 
     my $datadir = ($defaults =~ m/--datadir=(.*)/)[0];
@@ -62,7 +62,7 @@ unless (@ARGV) {
     if (!$datadir or $opt{i}) {
 	# determine the datadir from the instances section of /etc/my.cnf, if any
 	my $instances  = `my_print_defaults instances`;
-	die "Can't determine datadir from 'my_print_defaults mysqld' output: $defaults"
+	die "Can't determine datadir from 'my_print_defaults myblockchaind' output: $defaults"
 	    unless $instances;
 	my @instances = ($instances =~ m/^--(\w+)-/mg);
 	die "No -i 'instance_name' specified to select among known instances: @instances.\n"
@@ -83,7 +83,7 @@ unless (@ARGV) {
     }
 }
 
-warn "\nReading mysql slow query log from @ARGV\n";
+warn "\nReading myblockchain slow query log from @ARGV\n";
 
 my @pending;
 my %stmt;
@@ -105,7 +105,7 @@ while ( defined($_ = shift @pending) or defined($_ = <>) ) {
     my ($t, $l, $r) = ($1, $2, $3);
     $t -= $l unless $opt{l};
 
-    # remove fluff that mysqld writes to log when it (re)starts:
+    # remove fluff that myblockchaind writes to log when it (re)starts:
     s!^/.*Version.*started with:.*\n!!mg;
     s!^Tcp port: \d+  Unix socket: \S+\n!!mg;
     s!^Time.*Id.*Command.*Argument.*\n!!mg;
@@ -171,9 +171,9 @@ foreach (@sorted) {
 sub usage {
     my $str= shift;
     my $text= <<HERE;
-Usage: mysqldumpslow [ OPTS... ] [ LOGS... ]
+Usage: myblockchaindumpslow [ OPTS... ] [ LOGS... ]
 
-Parse and summarize the MySQL slow query log. Options are
+Parse and summarize the MyBlockchain slow query log. Options are
 
   --verbose    verbose
   --debug      debug
@@ -196,7 +196,7 @@ Parse and summarize the MySQL slow query log. Options are
   -g PATTERN   grep: only consider stmts that include this string
   -h HOSTNAME  hostname of db server for *-slow.log filename (can be wildcard),
                default is '*', i.e. match all
-  -i NAME      name of server instance (if using mysql.server startup script)
+  -i NAME      name of server instance (if using myblockchain.server startup script)
   -l           don't subtract lock time from total time
 
 HERE

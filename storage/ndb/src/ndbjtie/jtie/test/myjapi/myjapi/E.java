@@ -20,7 +20,7 @@
 
 package myjapi;
 
-import com.mysql.jtie.Wrapper;
+import com.myblockchain.jtie.Wrapper;
 
 public class E extends Wrapper {
     static public final int EE0 = 0;

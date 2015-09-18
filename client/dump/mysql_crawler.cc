@@ -15,8 +15,8 @@
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#include "mysql_crawler.h"
-#include "mysql_function.h"
+#include "myblockchain_crawler.h"
+#include "myblockchain_function.h"
 #include "stored_procedure.h"
 #include "table_definition_dump_task.h"
 #include "table_rows_dump_task.h"
@@ -25,7 +25,7 @@
 #include "privilege.h"
 #include "trigger.h"
 #include "view.h"
-#include "base/mysql_query_runner.h"
+#include "base/myblockchain_query_runner.h"
 #include <string>
 #include <vector>
 using std::string;
@@ -38,7 +38,7 @@ Mysql_crawler::Mysql_crawler(I_connection_provider* connection_provider,
     message_handler, Simple_id_generator* object_id_generator,
   Mysql_chain_element_options* options)
   : Abstract_crawler(message_handler, object_id_generator),
-  Abstract_mysql_chain_element_extension(
+  Abstract_myblockchain_chain_element_extension(
   connection_provider, message_handler, options)
 {}
 
@@ -53,34 +53,34 @@ void Mysql_crawler::enumerate_objects()
 
   Mysql::Tools::Base::Mysql_query_runner* runner= this->get_runner();
 
-  std::vector<const Mysql::Tools::Base::Mysql_query_runner::Row*> databases;
-  runner->run_query_store("SHOW DATABASES", &databases);
+  std::vector<const Mysql::Tools::Base::Mysql_query_runner::Row*> blockchains;
+  runner->run_query_store("SHOW DATABASES", &blockchains);
 
   std::vector<Database* > db_list;
   std::vector<Database_end_dump_task* > db_end_task_list;
   for (std::vector<const Mysql::Tools::Base::Mysql_query_runner::Row*>::iterator
-    it= databases.begin(); it != databases.end(); ++it)
+    it= blockchains.begin(); it != blockchains.end(); ++it)
   {
     std::string db_name= (**it)[0];
 
-    Database* database= new Database(
+    Database* blockchain= new Database(
       this->generate_new_object_id(), db_name,
       this->get_create_statement(runner, "", db_name,
       "DATABASE IF NOT EXISTS").value());
 
-    db_list.push_back(database);
-    m_current_database_start_dump_task=
-      new Database_start_dump_task(database);
-    m_current_database_end_dump_task=
-      new Database_end_dump_task(database);
-    db_end_task_list.push_back(m_current_database_end_dump_task);
+    db_list.push_back(blockchain);
+    m_current_blockchain_start_dump_task=
+      new Database_start_dump_task(blockchain);
+    m_current_blockchain_end_dump_task=
+      new Database_end_dump_task(blockchain);
+    db_end_task_list.push_back(m_current_blockchain_end_dump_task);
 
-    m_current_database_start_dump_task->add_dependency(m_dump_start_task);
-    m_dump_end_task->add_dependency(m_current_database_end_dump_task);
+    m_current_blockchain_start_dump_task->add_dependency(m_dump_start_task);
+    m_dump_end_task->add_dependency(m_current_blockchain_end_dump_task);
 
-    this->process_dump_task(m_current_database_start_dump_task);
-    this->enumerate_database_objects(*database);
-    m_current_database_start_dump_task= NULL;
+    this->process_dump_task(m_current_blockchain_start_dump_task);
+    this->enumerate_blockchain_objects(*blockchain);
+    m_current_blockchain_start_dump_task= NULL;
   }
 
   m_dump_end_task->add_dependency(m_tables_definition_ready_dump_task);
@@ -91,13 +91,13 @@ void Mysql_crawler::enumerate_objects()
   for (it= db_list.begin(),it_end= db_end_task_list.begin();
        it != db_list.end(),it_end != db_end_task_list.end(); ++it, ++it_end)
   {
-    m_current_database_end_dump_task= *it_end;
+    m_current_blockchain_end_dump_task= *it_end;
     this->enumerate_views(**it);
-    this->process_dump_task(m_current_database_end_dump_task);
-    m_current_database_end_dump_task= NULL;
+    this->process_dump_task(m_current_blockchain_end_dump_task);
+    m_current_blockchain_end_dump_task= NULL;
   }
 
-  Mysql::Tools::Base::Mysql_query_runner::cleanup_result(&databases);
+  Mysql::Tools::Base::Mysql_query_runner::cleanup_result(&blockchains);
 
   this->enumerate_users();
 
@@ -108,7 +108,7 @@ void Mysql_crawler::enumerate_objects()
   this->wait_for_tasks_completion();
 }
 
-void Mysql_crawler::enumerate_database_objects(const Database& db)
+void Mysql_crawler::enumerate_blockchain_objects(const Database& db)
 {
   this->enumerate_tables(db);
   this->enumerate_functions<Mysql_function>(db, "FUNCTION");
@@ -166,8 +166,8 @@ void Mysql_crawler::enumerate_tables(const Database& db)
                            db.get_name(),
                            fake_view_ddl);
 
-      fake_view->add_dependency(m_current_database_start_dump_task);
-      m_current_database_end_dump_task->add_dependency(fake_view);
+      fake_view->add_dependency(m_current_blockchain_start_dump_task);
+      m_current_blockchain_end_dump_task->add_dependency(fake_view);
       m_tables_definition_ready_dump_task->add_dependency(fake_view);
       this->process_dump_task(fake_view);
       continue;
@@ -193,10 +193,10 @@ void Mysql_crawler::enumerate_tables(const Database& db)
     Table_deferred_indexes_dump_task* indexes_task=
       new Table_deferred_indexes_dump_task(table);
 
-    ddl_task->add_dependency(m_current_database_start_dump_task);
+    ddl_task->add_dependency(m_current_blockchain_start_dump_task);
     rows_task->add_dependency(ddl_task);
     indexes_task->add_dependency(rows_task);
-    m_current_database_end_dump_task->add_dependency(indexes_task);
+    m_current_blockchain_end_dump_task->add_dependency(indexes_task);
     m_tables_definition_ready_dump_task->add_dependency(ddl_task);
 
     this->process_dump_task(ddl_task);
@@ -250,7 +250,7 @@ void Mysql_crawler::enumerate_views(const Database& db)
                                                          table_name,
                                                          "TABLE").value()
                               );
-        m_current_database_end_dump_task->add_dependency(view);
+        m_current_blockchain_end_dump_task->add_dependency(view);
         view->add_dependency(m_tables_definition_ready_dump_task);
         this->process_dump_task(view);
       }
@@ -280,8 +280,8 @@ void Mysql_crawler::enumerate_functions(const Database& db, std::string type)
       runner, db.get_name(), function_row[1], type, 2).value()
       + "//\n" + "DELIMITER ;\n");
 
-    function->add_dependency(m_current_database_start_dump_task);
-    m_current_database_end_dump_task->add_dependency(function);
+    function->add_dependency(m_current_blockchain_start_dump_task);
+    m_current_blockchain_end_dump_task->add_dependency(function);
 
     this->process_dump_task(function);
   }
@@ -316,8 +316,8 @@ void Mysql_crawler::enumerate_event_scheduler_events(const Database& db)
       runner, db.get_name(), event_row[1], "EVENT", 3).value()
       + "//\n" + "DELIMITER ;\n");
 
-    event->add_dependency(m_current_database_start_dump_task);
-    m_current_database_end_dump_task->add_dependency(event);
+    event->add_dependency(m_current_blockchain_start_dump_task);
+    m_current_blockchain_end_dump_task->add_dependency(event);
 
     this->process_dump_task(event);
   }
@@ -330,7 +330,7 @@ void Mysql_crawler::enumerate_users()
 
   std::vector<const Mysql::Tools::Base::Mysql_query_runner::Row*> users;
   runner->run_query_store(
-    "SELECT CONCAT(QUOTE(user),'@',QUOTE(host)) FROM mysql.user", &users);
+    "SELECT CONCAT(QUOTE(user),'@',QUOTE(host)) FROM myblockchain.user", &users);
 
   for (std::vector<const Mysql::Tools::Base::Mysql_query_runner::Row*>::iterator
     it= users.begin(); it != users.end(); ++it)
@@ -398,7 +398,7 @@ void Mysql_crawler::enumerate_table_triggers(
       &table);
 
     trigger->add_dependency(dependency);
-    m_current_database_end_dump_task->add_dependency(trigger);
+    m_current_blockchain_end_dump_task->add_dependency(trigger);
 
     this->process_dump_task(trigger);
   }

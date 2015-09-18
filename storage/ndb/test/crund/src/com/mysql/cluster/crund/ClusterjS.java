@@ -15,22 +15,22 @@
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-package com.mysql.cluster.crund;
+package com.myblockchain.cluster.crund;
 
 import java.util.Map;
 import java.util.List;
 import java.util.ArrayList;
 
-import com.mysql.clusterj.ClusterJHelper;
-import com.mysql.clusterj.SessionFactory;
-import com.mysql.clusterj.Session;
-import com.mysql.clusterj.LockMode;
-import com.mysql.clusterj.Constants;
-import com.mysql.clusterj.annotation.Index;
-import com.mysql.clusterj.annotation.PersistenceCapable;
-import com.mysql.clusterj.annotation.PrimaryKey;
+import com.myblockchain.clusterj.ClusterJHelper;
+import com.myblockchain.clusterj.SessionFactory;
+import com.myblockchain.clusterj.Session;
+import com.myblockchain.clusterj.LockMode;
+import com.myblockchain.clusterj.Constants;
+import com.myblockchain.clusterj.annotation.Index;
+import com.myblockchain.clusterj.annotation.PersistenceCapable;
+import com.myblockchain.clusterj.annotation.PrimaryKey;
 
-import com.mysql.cluster.crund.CrundDriver.XMode;
+import com.myblockchain.cluster.crund.CrundDriver.XMode;
 
 class ClusterjS extends CrundSLoad {
     // ClusterJ resources
@@ -70,7 +70,7 @@ class ClusterjS extends CrundSLoad {
     protected void printProperties() {
         for (Map.Entry<Object,Object> e : driver.props.entrySet()) {
             final String k = (String)e.getKey();
-            if (k.startsWith("com.mysql.clusterj")) {
+            if (k.startsWith("com.myblockchain.clusterj")) {
                 final StringBuilder s = new StringBuilder("..");
                 s.append(k, 18, k.length());
                 while (s.length() < 31) s.append(' ');

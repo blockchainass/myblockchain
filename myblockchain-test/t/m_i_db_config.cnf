@@ -1,0 +1,2 @@
+[myblockchaind]
+innodb-log-file-size=5242880

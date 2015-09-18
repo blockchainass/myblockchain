@@ -25,7 +25,7 @@ Created 2014/11/17 Shaohua Wang
 
 #include "ha_prototypes.h"
 #include "ft_global.h"
-#include "mysql/plugin_ftparser.h"
+#include "myblockchain/plugin_ftparser.h"
 #include "m_ctype.h"
 
 /* Macros and structs below are from ftdefs.h in MyISAM */
@@ -76,7 +76,7 @@ fts_get_word(
 	uchar**			start,
 	uchar*			end,
 	FT_WORD*		word,
-	MYSQL_FTPARSER_BOOLEAN_INFO*
+	MYBLOCKCHAIN_FTPARSER_BOOLEAN_INFO*
 				info)
 {
 	uchar*	doc = *start;

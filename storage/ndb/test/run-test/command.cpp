@@ -21,7 +21,7 @@
 
 
 
-MYSQL* find_atrtdb_client(atrt_config& config)
+MYBLOCKCHAIN* find_atrtdb_client(atrt_config& config)
 {
   atrt_cluster* cluster = 0;
   for (unsigned i = 0; i<config.m_clusters.size(); i++)
@@ -38,10 +38,10 @@ MYSQL* find_atrtdb_client(atrt_config& config)
           if (!atrt_client)
             return NULL; /* No atrt db */
 
-          atrt_process* f_mysqld = atrt_client->m_mysqld;
-          require(f_mysqld);
+          atrt_process* f_myblockchaind = atrt_client->m_myblockchaind;
+          require(f_myblockchaind);
 
-          return &f_mysqld->m_mysql;
+          return &f_myblockchaind->m_myblockchain;
         }
       }
       break;
@@ -176,7 +176,7 @@ do_change_version(atrt_config& config, SqlResultSet& command,
   if (!stop_process(proc))
     return false;
   BaseString newEnv = set_env_var(proc.m_proc.m_env, 
-                                  BaseString("MYSQL_BASE_DIR"),
+                                  BaseString("MYBLOCKCHAIN_BASE_DIR"),
                                   BaseString(new_prefix));
   proc.m_proc.m_env.assign(newEnv);
 
@@ -216,7 +216,7 @@ do_change_version(atrt_config& config, SqlResultSet& command,
                              part0.c_str(),
                              part1.c_str());
 
-    BaseString lib(g_libmysqlclient_so_path);
+    BaseString lib(g_libmyblockchainclient_so_path);
     ssize_t pos = lib.lastIndexOf('/') + 1;
     BaseString libname(lib.substr(pos));
     char * exe = find_bin_path(new_prefix, libname.c_str());
@@ -287,11 +287,11 @@ do_command(atrt_config& config){
   return true;
 #endif
 
-  MYSQL* mysql= find_atrtdb_client(config);
-  if (!mysql)
+  MYBLOCKCHAIN* myblockchain= find_atrtdb_client(config);
+  if (!myblockchain)
     return true;
 
-  AtrtClient atrtdb(mysql);
+  AtrtClient atrtdb(myblockchain);
   SqlResultSet command;
   if (!atrtdb.doQuery("SELECT * FROM command " \
                      "WHERE state = 'new' ORDER BY id LIMIT 1", command)){

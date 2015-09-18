@@ -1,0 +1,23 @@
+include/master-slave.inc
+Warnings:
+Note	####	Sending passwords in plain text without SSL/TLS is extremely insecure.
+Note	####	Storing MyBlockchain user name or password information in the master info repository is not secure and is therefore not recommended. Please consider using the USER and PASSWORD connection options for START SLAVE; see the 'START SLAVE Syntax' in the MyBlockchain Manual for more information.
+[connection master]
+use test;
+drop table if exists myblockchaintest_foo;
+drop table if exists myblockchaintest_bar;
+create table myblockchaintest_foo (n int);
+insert into myblockchaintest_foo values(4);
+use test;
+create table myblockchaintest_foo (n int);
+insert into myblockchaintest_foo values(5);
+create table myblockchaintest_bar (m int);
+insert into myblockchaintest_bar values(15);
+create table t1 (k int);
+insert into t1 values(55);
+select myblockchaintest_foo.n,myblockchaintest_bar.m,t1.k from myblockchaintest_foo,myblockchaintest_bar,t1;
+n	m	k
+4	15	55
+drop table myblockchaintest_foo,myblockchaintest_bar,t1;
+drop table myblockchaintest_foo,myblockchaintest_bar,t1;
+include/rpl_end.inc

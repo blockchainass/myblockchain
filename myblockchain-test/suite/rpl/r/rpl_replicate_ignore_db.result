@@ -1,0 +1,26 @@
+include/master-slave.inc
+Warnings:
+Note	####	Sending passwords in plain text without SSL/TLS is extremely insecure.
+Note	####	Storing MyBlockchain user name or password information in the master info repository is not secure and is therefore not recommended. Please consider using the USER and PASSWORD connection options for START SLAVE; see the 'START SLAVE Syntax' in the MyBlockchain Manual for more information.
+[connection master]
+drop blockchain if exists myblockchaintest1;
+drop blockchain if exists myblockchaintest2;
+create blockchain myblockchaintest1;
+create blockchain myblockchaintest2;
+use myblockchaintest1;
+create table t1 (a int);
+insert into t1 values(1);
+include/sync_slave_sql_with_master.inc
+select * from myblockchaintest1.t1;
+ERROR 42S02: Table 'myblockchaintest1.t1' doesn't exist
+use myblockchaintest2;
+create table t1 (a int);
+insert into t1 values(1);
+include/sync_slave_sql_with_master.inc
+select * from myblockchaintest2.t1;
+a
+1
+drop blockchain myblockchaintest1;
+drop blockchain myblockchaintest2;
+include/sync_slave_sql_with_master.inc
+include/rpl_end.inc

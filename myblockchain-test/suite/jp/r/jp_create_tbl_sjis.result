@@ -1,0 +1,523 @@
+SET NAMES sjis;
+SET character_set_blockchain = sjis;
+Warnings:
+Warning	1681	Updating 'character_set_blockchain' is deprecated. It will be made read-only in a future release.
+DROP TABLE IF EXISTS `���`;
+DROP TABLE IF EXISTS `���`;
+DROP TABLE IF EXISTS `���`;
+DROP TABLE IF EXISTS `���`;
+DROP TABLE IF EXISTS `���`;
+DROP TABLE IF EXISTS `������`;
+DROP TABLE IF EXISTS `������`;
+DROP TABLE IF EXISTS `������`;
+DROP TABLE IF EXISTS `������`;
+DROP TABLE IF EXISTS `������`;
+DROP TABLE IF EXISTS `�\�\�\`;
+DROP TABLE IF EXISTS `�\�\�\`;
+DROP TABLE IF EXISTS `�\�\�\`;
+DROP TABLE IF EXISTS `�\�\�\`;
+DROP TABLE IF EXISTS `�\�\�\`;
+CREATE TABLE `���`(`���` char(1)) DEFAULT CHARSET = ujis engine=INNODB;
+CREATE TABLE `���`(`���` char(1)) DEFAULT CHARSET = ujis engine=INNODB;
+CREATE TABLE `������`(`������` char(1)) DEFAULT CHARSET = sjis engine=INNODB;
+CREATE TABLE `������`(`������` char(1)) DEFAULT CHARSET = sjis engine=INNODB;
+CREATE TABLE `�\�\�\`(`�\�\�\` char(1)) DEFAULT CHARSET = sjis engine=INNODB;
+CREATE TABLE `�\�\�\`(`�\�\�\` char(1)) DEFAULT CHARSET = sjis engine=INNODB;
+CREATE TABLE IF NOT EXISTS `���`(`���` char(1)) DEFAULT CHARSET = sjis engine=INNODB;
+Warnings:
+Note	1050	Table '���' already exists
+CREATE TABLE IF NOT EXISTS `���`(`���` char(1)) DEFAULT CHARSET = sjis engine=INNODB;
+Warnings:
+Note	1050	Table '���' already exists
+CREATE TABLE IF NOT EXISTS `������`(`������` char(1)) DEFAULT CHARSET = sjis engine=INNODB;
+Warnings:
+Note	1050	Table '������' already exists
+CREATE TABLE IF NOT EXISTS `������`(`������` char(1)) DEFAULT CHARSET = sjis engine=INNODB;
+Warnings:
+Note	1050	Table '������' already exists
+CREATE TABLE IF NOT EXISTS `�\�\�\`(`�\�\�\` char(1)) DEFAULT CHARSET = sjis engine=INNODB;
+Warnings:
+Note	1050	Table '�\�\�\' already exists
+CREATE TABLE IF NOT EXISTS `�\�\�\`(`�\�\�\` char(1)) DEFAULT CHARSET = sjis engine=INNODB;
+Warnings:
+Note	1050	Table '�\�\�\' already exists
+CREATE TABLE IF NOT EXISTS `���`(`���` char(1)) DEFAULT CHARSET = sjis engine=INNODB;
+CREATE TABLE IF NOT EXISTS `������`(`������` char(1)) DEFAULT CHARSET = sjis engine=INNODB;
+CREATE TABLE IF NOT EXISTS `�\�\�\`(`�\�\�\`char(1)) DEFAULT CHARSET = sjis engine=INNODB;
+CREATE TEMPORARY TABLE `���`(`���` char(1)) DEFAULT CHARSET = sjis engine=INNODB;
+CREATE TEMPORARY TABLE `���`(`���` char(1)) DEFAULT CHARSET = sjis engine=INNODB;
+CREATE TEMPORARY TABLE `������`(`������` char(1)) DEFAULT CHARSET = sjis engine=INNODB;
+CREATE TEMPORARY TABLE `������`(`������` char(1)) DEFAULT CHARSET = sjis engine=INNODB;
+CREATE TEMPORARY TABLE `�\�\�\`(`�\�\�\` char(1)) DEFAULT CHARSET = sjis engine=INNODB;
+CREATE TEMPORARY TABLE `�\�\�\`(`�\�\�\` char(1)) DEFAULT CHARSET = sjis engine=INNODB;
+DESC `���`;
+Field	Type	Null	Key	Default	Extra
+���	char(1)	YES		NULL	
+DESC `���`;
+Field	Type	Null	Key	Default	Extra
+���	char(1)	YES		NULL	
+DESC `���`;
+Field	Type	Null	Key	Default	Extra
+���	char(1)	YES		NULL	
+DESC `���`;
+Field	Type	Null	Key	Default	Extra
+���	char(1)	YES		NULL	
+DESC `���`;
+Field	Type	Null	Key	Default	Extra
+���	char(1)	YES		NULL	
+DESC `������`;
+Field	Type	Null	Key	Default	Extra
+������	char(1)	YES		NULL	
+DESC `������`;
+Field	Type	Null	Key	Default	Extra
+������	char(1)	YES		NULL	
+DESC `������`;
+Field	Type	Null	Key	Default	Extra
+������	char(1)	YES		NULL	
+DESC `������`;
+Field	Type	Null	Key	Default	Extra
+������	char(1)	YES		NULL	
+DESC `������`;
+Field	Type	Null	Key	Default	Extra
+������	char(1)	YES		NULL	
+DESC `�\�\�\`;
+Field	Type	Null	Key	Default	Extra
+�\�\�\	char(1)	YES		NULL	
+DESC `�\�\�\`;
+Field	Type	Null	Key	Default	Extra
+�\�\�\	char(1)	YES		NULL	
+DESC `�\�\�\`;
+Field	Type	Null	Key	Default	Extra
+�\�\�\	char(1)	YES		NULL	
+DESC `�\�\�\`;
+Field	Type	Null	Key	Default	Extra
+�\�\�\	char(1)	YES		NULL	
+DESC `�\�\�\`;
+Field	Type	Null	Key	Default	Extra
+�\�\�\	char(1)	YES		NULL	
+SHOW CREATE TABLE `���`;
+Table	Create Table
+���	CREATE TABLE `���` (
+  `���` char(1) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=ujis
+SHOW CREATE TABLE `���`;
+Table	Create Table
+���	CREATE TABLE `���` (
+  `���` char(1) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=ujis
+SHOW CREATE TABLE `���`;
+Table	Create Table
+���	CREATE TABLE `���` (
+  `���` char(1) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=sjis
+SHOW CREATE TABLE `���`;
+Table	Create Table
+���	CREATE TEMPORARY TABLE `���` (
+  `���` char(1) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=sjis
+SHOW CREATE TABLE `���`;
+Table	Create Table
+���	CREATE TEMPORARY TABLE `���` (
+  `���` char(1) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=sjis
+SHOW CREATE TABLE `������`;
+Table	Create Table
+������	CREATE TABLE `������` (
+  `������` char(1) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=sjis
+SHOW CREATE TABLE `������`;
+Table	Create Table
+������	CREATE TABLE `������` (
+  `������` char(1) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=sjis
+SHOW CREATE TABLE `������`;
+Table	Create Table
+������	CREATE TABLE `������` (
+  `������` char(1) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=sjis
+SHOW CREATE TABLE `������`;
+Table	Create Table
+������	CREATE TEMPORARY TABLE `������` (
+  `������` char(1) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=sjis
+SHOW CREATE TABLE `������`;
+Table	Create Table
+������	CREATE TEMPORARY TABLE `������` (
+  `������` char(1) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=sjis
+SHOW CREATE TABLE `�\�\�\`;
+Table	Create Table
+�\�\�\	CREATE TABLE `�\�\�\` (
+  `�\�\�\` char(1) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=sjis
+SHOW CREATE TABLE `�\�\�\`;
+Table	Create Table
+�\�\�\	CREATE TABLE `�\�\�\` (
+  `�\�\�\` char(1) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=sjis
+SHOW CREATE TABLE `�\�\�\`;
+Table	Create Table
+�\�\�\	CREATE TABLE `�\�\�\` (
+  `�\�\�\` char(1) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=sjis
+SHOW CREATE TABLE `�\�\�\`;
+Table	Create Table
+�\�\�\	CREATE TEMPORARY TABLE `�\�\�\` (
+  `�\�\�\` char(1) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=sjis
+SHOW CREATE TABLE `�\�\�\`;
+Table	Create Table
+�\�\�\	CREATE TEMPORARY TABLE `�\�\�\` (
+  `�\�\�\` char(1) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=sjis
+DROP TABLE `���`;
+DROP TABLE `���`;
+DROP TABLE `���`;
+DROP TABLE `���`;
+DROP TABLE `���`;
+DROP TABLE `������`;
+DROP TABLE `������`;
+DROP TABLE `������`;
+DROP TABLE `������`;
+DROP TABLE `������`;
+DROP TABLE `�\�\�\`;
+DROP TABLE `�\�\�\`;
+DROP TABLE `�\�\�\`;
+DROP TABLE `�\�\�\`;
+DROP TABLE `�\�\�\`;
+CREATE TABLE `���`(`���` char(1)) DEFAULT CHARSET = sjis engine=MyISAM;
+CREATE TABLE `���`(`���` char(1)) DEFAULT CHARSET = sjis engine=MyISAM;
+CREATE TABLE `������`(`������` char(1)) DEFAULT CHARSET = sjis engine=MyISAM;
+CREATE TABLE `������`(`������` char(1)) DEFAULT CHARSET = sjis engine=MyISAM;
+CREATE TABLE `�\�\�\`(`�\�\�\` char(1)) DEFAULT CHARSET = sjis engine=MyISAM;
+CREATE TABLE `�\�\�\`(`�\�\�\` char(1)) DEFAULT CHARSET = sjis engine=MyISAM;
+CREATE TABLE IF NOT EXISTS `���`(`���` char(1)) DEFAULT CHARSET = sjis engine=MyISAM;
+Warnings:
+Note	1050	Table '���' already exists
+CREATE TABLE IF NOT EXISTS `���`(`���` char(1)) DEFAULT CHARSET = sjis engine=MyISAM;
+Warnings:
+Note	1050	Table '���' already exists
+CREATE TABLE IF NOT EXISTS `������`(`������` char(1)) DEFAULT CHARSET = sjis engine=MyISAM;
+Warnings:
+Note	1050	Table '������' already exists
+CREATE TABLE IF NOT EXISTS `������`(`������` char(1)) DEFAULT CHARSET = sjis engine=MyISAM;
+Warnings:
+Note	1050	Table '������' already exists
+CREATE TABLE IF NOT EXISTS `�\�\�\`(`�\�\�\` char(1)) DEFAULT CHARSET = sjis engine=MyISAM;
+Warnings:
+Note	1050	Table '�\�\�\' already exists
+CREATE TABLE IF NOT EXISTS `�\�\�\`(`�\�\�\` char(1)) DEFAULT CHARSET = sjis engine=MyISAM;
+Warnings:
+Note	1050	Table '�\�\�\' already exists
+CREATE TABLE IF NOT EXISTS `���`(`���` char(1)) DEFAULT CHARSET = sjis engine=MyISAM;
+CREATE TABLE IF NOT EXISTS `������`(`������` char(1)) DEFAULT CHARSET = sjis engine=MyISAM;
+CREATE TABLE IF NOT EXISTS `�\�\�\`(`�\�\�\`char(1)) DEFAULT CHARSET = sjis engine=MyISAM;
+CREATE TEMPORARY TABLE `���`(`���` char(1)) DEFAULT CHARSET = sjis engine=MyISAM;
+CREATE TEMPORARY TABLE `���`(`���` char(1)) DEFAULT CHARSET = sjis engine=MyISAM;
+CREATE TEMPORARY TABLE `������`(`������` char(1)) DEFAULT CHARSET = sjis engine=MyISAM;
+CREATE TEMPORARY TABLE `������`(`������` char(1)) DEFAULT CHARSET = sjis engine=MyISAM;
+CREATE TEMPORARY TABLE `�\�\�\`(`�\�\�\` char(1)) DEFAULT CHARSET = sjis engine=MyISAM;
+CREATE TEMPORARY TABLE `�\�\�\`(`�\�\�\` char(1)) DEFAULT CHARSET = sjis engine=MyISAM;
+DESC `���`;
+Field	Type	Null	Key	Default	Extra
+���	char(1)	YES		NULL	
+DESC `���`;
+Field	Type	Null	Key	Default	Extra
+���	char(1)	YES		NULL	
+DESC `���`;
+Field	Type	Null	Key	Default	Extra
+���	char(1)	YES		NULL	
+DESC `���`;
+Field	Type	Null	Key	Default	Extra
+���	char(1)	YES		NULL	
+DESC `���`;
+Field	Type	Null	Key	Default	Extra
+���	char(1)	YES		NULL	
+DESC `������`;
+Field	Type	Null	Key	Default	Extra
+������	char(1)	YES		NULL	
+DESC `������`;
+Field	Type	Null	Key	Default	Extra
+������	char(1)	YES		NULL	
+DESC `������`;
+Field	Type	Null	Key	Default	Extra
+������	char(1)	YES		NULL	
+DESC `������`;
+Field	Type	Null	Key	Default	Extra
+������	char(1)	YES		NULL	
+DESC `������`;
+Field	Type	Null	Key	Default	Extra
+������	char(1)	YES		NULL	
+DESC `�\�\�\`;
+Field	Type	Null	Key	Default	Extra
+�\�\�\	char(1)	YES		NULL	
+DESC `�\�\�\`;
+Field	Type	Null	Key	Default	Extra
+�\�\�\	char(1)	YES		NULL	
+DESC `�\�\�\`;
+Field	Type	Null	Key	Default	Extra
+�\�\�\	char(1)	YES		NULL	
+DESC `�\�\�\`;
+Field	Type	Null	Key	Default	Extra
+�\�\�\	char(1)	YES		NULL	
+DESC `�\�\�\`;
+Field	Type	Null	Key	Default	Extra
+�\�\�\	char(1)	YES		NULL	
+SHOW CREATE TABLE `���`;
+Table	Create Table
+���	CREATE TABLE `���` (
+  `���` char(1) DEFAULT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=sjis
+SHOW CREATE TABLE `���`;
+Table	Create Table
+���	CREATE TABLE `���` (
+  `���` char(1) DEFAULT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=sjis
+SHOW CREATE TABLE `���`;
+Table	Create Table
+���	CREATE TABLE `���` (
+  `���` char(1) DEFAULT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=sjis
+SHOW CREATE TABLE `���`;
+Table	Create Table
+���	CREATE TEMPORARY TABLE `���` (
+  `���` char(1) DEFAULT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=sjis
+SHOW CREATE TABLE `���`;
+Table	Create Table
+���	CREATE TEMPORARY TABLE `���` (
+  `���` char(1) DEFAULT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=sjis
+SHOW CREATE TABLE `������`;
+Table	Create Table
+������	CREATE TABLE `������` (
+  `������` char(1) DEFAULT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=sjis
+SHOW CREATE TABLE `������`;
+Table	Create Table
+������	CREATE TABLE `������` (
+  `������` char(1) DEFAULT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=sjis
+SHOW CREATE TABLE `������`;
+Table	Create Table
+������	CREATE TABLE `������` (
+  `������` char(1) DEFAULT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=sjis
+SHOW CREATE TABLE `������`;
+Table	Create Table
+������	CREATE TEMPORARY TABLE `������` (
+  `������` char(1) DEFAULT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=sjis
+SHOW CREATE TABLE `������`;
+Table	Create Table
+������	CREATE TEMPORARY TABLE `������` (
+  `������` char(1) DEFAULT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=sjis
+SHOW CREATE TABLE `�\�\�\`;
+Table	Create Table
+�\�\�\	CREATE TABLE `�\�\�\` (
+  `�\�\�\` char(1) DEFAULT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=sjis
+SHOW CREATE TABLE `�\�\�\`;
+Table	Create Table
+�\�\�\	CREATE TABLE `�\�\�\` (
+  `�\�\�\` char(1) DEFAULT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=sjis
+SHOW CREATE TABLE `�\�\�\`;
+Table	Create Table
+�\�\�\	CREATE TABLE `�\�\�\` (
+  `�\�\�\` char(1) DEFAULT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=sjis
+SHOW CREATE TABLE `�\�\�\`;
+Table	Create Table
+�\�\�\	CREATE TEMPORARY TABLE `�\�\�\` (
+  `�\�\�\` char(1) DEFAULT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=sjis
+SHOW CREATE TABLE `�\�\�\`;
+Table	Create Table
+�\�\�\	CREATE TEMPORARY TABLE `�\�\�\` (
+  `�\�\�\` char(1) DEFAULT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=sjis
+DROP TABLE `���`;
+DROP TABLE `���`;
+DROP TABLE `���`;
+DROP TABLE `���`;
+DROP TABLE `���`;
+DROP TABLE `������`;
+DROP TABLE `������`;
+DROP TABLE `������`;
+DROP TABLE `������`;
+DROP TABLE `������`;
+DROP TABLE `�\�\�\`;
+DROP TABLE `�\�\�\`;
+DROP TABLE `�\�\�\`;
+DROP TABLE `�\�\�\`;
+DROP TABLE `�\�\�\`;
+CREATE TABLE `���`(`���` char(1)) DEFAULT CHARSET = sjis engine=MEMORY;
+CREATE TABLE `���`(`���` char(1)) DEFAULT CHARSET = sjis engine=MEMORY;
+CREATE TABLE `������`(`������` char(1)) DEFAULT CHARSET = sjis engine=MEMORY;
+CREATE TABLE `������`(`������` char(1)) DEFAULT CHARSET = sjis engine=MEMORY;
+CREATE TABLE `�\�\�\`(`�\�\�\` char(1)) DEFAULT CHARSET = sjis engine=MEMORY;
+CREATE TABLE `�\�\�\`(`�\�\�\` char(1)) DEFAULT CHARSET = sjis engine=MEMORY;
+CREATE TABLE IF NOT EXISTS `���`(`���` char(1)) DEFAULT CHARSET = sjis engine=MEMORY;
+Warnings:
+Note	1050	Table '���' already exists
+CREATE TABLE IF NOT EXISTS `���`(`���` char(1)) DEFAULT CHARSET = sjis engine=MEMORY;
+Warnings:
+Note	1050	Table '���' already exists
+CREATE TABLE IF NOT EXISTS `������`(`������` char(1)) DEFAULT CHARSET = sjis engine=MEMORY;
+Warnings:
+Note	1050	Table '������' already exists
+CREATE TABLE IF NOT EXISTS `������`(`������` char(1)) DEFAULT CHARSET = sjis engine=MEMORY;
+Warnings:
+Note	1050	Table '������' already exists
+CREATE TABLE IF NOT EXISTS `�\�\�\`(`�\�\�\` char(1)) DEFAULT CHARSET = sjis engine=MEMORY;
+Warnings:
+Note	1050	Table '�\�\�\' already exists
+CREATE TABLE IF NOT EXISTS `�\�\�\`(`�\�\�\` char(1)) DEFAULT CHARSET = sjis engine=MEMORY;
+Warnings:
+Note	1050	Table '�\�\�\' already exists
+CREATE TABLE IF NOT EXISTS `���`(`���` char(1)) DEFAULT CHARSET = sjis engine=MEMORY;
+CREATE TABLE IF NOT EXISTS `������`(`������` char(1)) DEFAULT CHARSET = sjis engine=MEMORY;
+CREATE TABLE IF NOT EXISTS `�\�\�\`(`�\�\�\`char(1)) DEFAULT CHARSET = sjis engine=MEMORY;
+CREATE TEMPORARY TABLE `���`(`���` char(1)) DEFAULT CHARSET = sjis engine=MEMORY;
+CREATE TEMPORARY TABLE `���`(`���` char(1)) DEFAULT CHARSET = sjis engine=MEMORY;
+CREATE TEMPORARY TABLE `������`(`������` char(1)) DEFAULT CHARSET = sjis engine=MEMORY;
+CREATE TEMPORARY TABLE `������`(`������` char(1)) DEFAULT CHARSET = sjis engine=MEMORY;
+CREATE TEMPORARY TABLE `�\�\�\`(`�\�\�\` char(1)) DEFAULT CHARSET = sjis engine=MEMORY;
+CREATE TEMPORARY TABLE `�\�\�\`(`�\�\�\` char(1)) DEFAULT CHARSET = sjis engine=MEMORY;
+DESC `���`;
+Field	Type	Null	Key	Default	Extra
+���	char(1)	YES		NULL	
+DESC `���`;
+Field	Type	Null	Key	Default	Extra
+���	char(1)	YES		NULL	
+DESC `���`;
+Field	Type	Null	Key	Default	Extra
+���	char(1)	YES		NULL	
+DESC `���`;
+Field	Type	Null	Key	Default	Extra
+���	char(1)	YES		NULL	
+DESC `���`;
+Field	Type	Null	Key	Default	Extra
+���	char(1)	YES		NULL	
+DESC `������`;
+Field	Type	Null	Key	Default	Extra
+������	char(1)	YES		NULL	
+DESC `������`;
+Field	Type	Null	Key	Default	Extra
+������	char(1)	YES		NULL	
+DESC `������`;
+Field	Type	Null	Key	Default	Extra
+������	char(1)	YES		NULL	
+DESC `������`;
+Field	Type	Null	Key	Default	Extra
+������	char(1)	YES		NULL	
+DESC `������`;
+Field	Type	Null	Key	Default	Extra
+������	char(1)	YES		NULL	
+DESC `�\�\�\`;
+Field	Type	Null	Key	Default	Extra
+�\�\�\	char(1)	YES		NULL	
+DESC `�\�\�\`;
+Field	Type	Null	Key	Default	Extra
+�\�\�\	char(1)	YES		NULL	
+DESC `�\�\�\`;
+Field	Type	Null	Key	Default	Extra
+�\�\�\	char(1)	YES		NULL	
+DESC `�\�\�\`;
+Field	Type	Null	Key	Default	Extra
+�\�\�\	char(1)	YES		NULL	
+DESC `�\�\�\`;
+Field	Type	Null	Key	Default	Extra
+�\�\�\	char(1)	YES		NULL	
+SHOW CREATE TABLE `���`;
+Table	Create Table
+���	CREATE TABLE `���` (
+  `���` char(1) DEFAULT NULL
+) ENGINE=MEMORY DEFAULT CHARSET=sjis
+SHOW CREATE TABLE `���`;
+Table	Create Table
+���	CREATE TABLE `���` (
+  `���` char(1) DEFAULT NULL
+) ENGINE=MEMORY DEFAULT CHARSET=sjis
+SHOW CREATE TABLE `���`;
+Table	Create Table
+���	CREATE TABLE `���` (
+  `���` char(1) DEFAULT NULL
+) ENGINE=MEMORY DEFAULT CHARSET=sjis
+SHOW CREATE TABLE `���`;
+Table	Create Table
+���	CREATE TEMPORARY TABLE `���` (
+  `���` char(1) DEFAULT NULL
+) ENGINE=MEMORY DEFAULT CHARSET=sjis
+SHOW CREATE TABLE `���`;
+Table	Create Table
+���	CREATE TEMPORARY TABLE `���` (
+  `���` char(1) DEFAULT NULL
+) ENGINE=MEMORY DEFAULT CHARSET=sjis
+SHOW CREATE TABLE `������`;
+Table	Create Table
+������	CREATE TABLE `������` (
+  `������` char(1) DEFAULT NULL
+) ENGINE=MEMORY DEFAULT CHARSET=sjis
+SHOW CREATE TABLE `������`;
+Table	Create Table
+������	CREATE TABLE `������` (
+  `������` char(1) DEFAULT NULL
+) ENGINE=MEMORY DEFAULT CHARSET=sjis
+SHOW CREATE TABLE `������`;
+Table	Create Table
+������	CREATE TABLE `������` (
+  `������` char(1) DEFAULT NULL
+) ENGINE=MEMORY DEFAULT CHARSET=sjis
+SHOW CREATE TABLE `������`;
+Table	Create Table
+������	CREATE TEMPORARY TABLE `������` (
+  `������` char(1) DEFAULT NULL
+) ENGINE=MEMORY DEFAULT CHARSET=sjis
+SHOW CREATE TABLE `������`;
+Table	Create Table
+������	CREATE TEMPORARY TABLE `������` (
+  `������` char(1) DEFAULT NULL
+) ENGINE=MEMORY DEFAULT CHARSET=sjis
+SHOW CREATE TABLE `�\�\�\`;
+Table	Create Table
+�\�\�\	CREATE TABLE `�\�\�\` (
+  `�\�\�\` char(1) DEFAULT NULL
+) ENGINE=MEMORY DEFAULT CHARSET=sjis
+SHOW CREATE TABLE `�\�\�\`;
+Table	Create Table
+�\�\�\	CREATE TABLE `�\�\�\` (
+  `�\�\�\` char(1) DEFAULT NULL
+) ENGINE=MEMORY DEFAULT CHARSET=sjis
+SHOW CREATE TABLE `�\�\�\`;
+Table	Create Table
+�\�\�\	CREATE TABLE `�\�\�\` (
+  `�\�\�\` char(1) DEFAULT NULL
+) ENGINE=MEMORY DEFAULT CHARSET=sjis
+SHOW CREATE TABLE `�\�\�\`;
+Table	Create Table
+�\�\�\	CREATE TEMPORARY TABLE `�\�\�\` (
+  `�\�\�\` char(1) DEFAULT NULL
+) ENGINE=MEMORY DEFAULT CHARSET=sjis
+SHOW CREATE TABLE `�\�\�\`;
+Table	Create Table
+�\�\�\	CREATE TEMPORARY TABLE `�\�\�\` (
+  `�\�\�\` char(1) DEFAULT NULL
+) ENGINE=MEMORY DEFAULT CHARSET=sjis
+DROP TABLE `���`;
+DROP TABLE `���`;
+DROP TABLE `���`;
+DROP TABLE `���`;
+DROP TABLE `���`;
+DROP TABLE `������`;
+DROP TABLE `������`;
+DROP TABLE `������`;
+DROP TABLE `������`;
+DROP TABLE `������`;
+DROP TABLE `�\�\�\`;
+DROP TABLE `�\�\�\`;
+DROP TABLE `�\�\�\`;
+DROP TABLE `�\�\�\`;
+DROP TABLE `�\�\�\`;

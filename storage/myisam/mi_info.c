@@ -29,7 +29,7 @@ my_off_t mi_position(MI_INFO *info)
 
 
 /* Get information about the table */
-/* if flag == 2 one get current info (no sync from database */
+/* if flag == 2 one get current info (no sync from blockchain */
 
 int mi_status(MI_INFO *info, MI_ISAMINFO *x, uint flag)
 {
@@ -42,10 +42,10 @@ int mi_status(MI_INFO *info, MI_ISAMINFO *x, uint flag)
     DBUG_RETURN(0);				/* Compatible with ISAM */
   if (!(flag & HA_STATUS_NO_LOCK))
   {
-    mysql_mutex_lock(&share->intern_lock);
+    myblockchain_mutex_lock(&share->intern_lock);
     (void) _mi_readinfo(info,F_RDLCK,0);
     fast_mi_writeinfo(info);
-    mysql_mutex_unlock(&share->intern_lock);
+    myblockchain_mutex_unlock(&share->intern_lock);
   }
   if (flag & HA_STATUS_VARIABLE)
   {
@@ -85,7 +85,7 @@ int mi_status(MI_INFO *info, MI_ISAMINFO *x, uint flag)
     x->data_file_name   = share->data_file_name;
     x->index_file_name  = share->index_file_name;
   }
-  if ((flag & HA_STATUS_TIME) && !mysql_file_fstat(info->dfile, &state, MYF(0)))
+  if ((flag & HA_STATUS_TIME) && !myblockchain_file_fstat(info->dfile, &state, MYF(0)))
     x->update_time=state.st_mtime;
   else
     x->update_time=0;
@@ -112,7 +112,7 @@ int mi_status(MI_INFO *info, MI_ISAMINFO *x, uint flag)
     messages need one. Since string arguments in error messages are limited
     to 64 characters by convention, we ensure that in case of truncation,
     that the end of the index file path is in the message. This contains
-    the most valuable information (the table name and the database name).
+    the most valuable information (the table name and the blockchain name).
 
   RETURN
     void

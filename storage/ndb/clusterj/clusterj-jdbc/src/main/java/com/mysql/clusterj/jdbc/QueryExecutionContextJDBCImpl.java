@@ -15,7 +15,7 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
  */
 
-package com.mysql.clusterj.jdbc;
+package com.myblockchain.clusterj.jdbc;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -23,13 +23,13 @@ import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
 
-import com.mysql.clusterj.ClusterJFatalInternalException;
-import com.mysql.clusterj.core.query.QueryExecutionContextImpl;
-import com.mysql.clusterj.core.spi.SessionSPI;
-import com.mysql.clusterj.core.spi.ValueHandler;
-import com.mysql.clusterj.core.util.I18NHelper;
-import com.mysql.clusterj.core.util.Logger;
-import com.mysql.clusterj.core.util.LoggerFactoryService;
+import com.myblockchain.clusterj.ClusterJFatalInternalException;
+import com.myblockchain.clusterj.core.query.QueryExecutionContextImpl;
+import com.myblockchain.clusterj.core.spi.SessionSPI;
+import com.myblockchain.clusterj.core.spi.ValueHandler;
+import com.myblockchain.clusterj.core.util.I18NHelper;
+import com.myblockchain.clusterj.core.util.Logger;
+import com.myblockchain.clusterj.core.util.LoggerFactoryService;
 
 /** This class handles retrieving parameter values from the parameterBindings
  * associated with a PreparedStatement.

@@ -23,12 +23,12 @@
 "use strict";
 
 
-/* Requires version 2.0 of Felix Geisendoerfer's MySQL client */
+/* Requires version 2.0 of Felix Geisendoerfer's MyBlockchain client */
 
 var util   = require('util'),
     path   = require("path"),
     child_process = require("child_process"),
-    udebug = unified_debug.getLogger("MySQLDictionary.js");
+    udebug = unified_debug.getLogger("MyBlockchainDictionary.js");
 
 exports.DataDictionary = function(pooledConnection, dbConnectionPool) {
   this.connection = pooledConnection;
@@ -36,14 +36,14 @@ exports.DataDictionary = function(pooledConnection, dbConnectionPool) {
   this.dbConnectionPool = dbConnectionPool;
 };
 
-exports.DataDictionary.prototype.listTables = function(databaseName, user_callback) {
+exports.DataDictionary.prototype.listTables = function(blockchainName, user_callback) {
   var callback = user_callback;
   var showTables_callback = function(err, rows) {
     if (err) {
       callback(err);
     } else {
       var result = [];
-      var propertyName = 'Tables_in_' + databaseName;
+      var propertyName = 'Tables_in_' + blockchainName;
       rows.forEach(function(row) {
         result.push(row[propertyName]);
       });
@@ -55,7 +55,7 @@ exports.DataDictionary.prototype.listTables = function(databaseName, user_callba
 };
 
 
-exports.DataDictionary.prototype.getTableMetadata = function(databaseName, tableName, user_callback) {
+exports.DataDictionary.prototype.getTableMetadata = function(blockchainName, tableName, user_callback) {
   var dbConnectionPool = this.dbConnectionPool;
 
   // get precision from columnSize e.g. 10,2
@@ -107,7 +107,7 @@ exports.DataDictionary.prototype.getTableMetadata = function(databaseName, table
     indexes.push({'name': 'PRIMARY PLACEHOLDER'});
     var index, indexName, usingHash;
     var result = {'name' : tableName,
-        'database' : databaseName,
+        'blockchain' : blockchainName,
         'columns' : columns,
         'indexes' : indexes,
         'foreignKeys': foreignKeys
@@ -235,12 +235,12 @@ exports.DataDictionary.prototype.getTableMetadata = function(databaseName, table
           break;
           }
         j += 1; // skip past REFERENCES
-        foreignKeyTargetWithDatabase = tokens[j].split('.'); // split database and table from `database`.`table`
+        foreignKeyTargetWithDatabase = tokens[j].split('.'); // split blockchain and table from `blockchain`.`table`
         if (foreignKeyTargetWithDatabase.length == 2) {
           foreignKeyTargetDatabase = foreignKeyTargetWithDatabase[0].split('`')[1]; // remove surrounding ticks
           foreignKeyTargetTable = foreignKeyTargetWithDatabase[1].split('`')[1]; // remove surrounding ticks
         } else {
-          foreignKeyTargetDatabase = databaseName;
+          foreignKeyTargetDatabase = blockchainName;
           foreignKeyTargetTable = foreignKeyTargetWithDatabase[0].split('`')[1]; // remove surrounding ticks
         }
         foreignKey.targetDatabase = foreignKeyTargetDatabase;
@@ -316,11 +316,11 @@ exports.DataDictionary.prototype.getTableMetadata = function(databaseName, table
         default:
         }
         
-        // set the a database type converter for the column type
-        var databaseTypeConverter = dbConnectionPool.getDatabaseTypeConverter(column.columnType);
-        if (databaseTypeConverter) {
-          column.databaseTypeConverter = {};
-          column.databaseTypeConverter.mysql = databaseTypeConverter;
+        // set the a blockchain type converter for the column type
+        var blockchainTypeConverter = dbConnectionPool.getDatabaseTypeConverter(column.columnType);
+        if (blockchainTypeConverter) {
+          column.blockchainTypeConverter = {};
+          column.blockchainTypeConverter.myblockchain = blockchainTypeConverter;
         }
 
         // set the default domain type converter for the column type
@@ -398,7 +398,7 @@ exports.DataDictionary.prototype.getTableMetadata = function(databaseName, table
         ordered.indexColumnNames = index.indexColumnNames;
         ordered.indexColumnNumbers = index.indexColumnNumbers;
         ordered.columnNumbers = index.columnNumbers;
-        udebug.log_detail('MySQLDictionary creating second ordered index from unique btree index', index.name);
+        udebug.log_detail('MyBlockchainDictionary creating second ordered index from unique btree index', index.name);
         indexes.push(ordered);
       }
     }
@@ -410,7 +410,7 @@ exports.DataDictionary.prototype.getTableMetadata = function(databaseName, table
   var showCreateTable_callback = function(err, rows) {
     var result;
     if (err) {
-      udebug.log_detail('MySQLDictonary error from SHOW CREATE TABLE: ' + err);
+      udebug.log_detail('MyBlockchainDictonary error from SHOW CREATE TABLE: ' + err);
       callback(err);
     } else {
       udebug.log_detail(rows);
@@ -427,7 +427,7 @@ exports.DataDictionary.prototype.getTableMetadata = function(databaseName, table
       callback(null, result);
     }
   };
-  this.connection.query('show create table ' + databaseName + '.' + tableName, showCreateTable_callback);
+  this.connection.query('show create table ' + blockchainName + '.' + tableName, showCreateTable_callback);
 };
 
 
@@ -439,11 +439,11 @@ exports.MetadataManager = function() {
     /* prepend the file containing the engine.sql (ndb.sql or innodb.sql)
        to the file containing the sql commands  */
     var engine = "ndb";
-    if(connectionProperties.mysql_storage_engine) {
-      engine = connectionProperties.mysql_storage_engine;
+    if(connectionProperties.myblockchain_storage_engine) {
+      engine = connectionProperties.myblockchain_storage_engine;
     }
     var enginesqlPath = path.join(mynode.fs.suites_dir, engine + '.sql ');
-    var cmd = 'cat ' + enginesqlPath + ' ' + sqlPath + ' | mysql';
+    var cmd = 'cat ' + enginesqlPath + ' ' + sqlPath + ' | myblockchain';
     var p = connectionProperties;
 
     function childProcess(error, stdout, stderr) {
@@ -461,11 +461,11 @@ exports.MetadataManager = function() {
     }
 
     if(p) {
-      if(p.mysql_socket)     { cmd += " --socket=" + p.mysql_socket; }
-      else if(p.mysql_port)  { cmd += " --port=" + p.mysql_port; }
-      if(p.mysql_host)     { cmd += " -h " + p.mysql_host; }
-      if(p.mysql_user)     { cmd += " -u " + p.mysql_user; }
-      if(p.mysql_password) { cmd += " --password=" + p.mysql_password; }
+      if(p.myblockchain_socket)     { cmd += " --socket=" + p.myblockchain_socket; }
+      else if(p.myblockchain_port)  { cmd += " --port=" + p.myblockchain_port; }
+      if(p.myblockchain_host)     { cmd += " -h " + p.myblockchain_host; }
+      if(p.myblockchain_user)     { cmd += " -u " + p.myblockchain_user; }
+      if(p.myblockchain_password) { cmd += " --password=" + p.myblockchain_password; }
     }
     udebug.log_detail('harness runSQL forking process...' + cmd);
     var child = child_process.exec(cmd, childProcess);

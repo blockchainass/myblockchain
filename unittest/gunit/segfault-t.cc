@@ -44,9 +44,9 @@ protected:
 TEST_F(FatalSignalDeathTest, Abort)
 {
 #if defined(_WIN32)
-  EXPECT_DEATH_IF_SUPPORTED(abort(), ".* UTC - mysqld got exception.*");
+  EXPECT_DEATH_IF_SUPPORTED(abort(), ".* UTC - myblockchaind got exception.*");
 #else
-  EXPECT_DEATH_IF_SUPPORTED(abort(), ".* UTC - mysqld got signal 6.*");
+  EXPECT_DEATH_IF_SUPPORTED(abort(), ".* UTC - myblockchaind got signal 6.*");
 #endif
 }
 
@@ -69,7 +69,7 @@ TEST_F(FatalSignalDeathTest, Segfault)
    On most platforms we get SIGSEGV == 11, but SIGBUS == 10 is also possible.
    And on Mac OsX we can get SIGILL == 4 (but only in optmized mode).
   */
-  EXPECT_DEATH_IF_SUPPORTED(*pint= 42, ".* UTC - mysqld got signal .*");
+  EXPECT_DEATH_IF_SUPPORTED(*pint= 42, ".* UTC - myblockchaind got signal .*");
 #endif
 }
 

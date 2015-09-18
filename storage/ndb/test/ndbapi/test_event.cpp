@@ -57,7 +57,7 @@ static int createEvent(Ndb *pNdb,
   if (report)
     myEvent.setReport(NdbDictionary::Event::ER_SUBSCRIBE);
 
-  int res = myDict->createEvent(myEvent); // Add event to database
+  int res = myDict->createEvent(myEvent); // Add event to blockchain
 
   if (res == 0)
     myEvent.print();
@@ -73,7 +73,7 @@ static int createEvent(Ndb *pNdb,
       return NDBT_FAILED;
     }
     // try again
-    res = myDict->createEvent(myEvent); // Add event to database
+    res = myDict->createEvent(myEvent); // Add event to blockchain
     if (res) {
       g_err << "Failed to create event (1): " 
 	    << myDict->getNdbError().code << " : "

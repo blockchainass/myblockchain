@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Copyright (C) 2003, 2004 MySQL AB
+# Copyright (C) 2003, 2004 MyBlockchain AB
 # Use is subject to license terms
 # 
 # This program is free software; you can redistribute it and/or modify
@@ -17,15 +17,15 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA
 
 #
-# /Library/StartupItems/MySQLCOM/MySQLCOM
+# /Library/StartupItems/MyBlockchainCOM/MyBlockchainCOM
 #
-# A script to automatically start up MySQL on system bootup
+# A script to automatically start up MyBlockchain on system bootup
 # for Mac OS X. This is actually just a wrapper script around
-# the standard mysql.server init script, which is included in
+# the standard myblockchain.server init script, which is included in
 # the binary distribution.
 #
-# (c) 2003 MySQL AB
-# Written by Lenz Grimmer <lenz@mysql.com>
+# (c) 2003 MyBlockchain AB
+# Written by Lenz Grimmer <lenz@myblockchain.com>
 #
 
 # Suppress the annoying "$1: unbound variable" error when no option
@@ -39,32 +39,32 @@ fi
 test -r /etc/rc.common || exit 1
 . /etc/rc.common
 
-# The path to the mysql.server init script. The official MySQL
-# Mac OS X packages are being installed into /usr/local/mysql.
-SCRIPT="/usr/local/mysql/support-files/mysql.server"
+# The path to the myblockchain.server init script. The official MyBlockchain
+# Mac OS X packages are being installed into /usr/local/myblockchain.
+SCRIPT="/usr/local/myblockchain/support-files/myblockchain.server"
 
 StartService ()
 {
-	if [ "${MYSQLCOM:=-NO-}" = "-YES-" ] ; then
-		ConsoleMessage "Starting MySQL database server"
+	if [ "${MYBLOCKCHAINCOM:=-NO-}" = "-YES-" ] ; then
+		ConsoleMessage "Starting MyBlockchain blockchain server"
 		$SCRIPT start > /dev/null 2>&1
 	fi
 }
 
 StopService ()
 {
-	ConsoleMessage "Stopping MySQL database server"
+	ConsoleMessage "Stopping MyBlockchain blockchain server"
 	$SCRIPT stop > /dev/null 2>&1
 }
 
 RestartService ()
 {
-	ConsoleMessage "Restarting MySQL database server"
+	ConsoleMessage "Restarting MyBlockchain blockchain server"
 	$SCRIPT restart > /dev/null 2>&1
 }
 
 if test -x $SCRIPT ; then
 	RunService "$1"
 else
-	ConsoleMessage "Could not find MySQL startup script!"
+	ConsoleMessage "Could not find MyBlockchain startup script!"
 fi

@@ -305,7 +305,7 @@ ClusterMgr::threadMain()
   ApiRegReq * req = CAST_PTR(ApiRegReq, signal.getDataPtrSend());
   req->ref = numberToRef(API_CLUSTERMGR, theFacade.ownId());
   req->version = NDB_VERSION;
-  req->mysql_version = NDB_MYSQL_VERSION_D;
+  req->myblockchain_version = NDB_MYBLOCKCHAIN_VERSION_D;
   
   NdbApiSignal nodeFail_signal(numberToRef(API_CLUSTERMGR, getOwnNodeId()));
   nodeFail_signal.theVerId_signalNumber = GSN_NODE_FAILREP;
@@ -666,9 +666,9 @@ ClusterMgr::execAPI_REGREQ(const Uint32 * theData){
 
   if(node.m_info.m_version != apiRegReq->version){
     node.m_info.m_version = apiRegReq->version;
-    node.m_info.m_mysql_version = apiRegReq->mysql_version;
+    node.m_info.m_myblockchain_version = apiRegReq->myblockchain_version;
     if (node.m_info.m_version < NDBD_SPLIT_VERSION)
-      node.m_info.m_mysql_version = 0;
+      node.m_info.m_myblockchain_version = 0;
 
     if (getMajor(node.m_info.m_version) < getMajor(NDB_VERSION) ||
 	getMinor(node.m_info.m_version) < getMinor(NDB_VERSION)) {
@@ -687,7 +687,7 @@ ClusterMgr::execAPI_REGREQ(const Uint32 * theData){
   ApiRegConf * const conf = CAST_PTR(ApiRegConf, signal.getDataPtrSend());
   conf->qmgrRef = numberToRef(API_CLUSTERMGR, theFacade.ownId());
   conf->version = NDB_VERSION;
-  conf->mysql_version = NDB_MYSQL_VERSION_D;
+  conf->myblockchain_version = NDB_MYBLOCKCHAIN_VERSION_D;
 
   /*
     This is the frequency (in centiseonds) at which we want the other node
@@ -724,9 +724,9 @@ ClusterMgr::execAPI_REGCONF(const NdbApiSignal * signal,
 
   if(node.m_info.m_version != apiRegConf->version){
     node.m_info.m_version = apiRegConf->version;
-    node.m_info.m_mysql_version = apiRegConf->mysql_version;
+    node.m_info.m_myblockchain_version = apiRegConf->myblockchain_version;
     if (node.m_info.m_version < NDBD_SPLIT_VERSION)
-      node.m_info.m_mysql_version = 0;
+      node.m_info.m_myblockchain_version = 0;
         
     if(theNodes[theFacade.ownId()].m_info.m_type == NodeInfo::MGM)
       node.compatible = ndbCompatible_mgmt_ndb(NDB_VERSION,

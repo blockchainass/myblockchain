@@ -72,7 +72,7 @@ typedef struct unicase_info_st
 
 extern MY_UNICASE_INFO my_unicase_default;
 extern MY_UNICASE_INFO my_unicase_turkish;
-extern MY_UNICASE_INFO my_unicase_mysql500;
+extern MY_UNICASE_INFO my_unicase_myblockchain500;
 extern MY_UNICASE_INFO my_unicase_unicode520;
 
 #define MY_UCA_MAX_CONTRACTION 6
@@ -421,9 +421,9 @@ typedef struct charset_info_st
 #define ILLEGAL_CHARSET_INFO_NUMBER (~0U)
 
 
-extern MYSQL_PLUGIN_IMPORT CHARSET_INFO my_charset_bin;
-extern MYSQL_PLUGIN_IMPORT CHARSET_INFO my_charset_latin1;
-extern MYSQL_PLUGIN_IMPORT CHARSET_INFO my_charset_filename;
+extern MYBLOCKCHAIN_PLUGIN_IMPORT CHARSET_INFO my_charset_bin;
+extern MYBLOCKCHAIN_PLUGIN_IMPORT CHARSET_INFO my_charset_latin1;
+extern MYBLOCKCHAIN_PLUGIN_IMPORT CHARSET_INFO my_charset_filename;
 
 extern CHARSET_INFO my_charset_big5_chinese_ci;
 extern CHARSET_INFO my_charset_big5_bin;
@@ -450,7 +450,7 @@ extern CHARSET_INFO my_charset_tis620_bin;
 extern CHARSET_INFO my_charset_ucs2_general_ci;
 extern CHARSET_INFO my_charset_ucs2_bin;
 extern CHARSET_INFO my_charset_ucs2_unicode_ci;
-extern CHARSET_INFO my_charset_ucs2_general_mysql500_ci;
+extern CHARSET_INFO my_charset_ucs2_general_myblockchain500_ci;
 extern CHARSET_INFO my_charset_ujis_japanese_ci;
 extern CHARSET_INFO my_charset_ujis_bin;
 extern CHARSET_INFO my_charset_utf16_bin;
@@ -462,11 +462,11 @@ extern CHARSET_INFO my_charset_utf32_bin;
 extern CHARSET_INFO my_charset_utf32_general_ci;
 extern CHARSET_INFO my_charset_utf32_unicode_ci;
 
-extern MYSQL_PLUGIN_IMPORT CHARSET_INFO my_charset_utf8_general_ci;
+extern MYBLOCKCHAIN_PLUGIN_IMPORT CHARSET_INFO my_charset_utf8_general_ci;
 extern CHARSET_INFO my_charset_utf8_tolower_ci;
 extern CHARSET_INFO my_charset_utf8_unicode_ci;
 extern CHARSET_INFO my_charset_utf8_bin;
-extern CHARSET_INFO my_charset_utf8_general_mysql500_ci;
+extern CHARSET_INFO my_charset_utf8_general_myblockchain500_ci;
 extern CHARSET_INFO my_charset_utf8mb4_bin;
 extern CHARSET_INFO my_charset_utf8mb4_general_ci;
 extern CHARSET_INFO my_charset_utf8mb4_unicode_ci;

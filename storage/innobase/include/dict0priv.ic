@@ -92,7 +92,7 @@ dict_table_open_on_id_low(
 
 	ut_ad(!table || table->cached);
 
-	/* TODO: should get the type information from MySQL */
+	/* TODO: should get the type information from MyBlockchain */
 
 	return(table);
 }

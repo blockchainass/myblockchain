@@ -56,17 +56,17 @@ static unsigned opt_nodegroup_map_len= 0;
 static NODE_GROUP_MAP opt_nodegroup_map[MAX_NODE_GROUP_MAPS];
 #define OPT_NDB_NODEGROUP_MAP 'z'
 
-const char *opt_ndb_database= NULL;
+const char *opt_ndb_blockchain= NULL;
 const char *opt_ndb_table= NULL;
 unsigned int opt_verbose;
 unsigned int opt_hex_format;
 unsigned int opt_progress_frequency;
 NDB_TICKS g_report_prev;
-Vector<BaseString> g_databases;
+Vector<BaseString> g_blockchains;
 Vector<BaseString> g_tables;
 Vector<BaseString> g_include_tables, g_exclude_tables;
-Vector<BaseString> g_include_databases, g_exclude_databases;
-Properties g_rewrite_databases;
+Vector<BaseString> g_include_blockchains, g_exclude_blockchains;
+Properties g_rewrite_blockchains;
 NdbRecordPrintFormat g_ndbrecord_print_format;
 unsigned int opt_no_binlog;
 
@@ -81,7 +81,7 @@ public:
 Vector<class RestoreOption *> g_include_exclude;
 static void save_include_exclude(int optid, char * argument);
 
-static inline void parse_rewrite_database(char * argument);
+static inline void parse_rewrite_blockchain(char * argument);
 
 /**
  * print and restore flags
@@ -110,7 +110,7 @@ bool ga_skip_unknown_objects = false;
 bool ga_skip_broken_objects = false;
 BaseString g_options("ndb_restore");
 
-const char *load_default_groups[]= { "mysql_cluster","ndb_restore",0 };
+const char *load_default_groups[]= { "myblockchain_cluster","ndb_restore",0 };
 
 enum ndb_restore_options {
   OPT_VERBOSE = NDB_STD_OPTIONS_LAST,
@@ -129,9 +129,9 @@ static const char *tab_path= NULL;
 static int opt_append;
 static const char *opt_exclude_tables= NULL;
 static const char *opt_include_tables= NULL;
-static const char *opt_exclude_databases= NULL;
-static const char *opt_include_databases= NULL;
-static const char *opt_rewrite_database= NULL;
+static const char *opt_exclude_blockchains= NULL;
+static const char *opt_include_blockchains= NULL;
+static const char *opt_rewrite_blockchain= NULL;
 static bool opt_restore_privilege_tables = false;
 
 static struct my_option my_long_options[] =
@@ -176,7 +176,7 @@ static struct my_option my_long_options[] =
     (uchar**) &_no_restore_disk, (uchar**) &_no_restore_disk,  0,
     GET_BOOL, NO_ARG, 0, 0, 0, 0, 0, 0 },
   { "restore_epoch", 'e', 
-    "Restore epoch info into the status table. Convenient on a MySQL Cluster "
+    "Restore epoch info into the status table. Convenient on a MyBlockchain Cluster "
     "replication slave, for starting replication. The row in "
     NDB_REP_DB "." NDB_APPLY_TABLE " with id 0 will be updated/inserted.", 
     (uchar**) &ga_restore_epoch, (uchar**) &ga_restore_epoch,  0,
@@ -246,32 +246,32 @@ static struct my_option my_long_options[] =
     (uchar**) &opt_progress_frequency, (uchar**) &opt_progress_frequency, 0,
     GET_INT, REQUIRED_ARG, 0, 0, 65535, 0, 0, 0 },
   { "no-binlog", NDB_OPT_NOSHORT,
-    "If a mysqld is connected and has binary log, do not log the restored data", 
+    "If a myblockchaind is connected and has binary log, do not log the restored data", 
     (uchar**) &opt_no_binlog, (uchar**) &opt_no_binlog, 0,
     GET_BOOL, NO_ARG, 0, 0, 0, 0, 0, 0 },
   { "verbose", OPT_VERBOSE,
     "verbosity", 
     (uchar**) &opt_verbose, (uchar**) &opt_verbose, 0,
     GET_INT, REQUIRED_ARG, 1, 0, 255, 0, 0, 0 },
-  { "include-databases", OPT_INCLUDE_DATABASES,
-    "Comma separated list of databases to restore. Example: db1,db3",
-    (uchar**) &opt_include_databases, (uchar**) &opt_include_databases, 0,
+  { "include-blockchains", OPT_INCLUDE_DATABASES,
+    "Comma separated list of blockchains to restore. Example: db1,db3",
+    (uchar**) &opt_include_blockchains, (uchar**) &opt_include_blockchains, 0,
     GET_STR, REQUIRED_ARG, 0, 0, 0, 0, 0, 0 },
-  { "exclude-databases", OPT_EXCLUDE_DATABASES,
-    "Comma separated list of databases to not restore. Example: db1,db3",
-    (uchar**) &opt_exclude_databases, (uchar**) &opt_exclude_databases, 0,
+  { "exclude-blockchains", OPT_EXCLUDE_DATABASES,
+    "Comma separated list of blockchains to not restore. Example: db1,db3",
+    (uchar**) &opt_exclude_blockchains, (uchar**) &opt_exclude_blockchains, 0,
     GET_STR, REQUIRED_ARG, 0, 0, 0, 0, 0, 0 },
-  { "rewrite-database", OPT_REWRITE_DATABASE,
-    "A pair 'source,dest' of database names from/into which to restore. "
-    "Example: --rewrite-database=oldDb,newDb",
-    (uchar**) &opt_rewrite_database, (uchar**) &opt_rewrite_database, 0,
+  { "rewrite-blockchain", OPT_REWRITE_DATABASE,
+    "A pair 'source,dest' of blockchain names from/into which to restore. "
+    "Example: --rewrite-blockchain=oldDb,newDb",
+    (uchar**) &opt_rewrite_blockchain, (uchar**) &opt_rewrite_blockchain, 0,
     GET_STR, REQUIRED_ARG, 0, 0, 0, 0, 0, 0 },
   { "include-tables", OPT_INCLUDE_TABLES, "Comma separated list of tables to "
-    "restore. Table name should include database name. Example: db1.t1,db3.t1", 
+    "restore. Table name should include blockchain name. Example: db1.t1,db3.t1", 
     (uchar**) &opt_include_tables, (uchar**) &opt_include_tables, 0,
     GET_STR, REQUIRED_ARG, 0, 0, 0, 0, 0, 0 },
   { "exclude-tables", OPT_EXCLUDE_TABLES, "Comma separated list of tables to "
-    "not restore. Table name should include database name. "
+    "not restore. Table name should include blockchain name. "
     "Example: db1.t1,db3.t1",
     (uchar**) &opt_exclude_tables, (uchar**) &opt_exclude_tables, 0,
     GET_STR, REQUIRED_ARG, 0, 0, 0, 0, 0, 0 },
@@ -281,12 +281,12 @@ static struct my_option my_long_options[] =
     (uchar**) &opt_restore_privilege_tables, 0,
     GET_BOOL, NO_ARG, 0, 0, 0, 0, 0, 0 },
   { "exclude-missing-columns", NDB_OPT_NOSHORT,
-    "Ignore columns present in backup but not in database",
+    "Ignore columns present in backup but not in blockchain",
     (uchar**) &ga_exclude_missing_columns,
     (uchar**) &ga_exclude_missing_columns, 0,
     GET_BOOL, NO_ARG, 0, 0, 0, 0, 0, 0 },
   { "exclude-missing-tables", NDB_OPT_NOSHORT,
-    "Ignore tables present in backup but not in database",
+    "Ignore tables present in backup but not in blockchain",
     (uchar**) &ga_exclude_missing_tables,
     (uchar**) &ga_exclude_missing_tables, 0,
     GET_BOOL, NO_ARG, 0, 0, 0, 0, 0, 0 },
@@ -490,7 +490,7 @@ get_one_option(int optid, const struct my_option *opt __attribute__((unused)),
     save_include_exclude(optid, argument);
     break;
   case OPT_REWRITE_DATABASE:
-    parse_rewrite_database(argument);
+    parse_rewrite_blockchain(argument);
     break;
   }
   return 0;
@@ -566,7 +566,7 @@ exclude_privilege_tables()
   while((table_name= dist_priv.iter_next_table()))
   {
     BaseString priv_tab;
-    priv_tab.assfmt("%s.%s", dist_priv.database(), table_name);
+    priv_tab.assfmt("%s.%s", dist_priv.blockchain(), table_name);
     g_exclude_tables.push_back(priv_tab);
     save_include_exclude(OPT_EXCLUDE_TABLES, (char *)priv_tab.c_str());
   }
@@ -579,7 +579,7 @@ readArguments(int *pargc, char*** pargv)
   Uint32 i;
   BaseString tmp;
   debug << "Load defaults" << endl;
-  const char *load_default_groups[]= { "mysql_cluster","ndb_restore",0 };
+  const char *load_default_groups[]= { "myblockchain_cluster","ndb_restore",0 };
 
   init_nodegroup_map();
   ndb_load_defaults(NULL,load_default_groups,pargc,pargv);
@@ -731,7 +731,7 @@ o verify nodegroup mapping
     }
     if ((*pargv)[i] == NULL)
       break;
-    g_databases.push_back((*pargv)[i++]);
+    g_blockchains.push_back((*pargv)[i++]);
     while ((*pargv)[i] != NULL)
     {
       g_tables.push_back((*pargv)[i++]);
@@ -740,11 +740,11 @@ o verify nodegroup mapping
   }
   info.setLevel(254);
   info << "backup path = " << ga_backupPath << endl;
-  if (g_databases.size() > 0)
+  if (g_blockchains.size() > 0)
   {
     info << "WARNING! Using deprecated syntax for selective object restoration." << endl;
     info << "Please use --include-*/--exclude-* options in future." << endl;
-    info << "Restoring only from database " << g_databases[0].c_str() << endl;
+    info << "Restoring only from blockchain " << g_blockchains[0].c_str() << endl;
     if (g_tables.size() > 0)
     {
         info << "Restoring tables:";
@@ -764,16 +764,16 @@ o verify nodegroup mapping
       exclude_privilege_tables();
 
     // Move over old style arguments to include/exclude lists
-    if (g_databases.size() > 0)
+    if (g_blockchains.size() > 0)
     {
       BaseString tab_prefix, tab;
-      tab_prefix.append(g_databases[0].c_str());
+      tab_prefix.append(g_blockchains[0].c_str());
       tab_prefix.append(".");
       if (g_tables.size() == 0)
       {
-        g_include_databases.push_back(g_databases[0]);
+        g_include_blockchains.push_back(g_blockchains[0]);
         save_include_exclude(OPT_INCLUDE_DATABASES,
-                             (char *)g_databases[0].c_str());
+                             (char *)g_blockchains[0].c_str());
       }
       for (unsigned i= 0; i < g_tables.size(); i++)
       {
@@ -785,38 +785,38 @@ o verify nodegroup mapping
     }
   }
 
-  if (opt_include_databases)
+  if (opt_include_blockchains)
   {
-    tmp = BaseString(opt_include_databases);
-    tmp.split(g_include_databases,",");
+    tmp = BaseString(opt_include_blockchains);
+    tmp.split(g_include_blockchains,",");
     info << "Including Databases: ";
-    for (i= 0; i < g_include_databases.size(); i++)
+    for (i= 0; i < g_include_blockchains.size(); i++)
     {
-      info << g_include_databases[i] << " ";
+      info << g_include_blockchains[i] << " ";
     }
     info << endl;
   }
   
-  if (opt_exclude_databases)
+  if (opt_exclude_blockchains)
   {
-    tmp = BaseString(opt_exclude_databases);
-    tmp.split(g_exclude_databases,",");
-    info << "Excluding databases: ";
-    for (i= 0; i < g_exclude_databases.size(); i++)
+    tmp = BaseString(opt_exclude_blockchains);
+    tmp.split(g_exclude_blockchains,",");
+    info << "Excluding blockchains: ";
+    for (i= 0; i < g_exclude_blockchains.size(); i++)
     {
-      info << g_exclude_databases[i] << " ";
+      info << g_exclude_blockchains[i] << " ";
     }
     info << endl;
   }
   
-  if (opt_rewrite_database)
+  if (opt_rewrite_blockchain)
   {
-    info << "Rewriting databases:";
-    Properties::Iterator it(&g_rewrite_databases);
+    info << "Rewriting blockchains:";
+    Properties::Iterator it(&g_rewrite_blockchains);
     const char * src;
     for (src = it.first(); src != NULL; src = it.next()) {
       const char * dst = NULL;
-      bool r = g_rewrite_databases.get(src, &dst);
+      bool r = g_rewrite_blockchains.get(src, &dst);
       require(r && (dst != NULL));
       info << " (" << src << "->" << dst << ")";
     }
@@ -846,8 +846,8 @@ o verify nodegroup mapping
   }
 
   /*
-    the below formatting follows the formatting from mysqldump
-    do not change unless to adopt to changes in mysqldump
+    the below formatting follows the formatting from myblockchaindump
+    do not change unless to adopt to changes in myblockchaindump
   */
   g_ndbrecord_print_format.fields_enclosed_by=
     opt_fields_enclosed_by ? opt_fields_enclosed_by : "";
@@ -953,7 +953,7 @@ getTableName(const TableS* table)
   return table_name;
 }
 
-static void parse_rewrite_database(char * argument)
+static void parse_rewrite_blockchain(char * argument)
 {
   const BaseString arg(argument);
   Vector<BaseString> args;
@@ -964,7 +964,7 @@ static void parse_rewrite_database(char * argument)
     const BaseString src = args[0];
     const BaseString dst = args[1];
     const bool replace = true;
-    bool r = g_rewrite_databases.put(src.c_str(), dst.c_str(), replace);
+    bool r = g_rewrite_blockchains.put(src.c_str(), dst.c_str(), replace);
     require(r);
     return; // ok
   }
@@ -1002,30 +1002,30 @@ static void save_include_exclude(int optid, char * argument)
     g_include_exclude.push_back(option);
   }
 }
-static bool check_include_exclude(BaseString database, BaseString table)
+static bool check_include_exclude(BaseString blockchain, BaseString table)
 {
-  const char * db = database.c_str();
+  const char * db = blockchain.c_str();
   const char * tbl = table.c_str();
   bool do_include = true;
 
-  if (g_include_databases.size() != 0 ||
+  if (g_include_blockchains.size() != 0 ||
       g_include_tables.size() != 0)
   {
     /*
-      User has explicitly specified what databases
+      User has explicitly specified what blockchains
       and/or tables should be restored. If no match is
       found then DON'T restore table.
      */
     do_include = false;
   }
   if (do_include &&
-      (g_exclude_databases.size() != 0 ||
+      (g_exclude_blockchains.size() != 0 ||
        g_exclude_tables.size() != 0))
   {
     /*
-      User has not explicitly specified what databases
+      User has not explicitly specified what blockchains
       and/or tables should be restored.
-      User has explicitly specified what databases
+      User has explicitly specified what blockchains
       and/or tables should NOT be restored. If no match is
       found then DO restore table.
      */
@@ -1093,9 +1093,9 @@ checkDoRestore(const TableS* table)
     Include/exclude flags are evaluated right
     to left, and first match overrides any other
     matches. Non-overlapping arguments are accumulative.
-    If no include flags are specified this means all databases/tables
+    If no include flags are specified this means all blockchains/tables
     except any excluded are restored.
-    If include flags are specified than only those databases
+    If include flags are specified than only those blockchains
     or tables specified are restored.
    */
   ret = check_include_exclude(db, tbl);
@@ -1115,31 +1115,31 @@ checkDbAndTableName(const TableS* table)
 
   // If new options are given, ignore the old format
   if (opt_include_tables || g_exclude_tables.size() > 0 ||
-      opt_include_databases || opt_exclude_databases ) {
+      opt_include_blockchains || opt_exclude_blockchains ) {
     return (checkDoRestore(table));
   }
   
-  if (g_tables.size() == 0 && g_databases.size() == 0)
+  if (g_tables.size() == 0 && g_blockchains.size() == 0)
     return true;
 
-  if (g_databases.size() == 0)
-    g_databases.push_back("TEST_DB");
+  if (g_blockchains.size() == 0)
+    g_blockchains.push_back("TEST_DB");
 
   // Filter on the main table name for indexes and blobs
   unsigned i;
-  for (i= 0; i < g_databases.size(); i++)
+  for (i= 0; i < g_blockchains.size(); i++)
   {
-    if (strncmp(table_name, g_databases[i].c_str(),
-                g_databases[i].length()) == 0 &&
-        table_name[g_databases[i].length()] == '/')
+    if (strncmp(table_name, g_blockchains[i].c_str(),
+                g_blockchains[i].length()) == 0 &&
+        table_name[g_blockchains[i].length()] == '/')
     {
       // we have a match
-      if (g_databases.size() > 1 || g_tables.size() == 0)
+      if (g_blockchains.size() > 1 || g_tables.size() == 0)
         return true;
       break;
     }
   }
-  if (i == g_databases.size())
+  if (i == g_blockchains.size())
     return false; // no match found
 
   while (*table_name != '/') table_name++;
@@ -1332,7 +1332,7 @@ main(int argc, char** argv)
   if (version >= NDBD_RAW_LCP)
   {
     info << " ndb version: "
-         << ndbGetVersionString(tmp.NdbVersion, tmp.MySQLVersion, 0, 
+         << ndbGetVersionString(tmp.NdbVersion, tmp.MyBlockchainVersion, 0, 
                                 buf, sizeof(buf));
   }
 

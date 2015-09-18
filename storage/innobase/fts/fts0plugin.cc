@@ -36,7 +36,7 @@ static
 int
 fts_default_parser_init(
 /*====================*/
-	MYSQL_FTPARSER_PARAM *param)	/*!< in: plugin parser param */
+	MYBLOCKCHAIN_FTPARSER_PARAM *param)	/*!< in: plugin parser param */
 {
 	return(0);
 }
@@ -48,7 +48,7 @@ static
 int
 fts_default_parser_deinit(
 /*======================*/
-	MYSQL_FTPARSER_PARAM *param)	/*!< in: plugin parser param */
+	MYBLOCKCHAIN_FTPARSER_PARAM *param)	/*!< in: plugin parser param */
 {
         return(0);
 }
@@ -60,15 +60,15 @@ static
 int
 fts_default_parser_parse(
 /*=====================*/
-	MYSQL_FTPARSER_PARAM *param)	/*!< in: plugin parser param */
+	MYBLOCKCHAIN_FTPARSER_PARAM *param)	/*!< in: plugin parser param */
 {
-	return(param->mysql_parse(param, param->doc, param->length));
+	return(param->myblockchain_parse(param, param->doc, param->length));
 }
 
 /* FTS default parser from ft_static.c in MYISAM. */
-struct st_mysql_ftparser fts_default_parser =
+struct st_myblockchain_ftparser fts_default_parser =
 {
-	MYSQL_FTPARSER_INTERFACE_VERSION,
+	MYBLOCKCHAIN_FTPARSER_INTERFACE_VERSION,
 	fts_default_parser_parse,
 	fts_default_parser_init,
 	fts_default_parser_deinit
@@ -81,7 +81,7 @@ static
 fts_ast_node_t*
 fts_query_get_oper_node(
 /*====================*/
-	MYSQL_FTPARSER_BOOLEAN_INFO*	info,	/*!< in: token info */
+	MYBLOCKCHAIN_FTPARSER_BOOLEAN_INFO*	info,	/*!< in: token info */
 	fts_ast_state_t*		state)	/*!< in/out: query parse state*/
 {
 	fts_ast_node_t*	oper_node = NULL;
@@ -103,7 +103,7 @@ fts_query_get_oper_node(
 
 /******************************************************************//**
 FTS plugin parser 'myql_add_word' callback function for query parse.
-Refer to 'st_mysql_ftparser_param' for more detail.
+Refer to 'st_myblockchain_ftparser_param' for more detail.
 Note:
 a. Parse logic refers to 'ftb_query_add_word' from ft_boolean_search.c in MYISAM;
 b. Parse node or tree refers to fts0pars.y.
@@ -111,13 +111,13 @@ b. Parse node or tree refers to fts0pars.y.
 int
 fts_query_add_word_for_parser(
 /*==========================*/
-	MYSQL_FTPARSER_PARAM*	param,		/*!< in: parser param */
+	MYBLOCKCHAIN_FTPARSER_PARAM*	param,		/*!< in: parser param */
 	char*			word,		/*!< in: token */
 	int			word_len,	/*!< in: token length */
-	MYSQL_FTPARSER_BOOLEAN_INFO*	info)	/*!< in: token info */
+	MYBLOCKCHAIN_FTPARSER_BOOLEAN_INFO*	info)	/*!< in: token info */
 {
 	fts_ast_state_t* state =
-		static_cast<fts_ast_state_t*>(param->mysql_ftparam);
+		static_cast<fts_ast_state_t*>(param->myblockchain_ftparam);
 	fts_ast_node_t*	cur_node = state->cur_node;
 	fts_ast_node_t*	oper_node = NULL;
 	fts_ast_node_t*	term_node = NULL;
@@ -219,17 +219,17 @@ fts_query_add_word_for_parser(
 
 /******************************************************************//**
 FTS plugin parser 'myql_parser' callback function for query parse.
-Refer to 'st_mysql_ftparser_param' for more detail.
+Refer to 'st_myblockchain_ftparser_param' for more detail.
 @return 0 if parse successfully */
 static
 int
 fts_parse_query_internal(
 /*=====================*/
-	MYSQL_FTPARSER_PARAM*	param,	/*!< in: parser param */
+	MYBLOCKCHAIN_FTPARSER_PARAM*	param,	/*!< in: parser param */
 	char*			query,	/*!< in: query string */
 	int			len)	/*!< in: query length */
 {
-	MYSQL_FTPARSER_BOOLEAN_INFO	info;
+	MYBLOCKCHAIN_FTPARSER_BOOLEAN_INFO	info;
 	const CHARSET_INFO*		cs = param->cs;
 	uchar**	start = reinterpret_cast<uchar**>(&query);
 	uchar*	end = reinterpret_cast<uchar*>(query + len);
@@ -241,7 +241,7 @@ fts_parse_query_internal(
 	/* Note: We don't handle simple parser mode here,
 	but user supplied plugin parser should handler it. */
 	while (fts_get_word(cs, start, end, &w, &info)) {
-		int ret = param->mysql_add_word(
+		int ret = param->myblockchain_add_word(
 				param,
 				reinterpret_cast<char*>(w.pos),
 				w.len, &info);
@@ -262,25 +262,25 @@ fts_parse_by_parser(
 	ibool			mode,		/*!< in: parse boolean mode */
 	uchar*			query_str,	/*!< in: query string */
 	ulint			query_len,	/*!< in: query string length */
-	st_mysql_ftparser*	parser,		/*!< in: fts plugin parser */
+	st_myblockchain_ftparser*	parser,		/*!< in: fts plugin parser */
 	fts_ast_state_t*	state)		/*!< in/out: parser state */
 {
-	MYSQL_FTPARSER_PARAM	param;
+	MYBLOCKCHAIN_FTPARSER_PARAM	param;
 	int	ret;
 
 	ut_ad(parser);
 
 	/* Initial parser param */
-	param.mysql_parse = fts_parse_query_internal;
-	param.mysql_add_word = fts_query_add_word_for_parser;
-	param.mysql_ftparam = static_cast<void*>(state);
+	param.myblockchain_parse = fts_parse_query_internal;
+	param.myblockchain_add_word = fts_query_add_word_for_parser;
+	param.myblockchain_ftparam = static_cast<void*>(state);
 	param.cs = state->charset;
 	param.doc = reinterpret_cast<char*>(query_str);
 	param.length = static_cast<int>(query_len);
 	param.flags = 0;
 	param.mode = mode ?
-		     MYSQL_FTPARSER_FULL_BOOLEAN_INFO :
-		     MYSQL_FTPARSER_SIMPLE_MODE;
+		     MYBLOCKCHAIN_FTPARSER_FULL_BOOLEAN_INFO :
+		     MYBLOCKCHAIN_FTPARSER_SIMPLE_MODE;
 
 	PARSER_INIT(parser, &param);
 	ret = parser->parse(&param);

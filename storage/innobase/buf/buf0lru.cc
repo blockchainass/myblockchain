@@ -18,7 +18,7 @@ this program; if not, write to the Free Software Foundation, Inc.,
 
 /**************************************************//**
 @file buf/buf0lru.cc
-The database buffer replacement algorithm
+The blockchain buffer replacement algorithm
 
 Created 11/5/1995 Heikki Tuuri
 *******************************************************/
@@ -804,7 +804,7 @@ scan_again:
 			and release block->lock X-latch.
 			Note that the table cannot be evicted during
 			the execution of ALTER TABLE...DISCARD TABLESPACE
-			because MySQL is keeping the table handle open. */
+			because MyBlockchain is keeping the table handle open. */
 
 			btr_search_drop_page_hash_when_freed(
 				bpage->id, bpage->size);

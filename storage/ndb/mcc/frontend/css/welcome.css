@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 
 /******************************************************************************
  ***                                                                        ***
- ***   Style sheet settings for MySQL CLuster configuration welcome page    ***
+ ***   Style sheet settings for MyBlockchain CLuster configuration welcome page    ***
  ***                                                                        ***
  ******************************************************************************/
 
@@ -44,7 +44,7 @@ body {
   top: 14px;
 }
 
-#mysql-logo {
+#myblockchain-logo {
   position:absolute;
   left: 110px;
   top: 72px;

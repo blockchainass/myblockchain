@@ -25,7 +25,7 @@ this program; if not, write to the Free Software Foundation, Inc.,
 
 /**************************************************//**
 @file include/sync0rw.h
-The read-write lock (for threads, not for database transactions)
+The read-write lock (for threads, not for blockchain transactions)
 
 Created 9/11/1995 Heikki Tuuri
 *******************************************************/
@@ -121,7 +121,7 @@ Creates, or rather, initializes an rw-lock object in a specified memory
 location (which must be appropriately aligned). The rw-lock is initialized
 to the non-locked state. Explicit freeing of the rw-lock with rw_lock_free
 is necessary only if the memory block containing it is freed.
-if MySQL performance schema is enabled and "UNIV_PFS_RWLOCK" is
+if MyBlockchain performance schema is enabled and "UNIV_PFS_RWLOCK" is
 defined, the rwlock are instrumented with performance schema probes. */
 # ifdef UNIV_DEBUG
 #  define rw_lock_create(K, L, level)				\

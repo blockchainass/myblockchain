@@ -15,12 +15,12 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
  */
 
-package com.mysql.clusterj.jdbc.antlr.node;
+package com.myblockchain.clusterj.jdbc.antlr.node;
 
 import org.antlr.runtime.Token;
 
-import com.mysql.clusterj.query.Predicate;
-import com.mysql.clusterj.query.QueryDomainType;
+import com.myblockchain.clusterj.query.Predicate;
+import com.myblockchain.clusterj.query.QueryDomainType;
 
 public class WhereNode extends Node {
 

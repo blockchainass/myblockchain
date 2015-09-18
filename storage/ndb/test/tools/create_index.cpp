@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2003-2006 MySQL AB, 2009 Sun Microsystems, Inc.
+   Copyright (C) 2003-2006 MyBlockchain AB, 2009 Sun Microsystems, Inc.
     All rights reserved. Use is subject to license terms.
 
    This program is free software; you can redistribute it and/or modify
@@ -37,8 +37,8 @@ main(int argc, const char** argv){
   char* _tname= NULL;
 
   struct getargs args[] = {
-    { "database", 'd', arg_string, &_dbname, "dbname", 
-      "Name of database table is in"},
+    { "blockchain", 'd', arg_string, &_dbname, "dbname", 
+      "Name of blockchain table is in"},
     { "ordered", 'o', arg_flag, &_ordered, "Create ordered index", "" },
     { "pk", 'p', arg_flag, &_pk, "Create index on primary key", "" },
     { "idxname", 'i', arg_string, &_iname, "idxname", "Override default name for index" },

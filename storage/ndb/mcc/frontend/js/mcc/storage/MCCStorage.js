@@ -309,23 +309,23 @@ function getPredefinedDirectory(uname, type) {
     var dirs = {
         SunOS: {
             installdir: "/usr/local/bin/",
-            datadir: "/var/lib/mysql-cluster/"
+            datadir: "/var/lib/myblockchain-cluster/"
         },
         Linux: {
             installdir: "/usr/local/bin/",
-            datadir: "/var/lib/mysql-cluster/"
+            datadir: "/var/lib/myblockchain-cluster/"
         },
         CYGWIN: {
-            installdir: "C:\\Program Files\\MySQL\\",
-            datadir: "C:\\Program Data\\MySQL\\"
+            installdir: "C:\\Program Files\\MyBlockchain\\",
+            datadir: "C:\\Program Data\\MyBlockchain\\"
         },
         Windows: {
-            installdir: "C:\\Program Files\\MySQL\\",
-            datadir: "C:\\Program Data\\MySQL\\"
+            installdir: "C:\\Program Files\\MyBlockchain\\",
+            datadir: "C:\\Program Data\\MyBlockchain\\"
         },
         unknown: {
             installdir: "/usr/local/bin/",
-            datadir: "/var/lib/mysql-cluster/"
+            datadir: "/var/lib/myblockchain-cluster/"
         }
     }
     if (!uname || !dirs[uname]) {
@@ -710,7 +710,7 @@ function initializeProcessTypeStorage() {
                 currSeq: 1
             }); 
             processTypeStorage.newItem({
-                name: "mysqld", 
+                name: "myblockchaind", 
                 family: "sql", 
                 familyLabel: "SQL layer", 
                 nodeLabel: "SQL node",

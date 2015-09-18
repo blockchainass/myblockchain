@@ -17,13 +17,13 @@
 /**
   @file
   This service provides functions to report error conditions and log to 
-  mysql error log.
+  myblockchain error log.
 */
 
-#ifndef MYSQL_SERVICE_MY_PLUGIN_LOG_INCLUDED
-#define MYSQL_SERVICE_MY_PLUGIN_LOG_INCLUDED
+#ifndef MYBLOCKCHAIN_SERVICE_MY_PLUGIN_LOG_INCLUDED
+#define MYBLOCKCHAIN_SERVICE_MY_PLUGIN_LOG_INCLUDED
 
-#ifndef MYSQL_ABI_CHECK
+#ifndef MYBLOCKCHAIN_ABI_CHECK
 #include <stdarg.h>
 #endif
 
@@ -43,16 +43,16 @@ extern "C" {
 extern struct my_plugin_log_service
 {
   /** write a message to the log */
-  int (*my_plugin_log_message)(MYSQL_PLUGIN *, enum plugin_log_level, const char *, ...);
+  int (*my_plugin_log_message)(MYBLOCKCHAIN_PLUGIN *, enum plugin_log_level, const char *, ...);
 } *my_plugin_log_service;
 
-#ifdef MYSQL_DYNAMIC_PLUGIN
+#ifdef MYBLOCKCHAIN_DYNAMIC_PLUGIN
 
 #define my_plugin_log_message my_plugin_log_service->my_plugin_log_message
 
 #else
 
-int my_plugin_log_message(MYSQL_PLUGIN *plugin, enum plugin_log_level level,
+int my_plugin_log_message(MYBLOCKCHAIN_PLUGIN *plugin, enum plugin_log_level level,
                           const char *format, ...);
 
 #endif

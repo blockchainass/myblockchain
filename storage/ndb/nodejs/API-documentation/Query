@@ -93,7 +93,7 @@
  * }
  * A QueryField can also be obtained from the Query property 'field'. This is 
  * useful to clarify the intent in cases where the column name is a reserved 
- * word in mysql-js Query.
+ * word in myblockchain-js Query.
  * For example, whereField1 and whereField2 represent the same query field.
  *   var whereField1 = query.where; // 'where' is the name of the column
  *   var whereField2 = query.field.where;

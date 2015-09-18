@@ -72,7 +72,7 @@ _EOF
 	/\(\):/ {
 	    pr = substr($2, 1, 2);
 	    if (pr == "vi" || pr == "em" || pr == "ed") {
-		# XXXMYSQL: support CRLF
+		# XXXMYBLOCKCHAIN: support CRLF
 		name = substr($2, 1, index($2,"(") - 1);
 #
 # XXX:	need a space between name and prototype so that -fc and -fh
@@ -103,7 +103,7 @@ _EOF
 	/\(\):/ {
 	    pr = substr($2, 1, 2);
 	    if (pr == "vi" || pr == "em" || pr == "ed") {
-		# XXXMYSQL: support CRLF
+		# XXXMYBLOCKCHAIN: support CRLF
 		name = substr($2, 1, index($2,"(") - 1);
 		uname = "";
 		fname = "";
@@ -124,7 +124,7 @@ _EOF
 		printf("      STR(\"");
 		for (i = 2; i < NF; i++)
 		    printf("%s ", $i);
-        # XXXMYSQL: support CRLF
+        # XXXMYBLOCKCHAIN: support CRLF
 		sub("\r", "", $i);
 		printf("%s\") },\n", $i);
 		ok = 0;
@@ -151,7 +151,7 @@ _EOF
 
 #	generate fcns.h from various .h files
 #
-# XXXMYSQL: use portable tr syntax
+# XXXMYBLOCKCHAIN: use portable tr syntax
 -fh)
     cat $FILES | $AWK '/el_action_t/ { print $3 }' | \
     sort | tr abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ | $AWK '
@@ -228,7 +228,7 @@ _EOF
 	/\(\):/ {
 	    pr = substr($2, 1, 2);
 	    if (pr == "vi" || pr == "em" || pr == "ed") {
-		# XXXMYSQL: support CRLF
+		# XXXMYBLOCKCHAIN: support CRLF
 		name = substr($2, 1, index($2, "(") - 1);
 		fname = "";
 		for (i = 1; i <= length(name); i++) {

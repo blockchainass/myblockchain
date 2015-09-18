@@ -17,7 +17,7 @@
 
 #include "client_priv.h"
 #include <vector>
-#include "mysql_connection_options.h"
+#include "myblockchain_connection_options.h"
 #include "sslopt-vars.h"
 #include "instance_callback.h"
 
@@ -33,7 +33,7 @@ void Mysql_connection_options::Ssl_options::create_options()
       "If set to ON, this option enforces that SSL is established before "
       "client attempts to authenticate to the server. To disable client SSL "
       "capabilities use --ssl=OFF.")
-#ifdef MYSQL_CLIENT
+#ifdef MYBLOCKCHAIN_CLIENT
     ->add_callback(new Instance_callback<void, char*,
       Mysql_connection_options::Ssl_options>(
         this, &Mysql_connection_options::Ssl_options::use_ssl_option_callback))
@@ -66,7 +66,7 @@ void Mysql_connection_options::Ssl_options::create_options()
     ->add_callback(new Instance_callback<void, char*,
       Mysql_connection_options::Ssl_options>(callback));
 
-#ifdef MYSQL_CLIENT
+#ifdef MYBLOCKCHAIN_CLIENT
   this->create_new_option((bool*)&::opt_ssl_verify_server_cert,
     "ssl-verify-server-cert",
     "Verify server's \"Common Name\" in its cert against hostname used "
@@ -94,7 +94,7 @@ void Mysql_connection_options::Ssl_options::use_ssl_option_callback(
 }
 
 
-void Mysql_connection_options::Ssl_options::apply_for_connection(MYSQL* connection)
+void Mysql_connection_options::Ssl_options::apply_for_connection(MYBLOCKCHAIN* connection)
 {
   SSL_SET_OPTIONS(connection);
 }

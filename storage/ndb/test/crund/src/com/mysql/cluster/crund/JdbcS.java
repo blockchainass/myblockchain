@@ -15,7 +15,7 @@
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-package com.mysql.cluster.crund;
+package com.myblockchain.cluster.crund;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -24,7 +24,7 @@ import java.sql.Statement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
-import com.mysql.cluster.crund.CrundDriver.XMode;
+import com.myblockchain.cluster.crund.CrundDriver.XMode;
 
 class JdbcS extends CrundSLoad {
     // JDBC settings
@@ -140,13 +140,13 @@ class JdbcS extends CrundSLoad {
         out.println();
         out.println("initializing jdbc resources ...");
 
-        // create a connection to the database
+        // create a connection to the blockchain
         out.print("starting jdbc connection ...");
         out.flush();
         try {
             connection = DriverManager.getConnection(url, username, password);
         } catch (SQLException e) {
-            out.println("Cannot connect to database '" + url + "'");
+            out.println("Cannot connect to blockchain '" + url + "'");
             throw new RuntimeException(e);
         }
         out.println("    [ok: " + url + "]");
@@ -326,9 +326,9 @@ class JdbcS extends CrundSLoad {
         final int n = id.length;
 
         // use dynamic SQL for generic bulk queries
-        // The mysql jdbc driver requires property allowMultiQueries=true
+        // The myblockchain jdbc driver requires property allowMultiQueries=true
         // passed to DriverManager.getConnection() or in URL
-        // jdbc:mysql://localhost/crunddb?allowMultiQueries=true
+        // jdbc:myblockchain://localhost/crunddb?allowMultiQueries=true
         final StringBuilder sb = new StringBuilder();
         for (int i = 0; i < n; i++)
             sb.append(sqlSel0.replace("?", "'" + id[i] + "'")).append(";");

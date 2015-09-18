@@ -16,5 +16,5 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 echo "running result processor..."
-java -classpath build com.mysql.cluster.crund.ResultProcessor $*
+java -classpath build com.myblockchain.cluster.crund.ResultProcessor $*
 echo "done."

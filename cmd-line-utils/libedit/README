@@ -38,8 +38,8 @@ An approximate method to merge from upstream is:
 	>   rm ${file}.orig
 	> done
 
-then merge remaining bits by hand.  All MySQL-specific changes should be
-marked with XXXMYSQL to make them easier to identify and merge.  To generate
+then merge remaining bits by hand.  All MyBlockchain-specific changes should be
+marked with XXXMYBLOCKCHAIN to make them easier to identify and merge.  To generate
 a 'clean' diff against upstream you can use the above commands but use
 
 	cvs co -D "2011/10/23 17:37:55" [..]

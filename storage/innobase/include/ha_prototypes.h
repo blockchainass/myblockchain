@@ -40,7 +40,7 @@ struct fts_string_t;
 typedef struct charset_info_st CHARSET_INFO;
 
 /*********************************************************************//**
-Wrapper around MySQL's copy_and_convert function.
+Wrapper around MyBlockchain's copy_and_convert function.
 @return number of bytes copied to 'to' */
 ulint
 innobase_convert_string(
@@ -58,7 +58,7 @@ innobase_convert_string(
 
 /*******************************************************************//**
 Formats the raw data in "data" (in InnoDB on-disk format) that is of
-type DATA_(CHAR|VARCHAR|MYSQL|VARMYSQL) using "charset_coll" and writes
+type DATA_(CHAR|VARCHAR|MYBLOCKCHAIN|VARMYBLOCKCHAIN) using "charset_coll" and writes
 the result to "buf". The result is converted to "system_charset_info".
 Not more than "buf_size" bytes are written to "buf".
 The result is always NUL-terminated (provided buf_size > 0) and the
@@ -77,14 +77,14 @@ innobase_raw_format(
 					in bytes */
 
 /*****************************************************************//**
-Invalidates the MySQL query cache for the table. */
+Invalidates the MyBlockchain query cache for the table. */
 void
 innobase_invalidate_query_cache(
 /*============================*/
 	trx_t*		trx,		/*!< in: transaction which
 					modifies the table */
 	const char*	full_name,	/*!< in: concatenation of
-					database name, path separator,
+					blockchain name, path separator,
 					table name, null char NUL;
 					NOTE that in Windows this is
 					always in LOWER CASE! */
@@ -112,7 +112,7 @@ innobase_quote_identifier(
 	const char*	id);
 
 /*****************************************************************//**
-Convert a table name to the MySQL system_charset_info (UTF-8).
+Convert a table name to the MyBlockchain system_charset_info (UTF-8).
 @return pointer to the end of buf */
 char*
 innobase_convert_name(
@@ -121,7 +121,7 @@ innobase_convert_name(
 	ulint		buflen,	/*!< in: length of buf, in bytes */
 	const char*	id,	/*!< in: table name to convert */
 	ulint		idlen,	/*!< in: length of id, in bytes */
-	THD*		thd);	/*!< in: MySQL connection thread, or NULL */
+	THD*		thd);	/*!< in: MyBlockchain connection thread, or NULL */
 
 /******************************************************************//**
 Returns true if the thread is the replication thread on the slave
@@ -149,22 +149,22 @@ thd_has_edited_nontrans_tables(
 /*************************************************************//**
 Prints info of a THD object (== user session thread) to the given file. */
 void
-innobase_mysql_print_thd(
+innobase_myblockchain_print_thd(
 /*=====================*/
 	FILE*	f,		/*!< in: output stream */
-	THD*	thd,		/*!< in: pointer to a MySQL THD object */
+	THD*	thd,		/*!< in: pointer to a MyBlockchain THD object */
 	uint	max_query_len);	/*!< in: max query length to print, or 0 to
 				   use the default max length */
 
-/** Converts a MySQL type to an InnoDB type. Note that this function returns
-the 'mtype' of InnoDB. InnoDB differentiates between MySQL's old <= 4.1
+/** Converts a MyBlockchain type to an InnoDB type. Note that this function returns
+the 'mtype' of InnoDB. InnoDB differentiates between MyBlockchain's old <= 4.1
 VARCHAR and the new true VARCHAR in >= 5.0.3 by the 'prtype'.
 @param[out]	unsigned_flag		DATA_UNSIGNED if an 'unsigned type';
 at least ENUM and SET, and unsigned integer types are 'unsigned types'
-@param[in]	f			MySQL Field
+@param[in]	f			MyBlockchain Field
 @return DATA_BINARY, DATA_VARCHAR, ... */
 ulint
-get_innobase_type_from_mysql_type(
+get_innobase_type_from_myblockchain_type(
 	ulint*			unsigned_flag,
 	const void*		field);
 
@@ -173,7 +173,7 @@ Get the variable length bounds of the given character set. */
 void
 innobase_get_cset_width(
 /*====================*/
-	ulint	cset,		/*!< in: MySQL charset-collation code */
+	ulint	cset,		/*!< in: MyBlockchain charset-collation code */
 	ulint*	mbminlen,	/*!< out: minimum length of a char (in bytes) */
 	ulint*	mbmaxlen);	/*!< out: maximum length of a char (in bytes) */
 
@@ -244,11 +244,11 @@ Determines the connection character set.
 CHARSET_INFO*
 innobase_get_charset(
 /*=================*/
-	THD*	thd);	/*!< in: MySQL thread handle */
+	THD*	thd);	/*!< in: MyBlockchain thread handle */
 
 /** Determines the current SQL statement.
 Thread unsafe, can only be called from the thread owning the THD.
-@param[in]	thd	MySQL thread handle
+@param[in]	thd	MyBlockchain thread handle
 @param[out]	length	Length of the SQL statement
 @return			SQL statement string */
 const char*
@@ -259,7 +259,7 @@ innobase_get_stmt_unsafe(
 /** Determines the current SQL statement.
 Thread safe, can be called from any thread as the string is copied
 into the provided buffer.
-@param[in]	thd	MySQL thread handle
+@param[in]	thd	MyBlockchain thread handle
 @param[out]	buf	Buffer containing SQL statement
 @param[in]	buflen	Length of provided buffer
 @return			Length of the SQL statement */
@@ -322,7 +322,7 @@ innobase_get_table_cache_size(void);
 
 /**********************************************************************//**
 Get the current setting of the lower_case_table_names global parameter from
-mysqld.cc. We do a dirty read because for one there is no synchronization
+myblockchaind.cc. We do a dirty read because for one there is no synchronization
 object and secondly there is little harm in doing so even if we get a torn
 read.
 @return value of lower_case_table_names */
@@ -382,7 +382,7 @@ thd_start_time_in_secs(
 
 /*****************************************************************//**
 A wrapper function of innobase_convert_name(), convert a table name
-to the MySQL system_charset_info (UTF-8) and quote it if needed.
+to the MyBlockchain system_charset_info (UTF-8) and quote it if needed.
 @return pointer to the end of buf */
 void
 innobase_format_name(
@@ -415,7 +415,7 @@ ib_errf(
 /*====*/
 	THD*		thd,		/*!< in/out: session */
 	ib_log_level_t	level,		/*!< in: warning level */
-	ib_uint32_t	code,		/*!< MySQL error code */
+	ib_uint32_t	code,		/*!< MyBlockchain error code */
 	const char*	format,		/*!< printf format */
 	...)				/*!< Args */
 	__attribute__((format(printf, 4, 5)));
@@ -435,7 +435,7 @@ ib_senderrf(
 /*========*/
 	THD*		thd,		/*!< in/out: session */
 	ib_log_level_t	level,		/*!< in: warning level */
-	ib_uint32_t	code,		/*!< MySQL error code */
+	ib_uint32_t	code,		/*!< MyBlockchain error code */
 	...);				/*!< Args */
 
 extern const char* 	TROUBLESHOOTING_MSG;
@@ -461,12 +461,12 @@ Get the error message format string.
 const char*
 innobase_get_err_msg(
 /*=================*/
-	int	error_code);	/*!< in: MySQL error code */
+	int	error_code);	/*!< in: MyBlockchain error code */
 
 /*********************************************************************//**
 Compute the next autoinc value.
 
-For MySQL replication the autoincrement values can be partitioned among
+For MyBlockchain replication the autoincrement values can be partitioned among
 the nodes. The offset is the start or origin of the autoincrement value
 for a particular node. For n nodes the increment will be n and the offset
 will be in the interval [1, n]. The formula tries to allocate the next

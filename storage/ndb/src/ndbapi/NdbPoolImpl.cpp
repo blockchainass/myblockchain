@@ -188,8 +188,8 @@ Get an Ndb object.
 Input:
 hint_id: 0 = no hint, otherwise a hint of which Ndb object the thread
          used the last time.
-a_db_name: NULL = don't check for database specific Ndb  object, otherwise
-           a hint of which database is preferred.
+a_db_name: NULL = don't check for blockchain specific Ndb  object, otherwise
+           a hint of which blockchain is preferred.
 Output:
 hint_id: Returns id of Ndb object returned
 Return value: Ndb object pointer
@@ -211,7 +211,7 @@ NdbPool::get_ndb_object(Uint32 &hint_id,
     }
     /*
     The hinted Ndb object was not free. We need to allocate another object.
-    We start by checking for a free Ndb object connected to the same database.
+    We start by checking for a free Ndb object connected to the same blockchain.
     */
     if (a_schema_name && (ret_ndb = get_db_hash(hint_id,
                                                 hash_entry,
@@ -220,7 +220,7 @@ NdbPool::get_ndb_object(Uint32 &hint_id,
       break;
     }
     /*
-    No Ndb object connected to the preferred database was found.
+    No Ndb object connected to the preferred blockchain was found.
     We look for a free Ndb object in general.
     */
     if ((ret_ndb = get_free_list(hint_id, hash_entry)) != NULL) {

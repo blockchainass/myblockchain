@@ -36,7 +36,7 @@ TEST_F(Auth_util, parse_cnf_file)
 {
   ofstream fout;
   fout.open("auth_utils.cnf");
-  fout << "[mysqld]" << endl
+  fout << "[myblockchaind]" << endl
        << "trouble= true" << endl
        << endl
        << "[client]" << endl

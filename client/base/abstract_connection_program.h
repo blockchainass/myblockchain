@@ -23,7 +23,7 @@
 
 #include "i_options_provider.h"
 #include "composite_options_provider.h"
-#include "mysql_connection_options.h"
+#include "myblockchain_connection_options.h"
 #include "i_connection_factory.h"
 #include "abstract_program.h"
 
@@ -32,26 +32,26 @@ namespace Tools{
 namespace Base{
 
 /**
-  Base class for all programs that use connection to MySQL database server.
+  Base class for all programs that use connection to MyBlockchain blockchain server.
  */
 class Abstract_connection_program
   : public Abstract_program, public I_connection_factory
 {
 public:
   /**
-    Provides new connection to MySQL database server based on option values.
+    Provides new connection to MyBlockchain blockchain server based on option values.
     Implementation of I_connection_factory interface.
    */
-  virtual MYSQL* create_connection();
+  virtual MYBLOCKCHAIN* create_connection();
 
   /**
-    Retrieves charset that will be used in new MySQL connections. Can be NULL
+    Retrieves charset that will be used in new MyBlockchain connections. Can be NULL
     if none was set explicitly.
    */
   CHARSET_INFO* get_current_charset() const;
 
   /**
-    Sets charset that will be used in new MySQL connections.
+    Sets charset that will be used in new MyBlockchain connections.
    */
   void set_current_charset(CHARSET_INFO* charset);
 

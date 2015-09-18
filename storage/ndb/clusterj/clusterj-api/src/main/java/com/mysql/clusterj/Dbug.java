@@ -15,7 +15,7 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
  */
 
-package com.mysql.clusterj;
+package com.myblockchain.clusterj;
 
 /** Dbug allows clusterj applications to enable the DBUG functionality in cluster
  * ndbapi library.

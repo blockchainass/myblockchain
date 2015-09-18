@@ -46,9 +46,9 @@ ENDIF(HAVE_JDK)
 
 # the NdbJTie Java API
 SET(JAVA_SOURCE_DIRS
-  ${CMAKE_CURRENT_SOURCE_DIR}/com/mysql/ndbjtie/mysql
-  ${CMAKE_CURRENT_SOURCE_DIR}/com/mysql/ndbjtie/mgmapi
-  ${CMAKE_CURRENT_SOURCE_DIR}/com/mysql/ndbjtie/ndbapi)
+  ${CMAKE_CURRENT_SOURCE_DIR}/com/myblockchain/ndbjtie/myblockchain
+  ${CMAKE_CURRENT_SOURCE_DIR}/com/myblockchain/ndbjtie/mgmapi
+  ${CMAKE_CURRENT_SOURCE_DIR}/com/myblockchain/ndbjtie/ndbapi)
 
 SET(JAVA_SOURCES "")
 FOREACH(D ${JAVA_SOURCE_DIRS})

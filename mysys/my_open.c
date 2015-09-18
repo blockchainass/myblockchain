@@ -70,7 +70,7 @@ int my_close(File fd, myf MyFlags)
   DBUG_ENTER("my_close");
   DBUG_PRINT("my",("fd: %d  MyFlags: %d",fd, MyFlags));
 
-  mysql_mutex_lock(&THR_LOCK_open);
+  myblockchain_mutex_lock(&THR_LOCK_open);
 #ifndef _WIN32
   do
   {
@@ -96,7 +96,7 @@ int my_close(File fd, myf MyFlags)
     my_file_info[fd].type = UNOPEN;
   }
   my_file_opened--;
-  mysql_mutex_unlock(&THR_LOCK_open);
+  myblockchain_mutex_unlock(&THR_LOCK_open);
   DBUG_RETURN(err);
 } /* my_close */
 
@@ -130,9 +130,9 @@ File my_register_filename(File fd, const char *FileName, enum file_type
 #if defined(_WIN32)
       my_errno= EMFILE;
 #else
-      mysql_mutex_lock(&THR_LOCK_open);
+      myblockchain_mutex_lock(&THR_LOCK_open);
       my_file_opened++;
-      mysql_mutex_unlock(&THR_LOCK_open);
+      myblockchain_mutex_unlock(&THR_LOCK_open);
       DBUG_RETURN(fd);				/* safeguard */
 #endif
     }
@@ -141,12 +141,12 @@ File my_register_filename(File fd, const char *FileName, enum file_type
       dup_filename= my_strdup(key_memory_my_file_info, FileName, MyFlags);
       if (dup_filename != NULL)
       {
-        mysql_mutex_lock(&THR_LOCK_open);
+        myblockchain_mutex_lock(&THR_LOCK_open);
         my_file_info[fd].name= dup_filename;
         my_file_opened++;
         my_file_total_opened++;
         my_file_info[fd].type = type_of_file;
-        mysql_mutex_unlock(&THR_LOCK_open);
+        myblockchain_mutex_unlock(&THR_LOCK_open);
         DBUG_PRINT("exit",("fd: %d",fd));
         DBUG_RETURN(fd);
       }

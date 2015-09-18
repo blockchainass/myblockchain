@@ -26,8 +26,8 @@ AtrtClient::AtrtClient(const char* _group_suffix)
 }
 
 
-AtrtClient::AtrtClient(MYSQL* mysql)
-  : DbUtil(mysql)
+AtrtClient::AtrtClient(MYBLOCKCHAIN* myblockchain)
+  : DbUtil(myblockchain)
 {
 }
 
@@ -83,7 +83,7 @@ AtrtClient::writeCommand(AtrtCommandType _type,
     return -1;
   }
 
-  return (int)mysql_insert_id(m_mysql);
+  return (int)myblockchain_insert_id(m_myblockchain);
 }
 
 

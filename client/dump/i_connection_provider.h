@@ -18,7 +18,7 @@
 #ifndef I_CONNECTION_PROVIDER_INCLUDED
 #define I_CONNECTION_PROVIDER_INCLUDED
 
-#include "base/mysql_query_runner.h"
+#include "base/myblockchain_query_runner.h"
 #include "base/message_data.h"
 #include "i_callable.h"
 

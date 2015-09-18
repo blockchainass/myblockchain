@@ -1,4 +1,4 @@
-#! /usr/local/bin/mysql-super-smack
+#! /usr/local/bin/myblockchain-super-smack
 
 query "select"
  {

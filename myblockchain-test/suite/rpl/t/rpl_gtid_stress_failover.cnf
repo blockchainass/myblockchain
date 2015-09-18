@@ -1,0 +1,61 @@
+!include ../my.cnf
+[myblockchaind.1]
+gtid-mode=on
+enforce-gtid-consistency
+log-slave-updates
+
+[myblockchaind.2]
+gtid-mode=on
+enforce-gtid-consistency
+log-slave-updates
+
+[myblockchaind.3]
+gtid-mode=on
+enforce-gtid-consistency
+log-slave-updates
+server-id=3
+
+[myblockchaind.4]
+gtid-mode=on
+enforce-gtid-consistency
+log-slave-updates
+server-id=4
+
+[myblockchaind.5]
+gtid-mode=on
+enforce-gtid-consistency
+log-slave-updates
+server-id=5
+
+#[myblockchaind.6]
+#gtid-mode=on
+#enforce-gtid-consistency
+#log-slave-updates
+#server-id=6
+#
+#[myblockchaind.7]
+#gtid-mode=on
+#enforce-gtid-consistency
+#log-slave-updates
+#server-id=7
+#
+#[myblockchaind.8]
+#gtid-mode=on
+#enforce-gtid-consistency
+#log-slave-updates
+#server-id=8
+#
+#[myblockchaind.9]
+#gtid-mode=on
+#enforce-gtid-consistency
+#log-slave-updates
+#server-id=9
+
+[ENV]
+SERVER_MYPORT_3= @myblockchaind.3.port
+SERVER_MYPORT_4= @myblockchaind.4.port
+SERVER_MYPORT_5= @myblockchaind.5.port
+#SERVER_MYPORT_6= @myblockchaind.6.port
+#SERVER_MYPORT_7= @myblockchaind.7.port
+#SERVER_MYPORT_8= @myblockchaind.8.port
+#SERVER_MYPORT_9= @myblockchaind.9.port

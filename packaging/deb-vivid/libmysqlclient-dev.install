@@ -13,17 +13,17 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 
-usr/include/mysql/*.h
-usr/include/mysql/mysql/*.h
-usr/include/mysql/mysql/*.h.pp
-usr/include/mysql/mysql/psi/*.h
-usr/lib/*/libmysqlclient.a
-usr/lib/*/libmysqlclient.so
-usr/lib/*/libmysqlservices.a
-usr/bin/mysql_config
-usr/bin/mysql_config_editor
-usr/share/man/man1/mysql_config.1
-usr/share/man/man1/mysql_config_editor.1
+usr/include/myblockchain/*.h
+usr/include/myblockchain/myblockchain/*.h
+usr/include/myblockchain/myblockchain/*.h.pp
+usr/include/myblockchain/myblockchain/psi/*.h
+usr/lib/*/libmyblockchainclient.a
+usr/lib/*/libmyblockchainclient.so
+usr/lib/*/libmyblockchainservices.a
+usr/bin/myblockchain_config
+usr/bin/myblockchain_config_editor
+usr/share/man/man1/myblockchain_config.1
+usr/share/man/man1/myblockchain_config_editor.1
 # legal
-usr/share/doc/libmysqlclient-dev/COPYING
-usr/share/doc/libmysqlclient-dev/README
+usr/share/doc/libmyblockchainclient-dev/COPYING
+usr/share/doc/libmyblockchainclient-dev/README

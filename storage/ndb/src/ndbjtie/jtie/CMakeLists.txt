@@ -17,7 +17,7 @@ ADD_SUBDIRECTORY(test)
 
 # the JTie Java API
 FILE(GLOB JAVA_SOURCES
-  ${CMAKE_CURRENT_SOURCE_DIR}/com/mysql/jtie/*.java)
+  ${CMAKE_CURRENT_SOURCE_DIR}/com/myblockchain/jtie/*.java)
 
 SET(CLASSPATH
   ${CMAKE_BINARY_DIR}/storage/ndb/src/ndbjtie/jtie/target/classes)

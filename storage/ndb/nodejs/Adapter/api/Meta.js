@@ -24,7 +24,7 @@ var udebug       = unified_debug.getLogger("Meta.js");
 
 /** Meta allow users to define the metadata of a field or table to create tables.
  * meta is exported and functions return a new object of type Meta.
- * DBConnection pool uses meta to map metadata to database-specific schema.
+ * DBConnection pool uses meta to map metadata to blockchain-specific schema.
  */
 
 function Meta() {

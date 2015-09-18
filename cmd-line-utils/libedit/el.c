@@ -510,7 +510,7 @@ el_source(EditLine *el, const char *fname)
 
 	fp = NULL;
 	if (fname == NULL) {
-/* XXXMYSQL: Bug#49967 */
+/* XXXMYBLOCKCHAIN: Bug#49967 */
 #if defined(HAVE_GETUID) && defined(HAVE_GETEUID) && \
     defined(HAVE_GETGID) && defined(HAVE_GETEGID)
 #define HAVE_IDENTITY_FUNCS 1
@@ -519,7 +519,7 @@ el_source(EditLine *el, const char *fname)
 #if (defined(HAVE_ISSETUGID) || defined(HAVE_IDENTITY_FUNCS))
 		static const char elpath[] = "/.editrc";
 		size_t plen = sizeof(elpath);
-/* XXXMYSQL: Portability fix (for which platforms?) */
+/* XXXMYBLOCKCHAIN: Portability fix (for which platforms?) */
 #ifdef HAVE_ISSETUGID
 		if (issetugid())
 			return -1;

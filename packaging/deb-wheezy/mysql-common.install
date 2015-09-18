@@ -13,18 +13,18 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 
-etc/mysql/my.cnf
-usr/share/aclocal/mysql.m4
-usr/share/mysql/docs/ChangeLog
-usr/share/mysql/docs/INFO_SRC
-usr/share/mysql/docs/INFO_BIN
-usr/share/mysql/INSTALL-BINARY
+etc/myblockchain/my.cnf
+usr/share/aclocal/myblockchain.m4
+usr/share/myblockchain/docs/ChangeLog
+usr/share/myblockchain/docs/INFO_SRC
+usr/share/myblockchain/docs/INFO_BIN
+usr/share/myblockchain/INSTALL-BINARY
 # localized error msgs
-usr/share/mysql/*/errmsg.sys
-usr/share/mysql/errmsg-utf8.txt
+usr/share/myblockchain/*/errmsg.sys
+usr/share/myblockchain/errmsg-utf8.txt
 # charsets
-usr/share/mysql/charsets/*.xml
-usr/share/mysql/charsets/README
+usr/share/myblockchain/charsets/*.xml
+usr/share/myblockchain/charsets/README
 # legal
-usr/share/doc/mysql-common/COPYING
-usr/share/doc/mysql-common/README
+usr/share/doc/myblockchain-common/COPYING
+usr/share/doc/myblockchain-common/README

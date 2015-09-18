@@ -113,22 +113,22 @@ ENDIF()
 
 # Optionally set project name, e.g.
 # foo.xcodeproj (mac) or foo.sln (windows)
-SET(MYSQL_PROJECT_NAME_DOCSTRING "MySQL project name")
-IF(DEFINED MYSQL_PROJECT_NAME)
-  SET(MYSQL_PROJECT_NAME ${MYSQL_PROJECT_NAME} CACHE STRING
-      ${MYSQL_PROJECT_NAME_DOCSTRING} FORCE)
+SET(MYBLOCKCHAIN_PROJECT_NAME_DOCSTRING "MyBlockchain project name")
+IF(DEFINED MYBLOCKCHAIN_PROJECT_NAME)
+  SET(MYBLOCKCHAIN_PROJECT_NAME ${MYBLOCKCHAIN_PROJECT_NAME} CACHE STRING
+      ${MYBLOCKCHAIN_PROJECT_NAME_DOCSTRING} FORCE)
 ELSE()
-  SET(MYSQL_PROJECT_NAME "MySQL" CACHE STRING
-      ${MYSQL_PROJECT_NAME_DOCSTRING} FORCE)
-  MARK_AS_ADVANCED(MYSQL_PROJECT_NAME)
+  SET(MYBLOCKCHAIN_PROJECT_NAME "MyBlockchain" CACHE STRING
+      ${MYBLOCKCHAIN_PROJECT_NAME_DOCSTRING} FORCE)
+  MARK_AS_ADVANCED(MYBLOCKCHAIN_PROJECT_NAME)
 ENDIF()
-PROJECT(${MYSQL_PROJECT_NAME})
+PROJECT(${MYBLOCKCHAIN_PROJECT_NAME})
 
 # Maintainer mode is default on only for debug builds using GCC/G++
 IF(CMAKE_BUILD_TYPE MATCHES "Debug" OR WITH_DEBUG)
   IF(CMAKE_COMPILER_IS_GNUCC AND CMAKE_COMPILER_IS_GNUCXX)
-    SET(MYSQL_MAINTAINER_MODE ON CACHE BOOL
-        "MySQL maintainer-specific development environment")
+    SET(MYBLOCKCHAIN_MAINTAINER_MODE ON CACHE BOOL
+        "MyBlockchain maintainer-specific development environment")
   ENDIF()
 ENDIF()
 
@@ -144,7 +144,7 @@ IF(BUILD_CONFIG)
 ENDIF()
 
 #cmake on 64bit windows/mac/solaris doesn't set CMAKE_SYSTEM_PROCESSOR correctly
-SET(MYSQL_MACHINE_TYPE ${CMAKE_SYSTEM_PROCESSOR})
+SET(MYBLOCKCHAIN_MACHINE_TYPE ${CMAKE_SYSTEM_PROCESSOR})
 
 
 # Include the platform-specific file. To allow exceptions, this code
@@ -197,13 +197,13 @@ INCLUDE(lz4)
 INCLUDE(libevent)
 INCLUDE(ssl)
 INCLUDE(readline)
-INCLUDE(mysql_version)
+INCLUDE(myblockchain_version)
 INCLUDE(libutils)
 INCLUDE(dtrace)
 INCLUDE(plugin)
 INCLUDE(install_macros)
 INCLUDE(install_layout)
-INCLUDE(mysql_add_executable)
+INCLUDE(myblockchain_add_executable)
 
 # Handle options
 OPTION(DISABLE_SHARED 
@@ -220,7 +220,7 @@ IF(WIN32)
   OPTION(WITH_MSCRT_DEBUG "MS Visual Studio Debug CRT instrumentation" OFF)
 ENDIF()
 IF(NOT WITHOUT_SERVER)
-  OPTION (WITH_UNIT_TESTS "Compile MySQL with unit tests" ON)
+  OPTION (WITH_UNIT_TESTS "Compile MyBlockchain with unit tests" ON)
 ENDIF()
 OPTION(FORCE_UNSUPPORTED_COMPILER "Disable compiler version checks" OFF)
 MARK_AS_ADVANCED(WITHOUT_SERVER DISABLE_SHARED FORCE_UNSUPPORTED_COMPILER)
@@ -353,7 +353,7 @@ OPTION(OPTIMIZER_TRACE "Support tracing of Optimizer" ON)
 OPTION(WITH_CLIENT_PROTOCOL_TRACING
   "Support for client-side protocol tracing plugins" ON)
 OPTION(WITH_TEST_TRACE_PLUGIN
-  "Have a built-in test protocol trace plugin in libmysql (requires WITH_CLIENT_PROTOCOL_TRACING option)" OFF)
+  "Have a built-in test protocol trace plugin in libmyblockchain (requires WITH_CLIENT_PROTOCOL_TRACING option)" OFF)
 
 # Sanity checks for protocol tracing options
 
@@ -396,28 +396,28 @@ ENDIF()
 
 # Set commonly used variables
 IF(WIN32)
-  SET(DEFAULT_MYSQL_HOME "C:/Program Files/MySQL/MySQL Server ${MYSQL_BASE_VERSION}" )
+  SET(DEFAULT_MYBLOCKCHAIN_HOME "C:/Program Files/MyBlockchain/MyBlockchain Server ${MYBLOCKCHAIN_BASE_VERSION}" )
   SET(SHAREDIR share)
 ELSE()
-  SET(DEFAULT_MYSQL_HOME ${CMAKE_INSTALL_PREFIX})
-  SET(SHAREDIR ${DEFAULT_MYSQL_HOME}/${INSTALL_MYSQLSHAREDIR})
+  SET(DEFAULT_MYBLOCKCHAIN_HOME ${CMAKE_INSTALL_PREFIX})
+  SET(SHAREDIR ${DEFAULT_MYBLOCKCHAIN_HOME}/${INSTALL_MYBLOCKCHAINSHAREDIR})
 ENDIF()
 
-SET(DEFAULT_BASEDIR "${DEFAULT_MYSQL_HOME}")
-IF(INSTALL_MYSQLDATADIR MATCHES "^/.*")
-  SET(MYSQL_DATADIR ${INSTALL_MYSQLDATADIR} CACHE PATH "default MySQL data directory")
+SET(DEFAULT_BASEDIR "${DEFAULT_MYBLOCKCHAIN_HOME}")
+IF(INSTALL_MYBLOCKCHAINDATADIR MATCHES "^/.*")
+  SET(MYBLOCKCHAIN_DATADIR ${INSTALL_MYBLOCKCHAINDATADIR} CACHE PATH "default MyBlockchain data directory")
 ELSE()
-  SET(MYSQL_DATADIR "${DEFAULT_MYSQL_HOME}/${INSTALL_MYSQLDATADIR}" CACHE PATH "default MySQL data directory")
+  SET(MYBLOCKCHAIN_DATADIR "${DEFAULT_MYBLOCKCHAIN_HOME}/${INSTALL_MYBLOCKCHAINDATADIR}" CACHE PATH "default MyBlockchain data directory")
 ENDIF()
-SET(DEFAULT_CHARSET_HOME "${DEFAULT_MYSQL_HOME}")
-SET(PLUGINDIR "${DEFAULT_MYSQL_HOME}/${INSTALL_PLUGINDIR}")
+SET(DEFAULT_CHARSET_HOME "${DEFAULT_MYBLOCKCHAIN_HOME}")
+SET(PLUGINDIR "${DEFAULT_MYBLOCKCHAIN_HOME}/${INSTALL_PLUGINDIR}")
 IF(SYSCONFDIR)
   SET(DEFAULT_SYSCONFDIR "${SYSCONFDIR}")
 ENDIF()
 
 SET(TMPDIR "P_tmpdir"
   CACHE PATH
-  "PATH to MySQL TMP dir. Defaults to the P_tmpdir macro in <stdio.h>")
+  "PATH to MyBlockchain TMP dir. Defaults to the P_tmpdir macro in <stdio.h>")
 IF(TMPDIR STREQUAL "P_tmpdir")
   # Do not quote it, to refer to the P_tmpdir macro.
   SET(DEFAULT_TMPDIR "P_tmpdir")
@@ -450,15 +450,15 @@ INCLUDE_DIRECTORIES(
   ${CMAKE_CURRENT_BINARY_DIR}/libbinlogevents/include
   ${CMAKE_SOURCE_DIR}/libbinlogevents/export)
 # Add bundled or system zlib.
-MYSQL_CHECK_ZLIB_WITH_COMPRESS()
+MYBLOCKCHAIN_CHECK_ZLIB_WITH_COMPRESS()
 # Add bundled yassl/taocrypt or system openssl.
-MYSQL_CHECK_SSL()
+MYBLOCKCHAIN_CHECK_SSL()
 # Add system/bundled editline.
-MYSQL_CHECK_EDITLINE()
+MYBLOCKCHAIN_CHECK_EDITLINE()
 # Add libevent
-MYSQL_CHECK_LIBEVENT()
+MYBLOCKCHAIN_CHECK_LIBEVENT()
 # Add lz4 library
-MYSQL_CHECK_LZ4()
+MYBLOCKCHAIN_CHECK_LZ4()
 
 #
 # Setup maintainer mode options by the end. Platform checks are
@@ -468,8 +468,8 @@ MYSQL_CHECK_LZ4()
 # Why don't these flags affect the entire build?
 # Because things may already have been included with ADD_SUBDIRECTORY
 #
-OPTION(MYSQL_MAINTAINER_MODE
-       "MySQL maintainer-specific development environment" OFF)
+OPTION(MYBLOCKCHAIN_MAINTAINER_MODE
+       "MyBlockchain maintainer-specific development environment" OFF)
 
 INCLUDE(maintainer)
 
@@ -478,8 +478,8 @@ IF(WITH_UNIT_TESTS)
 ENDIF()
 
 IF(NOT WITHOUT_SERVER)
-  SET (MYSQLD_STATIC_PLUGIN_LIBS "" CACHE INTERNAL "")
-  SET (MYSQLD_STATIC_EMBEDDED_PLUGIN_LIBS "" CACHE INTERNAL "")
+  SET (MYBLOCKCHAIND_STATIC_PLUGIN_LIBS "" CACHE INTERNAL "")
+  SET (MYBLOCKCHAIND_STATIC_EMBEDDED_PLUGIN_LIBS "" CACHE INTERNAL "")
   # Add storage engines and plugins.
   CONFIGURE_PLUGINS()
 ELSE()
@@ -494,7 +494,7 @@ ADD_SUBDIRECTORY(vio)
 ADD_SUBDIRECTORY(regex)
 ADD_SUBDIRECTORY(mysys)
 ADD_SUBDIRECTORY(mysys_ssl)
-ADD_SUBDIRECTORY(libmysql)
+ADD_SUBDIRECTORY(libmyblockchain)
 ADD_SUBDIRECTORY(libbinlogevents)
 ADD_SUBDIRECTORY(libbinlogstandalone)
 
@@ -526,20 +526,20 @@ ENDIF()
 IF(NOT WITHOUT_SERVER)
   ADD_SUBDIRECTORY(tests)
   ADD_SUBDIRECTORY(sql)
-  OPTION (WITH_EMBEDDED_SERVER "Compile MySQL with embedded server" OFF)
+  OPTION (WITH_EMBEDDED_SERVER "Compile MyBlockchain with embedded server" OFF)
   IF(WITH_EMBEDDED_SERVER) 
-   ADD_SUBDIRECTORY(libmysqld)
-   ADD_SUBDIRECTORY(libmysqld/examples)
+   ADD_SUBDIRECTORY(libmyblockchaind)
+   ADD_SUBDIRECTORY(libmyblockchaind/examples)
   ENDIF(WITH_EMBEDDED_SERVER)
 ENDIF()
 
-# scripts/mysql_config depends on client and server targets loaded above.
+# scripts/myblockchain_config depends on client and server targets loaded above.
 # It is referenced by some of the directories below, so we insert it here.
 ADD_SUBDIRECTORY(scripts)
 
 IF(NOT WITHOUT_SERVER)
-  ADD_SUBDIRECTORY(mysql-test)
-  ADD_SUBDIRECTORY(mysql-test/lib/My/SafeProcess)
+  ADD_SUBDIRECTORY(myblockchain-test)
+  ADD_SUBDIRECTORY(myblockchain-test/lib/My/SafeProcess)
   ADD_SUBDIRECTORY(support-files)
   IF(EXISTS ${CMAKE_SOURCE_DIR}/internal/CMakeLists.txt)
     ADD_SUBDIRECTORY(internal)
@@ -555,8 +555,8 @@ INCLUDE(cmake/tags.cmake)
 
 CONFIGURE_FILE(config.h.cmake   ${CMAKE_BINARY_DIR}/include/my_config.h)
 CONFIGURE_FILE(config.h.cmake   ${CMAKE_BINARY_DIR}/include/config.h)
-CONFIGURE_FILE(${CMAKE_SOURCE_DIR}/include/mysql_version.h.in
-               ${CMAKE_BINARY_DIR}/include/mysql_version.h )
+CONFIGURE_FILE(${CMAKE_SOURCE_DIR}/include/myblockchain_version.h.in
+               ${CMAKE_BINARY_DIR}/include/myblockchain_version.h )
 CONFIGURE_FILE(${CMAKE_SOURCE_DIR}/sql/sql_builtin.cc.in
     ${CMAKE_BINARY_DIR}/sql/sql_builtin.cc)
 CONFIGURE_FILE(
@@ -589,13 +589,13 @@ ADD_SUBDIRECTORY(packaging/WiX)
 ADD_SUBDIRECTORY(packaging/solaris)
 
 IF(UNIX)
-  INSTALL(FILES Docs/mysql.info DESTINATION ${INSTALL_INFODIR} OPTIONAL COMPONENT Info)
+  INSTALL(FILES Docs/myblockchain.info DESTINATION ${INSTALL_INFODIR} OPTIONAL COMPONENT Info)
 ENDIF()
 #
 # RPM installs documentation directly from the source tree
 #
 IF(NOT INSTALL_LAYOUT MATCHES "RPM")
-  INSTALL(FILES COPYING LICENSE.mysql 
+  INSTALL(FILES COPYING LICENSE.myblockchain 
   DESTINATION ${INSTALL_DOCREADMEDIR} 
   COMPONENT Readme
   OPTIONAL
@@ -606,9 +606,9 @@ IF(NOT INSTALL_LAYOUT MATCHES "RPM")
   IF(UNIX)
     INSTALL(FILES Docs/INSTALL-BINARY DESTINATION ${INSTALL_DOCREADMEDIR} COMPONENT Readme)
   ENDIF()
-  # MYSQL_DOCS_LOCATON is used in "make dist", points to the documentation directory
-  SET(MYSQL_DOCS_LOCATION "" CACHE PATH "Location from where documentation is copied")
-  MARK_AS_ADVANCED(MYSQL_DOCS_LOCATION)
+  # MYBLOCKCHAIN_DOCS_LOCATON is used in "make dist", points to the documentation directory
+  SET(MYBLOCKCHAIN_DOCS_LOCATION "" CACHE PATH "Location from where documentation is copied")
+  MARK_AS_ADVANCED(MYBLOCKCHAIN_DOCS_LOCATION)
   INSTALL(DIRECTORY Docs/ DESTINATION ${INSTALL_DOCDIR}
     COMPONENT Documentation
     PATTERN "INSTALL-BINARY" EXCLUDE
@@ -616,7 +616,7 @@ IF(NOT INSTALL_LAYOUT MATCHES "RPM")
     PATTERN "glibc*" EXCLUDE
     PATTERN "linuxthreads.txt" EXCLUDE
     PATTERN "myisam.txt" EXCLUDE
-    PATTERN "mysql.info" EXCLUDE
+    PATTERN "myblockchain.info" EXCLUDE
     PATTERN "sp-imp-spec.txt" EXCLUDE
   )
 ENDIF()

@@ -69,7 +69,7 @@ has more fields than the other. */
 respectively */
 UNIV_INLINE
 int
-innobase_mysql_cmp(
+innobase_myblockchain_cmp(
 	ulint		prtype,
 	const byte*	a,
 	unsigned int	a_length,
@@ -77,15 +77,15 @@ innobase_mysql_cmp(
 	unsigned int	b_length)
 {
 #ifdef UNIV_DEBUG
-	switch (prtype & DATA_MYSQL_TYPE_MASK) {
-	case MYSQL_TYPE_BIT:
-	case MYSQL_TYPE_STRING:
-	case MYSQL_TYPE_VAR_STRING:
-	case MYSQL_TYPE_TINY_BLOB:
-	case MYSQL_TYPE_MEDIUM_BLOB:
-	case MYSQL_TYPE_BLOB:
-	case MYSQL_TYPE_LONG_BLOB:
-	case MYSQL_TYPE_VARCHAR:
+	switch (prtype & DATA_MYBLOCKCHAIN_TYPE_MASK) {
+	case MYBLOCKCHAIN_TYPE_BIT:
+	case MYBLOCKCHAIN_TYPE_STRING:
+	case MYBLOCKCHAIN_TYPE_VAR_STRING:
+	case MYBLOCKCHAIN_TYPE_TINY_BLOB:
+	case MYBLOCKCHAIN_TYPE_MEDIUM_BLOB:
+	case MYBLOCKCHAIN_TYPE_BLOB:
+	case MYBLOCKCHAIN_TYPE_LONG_BLOB:
+	case MYBLOCKCHAIN_TYPE_VARCHAR:
 		break;
 	default:
 		ut_error;
@@ -155,8 +155,8 @@ cmp_cols_are_equal(
 	return(col1->mtype != DATA_INT || col1->len == col2->len);
 }
 
-/** Compare two DATA_DECIMAL (MYSQL_TYPE_DECIMAL) fields.
-TODO: Remove this function. Everything should use MYSQL_TYPE_NEWDECIMAL.
+/** Compare two DATA_DECIMAL (MYBLOCKCHAIN_TYPE_DECIMAL) fields.
+TODO: Remove this function. Everything should use MYBLOCKCHAIN_TYPE_NEWDECIMAL.
 @param[in] a data field
 @param[in] a_length length of a, in bytes (not UNIV_SQL_NULL)
 @param[in] b data field
@@ -379,9 +379,9 @@ cmp_whole_field(
 			ut_ad(0);
 		}
 		/* fall through */
-	case DATA_VARMYSQL:
-	case DATA_MYSQL:
-		return(innobase_mysql_cmp(prtype,
+	case DATA_VARMYBLOCKCHAIN:
+	case DATA_MYBLOCKCHAIN:
+		return(innobase_myblockchain_cmp(prtype,
 					  a, a_length, b, b_length));
 	case DATA_POINT:
 	case DATA_VAR_POINT:
@@ -432,7 +432,7 @@ cmp_data(
 	case DATA_FIXBINARY:
 	case DATA_BINARY:
 		if (dtype_get_charset_coll(prtype)
-		    != DATA_MYSQL_BINARY_CHARSET_COLL) {
+		    != DATA_MYBLOCKCHAIN_BINARY_CHARSET_COLL) {
 			pad = 0x20;
 			break;
 		}
@@ -709,7 +709,7 @@ cmp_get_pad_char(
 	case DATA_FIXBINARY:
 	case DATA_BINARY:
 		if (dtype_get_charset_coll(type->prtype)
-		    == DATA_MYSQL_BINARY_CHARSET_COLL) {
+		    == DATA_MYBLOCKCHAIN_BINARY_CHARSET_COLL) {
 			/* Starting from 5.0.18, do not pad
 			VARBINARY or BINARY columns. */
 			return(ULINT_UNDEFINED);
@@ -717,8 +717,8 @@ cmp_get_pad_char(
 		/* Fall through */
 	case DATA_CHAR:
 	case DATA_VARCHAR:
-	case DATA_MYSQL:
-	case DATA_VARMYSQL:
+	case DATA_MYBLOCKCHAIN:
+	case DATA_VARMYBLOCKCHAIN:
 		/* Space is the padding character for all char and binary
 		strings, and starting from 5.0.3, also for TEXT strings. */
 		return(0x20);
@@ -997,7 +997,7 @@ cmp_rec_rec_simple(
 	const ulint*		offsets1,/*!< in: rec_get_offsets(rec1, ...) */
 	const ulint*		offsets2,/*!< in: rec_get_offsets(rec2, ...) */
 	const dict_index_t*	index,	/*!< in: data dictionary index */
-	struct TABLE*		table)	/*!< in: MySQL table, for reporting
+	struct TABLE*		table)	/*!< in: MyBlockchain table, for reporting
 					duplicate key value if applicable,
 					or NULL */
 {
@@ -1035,7 +1035,7 @@ cmp_rec_rec_simple(
 
 	if (!null_eq && table && dict_index_is_unique(index)) {
 		/* Report erroneous row using new version of table. */
-		innobase_rec_to_mysql(table, rec1, index, offsets1);
+		innobase_rec_to_myblockchain(table, rec1, index, offsets1);
 		return(0);
 	}
 

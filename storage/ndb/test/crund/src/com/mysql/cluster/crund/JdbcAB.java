@@ -15,7 +15,7 @@
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-package com.mysql.cluster.crund;
+package com.myblockchain.cluster.crund;
 
 import java.util.Properties;
 
@@ -28,7 +28,7 @@ import java.sql.Statement;
 import java.sql.Array;
 import java.sql.Types;
 
-import com.mysql.cluster.crund.CrundDriver.XMode;
+import com.myblockchain.cluster.crund.CrundDriver.XMode;
 
 /**
  * The JDBC benchmark implementation.
@@ -236,9 +236,9 @@ public class JdbcAB extends CrundLoad {
          * Bulk query support, mechanism #1: multiplied SQL queries with
          * substituted Ids for params.
          *
-         * The mysql jdbc driver requires property allowMultiQueries=true
+         * The myblockchain jdbc driver requires property allowMultiQueries=true
          * passed to DriverManager.getConnection() or in URL
-         * jdbc:mysql://localhost/crunddb?allowMultiQueries=true
+         * jdbc:myblockchain://localhost/crunddb?allowMultiQueries=true
          */
         protected String multipleQueries(int[] id) throws SQLException {
             final int n = id.length;
@@ -265,7 +265,7 @@ public class JdbcAB extends CrundLoad {
          * Bulk query support, mechanism #3: where-in clause with Ids
          * passed as SQL Array.
          *
-         * JDBC 4 feature.  Not supported by mysql driver 5.1 (or Java DB).
+         * JDBC 4 feature.  Not supported by myblockchain driver 5.1 (or Java DB).
          */
         protected Array idArray(int[] id) throws SQLException {
             final int n = id.length;
@@ -589,7 +589,7 @@ public class JdbcAB extends CrundLoad {
                 });
 
             ops.add(
-                // MySQL rejects this syntax: "DELETE FROM B b WHERE b.id = ?"
+                // MyBlockchain rejects this syntax: "DELETE FROM B b WHERE b.id = ?"
                 new WriteOp("B_del", xMode,
                             "DELETE FROM B WHERE id = ?") {
                     protected void setParams(int id) throws SQLException {
@@ -598,7 +598,7 @@ public class JdbcAB extends CrundLoad {
                 });
 
             ops.add(
-                // MySQL rejects this syntax: "DELETE FROM A a WHERE a.id = ?"
+                // MyBlockchain rejects this syntax: "DELETE FROM A a WHERE a.id = ?"
                 new WriteOp("A_del", xMode,
                             "DELETE FROM A WHERE id = ?") {
                     protected void setParams(int id) throws SQLException {

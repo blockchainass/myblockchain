@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2005 MySQL AB
+   Copyright (C) 2005 MyBlockchain AB
    Use is subject to license terms
 
    This program is free software; you can redistribute it and/or modify

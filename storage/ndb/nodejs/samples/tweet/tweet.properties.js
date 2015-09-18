@@ -25,17 +25,17 @@ var nosql = require("../..");
 
 function getDefaultAdapter() {
   return "ndb";
-  // return "mysql";
+  // return "myblockchain";
 }
 function getProperties(adapter) {
   var properties = new nosql.ConnectionProperties(adapter);
 
   // properties.ndb_connectstring = "localhost:1186";
-  // properties.mysql_socket = null;
-  // properties.mysql_port = null;
-  // properties.mysql_user = null;
-  // properties.mysql_host = null;
-  // properties.mysql_password = null;
+  // properties.myblockchain_socket = null;
+  // properties.myblockchain_port = null;
+  // properties.myblockchain_user = null;
+  // properties.myblockchain_host = null;
+  // properties.myblockchain_password = null;
 
   return properties;
 }

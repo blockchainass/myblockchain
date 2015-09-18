@@ -170,7 +170,7 @@ typedef NonStdNumTypeTraits< Uint32 > Tuint24;
  * Notes: the Helper classes
  * - extend Traits classes for convenience
  * - only add basic utility functions that
- * - have _no_ link or library dependencies upon MySQL code
+ * - have _no_ link or library dependencies upon MyBlockchain code
  *   (in contrast to other SQL utility code like ./NdbSqlUtil)
  * - are defined below as inline template specializations.
  */

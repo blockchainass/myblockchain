@@ -29,10 +29,10 @@ Created Nov 12, 2014 Vasil Dimov
 #include <algorithm>
 #include <math.h>
 
-#include "my_global.h" /* needed for headers from mysql/psi/ */
+#include "my_global.h" /* needed for headers from myblockchain/psi/ */
 
-#include "mysql/psi/mysql_stage.h" /* mysql_stage_inc_work_completed */
-#include "mysql/psi/psi.h" /* HAVE_PSI_STAGE_INTERFACE, PSI_stage_progress */
+#include "myblockchain/psi/myblockchain_stage.h" /* myblockchain_stage_inc_work_completed */
+#include "myblockchain/psi/psi.h" /* HAVE_PSI_STAGE_INTERFACE, PSI_stage_progress */
 
 #include "univ.i"
 
@@ -218,11 +218,11 @@ ut_stage_alter_t::~ut_stage_alter_t()
 	}
 
 	/* Set completed = estimated before we quit. */
-	mysql_stage_set_work_completed(
+	myblockchain_stage_set_work_completed(
 		m_progress,
-		mysql_stage_get_work_estimated(m_progress));
+		myblockchain_stage_get_work_estimated(m_progress));
 
-	mysql_end_stage();
+	myblockchain_end_stage();
 }
 
 /** Flag an ALTER TABLE start (read primary key phase).
@@ -237,10 +237,10 @@ ut_stage_alter_t::begin_phase_read_pk(
 
 	m_cur_phase = READ_PK;
 
-	m_progress = mysql_set_stage(
+	m_progress = myblockchain_set_stage(
 		srv_stage_alter_table_read_pk_internal_sort.m_key);
 
-	mysql_stage_set_work_completed(m_progress, 0);
+	myblockchain_stage_set_work_completed(m_progress, 0);
 
 	reestimate();
 }
@@ -321,7 +321,7 @@ ut_stage_alter_t::inc(
 	}
 
 	if (should_proceed) {
-		mysql_stage_inc_work_completed(m_progress, inc_val);
+		myblockchain_stage_inc_work_completed(m_progress, inc_val);
 		reestimate();
 	}
 }
@@ -425,9 +425,9 @@ ut_stage_alter_t::reestimate()
 	/* During the log table phase we calculate the estimate as
 	work done so far + log size remaining. */
 	if (m_cur_phase == LOG_TABLE) {
-		mysql_stage_set_work_estimated(
+		myblockchain_stage_set_work_estimated(
 			m_progress,
-			mysql_stage_get_work_completed(m_progress)
+			myblockchain_stage_get_work_completed(m_progress)
 			+ row_log_estimate_work(m_pk));
 		return;
 	}
@@ -461,9 +461,9 @@ ut_stage_alter_t::reestimate()
 
 	/* Prevent estimate < completed */
 	estimate = std::max(estimate,
-			    mysql_stage_get_work_completed(m_progress));
+			    myblockchain_stage_get_work_completed(m_progress));
 
-	mysql_stage_set_work_estimated(m_progress, estimate);
+	myblockchain_stage_set_work_estimated(m_progress, estimate);
 }
 
 /** Change the current phase.
@@ -495,13 +495,13 @@ ut_stage_alter_t::change_phase(
 		ut_error;
 	}
 
-	const ulonglong	c = mysql_stage_get_work_completed(m_progress);
-	const ulonglong	e = mysql_stage_get_work_estimated(m_progress);
+	const ulonglong	c = myblockchain_stage_get_work_completed(m_progress);
+	const ulonglong	e = myblockchain_stage_get_work_estimated(m_progress);
 
-	m_progress = mysql_set_stage(new_stage->m_key);
+	m_progress = myblockchain_set_stage(new_stage->m_key);
 
-	mysql_stage_set_work_completed(m_progress, c);
-	mysql_stage_set_work_estimated(m_progress, e);
+	myblockchain_stage_set_work_completed(m_progress, c);
+	myblockchain_stage_set_work_estimated(m_progress, e);
 }
 #else /* HAVE_PSI_STAGE_INTERFACE */
 

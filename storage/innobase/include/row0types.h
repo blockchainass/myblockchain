@@ -49,7 +49,7 @@ struct row_ext_t;
 /** Buffer for logging modifications during online index creation */
 struct row_log_t;
 
-/* MySQL data types */
+/* MyBlockchain data types */
 struct TABLE;
 
 #endif

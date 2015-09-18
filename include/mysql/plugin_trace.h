@@ -19,15 +19,15 @@
   @file
 
   ========================================================================
-   Declarations for client-side plugins of type MYSQL_CLIENT_TRACE_PLUGIN
+   Declarations for client-side plugins of type MYBLOCKCHAIN_CLIENT_TRACE_PLUGIN
   ========================================================================
 
-  See libmysql/mysql_trace.c for a brief description of the client-side
+  See libmyblockchain/myblockchain_trace.c for a brief description of the client-side
   protocol tracing infrastructure.
 */
 
 
-#include <mysql/client_plugin.h>
+#include <myblockchain/client_plugin.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -55,7 +55,7 @@ extern "C" {
   Protocol stages
   ---------------
 
-  A client following the MySQL protocol goes through several stages of it. Each
+  A client following the MyBlockchain protocol goes through several stages of it. Each
   stage determines what packets can be expected from the server or can be send
   by the client.
 
@@ -249,8 +249,8 @@ enum trace_event {
   ====================
 */
 
-struct st_mysql_client_plugin_TRACE;
-struct st_mysql;
+struct st_myblockchain_client_plugin_TRACE;
+struct st_myblockchain;
 
 /**
   Trace plugin tracing_start() method.
@@ -269,8 +269,8 @@ struct st_mysql;
 */
 
 typedef
-void* (tracing_start_callback)(struct st_mysql_client_plugin_TRACE *self,
-                               struct st_mysql *connection_handle,
+void* (tracing_start_callback)(struct st_myblockchain_client_plugin_TRACE *self,
+                               struct st_myblockchain *connection_handle,
                                enum protocol_stage stage);
 
 /**
@@ -286,8 +286,8 @@ void* (tracing_start_callback)(struct st_mysql_client_plugin_TRACE *self,
 */
 
 typedef
-void (tracing_stop_callback)(struct st_mysql_client_plugin_TRACE *self,
-                             struct st_mysql *connection_handle,
+void (tracing_stop_callback)(struct st_myblockchain_client_plugin_TRACE *self,
+                             struct st_myblockchain *connection_handle,
                              void   *plugin_data);
 
 /**
@@ -307,17 +307,17 @@ void (tracing_stop_callback)(struct st_mysql_client_plugin_TRACE *self,
 */
 
 typedef
-int (trace_event_handler)(struct st_mysql_client_plugin_TRACE *self,
+int (trace_event_handler)(struct st_myblockchain_client_plugin_TRACE *self,
                           void *plugin_data,
-                          struct st_mysql *connection_handle,
+                          struct st_myblockchain *connection_handle,
                           enum protocol_stage stage,
                           enum trace_event event,
                           struct st_trace_event_args args);
 
 
-struct st_mysql_client_plugin_TRACE
+struct st_myblockchain_client_plugin_TRACE
 {
-  MYSQL_CLIENT_PLUGIN_HEADER
+  MYBLOCKCHAIN_CLIENT_PLUGIN_HEADER
   tracing_start_callback *tracing_start;
   tracing_stop_callback  *tracing_stop;
   trace_event_handler    *trace_event;
@@ -329,7 +329,7 @@ struct st_mysql_client_plugin_TRACE
   to the server.
 */
 extern
-struct st_mysql_client_plugin_TRACE *trace_plugin;
+struct st_myblockchain_client_plugin_TRACE *trace_plugin;
 
 #ifndef DBUG_OFF
 

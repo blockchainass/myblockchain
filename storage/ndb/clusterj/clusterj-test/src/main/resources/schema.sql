@@ -895,7 +895,7 @@ create table stress (
   d19 double not null
   ) ENGINE=ndbcluster;
 
-create database if not exists test2;
+create blockchain if not exists test2;
 use test2;
 drop table if exists t_basic2;
 create table t_basic2 (

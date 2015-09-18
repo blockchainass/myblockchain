@@ -70,21 +70,21 @@ table_global_status::create(void)
 
 int table_global_status::delete_all_rows(void)
 {
-  mysql_mutex_lock(&LOCK_status);
+  myblockchain_mutex_lock(&LOCK_status);
   reset_status_by_thread();
   reset_status_by_account();
   reset_status_by_user();
   reset_status_by_host();
   reset_global_status();
-  mysql_mutex_unlock(&LOCK_status);
+  myblockchain_mutex_unlock(&LOCK_status);
   return 0;
 }
 
 ha_rows table_global_status::get_row_count(void)
 {
-  mysql_mutex_lock(&LOCK_status);
+  myblockchain_mutex_lock(&LOCK_status);
   ha_rows status_var_count= all_status_vars.size();
-  mysql_mutex_unlock(&LOCK_status);
+  myblockchain_mutex_unlock(&LOCK_status);
   return status_var_count;
 }
 

@@ -21,12 +21,12 @@ import java.util.List;
 
 import testsuite.clusterj.model.Employee;
 
-import com.mysql.clusterj.ClusterJUserException;
-import com.mysql.clusterj.Query;
+import com.myblockchain.clusterj.ClusterJUserException;
+import com.myblockchain.clusterj.Query;
 
-import com.mysql.clusterj.query.PredicateOperand;
-import com.mysql.clusterj.query.QueryBuilder;
-import com.mysql.clusterj.query.QueryDomainType;
+import com.myblockchain.clusterj.query.PredicateOperand;
+import com.myblockchain.clusterj.query.QueryBuilder;
+import com.myblockchain.clusterj.query.QueryDomainType;
 
 public class QueryMultipleParameterTest extends AbstractQueryTest {
 

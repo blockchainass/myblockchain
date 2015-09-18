@@ -2,16 +2,16 @@
 basedir = CHOOSE_dir
 baseport = 14000
 clusters = .4node
-mysqld = CHOOSE_host1
+myblockchaind = CHOOSE_host1
 fix-nodeid=1
 mt=2
 
 [ndb_mgmd]
 
-[mysqld]
+[myblockchaind]
 innodb
 loose-skip-bdb
-socket=mysql.sock
+socket=myblockchain.sock
 skip-grant-tables
 default-storage-engine=myisam
 

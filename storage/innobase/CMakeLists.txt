@@ -103,7 +103,7 @@ SET(INNOBASE_SOURCES
 	row/row0import.cc
 	row/row0ins.cc
 	row/row0merge.cc
-	row/row0mysql.cc
+	row/row0myblockchain.cc
 	row/row0log.cc
 	row/row0purge.cc
 	row/row0row.cc
@@ -149,7 +149,7 @@ IF(WITH_INNODB)
   SET(WITH_INNOBASE_STORAGE_ENGINE TRUE)
 ENDIF()
 
-MYSQL_ADD_PLUGIN(innobase ${INNOBASE_SOURCES} STORAGE_ENGINE
+MYBLOCKCHAIN_ADD_PLUGIN(innobase ${INNOBASE_SOURCES} STORAGE_ENGINE
   MANDATORY
   MODULE_OUTPUT_NAME ha_innodb
   LINK_LIBRARIES ${ZLIB_LIBRARY} ${LZ4_LIBRARY})
@@ -160,7 +160,7 @@ ENDIF()
 
 # Avoid generating Hardware Capabilities due to crc32 instructions
 IF(CMAKE_SYSTEM_NAME MATCHES "SunOS" AND CMAKE_SYSTEM_PROCESSOR MATCHES "i386")
-  INCLUDE(${MYSQL_CMAKE_SCRIPT_DIR}/compile_flags.cmake)
+  INCLUDE(${MYBLOCKCHAIN_CMAKE_SCRIPT_DIR}/compile_flags.cmake)
   ADD_COMPILE_FLAGS(
     ut/ut0crc32.cc
     COMPILE_FLAGS "-Wa,-nH"

@@ -85,7 +85,7 @@ static void usage(void)
 {
   print_version();
   puts(ORACLE_WELCOME_COPYRIGHT_NOTICE("2000"));
-  printf("Print a description for a system error code or a MySQL error code.\n");
+  printf("Print a description for a system error code or a MyBlockchain error code.\n");
   printf("If you want to get the error for a negative error code, you should use\n-- before the first error code to tell perror that there was no more options.\n\n");
   printf("Usage: %s [OPTIONS] [ERRORCODE [ERRORCODE...]]\n",my_progname);
   my_print_help(my_long_options);
@@ -156,7 +156,7 @@ typedef struct
 
 static st_error global_error_names[] =
 {
-#include <mysqld_ername.h>
+#include <myblockchaind_ername.h>
   { 0, 0, 0 }
 };
 
@@ -333,7 +333,7 @@ int main(int argc,char *argv[])
       {
         found= 1;
         if (verbose)
-          printf("MySQL error code %3d: %s\n", code, msg);
+          printf("MyBlockchain error code %3d: %s\n", code, msg);
         else
           puts(msg);
       }
@@ -341,7 +341,7 @@ int main(int argc,char *argv[])
       {
         found= 1;
         if (verbose)
-          printf("MySQL error code %3d (%s): %s\n", code, name, msg);
+          printf("MyBlockchain error code %3d (%s): %s\n", code, name, msg);
         else
           puts(msg);
       }

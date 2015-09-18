@@ -15,7 +15,7 @@
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-package com.mysql.cluster.crund;
+package com.myblockchain.cluster.crund;
 
 import java.io.Serializable;
 import java.io.ObjectInputStream;
@@ -34,7 +34,7 @@ public class B implements Serializable {
     //   optional=true  (value of all nonprimitive field/property may be null)
     // @javax.persistence.Lob specifies for the @Basic mapping that a
     //   persistent property or field should be persisted as a large object
-    //   to a database-supported large object type.  A Lob may be either a
+    //   to a blockchain-supported large object type.  A Lob may be either a
     //   binary or character type.
     // @javax.persistence.Transient specify a field or property of an entity
     //   that is not persistent

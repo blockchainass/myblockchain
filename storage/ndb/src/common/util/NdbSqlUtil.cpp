@@ -730,7 +730,7 @@ NdbSqlUtil::likeChar(const void* info, const void* p1, unsigned n1, const void* 
   const char* v1 = (const char*)p1;
   const char* v2 = (const char*)p2;
   CHARSET_INFO* cs = (CHARSET_INFO*)(info);
-  // strip end spaces to match (incorrect) MySQL behaviour
+  // strip end spaces to match (incorrect) MyBlockchain behaviour
   n1 = (unsigned)(*cs->cset->lengthsp)(cs, v1, n1);
   int k = (*cs->coll->wildcmp)(cs, v1, v1 + n1, v2, v2 + n2, ndb_wild_prefix, ndb_wild_one, ndb_wild_many);
   return k == 0 ? 0 : +1;
@@ -989,7 +989,7 @@ NdbSqlUtil::ndb_strnxfrm(struct charset_info_st * cs,
                          uchar *dst, size_t dstlen,
                          const uchar *src, size_t srclen)
 {
-#if NDB_MYSQL_VERSION_D < NDB_MAKE_VERSION(5,6,0)
+#if NDB_MYBLOCKCHAIN_VERSION_D < NDB_MAKE_VERSION(5,6,0)
   return (*cs->coll->strnxfrm)(cs, dst, dstlen, src, srclen);
 #else
   /*
@@ -1915,7 +1915,7 @@ testdatetime2(uint prec)
   memset(d1, 0x1f, sizeof(d1));
   memset(d2, 0x1f, sizeof(d2));
   bool nz = false;
-  s1.sign = getrand(0, 1, nz); // negative not yet in MySQL
+  s1.sign = getrand(0, 1, nz); // negative not yet in MyBlockchain
   s1.year = getrand(0, 9999, nz);
   s1.month = getrand(1, 12, nz);
   s1.day = getrand(1, 31, nz);

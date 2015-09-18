@@ -17,7 +17,7 @@
 
 #include "consumer.hpp"
 
-#ifdef USE_MYSQL
+#ifdef USE_MYBLOCKCHAIN
 int
 BackupConsumer::create_table_string(const TableS & table,
 				    char * tableName,
@@ -113,4 +113,4 @@ BackupConsumer::create_table_string(const TableS & table,
   return 0;
 }
 
-#endif // USE_MYSQL
+#endif // USE_MYBLOCKCHAIN

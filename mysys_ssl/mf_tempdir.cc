@@ -68,7 +68,7 @@ my_bool init_tmpdir(MY_TMPDIR *tmpdir, const char *pathlist)
   if (tmpdir->list == NULL)
     DBUG_RETURN(TRUE);
 
-  mysql_mutex_init(key_TMPDIR_mutex, &tmpdir->mutex, MY_MUTEX_INIT_FAST);
+  myblockchain_mutex_init(key_TMPDIR_mutex, &tmpdir->mutex, MY_MUTEX_INIT_FAST);
   memcpy(tmpdir->list, &full_list[0], sizeof(char*) * full_list.size());
   tmpdir->max= full_list.size() - 1;
   tmpdir->cur= 0;
@@ -96,5 +96,5 @@ void free_tmpdir(MY_TMPDIR *tmpdir)
   for (uint i= 0; i <= tmpdir->max; i++)
     my_free(tmpdir->list[i]);
   my_free(tmpdir->list);
-  mysql_mutex_destroy(&tmpdir->mutex);
+  myblockchain_mutex_destroy(&tmpdir->mutex);
 }

@@ -24,7 +24,7 @@
 #include <string.h>
 
 #include <my_global.h>
-#include <mysql.h>
+#include <myblockchain.h>
 #include <my_sys.h>
 
 #include <NdbApi.hpp> 

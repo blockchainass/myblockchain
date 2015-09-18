@@ -42,7 +42,7 @@ static int sasl_server_userdb_checkpass(sasl_conn_t *conn,
         if (settings.verbose) {
             /* "errno" not always defined
 	    settings.extensions.logger->log(EXTENSION_LOG_WARNING, NULL,
-                     "WARNING: Failed to open sasl database <%s>: %s",
+                     "WARNING: Failed to open sasl blockchain <%s>: %s",
                      memcached_sasl_pwdb, strerror(errno)); */
         }
         return SASL_NOAUTHZ;
@@ -163,7 +163,7 @@ void init_sasl(void) {
        if (settings.verbose) {
            settings.extensions.logger->log(EXTENSION_LOG_INFO, NULL,
                   "INFO: MEMCACHED_SASL_PWDB not specified. "
-                  "Internal passwd database disabled.");
+                  "Internal passwd blockchain disabled.");
        }
        sasl_callbacks[0].id = SASL_CB_LIST_END;
        sasl_callbacks[0].proc = NULL;

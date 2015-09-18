@@ -14,7 +14,7 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #
 # This is a reimplementation of parts of packaging/WiX/create_msi.cmake to make it
-# work with a MySQL Cluster install.
+# work with a MyBlockchain Cluster install.
 
 # Directories and files which are part of the install, but which should be 
 # ignored when creating the wxs.
@@ -27,7 +27,7 @@ SET(EXCLUDE_DIRS
      bin/debug
      data/test
      lib/plugin/debug
-     mysql-test
+     myblockchain-test
      scripts
      sql-bench)
 
@@ -35,15 +35,15 @@ SET(EXCLUDE_DIRS
 # be exluded from the wxs. Used through get_include() macro below
 SET(EXCLUDE_FILES
      bin/echo.exe
-     bin/mysql_client_test_embedded.exe
-     bin/mysqld-debug.exe
-     bin/mysqltest_embedded.exe
+     bin/myblockchain_client_test_embedded.exe
+     bin/myblockchaind-debug.exe
+     bin/myblockchaintest_embedded.exe
      bin/replace.exe
-     lib/debug/mysqlserver.lib
-     lib/libmysqld.dll
-     lib/libmysqld.lib
-     lib/mysqlserver.lib
-     lib/mysqlservices.lib
+     lib/debug/myblockchainserver.lib
+     lib/libmyblockchaind.dll
+     lib/libmyblockchaind.lib
+     lib/myblockchainserver.lib
+     lib/myblockchainservices.lib
 )
 
 # Debug tracing enabled by setting DEBUG_ variable

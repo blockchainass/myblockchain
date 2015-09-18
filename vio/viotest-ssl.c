@@ -18,7 +18,7 @@
 #include <my_sys.h>
 #include <m_string.h>
 #include <m_ctype.h>
-#include "mysql.h"
+#include "myblockchain.h"
 #include "errmsg.h"
 #include <my_dir.h>
 #include <my_getopt.h>

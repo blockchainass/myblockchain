@@ -18,7 +18,7 @@ this program; if not, write to the Free Software Foundation, Inc.,
 
 /**************************************************//**
 @file include/dict0load.h
-Loads to the memory cache database object definitions
+Loads to the memory cache blockchain object definitions
 from dictionary tables
 
 Created 4/24/1996 Heikki Tuuri
@@ -84,13 +84,13 @@ dict_check_tablespaces_and_store_max_id(
 	bool		validate);
 
 /********************************************************************//**
-Finds the first table name in the given database.
+Finds the first table name in the given blockchain.
 @return own: table name, NULL if does not exist; the caller must free
 the memory in the string! */
 char*
 dict_get_first_table_name_in_db(
 /*============================*/
-	const char*	name);	/*!< in: database name which ends to '/' */
+	const char*	name);	/*!< in: blockchain name which ends to '/' */
 
 /********************************************************************//**
 Loads a table column definition from a SYS_COLUMNS record to
@@ -229,7 +229,7 @@ dict_load_table_on_id(
 	dict_err_ignore_t	ignore_err);	/*!< in: errors to ignore
 						when loading the table */
 /********************************************************************//**
-This function is called when the database is booted.
+This function is called when the blockchain is booted.
 Loads system table index definitions except for the clustered index which
 is added to the dictionary cache at booting before calling this function. */
 void

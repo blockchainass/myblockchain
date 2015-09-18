@@ -26,14 +26,14 @@
 #include <string.h> // not using namespaces yet
 
 #include "my_global.h"
-#include "mysql.h"
+#include "myblockchain.h"
 #include "my_sys.h"
 
-#define MYSQL_BINARY_CHARSET 63
+#define MYBLOCKCHAIN_BINARY_CHARSET 63
 
 /* build_map():
    Actually building the map is deferred until after my_init() etc. have 
-   fully initialized mysql's strings library.  They cannot be done as part
+   fully initialized myblockchain's strings library.  They cannot be done as part
    of static initialization. 
 */
 void CharsetMapImpl::build_map() 
@@ -79,7 +79,7 @@ void CharsetMapImpl::build_map()
     /* You could add here:
      put("filename", "UTF-8");    // No. 17: filename encoding
      ... but we're going to leave it out for now, because it should not be found
-     in the database. */
+     in the blockchain. */
     
     /* Others */
     put("hp8", "HP-ROMAN-8");
@@ -92,22 +92,22 @@ void CharsetMapImpl::build_map()
     for(unsigned int i = 0 ; i < 255 ; i++) 
     {
         CHARSET_INFO *cs = get_charset(i, MYF(0));
-        register const char *mysql_name = 0;
+        register const char *myblockchain_name = 0;
         const char *mapped_name = 0;
         
         if(cs) 
         {
-            mysql_name = cs->csname;
-            mapped_name = get(mysql_name);
-            if(! cs_ucs2 && ! strcmp(mysql_name, "ucs2"))       cs_ucs2 = i;
-            if(! cs_utf16 && ! strcmp(mysql_name, "utf16"))     cs_utf16 = i;
-            if(! cs_utf8 && ! strcmp(mysql_name, "utf8"))       cs_utf8 = i;
-            if(! cs_utf8_3 && ! strcmp(mysql_name, "utf8mb3"))  cs_utf8_3 = i;
-            if(! cs_utf8_4 && ! strcmp(mysql_name, "utf8mb4"))  cs_utf8_4 = i;            
+            myblockchain_name = cs->csname;
+            mapped_name = get(myblockchain_name);
+            if(! cs_ucs2 && ! strcmp(myblockchain_name, "ucs2"))       cs_ucs2 = i;
+            if(! cs_utf16 && ! strcmp(myblockchain_name, "utf16"))     cs_utf16 = i;
+            if(! cs_utf8 && ! strcmp(myblockchain_name, "utf8"))       cs_utf8 = i;
+            if(! cs_utf8_3 && ! strcmp(myblockchain_name, "utf8mb3"))  cs_utf8_3 = i;
+            if(! cs_utf8_4 && ! strcmp(myblockchain_name, "utf8mb4"))  cs_utf8_4 = i;            
         }
 
-        if(mapped_name) mysql_charset_name[i] = mapped_name;
-        else            mysql_charset_name[i] = mysql_name;
+        if(mapped_name) myblockchain_charset_name[i] = mapped_name;
+        else            myblockchain_charset_name[i] = myblockchain_name;
     }
     
     if(cs_utf16) 
@@ -136,7 +136,7 @@ const char * CharsetMapImpl::getName(int csnum)
     {
         return 0;
     }
-    return mysql_charset_name[csnum];
+    return myblockchain_charset_name[csnum];
 }
 
 

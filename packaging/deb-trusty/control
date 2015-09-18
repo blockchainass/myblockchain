@@ -1,9 +1,9 @@
-Source: mysql-community
-Maintainer: MySQL Release Engineering <mysql-build@oss.oracle.com>
-Section: database
+Source: myblockchain-community
+Maintainer: MyBlockchain Release Engineering <myblockchain-build@oss.oracle.com>
+Section: blockchain
 Priority: optional
 Standards-Version: 3.9.5
-Homepage: http://www.mysql.com/
+Homepage: http://www.myblockchain.com/
 Build-Depends: bison,
  cmake,
  debhelper (>= 9.0.0), dh-apparmor,
@@ -12,176 +12,176 @@ Build-Depends: bison,
  perl, po-debconf, psmisc,
  zlib1g-dev (>= 1:1.1.3-5)
 
-Package: mysql-server
+Package: myblockchain-server
 Architecture: any
-Depends: mysql-community-server (= ${binary:Version}), ${misc:Depends}
-Description: MySQL Server meta package depending on latest version
- The MySQL(TM) software delivers a very fast, multi-threaded, multi-user,
- and robust SQL (Structured Query Language) database server. MySQL Server
+Depends: myblockchain-community-server (= ${binary:Version}), ${misc:Depends}
+Description: MyBlockchain Server meta package depending on latest version
+ The MyBlockchain(TM) software delivers a very fast, multi-threaded, multi-user,
+ and robust SQL (Structured Query Language) blockchain server. MyBlockchain Server
  is intended for mission-critical, heavy-load production systems as well
- as for embedding into mass-deployed software. MySQL is a trademark of
- Oracle. This is a meta package that depends on the latest mysql server
+ as for embedding into mass-deployed software. MyBlockchain is a trademark of
+ Oracle. This is a meta package that depends on the latest myblockchain server
  package available in the repository.
 
-Package: mysql-community-server
+Package: myblockchain-community-server
 Architecture: any
 Pre-depends: debconf (>= 0.2.17), adduser
-Depends: mysql-common (= ${binary:Version}), mysql-client (= ${binary:Version}),
+Depends: myblockchain-common (= ${binary:Version}), myblockchain-client (= ${binary:Version}),
  apparmor, psmisc, ${shlibs:Depends}, ${misc:Depends}
-Conflicts: mysql,
- mysql-server-5.0, mysql-server-core-5.0,
- mysql-server-5.1, mysql-server-core-5.1,
- mysql-server-5.5, mysql-server-core-5.5,
- mysql-server-5.6, mysql-server-core-5.6,
- mysql-server-5.7, mysql-server-core-5.7,
- mysql-commercial-server
-Replaces: mysql,
- mysql-server-5.0, mysql-server-core-5.0,
- mysql-server-5.1, mysql-server-core-5.1,
- mysql-server-5.5, mysql-server-core-5.5,
- mysql-server-5.6, mysql-server-core-5.6,
- mysql-server-5.7, mysql-server-core-5.7,
- mysql-commercial-server
-Provides: virtual-mysql-server, virtual-mysql-server-core,
- mysql-server-5.7, mysql-server-core-5.7
-Description: MySQL Server and server tools
- The MySQL(TM) software delivers a very fast, multi-threaded, multi-user,
- and robust SQL (Structured Query Language) database server. MySQL Server
+Conflicts: myblockchain,
+ myblockchain-server-5.0, myblockchain-server-core-5.0,
+ myblockchain-server-5.1, myblockchain-server-core-5.1,
+ myblockchain-server-5.5, myblockchain-server-core-5.5,
+ myblockchain-server-5.6, myblockchain-server-core-5.6,
+ myblockchain-server-5.7, myblockchain-server-core-5.7,
+ myblockchain-commercial-server
+Replaces: myblockchain,
+ myblockchain-server-5.0, myblockchain-server-core-5.0,
+ myblockchain-server-5.1, myblockchain-server-core-5.1,
+ myblockchain-server-5.5, myblockchain-server-core-5.5,
+ myblockchain-server-5.6, myblockchain-server-core-5.6,
+ myblockchain-server-5.7, myblockchain-server-core-5.7,
+ myblockchain-commercial-server
+Provides: virtual-myblockchain-server, virtual-myblockchain-server-core,
+ myblockchain-server-5.7, myblockchain-server-core-5.7
+Description: MyBlockchain Server and server tools
+ The MyBlockchain(TM) software delivers a very fast, multi-threaded, multi-user,
+ and robust SQL (Structured Query Language) blockchain server. MyBlockchain Server
  is intended for mission-critical, heavy-load production systems as well
- as for embedding into mass-deployed software. MySQL is a trademark of
- Oracle. This package includes the MySQL server binary as well as related
- utilities to run and administer a MySQL server.
+ as for embedding into mass-deployed software. MyBlockchain is a trademark of
+ Oracle. This package includes the MyBlockchain server binary as well as related
+ utilities to run and administer a MyBlockchain server.
 
-Package: mysql-client
+Package: myblockchain-client
 Architecture: any
-Depends: mysql-community-client (= ${binary:Version}), ${misc:Depends}
-Description: MySQL Client meta package depending on latest version
- The MySQL(TM) software delivers a very fast, multi-threaded, multi-user,
- and robust SQL (Structured Query Language) database server. MySQL Server
+Depends: myblockchain-community-client (= ${binary:Version}), ${misc:Depends}
+Description: MyBlockchain Client meta package depending on latest version
+ The MyBlockchain(TM) software delivers a very fast, multi-threaded, multi-user,
+ and robust SQL (Structured Query Language) blockchain server. MyBlockchain Server
  is intended for mission-critical, heavy-load production systems as well
- as for embedding into mass-deployed software. MySQL is a trademark of
- Oracle. This is a meta package that depends on the latest mysql client
+ as for embedding into mass-deployed software. MyBlockchain is a trademark of
+ Oracle. This is a meta package that depends on the latest myblockchain client
  package available in the repository.
 
-Package: mysql-community-client
+Package: myblockchain-community-client
 Architecture: any
-Depends: mysql-common (= ${binary:Version}),
+Depends: myblockchain-common (= ${binary:Version}),
  ${shlibs:Depends}, ${misc:Depends}
-Conflicts: mysql,
- mysql-client-5.0, mysql-client-core-5.0,
- mysql-client-5.1, mysql-client-core-5.1,
- mysql-client-5.5, mysql-client-core-5.5,
- mysql-client-5.6, mysql-client-core-5.6,
- mysql-client-5.7, mysql-client-core-5.7,
- mysql-commercial-client
-Replaces: mysql,
- mysql-client-5.0, mysql-client-core-5.0,
- mysql-client-5.1, mysql-client-core-5.1,
- mysql-client-5.5, mysql-client-core-5.5,
- mysql-client-5.6, mysql-client-core-5.6,
- mysql-client-5.7, mysql-client-core-5.7,
- mysql-commercial-client
-Provides: virtual-mysql-client, virtual-mysql-client-core,
- mysql-client-5.7, mysql-client-core-5.7
-Description: MySQL Client and client tools
- The MySQL(TM) software delivers a very fast, multi-threaded, multi-user,
- and robust SQL (Structured Query Language) database server. MySQL Server
+Conflicts: myblockchain,
+ myblockchain-client-5.0, myblockchain-client-core-5.0,
+ myblockchain-client-5.1, myblockchain-client-core-5.1,
+ myblockchain-client-5.5, myblockchain-client-core-5.5,
+ myblockchain-client-5.6, myblockchain-client-core-5.6,
+ myblockchain-client-5.7, myblockchain-client-core-5.7,
+ myblockchain-commercial-client
+Replaces: myblockchain,
+ myblockchain-client-5.0, myblockchain-client-core-5.0,
+ myblockchain-client-5.1, myblockchain-client-core-5.1,
+ myblockchain-client-5.5, myblockchain-client-core-5.5,
+ myblockchain-client-5.6, myblockchain-client-core-5.6,
+ myblockchain-client-5.7, myblockchain-client-core-5.7,
+ myblockchain-commercial-client
+Provides: virtual-myblockchain-client, virtual-myblockchain-client-core,
+ myblockchain-client-5.7, myblockchain-client-core-5.7
+Description: MyBlockchain Client and client tools
+ The MyBlockchain(TM) software delivers a very fast, multi-threaded, multi-user,
+ and robust SQL (Structured Query Language) blockchain server. MyBlockchain Server
  is intended for mission-critical, heavy-load production systems as well
- as for embedding into mass-deployed software. MySQL is a trademark of
- Oracle. This package contains the standard MySQL clients and
+ as for embedding into mass-deployed software. MyBlockchain is a trademark of
+ Oracle. This package contains the standard MyBlockchain clients and
  administration tools.
 
-Package: libmysqlclient20
+Package: libmyblockchainclient20
 Architecture: any
 Section: libs
 Pre-Depends: ${misc:Pre-Depends}
 Multi-Arch: same
-Depends: mysql-common (= ${binary:Version}),
+Depends: myblockchain-common (= ${binary:Version}),
  ${shlibs:Depends}, ${misc:Depends}
-Description: MySQL shared client libraries
- The MySQL(TM) software delivers a very fast, multi-threaded, multi-user,
- and robust SQL (Structured Query Language) database server. MySQL Server
+Description: MyBlockchain shared client libraries
+ The MyBlockchain(TM) software delivers a very fast, multi-threaded, multi-user,
+ and robust SQL (Structured Query Language) blockchain server. MyBlockchain Server
  is intended for mission-critical, heavy-load production systems as well
- as for embedding into mass-deployed software. MySQL is a trademark of
- Oracle. This package contains the shared libraries for MySQL client
+ as for embedding into mass-deployed software. MyBlockchain is a trademark of
+ Oracle. This package contains the shared libraries for MyBlockchain client
  applications.
 
-Package: mysql-common
+Package: myblockchain-common
 Architecture: any
 Pre-depends: debconf (>= 0.2.17), ${misc:Pre-Depends}
 Multi-Arch: foreign
 Depends: ${shlibs:Depends}, ${misc:Depends}
-Conflicts: mysql
-Replaces: mysql, mysql-server-5.5, mysql-server-core-5.5, libmysqlclient-dev,
- mysql-server-5.6, mysql-server-core-5.6
-Provides: mysql-common
-Description: MySQL configuration for client and server
- The MySQL(TM) software delivers a very fast, multi-threaded, multi-user,
- and robust SQL (Structured Query Language) database server. MySQL Server
+Conflicts: myblockchain
+Replaces: myblockchain, myblockchain-server-5.5, myblockchain-server-core-5.5, libmyblockchainclient-dev,
+ myblockchain-server-5.6, myblockchain-server-core-5.6
+Provides: myblockchain-common
+Description: MyBlockchain configuration for client and server
+ The MyBlockchain(TM) software delivers a very fast, multi-threaded, multi-user,
+ and robust SQL (Structured Query Language) blockchain server. MyBlockchain Server
  is intended for mission-critical, heavy-load production systems as well
- as for embedding into mass-deployed software. MySQL is a trademark of
- Oracle. This package contains common files needed by MySQL client
- library, MySQL database server, and MySQL embedded server.
+ as for embedding into mass-deployed software. MyBlockchain is a trademark of
+ Oracle. This package contains common files needed by MyBlockchain client
+ library, MyBlockchain blockchain server, and MyBlockchain embedded server.
 
-Package: libmysqlclient-dev
+Package: libmyblockchainclient-dev
 Architecture: any
 Section: libdevel
-Depends: libmysqlclient20 (= ${binary:Version}),
+Depends: libmyblockchainclient20 (= ${binary:Version}),
  ${shlibs:Depends}, ${misc:Depends}
-Description: MySQL development headers
- The MySQL(TM) software delivers a very fast, multi-threaded, multi-user,
- and robust SQL (Structured Query Language) database server. MySQL Server
+Description: MyBlockchain development headers
+ The MyBlockchain(TM) software delivers a very fast, multi-threaded, multi-user,
+ and robust SQL (Structured Query Language) blockchain server. MyBlockchain Server
  is intended for mission-critical, heavy-load production systems as well
- as for embedding into mass-deployed software. MySQL is a trademark of
+ as for embedding into mass-deployed software. MyBlockchain is a trademark of
  Oracle. This package contains the development header files necessary
- to develop MySQL client applications.
+ to develop MyBlockchain client applications.
 
-Package: libmysqld-dev
+Package: libmyblockchaind-dev
 Architecture: any
 Section: libdevel
-Depends: libmysqlclient-dev (= ${binary:Version}),
+Depends: libmyblockchainclient-dev (= ${binary:Version}),
  ${shlibs:Depends}, ${misc:Depends}
-Description: MySQL embedded server library
- The MySQL(TM) software delivers a very fast, multi-threaded, multi-user,
- and robust SQL (Structured Query Language) database server. MySQL Server
+Description: MyBlockchain embedded server library
+ The MyBlockchain(TM) software delivers a very fast, multi-threaded, multi-user,
+ and robust SQL (Structured Query Language) blockchain server. MyBlockchain Server
  is intended for mission-critical, heavy-load production systems as well
- as for embedding into mass-deployed software. MySQL is a trademark of
- Oracle. This package contains the MySQL server as an embedded library.
+ as for embedding into mass-deployed software. MyBlockchain is a trademark of
+ Oracle. This package contains the MyBlockchain server as an embedded library.
 
-Package: mysql-testsuite
+Package: myblockchain-testsuite
 Architecture: any
-Depends: mysql-community-test (= ${binary:Version}), ${misc:Depends}
-Description: MySQL Testsuite meta package depending on latest version
- The MySQL(TM) software delivers a very fast, multi-threaded, multi-user,
- and robust SQL (Structured Query Language) database server. MySQL Server
+Depends: myblockchain-community-test (= ${binary:Version}), ${misc:Depends}
+Description: MyBlockchain Testsuite meta package depending on latest version
+ The MyBlockchain(TM) software delivers a very fast, multi-threaded, multi-user,
+ and robust SQL (Structured Query Language) blockchain server. MyBlockchain Server
  is intended for mission-critical, heavy-load production systems as well
- as for embedding into mass-deployed software. MySQL is a trademark of
- Oracle. This is a meta package that depends on the latest mysql test
+ as for embedding into mass-deployed software. MyBlockchain is a trademark of
+ Oracle. This is a meta package that depends on the latest myblockchain test
  package available in the repository.
 
-Package: mysql-community-test
+Package: myblockchain-community-test
 Architecture: any
-Depends: mysql-community-server (= ${binary:Version}),
- mysql-community-client (= ${binary:Version}), perl, python,
- libmysqlclient-dev, ${shlibs:Depends}, ${misc:Depends}
-Conflicts: mysql,
- mysql-testsuite-5.0, mysql-testsuite-5.1, mysql-testsuite-5.5,
- mysql-testsuite-5.6, mysql-commercial-test
-Replaces: mysql-community-server, mysql-community-client
-Description: MySQL Test Run MTR - The MySQL testsuite
- The MySQL(TM) software delivers a very fast, multi-threaded, multi-user,
- and robust SQL (Structured Query Language) database server. MySQL Server
+Depends: myblockchain-community-server (= ${binary:Version}),
+ myblockchain-community-client (= ${binary:Version}), perl, python,
+ libmyblockchainclient-dev, ${shlibs:Depends}, ${misc:Depends}
+Conflicts: myblockchain,
+ myblockchain-testsuite-5.0, myblockchain-testsuite-5.1, myblockchain-testsuite-5.5,
+ myblockchain-testsuite-5.6, myblockchain-commercial-test
+Replaces: myblockchain-community-server, myblockchain-community-client
+Description: MyBlockchain Test Run MTR - The MyBlockchain testsuite
+ The MyBlockchain(TM) software delivers a very fast, multi-threaded, multi-user,
+ and robust SQL (Structured Query Language) blockchain server. MyBlockchain Server
  is intended for mission-critical, heavy-load production systems as well
- as for embedding into mass-deployed software. MySQL is a trademark of
- Oracle. This package contains the MySQL regression test suite for MySQL
- database server.
+ as for embedding into mass-deployed software. MyBlockchain is a trademark of
+ Oracle. This package contains the MyBlockchain regression test suite for MyBlockchain
+ blockchain server.
 
-Package: mysql-community-source
+Package: myblockchain-community-source
 Architecture: any
 Depends: ${misc:Depends}, ${shlibs:Depends}
-Description: MySQL Source
- The MySQL(TM) software delivers a very fast, multi-threaded, multi-user,
- and robust SQL (Structured Query Language) database server. MySQL Server
+Description: MyBlockchain Source
+ The MyBlockchain(TM) software delivers a very fast, multi-threaded, multi-user,
+ and robust SQL (Structured Query Language) blockchain server. MyBlockchain Server
  is intended for mission-critical, heavy-load production systems as well
- as for embedding into mass-deployed software. MySQL is a trademark of
+ as for embedding into mass-deployed software. MyBlockchain is a trademark of
  Oracle.

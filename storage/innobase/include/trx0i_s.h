@@ -134,15 +134,15 @@ struct i_s_trx_row_t {
 					is waiting, or NULL */
 	ib_time_t	trx_wait_started; /*!< trx_t::wait_started */
 	uintmax_t	trx_weight;	/*!< TRX_WEIGHT() */
-	ulint		trx_mysql_thread_id; /*!< thd_get_thread_id() */
-	const char*	trx_query;	/*!< MySQL statement being
+	ulint		trx_myblockchain_thread_id; /*!< thd_get_thread_id() */
+	const char*	trx_query;	/*!< MyBlockchain statement being
 					executed in the transaction */
 	CHARSET_INFO*	trx_query_cs;	/*!< the charset of trx_query */
 	const char*	trx_operation_state; /*!< trx_t::op_info */
-	ulint		trx_tables_in_use;/*!< n_mysql_tables_in_use in
+	ulint		trx_tables_in_use;/*!< n_myblockchain_tables_in_use in
 					 trx_t */
 	ulint		trx_tables_locked;
-					/*!< mysql_n_tables_locked in
+					/*!< myblockchain_n_tables_locked in
 					trx_t */
 	ulint		trx_lock_structs;/*!< list len of trx_locks in
 					trx_t */

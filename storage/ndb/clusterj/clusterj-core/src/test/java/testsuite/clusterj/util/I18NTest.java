@@ -17,7 +17,7 @@
 
 package testsuite.clusterj.util;
 
-import com.mysql.clusterj.core.util.I18NHelper;
+import com.myblockchain.clusterj.core.util.I18NHelper;
 import testsuite.clusterj.AbstractClusterJCoreTest;
 
 public class I18NTest extends AbstractClusterJCoreTest {

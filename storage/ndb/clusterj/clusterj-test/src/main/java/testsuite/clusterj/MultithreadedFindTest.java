@@ -21,10 +21,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import com.mysql.clusterj.Session;
-import com.mysql.clusterj.annotation.Index;
-import com.mysql.clusterj.annotation.PersistenceCapable;
-import com.mysql.clusterj.annotation.PrimaryKey;
+import com.myblockchain.clusterj.Session;
+import com.myblockchain.clusterj.annotation.Index;
+import com.myblockchain.clusterj.annotation.PersistenceCapable;
+import com.myblockchain.clusterj.annotation.PrimaryKey;
 
 public class MultithreadedFindTest extends AbstractClusterJModelTest {
 

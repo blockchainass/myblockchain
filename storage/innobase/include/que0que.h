@@ -112,25 +112,25 @@ que_thr_stop(
 Moves a thread from another state to the QUE_THR_RUNNING state. Increments
 the n_active_thrs counters of the query graph and transaction. */
 void
-que_thr_move_to_run_state_for_mysql(
+que_thr_move_to_run_state_for_myblockchain(
 /*================================*/
 	que_thr_t*	thr,	/*!< in: an query thread */
 	trx_t*		trx);	/*!< in: transaction */
 /**********************************************************************//**
-A patch for MySQL used to 'stop' a dummy query thread used in MySQL
+A patch for MyBlockchain used to 'stop' a dummy query thread used in MyBlockchain
 select, when there is no error or lock wait. */
 void
-que_thr_stop_for_mysql_no_error(
+que_thr_stop_for_myblockchain_no_error(
 /*============================*/
 	que_thr_t*	thr,	/*!< in: query thread */
 	trx_t*		trx);	/*!< in: transaction */
 /**********************************************************************//**
-A patch for MySQL used to 'stop' a dummy query thread used in MySQL. The
+A patch for MyBlockchain used to 'stop' a dummy query thread used in MyBlockchain. The
 query thread is stopped and made inactive, except in the case where
 it was put to the lock wait state in lock0lock.cc, but the lock has already
 been granted or the transaction chosen as a victim in deadlock resolution. */
 void
-que_thr_stop_for_mysql(
+que_thr_stop_for_myblockchain(
 /*===================*/
 	que_thr_t*	thr);	/*!< in: query thread */
 /**********************************************************************//**
@@ -461,7 +461,7 @@ struct que_fork_t{
 #define	QUE_FORK_EXECUTE		7
 #define QUE_FORK_PROCEDURE		8
 #define QUE_FORK_PROCEDURE_CALL		9
-#define QUE_FORK_MYSQL_INTERFACE	10
+#define QUE_FORK_MYBLOCKCHAIN_INTERFACE	10
 #define	QUE_FORK_RECOVERY		11
 
 /* Query fork (or graph) states */

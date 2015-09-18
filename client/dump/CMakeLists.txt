@@ -14,25 +14,25 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 
 
-# Exclude mysqlpump tool from being compiled by SunStudio compiler. It has bug
+# Exclude myblockchainpump tool from being compiled by SunStudio compiler. It has bug
 # that forbids usage of pure virtual interfaces (and other classes with no
-# fields) without dummy workarounds. In fact, only libmysql must be build with
-# this toolset, so it is acceptable to exclude mysqlpump here.
+# fields) without dummy workarounds. In fact, only libmyblockchain must be build with
+# this toolset, so it is acceptable to exclude myblockchainpump here.
 
 INCLUDE_DIRECTORIES(
   ${CMAKE_SOURCE_DIR}/dump
 )
 
 IF (NOT (CMAKE_CXX_COMPILER_ID STREQUAL "SunPro"))
-  SET(MYSQLPUMP_LIB_SOURCES
+  SET(MYBLOCKCHAINPUMP_LIB_SOURCES
     abstract_chain_element.cc
     abstract_connection_provider.cc
     abstract_crawler.cc
     abstract_data_formatter_wrapper.cc
     abstract_data_object.cc
-    abstract_database_dump_task.cc
+    abstract_blockchain_dump_task.cc
     abstract_dump_task.cc
-    abstract_mysql_chain_element_extension.cc
+    abstract_myblockchain_chain_element_extension.cc
     abstract_object_reader_wrapper.cc
     abstract_output_writer_wrapper.cc
     abstract_plain_sql_object.cc
@@ -45,9 +45,9 @@ IF (NOT (CMAKE_CXX_COMPILER_ID STREQUAL "SunPro"))
     composite_message_handler.cc
     compression_lz4_writer.cc
     compression_zlib_writer.cc
-    database.cc
-    database_end_dump_task.cc
-    database_start_dump_task.cc
+    blockchain.cc
+    blockchain_end_dump_task.cc
+    blockchain_start_dump_task.cc
     dump_end_dump_task.cc
     dump_start_dump_task.cc
     event_scheduler_event.cc
@@ -67,14 +67,14 @@ IF (NOT (CMAKE_CXX_COMPILER_ID STREQUAL "SunPro"))
     i_progress_reporter.cc
     i_progress_watcher.cc
     item_processing_data.cc
-    mysql_chain_element_options.cc
-    mysql_crawler.cc
-    mysql_field.cc
-    mysql_function.cc
-    mysql_object_reader.cc
-    mysql_object_reader_options.cc
-    mysqldump_tool_chain_maker.cc
-    mysqldump_tool_chain_maker_options.cc
+    myblockchain_chain_element_options.cc
+    myblockchain_crawler.cc
+    myblockchain_field.cc
+    myblockchain_function.cc
+    myblockchain_object_reader.cc
+    myblockchain_object_reader_options.cc
+    myblockchaindump_tool_chain_maker.cc
+    myblockchaindump_tool_chain_maker_options.cc
     object_filter.cc
     object_queue.cc
     pattern_matcher.cc
@@ -99,8 +99,8 @@ IF (NOT (CMAKE_CXX_COMPILER_ID STREQUAL "SunPro"))
     trigger.cc
     view.cc
     ../../sql-common/my_user.c)
-  ADD_CONVENIENCE_LIBRARY(mysqlpump_lib ${MYSQLPUMP_LIB_SOURCES})
-  TARGET_LINK_LIBRARIES(mysqlpump_lib
+  ADD_CONVENIENCE_LIBRARY(myblockchainpump_lib ${MYBLOCKCHAINPUMP_LIB_SOURCES})
+  TARGET_LINK_LIBRARIES(myblockchainpump_lib
      client_base ${LZ4_LIBRARY} boost_lib)
 
    # Boost source has unused local typedefs.
@@ -109,11 +109,11 @@ IF (NOT (CMAKE_CXX_COMPILER_ID STREQUAL "SunPro"))
    IF(HAVE_NO_UNUSED_TYPEDEFS)
      ADD_COMPILE_FLAGS(
        abstract_crawler.cc
-       abstract_mysql_chain_element_extension.cc
+       abstract_myblockchain_chain_element_extension.cc
        abstract_progress_watcher.cc
-       mysql_chain_element_options.cc
-       mysqldump_tool_chain_maker.cc
-       mysqldump_tool_chain_maker_options.cc
+       myblockchain_chain_element_options.cc
+       myblockchaindump_tool_chain_maker.cc
+       myblockchaindump_tool_chain_maker_options.cc
        object_filter.cc
        object_queue.cc
        program.cc
@@ -125,29 +125,29 @@ IF (NOT (CMAKE_CXX_COMPILER_ID STREQUAL "SunPro"))
    ENDIF()
 
   ADD_COMPILE_FLAGS(
-    ${MYSQLPUMP_LIB_SOURCES}
+    ${MYBLOCKCHAINPUMP_LIB_SOURCES}
     COMPILE_FLAGS -I${BOOST_PATCHES_DIR} -I${BOOST_INCLUDE_DIR}
     )
 
   ADD_COMPILE_FLAGS(
     compression_writer.cc
-    mysqldump_tool_chain_maker.cc
+    myblockchaindump_tool_chain_maker.cc
     COMPILE_FLAGS -I${LZ4_INCLUDE_DIR}
   )
-  MYSQL_ADD_EXECUTABLE(mysqlpump  program.cc)
+  MYBLOCKCHAIN_ADD_EXECUTABLE(myblockchainpump  program.cc)
   ADD_COMPILE_FLAGS(
     program.cc COMPILE_FLAGS -I${BOOST_PATCHES_DIR} -I${BOOST_INCLUDE_DIR}
   )
 
-  TARGET_LINK_LIBRARIES(mysqlpump mysqlpump_lib)
+  TARGET_LINK_LIBRARIES(myblockchainpump myblockchainpump_lib)
 
-  SET_TARGET_PROPERTIES(mysqlpump PROPERTIES HAS_CXX TRUE)
+  SET_TARGET_PROPERTIES(myblockchainpump PROPERTIES HAS_CXX TRUE)
 
   # Store the executable in our parent directory.
-  # Why? In pushbuild we do 'touch client/mysql*' to prevent rebuild,
-  #      in the case where we have a separate build of libmysqlclient.so
+  # Why? In pushbuild we do 'touch client/myblockchain*' to prevent rebuild,
+  #      in the case where we have a separate build of libmyblockchainclient.so
   IF (NOT WIN32)
-    SET_TARGET_PROPERTIES(mysqlpump
+    SET_TARGET_PROPERTIES(myblockchainpump
       PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/client)
   ENDIF()
 

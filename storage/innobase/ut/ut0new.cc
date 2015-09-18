@@ -147,7 +147,7 @@ ut_new_boot()
 		"row0import",
 		"row0log",
 		"row0merge",
-		"row0mysql",
+		"row0myblockchain",
 		"row0sel",
 		"row0trunc",
 		"srv0conc",

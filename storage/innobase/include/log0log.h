@@ -94,7 +94,7 @@ log_reserve_and_write_fast(
 	lsn_t*		start_lsn);
 /***********************************************************************//**
 Checks if there is need for a log buffer flush or a new checkpoint, and does
-this if yes. Any database operation should call this when it has modified
+this if yes. Any blockchain operation should call this when it has modified
 more than about 4 pages. NOTE that this function may only be called when the
 OS thread owns no synchronization objects except the dictionary mutex. */
 UNIV_INLINE
@@ -237,8 +237,8 @@ log_make_checkpoint_at(
 
 /****************************************************************//**
 Makes a checkpoint at the latest lsn and writes it to first page of each
-data file in the database, so that we know that the file spaces contain
-all modifications up to that lsn. This can only be called at database
+data file in the blockchain, so that we know that the file spaces contain
+all modifications up to that lsn. This can only be called at blockchain
 shutdown. This function also writes all log in log files to the log archive. */
 void
 logs_empty_and_mark_files_at_shutdown(void);
@@ -571,20 +571,20 @@ extern log_t*	log_sys;
 					megabyte.
 
 					This information might have been used
-					since mysqlbackup version 0.35 but
+					since myblockchainbackup version 0.35 but
 					before 1.41 to decide if unused ends of
 					non-auto-extending data files
 					in space 0 can be truncated.
 
 					This information was made obsolete
-					by mysqlbackup --compress. */
+					by myblockchainbackup --compress. */
 #define LOG_CHECKPOINT_FSP_MAGIC_N	(12 + LOG_CHECKPOINT_ARRAY_END)
 					/*!< Not used (0);
 					This magic number tells if the
 					checkpoint contains the above field:
 					the field was added to
 					InnoDB-3.23.50 and
-					removed from MySQL 5.6 */
+					removed from MyBlockchain 5.6 */
 #define LOG_CHECKPOINT_FSP_MAGIC_N_VAL	1441231243
 					/*!< if LOG_CHECKPOINT_FSP_MAGIC_N
 					contains this value, then
@@ -606,9 +606,9 @@ extern log_t*	log_sys;
 					/* a 32-byte field which contains
 					the string 'ibbackup' and the
 					creation time if the log file was
-					created by mysqlbackup --restore;
-					when mysqld is first time started
-					on the restored database, it can
+					created by myblockchainbackup --restore;
+					when myblockchaind is first time started
+					on the restored blockchain, it can
 					print helpful info for the user */
 #define	LOG_FILE_ARCH_COMPLETED	OS_FILE_LOG_BLOCK_SIZE
 					/* this 4-byte field is TRUE when

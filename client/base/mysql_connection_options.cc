@@ -18,7 +18,7 @@
 #include <sstream>
 #include <vector>
 #include "abstract_options_provider.h"
-#include "mysql_connection_options.h"
+#include "myblockchain_connection_options.h"
 #include "abstract_program.h"
 #include <mysys_err.h>
 
@@ -28,11 +28,11 @@ using Mysql::Nullable;
 using std::vector;
 using std::string;
 
-bool Mysql_connection_options::mysql_inited;
+bool Mysql_connection_options::myblockchain_inited;
 
-static void atexit_mysql_library_end()
+static void atexit_myblockchain_library_end()
 {
-  mysql_library_end();
+  myblockchain_library_end();
 }
 
 Mysql_connection_options::Mysql_connection_options(Abstract_program *program)
@@ -40,11 +40,11 @@ Mysql_connection_options::Mysql_connection_options(Abstract_program *program)
     m_program(program),
     m_protocol(0)
 {
-  if (Mysql_connection_options::mysql_inited == false)
+  if (Mysql_connection_options::myblockchain_inited == false)
   {
-    Mysql_connection_options::mysql_inited= true;
-    mysql_library_init(0, NULL, NULL);
-    atexit(atexit_mysql_library_end);
+    Mysql_connection_options::myblockchain_inited= true;
+    myblockchain_library_init(0, NULL, NULL);
+    atexit(atexit_myblockchain_library_end);
   }
 
   this->add_provider(&this->m_ssl_options_provider);
@@ -53,12 +53,12 @@ Mysql_connection_options::Mysql_connection_options(Abstract_program *program)
 Mysql_connection_options::~Mysql_connection_options()
 {
   my_boost::mutex::scoped_lock lock(m_connection_mutex);
-  for (vector<MYSQL*>::iterator it= this->m_allocated_connections.begin();
+  for (vector<MYBLOCKCHAIN*>::iterator it= this->m_allocated_connections.begin();
     it != this->m_allocated_connections.end(); it++)
   {
     if (*it)
     {
-      mysql_close(*it);
+      myblockchain_close(*it);
     }
   }
 }
@@ -98,7 +98,7 @@ void Mysql_connection_options::create_options()
     ->add_callback(new Instance_callback<void, char*, Mysql_connection_options>
       (this, &Mysql_connection_options::pipe_protocol_callback));
 #endif
-  this->create_new_option(&this->m_mysql_port, "port",
+  this->create_new_option(&this->m_myblockchain_port, "port",
       "Port number to use for connection.")
     ->set_short_character('P');
   this->create_new_option(&this->m_protocol_string, "protocol",
@@ -109,7 +109,7 @@ void Mysql_connection_options::create_options()
   this->create_new_option(&this->m_shared_memory_base_name,
     "shared-memory-base-name", "Base name of shared memory.");
 #endif
-  this->create_new_option(&this->m_mysql_unix_port, "socket",
+  this->create_new_option(&this->m_myblockchain_unix_port, "socket",
     "The socket file to use for connection.")
     ->set_short_character('S');
   this->create_new_option(&this->m_secure_auth, "secure-auth",
@@ -126,63 +126,63 @@ void Mysql_connection_options::create_options()
     "Default authentication client-side plugin to use.");
 }
 
-MYSQL* Mysql_connection_options::create_connection()
+MYBLOCKCHAIN* Mysql_connection_options::create_connection()
 {
-  MYSQL *connection = new MYSQL;
+  MYBLOCKCHAIN *connection = new MYBLOCKCHAIN;
 
   {
   my_boost::mutex::scoped_lock lock(m_connection_mutex);
   this->m_allocated_connections.push_back(connection);
   }
-  mysql_init(connection);
+  myblockchain_init(connection);
   if (this->m_compress)
-    mysql_options(connection, MYSQL_OPT_COMPRESS, NullS);
+    myblockchain_options(connection, MYBLOCKCHAIN_OPT_COMPRESS, NullS);
 
   this->m_ssl_options_provider.apply_for_connection(connection);
 
   if (this->m_protocol)
-    mysql_options(connection,MYSQL_OPT_PROTOCOL,
+    myblockchain_options(connection,MYBLOCKCHAIN_OPT_PROTOCOL,
       (char*)&this->m_protocol);
   if (this->m_bind_addr.has_value())
-    mysql_options(connection,MYSQL_OPT_BIND,
+    myblockchain_options(connection,MYBLOCKCHAIN_OPT_BIND,
       this->m_bind_addr.value().c_str());
   if (!this->m_secure_auth)
-    mysql_options(connection,MYSQL_SECURE_AUTH,
+    myblockchain_options(connection,MYBLOCKCHAIN_SECURE_AUTH,
       (char*)&this->m_secure_auth);
 #if defined (_WIN32) && !defined (EMBEDDED_LIBRARY)
   if (this->m_shared_memory_base_name.has_value())
-    mysql_options(connection,MYSQL_SHARED_MEMORY_BASE_NAME,
+    myblockchain_options(connection,MYBLOCKCHAIN_SHARED_MEMORY_BASE_NAME,
       this->m_shared_memory_base_name.value().c_str());
 #endif
   if (this->m_default_charset.has_value())
   {
-    mysql_options(connection, MYSQL_SET_CHARSET_NAME,
+    myblockchain_options(connection, MYBLOCKCHAIN_SET_CHARSET_NAME,
       this->m_default_charset.value().c_str());
   }
   else
   {
-    mysql_options(connection, MYSQL_SET_CHARSET_NAME, "utf8");
+    myblockchain_options(connection, MYBLOCKCHAIN_SET_CHARSET_NAME, "utf8");
   }
   if (this->m_plugin_dir.has_value())
-    mysql_options(connection, MYSQL_PLUGIN_DIR,
+    myblockchain_options(connection, MYBLOCKCHAIN_PLUGIN_DIR,
       this->m_plugin_dir.value().c_str());
 
   if (this->m_default_auth.has_value())
-    mysql_options(connection, MYSQL_DEFAULT_AUTH,
+    myblockchain_options(connection, MYBLOCKCHAIN_DEFAULT_AUTH,
       this->m_default_auth.value().c_str());
 
-  mysql_options(connection, MYSQL_OPT_CONNECT_ATTR_RESET, 0);
-  mysql_options4(connection, MYSQL_OPT_CONNECT_ATTR_ADD,
+  myblockchain_options(connection, MYBLOCKCHAIN_OPT_CONNECT_ATTR_RESET, 0);
+  myblockchain_options4(connection, MYBLOCKCHAIN_OPT_CONNECT_ATTR_ADD,
                   "program_name", this->m_program->get_name().c_str());
 
-  if (!mysql_real_connect(connection,
+  if (!myblockchain_real_connect(connection,
     this->get_null_or_string(this->m_host),
     this->get_null_or_string(this->m_user),
     this->get_null_or_string(this->m_password), NULL,
-    this->m_mysql_port,
-    this->get_null_or_string(this->m_mysql_unix_port), 0))
+    this->m_myblockchain_port,
+    this->get_null_or_string(this->m_myblockchain_unix_port), 0))
   {
-    this->db_error(connection, "while connecting to the MySQL server");
+    this->db_error(connection, "while connecting to the MyBlockchain server");
     return NULL;
   }
 
@@ -219,7 +219,7 @@ const char* Mysql_connection_options::get_null_or_string(
 void Mysql_connection_options::pipe_protocol_callback(
   char* not_used __attribute__((unused)))
 {
-  this->m_protocol= MYSQL_PROTOCOL_PIPE;
+  this->m_protocol= MYBLOCKCHAIN_PROTOCOL_PIPE;
 }
 #endif
 
@@ -246,10 +246,10 @@ void Mysql_connection_options::secure_auth_callback(
 
 
 void Mysql_connection_options::db_error(
-  MYSQL* connection, const char* when)
+  MYBLOCKCHAIN* connection, const char* when)
 {
   my_printf_error(0,"Got error: %d: %s %s", MYF(0),
-    mysql_errno(connection), mysql_error(connection), when);
+    myblockchain_errno(connection), myblockchain_error(connection), when);
   this->m_program->error(Mysql::Tools::Base::Message_data(
     EXIT_CANNOT_CONNECT_TO_SERVICE, "", Message_type_error));
 }

@@ -50,14 +50,14 @@ extern "C" {
 } // extern
 #endif
 
-#if defined(__cplusplus) && !defined(YASSL_MYSQL_COMPATIBLE)
+#if defined(__cplusplus) && !defined(YASSL_MYBLOCKCHAIN_COMPATIBLE)
 namespace yaSSL {
 extern "C" {
 #endif
 
 #undef X509_NAME   /* wincrypt.h clash */
 
-#if defined(__cplusplus) && !defined(YASSL_MYSQL_COMPATIBLE)
+#if defined(__cplusplus) && !defined(YASSL_MYBLOCKCHAIN_COMPATIBLE)
     class SSL;
     class SSL_SESSION;
     class SSL_METHOD;
@@ -558,7 +558,7 @@ void yaSSL_transport_set_ptr(SSL *, void *);
 void yaSSL_transport_set_recv_function(SSL *, yaSSL_recv_func_t);
 void yaSSL_transport_set_send_function(SSL *, yaSSL_send_func_t);
 
-#if defined(__cplusplus) && !defined(YASSL_MYSQL_COMPATIBLE)
+#if defined(__cplusplus) && !defined(YASSL_MYBLOCKCHAIN_COMPATIBLE)
 }      /* namespace  */
 }      /* extern "C" */
 #endif

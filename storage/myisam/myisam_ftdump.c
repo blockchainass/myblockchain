@@ -102,7 +102,7 @@ int main(int argc,char *argv[])
     goto err;
   }
 
-  mi_lock_database(info, F_EXTRA_LCK);
+  mi_lock_blockchain(info, F_EXTRA_LCK);
 
   info->lastpos= HA_OFFSET_ERROR;
   info->update|= HA_STATE_PREV_FOUND;
@@ -158,7 +158,7 @@ int main(int argc,char *argv[])
     if (verbose && (total%HOW_OFTEN_TO_WRITE)==0)
       printf("%10ld\r",total);
   }
-  mi_lock_database(info, F_UNLCK);
+  mi_lock_blockchain(info, F_UNLCK);
 
   if (count || stats)
   {

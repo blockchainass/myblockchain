@@ -1,4 +1,4 @@
-/* Copyright (c) 2000-2002, 2004, 2006-2008 MySQL AB, 2009 Sun Microsystems, Inc.
+/* Copyright (c) 2000-2002, 2004, 2006-2008 MyBlockchain AB, 2009 Sun Microsystems, Inc.
    Use is subject to license terms.
 
    This program is free software; you can redistribute it and/or modify
@@ -44,8 +44,8 @@ extern TYPELIB merge_insert_method;
 
 typedef struct st_mymerge_info		/* Struct from h_info */
 {
-  ulonglong records;			/* Records in database */
-  ulonglong deleted;			/* Deleted records in database */
+  ulonglong records;			/* Records in blockchain */
+  ulonglong deleted;			/* Deleted records in blockchain */
   ulonglong recpos;			/* Pos for last used record */
   ulonglong data_file_length;
   ulonglong dupp_key_pos;               /* Offset of the Duplicate key in the merge table */
@@ -76,7 +76,7 @@ typedef struct st_myrg_info
   LIST	 open_list;
   QUEUE  by_key;
   ulong *rec_per_key_part;			/* for sql optimizing */
-  mysql_mutex_t mutex;
+  myblockchain_mutex_t mutex;
 } MYRG_INFO;
 
 
@@ -106,7 +106,7 @@ extern int myrg_rsame(MYRG_INFO *file,uchar *record,int inx);
 extern int myrg_update(MYRG_INFO *file,const uchar *old,uchar *new_rec);
 extern int myrg_write(MYRG_INFO *info,uchar *rec);
 extern int myrg_status(MYRG_INFO *file,MYMERGE_INFO *x,int flag);
-extern int myrg_lock_database(MYRG_INFO *file,int lock_type);
+extern int myrg_lock_blockchain(MYRG_INFO *file,int lock_type);
 extern int myrg_create(const char *name, const char **table_names,
                        uint insert_method, my_bool fix_names);
 extern int myrg_extra(MYRG_INFO *file,enum ha_extra_function function,

@@ -15,7 +15,7 @@
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-package com.mysql.cluster.crund;
+package com.myblockchain.cluster.crund;
 
 import java.util.Collection;
 import java.util.Map;
@@ -27,19 +27,19 @@ import java.util.TreeSet;
 import java.util.Comparator;
 
 // XXX ndbapi constant not in clusterj-api.jar
-//import com.mysql.ndbjtie.ndbapi.NdbIndexScanOperation.NotSpecified.MaxRangeNo;
+//import com.myblockchain.ndbjtie.ndbapi.NdbIndexScanOperation.NotSpecified.MaxRangeNo;
 
-import com.mysql.clusterj.ClusterJHelper;
-import com.mysql.clusterj.Constants;
-import com.mysql.clusterj.Query;
-import com.mysql.clusterj.Session;
-import com.mysql.clusterj.SessionFactory;
-import com.mysql.clusterj.LockMode;
-import com.mysql.clusterj.query.QueryDomainType;
-import com.mysql.clusterj.query.QueryBuilder;
-import com.mysql.clusterj.query.Predicate;
+import com.myblockchain.clusterj.ClusterJHelper;
+import com.myblockchain.clusterj.Constants;
+import com.myblockchain.clusterj.Query;
+import com.myblockchain.clusterj.Session;
+import com.myblockchain.clusterj.SessionFactory;
+import com.myblockchain.clusterj.LockMode;
+import com.myblockchain.clusterj.query.QueryDomainType;
+import com.myblockchain.clusterj.query.QueryBuilder;
+import com.myblockchain.clusterj.query.Predicate;
 
-import com.mysql.cluster.crund.CrundDriver.XMode;
+import com.myblockchain.cluster.crund.CrundDriver.XMode;
 
 /**
  * The ClusterJ benchmark implementation.
@@ -101,7 +101,7 @@ public class ClusterjAB extends CrundLoad {
         out.println("ndb.mgmdConnect                 " + mgmdConnect);
         for (Map.Entry<Object,Object> e : driver.props.entrySet()) {
             final String k = (String)e.getKey();
-            if (k.startsWith("com.mysql.clusterj")) {
+            if (k.startsWith("com.myblockchain.clusterj")) {
                 final StringBuilder s = new StringBuilder("..");
                 s.append(k, 18, k.length());
                 while (s.length() < 31) s.append(' ');
@@ -171,7 +171,7 @@ public class ClusterjAB extends CrundLoad {
             case each :
             case bulk :
                 // Approach: control when persistent context is flushed,
-                // i.e., at commit for 1 database roundtrip only.
+                // i.e., at commit for 1 blockchain roundtrip only.
                 beginTransaction();
                 for (int i = 0; i < n; i++) {
                     write(id[i]);
@@ -570,8 +570,8 @@ public class ClusterjAB extends CrundLoad {
                         dobj = qbld.createQueryDefinition(IA.class);
                         dobjB = qbld.createQueryDefinition(IB.class);
                         // XXX equal-comparison of properties not implemented
-                        // [java] com.mysql.clusterj.ClusterJUserException: Operation equal is implemented only for parameters.
-                        // [java] at com.mysql.clusterj.core.query.PropertyImpl.equal(PropertyImpl.java:88)
+                        // [java] com.myblockchain.clusterj.ClusterJUserException: Operation equal is implemented only for parameters.
+                        // [java] at com.myblockchain.clusterj.core.query.PropertyImpl.equal(PropertyImpl.java:88)
                         Predicate p0 = dobj.get("id").equal(dobjB.get("aid"));
                         Predicate p1 = dobjB.get("id").in(dobjB.param("id"));
                         dobj.where(p0.and(p1));

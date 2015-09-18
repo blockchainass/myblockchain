@@ -44,7 +44,7 @@ can be retrieved with os_file_get_last_error */
 UNIV_INLINE
 os_file_t
 pfs_os_file_create_simple_func(
-	mysql_pfs_key_t key,
+	myblockchain_pfs_key_t key,
 	const char*	name,
 	ulint		create_mode,
 	ulint		access_type,
@@ -93,7 +93,7 @@ can be retrieved with os_file_get_last_error */
 UNIV_INLINE
 os_file_t
 pfs_os_file_create_simple_no_error_handling_func(
-	mysql_pfs_key_t key,
+	myblockchain_pfs_key_t key,
 	const char*	name,
 	ulint		create_mode,
 	ulint		access_type,
@@ -143,7 +143,7 @@ can be retrieved with os_file_get_last_error */
 UNIV_INLINE
 os_file_t
 pfs_os_file_create_func(
-	mysql_pfs_key_t key,
+	myblockchain_pfs_key_t key,
 	const char*	name,
 	ulint		create_mode,
 	ulint		purpose,
@@ -419,7 +419,7 @@ os_file_rename()
 UNIV_INLINE
 bool
 pfs_os_file_rename_func(
-	mysql_pfs_key_t	key,
+	myblockchain_pfs_key_t	key,
 	const char*	oldpath,
 	const char*	newpath,
 	const char*	src_file,
@@ -452,7 +452,7 @@ os_file_delete()
 UNIV_INLINE
 bool
 pfs_os_file_delete_func(
-	mysql_pfs_key_t	key,
+	myblockchain_pfs_key_t	key,
 	const char*	name,
 	const char*	src_file,
 	ulint		src_line)
@@ -484,7 +484,7 @@ os_file_delete_if_exists()
 UNIV_INLINE
 bool
 pfs_os_file_delete_if_exists_func(
-	mysql_pfs_key_t	key,
+	myblockchain_pfs_key_t	key,
 	const char*	name,
 	bool*		exist,
 	const char*	src_file,

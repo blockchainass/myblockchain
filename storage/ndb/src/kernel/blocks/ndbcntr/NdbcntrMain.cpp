@@ -429,9 +429,9 @@ parse_spec(Vector<ddentry> & dst,
 }
 
 /**
-Restart Phases in MySQL Cluster
+Restart Phases in MyBlockchain Cluster
 -------------------------------
-In MySQL Cluster the restart is processed in phases, the restart of a node
+In MyBlockchain Cluster the restart is processed in phases, the restart of a node
 is driven by a set of phases. In addition a node restart is also synchronised
 with already started nodes and other nodes that are starting up in parallel
 with our node. This comment will describe the various phases used.
@@ -561,7 +561,7 @@ touches all of this memory. It is part of the main thread.
 The next module receiving READ_CONFIG_REQ is NDBFS, this is the module that
 controls the file system threads, this module is found in the main thread.
 
-Next module is DBINFO, this module supports the ndbinfo database used to get
+Next module is DBINFO, this module supports the ndbinfo blockchain used to get
 information about the data node internals in table format, this module is
 found in the main thread.
 
@@ -910,7 +910,7 @@ record at a time and executing the action if needed that is found in the
 REDO log record.
 Apply the REDO log: Synonym of execute the REDO log.
 Prepare REDO log record: This is a REDO log record that contains the
-information about a change in the database (insert/delete/update/write).
+information about a change in the blockchain (insert/delete/update/write).
 COMMIT REDO log record: This is a REDO log record that specifies that a
 Prepare REDO log record is to be actually executed. The COMMIT REDO log
 record contains a back reference to the Prepare REDO log record.
@@ -919,27 +919,27 @@ the transaction was aborted so there is no need to apply the REDO log
 record.
 Database: Means in this context all the data residing in the cluster or
 in the node when there is a node restart.
-Off-line Database: Means that our database in our node is not on-line
-and thus cannot be used for reading. This is the state of the database
+Off-line Database: Means that our blockchain in our node is not on-line
+and thus cannot be used for reading. This is the state of the blockchain
 after restoring a LCP, but before applying the REDO log.
-Off-line Consistent database: This is a database state which is not
+Off-line Consistent blockchain: This is a blockchain state which is not
 up-to-date with the most recent changes, but it represents an old state
-in the database that existed previously. This state is achieved after
+in the blockchain that existed previously. This state is achieved after
 restoring an LCP and executing the REDO log.
-On-line Database: This is a database state which is up-to-date, any node
-that can be used to read data is has its database on-line (actually
+On-line Database: This is a blockchain state which is up-to-date, any node
+that can be used to read data is has its blockchain on-line (actually
 fragments are brought on-line one by one).
-On-line Recoverable Database: This is an on-line database that is also
-recoverable. In a node restart we reach the state on-line database first,
-but we need to run an LCP before the database can also be recovered to
-its current state. A recoverable database is also durable so this means
-that we're adding the D in ACID to the database when we reach this state.
+On-line Recoverable Database: This is an on-line blockchain that is also
+recoverable. In a node restart we reach the state on-line blockchain first,
+but we need to run an LCP before the blockchain can also be recovered to
+its current state. A recoverable blockchain is also durable so this means
+that we're adding the D in ACID to the blockchain when we reach this state.
 Node: There are API nodes, data nodes and management server nodes. A data
-node is a ndbd/ndbmtd process that runs all the database logic and
-contains the database data. The management server node is a process that
+node is a ndbd/ndbmtd process that runs all the blockchain logic and
+contains the blockchain data. The management server node is a process that
 runs ndb_mgmd that contains the cluster configuration and also performs
 a number of management services. API nodes are part of application processes
-and within mysqld's. There can be more than one API node per application
+and within myblockchaind's. There can be more than one API node per application
 process. Each API node is connected through a socket (or other
 communication media) to each of the data nodes and management server nodes.
 When one refers to nodes in this text it's mostly implied that we're
@@ -966,9 +966,9 @@ the page buffer manager, the tablespace manager, a block that writes
 LCPs and a block that restores LCPs, a log manager for disk data.
 
 ------------------------------------------------------------------------------
-| What happens as part START_COPYREQ is what is the real database restore    |
-| process. Here most of the important database recovery algorithms are       |
-| executed to bring the database online again. The earlier phases were still |
+| What happens as part START_COPYREQ is what is the real blockchain restore    |
+| process. Here most of the important blockchain recovery algorithms are       |
+| executed to bring the blockchain online again. The earlier phases were still |
 | needed to restore the metadata and setup communication, setup memory and   |
 | bringing in the starting node as a full citizen in the cluster of data     |
 | nodes.                                                                     |
@@ -1022,7 +1022,7 @@ stages of startup in the DBLQH module.
 
 Phase 3 in DBLQH is the reading of the REDO log and applying it on fragment
 replicas restored from the local checkpoint. This is required to create a
-database state which is synchronised on a specific global checkpoint. So we
+blockchain state which is synchronised on a specific global checkpoint. So we
 first install a local checkpoint for all fragments, next we apply the REDO
 log to synchronise the fragment replica with a certain global checkpoint.
 
@@ -1129,8 +1129,8 @@ ensure all nodes know that we're done with the synchronisation.
 
   COMPLETED RESTORING ON-LINE NOT RECOVERABLE DATABASE
 ------------------------------------------------------------------------------
-| At this point we have restored an online variant of the database by        |
-| bringing one fragment at a time online. The database is still not          |
+| At this point we have restored an online variant of the blockchain by        |
+| bringing one fragment at a time online. The blockchain is still not          |
 | recoverable since we haven't enabled logging yet and there is no local     |
 | checkpoint of the data in the starting node.                               |
 ------------------------------------------------------------------------------
@@ -1147,7 +1147,7 @@ this phase of the restart.
 | At this point we have managed to restored all data and we have brought it  |
 | online and now we have also executed a local checkpoint afer enabling      |
 | logging and so now data in the starting node is also recoverable. So this  |
-| means that the database is now fully online again.                         |
+| means that the blockchain is now fully online again.                         |
 ------------------------------------------------------------------------------
 
 After completing NDB_STTOR phase 5 then all nodes that have been synchronised
@@ -1252,26 +1252,26 @@ Over time the need for such a subsystem startup phases are no longer there,
 but the software is already engineered for this and thus it's been kept in
 this manner.
 
-3) Also the responsibility for the distributed parts of the database start
+3) Also the responsibility for the distributed parts of the blockchain start
 is divided. QMGR is responsible for discovering when nodes are up and down.
 NDBCNTR maintains the protocols for failure handling and other changes of the
 node configuration. Finally DBDIH is responsible for the distributed start of
-the database parts. It interacts a lot with DBLQH that have the local
-responsibility of starting one nodes database part as directed by DBDIH.
+the blockchain parts. It interacts a lot with DBLQH that have the local
+responsibility of starting one nodes blockchain part as directed by DBDIH.
 
-Local checkpoint processing in MySQL Cluster
+Local checkpoint processing in MyBlockchain Cluster
 --------------------------------------------
 
 This comment attempts to describe the processing of checkpoints as it happens
-in MySQL Cluster. It also clarifies where potential bottlenecks are. This
+in MyBlockchain Cluster. It also clarifies where potential bottlenecks are. This
 comment is mainly intended as internal documentation of the open source code
-of MySQL Cluster.
+of MyBlockchain Cluster.
 
-The reason for local checkpoints in MySQL Cluster is to ensure that we have
+The reason for local checkpoints in MyBlockchain Cluster is to ensure that we have
 copy of data on disk which can be used to run the REDO log against to restore
-the data in MySQL Cluster after a crash.
+the data in MyBlockchain Cluster after a crash.
 
-We start by introducing different restart variants in MySQL Cluster. The first
+We start by introducing different restart variants in MyBlockchain Cluster. The first
 variant is a normal node restart, this means that the node have been missing
 for a short time, but is now back on line again. We start by installing a
 checkpointed version of all tables (including executing proper parts of the
@@ -1309,7 +1309,7 @@ needed to restore the cluster, thus the node isn't fully restored until it can
 be used to restore all data it owns in a system restart.
 
 So when performing a rolling node restart where all nodes in the cluster are
-restarted (e.g. to upgrade the software in MySQL Cluster), it makes sense to
+restarted (e.g. to upgrade the software in MyBlockchain Cluster), it makes sense to
 restart a set of nodes at a time since we can only have one set of nodes
 restarted at a time.
 
@@ -4772,7 +4772,7 @@ Ndbcntr::execFSREMOVECONF(Signal* signal){
 void Ndbcntr::Missra::execSTART_ORD(Signal* signal){
   signal->theData[0] = NDB_LE_NDBStartStarted;
   signal->theData[1] = NDB_VERSION;
-  signal->theData[2] = NDB_MYSQL_VERSION_D;
+  signal->theData[2] = NDB_MYBLOCKCHAIN_VERSION_D;
   cntr.sendSignal(CMVMI_REF, GSN_EVENT_REP, signal, 3, JBB);
 
   currentBlockIndex = 0;
@@ -5061,7 +5061,7 @@ void Ndbcntr::Missra::sendNextSTTOR(Signal* signal){
 
   signal->theData[0] = NDB_LE_NDBStartCompleted;
   signal->theData[1] = NDB_VERSION;
-  signal->theData[2] = NDB_MYSQL_VERSION_D;
+  signal->theData[2] = NDB_MYBLOCKCHAIN_VERSION_D;
   cntr.sendSignal(CMVMI_REF, GSN_EVENT_REP, signal, 3, JBB);
   
   NodeState newState(NodeState::SL_STARTED);

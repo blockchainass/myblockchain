@@ -21,7 +21,7 @@
 #include "pfs_user.h"
 #include "pfs_host.h"
 #include "pfs_account.h"
-#include "mysqld_thd_manager.h"
+#include "myblockchaind_thd_manager.h"
 #include "pfs_buffer_container.h"
 
 /**
@@ -1346,7 +1346,7 @@ PFS_connection_status_visitor::~PFS_connection_status_visitor()
 void PFS_connection_status_visitor::visit_global()
 {
    /* NOTE: Requires lock on LOCK_status. */
-   mysql_mutex_assert_owner(&LOCK_status);
+   myblockchain_mutex_assert_owner(&LOCK_status);
    add_to_status(m_status_vars, &global_status_var, false);
 }
 

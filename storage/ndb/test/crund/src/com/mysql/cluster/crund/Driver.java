@@ -15,7 +15,7 @@
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-package com.mysql.cluster.crund;
+package com.myblockchain.cluster.crund;
 
 import java.util.Properties;
 import java.util.List;
@@ -36,7 +36,7 @@ import java.io.StringWriter;
 
 
 /**
- * This class benchmarks transactions of standard database operations on
+ * This class benchmarks transactions of standard blockchain operations on
  * different datastore implementations.
  * <p>
  * The operations are variations of Create, Read, Update, Navigate, and
@@ -261,7 +261,7 @@ public abstract class Driver {
             } else if (s.contains(".")) {
                 loadClassNames.add(s); // use qualified class name
             } else {
-                loadClassNames.add("com.mysql.cluster.crund." + s);
+                loadClassNames.add("com.myblockchain.cluster.crund." + s);
             }
         }
 

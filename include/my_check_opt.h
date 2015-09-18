@@ -23,7 +23,7 @@ extern "C" {
 /*
   All given definitions needed for MyISAM storage engine:
   myisamchk.c or/and ha_myisam.cc or/and micheck.c
-  Some definitions are needed by the MySQL parser.
+  Some definitions are needed by the MyBlockchain parser.
 */
 
 #define T_AUTO_INC		(1UL << 0)

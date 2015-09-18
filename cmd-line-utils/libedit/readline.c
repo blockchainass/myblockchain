@@ -446,7 +446,7 @@ readline(const char *p)
 		buf = strdup(ret);
 		if (buf == NULL)
 			return NULL;
-                /* XXXMYSQL: Bug#16408762 */
+                /* XXXMYBLOCKCHAIN: Bug#16408762 */
 		lastidx = strlen(ret) - 1;
 		if (buf[lastidx] == '\n')
 			buf[lastidx] = '\0';

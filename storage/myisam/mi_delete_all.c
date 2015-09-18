@@ -55,8 +55,8 @@ int mi_delete_all_rows(MI_INFO *info)
   flush_key_blocks(share->key_cache, share->kfile, FLUSH_IGNORE_CHANGED);
   if (share->file_map)
     mi_munmap_file(info);
-  if (mysql_file_chsize(info->dfile, 0, 0, MYF(MY_WME)) ||
-      mysql_file_chsize(share->kfile, share->base.keystart, 0, MYF(MY_WME)))
+  if (myblockchain_file_chsize(info->dfile, 0, 0, MYF(MY_WME)) ||
+      myblockchain_file_chsize(share->kfile, share->base.keystart, 0, MYF(MY_WME)))
     goto err;
   (void) _mi_writeinfo(info,WRITEINFO_UPDATE_KEYFILE);
   DBUG_RETURN(0);

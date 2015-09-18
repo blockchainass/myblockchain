@@ -15,11 +15,11 @@
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifndef MYSQL_FIELD_INCLUDED
-#define MYSQL_FIELD_INCLUDED
+#ifndef MYBLOCKCHAIN_FIELD_INCLUDED
+#define MYBLOCKCHAIN_FIELD_INCLUDED
 
 #include "my_global.h"
-#include "mysql.h"
+#include "myblockchain.h"
 #include <string>
 
 namespace Mysql{
@@ -29,7 +29,7 @@ namespace Dump{
 class Mysql_field
 {
 public:
-  Mysql_field(MYSQL_FIELD* field);
+  Mysql_field(MYBLOCKCHAIN_FIELD* field);
 
   std::string get_name() const;
 
@@ -40,7 +40,7 @@ public:
   enum enum_field_types get_type() const;
 
 private:
-  MYSQL_FIELD m_field;
+  MYBLOCKCHAIN_FIELD m_field;
 };
 
 }

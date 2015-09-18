@@ -103,7 +103,7 @@ extern void hp_clear_keys(HP_SHARE *info);
 extern uint hp_rb_pack_key(HP_KEYDEF *keydef, uchar *key, const uchar *old,
                            key_part_map keypart_map);
 
-extern mysql_mutex_t THR_LOCK_heap;
+extern myblockchain_mutex_t THR_LOCK_heap;
 
 extern PSI_memory_key hp_key_memory_HP_SHARE;
 extern PSI_memory_key hp_key_memory_HP_INFO;

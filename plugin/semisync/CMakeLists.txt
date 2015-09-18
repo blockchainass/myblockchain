@@ -21,10 +21,10 @@ IF(SSL_DEFINES)
  ADD_DEFINITIONS(${SSL_DEFINES})
 ENDIF()
 
-MYSQL_ADD_PLUGIN(semisync_master ${SEMISYNC_MASTER_SOURCES}  
+MYBLOCKCHAIN_ADD_PLUGIN(semisync_master ${SEMISYNC_MASTER_SOURCES}  
   MODULE_ONLY MODULE_OUTPUT_NAME "semisync_master")
 
 SET(SEMISYNC_SLAVE_SOURCES  semisync.cc semisync_slave.cc 
   semisync_slave_plugin.cc semisync.h semisync_slave.h )
-MYSQL_ADD_PLUGIN(semisync_slave ${SEMISYNC_SLAVE_SOURCES} 
+MYBLOCKCHAIN_ADD_PLUGIN(semisync_slave ${SEMISYNC_SLAVE_SOURCES} 
   MODULE_ONLY MODULE_OUTPUT_NAME "semisync_slave")

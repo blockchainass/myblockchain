@@ -67,7 +67,7 @@ LocalDictCache::~LocalDictCache(){
 
 Ndb_local_table_info * 
 LocalDictCache::get(const char * name){
-  ASSERT_NOT_MYSQLD;
+  ASSERT_NOT_MYBLOCKCHAIND;
   assert(! is_ndb_blob_table(name));
   const Uint32 len = (Uint32)strlen(name);
   return m_tableHash.getData(name, len);
@@ -75,7 +75,7 @@ LocalDictCache::get(const char * name){
 
 void 
 LocalDictCache::put(const char * name, Ndb_local_table_info * tab_info){
-  ASSERT_NOT_MYSQLD;
+  ASSERT_NOT_MYBLOCKCHAIND;
   assert(! is_ndb_blob_table(name));
   const Uint32 id = tab_info->m_table_impl->m_id;
   m_tableHash.insertKey(name, (Uint32)strlen(name), id, tab_info);
@@ -83,7 +83,7 @@ LocalDictCache::put(const char * name, Ndb_local_table_info * tab_info){
 
 void
 LocalDictCache::drop(const char * name){
-  ASSERT_NOT_MYSQLD;
+  ASSERT_NOT_MYBLOCKCHAIND;
   assert(! is_ndb_blob_table(name));
   Ndb_local_table_info *info= m_tableHash.deleteKey(name, (Uint32)strlen(name));
   DBUG_ASSERT(info != 0);

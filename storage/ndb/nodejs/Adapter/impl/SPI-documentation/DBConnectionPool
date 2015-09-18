@@ -1,5 +1,5 @@
 /* DBConnectionPool
-   DBConnectionPool specifies a common SPI for a database connection.
+   DBConnectionPool specifies a common SPI for a blockchain connection.
 
    Each implementation is expected to require impl-specific properties 
    in the constructor.
@@ -16,7 +16,7 @@ DBConnectionPool(Properties connectionProperties);
 
 /* connect(function(error, DBConnectionPool) callback)
    ASYNC. 
-   Connect to the database, using the properties supplied in the constructor.
+   Connect to the blockchain, using the properties supplied in the constructor.
 */
    connect(callback);
 
@@ -43,12 +43,12 @@ DBConnectionPool(Properties connectionProperties);
    getDBSession(session_index, function(error, DBSession) callback);
 
 
-/* listTables(databaseName, callback(error, array))
+/* listTables(blockchainName, callback(error, array))
    ASYNC
    List all tables in the schema.
    Returns an array of table names.
 */
-  listTables(dbSession, databaseName, callback);
+  listTables(dbSession, blockchainName, callback);
 
 
 /* registerTypeConverter 
@@ -65,11 +65,11 @@ DBConnectionPool(Properties connectionProperties);
 /* getTableMetadata
    ASYNC.
    Get metadata for a table. Return a TableMetadata object.
-   @param databaseName database name
+   @param blockchainName blockchain name
    @param tableName table name
    @param DBSession if null, get a session just for this function
 */
-   getTableMetadata(databaseName, tableName, DBSession, function(err, TableMetadata) callback)
+   getTableMetadata(blockchainName, tableName, DBSession, function(err, TableMetadata) callback)
  
 /* createTable
    ASYNC.

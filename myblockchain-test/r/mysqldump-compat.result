@@ -1,0 +1,4 @@
+CREATE DATABASE myblockchaindump_30126;
+USE myblockchaindump_30126;
+CREATE TABLE t1 (c1 int);
+DROP DATABASE myblockchaindump_30126;

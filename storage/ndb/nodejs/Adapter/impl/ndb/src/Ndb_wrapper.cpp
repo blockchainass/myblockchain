@@ -58,7 +58,7 @@ Handle<Value> Ndb_Wrapper(Ndb *ndb) {
 }
 
 /* Ndb constructor.
-   create_ndb(Ndb_cluster_connection, databaseName, callback)
+   create_ndb(Ndb_cluster_connection, blockchainName, callback)
    The constructor is wrapped in a call that also calls ndb->init().
 */
 Ndb * async_create_ndb(Ndb_cluster_connection *conn, const char *db) {

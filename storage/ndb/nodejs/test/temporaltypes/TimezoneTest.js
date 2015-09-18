@@ -20,32 +20,32 @@
 
 "use strict";
 
-/* Write MySQL, Read NDB Datetime
-   Write NDB, Read MySQL Datetime
-   Write MySQL, Read NDB Timestamp
-   Write NDB, Read MySQL Timestamp
+/* Write MyBlockchain, Read NDB Datetime
+   Write NDB, Read MyBlockchain Datetime
+   Write MyBlockchain, Read NDB Timestamp
+   Write NDB, Read MyBlockchain Timestamp
    
    TODO: These tests should use the current adapter rather than "Ndb" 
-         and should use a direct mysql connection rather than our "Mysql"
+         and should use a direct myblockchain connection rather than our "Mysql"
    
    Assure that the two backends have identical behavior,
    especially with regard to local time vs. UTC.
 */
 
-// http://dev.mysql.com/doc/refman/5.6/en/time-zone-support.html
+// http://dev.myblockchain.com/doc/refman/5.6/en/time-zone-support.html
 
 var propsNdb = new mynode.ConnectionProperties(global.test_conn_properties);
 var propsMysql = new mynode.ConnectionProperties(global.test_conn_properties);
 propsNdb.implementation = global.adapter;
-propsMysql.implementation = "mysql";
+propsMysql.implementation = "myblockchain";
 
 function openSessions(testCase, callback) {
   function onOpen2(err, session) {
     if(err) {
-      testCase.fail("mysql:", err);
+      testCase.fail("myblockchain:", err);
     }
     else {
-      testCase.mysqlSession = session;
+      testCase.myblockchainSession = session;
       callback(testCase);
     }
   }
@@ -80,8 +80,8 @@ function ValueVerifier(testCase, field, value) {
     if (testCase.ndbSession) {
       testCase.ndbSession.close();
     }
-    if (testCase.mysqlSession) {
-      testCase.mysqlSession.close();
+    if (testCase.myblockchainSession) {
+      testCase.myblockchainSession.close();
     }
     testCase.failOnError();
   };
@@ -97,7 +97,7 @@ function ReadNdbFunction(testCase) {
 function ReadMysqlFunction(testCase) {
   return function onNdbPersist(err) {
     testCase.errorIfError(err);
-    testCase.mysqlSession.find(testCase.tableName, testCase.data.id, testCase.verifier.run);
+    testCase.myblockchainSession.find(testCase.tableName, testCase.data.id, testCase.verifier.run);
   }
 }
 
@@ -105,7 +105,7 @@ function InsertMysqlFunction(tableName, data) {
   return function onSessions(testCase) {
     testCase.tableName = tableName;
     testCase.data = data;
-    testCase.mysqlSession.persist(tableName, data, ReadNdbFunction(testCase));
+    testCase.myblockchainSession.persist(tableName, data, ReadNdbFunction(testCase));
   };
 }
 
@@ -123,8 +123,8 @@ function TestData(id) {
   this.cTimestamp = new Date();
 }
 
-// Timestamp NDB->MySQL
-var t1 = new harness.ConcurrentTest("Timestamp-NDB-MySQL");
+// Timestamp NDB->MyBlockchain
+var t1 = new harness.ConcurrentTest("Timestamp-NDB-MyBlockchain");
 t1.run = function() {
   var data = new TestData(101);
   var date1970 = new Date(Date.UTC(1970, 0, 1, 3, 34, 30));
@@ -133,8 +133,8 @@ t1.run = function() {
   openSessions(this, InsertNdbFunction("temporaltypes", data));
 }
 
-// Timestamp MySQL->NDB
-var t2 = new harness.ConcurrentTest("Timestamp-MySQL-NDB");
+// Timestamp MyBlockchain->NDB
+var t2 = new harness.ConcurrentTest("Timestamp-MyBlockchain-NDB");
 t2.run = function() {
   var data = new TestData(102);
   var date1970 = new Date(Date.UTC(1970, 1, 2, 4, 34, 30));
@@ -143,8 +143,8 @@ t2.run = function() {
   openSessions(this, InsertMysqlFunction("temporaltypes", data));
 }
 
-// Datetime NDB->MySQL
-var t3 = new harness.ConcurrentTest("Datetime-NDB-MySQL");
+// Datetime NDB->MyBlockchain
+var t3 = new harness.ConcurrentTest("Datetime-NDB-MyBlockchain");
 t3.run = function() {
   var data = new TestData(103);
   var date1970 = new Date(Date.UTC(1970, 2, 3, 4, 34, 30));
@@ -153,8 +153,8 @@ t3.run = function() {
   openSessions(this, InsertNdbFunction("temporaltypes", data));
 }
 
-// Datetime MySQL->NDB
-var t4 = new harness.ConcurrentTest("Datetime-MySQL-NDB");
+// Datetime MyBlockchain->NDB
+var t4 = new harness.ConcurrentTest("Datetime-MyBlockchain-NDB");
 t4.run = function() {
   var data = new TestData(104);
   var date1970 = new Date(Date.UTC(1970, 3, 4, 4, 34, 30));

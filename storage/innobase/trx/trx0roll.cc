@@ -37,7 +37,7 @@ Created 3/26/1996 Heikki Tuuri
 #include "pars0pars.h"
 #include "que0que.h"
 #include "read0read.h"
-#include "row0mysql.h"
+#include "row0myblockchain.h"
 #include "row0undo.h"
 #include "srv0mon.h"
 #include "srv0start.h"
@@ -74,7 +74,7 @@ trx_rollback_finish(
 	trx_t*		trx);	/*!< in: transaction */
 
 /*******************************************************************//**
-Rollback a transaction used in MySQL. */
+Rollback a transaction used in MyBlockchain. */
 static
 void
 trx_rollback_to_savepoint_low(
@@ -162,11 +162,11 @@ trx_rollback_to_savepoint(
 }
 
 /*******************************************************************//**
-Rollback a transaction used in MySQL.
+Rollback a transaction used in MyBlockchain.
 @return error code or DB_SUCCESS */
 static
 dberr_t
-trx_rollback_for_mysql_low(
+trx_rollback_for_myblockchain_low(
 /*=======================*/
 	trx_t*	trx)	/*!< in/out: transaction */
 {
@@ -174,7 +174,7 @@ trx_rollback_for_mysql_low(
 
 	/* If we are doing the XA recovery of prepared transactions,
 	then the transaction object does not have an InnoDB session
-	object, and we set a dummy session that we use for all MySQL
+	object, and we set a dummy session that we use for all MyBlockchain
 	transactions. */
 
 	trx_rollback_to_savepoint_low(trx, NULL);
@@ -187,10 +187,10 @@ trx_rollback_for_mysql_low(
 }
 
 /*******************************************************************//**
-Rollback a transaction used in MySQL.
+Rollback a transaction used in MyBlockchain.
 @return error code or DB_SUCCESS */
 dberr_t
-trx_rollback_for_mysql(
+trx_rollback_for_myblockchain(
 /*===================*/
 	trx_t*	trx)	/*!< in/out: transaction */
 {
@@ -204,21 +204,21 @@ trx_rollback_for_mysql(
 
 	/* We are reading trx->state without holding trx_sys->mutex
 	here, because the rollback should be invoked for a running
-	active MySQL transaction (or recovered prepared transaction)
+	active MyBlockchain transaction (or recovered prepared transaction)
 	that is associated with the current thread. */
 
 	switch (trx->state) {
 	case TRX_STATE_FORCED_ROLLBACK:
 	case TRX_STATE_NOT_STARTED:
 		trx->will_lock = 0;
-		ut_ad(trx->in_mysql_trx_list);
+		ut_ad(trx->in_myblockchain_trx_list);
 		return(trx->state == TRX_STATE_NOT_STARTED
 		       ? DB_SUCCESS : DB_FORCED_ABORT);
 
 	case TRX_STATE_ACTIVE:
-		ut_ad(trx->in_mysql_trx_list);
+		ut_ad(trx->in_myblockchain_trx_list);
 		assert_trx_nonlocking_or_in_list(trx);
-		return(trx_rollback_for_mysql_low(trx));
+		return(trx_rollback_for_myblockchain_low(trx));
 
 	case TRX_STATE_PREPARED:
 		ut_ad(!trx_is_autocommit_non_locking(trx));
@@ -250,7 +250,7 @@ trx_rollback_for_mysql(
 			ut_ad(mtr.commit_lsn() > 0);
 		}
 #ifdef ENABLED_DEBUG_SYNC
-		if (trx->mysql_thd == NULL) {
+		if (trx->myblockchain_thd == NULL) {
 			/* We could be executing XA ROLLBACK after
 			XA PREPARE and a server restart. */
 		} else if (!trx_is_redo_rseg_updated(trx)) {
@@ -266,7 +266,7 @@ trx_rollback_for_mysql(
 			DEBUG_SYNC_C("trx_xa_rollback");
 		}
 #endif /* ENABLED_DEBUG_SYNC */
-		return(trx_rollback_for_mysql_low(trx));
+		return(trx_rollback_for_myblockchain_low(trx));
 
 	case TRX_STATE_COMMITTED_IN_MEMORY:
 		check_trx_state(trx);
@@ -278,10 +278,10 @@ trx_rollback_for_mysql(
 }
 
 /*******************************************************************//**
-Rollback the latest SQL statement for MySQL.
+Rollback the latest SQL statement for MyBlockchain.
 @return error code or DB_SUCCESS */
 dberr_t
-trx_rollback_last_sql_stat_for_mysql(
+trx_rollback_last_sql_stat_for_myblockchain(
 /*=================================*/
 	trx_t*	trx)	/*!< in/out: transaction */
 {
@@ -289,9 +289,9 @@ trx_rollback_last_sql_stat_for_mysql(
 
 	/* We are reading trx->state without holding trx_sys->mutex
 	here, because the statement rollback should be invoked for a
-	running active MySQL transaction that is associated with the
+	running active MyBlockchain transaction that is associated with the
 	current thread. */
-	ut_ad(trx->in_mysql_trx_list);
+	ut_ad(trx->in_myblockchain_trx_list);
 
 	switch (trx->state) {
 	case TRX_STATE_FORCED_ROLLBACK:
@@ -401,14 +401,14 @@ were set after this savepoint are deleted.
 otherwise DB_SUCCESS */
 static __attribute__((nonnull, warn_unused_result))
 dberr_t
-trx_rollback_to_savepoint_for_mysql_low(
+trx_rollback_to_savepoint_for_myblockchain_low(
 /*====================================*/
 	trx_t*			trx,	/*!< in/out: transaction */
 	trx_named_savept_t*	savep,	/*!< in/out: savepoint */
-	int64_t*		mysql_binlog_cache_pos)
-					/*!< out: the MySQL binlog
+	int64_t*		myblockchain_binlog_cache_pos)
+					/*!< out: the MyBlockchain binlog
 					cache position corresponding
-					to this savepoint; MySQL needs
+					to this savepoint; MyBlockchain needs
 					this information to remove the
 					binlog entries of the queries
 					executed after the savepoint */
@@ -416,14 +416,14 @@ trx_rollback_to_savepoint_for_mysql_low(
 	dberr_t	err;
 
 	ut_ad(trx_state_eq(trx, TRX_STATE_ACTIVE));
-	ut_ad(trx->in_mysql_trx_list);
+	ut_ad(trx->in_myblockchain_trx_list);
 
 	/* Free all savepoints strictly later than savep. */
 
 	trx_roll_savepoints_free(
 		trx, UT_LIST_GET_NEXT(trx_savepoints, savep));
 
-	*mysql_binlog_cache_pos = savep->mysql_binlog_cache_pos;
+	*myblockchain_binlog_cache_pos = savep->myblockchain_binlog_cache_pos;
 
 	trx->op_info = "rollback to a savepoint";
 
@@ -450,13 +450,13 @@ were set after this savepoint are deleted.
 @return if no savepoint of the name found then DB_NO_SAVEPOINT,
 otherwise DB_SUCCESS */
 dberr_t
-trx_rollback_to_savepoint_for_mysql(
+trx_rollback_to_savepoint_for_myblockchain(
 /*================================*/
 	trx_t*		trx,			/*!< in: transaction handle */
 	const char*	savepoint_name,		/*!< in: savepoint name */
-	int64_t*	mysql_binlog_cache_pos)	/*!< out: the MySQL binlog cache
+	int64_t*	myblockchain_binlog_cache_pos)	/*!< out: the MyBlockchain binlog cache
 						position corresponding to this
-						savepoint; MySQL needs this
+						savepoint; MyBlockchain needs this
 						information to remove the
 						binlog entries of the queries
 						executed after the savepoint */
@@ -465,9 +465,9 @@ trx_rollback_to_savepoint_for_mysql(
 
 	/* We are reading trx->state without holding trx_sys->mutex
 	here, because the savepoint rollback should be invoked for a
-	running active MySQL transaction that is associated with the
+	running active MyBlockchain transaction that is associated with the
 	current thread. */
-	ut_ad(trx->in_mysql_trx_list);
+	ut_ad(trx->in_myblockchain_trx_list);
 
 	savep = trx_savepoint_find(trx, savepoint_name);
 
@@ -487,8 +487,8 @@ trx_rollback_to_savepoint_for_mysql(
 
 	case TRX_STATE_ACTIVE:
 
-		return(trx_rollback_to_savepoint_for_mysql_low(
-				trx, savep, mysql_binlog_cache_pos));
+		return(trx_rollback_to_savepoint_for_myblockchain_low(
+				trx, savep, myblockchain_binlog_cache_pos));
 
 	case TRX_STATE_PREPARED:
 	case TRX_STATE_COMMITTED_IN_MEMORY:
@@ -508,11 +508,11 @@ savepoint and replaces it with a new. Savepoints are deleted in a transaction
 commit or rollback.
 @return always DB_SUCCESS */
 dberr_t
-trx_savepoint_for_mysql(
+trx_savepoint_for_myblockchain(
 /*====================*/
 	trx_t*		trx,			/*!< in: transaction handle */
 	const char*	savepoint_name,		/*!< in: savepoint name */
-	int64_t		binlog_cache_pos)	/*!< in: MySQL binlog cache
+	int64_t		binlog_cache_pos)	/*!< in: MyBlockchain binlog cache
 						position corresponding to this
 						connection at the time of the
 						savepoint */
@@ -541,7 +541,7 @@ trx_savepoint_for_mysql(
 
 	savep->savept = trx_savept_take(trx);
 
-	savep->mysql_binlog_cache_pos = binlog_cache_pos;
+	savep->myblockchain_binlog_cache_pos = binlog_cache_pos;
 
 	UT_LIST_ADD_LAST(trx->trx_savepoints, savep);
 
@@ -554,7 +554,7 @@ savepoint are left as is.
 @return if no savepoint of the name found then DB_NO_SAVEPOINT,
 otherwise DB_SUCCESS */
 dberr_t
-trx_release_savepoint_for_mysql(
+trx_release_savepoint_for_myblockchain(
 /*============================*/
 	trx_t*		trx,			/*!< in: transaction handle */
 	const char*	savepoint_name)		/*!< in: savepoint name */
@@ -562,7 +562,7 @@ trx_release_savepoint_for_mysql(
 	trx_named_savept_t*	savep;
 
 	ut_ad(trx_state_eq(trx, TRX_STATE_ACTIVE));
-	ut_ad(trx->in_mysql_trx_list);
+	ut_ad(trx->in_myblockchain_trx_list);
 
 	savep = trx_savepoint_find(trx, savepoint_name);
 
@@ -657,7 +657,7 @@ trx_rollback_active(
 		<< rows_to_undo << unit << " rows to undo";
 
 	if (trx_get_dict_operation(trx) != TRX_DICT_OP_NONE) {
-		row_mysql_lock_data_dictionary(trx);
+		row_myblockchain_lock_data_dictionary(trx);
 		dictionary_locked = TRUE;
 	}
 
@@ -693,12 +693,12 @@ trx_rollback_active(
 
 			dict_table_close_and_drop(trx, table);
 
-			trx_commit_for_mysql(trx);
+			trx_commit_for_myblockchain(trx);
 		}
 	}
 
 	if (dictionary_locked) {
-		row_mysql_unlock_data_dictionary(trx);
+		row_myblockchain_unlock_data_dictionary(trx);
 	}
 
 	ib::info() << "Rollback of trx with id " << trx_id << " completed";
@@ -791,7 +791,7 @@ trx_rollback_or_clean_recovered(
 			" of uncommitted transactions";
 	}
 
-	/* Note: For XA recovered transactions, we rely on MySQL to
+	/* Note: For XA recovered transactions, we rely on MyBlockchain to
 	do rollback. They will be in TRX_STATE_PREPARED state. If the server
 	is shutdown and they are still lingering in trx_sys_t::trx_list
 	then the shutdown will hang. */

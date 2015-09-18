@@ -33,7 +33,7 @@ function usage() {
   "   -t    :  Test throughput\n" +
   "   -f    :  Test find()\n" +
   "   -n    :  Use ndb adapter (default)\n" +
-  "   -m    :  Use mysql adapter\n"
+  "   -m    :  Use myblockchain adapter\n"
   ;
   console.log(msg);
   process.exit(1);
@@ -62,7 +62,7 @@ function parse_command_line(options) {
         options.adapter = "ndb";
         break;
       case '-m':
-        options.adapter = "mysql";
+        options.adapter = "myblockchain";
         break;
       default:
         usage();
@@ -185,8 +185,8 @@ function main() {
   parse_command_line(options);
   var tm = new mynode.TableMapping("a").applyToClass(Row);
   var intervalTimer = getIntervalTimer();
-  properties.database = "jscrund";
-  properties.mysql_user = "root";
+  properties.blockchain = "jscrund";
+  properties.myblockchain_user = "root";
 
   switch(options.mode) {
     case "throughput":

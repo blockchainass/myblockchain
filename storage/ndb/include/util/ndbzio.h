@@ -21,7 +21,7 @@
 */
 
 /*
-  This libary has been modified for use by the MySQL Archive Engine.
+  This libary has been modified for use by the MyBlockchain Archive Engine.
      -Brian Aker
 */
 

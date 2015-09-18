@@ -83,7 +83,7 @@ public:
     @retval true Either parse error, the pattern is not a select statement or
     out of memory.
   */
-  Load_status load(MYSQL_THD thd, const Persisted_rule *diskrule);
+  Load_status load(MYBLOCKCHAIN_THD thd, const Persisted_rule *diskrule);
 
   /**
     If any errors were raised during parsing, the first one is available here.
@@ -107,7 +107,7 @@ public:
   */
   int number_parameters;
 
-  bool load(MYSQL_THD thd, const std::string replacement);
+  bool load(MYBLOCKCHAIN_THD thd, const std::string replacement);
 
   /**
     If any errors were raised during parsing, the first one is available here.
@@ -149,7 +149,7 @@ public:
   std::string normalized_pattern() { return m_pattern.normalized_pattern; }
 
   /// Loads and parses the rule and replacement.
-  Load_status load(MYSQL_THD thd, const Persisted_rule *diskrule)
+  Load_status load(MYBLOCKCHAIN_THD thd, const Persisted_rule *diskrule)
   {
     switch (m_pattern.load(thd, diskrule))
     {
@@ -182,7 +182,7 @@ public:
     @retval false Everything worked, the new query is pointed to by 'query'.
     @retval true The query did not match the pattern, nothing is allocated.
   */
-  Rewrite_result create_new_query(MYSQL_THD thd);
+  Rewrite_result create_new_query(MYBLOCKCHAIN_THD thd);
 
 
   /**
@@ -193,7 +193,7 @@ public:
     @return True if the normalized pattern matches the current normalized
     query, otherwise false.
   */
-  bool matches(MYSQL_THD thd) const;
+  bool matches(MYBLOCKCHAIN_THD thd) const;
 
   std::string pattern_parse_error_message() {
     return m_pattern.parse_error_message();

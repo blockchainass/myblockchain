@@ -17,9 +17,9 @@
 
 package testsuite.clusterj.model;
 
-import com.mysql.clusterj.annotation.Index;
-import com.mysql.clusterj.annotation.PersistenceCapable;
-import com.mysql.clusterj.annotation.PrimaryKey;
+import com.myblockchain.clusterj.annotation.Index;
+import com.myblockchain.clusterj.annotation.PersistenceCapable;
+import com.myblockchain.clusterj.annotation.PrimaryKey;
 
 @PersistenceCapable(table="t_basic2")
 public interface Employee2 extends IdBase {

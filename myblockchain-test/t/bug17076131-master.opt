@@ -1,0 +1,2 @@
+--no-console
+--log-error=$MYBLOCKCHAINTEST_VARDIR/tmp/myblockchain.err

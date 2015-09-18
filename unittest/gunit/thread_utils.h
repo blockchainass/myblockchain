@@ -17,7 +17,7 @@
 #define SQL_THREAD_INCLUDED
 
 #include <my_global.h>
-#include <mysql/psi/mysql_thread.h>
+#include <myblockchain/psi/myblockchain_thread.h>
 
 namespace thread {
 
@@ -83,8 +83,8 @@ public:
   void notify();
 private:
   bool            m_notified;
-  mysql_cond_t    m_cond;
-  mysql_mutex_t   m_mutex;
+  myblockchain_cond_t    m_cond;
+  myblockchain_mutex_t   m_mutex;
 
   Notification(const Notification&);            /* Not copyable. */
   void operator=(const Notification&);          /* Not assignable. */

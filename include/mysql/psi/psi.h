@@ -13,8 +13,8 @@
   along with this program; if not, write to the Free Software Foundation,
   51 Franklin Street, Suite 500, Boston, MA 02110-1335 USA */
 
-#ifndef MYSQL_PERFORMANCE_SCHEMA_INTERFACE_H
-#define MYSQL_PERFORMANCE_SCHEMA_INTERFACE_H
+#ifndef MYBLOCKCHAIN_PERFORMANCE_SCHEMA_INTERFACE_H
+#define MYBLOCKCHAIN_PERFORMANCE_SCHEMA_INTERFACE_H
 
 #ifdef EMBEDDED_LIBRARY
 #define DISABLE_ALL_PSI
@@ -78,7 +78,7 @@ struct sql_digest_storage;
 #endif
 
 /**
-  @file mysql/psi/psi.h
+  @file myblockchain/psi/psi.h
   Performance schema instrumentation interface.
 
   @defgroup Instrumentation_interface Instrumentation Interface
@@ -1168,7 +1168,7 @@ struct PSI_metadata_locker_state_v1
 };
 typedef struct PSI_metadata_locker_state_v1 PSI_metadata_locker_state_v1;
 
-/* Duplicate of NAME_LEN, to avoid dependency on mysql_com.h */
+/* Duplicate of NAME_LEN, to avoid dependency on myblockchain_com.h */
 #define PSI_SCHEMA_NAME_LEN (64 * 3)
 
 /**
@@ -1606,9 +1606,9 @@ typedef void (*set_thread_account_v1_t)(const char *user, int user_len,
                                         const char *host, int host_len);
 
 /**
-  Assign a current database to the instrumented thread.
-  @param db the database name
-  @param db_len the database name length
+  Assign a current blockchain to the instrumented thread.
+  @param db the blockchain name
+  @param db_len the blockchain name length
 */
 typedef void (*set_thread_db_v1_t)(const char* db, int db_len);
 
@@ -1979,8 +1979,8 @@ typedef struct PSI_statement_locker* (*refine_statement_v1_t)
 /**
   Start a new statement event.
   @param locker the statement locker for this event
-  @param db the active database name for this statement
-  @param db_length the active database name length for this statement
+  @param db the active blockchain name for this statement
+  @param db_length the active blockchain name length for this statement
   @param src_file source file name
   @param src_line source line number
 */
@@ -2932,7 +2932,7 @@ typedef struct PSI_stage_info_none PSI_stage_info;
 
 #endif /* HAVE_PSI_INTERFACE */
 
-extern MYSQL_PLUGIN_IMPORT PSI *PSI_server;
+extern MYBLOCKCHAIN_PLUGIN_IMPORT PSI *PSI_server;
 
 /*
   Allow to override PSI_XXX_CALL at compile time
@@ -2946,5 +2946,5 @@ extern MYSQL_PLUGIN_IMPORT PSI *PSI_server;
 /** @} */
 
 C_MODE_END
-#endif /* MYSQL_PERFORMANCE_SCHEMA_INTERFACE_H */
+#endif /* MYBLOCKCHAIN_PERFORMANCE_SCHEMA_INTERFACE_H */
 

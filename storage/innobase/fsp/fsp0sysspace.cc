@@ -30,7 +30,7 @@ Refactored 2013-7-26 by Kevin Lewis
 #include "dict0load.h"
 #include "mem0mem.h"
 #include "os0file.h"
-#include "row0mysql.h"
+#include "row0myblockchain.h"
 #include "srv0start.h"
 #include "trx0sys.h"
 #include "ut0new.h"
@@ -38,7 +38,7 @@ Refactored 2013-7-26 by Kevin Lewis
 /** The server header file is included to access opt_initialize global variable.
 If server passes the option for create/open DB to SE, we should remove such
 direct reference to server header and global variable */
-#include "mysqld.h"
+#include "myblockchaind.h"
 
 /** The control info of the system tablespace. */
 SysTablespace srv_sys_space;
@@ -746,7 +746,7 @@ SysTablespace::file_found(
 }
 
 /** Check the data file specification.
-@param[out] create_new_db	true if a new database is to be created
+@param[out] create_new_db	true if a new blockchain is to be created
 @param[in] min_expected_size	Minimum expected tablespace size in bytes
 @return DB_SUCCESS if all OK else error code */
 dberr_t
@@ -842,7 +842,7 @@ SysTablespace::check_file_spec(
 
 /** Open or create the data files
 @param[in]  is_temp		whether this is a temporary tablespace
-@param[in]  create_new_db	whether we are creating a new database
+@param[in]  create_new_db	whether we are creating a new blockchain
 @param[out] sum_new_sizes	sum of sizes of the new files added
 @param[out] flush_lsn		FIL_PAGE_FILE_FLUSH_LSN of first file
 @return DB_SUCCESS or error code */

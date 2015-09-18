@@ -106,17 +106,17 @@ IF(NOT VERSION)
 
   IF(SHORT_PRODUCT_TAG)
     SET(PRODUCT_TAG "-${SHORT_PRODUCT_TAG}")
-  ELSEIF(MYSQL_SERVER_SUFFIX)
-    SET(PRODUCT_TAG "${MYSQL_SERVER_SUFFIX}")  # Already has a leading dash
+  ELSEIF(MYBLOCKCHAIN_SERVER_SUFFIX)
+    SET(PRODUCT_TAG "${MYBLOCKCHAIN_SERVER_SUFFIX}")  # Already has a leading dash
   ELSE()
     SET(PRODUCT_TAG)
   ENDIF()
 
   IF("${VERSION}" MATCHES "-ndb-")
     STRING(REGEX REPLACE "^.*-ndb-" "" NDBVERSION "${VERSION}")
-    SET(package_name "mysql-cluster${PRODUCT_TAG}-${NDBVERSION}-${SYSTEM_NAME_AND_PROCESSOR}")
+    SET(package_name "myblockchain-cluster${PRODUCT_TAG}-${NDBVERSION}-${SYSTEM_NAME_AND_PROCESSOR}")
   ELSE()
-    SET(package_name "mysql${PRODUCT_TAG}-${VERSION}-${SYSTEM_NAME_AND_PROCESSOR}")
+    SET(package_name "myblockchain${PRODUCT_TAG}-${VERSION}-${SYSTEM_NAME_AND_PROCESSOR}")
   ENDIF()
 
   MESSAGE(STATUS "Packaging as: ${package_name}")

@@ -111,7 +111,7 @@ int vio_shutdown_pipe(Vio *vio)
 
   vio->inactive= TRUE;
   vio->hPipe= NULL;
-  vio->mysql_socket= MYSQL_INVALID_SOCKET;
+  vio->myblockchain_socket= MYBLOCKCHAIN_INVALID_SOCKET;
 
   DBUG_RETURN(ret);
 }

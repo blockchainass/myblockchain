@@ -20,12 +20,12 @@
   - Server state
  */
 
-#include <mysql/group_replication_priv.h>
-#include <mysql/plugin.h>
-#include <mysql/service_my_plugin_log.h>
-#include <mysql/service_rpl_transaction_ctx.h>
+#include <myblockchain/group_replication_priv.h>
+#include <myblockchain/plugin.h>
+#include <myblockchain/service_my_plugin_log.h>
+#include <myblockchain/service_rpl_transaction_ctx.h>
 
-static MYSQL_PLUGIN plugin_info_ptr;
+static MYBLOCKCHAIN_PLUGIN plugin_info_ptr;
 
 int validate_plugin_server_requirements(Trans_param *param);
 int test_channel_service_interface_initialization();
@@ -554,7 +554,7 @@ int validate_plugin_server_requirements(Trans_param *param)
 
 
   /*
-    include/mysql/group_replication_priv.h exported functions.
+    include/myblockchain/group_replication_priv.h exported functions.
   */
   my_thread_attr_t *thread_attr= get_connection_attrib();
 
@@ -723,7 +723,7 @@ int test_channel_service_interface()
     1                    failure (cannot happen)
 */
 
-static int replication_observers_example_plugin_init(MYSQL_PLUGIN plugin_info)
+static int replication_observers_example_plugin_init(MYBLOCKCHAIN_PLUGIN plugin_info)
 {
   plugin_info_ptr= plugin_info;
 
@@ -804,11 +804,11 @@ static int replication_observers_example_plugin_deinit(void *p)
   Plugin library descriptor
 */
 struct Mysql_replication replication_observers_example_plugin=
-{ MYSQL_REPLICATION_INTERFACE_VERSION };
+{ MYBLOCKCHAIN_REPLICATION_INTERFACE_VERSION };
 
-mysql_declare_plugin(replication_observers_example)
+myblockchain_declare_plugin(replication_observers_example)
 {
-  MYSQL_REPLICATION_PLUGIN,
+  MYBLOCKCHAIN_REPLICATION_PLUGIN,
   &replication_observers_example_plugin,
   "replication_observers_example",
   "ORACLE",
@@ -822,4 +822,4 @@ mysql_declare_plugin(replication_observers_example)
   NULL,                       /* config options                  */
   0,                          /* flags                           */
 }
-mysql_declare_plugin_end;
+myblockchain_declare_plugin_end;

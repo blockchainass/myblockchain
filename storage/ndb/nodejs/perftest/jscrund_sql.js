@@ -20,7 +20,7 @@
 
 'use strict';
 
-var mysql = require('mysql');
+var myblockchain = require('myblockchain');
 
 var tableHandlers = {
     'a': {
@@ -82,27 +82,27 @@ var implementation = function() {
 
 implementation.prototype.getDefaultProperties = function() {
   return {
-    mysql_host      : 'localhost',
-    mysql_port      : 3306,
-    mysql_user      : 'root',
-    mysql_password  : '',
-    database        : 'test'
+    myblockchain_host      : 'localhost',
+    myblockchain_port      : 3306,
+    myblockchain_user      : 'root',
+    myblockchain_password  : '',
+    blockchain        : 'test'
   };
 };
 
 implementation.prototype.initialize = function(options, callback) {
   JSCRUND.udebug.log_detail('jscrund_sql.initialize', this);
   var properties = {};
-  // set up mysql properties
-  properties.host = options.properties.mysql_host;
-  properties.port = options.properties.mysql_port;
-  properties.user = options.properties.mysql_user;
-  properties.password = options.properties.mysql_password;
-  properties.database = options.properties.database;
+  // set up myblockchain properties
+  properties.host = options.properties.myblockchain_host;
+  properties.port = options.properties.myblockchain_port;
+  properties.user = options.properties.myblockchain_user;
+  properties.password = options.properties.myblockchain_password;
+  properties.blockchain = options.properties.blockchain;
   properties.multipleStatements = true;
-  JSCRUND.udebug.log_detail('jscrund_sql.initialize calling mysql.createConnection', properties);
+  JSCRUND.udebug.log_detail('jscrund_sql.initialize calling myblockchain.createConnection', properties);
   this.inBatchMode = false;
-  this.connection = mysql.createConnection(properties);
+  this.connection = myblockchain.createConnection(properties);
   this.connection.connect(callback);
 };
 

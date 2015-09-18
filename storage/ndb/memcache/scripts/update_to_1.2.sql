@@ -21,7 +21,7 @@
 
 -- This update adds schema support for externalized large values
 
--- Config version 1.2 became current with MySQL Cluster release 7.2.4
+-- Config version 1.2 became current with MyBlockchain Cluster release 7.2.4
 -- It remained current through release 7.2.11 
 -- and was then replaced by config version 1.2a
 

@@ -18,15 +18,15 @@
 #define _my_audit_h
 
 /*************************************************************************
-  API for Audit plugin. (MYSQL_AUDIT_PLUGIN)
+  API for Audit plugin. (MYBLOCKCHAIN_AUDIT_PLUGIN)
 */
 
 #include "plugin.h"
-#include "mysql/mysql_lex_string.h"
+#include "myblockchain/myblockchain_lex_string.h"
 
-#define MYSQL_AUDIT_CLASS_MASK_SIZE 1
+#define MYBLOCKCHAIN_AUDIT_CLASS_MASK_SIZE 1
 
-#define MYSQL_AUDIT_INTERFACE_VERSION 0x0302
+#define MYBLOCKCHAIN_AUDIT_INTERFACE_VERSION 0x0302
 
 
 /*************************************************************************
@@ -39,14 +39,14 @@
   to the user.
 */
 
-#define MYSQL_AUDIT_GENERAL_CLASS 0
-#define MYSQL_AUDIT_GENERAL_CLASSMASK (1 << MYSQL_AUDIT_GENERAL_CLASS)
-#define MYSQL_AUDIT_GENERAL_LOG 0
-#define MYSQL_AUDIT_GENERAL_ERROR 1
-#define MYSQL_AUDIT_GENERAL_RESULT 2
-#define MYSQL_AUDIT_GENERAL_STATUS 3
+#define MYBLOCKCHAIN_AUDIT_GENERAL_CLASS 0
+#define MYBLOCKCHAIN_AUDIT_GENERAL_CLASSMASK (1 << MYBLOCKCHAIN_AUDIT_GENERAL_CLASS)
+#define MYBLOCKCHAIN_AUDIT_GENERAL_LOG 0
+#define MYBLOCKCHAIN_AUDIT_GENERAL_ERROR 1
+#define MYBLOCKCHAIN_AUDIT_GENERAL_RESULT 2
+#define MYBLOCKCHAIN_AUDIT_GENERAL_STATUS 3
 
-struct mysql_event_general
+struct myblockchain_event_general
 {
   unsigned int event_subclass;
   int general_error_code;
@@ -60,10 +60,10 @@ struct mysql_event_general
   struct charset_info_st *general_charset;
   unsigned long long general_time;
   unsigned long long general_rows;
-  MYSQL_LEX_STRING general_host;
-  MYSQL_LEX_STRING general_sql_command;
-  MYSQL_LEX_STRING general_external_user;
-  MYSQL_LEX_STRING general_ip;
+  MYBLOCKCHAIN_LEX_STRING general_host;
+  MYBLOCKCHAIN_LEX_STRING general_sql_command;
+  MYBLOCKCHAIN_LEX_STRING general_external_user;
+  MYBLOCKCHAIN_LEX_STRING general_ip;
 };
 
 
@@ -75,13 +75,13 @@ struct mysql_event_general
   CHANGE_USER occurs after COM_CHANGE_USER RPC is completed.
 */
 
-#define MYSQL_AUDIT_CONNECTION_CLASS 1
-#define MYSQL_AUDIT_CONNECTION_CLASSMASK (1 << MYSQL_AUDIT_CONNECTION_CLASS)
-#define MYSQL_AUDIT_CONNECTION_CONNECT 0
-#define MYSQL_AUDIT_CONNECTION_DISCONNECT 1
-#define MYSQL_AUDIT_CONNECTION_CHANGE_USER 2
+#define MYBLOCKCHAIN_AUDIT_CONNECTION_CLASS 1
+#define MYBLOCKCHAIN_AUDIT_CONNECTION_CLASSMASK (1 << MYBLOCKCHAIN_AUDIT_CONNECTION_CLASS)
+#define MYBLOCKCHAIN_AUDIT_CONNECTION_CONNECT 0
+#define MYBLOCKCHAIN_AUDIT_CONNECTION_DISCONNECT 1
+#define MYBLOCKCHAIN_AUDIT_CONNECTION_CHANGE_USER 2
 
-struct mysql_event_connection
+struct myblockchain_event_connection
 {
   unsigned int event_subclass;
   int status;
@@ -98,26 +98,26 @@ struct mysql_event_connection
   unsigned int host_length;
   const char *ip;
   unsigned int ip_length;
-  const char *database;
-  unsigned int database_length;
+  const char *blockchain;
+  unsigned int blockchain_length;
   int connection_type;
 };
 
-#define MYSQL_AUDIT_PARSE_CLASS 2
-#define MYSQL_AUDIT_PARSE_CLASSMASK (1UL << MYSQL_AUDIT_PARSE_CLASS)
-#define MYSQL_AUDIT_PREPARSE 0
-#define MYSQL_AUDIT_POSTPARSE 1
+#define MYBLOCKCHAIN_AUDIT_PARSE_CLASS 2
+#define MYBLOCKCHAIN_AUDIT_PARSE_CLASSMASK (1UL << MYBLOCKCHAIN_AUDIT_PARSE_CLASS)
+#define MYBLOCKCHAIN_AUDIT_PREPARSE 0
+#define MYBLOCKCHAIN_AUDIT_POSTPARSE 1
 
-/// mysql_event_parse::flags Must be set by a plugin if the query is rewritten.
+/// myblockchain_event_parse::flags Must be set by a plugin if the query is rewritten.
 #define FLAG_REWRITE_PLUGIN_QUERY_REWRITTEN 1
-/// mysql_event_parse::flags Is set by the server if the query is prepared statement.
+/// myblockchain_event_parse::flags Is set by the server if the query is prepared statement.
 #define FLAG_REWRITE_PLUGIN_IS_PREPARED_STATEMENT 2
 
 
-/** Data for the MYSQL_AUDIT_[PRE|POST]_PARSE events */
-struct mysql_event_parse
+/** Data for the MYBLOCKCHAIN_AUDIT_[PRE|POST]_PARSE events */
+struct myblockchain_event_parse
 {
-  /** MYSQL_AUDIT_[PRE|POST]_PARSE event id */
+  /** MYBLOCKCHAIN_AUDIT_[PRE|POST]_PARSE event id */
   unsigned int event_subclass;
   /** one of FLAG_REWRITE_PLUGIN_* */
   int *flags;
@@ -134,7 +134,7 @@ struct mysql_event_parse
 
 /*************************************************************************
   Here we define the descriptor structure, that is referred from
-  st_mysql_plugin.
+  st_myblockchain_plugin.
 
   release_thd() event occurs when the event class consumer is to be
   disassociated from the specified THD. This would typically occur
@@ -150,12 +150,12 @@ struct mysql_event_parse
   that this plugin wants to receive.
 */
 
-struct st_mysql_audit
+struct st_myblockchain_audit
 {
   int interface_version;
-  void (*release_thd)(MYSQL_THD);
-  void (*event_notify)(MYSQL_THD, unsigned int, const void *);
-  unsigned long class_mask[MYSQL_AUDIT_CLASS_MASK_SIZE];
+  void (*release_thd)(MYBLOCKCHAIN_THD);
+  void (*event_notify)(MYBLOCKCHAIN_THD, unsigned int, const void *);
+  unsigned long class_mask[MYBLOCKCHAIN_AUDIT_CLASS_MASK_SIZE];
 };
 
 

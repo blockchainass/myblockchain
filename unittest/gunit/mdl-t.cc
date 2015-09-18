@@ -16,7 +16,7 @@
 /**
    This is a unit test for the 'meta data locking' classes.
    It is written to illustrate how we can use Google Test for unit testing
-   of MySQL code.
+   of MyBlockchain code.
    For documentation on Google Test, see http://code.google.com/p/googletest/
    and the contained wiki pages GoogleTestPrimer and GoogleTestAdvancedGuide.
    The code below should hopefully be (mostly) self-explanatory.
@@ -27,7 +27,7 @@
 #include <gtest/gtest.h>
 
 #include "mdl.h"
-#include <mysqld_error.h>
+#include <myblockchaind_error.h>
 
 #include "thr_malloc.h"
 #include "thread_utils.h"
@@ -73,7 +73,7 @@ namespace mdl_unittest {
 using thread::Notification;
 using thread::Thread;
 
-const char db_name[]= "some_database";
+const char db_name[]= "some_blockchain";
 const char table_name1[]= "some_table1";
 const char table_name2[]= "some_table2";
 const char table_name3[]= "some_table3";
@@ -188,8 +188,8 @@ public:
       m_release_locks->notify();
   }
 
-  virtual void enter_cond(mysql_cond_t *cond,
-                          mysql_mutex_t* mutex,
+  virtual void enter_cond(myblockchain_cond_t *cond,
+                          myblockchain_mutex_t* mutex,
                           const PSI_stage_info *stage,
                           PSI_stage_info *old_stage,
                           const char *src_function,
@@ -3876,8 +3876,8 @@ public:
                                   bool needs_thr_lock_abort)
   { }
 
-  virtual void enter_cond(mysql_cond_t *cond,
-                          mysql_mutex_t* mutex,
+  virtual void enter_cond(myblockchain_cond_t *cond,
+                          myblockchain_mutex_t* mutex,
                           const PSI_stage_info *stage,
                           PSI_stage_info *old_stage,
                           const char *src_function,
@@ -4080,7 +4080,7 @@ typedef MDLKeyTest MDLKeyDeathTest;
 
 /*
   Verifies that debug build dies with a DBUG_ASSERT if we try to construct
-  MDL_key with too long database or object names.
+  MDL_key with too long blockchain or object names.
 */
 
 #if GTEST_HAS_DEATH_TEST && !defined(DBUG_OFF)
@@ -4113,7 +4113,7 @@ TEST_F(MDLKeyDeathTest, DieWhenNamesAreTooLong)
 
 /*
   Verifies that for production build we allow construction of
-  MDL_key with too long database or object names, but they are
+  MDL_key with too long blockchain or object names, but they are
   truncated.
 */
 

@@ -17,7 +17,7 @@
 /**
   @file
 
-  mysql_no_login authentication plugin.
+  myblockchain_no_login authentication plugin.
 
   This plugin exists to support system user accounts, which
   cannot be accessed externally.  This is useful for privileged
@@ -26,14 +26,14 @@
 */
 
 #include <my_global.h>
-#include <mysql/plugin_auth.h>
+#include <myblockchain/plugin_auth.h>
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
 
-static int mysql_no_login(
-    MYSQL_PLUGIN_VIO *vio __attribute__((unused)),
-    MYSQL_SERVER_AUTH_INFO *info __attribute__((unused)))
+static int myblockchain_no_login(
+    MYBLOCKCHAIN_PLUGIN_VIO *vio __attribute__((unused)),
+    MYBLOCKCHAIN_SERVER_AUTH_INFO *info __attribute__((unused)))
 {
   return CR_ERROR;
 }
@@ -62,22 +62,22 @@ int set_salt(const char* password __attribute__((unused)),
   return 0;
 }
 
-static struct st_mysql_auth mysql_no_login_handler=
+static struct st_myblockchain_auth myblockchain_no_login_handler=
 {
-  MYSQL_AUTHENTICATION_INTERFACE_VERSION,
+  MYBLOCKCHAIN_AUTHENTICATION_INTERFACE_VERSION,
   0,
-  mysql_no_login,
+  myblockchain_no_login,
   generate_auth_string_hash,
   validate_auth_string_hash,
   set_salt,
   AUTH_FLAG_PRIVILEGED_USER_FOR_PASSWORD_CHANGE
 };
 
-mysql_declare_plugin(mysql_no_login)
+myblockchain_declare_plugin(myblockchain_no_login)
 {
-  MYSQL_AUTHENTICATION_PLUGIN,                  /* type constant    */
-  &mysql_no_login_handler,                      /* type descriptor  */
-  "mysql_no_login",                             /* Name             */
+  MYBLOCKCHAIN_AUTHENTICATION_PLUGIN,                  /* type constant    */
+  &myblockchain_no_login_handler,                      /* type descriptor  */
+  "myblockchain_no_login",                             /* Name             */
   "Todd Farmer",                                /* Author           */
   "No login authentication plugin",             /* Description      */
   PLUGIN_LICENSE_GPL,                           /* License          */
@@ -89,4 +89,4 @@ mysql_declare_plugin(mysql_no_login)
   NULL,                                         /* config options   */
   0,                                            /* flags            */
 }
-mysql_declare_plugin_end;
+myblockchain_declare_plugin_end;

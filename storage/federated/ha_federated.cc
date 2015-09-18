@@ -15,54 +15,54 @@
 
 /*
 
-  MySQL Federated Storage Engine
+  MyBlockchain Federated Storage Engine
 
-  ha_federated.cc - MySQL Federated Storage Engine
+  ha_federated.cc - MyBlockchain Federated Storage Engine
   Patrick Galbraith and Brian Aker, 2004
 
-  This is a handler which uses a foreign database as the data file, as
+  This is a handler which uses a foreign blockchain as the data file, as
   opposed to a handler like MyISAM, which uses .MYD files locally.
 
   How this handler works
   ----------------------------------
-  Normal database files are local and as such: You create a table called
+  Normal blockchain files are local and as such: You create a table called
   'users', a file such as 'users.MYD' is created. A handler reads, inserts,
   deletes, updates data in this file. The data is stored in particular format,
   so to read, that data has to be parsed into fields, to write, fields have to
   be stored in this format to write to this data file.
 
-  With MySQL Federated storage engine, there will be no local files
-  for each table's data (such as .MYD). A foreign database will store
+  With MyBlockchain Federated storage engine, there will be no local files
+  for each table's data (such as .MYD). A foreign blockchain will store
   the data that would normally be in this file. This will necessitate
-  the use of MySQL client API to read, delete, update, insert this
+  the use of MyBlockchain client API to read, delete, update, insert this
   data. The data will have to be retrieve via an SQL call "SELECT *
   FROM users". Then, to read this data, it will have to be retrieved
-  via mysql_fetch_row one row at a time, then converted from the
+  via myblockchain_fetch_row one row at a time, then converted from the
   column in this select into the format that the handler expects.
 
   The create table will simply create the .frm file, and within the
   "CREATE TABLE" SQL, there SHALL be any of the following :
 
-  connection=scheme://username:password@hostname:port/database/tablename
-  connection=scheme://username@hostname/database/tablename
-  connection=scheme://username:password@hostname/database/tablename
-  connection=scheme://username:password@hostname/database/tablename
+  connection=scheme://username:password@hostname:port/blockchain/tablename
+  connection=scheme://username@hostname/blockchain/tablename
+  connection=scheme://username:password@hostname/blockchain/tablename
+  connection=scheme://username:password@hostname/blockchain/tablename
 
   - OR -
 
   As of 5.1 (See worklog #3031), federated now allows you to use a non-url
-  format, taking advantage of mysql.servers:
+  format, taking advantage of myblockchain.servers:
 
   connection="connection_one"
   connection="connection_one/table_foo"
 
   An example would be:
 
-  connection=mysql://username:password@hostname:port/database/tablename
+  connection=myblockchain://username:password@hostname:port/blockchain/tablename
 
   or, if we had:
 
-  create server 'server_one' foreign data wrapper 'mysql' options
+  create server 'server_one' foreign data wrapper 'myblockchain' options
   (HOST '127.0.0.1',
   DATABASE 'db1',
   USER 'root',
@@ -80,7 +80,7 @@
 
   So, this will have been the equivalent of
 
-  CONNECTION="mysql://root@127.0.0.1:3306/db1/t1"
+  CONNECTION="myblockchain://root@127.0.0.1:3306/db1/t1"
 
   Then, we can also change the server to point to a new schema:
 
@@ -97,9 +97,9 @@
   The basic flow is this:
 
   SQL calls issues locally ->
-  mysql handler API (data in handler format) ->
-  mysql client API (data converted to SQL calls) ->
-  foreign database -> mysql client API ->
+  myblockchain handler API (data in handler format) ->
+  myblockchain client API (data converted to SQL calls) ->
+  foreign blockchain -> myblockchain client API ->
   convert result sets (if any) to handler format ->
   handler API -> results or rows affected to local
 
@@ -113,11 +113,11 @@
     know putting two mirror in front of each other how the reflection
     continues for eternity? Well, need I say more?!
   * There will not be support for transactions.
-  * There is no way for the handler to know if the foreign database or table
-    has changed. The reason for this is that this database has to work like a
+  * There is no way for the handler to know if the foreign blockchain or table
+    has changed. The reason for this is that this blockchain has to work like a
     data file that would never be written to by anything other than the
-    database. The integrity of the data in the local table could be breached
-    if there was any change to the foreign database.
+    blockchain. The integrity of the data in the local table could be breached
+    if there was any change to the foreign blockchain.
   * Support for SELECT, INSERT, UPDATE , DELETE, indexes.
   * No ALTER TABLE, DROP TABLE or any other Data Definition Language calls.
   * Prepared statements will not be used in the first implementation, it
@@ -183,7 +183,7 @@
       make
 
     Next, to use this handler, it's very simple. You must
-    have two databases running, either both on the same host, or
+    have two blockchains running, either both on the same host, or
     on different hosts.
 
     One the server that will be connecting to the foreign
@@ -198,18 +198,18 @@
       KEY other_key (other))
        ENGINE="FEDERATED"
        DEFAULT CHARSET=latin1
-       CONNECTION='mysql://root@127.0.0.1:9306/federated/test_federated';
+       CONNECTION='myblockchain://root@127.0.0.1:9306/federated/test_federated';
 
    Notice the "COMMENT" and "ENGINE" field? This is where you
    respectively set the engine type, "FEDERATED" and foreign
-   host information, this being the database your 'client' database
+   host information, this being the blockchain your 'client' blockchain
    will connect to and use as the "data file". Obviously, the foreign
-   database is running on port 9306, so you want to start up your other
-   database so that it is indeed on port 9306, and your federated
-   database on a port other than that. In my setup, I use port 5554
-   for federated, and port 5555 for the foreign database.
+   blockchain is running on port 9306, so you want to start up your other
+   blockchain so that it is indeed on port 9306, and your federated
+   blockchain on a port other than that. In my setup, I use port 5554
+   for federated, and port 5555 for the foreign blockchain.
 
-   Then, on the foreign database:
+   Then, on the foreign blockchain:
 
    CREATE TABLE test_table (
      id     int(20) NOT NULL auto_increment,
@@ -229,34 +229,34 @@
     How to see the handler in action
     --------------------------------
 
-    When developing this handler, I compiled the federated database with
+    When developing this handler, I compiled the federated blockchain with
     debugging:
 
     ./configure --with-federated-storage-engine
-    --prefix=/home/mysql/mysql-build/federated/ --with-debug
+    --prefix=/home/myblockchain/myblockchain-build/federated/ --with-debug
 
     Once compiled, I did a 'make install' (not for the purpose of installing
     the binary, but to install all the files the binary expects to see in the
     diretory I specified in the build with --prefix,
-    "/home/mysql/mysql-build/federated".
+    "/home/myblockchain/myblockchain-build/federated".
 
     Then, I started the foreign server:
 
-    /usr/local/mysql/bin/mysqld_safe
-    --user=mysql --log=/tmp/mysqld.5555.log -P 5555
+    /usr/local/myblockchain/bin/myblockchaind_safe
+    --user=myblockchain --log=/tmp/myblockchaind.5555.log -P 5555
 
-    Then, I went back to the directory containing the newly compiled mysqld,
+    Then, I went back to the directory containing the newly compiled myblockchaind,
     <builddir>/sql/, started up gdb:
 
-    gdb ./mysqld
+    gdb ./myblockchaind
 
     Then, withn the (gdb) prompt:
-    (gdb) run --gdb --port=5554 --socket=/tmp/mysqld.5554 --skip-innodb --debug
+    (gdb) run --gdb --port=5554 --socket=/tmp/myblockchaind.5554 --skip-innodb --debug
 
     Next, I open several windows for each:
 
-    1. Tail the debug trace: tail -f /tmp/mysqld.trace|grep ha_fed
-    2. Tail the SQL calls to the foreign database: tail -f /tmp/mysqld.5555.log
+    1. Tail the debug trace: tail -f /tmp/myblockchaind.trace|grep ha_fed
+    2. Tail the SQL calls to the foreign blockchain: tail -f /tmp/myblockchaind.5555.log
     3. A window with a client open to the federated server on port 5554
     4. A window with a client open to the federated server on port 5555
 
@@ -282,8 +282,8 @@
     Testing
     -------
 
-    There is a test for MySQL Federated Storage Handler in ./mysql-test/t,
-    federatedd.test It starts both a slave and master database using
+    There is a test for MyBlockchain Federated Storage Handler in ./myblockchain-test/t,
+    federatedd.test It starts both a slave and master blockchain using
     the same setup that the replication tests use, with the exception that
     it turns off replication, and sets replication to ignore the test tables.
     After ensuring that you actually do have support for the federated storage
@@ -292,19 +292,19 @@
     any issues that would be most likely to affect this handler. All tests
     should work! ;)
 
-    To run these tests, go into ./mysql-test (based in the directory you
+    To run these tests, go into ./myblockchain-test (based in the directory you
     built the server in)
 
-    ./mysql-test-run federated
+    ./myblockchain-test-run federated
 
     To run the test, or if you want to run the test and have debug info:
 
-    ./mysql-test-run --debug federated
+    ./myblockchain-test-run --debug federated
 
     This will run the test in debug mode, and you can view the trace and
-    log files in the ./mysql-test/var/log directory
+    log files in the ./myblockchain-test/var/log directory
 
-    ls -l mysql-test/var/log/
+    ls -l myblockchain-test/var/log/
     -rw-r--r--  1 patg  patg        17  4 Dec 12:27 current_test
     -rw-r--r--  1 patg  patg       692  4 Dec 12:52 manager.log
     -rw-rw----  1 patg  patg     21246  4 Dec 12:51 master-bin.000001
@@ -312,8 +312,8 @@
     -rw-r--r--  1 patg  patg      1620  4 Dec 12:51 master.err
     -rw-rw----  1 patg  patg     23179  4 Dec 12:51 master.log
     -rw-rw----  1 patg  patg  16696550  4 Dec 12:51 master.trace
-    -rw-r--r--  1 patg  patg         0  4 Dec 12:28 mysqltest-time
-    -rw-r--r--  1 patg  patg   2024051  4 Dec 12:51 mysqltest.trace
+    -rw-r--r--  1 patg  patg         0  4 Dec 12:28 myblockchaintest-time
+    -rw-r--r--  1 patg  patg   2024051  4 Dec 12:51 myblockchaintest.trace
     -rw-rw----  1 patg  patg     94992  4 Dec 12:51 slave-bin.000001
     -rw-rw----  1 patg  patg        67  4 Dec 12:28 slave-bin.index
     -rw-rw----  1 patg  patg       249  4 Dec 12:52 slave-relay-bin.000003
@@ -325,18 +325,18 @@
 
     Of course, again, you can tail the trace log:
 
-    tail -f mysql-test/var/log/master.trace |grep ha_fed
+    tail -f myblockchain-test/var/log/master.trace |grep ha_fed
 
     As well as the slave query log:
 
-    tail -f mysql-test/var/log/slave.log
+    tail -f myblockchain-test/var/log/slave.log
 
     Files that comprise the test suit
     ---------------------------------
-    mysql-test/t/federated.test
-    mysql-test/r/federated.result
-    mysql-test/r/have_federated_db.require
-    mysql-test/include/have_federated_db.inc
+    myblockchain-test/t/federated.test
+    myblockchain-test/r/federated.result
+    myblockchain-test/r/have_federated_db.require
+    myblockchain-test/include/have_federated_db.inc
 
 
     Other tidbits
@@ -349,21 +349,21 @@
     ./sql/Makefile.am
     ./config/ac_macros/ha_federated.m4
     ./sql/handler.cc
-    ./sql/mysqld.cc
+    ./sql/myblockchaind.cc
     ./sql/set_var.cc
     ./sql/field.h
     ./sql/sql_string.h
-    ./mysql-test/mysql-test-run(.sh)
-    ./mysql-test/t/federated.test
-    ./mysql-test/r/federated.result
-    ./mysql-test/r/have_federated_db.require
-    ./mysql-test/include/have_federated_db.inc
+    ./myblockchain-test/myblockchain-test-run(.sh)
+    ./myblockchain-test/t/federated.test
+    ./myblockchain-test/r/federated.result
+    ./myblockchain-test/r/have_federated_db.require
+    ./myblockchain-test/include/have_federated_db.inc
     ./sql/ha_federated.cc
     ./sql/ha_federated.h
 
     In 5.1
 
-    my:~/mysql-build/mysql-5.1-bkbits patg$ ls storage/federated/
+    my:~/myblockchain-build/myblockchain-5.1-bkbits patg$ ls storage/federated/
     CMakeLists.txt                  Makefile.in                     ha_federated.h                  plug.in
     Makefile                        SCCS                            libfederated.a
     Makefile.am                     ha_federated.cc                 libfederated_a-ha_federated.o
@@ -371,20 +371,20 @@
 */
 
 
-#define MYSQL_SERVER 1
+#define MYBLOCKCHAIN_SERVER 1
 #include "sql_servers.h"         // FOREIGN_SERVER, get_server_by_name
 #include "sql_class.h"           // SSV
 #include "sql_analyse.h"         // append_escaped
-#include <mysql/plugin.h>
+#include <myblockchain/plugin.h>
 
 #include "ha_federated.h"
-#include "probes_mysql.h"
+#include "probes_myblockchain.h"
 
 #include "m_string.h"
 #include "key.h"                                // key_copy
 #include "myisam.h"                             // TT_USEFRM
 
-#include <mysql/plugin.h>
+#include <myblockchain/plugin.h>
 
 #include <algorithm>
 
@@ -393,7 +393,7 @@ using std::max;
 
 /* Variables for federated share methods */
 static HASH federated_open_tables;              // To track open tables
-mysql_mutex_t federated_mutex;                // To init the hash
+myblockchain_mutex_t federated_mutex;                // To init the hash
 static char ident_quote_char= '`';              // Character for quoting
                                                 // identifiers
 static char value_quote_char= '\'';             // Character for quoting
@@ -453,10 +453,10 @@ static void init_federated_psi_keys(void)
   int count;
 
   count= array_elements(all_federated_mutexes);
-  mysql_mutex_register(category, all_federated_mutexes, count);
+  myblockchain_mutex_register(category, all_federated_mutexes, count);
 
   count= array_elements(all_federated_memory);
-  mysql_memory_register(category, all_federated_memory, count);
+  myblockchain_memory_register(category, all_federated_memory, count);
 }
 #endif /* HAVE_PSI_INTERFACE */
 
@@ -495,7 +495,7 @@ int federated_db_init(void *p)
   federated_hton->commit= 0;
   federated_hton->rollback= 0;
 
-  if (mysql_mutex_init(fe_key_mutex_federated,
+  if (myblockchain_mutex_init(fe_key_mutex_federated,
                        &federated_mutex, MY_MUTEX_INIT_FAST))
     goto error;
   if (!my_hash_init(&federated_open_tables, &my_charset_bin, 32, 0, 0,
@@ -505,7 +505,7 @@ int federated_db_init(void *p)
     DBUG_RETURN(FALSE);
   }
 
-  mysql_mutex_destroy(&federated_mutex);
+  myblockchain_mutex_destroy(&federated_mutex);
 error:
   DBUG_RETURN(TRUE);
 }
@@ -524,7 +524,7 @@ error:
 int federated_done(void *p)
 {
   my_hash_free(&federated_open_tables);
-  mysql_mutex_destroy(&federated_mutex);
+  myblockchain_mutex_destroy(&federated_mutex);
 
   return 0;
 }
@@ -634,19 +634,19 @@ int get_connection(MEM_ROOT *mem_root, FEDERATED_SHARE *share)
   share->server_name= server->server_name;
   share->username= server->username;
   share->password= server->password;
-  share->database= server->db;
+  share->blockchain= server->db;
   share->port= server->port > 0 && server->port < 65536 ?
-               (ushort) server->port : MYSQL_PORT;
+               (ushort) server->port : MYBLOCKCHAIN_PORT;
   share->hostname= server->host;
   if (!(share->socket= server->socket) &&
       !strcmp(share->hostname, my_localhost))
-    share->socket= (char *) MYSQL_UNIX_ADDR;
+    share->socket= (char *) MYBLOCKCHAIN_UNIX_ADDR;
   share->scheme= server->scheme;
 
   DBUG_PRINT("info", ("share->username %s", share->username));
   DBUG_PRINT("info", ("share->password %s", share->password));
   DBUG_PRINT("info", ("share->hostname %s", share->hostname));
-  DBUG_PRINT("info", ("share->database %s", share->database));
+  DBUG_PRINT("info", ("share->blockchain %s", share->blockchain));
   DBUG_PRINT("info", ("share->port %d", share->port));
   DBUG_PRINT("info", ("share->socket %s", share->socket));
   DBUG_RETURN(0);
@@ -669,16 +669,16 @@ error:
 
   DESCRIPTION
     Populates the share with information about the connection
-    to the foreign database that will serve as the data source.
+    to the foreign blockchain that will serve as the data source.
     This string must be specified (currently) in the "CONNECTION" field,
     listed in the CREATE TABLE statement.
 
     This string MUST be in the format of any of these:
 
-    CONNECTION="scheme://username:password@hostname:port/database/table"
-    CONNECTION="scheme://username@hostname/database/table"
-    CONNECTION="scheme://username@hostname:port/database/table"
-    CONNECTION="scheme://username:password@hostname/database/table"
+    CONNECTION="scheme://username:password@hostname:port/blockchain/table"
+    CONNECTION="scheme://username@hostname/blockchain/table"
+    CONNECTION="scheme://username@hostname:port/blockchain/table"
+    CONNECTION="scheme://username:password@hostname/blockchain/table"
 
     _OR_
 
@@ -690,7 +690,7 @@ error:
 
   CREATE TABLE t1 (id int(32))
     ENGINE="FEDERATED"
-    CONNECTION="mysql://joe:joespass@192.168.1.111:9308/federated/testtable";
+    CONNECTION="myblockchain://joe:joespass@192.168.1.111:9308/federated/testtable";
 
   CREATE TABLE t2 (
     id int(4) NOT NULL auto_increment,
@@ -700,7 +700,7 @@ error:
 
   ***IMPORTANT***
   Currently, the Federated Storage Engine only supports connecting to another
-  MySQL Database ("scheme" of "mysql"). Connections using JDBC as well as 
+  MyBlockchain Database ("scheme" of "myblockchain"). Connections using JDBC as well as 
   other connectors are in the planning stage.
   
 
@@ -810,7 +810,7 @@ static int parse_url(MEM_ROOT *mem_root, FEDERATED_SHARE *share, TABLE *table,
       goto error;
     share->scheme[share->username - share->scheme]= '\0';
 
-    if (strcmp(share->scheme, "mysql") != 0)
+    if (strcmp(share->scheme, "myblockchain") != 0)
       goto error;
 
     share->username+= 3;
@@ -844,10 +844,10 @@ static int parse_url(MEM_ROOT *mem_root, FEDERATED_SHARE *share, TABLE *table,
     if ((strchr(share->username, '/')) || (strchr(share->hostname, '@')))
       goto error;
 
-    if (!(share->database= strchr(share->hostname, '/')))
+    if (!(share->blockchain= strchr(share->hostname, '/')))
       goto error;
-    share->hostname[share->database - share->hostname]= '\0';
-    share->database++;
+    share->hostname[share->blockchain - share->hostname]= '\0';
+    share->blockchain++;
 
     if ((share->sport= strchr(share->hostname, ':')))
     {
@@ -859,9 +859,9 @@ static int parse_url(MEM_ROOT *mem_root, FEDERATED_SHARE *share, TABLE *table,
         share->port= atoi(share->sport);
     }
 
-    if (!(share->table_name= strchr(share->database, '/')))
+    if (!(share->table_name= strchr(share->blockchain, '/')))
       goto error;
-    share->database[share->table_name - share->database]= '\0';
+    share->blockchain[share->table_name - share->blockchain]= '\0';
     share->table_name++;
 
     share->table_name_length= strlen(share->table_name);
@@ -872,7 +872,7 @@ static int parse_url(MEM_ROOT *mem_root, FEDERATED_SHARE *share, TABLE *table,
 
     /*
       If hostname is omitted, we set it to NULL. According to
-      mysql_real_connect() manual:
+      myblockchain_real_connect() manual:
       The value of host may be either a hostname or an IP address.
       If host is NULL or the string "localhost", a connection to the
       local host is assumed.
@@ -884,16 +884,16 @@ static int parse_url(MEM_ROOT *mem_root, FEDERATED_SHARE *share, TABLE *table,
   if (!share->port)
   {
     if (!share->hostname || strcmp(share->hostname, my_localhost) == 0)
-      share->socket= (char*) MYSQL_UNIX_ADDR;
+      share->socket= (char*) MYBLOCKCHAIN_UNIX_ADDR;
     else
-      share->port= MYSQL_PORT;
+      share->port= MYBLOCKCHAIN_PORT;
   }
 
   DBUG_PRINT("info",
              ("scheme: %s  username: %s  password: %s \
                hostname: %s  port: %d  db: %s  tablename: %s",
               share->scheme, share->username, share->password,
-              share->hostname, share->port, share->database,
+              share->hostname, share->port, share->blockchain,
               share->table_name));
 
   DBUG_RETURN(0);
@@ -909,7 +909,7 @@ error:
 ha_federated::ha_federated(handlerton *hton,
                            TABLE_SHARE *table_arg)
   :handler(hton, table_arg),
-   mysql(0), stored_result(0), results(fe_key_memory_federated_share)
+   myblockchain(0), stored_result(0), results(fe_key_memory_federated_share)
 {
   trx_next= 0;
   memset(&bulk_insert, 0, sizeof(bulk_insert));
@@ -917,12 +917,12 @@ ha_federated::ha_federated(handlerton *hton,
 
 
 /*
-  Convert MySQL result set row to handler internal format
+  Convert MyBlockchain result set row to handler internal format
 
   SYNOPSIS
     convert_row_to_internal_format()
       record    Byte pointer to record
-      row       MySQL result set row from fetchrow()
+      row       MyBlockchain result set row from fetchrow()
       result	Result set to use
 
   DESCRIPTION
@@ -937,15 +937,15 @@ ha_federated::ha_federated(handlerton *hton,
 */
 
 uint ha_federated::convert_row_to_internal_format(uchar *record,
-                                                  MYSQL_ROW row,
-                                                  MYSQL_RES *result)
+                                                  MYBLOCKCHAIN_ROW row,
+                                                  MYBLOCKCHAIN_RES *result)
 {
   ulong *lengths;
   Field **field;
   my_bitmap_map *old_map= dbug_tmp_use_all_columns(table, table->write_set);
   DBUG_ENTER("ha_federated::convert_row_to_internal_format");
 
-  lengths= mysql_fetch_lengths(result);
+  lengths= myblockchain_fetch_lengths(result);
 
   for (field= table->field; *field; field++, row++, lengths++)
   {
@@ -1523,7 +1523,7 @@ static FEDERATED_SHARE *get_share(const char *table_name, TABLE *table)
 
   init_alloc_root(fe_key_memory_federated_share, &mem_root, 256, 0);
 
-  mysql_mutex_lock(&federated_mutex);
+  myblockchain_mutex_lock(&federated_mutex);
 
   tmp_share.share_key= table_name;
   tmp_share.share_key_length= (uint) strlen(table_name);
@@ -1565,19 +1565,19 @@ static FEDERATED_SHARE *get_share(const char *table_name, TABLE *table)
     if (my_hash_insert(&federated_open_tables, (uchar*) share))
       goto error;
     thr_lock_init(&share->lock);
-    mysql_mutex_init(fe_key_mutex_FEDERATED_SHARE_mutex,
+    myblockchain_mutex_init(fe_key_mutex_FEDERATED_SHARE_mutex,
                      &share->mutex, MY_MUTEX_INIT_FAST);
   }
   else
     free_root(&mem_root, MYF(0)); /* prevents memory leak */
 
   share->use_count++;
-  mysql_mutex_unlock(&federated_mutex);
+  myblockchain_mutex_unlock(&federated_mutex);
 
   DBUG_RETURN(share);
 
 error:
-  mysql_mutex_unlock(&federated_mutex);
+  myblockchain_mutex_unlock(&federated_mutex);
   free_root(&mem_root, MYF(0));
   DBUG_RETURN(NULL);
 }
@@ -1594,15 +1594,15 @@ static int free_share(FEDERATED_SHARE *share)
   MEM_ROOT mem_root= share->mem_root;
   DBUG_ENTER("free_share");
 
-  mysql_mutex_lock(&federated_mutex);
+  myblockchain_mutex_lock(&federated_mutex);
   if (!--share->use_count)
   {
     my_hash_delete(&federated_open_tables, (uchar*) share);
     thr_lock_delete(&share->lock);
-    mysql_mutex_destroy(&share->mutex);
+    myblockchain_mutex_destroy(&share->mutex);
     free_root(&mem_root, MYF(0));
   }
-  mysql_mutex_unlock(&federated_mutex);
+  myblockchain_mutex_unlock(&federated_mutex);
 
   DBUG_RETURN(0);
 }
@@ -1657,9 +1657,9 @@ int ha_federated::open(const char *name, int mode, uint test_if_locked)
     DBUG_RETURN(1);
   thr_lock_data_init(&share->lock, &lock, NULL);
 
-  DBUG_ASSERT(mysql == NULL);
+  DBUG_ASSERT(myblockchain == NULL);
 
-  ref_length= sizeof(MYSQL_RES *) + sizeof(MYSQL_ROW_OFFSET);
+  ref_length= sizeof(MYBLOCKCHAIN_RES *) + sizeof(MYBLOCKCHAIN_ROW_OFFSET);
   DBUG_PRINT("info", ("ref_length: %u", ref_length));
 
   reset();
@@ -1692,19 +1692,19 @@ int ha_federated::close(void)
     FLUSH TABLES will quit the connection and if connection is broken,
     it will reconnect again and quit silently.
   */
-  if (mysql && !vio_is_connected(mysql->net.vio))
-     mysql->net.error= 2;
+  if (myblockchain && !vio_is_connected(myblockchain->net.vio))
+     myblockchain->net.error= 2;
 
-  /* Disconnect from mysql */
-  mysql_close(mysql);
-  mysql= NULL;
+  /* Disconnect from myblockchain */
+  myblockchain_close(myblockchain);
+  myblockchain= NULL;
 
   /*
-    mysql_close() might return an error if a remote server's gone
+    myblockchain_close() might return an error if a remote server's gone
     for some reason. If that happens while removing a table from
     the table cache, the error will be propagated to a client even
     if the original query was not issued against the FEDERATED table.
-    So, don't propagate errors from mysql_close().
+    So, don't propagate errors from myblockchain_close().
   */
   if (table->in_use)
     table->in_use->clear_error();
@@ -1897,7 +1897,7 @@ int ha_federated::write_row(uchar *buf)
       auto_increment_update_required to FALSE as no query was executed.
     */
     if (bulk_insert.length + values_string.length() + bulk_padding >
-        mysql->net.max_packet_size && bulk_insert.length)
+        myblockchain->net.max_packet_size && bulk_insert.length)
     {
       error= real_query(bulk_insert.str, bulk_insert.length);
       bulk_insert.length= 0;
@@ -1938,7 +1938,7 @@ int ha_federated::write_row(uchar *buf)
   {
     update_auto_increment();
 
-    /* mysql_insert() uses this for protocol return value */
+    /* myblockchain_insert() uses this for protocol return value */
     table->next_number_field->store(stats.auto_increment_value, 1);
   }
 
@@ -1975,7 +1975,7 @@ void ha_federated::start_bulk_insert(ha_rows rows)
     Make sure we have an open connection so that we know the 
     maximum packet size.
   */
-  if (!mysql && real_connect())
+  if (!myblockchain && real_connect())
     DBUG_VOID_RETURN;
 
   page_size= (uint) my_getpagesize();
@@ -2023,7 +2023,7 @@ int ha_federated::end_bulk_insert()
   ha_federated::update_auto_increment
 
   This method ensures that last_insert_id() works properly. What it simply does
-  is calls last_insert_id() on the foreign database immediately after insert
+  is calls last_insert_id() on the foreign blockchain immediately after insert
   (if the table has an auto_increment field) and sets the insert id via
   thd->insert_id(ID)).
 */
@@ -2318,11 +2318,11 @@ int ha_federated::delete_row(const uchar *buf)
   {
     DBUG_RETURN(stash_remote_error());
   }
-  stats.deleted+= (ha_rows) mysql->affected_rows;
-  stats.records-= (ha_rows) mysql->affected_rows;
+  stats.deleted+= (ha_rows) myblockchain->affected_rows;
+  stats.records-= (ha_rows) myblockchain->affected_rows;
   DBUG_PRINT("info",
              ("rows deleted %ld  rows deleted for all time %ld",
-              (long) mysql->affected_rows, (long) stats.deleted));
+              (long) myblockchain->affected_rows, (long) stats.deleted));
 
   DBUG_RETURN(0);
 }
@@ -2357,12 +2357,12 @@ int ha_federated::index_read(uchar *buf, const uchar *key,
   int rc;
   DBUG_ENTER("ha_federated::index_read");
 
-  MYSQL_INDEX_READ_ROW_START(table_share->db.str, table_share->table_name.str);
+  MYBLOCKCHAIN_INDEX_READ_ROW_START(table_share->db.str, table_share->table_name.str);
   free_result();
   rc= index_read_idx_with_result_set(buf, active_index, key,
                                      key_len, find_flag,
                                      &stored_result);
-  MYSQL_INDEX_READ_ROW_DONE(rc);
+  MYBLOCKCHAIN_INDEX_READ_ROW_DONE(rc);
   DBUG_RETURN(rc);
 }
 
@@ -2384,14 +2384,14 @@ int ha_federated::index_read_idx(uchar *buf, uint index, const uchar *key,
                                  uint key_len, enum ha_rkey_function find_flag)
 {
   int retval;
-  MYSQL_RES *mysql_result;
+  MYBLOCKCHAIN_RES *myblockchain_result;
   DBUG_ENTER("ha_federated::index_read_idx");
 
   if ((retval= index_read_idx_with_result_set(buf, index, key,
                                               key_len, find_flag,
-                                              &mysql_result)))
+                                              &myblockchain_result)))
     DBUG_RETURN(retval);
-  mysql_free_result(mysql_result);
+  myblockchain_free_result(myblockchain_result);
   results.pop_back();
   DBUG_RETURN(0);
 }
@@ -2411,7 +2411,7 @@ int ha_federated::index_read_idx_with_result_set(uchar *buf, uint index,
                                                  const uchar *key,
                                                  uint key_len,
                                                  ha_rkey_function find_flag,
-                                                 MYSQL_RES **result)
+                                                 MYBLOCKCHAIN_RES **result)
 {
   int retval;
   char error_buffer[FEDERATED_QUERY_BUFFER_SIZE];
@@ -2445,18 +2445,18 @@ int ha_federated::index_read_idx_with_result_set(uchar *buf, uint index,
   if (real_query(sql_query.ptr(), sql_query.length()))
   {
     sprintf(error_buffer, "error: %d '%s'",
-            mysql_errno(mysql), mysql_error(mysql));
+            myblockchain_errno(myblockchain), myblockchain_error(myblockchain));
     retval= ER_QUERY_ON_FOREIGN_DATA_SOURCE;
     goto error;
   }
-  if (!(*result= store_result(mysql)))
+  if (!(*result= store_result(myblockchain)))
   {
     retval= HA_ERR_END_OF_FILE;
     goto error;
   }
   if ((retval= read_next(buf, *result)))
   {
-    mysql_free_result(*result);
+    myblockchain_free_result(*result);
     results.pop_back();
     *result= 0;
     table->status= STATUS_NOT_FOUND;
@@ -2514,7 +2514,7 @@ int ha_federated::read_range_first(const key_range *start_key,
                    sizeof(sql_query_buffer),
                    &my_charset_bin);
   DBUG_ENTER("ha_federated::read_range_first");
-  MYSQL_INDEX_READ_ROW_START(table_share->db.str, table_share->table_name.str);
+  MYBLOCKCHAIN_INDEX_READ_ROW_START(table_share->db.str, table_share->table_name.str);
 
   DBUG_ASSERT(!(start_key == NULL && end_key == NULL));
 
@@ -2530,19 +2530,19 @@ int ha_federated::read_range_first(const key_range *start_key,
   }
   sql_query.length(0);
 
-  if (!(stored_result= store_result(mysql)))
+  if (!(stored_result= store_result(myblockchain)))
   {
     retval= HA_ERR_END_OF_FILE;
     goto error;
   }
 
   retval= read_next(table->record[0], stored_result);
-  MYSQL_INDEX_READ_ROW_DONE(retval);
+  MYBLOCKCHAIN_INDEX_READ_ROW_DONE(retval);
   DBUG_RETURN(retval);
 
 error:
   table->status= STATUS_NOT_FOUND;
-  MYSQL_INDEX_READ_ROW_DONE(retval);
+  MYBLOCKCHAIN_INDEX_READ_ROW_DONE(retval);
   DBUG_RETURN(retval);
 }
 
@@ -2551,9 +2551,9 @@ int ha_federated::read_range_next()
 {
   int retval;
   DBUG_ENTER("ha_federated::read_range_next");
-  MYSQL_INDEX_READ_ROW_START(table_share->db.str, table_share->table_name.str);
+  MYBLOCKCHAIN_INDEX_READ_ROW_START(table_share->db.str, table_share->table_name.str);
   retval= rnd_next_int(table->record[0]);
-  MYSQL_INDEX_READ_ROW_DONE(retval);
+  MYBLOCKCHAIN_INDEX_READ_ROW_DONE(retval);
   DBUG_RETURN(retval);
 }
 
@@ -2563,10 +2563,10 @@ int ha_federated::index_next(uchar *buf)
 {
   int retval;
   DBUG_ENTER("ha_federated::index_next");
-  MYSQL_INDEX_READ_ROW_START(table_share->db.str, table_share->table_name.str);
+  MYBLOCKCHAIN_INDEX_READ_ROW_START(table_share->db.str, table_share->table_name.str);
   ha_statistic_increment(&SSV::ha_read_next_count);
   retval= read_next(buf, stored_result);
-  MYSQL_INDEX_READ_ROW_DONE(retval);
+  MYBLOCKCHAIN_INDEX_READ_ROW_DONE(retval);
   DBUG_RETURN(retval);
 }
 
@@ -2594,7 +2594,7 @@ int ha_federated::rnd_init(bool scan)
 
     When the initial query contains a WHERE clause of the query using an
     indexed column, it's index_read_idx that selects the exact record from
-    the foreign database.
+    the foreign blockchain.
 
     When there is NO index in the query, either due to not having a WHERE
     clause, or the WHERE clause is using columns that are not indexed, a
@@ -2611,12 +2611,12 @@ int ha_federated::rnd_init(bool scan)
     An initial query like 'UPDATE tablename SET anything = whatever WHERE
     indexedcol = someval', index_read_idx would get called, using a query
     constructed with a WHERE clause built from the values of index ('indexcol'
-    in this case, having a value of 'someval').  mysql_store_result would
+    in this case, having a value of 'someval').  myblockchain_store_result would
     then get called (this would be the result set we want to use).
 
     After this rnd_init (from sql_update.cc) would be called, it would then
     unecessarily call "select * from table" on the foreign table, then call
-    mysql_store_result, which would wipe out the correct previous result set
+    myblockchain_store_result, which would wipe out the correct previous result set
     from the previous call of index_read_idx's that had the result set
     containing the correct record, hence update the wrong row!
 
@@ -2625,7 +2625,7 @@ int ha_federated::rnd_init(bool scan)
   if (scan)
   {
     if (real_query(share->select_query, strlen(share->select_query)) ||
-        !(stored_result= store_result(mysql)))
+        !(stored_result= store_result(myblockchain)))
       DBUG_RETURN(stash_remote_error());
   }
   DBUG_RETURN(0);
@@ -2662,10 +2662,10 @@ int ha_federated::rnd_next(uchar *buf)
 {
   int rc;
   DBUG_ENTER("ha_federated::rnd_next");
-  MYSQL_READ_ROW_START(table_share->db.str, table_share->table_name.str,
+  MYBLOCKCHAIN_READ_ROW_START(table_share->db.str, table_share->table_name.str,
                        TRUE);
   rc= rnd_next_int(buf);
-  MYSQL_READ_ROW_DONE(rc);
+  MYBLOCKCHAIN_READ_ROW_DONE(rc);
   DBUG_RETURN(rc);
 }
 
@@ -2689,13 +2689,13 @@ int ha_federated::rnd_next_int(uchar *buf)
 /*
   ha_federated::read_next
 
-  reads from a result set and converts to mysql internal
+  reads from a result set and converts to myblockchain internal
   format
 
   SYNOPSIS
     ha_federated::read_next()
       buf       byte pointer to record 
-      result    mysql result set 
+      result    myblockchain result set 
 
     DESCRIPTION
      This method is a wrapper method that reads one record from a result
@@ -2706,10 +2706,10 @@ int ha_federated::rnd_next_int(uchar *buf)
       0    no error 
 */
 
-int ha_federated::read_next(uchar *buf, MYSQL_RES *result)
+int ha_federated::read_next(uchar *buf, MYBLOCKCHAIN_RES *result)
 {
   int retval;
-  MYSQL_ROW row;
+  MYBLOCKCHAIN_ROW row;
   DBUG_ENTER("ha_federated::read_next");
 
   table->status= STATUS_NOT_FOUND;              // For easier return
@@ -2718,7 +2718,7 @@ int ha_federated::read_next(uchar *buf, MYSQL_RES *result)
   current_position= result->data_cursor;
 
   /* Fetch a row, insert it back in a row format. */
-  if (!(row= mysql_fetch_row(result)))
+  if (!(row= myblockchain_fetch_row(result)))
     DBUG_RETURN(HA_ERR_END_OF_FILE);
 
   if (!(retval= convert_row_to_internal_format(buf, row, result)))
@@ -2756,10 +2756,10 @@ void ha_federated::position(const uchar *record __attribute__ ((unused)))
 
   position_called= TRUE;
   /* Store result set address. */
-  memcpy(ref, &stored_result, sizeof(MYSQL_RES *));
+  memcpy(ref, &stored_result, sizeof(MYBLOCKCHAIN_RES *));
   /* Store data cursor position. */
-  memcpy(ref + sizeof(MYSQL_RES *), &current_position,
-               sizeof(MYSQL_ROW_OFFSET));
+  memcpy(ref + sizeof(MYBLOCKCHAIN_RES *), &current_position,
+               sizeof(MYBLOCKCHAIN_ROW_OFFSET));
   DBUG_VOID_RETURN;
 }
 
@@ -2775,23 +2775,23 @@ void ha_federated::position(const uchar *record __attribute__ ((unused)))
 
 int ha_federated::rnd_pos(uchar *buf, uchar *pos)
 {
-  MYSQL_RES *result;
+  MYBLOCKCHAIN_RES *result;
   int ret_val;
   DBUG_ENTER("ha_federated::rnd_pos");
 
-  MYSQL_READ_ROW_START(table_share->db.str, table_share->table_name.str,
+  MYBLOCKCHAIN_READ_ROW_START(table_share->db.str, table_share->table_name.str,
                        FALSE);
   ha_statistic_increment(&SSV::ha_read_rnd_count);
 
   /* Get stored result set. */
-  memcpy(&result, pos, sizeof(MYSQL_RES *));
+  memcpy(&result, pos, sizeof(MYBLOCKCHAIN_RES *));
   DBUG_ASSERT(result);
   /* Set data cursor position. */
-  memcpy(&result->data_cursor, pos + sizeof(MYSQL_RES *),
-         sizeof(MYSQL_ROW_OFFSET));
+  memcpy(&result->data_cursor, pos + sizeof(MYBLOCKCHAIN_RES *),
+         sizeof(MYBLOCKCHAIN_ROW_OFFSET));
   /* Read a row. */
   ret_val= read_next(buf, result);
-  MYSQL_READ_ROW_DONE(ret_val);
+  MYBLOCKCHAIN_READ_ROW_DONE(ret_val);
   DBUG_RETURN(ret_val);
 }
 
@@ -2845,8 +2845,8 @@ int ha_federated::info(uint flag)
   char status_buf[FEDERATED_QUERY_BUFFER_SIZE];
   int error;
   uint error_code;
-  MYSQL_RES *result= 0;
-  MYSQL_ROW row;
+  MYBLOCKCHAIN_RES *result= 0;
+  MYBLOCKCHAIN_ROW row;
   String status_query_string(status_buf, sizeof(status_buf), &my_charset_bin);
   DBUG_ENTER("ha_federated::info");
 
@@ -2864,19 +2864,19 @@ int ha_federated::info(uint flag)
 
     status_query_string.length(0);
 
-    result= mysql_store_result(mysql);
+    result= myblockchain_store_result(myblockchain);
 
     /*
       We're going to use fields num. 4, 12 and 13 of the resultset,
       so make sure we have these fields.
     */
-    if (!result || (mysql_num_fields(result) < 14))
+    if (!result || (myblockchain_num_fields(result) < 14))
       goto error;
 
-    if (!mysql_num_rows(result))
+    if (!myblockchain_num_rows(result))
       goto error;
 
-    if (!(row= mysql_fetch_row(result)))
+    if (!(row= myblockchain_fetch_row(result)))
       goto error;
 
     /*
@@ -2914,19 +2914,19 @@ int ha_federated::info(uint flag)
 
   }
 
-  if ((flag & HA_STATUS_AUTO) && mysql)
-    stats.auto_increment_value= mysql->insert_id;
+  if ((flag & HA_STATUS_AUTO) && myblockchain)
+    stats.auto_increment_value= myblockchain->insert_id;
 
-  mysql_free_result(result);
+  myblockchain_free_result(result);
 
   DBUG_RETURN(0);
 
 error:
-  mysql_free_result(result);
-  if (mysql)
+  myblockchain_free_result(result);
+  if (myblockchain)
   {
     my_printf_error(error_code, ": %d : %s", MYF(0),
-                    mysql_errno(mysql), mysql_error(mysql));
+                    myblockchain_errno(myblockchain), myblockchain_error(myblockchain));
   }
   else
   if (remote_error_number != -1 /* error already reported */)
@@ -2939,7 +2939,7 @@ error:
 
 
 /**
-  @brief Handles extra signals from MySQL server
+  @brief Handles extra signals from MyBlockchain server
 
   @param[in] operation  Hint for storage engine
 
@@ -2995,9 +2995,9 @@ int ha_federated::reset(void)
   replace_duplicates= FALSE;
 
   /* Free stored result sets. */
-  for (MYSQL_RES **result= results.begin(); result != results.end(); ++result)
+  for (MYBLOCKCHAIN_RES **result= results.begin(); result != results.end(); ++result)
   {
-    mysql_free_result(*result);
+    myblockchain_free_result(*result);
   }
   results.clear();
 
@@ -3012,7 +3012,7 @@ int ha_federated::reset(void)
 
   Called from item_sum.cc by Item_func_group_concat::clear(),
   Item_sum_count_distinct::clear(), and Item_func_group_concat::clear().
-  Called from sql_delete.cc by mysql_delete().
+  Called from sql_delete.cc by myblockchain_delete().
   Called from sql_select.cc by JOIN::reinit().
   Called from sql_union.cc by st_select_lex_unit::exec().
 */
@@ -3061,7 +3061,7 @@ int ha_federated::truncate()
                ident_quote_char);
 
   /*
-    TRUNCATE won't return anything in mysql_affected_rows
+    TRUNCATE won't return anything in myblockchain_affected_rows
   */
   if (real_query(query.ptr(), query.length()))
   {
@@ -3081,9 +3081,9 @@ int ha_federated::truncate()
   read locks.
 
   Before adding the lock into the table lock handler (see thr_lock.c)
-  mysqld calls store lock with the requested locks.  Store lock can now
+  myblockchaind calls store lock with the requested locks.  Store lock can now
   modify a write lock to a read lock (or some other lock), ignore the
-  lock (if we don't want to use MySQL table locks at all) or add locks
+  lock (if we don't want to use MyBlockchain table locks at all) or add locks
   for many tables (like we do when we are using a MERGE handler).
 
   Berkeley DB for federated  changes all WRITE locks to TL_WRITE_ALLOW_WRITE
@@ -3093,10 +3093,10 @@ int ha_federated::truncate()
   When releasing locks, store_lock() are also called. In this case one
   usually doesn't have to do anything.
 
-  In some exceptional cases MySQL may send a request for a TL_IGNORE;
+  In some exceptional cases MyBlockchain may send a request for a TL_IGNORE;
   This means that we are requesting the same lock as last time and this
   should also be ignored. (This may happen when someone does a flush
-  table when we have opened a part of the tables, in which case mysqld
+  table when we have opened a part of the tables, in which case myblockchaind
   closes and reopens the tables and tries to get the same locks at last
   time).  In the future we will probably try to remove this.
 
@@ -3123,7 +3123,7 @@ THR_LOCK_DATA **ha_federated::store_lock(THD *thd,
 
     /*
       In queries of type INSERT INTO t1 SELECT ... FROM t2 ...
-      MySQL would use the lock TL_READ_NO_INSERT on t2, and that
+      MyBlockchain would use the lock TL_READ_NO_INSERT on t2, and that
       would conflict with TL_WRITE_ALLOW_WRITE, blocking all inserts
       to t2. Convert the lock to a normal read lock to allow
       concurrent inserts to t2.
@@ -3142,7 +3142,7 @@ THR_LOCK_DATA **ha_federated::store_lock(THD *thd,
 
 /*
   create() does nothing, since we have no local setup of our own.
-  FUTURE: We should potentially connect to the foreign database and
+  FUTURE: We should potentially connect to the foreign blockchain and
 */
 
 int ha_federated::create(const char *name, TABLE *table_arg,
@@ -3172,11 +3172,11 @@ int ha_federated::real_connect()
     to establish Federated connection to guard against a trivial
     Denial of Service scenerio.
   */
-  mysql_mutex_assert_not_owner(&LOCK_open);
+  myblockchain_mutex_assert_not_owner(&LOCK_open);
 
-  DBUG_ASSERT(mysql == NULL);
+  DBUG_ASSERT(myblockchain == NULL);
 
-  if (!(mysql= mysql_init(NULL)))
+  if (!(myblockchain= myblockchain_init(NULL)))
   {
     remote_error_number= HA_ERR_OUT_OF_MEM;
     DBUG_RETURN(-1);
@@ -3188,25 +3188,25 @@ int ha_federated::real_connect()
     of table
   */
   /* this sets the csname like 'set names utf8' */
-  mysql_options(mysql,MYSQL_SET_CHARSET_NAME,
+  myblockchain_options(myblockchain,MYBLOCKCHAIN_SET_CHARSET_NAME,
                 this->table->s->table_charset->csname);
-  mysql_options4(mysql, MYSQL_OPT_CONNECT_ATTR_ADD,
-                "program_name", "mysqld");
-  mysql_options4(mysql, MYSQL_OPT_CONNECT_ATTR_ADD,
+  myblockchain_options4(myblockchain, MYBLOCKCHAIN_OPT_CONNECT_ATTR_ADD,
+                "program_name", "myblockchaind");
+  myblockchain_options4(myblockchain, MYBLOCKCHAIN_OPT_CONNECT_ATTR_ADD,
                 "_client_role", "federated_storage");
   sql_query.length(0);
 
-  if (!mysql_real_connect(mysql,
+  if (!myblockchain_real_connect(myblockchain,
                           share->hostname,
                           share->username,
                           share->password,
-                          share->database,
+                          share->blockchain,
                           share->port,
                           share->socket, 0))
   {
     stash_remote_error();
-    mysql_close(mysql);
-    mysql= NULL;
+    myblockchain_close(myblockchain);
+    myblockchain= NULL;
     my_error(ER_CONNECT_TO_FOREIGN_DATA_SOURCE, MYF(0), remote_error_buf);
     remote_error_number= -1;
     DBUG_RETURN(-1);
@@ -3218,24 +3218,24 @@ int ha_federated::real_connect()
   */
   sql_query.append(share->select_query);
   sql_query.append(STRING_WITH_LEN(" WHERE 1=0"));
-  if (mysql_real_query(mysql, sql_query.ptr(),
+  if (myblockchain_real_query(myblockchain, sql_query.ptr(),
                        static_cast<ulong>(sql_query.length())))
   {
     sql_query.length(0);
     sql_query.append("error: ");
-    sql_query.qs_append(mysql_errno(mysql));
+    sql_query.qs_append(myblockchain_errno(myblockchain));
     sql_query.append("  '");
-    sql_query.append(mysql_error(mysql));
+    sql_query.append(myblockchain_error(myblockchain));
     sql_query.append("'");
-    mysql_close(mysql);
-    mysql= NULL;
+    myblockchain_close(myblockchain);
+    myblockchain= NULL;
     my_error(ER_FOREIGN_DATA_SOURCE_DOESNT_EXIST, MYF(0), sql_query.ptr());
     remote_error_number= -1;
     DBUG_RETURN(-1);
   }
 
   /* Just throw away the result, no rows anyways but need to keep in sync */
-  mysql_free_result(mysql_store_result(mysql));
+  myblockchain_free_result(myblockchain_store_result(myblockchain));
 
   /*
     Since we do not support transactions at this version, we can let the client
@@ -3243,7 +3243,7 @@ int ha_federated::real_connect()
     deal with transactions
   */
 
-  mysql->reconnect= 1;
+  myblockchain->reconnect= 1;
   DBUG_RETURN(0);
 }
 
@@ -3253,13 +3253,13 @@ int ha_federated::real_query(const char *query, size_t length)
   int rc= 0;
   DBUG_ENTER("ha_federated::real_query");
 
-  if (!mysql && (rc= real_connect()))
+  if (!myblockchain && (rc= real_connect()))
     goto end;
 
   if (!query || !length)
     goto end;
 
-  rc= mysql_real_query(mysql, query, static_cast<ulong>(length));
+  rc= myblockchain_real_query(myblockchain, query, static_cast<ulong>(length));
   
 end:
   DBUG_RETURN(rc);
@@ -3269,10 +3269,10 @@ end:
 int ha_federated::stash_remote_error()
 {
   DBUG_ENTER("ha_federated::stash_remote_error()");
-  if (!mysql)
+  if (!myblockchain)
     DBUG_RETURN(remote_error_number);
-  remote_error_number= mysql_errno(mysql);
-  strmake(remote_error_buf, mysql_error(mysql), sizeof(remote_error_buf)-1);
+  remote_error_number= myblockchain_errno(myblockchain);
+  strmake(remote_error_buf, myblockchain_error(myblockchain), sizeof(remote_error_buf)-1);
   if (remote_error_number == ER_DUP_ENTRY ||
       remote_error_number == ER_DUP_KEY)
     DBUG_RETURN(HA_ERR_FOUND_DUPP_KEY);
@@ -3302,17 +3302,17 @@ bool ha_federated::get_error_message(int error, String* buf)
 /**
   @brief      Store a result set.
 
-  @details    Call @c mysql_store_result() to save a result set then
+  @details    Call @c myblockchain_store_result() to save a result set then
               append it to the stored results array.
 
-  @param[in]  mysql_arg  MySLQ connection structure.
+  @param[in]  myblockchain_arg  MySLQ connection structure.
 
-  @return     Stored result set (MYSQL_RES object).
+  @return     Stored result set (MYBLOCKCHAIN_RES object).
 */
 
-MYSQL_RES *ha_federated::store_result(MYSQL *mysql_arg)
+MYBLOCKCHAIN_RES *ha_federated::store_result(MYBLOCKCHAIN *myblockchain_arg)
 {
-  MYSQL_RES *result= mysql_store_result(mysql_arg);
+  MYBLOCKCHAIN_RES *result= myblockchain_store_result(myblockchain_arg);
   DBUG_ENTER("ha_federated::store_result");
   if (result)
   {
@@ -3328,7 +3328,7 @@ void ha_federated::free_result()
   DBUG_ENTER("ha_federated::free_result");
   if (stored_result && !position_called)
   {
-    mysql_free_result(stored_result);
+    myblockchain_free_result(stored_result);
     stored_result= 0;
     if (!results.empty())
       results.pop_back();
@@ -3427,23 +3427,23 @@ int ha_federated::execute_simple_query(const char *query, int len)
 {
   DBUG_ENTER("ha_federated::execute_simple_query");
 
-  if (mysql_real_query(mysql, query, len))
+  if (myblockchain_real_query(myblockchain, query, len))
   {
     DBUG_RETURN(stash_remote_error());
   }
   DBUG_RETURN(0);
 }
 
-struct st_mysql_storage_engine federated_storage_engine=
-{ MYSQL_HANDLERTON_INTERFACE_VERSION };
+struct st_myblockchain_storage_engine federated_storage_engine=
+{ MYBLOCKCHAIN_HANDLERTON_INTERFACE_VERSION };
 
-mysql_declare_plugin(federated)
+myblockchain_declare_plugin(federated)
 {
-  MYSQL_STORAGE_ENGINE_PLUGIN,
+  MYBLOCKCHAIN_STORAGE_ENGINE_PLUGIN,
   &federated_storage_engine,
   "FEDERATED",
-  "Patrick Galbraith and Brian Aker, MySQL AB",
-  "Federated MySQL storage engine",
+  "Patrick Galbraith and Brian Aker, MyBlockchain AB",
+  "Federated MyBlockchain storage engine",
   PLUGIN_LICENSE_GPL,
   federated_db_init, /* Plugin Init */
   federated_done, /* Plugin Deinit */
@@ -3453,4 +3453,4 @@ mysql_declare_plugin(federated)
   NULL,                       /* config options                  */
   0,                          /* flags                           */
 }
-mysql_declare_plugin_end;
+myblockchain_declare_plugin_end;

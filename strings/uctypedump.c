@@ -107,7 +107,7 @@ typedef struct
   uint lowercase_mapping;
   uint titlecase_mapping;
 
-  int mysql_ctype; /* ctype in MySQL format */
+  int myblockchain_ctype; /* ctype in MyBlockchain format */
 
 } MY_UNIDATA_CHAR;
 
@@ -178,7 +178,7 @@ load_unidata(MY_UNIDATA_PARAM *prm, MY_UNIDATA_CHAR *chr)
           ch.general_category[0]= tok[0];
           ch.general_category[1]= tok[1];
           ch.general_category[2]= '\0';
-          ch.mysql_ctype= ctypestr2num(tok);
+          ch.myblockchain_ctype= ctypestr2num(tok);
           break;
           
         case 3: /* Canonical Combining Class */
@@ -240,7 +240,7 @@ unidata_char_set_cjk(MY_UNIDATA_CHAR *unidata, int max_char, int cur_char)
   if (cur_char < max_char)
   {
     MY_UNIDATA_CHAR *ch= &unidata[cur_char];
-    ch->mysql_ctype= _MY_L | _MY_U;
+    ch->myblockchain_ctype= _MY_L | _MY_U;
     strcpy(ch->general_category, "Lo");
   }
 }
@@ -252,12 +252,12 @@ fill_implicit_ctype(MY_UNIDATA_PARAM *prm, MY_UNIDATA_CHAR *unidata)
   int i;
   /* Fill digits */
   for (i= '0'; i <= '9'; i++)
-    unidata[i].mysql_ctype= _MY_NMR;
+    unidata[i].myblockchain_ctype= _MY_NMR;
   /* Fill hex digits */
   for (i= 'a'; i <= 'z'; i++)
-    unidata[i].mysql_ctype|= _MY_X;
+    unidata[i].myblockchain_ctype|= _MY_X;
   for (i= 'A'; i <= 'Z'; i++)
-    unidata[i].mysql_ctype|= _MY_X;
+    unidata[i].myblockchain_ctype|= _MY_X;
 
   /* Fill ideographs  */
   /* CJK Ideographs Extension A (U+3400 - U+4DB5) */
@@ -317,10 +317,10 @@ page_ctype(MY_UNIDATA_CHAR *data, size_t nchars)
   size_t i;
   for (i= 1; i < nchars; i++)
   {
-    if (data[i].mysql_ctype != data->mysql_ctype)
+    if (data[i].myblockchain_ctype != data->myblockchain_ctype)
       return -1;
   }
-  return data->mysql_ctype;
+  return data->myblockchain_ctype;
 }
 
 
@@ -344,7 +344,7 @@ dump_ctype(MY_UNIDATA_PARAM *prm, MY_UNIDATA_CHAR *unidata)
              prm->varname, page);
       for(num= 0, charnum=0; charnum < 256; charnum++)
       {
-        printf(" %2d%s", unidata[page * 256 + charnum].mysql_ctype,
+        printf(" %2d%s", unidata[page * 256 + charnum].myblockchain_ctype,
                charnum < 255 ? "," : "");
         if(++num == 16)
         {

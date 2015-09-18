@@ -85,14 +85,14 @@ void create_last_word_mask(MY_BITMAP *map)
 static inline void bitmap_lock(MY_BITMAP *map __attribute__((unused)))
 {
   if (map->mutex)
-    mysql_mutex_lock(map->mutex);
+    myblockchain_mutex_lock(map->mutex);
 }
 
 
 static inline void bitmap_unlock(MY_BITMAP *map __attribute__((unused)))
 {
   if (map->mutex)
-    mysql_mutex_unlock(map->mutex);
+    myblockchain_mutex_unlock(map->mutex);
 }
 
 
@@ -148,7 +148,7 @@ my_bool bitmap_init(MY_BITMAP *map, my_bitmap_map *buf, uint n_bits,
     if (thread_safe)
     {
       size_in_bytes= ALIGN_SIZE(size_in_bytes);
-      extra= sizeof(mysql_mutex_t);
+      extra= sizeof(myblockchain_mutex_t);
     }
     map->mutex= 0;
 
@@ -158,8 +158,8 @@ my_bool bitmap_init(MY_BITMAP *map, my_bitmap_map *buf, uint n_bits,
 
     if (thread_safe)
     {
-      map->mutex= (mysql_mutex_t *) ((char*) buf + size_in_bytes);
-      mysql_mutex_init(key_BITMAP_mutex, map->mutex, MY_MUTEX_INIT_FAST);
+      map->mutex= (myblockchain_mutex_t *) ((char*) buf + size_in_bytes);
+      myblockchain_mutex_init(key_BITMAP_mutex, map->mutex, MY_MUTEX_INIT_FAST);
     }
 
   }
@@ -185,7 +185,7 @@ void bitmap_free(MY_BITMAP *map)
   if (map->bitmap)
   {
     if (map->mutex)
-      mysql_mutex_destroy(map->mutex);
+      myblockchain_mutex_destroy(map->mutex);
 
     my_free(map->bitmap);
     map->bitmap=0;

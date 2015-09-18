@@ -22,7 +22,7 @@ IF(NOT CMAKE_SYSTEM_NAME MATCHES "SunOS")
 ENDIF()
 
 # Currently, this expands to "support-files/" in most layouts,
-# but to "/usr/share/mysql/" in a RPM.
+# but to "/usr/share/myblockchain/" in a RPM.
 # It is important not to pollute "/usr/bin".
 SET(inst_location ${INSTALL_SUPPORTFILESDIR})
 

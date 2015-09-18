@@ -15,7 +15,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 
-# Scripts to run by MySQL systemd service
+# Scripts to run by MyBlockchain systemd service
 #
 # Needed argument: pre | post
 #
@@ -23,77 +23,77 @@
 # post mode :  ping server until answer is received
 
 get_path () {
-	my_print_defaults mysqld | grep ${1} | cut -d= -f2
+	my_print_defaults myblockchaind | grep ${1} | cut -d= -f2
 }
 
 pinger () {
 	while /bin/true ; do
 		sleep 1
-		mysqladmin ping >/dev/null 2>&1 && break
+		myblockchainadmin ping >/dev/null 2>&1 && break
 	done
 }
 
 sanity () {
-	MYSQLRUN=/var/run/mysqld
-	MYSQLDATA=$(get_path datadir)
-	MYSQLFILES=/var/lib/mysql-files
-	MYSQLLOG=/var/log/mysql
+	MYBLOCKCHAINRUN=/var/run/myblockchaind
+	MYBLOCKCHAINDATA=$(get_path datadir)
+	MYBLOCKCHAINFILES=/var/lib/myblockchain-files
+	MYBLOCKCHAINLOG=/var/log/myblockchain
 
-	if [ ! -d ${MYSQLDATA} -a ! -L ${MYSQLDATA} ];
+	if [ ! -d ${MYBLOCKCHAINDATA} -a ! -L ${MYBLOCKCHAINDATA} ];
 	then
-		mkdir ${MYSQLDATA}
-		chown mysql:mysql ${MYSQLDATA}
-		chmod 750 ${MYSQLDATA}
+		mkdir ${MYBLOCKCHAINDATA}
+		chown myblockchain:myblockchain ${MYBLOCKCHAINDATA}
+		chmod 750 ${MYBLOCKCHAINDATA}
 	fi
 
-	if [ ! -d ${MYSQLFILES} -a ! -L ${MYSQLFILES} ];
+	if [ ! -d ${MYBLOCKCHAINFILES} -a ! -L ${MYBLOCKCHAINFILES} ];
 	then
-		mkdir ${MYSQLFILES}
-		chown mysql:mysql ${MYSQLFILES}
-		chmod 770 ${MYSQLFILES}
+		mkdir ${MYBLOCKCHAINFILES}
+		chown myblockchain:myblockchain ${MYBLOCKCHAINFILES}
+		chmod 770 ${MYBLOCKCHAINFILES}
 	fi
 
-	if [ ! -d "${MYSQLDATA}/mysql" -a ! -L "${MYSQLDATA}/mysql" ];
+	if [ ! -d "${MYBLOCKCHAINDATA}/myblockchain" -a ! -L "${MYBLOCKCHAINDATA}/myblockchain" ];
 	then
-		mkdir ${MYSQLDATA}/mysql
-		chown mysql:mysql ${MYSQLDATA}/mysql
-		chmod 750 ${MYSQLDATA}/mysql
+		mkdir ${MYBLOCKCHAINDATA}/myblockchain
+		chown myblockchain:myblockchain ${MYBLOCKCHAINDATA}/myblockchain
+		chmod 750 ${MYBLOCKCHAINDATA}/myblockchain
 	fi
 
-	if [ ! "$(ls -A ${MYSQLDATA}/mysql)" ];
+	if [ ! "$(ls -A ${MYBLOCKCHAINDATA}/myblockchain)" ];
 	then
-		su - mysql -s /bin/bash -c "/usr/sbin/mysqld --initialize-insecure=on 2>&1 > /dev/null"
-		su - mysql -s /bin/bash -c "/usr/sbin/mysqld --log_error_verbosity=2 2>&1 > /dev/null &"
+		su - myblockchain -s /bin/bash -c "/usr/sbin/myblockchaind --initialize-insecure=on 2>&1 > /dev/null"
+		su - myblockchain -s /bin/bash -c "/usr/sbin/myblockchaind --log_error_verbosity=2 2>&1 > /dev/null &"
 		pinger
-		mysql -e "INSTALL PLUGIN auth_socket SONAME 'auth_socket.so'"
-		mysql -e "USE mysql; UPDATE user SET plugin='auth_socket' WHERE user='root'"
-		mysqladmin shutdown
+		myblockchain -e "INSTALL PLUGIN auth_socket SONAME 'auth_socket.so'"
+		myblockchain -e "USE myblockchain; UPDATE user SET plugin='auth_socket' WHERE user='root'"
+		myblockchainadmin shutdown
 	fi
 
-	if [ -x /usr/bin/mysql_ssl_rsa_setup -a ! -e "${MYSQLDATA}/server-key.pem" ];
+	if [ -x /usr/bin/myblockchain_ssl_rsa_setup -a ! -e "${MYBLOCKCHAINDATA}/server-key.pem" ];
 	then
-		/usr/bin/mysql_ssl_rsa_setup --datadir="${MYSQLDATA}" --uid=mysql >/dev/null 2>&1
+		/usr/bin/myblockchain_ssl_rsa_setup --datadir="${MYBLOCKCHAINDATA}" --uid=myblockchain >/dev/null 2>&1
 	fi
 
-	if [ ! -d ${MYSQLLOG} -a ! -L ${MYSQLLOG} ];
+	if [ ! -d ${MYBLOCKCHAINLOG} -a ! -L ${MYBLOCKCHAINLOG} ];
 	then
-		mkdir ${MYSQLLOG}
-		chown mysql:adm ${MYSQLLOG}
-		chmod 750 ${MYSQLLOG}
-		touch ${MYSQLLOG}/error.log
-		chmod 640 ${MYSQLLOG}/error.log
-		chown mysql:adm ${MYSQLLOG}/error.log
+		mkdir ${MYBLOCKCHAINLOG}
+		chown myblockchain:adm ${MYBLOCKCHAINLOG}
+		chmod 750 ${MYBLOCKCHAINLOG}
+		touch ${MYBLOCKCHAINLOG}/error.log
+		chmod 640 ${MYBLOCKCHAINLOG}/error.log
+		chown myblockchain:adm ${MYBLOCKCHAINLOG}/error.log
 	fi
 
-	if [ ! -d "${MYSQLRUN}" -a ! -L "${MYSQLRUN}" ];
+	if [ ! -d "${MYBLOCKCHAINRUN}" -a ! -L "${MYBLOCKCHAINRUN}" ];
 	then
-		mkdir ${MYSQLRUN}
-		chown mysql:mysql ${MYSQLRUN}
-		chmod 755 ${MYSQLRUN}
+		mkdir ${MYBLOCKCHAINRUN}
+		chown myblockchain:myblockchain ${MYBLOCKCHAINRUN}
+		chmod 755 ${MYBLOCKCHAINRUN}
 	fi
 
-	if [ ! -r /etc/mysql/my.cnf ]; then
-		echo "MySQL configuration not found at /etc/mysql/my.cnf. Please install one using update-alternatives."
+	if [ ! -r /etc/myblockchain/my.cnf ]; then
+		echo "MyBlockchain configuration not found at /etc/myblockchain/my.cnf. Please install one using update-alternatives."
 		exit 1
 	fi
 }

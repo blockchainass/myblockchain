@@ -181,7 +181,7 @@ innodb_read_cache_policy(
 
 	if (err != DB_SUCCESS) {
 		fprintf(stderr, " InnoDB_Memcached: Cannot open config table"
-				"'%s' in database '%s'. Error %d\n",
+				"'%s' in blockchain '%s'. Error %d\n",
 			MCI_CFG_CACHE_POLICIES, MCI_CFG_DB_NAME,
 			err);
 		err = DB_ERROR;
@@ -196,7 +196,7 @@ innodb_read_cache_policy(
 
 	if (err != DB_SUCCESS) {
 		fprintf(stderr, " InnoDB_Memcached: failed to locate entry in"
-				" config table '%s' in database '%s' \n",
+				" config table '%s' in blockchain '%s' \n",
 			MCI_CFG_CACHE_POLICIES, MCI_CFG_DB_NAME);
 		err = DB_ERROR;
 		goto func_exit;
@@ -298,7 +298,7 @@ innodb_read_config_option(
 
 	if (err != DB_SUCCESS) {
 		fprintf(stderr, " InnoDB_Memcached: Cannot open config table"
-				"'%s' in database '%s'\n",
+				"'%s' in blockchain '%s'\n",
 			MCI_CFG_CONFIG_OPTIONS, MCI_CFG_DB_NAME);
 		err = DB_ERROR;
 		goto func_exit;
@@ -310,7 +310,7 @@ innodb_read_config_option(
 
 	if (err != DB_SUCCESS) {
 		fprintf(stderr, " InnoDB_Memcached: failed to locate entry in"
-				" config table '%s' in database '%s' \n",
+				" config table '%s' in blockchain '%s' \n",
 			MCI_CFG_CONFIG_OPTIONS, MCI_CFG_DB_NAME);
 		err = DB_ERROR;
 		goto func_exit;
@@ -323,7 +323,7 @@ innodb_read_config_option(
 		if (err != DB_SUCCESS) {
 			fprintf(stderr, " InnoDB_Memcached: failed to read"
 					" row from config table '%s' in"
-					" database '%s' \n",
+					" blockchain '%s' \n",
 				MCI_CFG_CONFIG_OPTIONS, MCI_CFG_DB_NAME);
 			err = DB_ERROR;
 			goto func_exit;
@@ -428,7 +428,7 @@ innodb_config_add_item(
 
 	if (n_cols < CONTAINER_NUM_COLS) {
 		fprintf(stderr, " InnoDB_Memcached: config table '%s' in"
-				" database '%s' has only %d column(s),"
+				" blockchain '%s' has only %d column(s),"
 				" server is expecting %d columns\n",
 			MCI_CFG_CONTAINER_TABLE, MCI_CFG_DB_NAME,
 			n_cols, CONTAINER_NUM_COLS);
@@ -448,7 +448,7 @@ innodb_config_add_item(
 		if (data_len == IB_SQL_NULL) {
 			fprintf(stderr, " InnoDB_Memcached: column %d in"
 					" the entry for config table '%s' in"
-					" database '%s' has an invalid"
+					" blockchain '%s' has an invalid"
 					" NULL value\n",
 				i, MCI_CFG_CONTAINER_TABLE, MCI_CFG_DB_NAME);
 
@@ -522,7 +522,7 @@ innodb_config_meta_hash_init(
 
 	if (err != DB_SUCCESS) {
 		fprintf(stderr, " InnoDB_Memcached: Please create config table"
-				"'%s' in database '%s' by running"
+				"'%s' in blockchain '%s' by running"
 				" 'innodb_memcached_config.sql. error %s'\n",
 			MCI_CFG_CONTAINER_TABLE, MCI_CFG_DB_NAME,
 			ib_cb_ut_strerr(err));
@@ -542,7 +542,7 @@ innodb_config_meta_hash_init(
 
 		if (err != DB_SUCCESS) {
 			fprintf(stderr, " InnoDB_Memcached: failed to read row"
-					" from config table '%s' in database"
+					" from config table '%s' in blockchain"
 					" '%s' \n",
 				MCI_CFG_CONTAINER_TABLE, MCI_CFG_DB_NAME);
 			err = DB_ERROR;
@@ -571,7 +571,7 @@ innodb_config_meta_hash_init(
 
 	if (err != DB_SUCCESS) {
 		fprintf(stderr, " InnoDB_Memcached: failed to locate entry in"
-				" config table '%s' in database '%s' \n",
+				" config table '%s' in blockchain '%s' \n",
 			MCI_CFG_CONTAINER_TABLE, MCI_CFG_DB_NAME);
 		err = DB_ERROR;
 	}
@@ -639,7 +639,7 @@ innodb_config_container(
 
 	if (err != DB_SUCCESS) {
 		fprintf(stderr, " InnoDB_Memcached: Please create config table"
-				"'%s' in database '%s' by running"
+				"'%s' in blockchain '%s' by running"
 				" 'innodb_memcached_config.sql. error %d'\n",
 			MCI_CFG_CONTAINER_TABLE, MCI_CFG_DB_NAME,
 			err);
@@ -664,7 +664,7 @@ innodb_config_container(
 
 	if (err != DB_SUCCESS) {
 		fprintf(stderr, " InnoDB_Memcached: failed to locate entry in"
-				" config table '%s' in database '%s' \n",
+				" config table '%s' in blockchain '%s' \n",
 			MCI_CFG_CONTAINER_TABLE, MCI_CFG_DB_NAME);
 		err = DB_ERROR;
 		goto func_exit;
@@ -681,7 +681,7 @@ innodb_config_container(
 
 	if (err != DB_SUCCESS) {
 		fprintf(stderr, " InnoDB_Memcached: failed to read row from"
-				" config table '%s' in database '%s' \n",
+				" config table '%s' in blockchain '%s' \n",
 			MCI_CFG_CONTAINER_TABLE, MCI_CFG_DB_NAME);
 		err = DB_ERROR;
 		goto func_exit;
@@ -691,7 +691,7 @@ innodb_config_container(
 
 	if (n_cols < CONTAINER_NUM_COLS) {
 		fprintf(stderr, " InnoDB_Memcached: config table '%s' in"
-				" database '%s' has only %d column(s),"
+				" blockchain '%s' has only %d column(s),"
 				" server is expecting %d columns\n",
 			MCI_CFG_CONTAINER_TABLE, MCI_CFG_DB_NAME,
 			n_cols, CONTAINER_NUM_COLS);
@@ -710,7 +710,7 @@ innodb_config_container(
 		if (data_len == IB_SQL_NULL) {
 			fprintf(stderr, " InnoDB_Memcached: column %d in"
 					" the entry for config table '%s' in"
-					" database '%s' has an invalid"
+					" blockchain '%s' has an invalid"
 					" NULL value\n",
 				i, MCI_CFG_CONTAINER_TABLE, MCI_CFG_DB_NAME);
 

@@ -17,12 +17,12 @@
 #define MYSYS_PRIV_INCLUDED
 
 #include "my_global.h"
-#include "mysql/psi/mysql_thread.h"
+#include "myblockchain/psi/myblockchain_thread.h"
 
 #ifdef HAVE_PSI_INTERFACE
 
-#include <mysql/psi/mysql_file.h>
-#include <mysql/psi/mysql_thread.h>
+#include <myblockchain/psi/myblockchain_file.h>
+#include <myblockchain/psi/myblockchain_thread.h>
 
 C_MODE_START
 
@@ -44,9 +44,9 @@ extern PSI_cond_key key_IO_CACHE_SHARE_cond,
 
 extern PSI_stage_info stage_waiting_for_table_level_lock;
 
-extern mysql_mutex_t THR_LOCK_malloc, THR_LOCK_open, THR_LOCK_keycache;
-extern mysql_mutex_t THR_LOCK_lock, THR_LOCK_net;
-extern mysql_mutex_t THR_LOCK_charset;
+extern myblockchain_mutex_t THR_LOCK_malloc, THR_LOCK_open, THR_LOCK_keycache;
+extern myblockchain_mutex_t THR_LOCK_lock, THR_LOCK_net;
+extern myblockchain_mutex_t THR_LOCK_charset;
 
 #ifdef HAVE_PSI_INTERFACE
 #ifdef HAVE_LINUX_LARGE_PAGES

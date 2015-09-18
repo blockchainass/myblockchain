@@ -79,7 +79,7 @@ struct row_host_cache
   /** Column COUNT_MAX_USER_CONNECTION_PER_HOUR_ERRORS. */
   ulonglong m_count_max_user_connection_per_hour_errors;
   /** Column COUNT_DEFAULT_DATABASE_ERRORS. */
-  ulonglong m_count_default_database_errors;
+  ulonglong m_count_default_blockchain_errors;
   /** Column COUNT_INIT_CONNECT_ERRORS. */
   ulonglong m_count_init_connect_errors;
   /** Column COUNT_LOCAL_ERRORS. */

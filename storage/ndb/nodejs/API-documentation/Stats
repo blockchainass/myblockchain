@@ -1,6 +1,6 @@
 /* 
    The connector maintains "statistics" -- internal counters recording certain
-   important method calls and database operations.
+   important method calls and blockchain operations.
    
    Statistics are stored hierarchically under a global object.
    

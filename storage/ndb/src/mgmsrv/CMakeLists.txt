@@ -30,20 +30,20 @@ IF(WITHOUT_SERVER)
   RETURN()
 ENDIF()
 
-# Define MYSQLCLUSTERDIR, the default location
+# Define MYBLOCKCHAINCLUSTERDIR, the default location
 # of ndb_mgmd config files
-IF(NOT DEFINED DEFAULT_MYSQL_HOME)
-  # MySQL does not define DEFAULT_MYSQL_HOME in pre 5.5 version, fall
+IF(NOT DEFINED DEFAULT_MYBLOCKCHAIN_HOME)
+  # MyBlockchain does not define DEFAULT_MYBLOCKCHAIN_HOME in pre 5.5 version, fall
   # back to our old defaults and be backwards compatible
   IF(WIN32)
-    SET(DEFAULT_MYSQL_HOME "C:/mysql" )
+    SET(DEFAULT_MYBLOCKCHAIN_HOME "C:/myblockchain" )
   ELSE()
-    SET(DEFAULT_MYSQL_HOME ${CMAKE_INSTALL_PREFIX})
+    SET(DEFAULT_MYBLOCKCHAIN_HOME ${CMAKE_INSTALL_PREFIX})
   ENDIF()
 ENDIF()
-SET(clusterdir ${DEFAULT_MYSQL_HOME}/mysql-cluster)
-ADD_DEFINITIONS(-DMYSQLCLUSTERDIR=\"${clusterdir}\")
-MESSAGE(STATUS "Using MYSQLCLUSTERDIR: '${clusterdir}'")
+SET(clusterdir ${DEFAULT_MYBLOCKCHAIN_HOME}/myblockchain-cluster)
+ADD_DEFINITIONS(-DMYBLOCKCHAINCLUSTERDIR=\"${clusterdir}\")
+MESSAGE(STATUS "Using MYBLOCKCHAINCLUSTERDIR: '${clusterdir}'")
 
 
 IF(WIN32)
@@ -53,7 +53,7 @@ IF(WIN32)
     ${CMAKE_SOURCE_DIR}/storage/ndb/src/common/logger/msg00001.bin)
 ENDIF()
 
-MYSQL_ADD_EXECUTABLE(ndb_mgmd
+MYBLOCKCHAIN_ADD_EXECUTABLE(ndb_mgmd
   MgmtSrvr.cpp main.cpp Services.cpp ConfigManager.cpp
   ${NDB_MGMD_EXTRA_SRC}
   DESTINATION ${INSTALL_SBINDIR}

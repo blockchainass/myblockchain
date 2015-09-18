@@ -16,7 +16,7 @@
 */
 
 /*
-  This handler was developed by Mikael Ronstrom for version 5.1 of MySQL.
+  This handler was developed by Mikael Ronstrom for version 5.1 of MyBlockchain.
   It is an abstraction layer on top of other handlers such as MyISAM,
   InnoDB, Federated, Berkeley DB and so forth. Partitioned tables can also
   be handled by a storage engine. The current example of this is NDB
@@ -31,10 +31,10 @@
   one has to scan all index parts which is ok for large queries but for
   small queries it can be a disadvantage.
 
-  Partitioning lays the foundation for more manageable databases that are
+  Partitioning lays the foundation for more manageable blockchains that are
   extremely large. It does also lay the foundation for more parallelism
   in the execution of queries. This functionality will grow with later
-  versions of MySQL.
+  versions of MyBlockchain.
 
   You can enable it in your buld by doing the following during your build
   process:
@@ -51,9 +51,9 @@
 
 /*
   This engine need server classes (like THD etc.) which only is defined if
-  MYSQL_SERVER define is set!
+  MYBLOCKCHAIN_SERVER define is set!
 */
-#define MYSQL_SERVER 1
+#define MYBLOCKCHAIN_SERVER 1
 #include "sql_parse.h"                          // append_file_to_dir
 #include "partition_info.h"                  // partition_info
 #include "ha_partition.h"
@@ -71,7 +71,7 @@
 #endif
 
 #include "pfs_file_provider.h"
-#include "mysql/psi/mysql_file.h"
+#include "myblockchain/psi/myblockchain_file.h"
 
 using std::min;
 using std::max;
@@ -126,9 +126,9 @@ static void init_partition_psi_keys(void)
   int count;
 
   count= array_elements(all_partition_memory);
-  mysql_memory_register(category, all_partition_memory, count);
+  myblockchain_memory_register(category, all_partition_memory, count);
   count= array_elements(all_partition_file);
-  mysql_file_register(category, all_partition_file, count);
+  myblockchain_file_register(category, all_partition_file, count);
 }
 #endif /* HAVE_PSI_INTERFACE */
 
@@ -571,7 +571,7 @@ int ha_partition::delete_table(const char *name)
     handler.cc and it will rename all files with the file extentions returned
     by bas_ext().
 
-    Called from sql_table.cc by mysql_rename_table().
+    Called from sql_table.cc by myblockchain_rename_table().
 */
 
 int ha_partition::rename_table(const char *from, const char *to)
@@ -622,9 +622,9 @@ int ha_partition::create_handler_files(const char *path,
     strxmov(name, path, ha_par_ext, NullS);
     strxmov(old_name, old_path, ha_par_ext, NullS);
     if ((action_flag == CHF_DELETE_FLAG &&
-         mysql_file_delete(key_file_ha_partition_par, name, MYF(MY_WME))) ||
+         myblockchain_file_delete(key_file_ha_partition_par, name, MYF(MY_WME))) ||
         (action_flag == CHF_RENAME_FLAG &&
-         mysql_file_rename(key_file_ha_partition_par,
+         myblockchain_file_rename(key_file_ha_partition_par,
                            old_name,
                            name,
                            MYF(MY_WME))))
@@ -1404,7 +1404,7 @@ void ha_partition::update_create_info(HA_CREATE_INFO *create_info)
   memset(&dummy_info, 0, sizeof(dummy_info));
 
   /*
-  Since update_create_info() can be called from mysql_prepare_alter_table()
+  Since update_create_info() can be called from myblockchain_prepare_alter_table()
   when not all handlers are set up, we look for that condition first.
   If all handlers are not available, do not call update_create_info for any.
   */
@@ -1805,13 +1805,13 @@ bool ha_partition::create_handler_file(const char *name)
     to be used at open, delete_table and rename_table
   */
   fn_format(file_name, name, "", ha_par_ext, MY_APPEND_EXT);
-  if ((file= mysql_file_create(key_file_ha_partition_par,
+  if ((file= myblockchain_file_create(key_file_ha_partition_par,
                                file_name, CREATE_MODE, O_RDWR | O_TRUNC,
                                MYF(MY_WME))) >= 0)
   {
-    result= mysql_file_write(file, (uchar *) file_buffer, tot_len_byte,
+    result= myblockchain_file_write(file, (uchar *) file_buffer, tot_len_byte,
                              MYF(MY_WME | MY_NABP)) != 0;
-    (void) mysql_file_close(file, MYF(0));
+    (void) myblockchain_file_close(file, MYF(0));
   }
   else
     result= TRUE;
@@ -1983,20 +1983,20 @@ bool ha_partition::read_par_file(const char *name)
     DBUG_RETURN(false);
   fn_format(buff, name, "", ha_par_ext, MY_APPEND_EXT);
 
-  /* Following could be done with mysql_file_stat to read in whole file */
-  if ((file= mysql_file_open(key_file_ha_partition_par,
+  /* Following could be done with myblockchain_file_stat to read in whole file */
+  if ((file= myblockchain_file_open(key_file_ha_partition_par,
                              buff, O_RDONLY | O_SHARE, MYF(0))) < 0)
     DBUG_RETURN(TRUE);
-  if (mysql_file_read(file, (uchar *) &buff[0], PAR_WORD_SIZE, MYF(MY_NABP)))
+  if (myblockchain_file_read(file, (uchar *) &buff[0], PAR_WORD_SIZE, MYF(MY_NABP)))
     goto err1;
   len_words= uint4korr(buff_p);
   len_bytes= PAR_WORD_SIZE * len_words;
-  if (mysql_file_seek(file, 0, MY_SEEK_SET, MYF(0)) == MY_FILEPOS_ERROR)
+  if (myblockchain_file_seek(file, 0, MY_SEEK_SET, MYF(0)) == MY_FILEPOS_ERROR)
     goto err1;
   if (!(file_buffer= (char*) my_malloc(key_memory_ha_partition_file,
                                        len_bytes, MYF(0))))
     goto err1;
-  if (mysql_file_read(file, (uchar *) file_buffer, len_bytes, MYF(MY_NABP)))
+  if (myblockchain_file_read(file, (uchar *) file_buffer, len_bytes, MYF(MY_NABP)))
     goto err2;
 
   chksum= 0;
@@ -2019,7 +2019,7 @@ bool ha_partition::read_par_file(const char *name)
   */
   if (len_words != (tot_partition_words + tot_name_words + 4))
     goto err2;
-  (void) mysql_file_close(file, MYF(0));
+  (void) myblockchain_file_close(file, MYF(0));
   m_file_buffer= file_buffer;          // Will be freed in clear_handler_file()
   m_name_buffer_ptr= tot_name_len_offset + PAR_WORD_SIZE;
 
@@ -2028,7 +2028,7 @@ bool ha_partition::read_par_file(const char *name)
 err2:
   my_free(file_buffer);
 err1:
-  (void) mysql_file_close(file, MYF(0));
+  (void) myblockchain_file_close(file, MYF(0));
   DBUG_RETURN(true);
 }
 
@@ -2628,14 +2628,14 @@ int ha_partition::close(void)
     0                    Success
 
   DESCRIPTION
-    First you should go read the section "locking functions for mysql" in
+    First you should go read the section "locking functions for myblockchain" in
     lock.cc to understand this.
     This create a lock on the table. If you are implementing a storage engine
     that can handle transactions look at ha_berkeley.cc to see how you will
     want to go about doing this. Otherwise you should consider calling
     flock() here.
     Originally this method was used to set locks on file level to enable
-    several MySQL Servers to work on the same data. For transactional
+    several MyBlockchain Servers to work on the same data. For transactional
     engines it has been "abused" to also mean start and end of statements
     to enable proper rollback of statements and transactions. When LOCK
     TABLES has been issued the start_stmt method takes over the role of
@@ -2722,9 +2722,9 @@ err_handler:
     read locks.
 
     Before adding the lock into the table lock handler (see thr_lock.c)
-    mysqld calls store lock with the requested locks.  Store lock can now
+    myblockchaind calls store lock with the requested locks.  Store lock can now
     modify a write lock to a read lock (or some other lock), ignore the
-    lock (if we don't want to use MySQL table locks at all) or add locks
+    lock (if we don't want to use MyBlockchain table locks at all) or add locks
     for many tables (like we do when we are using a MERGE handler).
 
     Berkeley DB for partition  changes all WRITE locks to TL_WRITE_ALLOW_WRITE
@@ -2737,10 +2737,10 @@ err_handler:
     store_lock is called when holding a global mutex to ensure that only
     one thread at a time changes the locking information of tables.
 
-    In some exceptional cases MySQL may send a request for a TL_IGNORE;
+    In some exceptional cases MyBlockchain may send a request for a TL_IGNORE;
     This means that we are requesting the same lock as last time and this
     should also be ignored. (This may happen when someone does a flush
-    table when we have opened a part of the tables, in which case mysqld
+    table when we have opened a part of the tables, in which case myblockchaind
     closes and reopens the tables and tries to get the same locks as last
     time).  In the future we will probably try to remove this.
 
@@ -2756,7 +2756,7 @@ THR_LOCK_DATA **ha_partition::store_lock(THD *thd,
   DBUG_ASSERT(thd == current_thd);
 
   /*
-    This can be called from get_lock_data() in mysql_lock_abort_for_thread(),
+    This can be called from get_lock_data() in myblockchain_lock_abort_for_thread(),
     even when thd != table->in_use. In that case don't use partition pruning,
     but use all partitions instead to avoid using another threads structures.
   */
@@ -2845,7 +2845,7 @@ uint ha_partition::lock_count() const
     needed, only some minor over allocation of memory in get_lock_data().
 
     Also notice that this may be called for another thread != table->in_use,
-    when mysql_lock_abort_for_thread() is called. So this is more safe, then
+    when myblockchain_lock_abort_for_thread() is called. So this is more safe, then
     using number of partitions after pruning.
   */
   DBUG_RETURN(m_tot_parts * m_num_locks);
@@ -2888,8 +2888,8 @@ void ha_partition::unlock_row()
     In an UPDATE or DELETE, if the row under the cursor was locked by another
     transaction, and the engine used an optimistic read of the last
     committed row value under the cursor, then the engine returns 1 from this
-    function. MySQL must NOT try to update this optimistic value. If the
-    optimistic value does not match the WHERE condition, MySQL can decide to
+    function. MyBlockchain must NOT try to update this optimistic value. If the
+    optimistic value does not match the WHERE condition, MyBlockchain can decide to
     skip over this row. Currently only works for InnoDB. This can be used to
     avoid unnecessary lock waits.
 
@@ -2946,7 +2946,7 @@ void ha_partition::try_semi_consistent_read(bool yes)
 
 /** Insert a row to the partition.
   @param part_id  Partition to insert into.
-  @param buf      The row in MySQL Row Format.
+  @param buf      The row in MyBlockchain Row Format.
 
   @return Operation status.
     @retval 0    Success
@@ -2996,7 +2996,7 @@ int ha_partition::update_row_in_part(uint part_id,
   buf is either record[0] or record[1]
 
   @param part_id  The partition to delete the row from.
-  @param buf      The record in MySQL Row Format.
+  @param buf      The record in MyBlockchain Row Format.
 
   @return Operation status.
     @retval 0    Success
@@ -3035,7 +3035,7 @@ int ha_partition::delete_row_in_part(uint part_id, const uchar *buf)
 
     Called from item_sum.cc by Item_func_group_concat::clear(),
     Item_sum_count_distinct::clear(), and Item_func_group_concat::clear().
-    Called from sql_delete.cc by mysql_delete().
+    Called from sql_delete.cc by myblockchain_delete().
     Called from sql_select.cc by JOIN::reset().
     Called from sql_union.cc by st_select_lex_unit::exec().
 */
@@ -3382,7 +3382,7 @@ int ha_partition::rnd_next_in_part(uint part_id, uchar *buf)
   current_position should be the offset. If it is a primary key like in
   InnoDB, then it needs to be a primary key.
 
-  @param record  Current record in MySQL Row Format.
+  @param record  Current record in MyBlockchain Row Format.
 
   @note m_last_part must be set (normally done by
   Partition_helper::return_top_record()).
@@ -3410,7 +3410,7 @@ void ha_partition::position_in_last_part(uchar *ref, const uchar *record)
   tables usually returns offset in heap file (like MyISAM).
 
   @param[in]     part_id  Partition to read from.
-  @param[in,out] buf      Buffer to fill with record in MySQL format.
+  @param[in,out] buf      Buffer to fill with record in MyBlockchain format.
   @param[in]     pos      Position (data pointed to from ::ref) from position().
 
   @return Operation status.
@@ -3510,7 +3510,7 @@ int ha_partition::index_end_in_part(uint part)
   index_scan. This is particularly used in conjunction with multi read ranges.
 
   @param[in]     part         Partition to read from.
-  @param[in,out] buf          Read row in MySQL Row Format
+  @param[in,out] buf          Read row in MyBlockchain Row Format
   @param[in]     key          Key parts in consecutive order
   @param[in]     keypart_map  Which part of key is used
   @param[in]     find_flag    What type of key condition is used
@@ -3539,7 +3539,7 @@ int ha_partition::index_read_map_in_part(uint part,
   index_next.
 
   @param[in]     part  Partition to read from.
-  @param[in,out] buf   Read row in MySQL Row Format.
+  @param[in,out] buf   Read row in MyBlockchain Row Format.
 
   @return Operation status.
     @retval    0  Success
@@ -3561,7 +3561,7 @@ int ha_partition::index_first_in_part(uint part, uchar* buf)
   index_prev.
 
   @param[in]     part  Partition to read from.
-  @param[in,out] buf   Read row in MySQL Row Format.
+  @param[in,out] buf   Read row in MyBlockchain Row Format.
 
   @return Operation status.
     @retval    0  Success
@@ -3580,7 +3580,7 @@ int ha_partition::index_last_in_part(uint part, uchar *buf)
   This is used in join_read_last_key to optimize away an ORDER BY.
   Can only be used on indexes supporting HA_READ_ORDER.
 
-  @param[in,out] buf          Read row in MySQL Row Format
+  @param[in,out] buf          Read row in MyBlockchain Row Format
   @param[in]     key          Key
   @param[in]     keypart_map  Which part of key is used
 
@@ -3602,7 +3602,7 @@ int ha_partition::index_read_last_map_in_part(uint part,
   Read index by key and keymap in a partition.
 
   @param[in]     part         Index to read from
-  @param[in,out] buf          Read row in MySQL Row Format
+  @param[in,out] buf          Read row in MyBlockchain Row Format
   @param[in]     index        Index to read from
   @param[in]     key          Key
   @param[in]     keypart_map  Which part of key is used
@@ -3634,7 +3634,7 @@ int ha_partition::index_read_idx_map_in_part(uint part,
   Used to read forward through the index (left to right, low to high).
 
   @param[in]     part  Partition to read from.
-  @param[in,out] buf   Read row in MySQL Row Format.
+  @param[in,out] buf   Read row in MyBlockchain Row Format.
 
   @return Operation status.
     @retval    0  Success
@@ -3654,7 +3654,7 @@ int ha_partition::index_next_in_part(uint part, uchar *buf)
   as supplied in the call.
 
   @param[in]     part    Partition to read from.
-  @param[in,out] buf     Read row in MySQL Row Format.
+  @param[in,out] buf     Read row in MyBlockchain Row Format.
   @param[in]     key     Key.
   @param[in]     keylen  Length of key.
 
@@ -3677,7 +3677,7 @@ int ha_partition::index_next_same_in_part(uint part,
 
   Used to read backwards through the index (right to left, high to low).
 
-  @param[in,out] buf  Read row in MySQL Row Format.
+  @param[in,out] buf  Read row in MyBlockchain Row Format.
 
   @return Operation status.
     @retval    0  Success
@@ -3828,12 +3828,12 @@ int ha_partition::compare_number_of_records(ha_partition *me,
 
     Some flags that are not implemented
       HA_STATUS_POS:
-        This parameter is never used from the MySQL Server. It is checked in a
+        This parameter is never used from the MyBlockchain Server. It is checked in a
         place in MyISAM so could potentially be used by MyISAM specific
         programs.
       HA_STATUS_NO_LOCK:
       This is declared and often used. It's only used by MyISAM.
-      It means that MySQL doesn't need the absolute latest statistics
+      It means that MyBlockchain doesn't need the absolute latest statistics
       information. This may save the handler from doing internal locks while
       retrieving statistics data.
 */
@@ -4208,7 +4208,7 @@ void ha_partition::get_dynamic_partition_info(ha_statistics *stat_info,
     When the user does DELETE QUICK FROM table where-clause; this extra
     option is called before the delete query is performed and
     HA_EXTRA_NORMAL is called after the delete query is completed.
-    Temporary tables used internally in MySQL always set this option
+    Temporary tables used internally in MyBlockchain always set this option
 
     The meaning of quick mode is that when deleting in a B-tree no merging
     of leafs is performed. This is a common method and many large DBMS's
@@ -4556,7 +4556,7 @@ int ha_partition::extra(enum ha_extra_function operation)
     break;
   }
   /*
-    http://dev.mysql.com/doc/refman/5.1/en/partitioning-limitations.html
+    http://dev.myblockchain.com/doc/refman/5.1/en/partitioning-limitations.html
     says we no longer support logging to partitioned tables, so we fail
     here.
   */
@@ -5217,7 +5217,7 @@ bool ha_partition::check_if_incompatible_data(HA_CREATE_INFO *create_info,
 
   /*
     The check for any partitioning related changes have already been done
-    in mysql_alter_table (by fix_partition_func), so it is only up to
+    in myblockchain_alter_table (by fix_partition_func), so it is only up to
     the underlying handlers.
   */
   for (file= m_file; *file; file++)
@@ -5276,7 +5276,7 @@ ha_partition::check_if_supported_inplace_alter(TABLE *altered_table,
   /*
     Support inplace change of KEY () -> KEY ALGORITHM = N ().
     Any other change would set partition_changed in
-    prep_alter_part_table() in mysql_alter_table().
+    prep_alter_part_table() in myblockchain_alter_table().
   */
   if (ha_alter_info->alter_info->flags == Alter_info::ALTER_PARTITION)
     DBUG_RETURN(HA_ALTER_INPLACE_NO_LOCK);
@@ -5761,7 +5761,7 @@ inline int ha_partition::initialize_auto_increment(bool no_lock)
 #ifndef DBUG_OFF
   if (table_share->tmp_table == NO_TMP_TABLE)
   {
-    mysql_mutex_assert_owner(part_share->auto_inc_mutex);
+    myblockchain_mutex_assert_owner(part_share->auto_inc_mutex);
   }
 #endif
   DBUG_ASSERT(!part_share->auto_inc_initialized);
@@ -6021,7 +6021,7 @@ int ha_partition::check_for_upgrade(HA_CHECK_OPT *check_opt)
     Check if KEY (sub)partitioning was used and any field's hash calculation
     differs from 5.1, see bug#14521864.
   */
-  if (table->s->mysql_version < 50503 &&              // 5.1 table (<5.5.3)
+  if (table->s->myblockchain_version < 50503 &&              // 5.1 table (<5.5.3)
       ((m_part_info->part_type == HASH_PARTITION &&   // KEY partitioned
         m_part_info->list_of_part_fields) ||
        (m_is_sub_partitioned &&                       // KEY subpartitioned
@@ -6039,21 +6039,21 @@ int ha_partition::check_for_upgrade(HA_CHECK_OPT *check_opt)
     for (; *field; field++)
     {
       switch ((*field)->real_type()) {
-      case MYSQL_TYPE_TINY:
-      case MYSQL_TYPE_SHORT:
-      case MYSQL_TYPE_LONG:
-      case MYSQL_TYPE_FLOAT:
-      case MYSQL_TYPE_DOUBLE:
-      case MYSQL_TYPE_NEWDECIMAL:
-      case MYSQL_TYPE_TIMESTAMP:
-      case MYSQL_TYPE_LONGLONG:
-      case MYSQL_TYPE_INT24:
-      case MYSQL_TYPE_TIME:
-      case MYSQL_TYPE_DATETIME:
-      case MYSQL_TYPE_YEAR:
-      case MYSQL_TYPE_NEWDATE:
-      case MYSQL_TYPE_ENUM:
-      case MYSQL_TYPE_SET:
+      case MYBLOCKCHAIN_TYPE_TINY:
+      case MYBLOCKCHAIN_TYPE_SHORT:
+      case MYBLOCKCHAIN_TYPE_LONG:
+      case MYBLOCKCHAIN_TYPE_FLOAT:
+      case MYBLOCKCHAIN_TYPE_DOUBLE:
+      case MYBLOCKCHAIN_TYPE_NEWDECIMAL:
+      case MYBLOCKCHAIN_TYPE_TIMESTAMP:
+      case MYBLOCKCHAIN_TYPE_LONGLONG:
+      case MYBLOCKCHAIN_TYPE_INT24:
+      case MYBLOCKCHAIN_TYPE_TIME:
+      case MYBLOCKCHAIN_TYPE_DATETIME:
+      case MYBLOCKCHAIN_TYPE_YEAR:
+      case MYBLOCKCHAIN_TYPE_NEWDATE:
+      case MYBLOCKCHAIN_TYPE_ENUM:
+      case MYBLOCKCHAIN_TYPE_SET:
         {
           THD *thd= ha_thd();
           char *part_buf;
@@ -6117,15 +6117,15 @@ int ha_partition::check_for_upgrade(HA_CHECK_OPT *check_opt)
 }
 
 
-struct st_mysql_storage_engine partition_storage_engine=
-{ MYSQL_HANDLERTON_INTERFACE_VERSION };
+struct st_myblockchain_storage_engine partition_storage_engine=
+{ MYBLOCKCHAIN_HANDLERTON_INTERFACE_VERSION };
 
-mysql_declare_plugin(partition)
+myblockchain_declare_plugin(partition)
 {
-  MYSQL_STORAGE_ENGINE_PLUGIN,
+  MYBLOCKCHAIN_STORAGE_ENGINE_PLUGIN,
   &partition_storage_engine,
   "partition",
-  "Mikael Ronstrom, MySQL AB",
+  "Mikael Ronstrom, MyBlockchain AB",
   "Partition Storage Engine Helper",
   PLUGIN_LICENSE_GPL,
   partition_initialize, /* Plugin Init */
@@ -6136,4 +6136,4 @@ mysql_declare_plugin(partition)
   NULL,                       /* config options                  */
   0,                          /* flags                           */
 }
-mysql_declare_plugin_end;
+myblockchain_declare_plugin_end;

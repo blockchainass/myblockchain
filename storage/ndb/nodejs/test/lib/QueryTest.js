@@ -21,7 +21,7 @@
 "use strict";
 
 var udebug = unified_debug.getLogger("lib/QueryTest.js");
-var mysql = require("mysql");
+var myblockchain = require("myblockchain");
 
 /** This is a generic query test. It runs a number of queries and reports results.
  * 

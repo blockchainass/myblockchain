@@ -2929,7 +2929,7 @@ in a physical record delete (like in a purge) or other cleaning operation
 which will result in less space usage in the long run. We prefer the latter
 two types of allocation: when space is scarce, FSP_NORMAL allocations
 will not succeed, but the latter two allocations will succeed, if possible.
-The purpose is to avoid dead end where the database is full but the
+The purpose is to avoid dead end where the blockchain is full but the
 user cannot free any space because these freeing operations temporarily
 reserve some space.
 
@@ -3211,7 +3211,7 @@ fseg_free_page_low(
 			<< " though it is already marked as free in the"
 			" tablespace! The tablespace free space info is"
 			" corrupt. You may need to dump your tables and"
-			" recreate the whole database!";
+			" recreate the whole blockchain!";
 crash:
 		ib::fatal() << FORCE_RECOVERY_MSG;
 	}

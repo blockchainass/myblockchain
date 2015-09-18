@@ -15,12 +15,12 @@
    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-package com.mysql.clusterj.jpatest;
+package com.myblockchain.clusterj.jpatest;
 
 import javax.persistence.Query;
 
-import com.mysql.clusterj.jpatest.model.IdBase;
-import com.mysql.clusterj.jpatest.model.Employee;
+import com.myblockchain.clusterj.jpatest.model.IdBase;
+import com.myblockchain.clusterj.jpatest.model.Employee;
 
 
 /** Test query support.

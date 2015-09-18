@@ -20,12 +20,12 @@
 user="$(whoami)"
 echo
 echo "grant privileges to users: '', $user"
-# MySQL doesn't support wildcards in user names but anonymous users as '';
+# MyBlockchain doesn't support wildcards in user names but anonymous users as '';
 # any user who connects from the local host with the correct password for
 # the anonymous user will be allowed access then.
-./mysql.sh -v -u root -e "GRANT ALL ON *.* TO ''@localhost, $user@localhost;"
+./myblockchain.sh -v -u root -e "GRANT ALL ON *.* TO ''@localhost, $user@localhost;"
 s=$?
-echo "mysql exit status: $s"
+echo "myblockchain exit status: $s"
 
 echo
 echo done.

@@ -49,7 +49,7 @@ Created 4/20/1996 Heikki Tuuri
 #include "read0read.h"
 #include "ut0mem.h"
 #include "gis0geo.h"
-#include "row0mysql.h"
+#include "row0myblockchain.h"
 
 /*****************************************************************//**
 When an insert or purge to a table is performed, this function builds
@@ -1034,7 +1034,7 @@ row_raw_format_int(
 
 /*******************************************************************//**
 Formats the raw data in "data" (in InnoDB on-disk format) that is of
-type DATA_(CHAR|VARCHAR|MYSQL|VARMYSQL) using "prtype" and writes the
+type DATA_(CHAR|VARCHAR|MYBLOCKCHAIN|VARMYBLOCKCHAIN) using "prtype" and writes the
 result to "buf".
 If the data is in binary format, then nothing is written to "buf",
 0 is returned and "format_in_hex" is set to TRUE, otherwise
@@ -1075,7 +1075,7 @@ row_raw_format_str(
 	}
 	/* else */
 
-	if (charset_coll == DATA_MYSQL_BINARY_CHARSET_COLL) {
+	if (charset_coll == DATA_MYBLOCKCHAIN_BINARY_CHARSET_COLL) {
 
 		*format_in_hex = TRUE;
 		return(0);
@@ -1139,8 +1139,8 @@ row_raw_format(
 		break;
 	case DATA_CHAR:
 	case DATA_VARCHAR:
-	case DATA_MYSQL:
-	case DATA_VARMYSQL:
+	case DATA_MYBLOCKCHAIN:
+	case DATA_VARMYBLOCKCHAIN:
 
 		ret = row_raw_format_str(data, data_len, prtype,
 					 buf, buf_size, &format_in_hex);

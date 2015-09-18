@@ -141,7 +141,7 @@ function saveClusterDefinition() {
             alert("Please note that with this application area, the " +
                     "configuration tool will set parameter values " +
                     "assuming that the hosts are used for running " +
-                    "MySQL Cluster exclusively. The cluster will need " +
+                    "MyBlockchain Cluster exclusively. The cluster will need " +
                     "much time for initialization, maybe in the order of " +
                     "one hour or more, and will consume most of the hosts' " +
                     "RAM, hence leaving the hosts unusable for other " +
@@ -288,7 +288,7 @@ function clusterDefinitionSetup() {
     var cd_hosts_tt = new dijit.Tooltip({
         connectId: ["cd_hosts", "cd_hosts_qm"],
         label: "Comma separated list of names or ip addresses of the hosts \
-                to use for running MySQL cluster"
+                to use for running MyBlockchain cluster"
     });
 
     var cd_apparea = new dijit.form.FilteringSelect({style: "width: 120px", 
@@ -316,7 +316,7 @@ function clusterDefinitionSetup() {
     var sd_keybased_tt = new dijit.Tooltip({
         connectId: ["sd_keybased", "sd_keybased_qm"],
         label: "Check this box if key based ssh login is enabled \
-                on the hosts running MySQL Cluster."
+                on the hosts running MyBlockchain Cluster."
     });
 
     var sd_user = new dijit.form.TextBox({style: "width: 120px"}, "sd_user");
@@ -324,7 +324,7 @@ function clusterDefinitionSetup() {
     var sd_user_tt = new dijit.Tooltip({
         connectId: ["sd_user", "sd_user_qm"],
         label: "User name for ssh login \
-                to the hosts running MySQL Cluster."
+                to the hosts running MyBlockchain Cluster."
     });
 
     var sd_pwd = new dijit.form.TextBox({
@@ -335,7 +335,7 @@ function clusterDefinitionSetup() {
     var sd_pwd_tt = new dijit.Tooltip({
         connectId: ["sd_pwd", "sd_pwd_qm"],
         label: "Password for ssh login \
-                to the hosts running MySQL Cluster."
+                to the hosts running MyBlockchain Cluster."
     });
 }
 

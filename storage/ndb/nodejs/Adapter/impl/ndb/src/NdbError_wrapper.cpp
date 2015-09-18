@@ -33,7 +33,7 @@ using namespace v8;
 Handle<Value> get_status(Local<String>, const AccessorInfo &);
 Handle<Value> get_classification(Local<String>, const AccessorInfo &);
 Handle<Value> get_code(Local<String>, const AccessorInfo &);
-Handle<Value> get_mysql_code(Local<String>, const AccessorInfo &);
+Handle<Value> get_myblockchain_code(Local<String>, const AccessorInfo &);
 Handle<Value> get_message(Local<String>, const AccessorInfo &);
 
 
@@ -43,7 +43,7 @@ public:
     DEFINE_JS_ACCESSOR(Envelope::stencil, "status", get_status);
     DEFINE_JS_ACCESSOR(Envelope::stencil, "classification", get_classification);
     DEFINE_JS_ACCESSOR(Envelope::stencil, "code", get_code);
-    DEFINE_JS_ACCESSOR(Envelope::stencil, "handler_error_code", get_mysql_code);
+    DEFINE_JS_ACCESSOR(Envelope::stencil, "handler_error_code", get_myblockchain_code);
     DEFINE_JS_ACCESSOR(Envelope::stencil, "message", get_message);
 }
 
@@ -115,10 +115,10 @@ Handle<Value> get_code(Local<String> property, const AccessorInfo &info) {
 }
 
 
-Handle<Value> get_mysql_code(Local<String> property, const AccessorInfo &info) {
+Handle<Value> get_myblockchain_code(Local<String> property, const AccessorInfo &info) {
   const NdbError *err = unwrapPointer<const NdbError *>(info.Holder());
   
-  return Integer::New(err->mysql_code);
+  return Integer::New(err->myblockchain_code);
 }
 
 

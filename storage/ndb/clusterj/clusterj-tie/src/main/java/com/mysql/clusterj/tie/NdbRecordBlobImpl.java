@@ -15,13 +15,13 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
  */
 
-package com.mysql.clusterj.tie;
+package com.myblockchain.clusterj.tie;
 
-import com.mysql.clusterj.core.store.Column;
+import com.myblockchain.clusterj.core.store.Column;
 
-import com.mysql.clusterj.core.util.I18NHelper;
-import com.mysql.clusterj.core.util.Logger;
-import com.mysql.clusterj.core.util.LoggerFactoryService;
+import com.myblockchain.clusterj.core.util.I18NHelper;
+import com.myblockchain.clusterj.core.util.Logger;
+import com.myblockchain.clusterj.core.util.LoggerFactoryService;
 
 /**
  * NdbRecord blob handling defers the acquisition of an NdbBlob until the NdbOperation
@@ -57,8 +57,8 @@ class NdbRecordBlobImpl extends BlobImpl {
      * While scanning, the operation used to fetch the blob data is the scan operation. But the
      * operation for the new NdbRecordBlobImpl is a new operation that is not currently bound to
      * an NdbOperation. Subsequent use of the blob will require a new NdbBlob with the NdbOperation.
-     * @param operation the new operation that is not connected to the database
-     * @param ndbRecordBlobImpl2 the other NdbRecordBlobImpl that is connected to the database
+     * @param operation the new operation that is not connected to the blockchain
+     * @param ndbRecordBlobImpl2 the other NdbRecordBlobImpl that is connected to the blockchain
      */
     public NdbRecordBlobImpl(NdbRecordOperationImpl operation, NdbRecordBlobImpl ndbRecordBlobImpl2) {
         this.operation = operation;

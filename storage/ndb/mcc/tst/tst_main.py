@@ -64,12 +64,12 @@ from paramiko import SSHClient, WarningPolicy
 _ndb_config = os.path.join('..', '..', '..', 'bin', 'ndb_config')
 
 def tst_tempify(*fs):
-	td = util.get_val(os.environ, 'MYSQL_TMP_DIR', tempfile.gettempdir())
+	td = util.get_val(os.environ, 'MYBLOCKCHAIN_TMP_DIR', tempfile.gettempdir())
 	#td = tempfile.mkdtemp()
 	return os.path.join(td, *fs)
 
 def defdatadir():
-    return os.path.join(os.path.expanduser('~'), 'MySQL_Cluster', 'data')
+    return os.path.join(os.path.expanduser('~'), 'MyBlockchain_Cluster', 'data')
 
 # Default tst configuration. Can be overridden in config.json
 _cfg = { 'debuglevel': 'DEBUG' }
@@ -79,7 +79,7 @@ def cfg():
 
 request_handler.configdir = '..'
 
-def_datadir = os.path.join(os.path.expanduser('~'), 'MySQL_Cluster', 'data')
+def_datadir = os.path.join(os.path.expanduser('~'), 'MyBlockchain_Cluster', 'data')
 
 
 def mock_ABClusterHost(hle):

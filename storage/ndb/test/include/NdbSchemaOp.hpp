@@ -136,7 +136,7 @@ public:
 
   
   /**
-   * Create a new table in the database.
+   * Create a new table in the blockchain.
    * 
    * @note The NdbSchemaCon should be closed with 
    *       Ndb::closeSchemaTransaction, even if this method fails.
@@ -145,7 +145,7 @@ public:
    * @param  aTableSize	  (Performance parameter.)
    *                      Initial size of the data part of the table
    *                      expressed in kByte. 
-   *                      The database handles
+   *                      The blockchain handles
    * 			  bad parameter setting but at a certain 
    *                      loss in performance.
    *                      The size given here is
@@ -306,7 +306,7 @@ public:
 #endif
 
   /**
-   * Add a new attribute to a database table.
+   * Add a new attribute to a blockchain table.
    *
    * Attributes can only be added to a table in the same transaction
    * as the transaction creating the table.

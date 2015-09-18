@@ -19,24 +19,24 @@
 #define ABSTRACT_DATABASE_DUMP_TASK_INCLUDED
 
 #include "abstract_dump_task.h"
-#include "database.h"
+#include "blockchain.h"
 
 namespace Mysql{
 namespace Tools{
 namespace Dump{
 
 /**
-  Abstract class for defining single database definition dump task.
+  Abstract class for defining single blockchain definition dump task.
  */
-class Abstract_database_dump_task : public Abstract_dump_task
+class Abstract_blockchain_dump_task : public Abstract_dump_task
 {
 public:
-  Abstract_database_dump_task(Database* related_database);
+  Abstract_blockchain_dump_task(Database* related_blockchain);
 
   /**
-    Returns database the current task is created for.
+    Returns blockchain the current task is created for.
    */
-  Database* get_related_database();
+  Database* get_related_blockchain();
 };
 
 }

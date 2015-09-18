@@ -71,7 +71,7 @@ int main(int argc, char** argv)
 
   if (argc != 8)
   {
-    ndbout << "Arguments are <connect_string cluster 1> <connect_string cluster 2> <database> <table name> <primary key> <value of primary key> <attribute to update>.\n";
+    ndbout << "Arguments are <connect_string cluster 1> <connect_string cluster 2> <blockchain> <table name> <primary key> <value of primary key> <attribute to update>.\n";
     exit(-1);
   }
 
@@ -119,7 +119,7 @@ int main(int argc, char** argv)
       g_err << "Cluster 2 was not ready within 30 secs.\n";
       exit(-1);
     }
-    // Object representing the database
+    // Object representing the blockchain
     Ndb myNdb1(&cluster1_connection, opt_db);
     Ndb myNdb2(&cluster2_connection, opt_db);
     //

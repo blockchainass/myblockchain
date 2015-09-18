@@ -16,7 +16,7 @@
    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-package com.mysql.clusterj.annotation;
+package com.myblockchain.clusterj.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -24,7 +24,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation for a database index.
+ * Annotation for a blockchain index.
  */
 @Target({ElementType.TYPE, ElementType.FIELD, ElementType.METHOD}) 
 @Retention(RetentionPolicy.RUNTIME)

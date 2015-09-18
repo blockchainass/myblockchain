@@ -78,7 +78,7 @@ public:
 */
 class Fake_TABLE: public TABLE
 {
-  // make room for 8 indexes (mysql permits 64)
+  // make room for 8 indexes (myblockchain permits 64)
   static const int max_keys= 8;
   KEY m_keys[max_keys];
   // make room for up to 8 keyparts per index

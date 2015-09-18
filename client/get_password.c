@@ -19,10 +19,10 @@
 */
 #include <my_global.h>
 #include <my_sys.h>
-#include "mysql.h"
+#include "myblockchain.h"
 #include <m_string.h>
 #include <m_ctype.h>
-#include <mysql/get_password.h>
+#include <myblockchain/get_password.h>
 
 #ifdef HAVE_GETPASS
 #ifdef HAVE_PWD_H

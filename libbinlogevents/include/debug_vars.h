@@ -16,8 +16,8 @@
 /**
   @file debug_vars.h
 
-  @brief This header file contains the status of variables used by MySQL tests
-  for debug operations. The variables are set to true by the MySQL server if
+  @brief This header file contains the status of variables used by MyBlockchain tests
+  for debug operations. The variables are set to true by the MyBlockchain server if
   the test pertaining to the variable is active. The variables are initialized
    with false (in binlog_event.cpp).
 */

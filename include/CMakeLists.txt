@@ -14,24 +14,24 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 
 SET(HEADERS_GEN_CONFIGURE 
-${CMAKE_CURRENT_BINARY_DIR}/mysql_version.h
+${CMAKE_CURRENT_BINARY_DIR}/myblockchain_version.h
 ${CMAKE_CURRENT_BINARY_DIR}/my_config.h
-${CMAKE_CURRENT_BINARY_DIR}/mysqld_ername.h
-${CMAKE_CURRENT_BINARY_DIR}/mysqld_error.h
+${CMAKE_CURRENT_BINARY_DIR}/myblockchaind_ername.h
+${CMAKE_CURRENT_BINARY_DIR}/myblockchaind_error.h
 ${CMAKE_CURRENT_BINARY_DIR}/sql_state.h
 )
 SET(HEADERS_ABI 
-  mysql.h 
-  mysql_com.h
-  mysql_time.h 
+  myblockchain.h 
+  myblockchain_com.h
+  myblockchain_time.h 
   my_list.h
   my_alloc.h
   typelib.h 
-  mysql/plugin.h
-  mysql/plugin_audit.h
-  mysql/plugin_ftparser.h
-  mysql/plugin_validate_password.h
-  mysql/plugin_group_replication.h
+  myblockchain/plugin.h
+  myblockchain/plugin_audit.h
+  myblockchain/plugin_ftparser.h
+  myblockchain/plugin_validate_password.h
+  myblockchain/plugin_group_replication.h
 )
 
 SET(HEADERS 
@@ -40,7 +40,7 @@ SET(HEADERS
   m_string.h
   my_sys.h 
   my_xml.h
-  mysql_embed.h
+  myblockchain_embed.h
   my_thread.h
   decimal.h
   errmsg.h
@@ -54,7 +54,7 @@ SET(HEADERS
   keycache.h
   m_ctype.h
   my_compiler.h
-  mysql_com_server.h
+  myblockchain_com_server.h
   my_byteorder.h
   byte_order_generic.h
   byte_order_generic_x86.h
@@ -65,7 +65,7 @@ SET(HEADERS
 
 INSTALL(FILES ../libbinlogevents/export/binary_log_types.h DESTINATION ${INSTALL_INCLUDEDIR})
 INSTALL(FILES ${HEADERS} DESTINATION ${INSTALL_INCLUDEDIR} COMPONENT Development)
-INSTALL(DIRECTORY mysql/ DESTINATION ${INSTALL_INCLUDEDIR}/mysql COMPONENT Development 
+INSTALL(DIRECTORY myblockchain/ DESTINATION ${INSTALL_INCLUDEDIR}/myblockchain COMPONENT Development 
  PATTERN "*.h"
  PATTERN "psi_abi*" EXCLUDE
 )

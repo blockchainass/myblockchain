@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2003-2008 MySQL AB, 2008, 2009 Sun Microsystems, Inc.
+   Copyright (C) 2003-2008 MyBlockchain AB, 2008, 2009 Sun Microsystems, Inc.
     All rights reserved. Use is subject to license terms.
 
    This program is free software; you can redistribute it and/or modify
@@ -105,13 +105,13 @@ public:
   /**
    *  Begin of compound.
    *  If no group type is passed, defaults to AND.
-   *  ®return  0 if successful, -1 otherwise
+   *  ï¿½return  0 if successful, -1 otherwise
    */
   int begin(Group group = AND);    
 
   /**
    *  End of compound.
-   *  ®return  0 if successful, -1 otherwise
+   *  ï¿½return  0 if successful, -1 otherwise
    */
   int end();
 
@@ -119,13 +119,13 @@ public:
 
   /**
    *  Define one term of the current group as TRUE
-   *  ®return  0 if successful, -1 otherwise
+   *  ï¿½return  0 if successful, -1 otherwise
    */
   int istrue();
 
   /**
    *  Define one term of the current group as FALSE
-   *  ®return  0 if successful, -1 otherwise
+   *  ï¿½return  0 if successful, -1 otherwise
    */
   int isfalse();
 
@@ -141,7 +141,7 @@ public:
    * For bitmask operations, see the bitmask format information against
    * the branch_col_and_mask_eq_mask instruction in NdbInterpretedCode.hpp
    *
-   *  ®return  0 if successful, -1 otherwise
+   *  ï¿½return  0 if successful, -1 otherwise
    */
   int cmp(BinaryCondition cond, int ColId, const void *val, Uint32 len = 0); 
 
@@ -150,63 +150,63 @@ public:
    * @{
    */
   /** Compare column value with integer for equal   
-   *  ®return  0 if successful, -1 otherwise
+   *  ï¿½return  0 if successful, -1 otherwise
    */
   int eq(int ColId, Uint32 value) { return cmp(COND_EQ, ColId, &value, 4);}
 
   /** Compare column value with integer for not equal.
-   *  ®return  0 if successful, -1 otherwise 
+   *  ï¿½return  0 if successful, -1 otherwise 
    */
   int ne(int ColId, Uint32 value) { return cmp(COND_NE, ColId, &value, 4);}  
   /** Compare column value with integer for less than.
-   *  ®return  0 if successful, -1 otherwise 
+   *  ï¿½return  0 if successful, -1 otherwise 
    */
   int lt(int ColId, Uint32 value) { return cmp(COND_LT, ColId, &value, 4);}
   /** Compare column value with integer for less than or equal. 
-   *  ®return  0 if successful, -1 otherwise
+   *  ï¿½return  0 if successful, -1 otherwise
    */
   int le(int ColId, Uint32 value) { return cmp(COND_LE, ColId, &value, 4);}
   /** Compare column value with integer for greater than. 
-   *  ®return  0 if successful, -1 otherwise
+   *  ï¿½return  0 if successful, -1 otherwise
    */
   int gt(int ColId, Uint32 value) { return cmp(COND_GT, ColId, &value, 4);} 
   /** Compare column value with integer for greater than or equal.
-   *  ®return  0 if successful, -1 otherwise
+   *  ï¿½return  0 if successful, -1 otherwise
    */
   int ge(int ColId, Uint32 value) { return cmp(COND_GE, ColId, &value, 4);}
 
   /** Compare column value with integer for equal. 64-bit.  
-   *  ®return  0 if successful, -1 otherwise
+   *  ï¿½return  0 if successful, -1 otherwise
    */
   int eq(int ColId, Uint64 value) { return cmp(COND_EQ, ColId, &value, 8);}
   /** Compare column value with integer for not equal. 64-bit.
-   *  ®return  0 if successful, -1 otherwise
+   *  ï¿½return  0 if successful, -1 otherwise
    */
   int ne(int ColId, Uint64 value) { return cmp(COND_NE, ColId, &value, 8);}
   /** Compare column value with integer for less than. 64-bit.
-   *  ®return  0 if successful, -1 otherwise
+   *  ï¿½return  0 if successful, -1 otherwise
    */
   int lt(int ColId, Uint64 value) { return cmp(COND_LT, ColId, &value, 8);}  
   /** Compare column value with integer for less than or equal. 64-bit.
-   *  ®return  0 if successful, -1 otherwise
+   *  ï¿½return  0 if successful, -1 otherwise
    */
   int le(int ColId, Uint64 value) { return cmp(COND_LE, ColId, &value, 8);}
   /** Compare column value with integer for greater than. 64-bit.
-   *  ®return  0 if successful, -1 otherwise
+   *  ï¿½return  0 if successful, -1 otherwise
    */
   int gt(int ColId, Uint64 value) { return cmp(COND_GT, ColId, &value, 8);}
   /** Compare column value with integer for greater than or equal. 64-bit.
-   *  ®return  0 if successful, -1 otherwise
+   *  ï¿½return  0 if successful, -1 otherwise
    */
   int ge(int ColId, Uint64 value) { return cmp(COND_GE, ColId, &value, 8);}
   /** @} *********************************************************************/
 
   /** Check if column value is NULL 
-   *  ®return  0 if successful, -1 otherwise
+   *  ï¿½return  0 if successful, -1 otherwise
    */
   int isnull(int ColId);             
   /** Check if column value is non-NULL 
-   *  ®return  0 if successful, -1 otherwise
+   *  ï¿½return  0 if successful, -1 otherwise
    */
   int isnotnull(int ColId);          
   

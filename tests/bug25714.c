@@ -15,13 +15,13 @@
 
 #include <my_global.h>
 #include <my_sys.h>
-#include <mysql.h>
+#include <myblockchain.h>
 #include <m_string.h>
 #include <assert.h>
 
 int main (int argc, char **argv)
 {
-  MYSQL conn;
+  MYBLOCKCHAIN conn;
   int OK;
 
   const char* query4= "INSERT INTO federated.t1 SET Value=54";
@@ -31,13 +31,13 @@ int main (int argc, char **argv)
 
   if (argc != 2 || !strcmp(argv[1], "--help"))
   {
-    fprintf(stderr, "This program is a part of the MySQL test suite. "
+    fprintf(stderr, "This program is a part of the MyBlockchain test suite. "
             "It is not intended to be executed directly by a user.\n");
     return -1;
   }
 
-  mysql_init(&conn);
-  if (!mysql_real_connect(
+  myblockchain_init(&conn);
+  if (!myblockchain_real_connect(
                           &conn,
                           "127.0.0.1",
                           "root",
@@ -47,28 +47,28 @@ int main (int argc, char **argv)
                           NULL,
                           CLIENT_FOUND_ROWS))
   {
-    fprintf(stderr, "Failed to connect to database: Error: %s\n",
-            mysql_error(&conn));
+    fprintf(stderr, "Failed to connect to blockchain: Error: %s\n",
+            myblockchain_error(&conn));
     return 1;
   } else {
-    printf("%s\n", mysql_error(&conn));
+    printf("%s\n", myblockchain_error(&conn));
   }
 
-  OK = mysql_real_query (&conn, query4, (ulong) strlen(query4));
+  OK = myblockchain_real_query (&conn, query4, (ulong) strlen(query4));
 
   assert(0 == OK);
 
   printf("%ld inserted\n",
-         (long) mysql_insert_id(&conn));
+         (long) myblockchain_insert_id(&conn));
 
-  OK = mysql_real_query (&conn, query5, (ulong) strlen(query5));
+  OK = myblockchain_real_query (&conn, query5, (ulong) strlen(query5));
 
   assert(0 == OK);
 
   printf("%ld inserted\n",
-         (long) mysql_insert_id(&conn));
+         (long) myblockchain_insert_id(&conn));
 
-  mysql_close(&conn);
+  myblockchain_close(&conn);
   my_end(0);
 
   return 0;

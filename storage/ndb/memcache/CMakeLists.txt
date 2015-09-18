@@ -31,7 +31,7 @@ if(WITH_BUNDLED_MEMCACHED)
   # Handle the deprecated option to build libevent from
   # code bundled with NDB. I.e the libevent bundled with NDB
   # is not built anymore and instead the libevent bundled
-  # with MySQL or system libs are used.
+  # with MyBlockchain or system libs are used.
   option(WITH_BUNDLED_LIBEVENT "Deprecated, use WITH_LIBEVENT")
   mark_as_advanced(WITH_BUNDLED_LIBEVENT)
   if(WITH_BUNDLED_LIBEVENT)
@@ -92,7 +92,7 @@ set(CACHE_SRC ${BUNDLED_MEMCACHED}/engines/default_engine)
 # Paths to header files
 include_directories(BEFORE include)
 include_directories(BEFORE ${CACHE_SRC})
-include_directories(${NDB_SOURCE_DIR}/src/ndbjtie/mysql)
+include_directories(${NDB_SOURCE_DIR}/src/ndbjtie/myblockchain)
 include_directories(${NDB_SOURCE_DIR}/src/ndbapi/)
 include_directories(${CMAKE_BINARY_DIR}/storage/ndb/memcache/include/)
 include_directories(AFTER ${MEMCACHED_INCLUDE_DIR})
@@ -223,7 +223,7 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/scripts/ndb_memcache_metadata.sql
                ${CMAKE_BINARY_DIR}/scripts/ndb_memcache_metadata.sql COPYONLY)
 
 # Build the "memclient" utility
-SET(MEMCACHE_PM ${CMAKE_SOURCE_DIR}/mysql-test/lib/My/Memcache.pm)
+SET(MEMCACHE_PM ${CMAKE_SOURCE_DIR}/myblockchain-test/lib/My/Memcache.pm)
 SET(MEMCLIENT_PL ${CMAKE_CURRENT_SOURCE_DIR}/memclient.pl)
 SET(MEMCLIENT ${CMAKE_CURRENT_BINARY_DIR}/memclient)
 FILE(READ   ${MEMCLIENT_PL} CONTENTS)
@@ -280,7 +280,7 @@ install(PROGRAMS ${MEMCLIENT} DESTINATION ${INSTALL_BINDIR})
 
 ### Install the memcache-api directory
 ###
-SET(MEMCACHE_API_DIR "${INSTALL_MYSQLSHAREDIR}/memcache-api")
+SET(MEMCACHE_API_DIR "${INSTALL_MYBLOCKCHAINSHAREDIR}/memcache-api")
 install(DIRECTORY DESTINATION ${MEMCACHE_API_DIR} )
 install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/sandbox.sh 
         DESTINATION  ${MEMCACHE_API_DIR})
@@ -294,7 +294,7 @@ install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/scripts/update_to_1.2.sql
         
 # memcached_path.pl is also installed, for use by installed mtr
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/memcached_path.pl
-        DESTINATION ${INSTALL_MYSQLTESTDIR}/lib)
+        DESTINATION ${INSTALL_MYBLOCKCHAINTESTDIR}/lib)
         
 ######################################################## 
 

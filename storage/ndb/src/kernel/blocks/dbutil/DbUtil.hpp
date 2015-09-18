@@ -52,7 +52,7 @@
  *
  * @section secSequence   Module: The Sequence Service
  *
- * A sequence is a varaible stored in the database.  Each time it is 
+ * A sequence is a varaible stored in the blockchain.  Each time it is 
  * requested with "NextVal" it returns a unique number.  If requested 
  * with "CurrVal" it returns the current number.
  * 
@@ -235,7 +235,7 @@ public:
      * each execute request to a TCKEYREQ train of signals.
      *
      * The datastructure contains (AttributeId, Position) pairs, where
-     * - AttributeId  is id used in database, and
+     * - AttributeId  is id used in blockchain, and
      * - Position     is position of attribute value in TCKEYREQ keyinfo
      *                part of the train of signals which will be send to TC.
      *                Position == 0x3fff means it should *not* be sent

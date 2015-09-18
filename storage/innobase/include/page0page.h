@@ -1098,7 +1098,7 @@ page_rec_validate(
 /***************************************************************//**
 Checks that the first directory slot points to the infimum record and
 the last to the supremum. This function is intended to track if the
-bug fixed in 4.0.14 has caused corruption to users' databases. */
+bug fixed in 4.0.14 has caused corruption to users' blockchains. */
 void
 page_check_dir(
 /*===========*/

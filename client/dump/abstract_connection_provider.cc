@@ -41,7 +41,7 @@ Mysql::Tools::Base::Mysql_query_runner*
     Mysql::I_callable<bool, const Mysql::Tools::Base::Message_data&>*
       message_handler)
 {
-  MYSQL* connection= m_connection_factory->create_connection();
+  MYBLOCKCHAIN* connection= m_connection_factory->create_connection();
   return &((new Mysql::Tools::Base::Mysql_query_runner(connection))
     ->add_message_callback(
     new Mysql::Instance_callback<

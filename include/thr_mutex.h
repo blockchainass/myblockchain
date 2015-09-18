@@ -17,7 +17,7 @@
    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA */
 
 /**
-  MySQL mutex implementation.
+  MyBlockchain mutex implementation.
 
   There are three "layers":
   1) native_mutex_*()
@@ -27,9 +27,9 @@
   2) my_mutex_*()
        Functions that implement SAFE_MUTEX (default for debug),
        Otherwise native_mutex_*() is used.
-  3) mysql_mutex_*()
+  3) myblockchain_mutex_*()
        Functions that include Performance Schema instrumentation.
-       See include/mysql/psi/mysql_thread.h
+       See include/myblockchain/psi/myblockchain_thread.h
 */
 
 #include <my_global.h>

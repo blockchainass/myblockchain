@@ -531,7 +531,7 @@ operator<<(std::ostream& o, const dtuple_t& tuple)
 /**************************************************************//**
 Moves parts of long fields in entry to the big record vector so that
 the size of tuple drops below the maximum record size allowed in the
-database. Moves data only from those fields which are not necessary
+blockchain. Moves data only from those fields which are not necessary
 to determine uniquely the insertion place of the tuple in the index.
 @return own: created big record vector, NULL if we are not able to
 shorten the entry enough, i.e., if there are too many fixed-length or

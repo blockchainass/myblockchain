@@ -1,0 +1,66 @@
+include/master-slave.inc
+Warnings:
+Note	####	Sending passwords in plain text without SSL/TLS is extremely insecure.
+Note	####	Storing MyBlockchain user name or password information in the master info repository is not secure and is therefore not recommended. Please consider using the USER and PASSWORD connection options for START SLAVE; see the 'START SLAVE Syntax' in the MyBlockchain Manual for more information.
+[connection master]
+DROP DATABASE IF EXISTS myblockchaintest_prometheus;
+DROP DATABASE IF EXISTS myblockchaintest_sisyfos;
+DROP DATABASE IF EXISTS myblockchaintest_bob;
+include/sync_slave_sql_with_master.inc
+DROP DATABASE IF EXISTS myblockchaintest_bob;
+CREATE DATABASE myblockchaintest_prometheus;
+CREATE DATABASE myblockchaintest_sisyfos;
+CREATE DATABASE myblockchaintest_bob;
+USE myblockchaintest_sisyfos;
+CREATE TABLE t1 (b int);
+INSERT INTO t1 VALUES(1);
+USE myblockchaintest_bob;
+CREATE TABLE t2 (b int);
+INSERT INTO t2 VALUES(2);
+ALTER DATABASE myblockchaintest_sisyfos CHARACTER SET latin1;
+USE myblockchaintest_sisyfos;
+ALTER DATABASE myblockchaintest_bob CHARACTER SET latin1;
+SHOW DATABASES LIKE 'myblockchain%';
+Database (myblockchain%)
+myblockchain
+myblockchaintest_bob
+myblockchaintest_prometheus
+myblockchaintest_sisyfos
+include/sync_slave_sql_with_master.inc
+SHOW DATABASES LIKE 'myblockchain%';
+Database (myblockchain%)
+myblockchain
+myblockchaintest_prometheus
+myblockchaintest_sisyfos
+DROP DATABASE IF EXISTS myblockchaintest_sisyfos;
+USE myblockchaintest_prometheus;
+CREATE TABLE t1 (a INT);
+INSERT INTO t1 VALUES (1);
+CREATE DATABASE myblockchaintest_sisyfos;
+USE myblockchaintest_sisyfos;
+CREATE TABLE t2 (a INT);
+SHOW DATABASES LIKE 'myblockchain%';
+Database (myblockchain%)
+myblockchain
+myblockchaintest_bob
+myblockchaintest_prometheus
+myblockchaintest_sisyfos
+include/sync_slave_sql_with_master.inc
+SHOW DATABASES LIKE 'myblockchain%';
+Database (myblockchain%)
+myblockchain
+myblockchaintest_prometheus
+myblockchaintest_sisyfos
+USE myblockchaintest_prometheus;
+SHOW TABLES;
+Tables_in_myblockchaintest_prometheus
+t1
+USE myblockchaintest_sisyfos;
+SHOW TABLES;
+Tables_in_myblockchaintest_sisyfos
+t2
+DROP DATABASE IF EXISTS myblockchaintest_prometheus;
+DROP DATABASE IF EXISTS myblockchaintest_sisyfos;
+DROP DATABASE IF EXISTS myblockchaintest_bob;
+include/sync_slave_sql_with_master.inc
+include/rpl_end.inc

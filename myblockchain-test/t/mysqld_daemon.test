@@ -1,0 +1,48 @@
+#
+# Test for starting myblockchaind using --daemonize option.
+#
+
+--source include/not_embedded.inc
+--source include/not_windows.inc
+--source include/not_valgrind.inc
+
+# Set valiables to be used in parameters of myblockchaind.
+let $MYBLOCKCHAIND_DATADIR= `SELECT @@datadir`;
+let $MYBLOCKCHAIN_BASEDIR= `SELECT @@basedir`;
+let $MYBLOCKCHAIN_SOCKET= `SELECT @@socket`;
+let $MYBLOCKCHAIN_TIMEZONE= `SELECT @@time_zone`;
+let $MYBLOCKCHAIN_PIDFILE= `SELECT @@pid_file`;
+let $MYBLOCKCHAIN_PORT= `SELECT @@port`;
+let $MYBLOCKCHAIN_MESSAGESDIR= `SELECT @@lc_messages_dir`;
+let $start_page_size= `SELECT @@innodb_page_size`;
+let $other_page_size_k= `SELECT $start_page_size DIV 1024`;
+let $other_page_size_nk= `SELECT CONCAT($other_page_size_k,'k')`;
+
+# Shutdown myblockchaind which is started by mtr.
+--let $_server_id= `SELECT @@server_id`
+--let $_expect_file_name= $MYBLOCKCHAINTEST_VARDIR/tmp/myblockchaind.$_server_id.expect
+--exec echo "wait" > $_expect_file_name
+--shutdown_server
+--source include/wait_until_disconnected.inc
+
+# Run the myblockchaind with exec with --daemonize option.
+--exec $MYBLOCKCHAIND --defaults-file=$MYBLOCKCHAINTEST_VARDIR/my.cnf --basedir=$MYBLOCKCHAIN_BASEDIR --datadir=$MYBLOCKCHAIND_DATADIR --socket=$MYBLOCKCHAIN_SOCKET --pid-file=$MYBLOCKCHAIN_PIDFILE --port=$MYBLOCKCHAIN_PORT --loose-debug-sync-timeout=600 --default-storage-engine=InnoDB --default-tmp-storage-engine=InnoDB --loose-skip-log-bin --core-file --lc-messages-dir=$MYBLOCKCHAIN_MESSAGESDIR --innodb-page-size=$other_page_size_nk --daemonize --secure-file-priv="" >$MYBLOCKCHAINTEST_VARDIR/log/myblockchaind_out_err.log 2>&1
+
+# myblockchaind takes some time to come up.
+--enable_reconnect
+--source include/wait_until_connected_again.inc
+--disable_reconnect
+
+#  Execute some SQL
+--exec $MYBLOCKCHAIN -h localhost -S $MYBLOCKCHAIN_SOCKET -P $MYBLOCKCHAIN_PORT -u root -e "SHOW DATABASES" 2>&1
+
+#  Shutdown myblockchaind with myblockchainadmin
+--exec $MYBLOCKCHAINADMIN -h localhost -S $MYBLOCKCHAIN_SOCKET -P $MYBLOCKCHAIN_PORT -u root shutdown 2>&1
+
+# Delay introduced - myblockchaind_safe takes some time to restart myblockchaind
+--source include/wait_until_disconnected.inc
+
+# Restart myblockchaind of mtr
+--exec echo "restart" > $MYBLOCKCHAINTEST_VARDIR/tmp/myblockchaind.1.expect
+--enable_reconnect
+--source include/wait_until_connected_again.inc

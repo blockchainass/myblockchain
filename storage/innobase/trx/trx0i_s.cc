@@ -32,7 +32,7 @@ Created July 17, 2007 Vasil Dimov
    The includes "univ.i" -> "my_global.h" cause a different path
    to be taken further down with pthread functions and types,
    so they must come first.
-   From the symptoms, this is related to bug#46587 in the MySQL bug DB.
+   From the symptoms, this is related to bug#46587 in the MyBlockchain bug DB.
 */
 
 #include "ha_prototypes.h"
@@ -483,19 +483,19 @@ fill_trx_row(
 
 	row->trx_weight = static_cast<uintmax_t>(TRX_WEIGHT(trx));
 
-	if (trx->mysql_thd == NULL) {
+	if (trx->myblockchain_thd == NULL) {
 		/* For internal transactions e.g., purge and transactions
-		being recovered at startup there is no associated MySQL
+		being recovered at startup there is no associated MyBlockchain
 		thread data structure. */
-		row->trx_mysql_thread_id = 0;
+		row->trx_myblockchain_thread_id = 0;
 		row->trx_query = NULL;
 		goto thd_done;
 	}
 
-	row->trx_mysql_thread_id = thd_get_thread_id(trx->mysql_thd);
+	row->trx_myblockchain_thread_id = thd_get_thread_id(trx->myblockchain_thd);
 
 	char	query[TRX_I_S_TRX_QUERY_MAX_LEN + 1];
-	stmt_len = innobase_get_stmt_safe(trx->mysql_thd, query, sizeof(query));
+	stmt_len = innobase_get_stmt_safe(trx->myblockchain_thd, query, sizeof(query));
 
 	if (stmt_len > 0) {
 
@@ -504,7 +504,7 @@ fill_trx_row(
 				cache->storage, query, stmt_len + 1,
 				MAX_ALLOWED_FOR_STORAGE(cache)));
 
-		row->trx_query_cs = innobase_get_charset(trx->mysql_thd);
+		row->trx_query_cs = innobase_get_charset(trx->myblockchain_thd);
 
 		if (row->trx_query == NULL) {
 
@@ -532,7 +532,7 @@ thd_done:
 		row->trx_operation_state = NULL;
 	}
 
-	row->trx_tables_in_use = trx->n_mysql_tables_in_use;
+	row->trx_tables_in_use = trx->n_myblockchain_tables_in_use;
 
 	row->trx_tables_locked = lock_number_of_tables_locked(&trx->lock);
 
@@ -1265,7 +1265,7 @@ fetch_data_into_cache_low(
 	const trx_t*		trx;
 	bool			rw_trx_list = trx_list == &trx_sys->rw_trx_list;
 
-	ut_ad(rw_trx_list || trx_list == &trx_sys->mysql_trx_list);
+	ut_ad(rw_trx_list || trx_list == &trx_sys->myblockchain_trx_list);
 
 	/* Iterate over the transaction list and add each one
 	to innodb_trx's cache. We also add all locks that are relevant
@@ -1277,7 +1277,7 @@ fetch_data_into_cache_low(
 	     trx =
 	     (rw_trx_list
 	      ? UT_LIST_GET_NEXT(trx_list, trx)
-	      : UT_LIST_GET_NEXT(mysql_trx_list, trx))) {
+	      : UT_LIST_GET_NEXT(myblockchain_trx_list, trx))) {
 
 		i_s_trx_row_t*		trx_row;
 		i_s_locks_row_t*	requested_lock_row;
@@ -1337,11 +1337,11 @@ fetch_data_into_cache(
 	trx_i_s_cache_clear(cache);
 
 	/* Capture the state of the read-write transactions. This includes
-	internal transactions too. They are not on mysql_trx_list */
+	internal transactions too. They are not on myblockchain_trx_list */
 	fetch_data_into_cache_low(cache, true, &trx_sys->rw_trx_list);
 
 	/* Capture the state of the read-only active transactions */
-	fetch_data_into_cache_low(cache, false, &trx_sys->mysql_trx_list);
+	fetch_data_into_cache_low(cache, false, &trx_sys->myblockchain_trx_list);
 
 	cache->is_truncated = FALSE;
 }

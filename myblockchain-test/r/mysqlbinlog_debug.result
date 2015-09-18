@@ -1,0 +1,7 @@
+#
+# Bug#18742916 : MYBLOCKCHAINBINLOG --RAW DOES NOT CHECK FOR ERRORS
+#
+ERROR: Could not write into log file 'MYBLOCKCHAINTEST_VARDIR/tmp/master-bin.000001'
+ERROR: Could not write into log file 'MYBLOCKCHAINTEST_VARDIR/tmp/master-bin.000001'
+
+End of tests

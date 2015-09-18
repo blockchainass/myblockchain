@@ -74,7 +74,7 @@ protected:
     }
 
     lex_start(thd());
-    mysql_reset_thd_for_next_command(thd());
+    myblockchain_reset_thd_for_next_command(thd());
     bool err= parse_sql(thd(), &state, NULL);
     EXPECT_FALSE(err);
     return thd()->lex->current_select();

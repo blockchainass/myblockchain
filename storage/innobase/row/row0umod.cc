@@ -237,7 +237,7 @@ row_undo_mod_remove_clust_low(
 					   false, mtr);
 
 		/* The delete operation may fail if we have little
-		file space left: TODO: easiest to crash the database
+		file space left: TODO: easiest to crash the blockchain
 		and restart with more file space */
 	}
 
@@ -530,7 +530,7 @@ row_undo_mod_del_mark_or_remove_sec_low(
 						   false, &mtr);
 
 			/* The delete operation may fail if we have little
-			file space left: TODO: easiest to crash the database
+			file space left: TODO: easiest to crash the blockchain
 			and restart with more file space */
 		}
 	}
@@ -677,12 +677,12 @@ try_again:
 
 		if (index->is_committed()) {
 			/* During online secondary index creation, it
-			is possible that MySQL is waiting for a
+			is possible that MyBlockchain is waiting for a
 			meta-data lock upgrade before invoking
 			ha_innobase::commit_inplace_alter_table()
 			while this ROLLBACK is executing. InnoDB has
 			finished building the index, but it does not
-			yet exist in MySQL. In this case, we suppress
+			yet exist in MyBlockchain. In this case, we suppress
 			the printout to the error log. */
 			ib::warn() << "Record in index " << index->name
 				<< " of table " << index->table->name
@@ -862,7 +862,7 @@ row_undo_mod_upd_del_sec(
 			node->row, node->ext, index, heap);
 
 		if (UNIV_UNLIKELY(!entry)) {
-			/* The database must have crashed after
+			/* The blockchain must have crashed after
 			inserting a clustered index record but before
 			writing all the externally stored columns of
 			that record.  Because secondary index entries

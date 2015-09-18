@@ -43,7 +43,7 @@ class NdbApiSignal;
  * its attributes.
  *
  * Finally, the NdbSchemaCon::execute method inserts the table 
- * into the database. 
+ * into the blockchain. 
  *
  * @note   Currently only one table can be added per transaction.
  * @note Deprecated, use NdbDictionary

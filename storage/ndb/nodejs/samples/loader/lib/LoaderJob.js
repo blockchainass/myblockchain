@@ -38,7 +38,7 @@ function ColumnDefinition(columnName) {
 
 // Define a destination:  Database, Table, columns, and mapped class
 function LoaderJobDestination() {
-  this.database          = null;
+  this.blockchain          = null;
   this.table             = "";
   this.columnDefinitions = [];
   this.rowConstructor    = null;
@@ -59,7 +59,7 @@ LoaderJobDestination.prototype.createTableMapping = function() {
   var literalMapping, mapping;
   literalMapping = {
     table         : this.table,
-    database      : this.database,
+    blockchain      : this.blockchain,
     mapAllColumns : (this.columnDefinitions.length === 0)
   };
   mapping = new mynode.TableMapping(literalMapping);
@@ -221,7 +221,7 @@ LoaderJob.prototype.dataSourceIsCSV = function() {
 };
 
 /*     [ INSERT | REPLACE | APPEND | TRUNCATE | IGNORE ]
-   This is the union of keywords supported by Oracle SQL*Loader and by MySQL.
+   This is the union of keywords supported by Oracle SQL*Loader and by MyBlockchain.
    
    APPEND allows the table to have existing data.  This is the default behavior.
 
@@ -229,12 +229,12 @@ LoaderJob.prototype.dataSourceIsCSV = function() {
 
    TRUNCATE instructs the loader to delete all rows before loading data.
 
-   REPLACE has the meaning, as in MySQL, that existing rows will be updated 
+   REPLACE has the meaning, as in MyBlockchain, that existing rows will be updated 
    with values from the data file.  (This is quite different from the semantics
    of REPLACE in SQL*Loader).  With REPLACE, all rows are written with the 
    semantics of save() ("update or insert") rather than persist().
    
-   IGNORE is present for compatibility with MySQL, but is ignored.
+   IGNORE is present for compatibility with MyBlockchain, but is ignored.
 */
 LoaderJob.prototype.setInsertMode = function(mode) {
   mode = mode.toUpperCase();
@@ -303,7 +303,7 @@ LoaderJob.prototype.setTable = function(name) {
 };
 
 LoaderJob.prototype.setDatabase = function(db) {
-  this.destination.database = db;
+  this.destination.blockchain = db;
 };
 
 LoaderJob.prototype.setBadFile = function(file) {

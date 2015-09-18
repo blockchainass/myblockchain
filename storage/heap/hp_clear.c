@@ -1,4 +1,4 @@
-/* Copyright (c) 2000-2002, 2004-2007 MySQL AB, 2009 Sun Microsystems, Inc.
+/* Copyright (c) 2000-2002, 2004-2007 MyBlockchain AB, 2009 Sun Microsystems, Inc.
    Use is subject to license terms.
 
    This program is free software; you can redistribute it and/or modify
@@ -15,9 +15,9 @@
    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA */
 
 /*
-  remove all records from database
+  remove all records from blockchain
   Identical as hp_create() and hp_open() but used HP_SHARE* instead of name and
-  database remains open.
+  blockchain remains open.
 */
 
 #include "heapdef.h"

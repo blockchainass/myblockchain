@@ -18,7 +18,7 @@ this program; if not, write to the Free Software Foundation, Inc.,
 
 /**************************************************//**
 @file include/buf0buf.h
-The database buffer pool high-level routines
+The blockchain buffer pool high-level routines
 
 Created 11/5/1995 Heikki Tuuri
 *******************************************************/
@@ -89,7 +89,7 @@ struct fil_addr_t;
 					page_hash locks */
 
 extern	buf_pool_t*	buf_pool_ptr;	/*!< The buffer pools
-					of the database */
+					of the blockchain */
 
 extern	volatile bool	buf_pool_withdrawing; /*!< true when withdrawing buffer
 					pool pages might cause page relocation */
@@ -494,7 +494,7 @@ with care. */
 	buf_page_get_gen(ID, SIZE, RW_NO_LATCH, NULL, BUF_GET_NO_LATCH, \
 			 __FILE__, __LINE__, MTR)
 /********************************************************************//**
-This is the general function used to get optimistic access to a database
+This is the general function used to get optimistic access to a blockchain
 page.
 @return TRUE if success */
 ibool
@@ -507,7 +507,7 @@ buf_page_optimistic_get(
 	ulint		line,	/*!< in: line where called */
 	mtr_t*		mtr);	/*!< in: mini-transaction */
 /********************************************************************//**
-This is used to get access to a known database page, when no waiting can be
+This is used to get access to a known blockchain page, when no waiting can be
 done.
 @return TRUE if success */
 ibool
@@ -559,7 +559,7 @@ buf_page_get_zip(
 	const page_id_t&	page_id,
 	const page_size_t&	page_size);
 
-/** This is the general function used to get access to a database page.
+/** This is the general function used to get access to a blockchain page.
 @param[in]	page_id		page id
 @param[in]	rw_latch	RW_S_LATCH, RW_X_LATCH, RW_NO_LATCH
 @param[in]	guess		guessed block or NULL
@@ -600,7 +600,7 @@ buf_page_create(
 
 #else /* !UNIV_HOTBACKUP */
 
-/** Inits a page to the buffer buf_pool, for use in mysqlbackup --restore.
+/** Inits a page to the buffer buf_pool, for use in myblockchainbackup --restore.
 @param[in]	page_id		page id
 @param[in]	page_size	page size
 @param[in,out]	block		block to init */
@@ -803,7 +803,7 @@ buf_block_unfix(
 #endif /* !UNIV_INNOCHECKSUM */
 
 /** Checks if a page contains only zeroes.
-@param[in]	read_buf	database page
+@param[in]	read_buf	blockchain page
 @param[in]	page_size	page size
 @return true if page is filled with zeroes */
 bool
@@ -814,7 +814,7 @@ buf_page_is_zeroes(
 /** Checks if a page is corrupt.
 @param[in]	check_lsn	true if we need to check and complain about
 the LSN
-@param[in]	read_buf	database page
+@param[in]	read_buf	blockchain page
 @param[in]	page_size	page size
 @param[in]	skip_checksum	if true, skip checksum
 @param[in]	page_no		page number of given read_buf
@@ -903,7 +903,7 @@ enum buf_page_print_flags {
 };
 
 /** Prints a page to stderr.
-@param[in]	read_buf	a database page
+@param[in]	read_buf	a blockchain page
 @param[in]	page_size	page size
 @param[in]	flags		0 or BUF_PAGE_PRINT_NO_CRASH or
 BUF_PAGE_PRINT_NO_FULL */
@@ -955,7 +955,7 @@ buf_stats_get_pool_info(
 						to fill */
 /*********************************************************************//**
 Returns the ratio in percents of modified pages in the buffer pool /
-database pages in the buffer pool.
+blockchain pages in the buffer pool.
 @return modified page percentage ratio */
 double
 buf_get_modified_ratio_pct(void);

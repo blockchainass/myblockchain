@@ -258,7 +258,7 @@ data from it. For details, see the description of the record format at the
 top of this file. */
 
 /** @name Format of the IBUF_REC_FIELD_METADATA of an insert buffer record
-The fourth column in the MySQL 5.5 format contains an operation
+The fourth column in the MyBlockchain 5.5 format contains an operation
 type, counter, and some flags. */
 /* @{ */
 #define IBUF_REC_INFO_SIZE	4	/*!< Combined size of info fields at
@@ -489,7 +489,7 @@ ibuf_size_update(
 }
 
 /******************************************************************//**
-Creates the insert buffer data structure at a database startup and initializes
+Creates the insert buffer data structure at a blockchain startup and initializes
 the data structures for the insert buffer. */
 void
 ibuf_init_at_db_start(void)
@@ -2867,7 +2867,7 @@ ibuf_get_volume_buffered_count_func(
 	rec_get_nth_field_offs_old(rec, 1, &len);
 	/* This function is only invoked when buffering new
 	operations.  All pre-4.1 records should have been merged
-	when the database was started up. */
+	when the blockchain was started up. */
 	ut_a(len == 1);
 
 	if (rec_get_deleted_flag(rec, 0)) {
@@ -4196,7 +4196,7 @@ ibuf_delete(
 			fprintf(stderr, "\nspace " UINT32PF " offset " UINT32PF
 				" (%u records, index id %llu)\n"
 				"InnoDB: Submit a detailed bug report"
-				" to http://bugs.mysql.com\n",
+				" to http://bugs.myblockchain.com\n",
 				block->page.id.space(),
 				block->page.id.page_no(),
 				(unsigned) page_get_n_recs(page),
@@ -4544,7 +4544,7 @@ ibuf_merge_or_delete_for_page(
 				" if they are corrupt after this.";
 
 			ib::error() << "Please submit a detailed bug"
-				" report to http://bugs.mysql.com";
+				" report to http://bugs.myblockchain.com";
 			ut_ad(0);
 		}
 	}
@@ -4948,7 +4948,7 @@ ibuf_check_bitmap_on_import(
 	ulint	page_no;
 
 	ut_ad(space_id);
-	ut_ad(trx->mysql_thd);
+	ut_ad(trx->myblockchain_thd);
 
 	bool			found;
 	const page_size_t&	page_size
@@ -5007,7 +5007,7 @@ ibuf_check_bitmap_on_import(
 				ibuf_exit(&mtr);
 				mtr_commit(&mtr);
 
-				ib_errf(trx->mysql_thd,
+				ib_errf(trx->myblockchain_thd,
 					IB_LOG_LEVEL_ERROR,
 					 ER_INNODB_INDEX_CORRUPT,
 					 "Space %u page %u"
@@ -5023,7 +5023,7 @@ ibuf_check_bitmap_on_import(
 				    bitmap_page, cur_page_id, page_size,
 				    IBUF_BITMAP_BUFFERED, &mtr)) {
 
-				ib_errf(trx->mysql_thd,
+				ib_errf(trx->myblockchain_thd,
 					IB_LOG_LEVEL_WARN,
 					ER_INNODB_INDEX_CORRUPT,
 					"Buffered changes"

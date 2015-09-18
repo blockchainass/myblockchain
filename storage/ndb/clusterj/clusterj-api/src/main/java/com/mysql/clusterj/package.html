@@ -18,11 +18,11 @@
 
 <html>
 <head>
-<title>com.mysql.clusterj</title>
+<title>com.myblockchain.clusterj</title>
 </head>
 <body bgcolor="white">
 
-Provides classes and interfaces for using MySQL Cluster directly from Java.
+Provides classes and interfaces for using MyBlockchain Cluster directly from Java.
 <p>
 This package contains three main groups of classes and interfaces:
 <ul>
@@ -33,36 +33,36 @@ This package contains three main groups of classes and interfaces:
 
 <h3>Major Interfaces</h3>
 ClusterJ provides these major interfaces for use by application programs:
-{@link com.mysql.clusterj.SessionFactory},
-{@link com.mysql.clusterj.Session},
-{@link com.mysql.clusterj.Transaction},
-{@link com.mysql.clusterj.query.QueryBuilder},
+{@link com.myblockchain.clusterj.SessionFactory},
+{@link com.myblockchain.clusterj.Session},
+{@link com.myblockchain.clusterj.Transaction},
+{@link com.myblockchain.clusterj.query.QueryBuilder},
 and
-{@link com.mysql.clusterj.Query}.
+{@link com.myblockchain.clusterj.Query}.
 
 <h3>Bootstrapping</h3>
 
-The helper class {@link com.mysql.clusterj.ClusterJHelper} contains methods
-for creating the {@link com.mysql.clusterj.SessionFactory}.
-<em>Bootstrapping</em> is the process of identifying a MySQL Cluster and
+The helper class {@link com.myblockchain.clusterj.ClusterJHelper} contains methods
+for creating the {@link com.myblockchain.clusterj.SessionFactory}.
+<em>Bootstrapping</em> is the process of identifying a MyBlockchain Cluster and
 obtaining the SessionFactory for use with the cluster. There is one
 SessionFactory per cluster per Java VM.
 <p>
 <h3>SessionFactory</h3>
 
-The {@link com.mysql.clusterj.SessionFactory} is configured via properties, which identify the
-MySQL Cluster that the application connects to:
+The {@link com.myblockchain.clusterj.SessionFactory} is configured via properties, which identify the
+MyBlockchain Cluster that the application connects to:
 <ul>
-<li>com.mysql.clusterj.connectstring identifies the ndb_mgmd host name and port</li>
-<li>com.mysql.clusterj.connect.retries is the number of retries when connecting</li>
-<li>com.mysql.clusterj.connect.delay is the delay in seconds between connection retries</li>
-<li>com.mysql.clusterj.connect.verbose tells whether to display a message
+<li>com.myblockchain.clusterj.connectstring identifies the ndb_mgmd host name and port</li>
+<li>com.myblockchain.clusterj.connect.retries is the number of retries when connecting</li>
+<li>com.myblockchain.clusterj.connect.delay is the delay in seconds between connection retries</li>
+<li>com.myblockchain.clusterj.connect.verbose tells whether to display a message
 to System.out while connecting</li>
-<li>com.mysql.clusterj.connect.timeout.before is the number of seconds to wait
+<li>com.myblockchain.clusterj.connect.timeout.before is the number of seconds to wait
 until the first node responds to a connect request</li>
-<li>com.mysql.clusterj.connect.timeout.after is the number of seconds to wait
+<li>com.myblockchain.clusterj.connect.timeout.after is the number of seconds to wait
 until the last node responds to a connect request</li>
-<li>com.mysql.clusterj.connect.database is the name of the database to use</li>
+<li>com.myblockchain.clusterj.connect.blockchain is the name of the blockchain to use</li>
 </ul>
 
 <pre>
@@ -75,7 +75,7 @@ until the last node responds to a connect request</li>
 
 <h3>Session</h3>
 
-The {@link com.mysql.clusterj.Session} represents the user's individual connection to
+The {@link com.myblockchain.clusterj.Session} represents the user's individual connection to
 the cluster. It contains methods for:
 <ul>
 <li>finding persistent instances by primary key</li>
@@ -97,8 +97,8 @@ the cluster. It contains methods for:
 
 <h3>Transaction</h3>
 
-The {@link com.mysql.clusterj.Transaction} allows users to combine multiple operations
-into a single database transaction. It contains methods to:
+The {@link com.myblockchain.clusterj.Transaction} allows users to combine multiple operations
+into a single blockchain transaction. It contains methods to:
 <ul>
 <li>begin a unit of work</li>
 <li>commit changes from a unit of work</li>
@@ -118,7 +118,7 @@ into a single database transaction. It contains methods to:
 
 <h3>QueryBuilder</h3>
 
-The {@link com.mysql.clusterj.query.QueryBuilder} allows users to build queries.
+The {@link com.myblockchain.clusterj.query.QueryBuilder} allows users to build queries.
 It contains methods to:
 <ul>
 <li>define the Domain Object Model to query</li>

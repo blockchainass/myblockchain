@@ -160,15 +160,15 @@ public:
 /**
   @class Start_event_v3
 
-  Start_event_v3 is the Start_event of binlog format 3 (MySQL 3.23 and
+  Start_event_v3 is the Start_event of binlog format 3 (MyBlockchain 3.23 and
   4.x).
 
   @section Start_event_v3_binary_format Binary Format
 
   Format_description_event derives from Start_event_v3; it is
-  the Start_event of binlog format 4 (MySQL 5.0), that is, the
+  the Start_event of binlog format 4 (MyBlockchain 5.0), that is, the
   event that describes the other events' Common-Header/Post-Header
-  lengths. This event is sent by MySQL 5.0 whenever it starts sending
+  lengths. This event is sent by MyBlockchain 5.0 whenever it starts sending
   a new binlog if the requested position is >4 (otherwise if ==4 the
   event will be sent naturally).
   The Post-Header has four components:
@@ -191,14 +191,14 @@ public:
   <tr>
     <td>binlog_version</td>
     <td>2 byte unsigned integer</td>
-    <td>This is 1 in MySQL 3.23 and 3 in MySQL 4.0 and 4.1
-        (In MySQL 5.0 and up, FORMAT_DESCRIPTION_EVENT is
+    <td>This is 1 in MyBlockchain 3.23 and 3 in MyBlockchain 4.0 and 4.1
+        (In MyBlockchain 5.0 and up, FORMAT_DESCRIPTION_EVENT is
         used instead of START_EVENT_V3 and for them its 4).</td>
   </tr>
   <tr>
     <td>server_version</td>
     <td>char array of 50 bytes</td>
-    <td>The MySQL server's version (example: 4.0.14-debug-log),
+    <td>The MyBlockchain server's version (example: 4.0.14-debug-log),
         padded with 0x00 bytes on the right</td>
   </tr>
   <tr>
@@ -216,7 +216,7 @@ public:
     startup 'created' should be the timestamp when the event (and the
     binary log) was created.  In the other case (i.e. this event is at
     the start of a binary log created by FLUSH LOGS or automatic
-    rotation), 'created' should be 0.  This "trick" is used by MySQL
+    rotation), 'created' should be 0.  This "trick" is used by MyBlockchain
     >=4.0.14 slaves to know whether they must drop stale temporary
     tables and whether they should abort unfinished transaction.
 
@@ -229,7 +229,7 @@ public:
     ('when'). Conclusion:
      - we use timestamp to print when the binlog was created.
      - we use 'created' only to know if this is a first binlog or not.
-     In 3.23.57 we did not pay attention to this identity, so mysqlbinlog in
+     In 3.23.57 we did not pay attention to this identity, so myblockchainbinlog in
      3.23.57 does not print 'created the_date' if created was zero. This is now
      fixed.
   */
@@ -251,8 +251,8 @@ protected:
 public:
   /**
     This event occurs at the beginning of v1 or v3 binary log files.
-    In MySQL 4.0 and 4.1, such events are written only to the first binary log
-    file that mysqld creates after startup. Log files created subsequently
+    In MyBlockchain 4.0 and 4.1, such events are written only to the first binary log
+    file that myblockchaind creates after startup. Log files created subsequently
     (when someone issues a FLUSH LOGS statement or the current binary log file
     becomes too large) do not contain this event.
 
@@ -278,7 +278,7 @@ public:
                  const Format_description_event* description_event);
 #ifndef HAVE_MYSYS
   //TODO(WL#7684): Implement the method print_event_info and print_long_info for
-  //            all the events supported  in  MySQL Binlog
+  //            all the events supported  in  MyBlockchain Binlog
   void print_event_info(std::ostream& info) { }
   void print_long_info(std::ostream& info) { }
 #endif
@@ -364,16 +364,16 @@ public:
 
     This constructor can be used to create the event to write to the binary log
     (when the server starts or when FLUSH LOGS), or to create artificial events
-    to parse binlogs from MySQL 3.23 or 4.x.
+    to parse binlogs from MyBlockchain 3.23 or 4.x.
     When in a client, only the 2nd use is possible.
 
     @param binlog_ver             the binlog version for which we want to build
-                                  an event. Can be 1 (=MySQL 3.23), 3 (=4.0.x
-                                  x>=2 and 4.1) or 4 (MySQL 5.0). Note that the
+                                  an event. Can be 1 (=MyBlockchain 3.23), 3 (=4.0.x
+                                  x>=2 and 4.1) or 4 (MyBlockchain 5.0). Note that the
                                   old 4.0 (binlog version 2) is not supported;
                                   it should not be used for replication with
                                   5.0.
-    @param server_ver             The MySQL server's version.
+    @param server_ver             The MyBlockchain server's version.
   */
   Format_description_event(uint8_t binlog_ver,
                            const char* server_ver);
@@ -482,7 +482,7 @@ public:
    that happened on the master.
 
    The event is used to inform the slave that something out of the
-   ordinary happened on the master that might cause the database to be
+   ordinary happened on the master that might cause the blockchain to be
    in an inconsistent state.
 
   @section Incident_event_binary_format Binary Format
@@ -560,7 +560,7 @@ public:
     Incident number codes are listed in binlog_evnet.h.
     The only code currently used is INCIDENT_LOST_EVENTS, which indicates that
     there may be lost events (a "gap") in the replication stream that requires
-    databases to be resynchronized.
+    blockchains to be resynchronized.
 
     @param buf                Contains the serialized event.
     @param length             Length of the serialized event.
@@ -670,14 +670,14 @@ The Body has the following component:
 
   <tr>
     <td>my_xid</td>
-    <td>a struct similar to mysql/plugin.h containing three members.</td>
+    <td>a struct similar to myblockchain/plugin.h containing three members.</td>
     <td>serialized XID representation of XA transaction.</td>
   </tr>
 
   <tr>
     <td>xid</td>
     <td>a pointer to XID object.</td>
-    <td>a reference to an object for mysql logger.</td>
+    <td>a reference to an object for myblockchain logger.</td>
   </tr>
 
   <tr>
@@ -693,21 +693,21 @@ The Body has the following component:
 class XA_prepare_event: public Binary_log_event
 {
   /*
-    Struct def is copied from $MYSQL/include/mysql/plugin.h,
+    Struct def is copied from $MYBLOCKCHAIN/include/myblockchain/plugin.h,
     consult there about fine details.
   */
   static const int MY_XIDDATASIZE= 128;
 
-  struct st_mysql_xid {
+  struct st_myblockchain_xid {
     long formatID;
     long gtrid_length;
     long bqual_length;
     char data[MY_XIDDATASIZE];  /* Not \0-terminated */
   };
-  typedef struct st_mysql_xid MY_XID;
+  typedef struct st_myblockchain_xid MY_XID;
 
 protected:
-  /* size of serialization buffer is explained in $MYSQL/sql/xa.h. */
+  /* size of serialization buffer is explained in $MYBLOCKCHAIN/sql/xa.h. */
   static const uint16_t ser_buf_size=
     8 + 2 * MY_XIDDATASIZE + 4 * sizeof(long) + 1;
   MY_XID my_xid;
@@ -843,7 +843,7 @@ struct gtid_info
   @struct  Uuid
 
   This is a POD.  It has to be a POD because it is a member of
-  Sid_map::Node which is stored in HASH in mysql-server code.
+  Sid_map::Node which is stored in HASH in myblockchain-server code.
   The structure contains the following components.
   <table>
   <caption>Structure gtid_info</caption>
@@ -947,7 +947,7 @@ public:
     The transaction's logical timestamps used for MTS: see
     Transaction_ctx::last_committed and
     Transaction_ctx::sequence_number for details.
-    Note: Transaction_ctx is in the MySQL server code.
+    Note: Transaction_ctx is in the MyBlockchain server code.
   */
   long long int last_committed;
   long long int sequence_number;
@@ -985,7 +985,7 @@ public:
   {}
 #ifndef HAVE_MYSYS
   //TODO(WL#7684): Implement the method print_event_info and print_long_info
-  //               for all the events supported  in  MySQL Binlog
+  //               for all the events supported  in  MyBlockchain Binlog
   void print_event_info(std::ostream& info) { }
   void print_long_info(std::ostream& info) { }
 #endif
@@ -1082,7 +1082,7 @@ public:
   {}
 #ifndef HAVE_MYSYS
   //TODO(WL#7684): Implement the method print_event_info and print_long_info
-  //               for all the events supported  in  MySQL Binlog
+  //               for all the events supported  in  MyBlockchain Binlog
   void print_event_info(std::ostream& info) { }
   void print_long_info(std::ostream& info) { }
 #endif

@@ -1,0 +1,18 @@
+SHOW DATABASES;
+Database
+information_schema
+mtr
+myblockchain
+performance_schema
+sys
+test
+CREATE DATABASE myblockchain;
+ERROR HY000: Can't create blockchain 'myblockchain'; blockchain exists
+SHOW DATABASES;
+Database
+information_schema
+mtr
+myblockchain
+performance_schema
+sys
+test

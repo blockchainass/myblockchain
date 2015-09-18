@@ -38,7 +38,7 @@ int mi_rnext_same(MI_INFO *info, uchar *buf)
     DBUG_RETURN(my_errno);
 
   if (info->s->concurrent_insert)
-    mysql_rwlock_rdlock(&info->s->key_root_lock[inx]);
+    myblockchain_rwlock_rdlock(&info->s->key_root_lock[inx]);
 
   switch (keyinfo->key_alg)
   {
@@ -82,8 +82,8 @@ int mi_rnext_same(MI_INFO *info, uchar *buf)
       }
   }
   if (info->s->concurrent_insert)
-    mysql_rwlock_unlock(&info->s->key_root_lock[inx]);
-	/* Don't clear if database-changed */
+    myblockchain_rwlock_unlock(&info->s->key_root_lock[inx]);
+	/* Don't clear if blockchain-changed */
   info->update&= (HA_STATE_CHANGED | HA_STATE_ROW_CHANGED);
   info->update|= HA_STATE_NEXT_FOUND;
 

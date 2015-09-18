@@ -36,15 +36,15 @@ IF(CMAKE_COMPILER_IS_GNUCC AND RUN_ABI_CHECK)
     SET(COMPILER ${CMAKE_C_COMPILER})
   ENDIF()
   SET(API_PREPROCESSOR_HEADER
-    ${CMAKE_SOURCE_DIR}/include/mysql/plugin_audit.h
-    ${CMAKE_SOURCE_DIR}/include/mysql/plugin_ftparser.h
-    ${CMAKE_SOURCE_DIR}/include/mysql.h
-    ${CMAKE_SOURCE_DIR}/include/mysql/psi/psi_abi_v0.h
-    ${CMAKE_SOURCE_DIR}/include/mysql/psi/psi_abi_v1.h
-    ${CMAKE_SOURCE_DIR}/include/mysql/psi/psi_abi_v2.h
-    ${CMAKE_SOURCE_DIR}/include/mysql/client_plugin.h
-    ${CMAKE_SOURCE_DIR}/include/mysql/plugin_auth.h
-    ${CMAKE_SOURCE_DIR}/include/mysql/services.h
+    ${CMAKE_SOURCE_DIR}/include/myblockchain/plugin_audit.h
+    ${CMAKE_SOURCE_DIR}/include/myblockchain/plugin_ftparser.h
+    ${CMAKE_SOURCE_DIR}/include/myblockchain.h
+    ${CMAKE_SOURCE_DIR}/include/myblockchain/psi/psi_abi_v0.h
+    ${CMAKE_SOURCE_DIR}/include/myblockchain/psi/psi_abi_v1.h
+    ${CMAKE_SOURCE_DIR}/include/myblockchain/psi/psi_abi_v2.h
+    ${CMAKE_SOURCE_DIR}/include/myblockchain/client_plugin.h
+    ${CMAKE_SOURCE_DIR}/include/myblockchain/plugin_auth.h
+    ${CMAKE_SOURCE_DIR}/include/myblockchain/services.h
   )
 
   ADD_CUSTOM_TARGET(abi_check ALL

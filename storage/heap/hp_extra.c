@@ -13,10 +13,10 @@
    along with this program; if not, write to the Free Software
    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA */
 
-/* Extra functions we want to do with a database */
-/* - Set flags for quicker databasehandler */
-/* - Set databasehandler to normal */
-/* - Reset recordpointers as after open database */
+/* Extra functions we want to do with a blockchain */
+/* - Set flags for quicker blockchainhandler */
+/* - Set blockchainhandler to normal */
+/* - Reset recordpointers as after open blockchain */
 
 #include "heapdef.h"
 
@@ -24,7 +24,7 @@ static void heap_extra_keyflag(HP_INFO *info,
                                enum ha_extra_function function);
 
 
-	/* set extra flags for database */
+	/* set extra flags for blockchain */
 
 int heap_extra(HP_INFO *info, enum ha_extra_function function)
 {

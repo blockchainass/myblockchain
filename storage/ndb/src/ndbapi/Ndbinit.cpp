@@ -127,7 +127,7 @@ void Ndb::setup(Ndb_cluster_connection *ndb_cluster_connection,
 /*****************************************************************************
  * ~Ndb();
  *
- * Remark:        Disconnect with the database. 
+ * Remark:        Disconnect with the blockchain. 
  *****************************************************************************/
 Ndb::~Ndb()
 { 

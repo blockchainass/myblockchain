@@ -1,32 +1,32 @@
 typedef char my_bool;
 typedef int my_socket;
-#include "mysql_version.h"
-#include "mysql_com.h"
+#include "myblockchain_version.h"
+#include "myblockchain_com.h"
 #include "binary_log_types.h"
 typedef enum enum_field_types {
-  MYSQL_TYPE_DECIMAL, MYSQL_TYPE_TINY,
-  MYSQL_TYPE_SHORT, MYSQL_TYPE_LONG,
-  MYSQL_TYPE_FLOAT, MYSQL_TYPE_DOUBLE,
-  MYSQL_TYPE_NULL, MYSQL_TYPE_TIMESTAMP,
-  MYSQL_TYPE_LONGLONG,MYSQL_TYPE_INT24,
-  MYSQL_TYPE_DATE, MYSQL_TYPE_TIME,
-  MYSQL_TYPE_DATETIME, MYSQL_TYPE_YEAR,
-  MYSQL_TYPE_NEWDATE, MYSQL_TYPE_VARCHAR,
-  MYSQL_TYPE_BIT,
-  MYSQL_TYPE_TIMESTAMP2,
-  MYSQL_TYPE_DATETIME2,
-  MYSQL_TYPE_TIME2,
-  MYSQL_TYPE_JSON=245,
-  MYSQL_TYPE_NEWDECIMAL=246,
-  MYSQL_TYPE_ENUM=247,
-  MYSQL_TYPE_SET=248,
-  MYSQL_TYPE_TINY_BLOB=249,
-  MYSQL_TYPE_MEDIUM_BLOB=250,
-  MYSQL_TYPE_LONG_BLOB=251,
-  MYSQL_TYPE_BLOB=252,
-  MYSQL_TYPE_VAR_STRING=253,
-  MYSQL_TYPE_STRING=254,
-  MYSQL_TYPE_GEOMETRY=255
+  MYBLOCKCHAIN_TYPE_DECIMAL, MYBLOCKCHAIN_TYPE_TINY,
+  MYBLOCKCHAIN_TYPE_SHORT, MYBLOCKCHAIN_TYPE_LONG,
+  MYBLOCKCHAIN_TYPE_FLOAT, MYBLOCKCHAIN_TYPE_DOUBLE,
+  MYBLOCKCHAIN_TYPE_NULL, MYBLOCKCHAIN_TYPE_TIMESTAMP,
+  MYBLOCKCHAIN_TYPE_LONGLONG,MYBLOCKCHAIN_TYPE_INT24,
+  MYBLOCKCHAIN_TYPE_DATE, MYBLOCKCHAIN_TYPE_TIME,
+  MYBLOCKCHAIN_TYPE_DATETIME, MYBLOCKCHAIN_TYPE_YEAR,
+  MYBLOCKCHAIN_TYPE_NEWDATE, MYBLOCKCHAIN_TYPE_VARCHAR,
+  MYBLOCKCHAIN_TYPE_BIT,
+  MYBLOCKCHAIN_TYPE_TIMESTAMP2,
+  MYBLOCKCHAIN_TYPE_DATETIME2,
+  MYBLOCKCHAIN_TYPE_TIME2,
+  MYBLOCKCHAIN_TYPE_JSON=245,
+  MYBLOCKCHAIN_TYPE_NEWDECIMAL=246,
+  MYBLOCKCHAIN_TYPE_ENUM=247,
+  MYBLOCKCHAIN_TYPE_SET=248,
+  MYBLOCKCHAIN_TYPE_TINY_BLOB=249,
+  MYBLOCKCHAIN_TYPE_MEDIUM_BLOB=250,
+  MYBLOCKCHAIN_TYPE_LONG_BLOB=251,
+  MYBLOCKCHAIN_TYPE_BLOB=252,
+  MYBLOCKCHAIN_TYPE_VAR_STRING=253,
+  MYBLOCKCHAIN_TYPE_STRING=254,
+  MYBLOCKCHAIN_TYPE_GEOMETRY=255
 } enum_field_types;
 enum enum_server_command
 {
@@ -67,7 +67,7 @@ typedef struct st_net {
   char sqlstate[5 +1];
   void *extension;
 } NET;
-enum mysql_enum_shutdown_level {
+enum myblockchain_enum_shutdown_level {
   SHUTDOWN_DEFAULT = 0,
   SHUTDOWN_WAIT_CONNECTIONS= (unsigned char)(1 << 0),
   SHUTDOWN_WAIT_TRANSACTIONS= (unsigned char)(1 << 1),
@@ -84,10 +84,10 @@ enum enum_cursor_type
   CURSOR_TYPE_FOR_UPDATE= 2,
   CURSOR_TYPE_SCROLLABLE= 4
 };
-enum enum_mysql_set_option
+enum enum_myblockchain_set_option
 {
-  MYSQL_OPTION_MULTI_STATEMENTS_ON,
-  MYSQL_OPTION_MULTI_STATEMENTS_OFF
+  MYBLOCKCHAIN_OPTION_MULTI_STATEMENTS_ON,
+  MYBLOCKCHAIN_OPTION_MULTI_STATEMENTS_OFF
 };
 enum enum_session_state_type
 {
@@ -156,22 +156,22 @@ void get_salt_from_password(unsigned char *res, const char *password);
 void make_password_from_salt(char *to, const unsigned char *hash_stage2);
 char *octet2hex(char *to, const char *str, unsigned int len);
 char *get_tty_password(const char *opt_message);
-const char *mysql_errno_to_sqlstate(unsigned int mysql_errno);
+const char *myblockchain_errno_to_sqlstate(unsigned int myblockchain_errno);
 my_bool my_thread_init(void);
 void my_thread_end(void);
-#include "mysql_time.h"
-enum enum_mysql_timestamp_type
+#include "myblockchain_time.h"
+enum enum_myblockchain_timestamp_type
 {
-  MYSQL_TIMESTAMP_NONE= -2, MYSQL_TIMESTAMP_ERROR= -1,
-  MYSQL_TIMESTAMP_DATE= 0, MYSQL_TIMESTAMP_DATETIME= 1, MYSQL_TIMESTAMP_TIME= 2
+  MYBLOCKCHAIN_TIMESTAMP_NONE= -2, MYBLOCKCHAIN_TIMESTAMP_ERROR= -1,
+  MYBLOCKCHAIN_TIMESTAMP_DATE= 0, MYBLOCKCHAIN_TIMESTAMP_DATETIME= 1, MYBLOCKCHAIN_TIMESTAMP_TIME= 2
 };
-typedef struct st_mysql_time
+typedef struct st_myblockchain_time
 {
   unsigned int year, month, day, hour, minute, second;
   unsigned long second_part;
   my_bool neg;
-  enum enum_mysql_timestamp_type time_type;
-} MYSQL_TIME;
+  enum enum_myblockchain_timestamp_type time_type;
+} MYBLOCKCHAIN_TIME;
 #include "my_list.h"
 typedef struct st_list {
   struct st_list *prev,*next;
@@ -185,19 +185,19 @@ extern LIST *list_reverse(LIST *root);
 extern void list_free(LIST *root,unsigned int free_data);
 extern unsigned int list_length(LIST *);
 extern int list_walk(LIST *,list_walk_action action,unsigned char * argument);
-#include "mysql/client_plugin.h"
-struct st_mysql_client_plugin
+#include "myblockchain/client_plugin.h"
+struct st_myblockchain_client_plugin
 {
-  int type; unsigned int interface_version; const char *name; const char *author; const char *desc; unsigned int version[3]; const char *license; void *mysql_api; int (*init)(char *, size_t, int, va_list); int (*deinit)(); int (*options)(const char *option, const void *);
+  int type; unsigned int interface_version; const char *name; const char *author; const char *desc; unsigned int version[3]; const char *license; void *myblockchain_api; int (*init)(char *, size_t, int, va_list); int (*deinit)(); int (*options)(const char *option, const void *);
 };
-struct st_mysql;
-#include <mysql/plugin_auth_common.h>
+struct st_myblockchain;
+#include <myblockchain/plugin_auth_common.h>
 typedef struct st_plugin_vio_info
 {
-  enum { MYSQL_VIO_INVALID, MYSQL_VIO_TCP, MYSQL_VIO_SOCKET,
-         MYSQL_VIO_PIPE, MYSQL_VIO_MEMORY } protocol;
+  enum { MYBLOCKCHAIN_VIO_INVALID, MYBLOCKCHAIN_VIO_TCP, MYBLOCKCHAIN_VIO_SOCKET,
+         MYBLOCKCHAIN_VIO_PIPE, MYBLOCKCHAIN_VIO_MEMORY } protocol;
   int socket;
-} MYSQL_PLUGIN_VIO_INFO;
+} MYBLOCKCHAIN_PLUGIN_VIO_INFO;
 typedef struct st_plugin_vio
 {
   int (*read_packet)(struct st_plugin_vio *vio,
@@ -206,28 +206,28 @@ typedef struct st_plugin_vio
                       const unsigned char *packet,
                       int packet_len);
   void (*info)(struct st_plugin_vio *vio, struct st_plugin_vio_info *info);
-} MYSQL_PLUGIN_VIO;
-struct st_mysql_client_plugin_AUTHENTICATION
+} MYBLOCKCHAIN_PLUGIN_VIO;
+struct st_myblockchain_client_plugin_AUTHENTICATION
 {
-  int type; unsigned int interface_version; const char *name; const char *author; const char *desc; unsigned int version[3]; const char *license; void *mysql_api; int (*init)(char *, size_t, int, va_list); int (*deinit)(); int (*options)(const char *option, const void *);
-  int (*authenticate_user)(MYSQL_PLUGIN_VIO *vio, struct st_mysql *mysql);
+  int type; unsigned int interface_version; const char *name; const char *author; const char *desc; unsigned int version[3]; const char *license; void *myblockchain_api; int (*init)(char *, size_t, int, va_list); int (*deinit)(); int (*options)(const char *option, const void *);
+  int (*authenticate_user)(MYBLOCKCHAIN_PLUGIN_VIO *vio, struct st_myblockchain *myblockchain);
 };
-struct st_mysql_client_plugin *
-mysql_load_plugin(struct st_mysql *mysql, const char *name, int type,
+struct st_myblockchain_client_plugin *
+myblockchain_load_plugin(struct st_myblockchain *myblockchain, const char *name, int type,
                   int argc, ...);
-struct st_mysql_client_plugin *
-mysql_load_plugin_v(struct st_mysql *mysql, const char *name, int type,
+struct st_myblockchain_client_plugin *
+myblockchain_load_plugin_v(struct st_myblockchain *myblockchain, const char *name, int type,
                     int argc, va_list args);
-struct st_mysql_client_plugin *
-mysql_client_find_plugin(struct st_mysql *mysql, const char *name, int type);
-struct st_mysql_client_plugin *
-mysql_client_register_plugin(struct st_mysql *mysql,
-                             struct st_mysql_client_plugin *plugin);
-int mysql_plugin_options(struct st_mysql_client_plugin *plugin,
+struct st_myblockchain_client_plugin *
+myblockchain_client_find_plugin(struct st_myblockchain *myblockchain, const char *name, int type);
+struct st_myblockchain_client_plugin *
+myblockchain_client_register_plugin(struct st_myblockchain *myblockchain,
+                             struct st_myblockchain_client_plugin *plugin);
+int myblockchain_plugin_options(struct st_myblockchain_client_plugin *plugin,
                          const char *option, const void *value);
-extern unsigned int mysql_port;
-extern char *mysql_unix_port;
-typedef struct st_mysql_field {
+extern unsigned int myblockchain_port;
+extern char *myblockchain_unix_port;
+typedef struct st_myblockchain_field {
   char *name;
   char *org_name;
   char *table;
@@ -249,13 +249,13 @@ typedef struct st_mysql_field {
   unsigned int charsetnr;
   enum enum_field_types type;
   void *extension;
-} MYSQL_FIELD;
-typedef char **MYSQL_ROW;
-typedef unsigned int MYSQL_FIELD_OFFSET;
+} MYBLOCKCHAIN_FIELD;
+typedef char **MYBLOCKCHAIN_ROW;
+typedef unsigned int MYBLOCKCHAIN_FIELD_OFFSET;
 typedef unsigned long long my_ulonglong;
 #include "typelib.h"
 #include "my_alloc.h"
-#include <mysql/psi/psi_memory.h>
+#include <myblockchain/psi/psi_memory.h>
 #include "psi_base.h"
 struct PSI_thread;
 typedef unsigned int PSI_memory_key;
@@ -295,46 +295,46 @@ my_ulonglong find_set_from_flags(const TYPELIB *lib, unsigned int default_name,
                               my_ulonglong cur_set, my_ulonglong default_set,
                               const char *str, unsigned int length,
                               char **err_pos, unsigned int *err_len);
-typedef struct st_mysql_rows {
-  struct st_mysql_rows *next;
-  MYSQL_ROW data;
+typedef struct st_myblockchain_rows {
+  struct st_myblockchain_rows *next;
+  MYBLOCKCHAIN_ROW data;
   unsigned long length;
-} MYSQL_ROWS;
-typedef MYSQL_ROWS *MYSQL_ROW_OFFSET;
+} MYBLOCKCHAIN_ROWS;
+typedef MYBLOCKCHAIN_ROWS *MYBLOCKCHAIN_ROW_OFFSET;
 #include "my_alloc.h"
 typedef struct embedded_query_result EMBEDDED_QUERY_RESULT;
-typedef struct st_mysql_data {
-  MYSQL_ROWS *data;
+typedef struct st_myblockchain_data {
+  MYBLOCKCHAIN_ROWS *data;
   struct embedded_query_result *embedded_info;
   MEM_ROOT alloc;
   my_ulonglong rows;
   unsigned int fields;
   void *extension;
-} MYSQL_DATA;
-enum mysql_option
+} MYBLOCKCHAIN_DATA;
+enum myblockchain_option
 {
-  MYSQL_OPT_CONNECT_TIMEOUT, MYSQL_OPT_COMPRESS, MYSQL_OPT_NAMED_PIPE,
-  MYSQL_INIT_COMMAND, MYSQL_READ_DEFAULT_FILE, MYSQL_READ_DEFAULT_GROUP,
-  MYSQL_SET_CHARSET_DIR, MYSQL_SET_CHARSET_NAME, MYSQL_OPT_LOCAL_INFILE,
-  MYSQL_OPT_PROTOCOL, MYSQL_SHARED_MEMORY_BASE_NAME, MYSQL_OPT_READ_TIMEOUT,
-  MYSQL_OPT_WRITE_TIMEOUT, MYSQL_OPT_USE_RESULT,
-  MYSQL_OPT_USE_REMOTE_CONNECTION, MYSQL_OPT_USE_EMBEDDED_CONNECTION,
-  MYSQL_OPT_GUESS_CONNECTION, MYSQL_SET_CLIENT_IP, MYSQL_SECURE_AUTH,
-  MYSQL_REPORT_DATA_TRUNCATION, MYSQL_OPT_RECONNECT,
-  MYSQL_OPT_SSL_VERIFY_SERVER_CERT, MYSQL_PLUGIN_DIR, MYSQL_DEFAULT_AUTH,
-  MYSQL_OPT_BIND,
-  MYSQL_OPT_SSL_KEY, MYSQL_OPT_SSL_CERT,
-  MYSQL_OPT_SSL_CA, MYSQL_OPT_SSL_CAPATH, MYSQL_OPT_SSL_CIPHER,
-  MYSQL_OPT_SSL_CRL, MYSQL_OPT_SSL_CRLPATH,
-  MYSQL_OPT_CONNECT_ATTR_RESET, MYSQL_OPT_CONNECT_ATTR_ADD,
-  MYSQL_OPT_CONNECT_ATTR_DELETE,
-  MYSQL_SERVER_PUBLIC_KEY,
-  MYSQL_ENABLE_CLEARTEXT_PLUGIN,
-  MYSQL_OPT_CAN_HANDLE_EXPIRED_PASSWORDS,
-  MYSQL_OPT_SSL_ENFORCE
+  MYBLOCKCHAIN_OPT_CONNECT_TIMEOUT, MYBLOCKCHAIN_OPT_COMPRESS, MYBLOCKCHAIN_OPT_NAMED_PIPE,
+  MYBLOCKCHAIN_INIT_COMMAND, MYBLOCKCHAIN_READ_DEFAULT_FILE, MYBLOCKCHAIN_READ_DEFAULT_GROUP,
+  MYBLOCKCHAIN_SET_CHARSET_DIR, MYBLOCKCHAIN_SET_CHARSET_NAME, MYBLOCKCHAIN_OPT_LOCAL_INFILE,
+  MYBLOCKCHAIN_OPT_PROTOCOL, MYBLOCKCHAIN_SHARED_MEMORY_BASE_NAME, MYBLOCKCHAIN_OPT_READ_TIMEOUT,
+  MYBLOCKCHAIN_OPT_WRITE_TIMEOUT, MYBLOCKCHAIN_OPT_USE_RESULT,
+  MYBLOCKCHAIN_OPT_USE_REMOTE_CONNECTION, MYBLOCKCHAIN_OPT_USE_EMBEDDED_CONNECTION,
+  MYBLOCKCHAIN_OPT_GUESS_CONNECTION, MYBLOCKCHAIN_SET_CLIENT_IP, MYBLOCKCHAIN_SECURE_AUTH,
+  MYBLOCKCHAIN_REPORT_DATA_TRUNCATION, MYBLOCKCHAIN_OPT_RECONNECT,
+  MYBLOCKCHAIN_OPT_SSL_VERIFY_SERVER_CERT, MYBLOCKCHAIN_PLUGIN_DIR, MYBLOCKCHAIN_DEFAULT_AUTH,
+  MYBLOCKCHAIN_OPT_BIND,
+  MYBLOCKCHAIN_OPT_SSL_KEY, MYBLOCKCHAIN_OPT_SSL_CERT,
+  MYBLOCKCHAIN_OPT_SSL_CA, MYBLOCKCHAIN_OPT_SSL_CAPATH, MYBLOCKCHAIN_OPT_SSL_CIPHER,
+  MYBLOCKCHAIN_OPT_SSL_CRL, MYBLOCKCHAIN_OPT_SSL_CRLPATH,
+  MYBLOCKCHAIN_OPT_CONNECT_ATTR_RESET, MYBLOCKCHAIN_OPT_CONNECT_ATTR_ADD,
+  MYBLOCKCHAIN_OPT_CONNECT_ATTR_DELETE,
+  MYBLOCKCHAIN_SERVER_PUBLIC_KEY,
+  MYBLOCKCHAIN_ENABLE_CLEARTEXT_PLUGIN,
+  MYBLOCKCHAIN_OPT_CAN_HANDLE_EXPIRED_PASSWORDS,
+  MYBLOCKCHAIN_OPT_SSL_ENFORCE
 };
-struct st_mysql_options_extention;
-struct st_mysql_options {
+struct st_myblockchain_options_extention;
+struct st_myblockchain_options {
   unsigned int connect_timeout, read_timeout, write_timeout;
   unsigned int port, protocol;
   unsigned long client_flag;
@@ -354,7 +354,7 @@ struct st_mysql_options {
   my_bool unused2;
   my_bool unused3;
   my_bool unused4;
-  enum mysql_option methods_to_use;
+  enum myblockchain_option methods_to_use;
   union {
     char *client_ip;
     char *bind_address;
@@ -366,17 +366,17 @@ struct st_mysql_options {
   void (*local_infile_end)(void *);
   int (*local_infile_error)(void *, char *, unsigned int);
   void *local_infile_userdata;
-  struct st_mysql_options_extention *extension;
+  struct st_myblockchain_options_extention *extension;
 };
-enum mysql_status
+enum myblockchain_status
 {
-  MYSQL_STATUS_READY, MYSQL_STATUS_GET_RESULT, MYSQL_STATUS_USE_RESULT,
-  MYSQL_STATUS_STATEMENT_GET_RESULT
+  MYBLOCKCHAIN_STATUS_READY, MYBLOCKCHAIN_STATUS_GET_RESULT, MYBLOCKCHAIN_STATUS_USE_RESULT,
+  MYBLOCKCHAIN_STATUS_STATEMENT_GET_RESULT
 };
-enum mysql_protocol_type
+enum myblockchain_protocol_type
 {
-  MYSQL_PROTOCOL_DEFAULT, MYSQL_PROTOCOL_TCP, MYSQL_PROTOCOL_SOCKET,
-  MYSQL_PROTOCOL_PIPE, MYSQL_PROTOCOL_MEMORY
+  MYBLOCKCHAIN_PROTOCOL_DEFAULT, MYBLOCKCHAIN_PROTOCOL_TCP, MYBLOCKCHAIN_PROTOCOL_SOCKET,
+  MYBLOCKCHAIN_PROTOCOL_PIPE, MYBLOCKCHAIN_PROTOCOL_MEMORY
 };
 typedef struct character_set
 {
@@ -389,16 +389,16 @@ typedef struct character_set
   unsigned int mbminlen;
   unsigned int mbmaxlen;
 } MY_CHARSET_INFO;
-struct st_mysql_methods;
-struct st_mysql_stmt;
-typedef struct st_mysql
+struct st_myblockchain_methods;
+struct st_myblockchain_stmt;
+typedef struct st_myblockchain
 {
   NET net;
   unsigned char *connector_fd;
   char *host,*user,*passwd,*unix_socket,*server_version,*host_info;
   char *info, *db;
   struct charset_info_st *charset;
-  MYSQL_FIELD *fields;
+  MYBLOCKCHAIN_FIELD *fields;
   MEM_ROOT field_alloc;
   my_ulonglong affected_rows;
   my_ulonglong insert_id;
@@ -412,100 +412,100 @@ typedef struct st_mysql
   unsigned int server_status;
   unsigned int server_language;
   unsigned int warning_count;
-  struct st_mysql_options options;
-  enum mysql_status status;
+  struct st_myblockchain_options options;
+  enum myblockchain_status status;
   my_bool free_me;
   my_bool reconnect;
   char scramble[20 +1];
   my_bool unused1;
   void *unused2, *unused3, *unused4, *unused5;
   LIST *stmts;
-  const struct st_mysql_methods *methods;
+  const struct st_myblockchain_methods *methods;
   void *thd;
   my_bool *unbuffered_fetch_owner;
   char *info_buffer;
   void *extension;
-} MYSQL;
-typedef struct st_mysql_res {
+} MYBLOCKCHAIN;
+typedef struct st_myblockchain_res {
   my_ulonglong row_count;
-  MYSQL_FIELD *fields;
-  MYSQL_DATA *data;
-  MYSQL_ROWS *data_cursor;
+  MYBLOCKCHAIN_FIELD *fields;
+  MYBLOCKCHAIN_DATA *data;
+  MYBLOCKCHAIN_ROWS *data_cursor;
   unsigned long *lengths;
-  MYSQL *handle;
-  const struct st_mysql_methods *methods;
-  MYSQL_ROW row;
-  MYSQL_ROW current_row;
+  MYBLOCKCHAIN *handle;
+  const struct st_myblockchain_methods *methods;
+  MYBLOCKCHAIN_ROW row;
+  MYBLOCKCHAIN_ROW current_row;
   MEM_ROOT field_alloc;
   unsigned int field_count, current_field;
   my_bool eof;
   my_bool unbuffered_fetch_cancelled;
   void *extension;
-} MYSQL_RES;
-typedef struct st_mysql_parameters
+} MYBLOCKCHAIN_RES;
+typedef struct st_myblockchain_parameters
 {
   unsigned long *p_max_allowed_packet;
   unsigned long *p_net_buffer_length;
   void *extension;
-} MYSQL_PARAMETERS;
-int mysql_server_init(int argc, char **argv, char **groups);
-void mysql_server_end(void);
-MYSQL_PARAMETERS * mysql_get_parameters(void);
-my_bool mysql_thread_init(void);
-void mysql_thread_end(void);
-my_ulonglong mysql_num_rows(MYSQL_RES *res);
-unsigned int mysql_num_fields(MYSQL_RES *res);
-my_bool mysql_eof(MYSQL_RES *res);
-MYSQL_FIELD * mysql_fetch_field_direct(MYSQL_RES *res,
+} MYBLOCKCHAIN_PARAMETERS;
+int myblockchain_server_init(int argc, char **argv, char **groups);
+void myblockchain_server_end(void);
+MYBLOCKCHAIN_PARAMETERS * myblockchain_get_parameters(void);
+my_bool myblockchain_thread_init(void);
+void myblockchain_thread_end(void);
+my_ulonglong myblockchain_num_rows(MYBLOCKCHAIN_RES *res);
+unsigned int myblockchain_num_fields(MYBLOCKCHAIN_RES *res);
+my_bool myblockchain_eof(MYBLOCKCHAIN_RES *res);
+MYBLOCKCHAIN_FIELD * myblockchain_fetch_field_direct(MYBLOCKCHAIN_RES *res,
            unsigned int fieldnr);
-MYSQL_FIELD * mysql_fetch_fields(MYSQL_RES *res);
-MYSQL_ROW_OFFSET mysql_row_tell(MYSQL_RES *res);
-MYSQL_FIELD_OFFSET mysql_field_tell(MYSQL_RES *res);
-unsigned int mysql_field_count(MYSQL *mysql);
-my_ulonglong mysql_affected_rows(MYSQL *mysql);
-my_ulonglong mysql_insert_id(MYSQL *mysql);
-unsigned int mysql_errno(MYSQL *mysql);
-const char * mysql_error(MYSQL *mysql);
-const char * mysql_sqlstate(MYSQL *mysql);
-unsigned int mysql_warning_count(MYSQL *mysql);
-const char * mysql_info(MYSQL *mysql);
-unsigned long mysql_thread_id(MYSQL *mysql);
-const char * mysql_character_set_name(MYSQL *mysql);
-int mysql_set_character_set(MYSQL *mysql, const char *csname);
-MYSQL * mysql_init(MYSQL *mysql);
-my_bool mysql_ssl_set(MYSQL *mysql, const char *key,
+MYBLOCKCHAIN_FIELD * myblockchain_fetch_fields(MYBLOCKCHAIN_RES *res);
+MYBLOCKCHAIN_ROW_OFFSET myblockchain_row_tell(MYBLOCKCHAIN_RES *res);
+MYBLOCKCHAIN_FIELD_OFFSET myblockchain_field_tell(MYBLOCKCHAIN_RES *res);
+unsigned int myblockchain_field_count(MYBLOCKCHAIN *myblockchain);
+my_ulonglong myblockchain_affected_rows(MYBLOCKCHAIN *myblockchain);
+my_ulonglong myblockchain_insert_id(MYBLOCKCHAIN *myblockchain);
+unsigned int myblockchain_errno(MYBLOCKCHAIN *myblockchain);
+const char * myblockchain_error(MYBLOCKCHAIN *myblockchain);
+const char * myblockchain_sqlstate(MYBLOCKCHAIN *myblockchain);
+unsigned int myblockchain_warning_count(MYBLOCKCHAIN *myblockchain);
+const char * myblockchain_info(MYBLOCKCHAIN *myblockchain);
+unsigned long myblockchain_thread_id(MYBLOCKCHAIN *myblockchain);
+const char * myblockchain_character_set_name(MYBLOCKCHAIN *myblockchain);
+int myblockchain_set_character_set(MYBLOCKCHAIN *myblockchain, const char *csname);
+MYBLOCKCHAIN * myblockchain_init(MYBLOCKCHAIN *myblockchain);
+my_bool myblockchain_ssl_set(MYBLOCKCHAIN *myblockchain, const char *key,
           const char *cert, const char *ca,
           const char *capath, const char *cipher);
-const char * mysql_get_ssl_cipher(MYSQL *mysql);
-my_bool mysql_change_user(MYSQL *mysql, const char *user,
+const char * myblockchain_get_ssl_cipher(MYBLOCKCHAIN *myblockchain);
+my_bool myblockchain_change_user(MYBLOCKCHAIN *myblockchain, const char *user,
        const char *passwd, const char *db);
-MYSQL * mysql_real_connect(MYSQL *mysql, const char *host,
+MYBLOCKCHAIN * myblockchain_real_connect(MYBLOCKCHAIN *myblockchain, const char *host,
         const char *user,
         const char *passwd,
         const char *db,
         unsigned int port,
         const char *unix_socket,
         unsigned long clientflag);
-int mysql_select_db(MYSQL *mysql, const char *db);
-int mysql_query(MYSQL *mysql, const char *q);
-int mysql_send_query(MYSQL *mysql, const char *q,
+int myblockchain_select_db(MYBLOCKCHAIN *myblockchain, const char *db);
+int myblockchain_query(MYBLOCKCHAIN *myblockchain, const char *q);
+int myblockchain_send_query(MYBLOCKCHAIN *myblockchain, const char *q,
       unsigned long length);
-int mysql_real_query(MYSQL *mysql, const char *q,
+int myblockchain_real_query(MYBLOCKCHAIN *myblockchain, const char *q,
      unsigned long length);
-MYSQL_RES * mysql_store_result(MYSQL *mysql);
-MYSQL_RES * mysql_use_result(MYSQL *mysql);
-void mysql_get_character_set_info(MYSQL *mysql,
+MYBLOCKCHAIN_RES * myblockchain_store_result(MYBLOCKCHAIN *myblockchain);
+MYBLOCKCHAIN_RES * myblockchain_use_result(MYBLOCKCHAIN *myblockchain);
+void myblockchain_get_character_set_info(MYBLOCKCHAIN *myblockchain,
                            MY_CHARSET_INFO *charset);
-int mysql_session_track_get_first(MYSQL *mysql,
+int myblockchain_session_track_get_first(MYBLOCKCHAIN *myblockchain,
                                           enum enum_session_state_type type,
                                           const char **data,
                                           size_t *length);
-int mysql_session_track_get_next(MYSQL *mysql,
+int myblockchain_session_track_get_next(MYBLOCKCHAIN *myblockchain,
                                          enum enum_session_state_type type,
                                          const char **data,
                                          size_t *length);
 void
-mysql_set_local_infile_handler(MYSQL *mysql,
+myblockchain_set_local_infile_handler(MYBLOCKCHAIN *myblockchain,
                                int (*local_infile_init)(void **, const char *,
                             void *),
                                int (*local_infile_read)(void *, char *,
@@ -515,78 +515,78 @@ mysql_set_local_infile_handler(MYSQL *mysql,
         unsigned int),
                                void *);
 void
-mysql_set_local_infile_default(MYSQL *mysql);
-int mysql_shutdown(MYSQL *mysql,
-                                       enum mysql_enum_shutdown_level
+myblockchain_set_local_infile_default(MYBLOCKCHAIN *myblockchain);
+int myblockchain_shutdown(MYBLOCKCHAIN *myblockchain,
+                                       enum myblockchain_enum_shutdown_level
                                        shutdown_level);
-int mysql_dump_debug_info(MYSQL *mysql);
-int mysql_refresh(MYSQL *mysql,
+int myblockchain_dump_debug_info(MYBLOCKCHAIN *myblockchain);
+int myblockchain_refresh(MYBLOCKCHAIN *myblockchain,
          unsigned int refresh_options);
-int mysql_kill(MYSQL *mysql,unsigned long pid);
-int mysql_set_server_option(MYSQL *mysql,
-      enum enum_mysql_set_option
+int myblockchain_kill(MYBLOCKCHAIN *myblockchain,unsigned long pid);
+int myblockchain_set_server_option(MYBLOCKCHAIN *myblockchain,
+      enum enum_myblockchain_set_option
       option);
-int mysql_ping(MYSQL *mysql);
-const char * mysql_stat(MYSQL *mysql);
-const char * mysql_get_server_info(MYSQL *mysql);
-const char * mysql_get_client_info(void);
-unsigned long mysql_get_client_version(void);
-const char * mysql_get_host_info(MYSQL *mysql);
-unsigned long mysql_get_server_version(MYSQL *mysql);
-unsigned int mysql_get_proto_info(MYSQL *mysql);
-MYSQL_RES * mysql_list_dbs(MYSQL *mysql,const char *wild);
-MYSQL_RES * mysql_list_tables(MYSQL *mysql,const char *wild);
-MYSQL_RES * mysql_list_processes(MYSQL *mysql);
-int mysql_options(MYSQL *mysql,enum mysql_option option,
+int myblockchain_ping(MYBLOCKCHAIN *myblockchain);
+const char * myblockchain_stat(MYBLOCKCHAIN *myblockchain);
+const char * myblockchain_get_server_info(MYBLOCKCHAIN *myblockchain);
+const char * myblockchain_get_client_info(void);
+unsigned long myblockchain_get_client_version(void);
+const char * myblockchain_get_host_info(MYBLOCKCHAIN *myblockchain);
+unsigned long myblockchain_get_server_version(MYBLOCKCHAIN *myblockchain);
+unsigned int myblockchain_get_proto_info(MYBLOCKCHAIN *myblockchain);
+MYBLOCKCHAIN_RES * myblockchain_list_dbs(MYBLOCKCHAIN *myblockchain,const char *wild);
+MYBLOCKCHAIN_RES * myblockchain_list_tables(MYBLOCKCHAIN *myblockchain,const char *wild);
+MYBLOCKCHAIN_RES * myblockchain_list_processes(MYBLOCKCHAIN *myblockchain);
+int myblockchain_options(MYBLOCKCHAIN *myblockchain,enum myblockchain_option option,
           const void *arg);
-int mysql_options4(MYSQL *mysql,enum mysql_option option,
+int myblockchain_options4(MYBLOCKCHAIN *myblockchain,enum myblockchain_option option,
                                        const void *arg1, const void *arg2);
-int mysql_get_option(MYSQL *mysql, enum mysql_option option,
+int myblockchain_get_option(MYBLOCKCHAIN *myblockchain, enum myblockchain_option option,
                                          const void *arg);
-void mysql_free_result(MYSQL_RES *result);
-void mysql_data_seek(MYSQL_RES *result,
+void myblockchain_free_result(MYBLOCKCHAIN_RES *result);
+void myblockchain_data_seek(MYBLOCKCHAIN_RES *result,
      my_ulonglong offset);
-MYSQL_ROW_OFFSET mysql_row_seek(MYSQL_RES *result,
-      MYSQL_ROW_OFFSET offset);
-MYSQL_FIELD_OFFSET mysql_field_seek(MYSQL_RES *result,
-        MYSQL_FIELD_OFFSET offset);
-MYSQL_ROW mysql_fetch_row(MYSQL_RES *result);
-unsigned long * mysql_fetch_lengths(MYSQL_RES *result);
-MYSQL_FIELD * mysql_fetch_field(MYSQL_RES *result);
-MYSQL_RES * mysql_list_fields(MYSQL *mysql, const char *table,
+MYBLOCKCHAIN_ROW_OFFSET myblockchain_row_seek(MYBLOCKCHAIN_RES *result,
+      MYBLOCKCHAIN_ROW_OFFSET offset);
+MYBLOCKCHAIN_FIELD_OFFSET myblockchain_field_seek(MYBLOCKCHAIN_RES *result,
+        MYBLOCKCHAIN_FIELD_OFFSET offset);
+MYBLOCKCHAIN_ROW myblockchain_fetch_row(MYBLOCKCHAIN_RES *result);
+unsigned long * myblockchain_fetch_lengths(MYBLOCKCHAIN_RES *result);
+MYBLOCKCHAIN_FIELD * myblockchain_fetch_field(MYBLOCKCHAIN_RES *result);
+MYBLOCKCHAIN_RES * myblockchain_list_fields(MYBLOCKCHAIN *myblockchain, const char *table,
        const char *wild);
-unsigned long mysql_escape_string(char *to,const char *from,
+unsigned long myblockchain_escape_string(char *to,const char *from,
          unsigned long from_length);
-unsigned long mysql_hex_string(char *to,const char *from,
+unsigned long myblockchain_hex_string(char *to,const char *from,
                                          unsigned long from_length);
-unsigned long mysql_real_escape_string(MYSQL *mysql,
+unsigned long myblockchain_real_escape_string(MYBLOCKCHAIN *myblockchain,
             char *to,const char *from,
             unsigned long length);
-unsigned long mysql_real_escape_string_quote(MYSQL *mysql,
+unsigned long myblockchain_real_escape_string_quote(MYBLOCKCHAIN *myblockchain,
                  char *to, const char *from,
                  unsigned long length, char quote);
-void mysql_debug(const char *debug);
-void myodbc_remove_escape(MYSQL *mysql,char *name);
-unsigned int mysql_thread_safe(void);
-my_bool mysql_embedded(void);
-my_bool mysql_read_query_result(MYSQL *mysql);
-int mysql_reset_connection(MYSQL *mysql);
-enum enum_mysql_stmt_state
+void myblockchain_debug(const char *debug);
+void myodbc_remove_escape(MYBLOCKCHAIN *myblockchain,char *name);
+unsigned int myblockchain_thread_safe(void);
+my_bool myblockchain_embedded(void);
+my_bool myblockchain_read_query_result(MYBLOCKCHAIN *myblockchain);
+int myblockchain_reset_connection(MYBLOCKCHAIN *myblockchain);
+enum enum_myblockchain_stmt_state
 {
-  MYSQL_STMT_INIT_DONE= 1, MYSQL_STMT_PREPARE_DONE, MYSQL_STMT_EXECUTE_DONE,
-  MYSQL_STMT_FETCH_DONE
+  MYBLOCKCHAIN_STMT_INIT_DONE= 1, MYBLOCKCHAIN_STMT_PREPARE_DONE, MYBLOCKCHAIN_STMT_EXECUTE_DONE,
+  MYBLOCKCHAIN_STMT_FETCH_DONE
 };
-typedef struct st_mysql_bind
+typedef struct st_myblockchain_bind
 {
   unsigned long *length;
   my_bool *is_null;
   void *buffer;
   my_bool *error;
   unsigned char *row_ptr;
-  void (*store_param_func)(NET *net, struct st_mysql_bind *param);
-  void (*fetch_result)(struct st_mysql_bind *, MYSQL_FIELD *,
+  void (*store_param_func)(NET *net, struct st_myblockchain_bind *param);
+  void (*fetch_result)(struct st_myblockchain_bind *, MYBLOCKCHAIN_FIELD *,
                        unsigned char **row);
-  void (*skip_result)(struct st_mysql_bind *, MYSQL_FIELD *,
+  void (*skip_result)(struct st_myblockchain_bind *, MYBLOCKCHAIN_FIELD *,
         unsigned char **row);
   unsigned long buffer_length;
   unsigned long offset;
@@ -599,19 +599,19 @@ typedef struct st_mysql_bind
   my_bool long_data_used;
   my_bool is_null_value;
   void *extension;
-} MYSQL_BIND;
-struct st_mysql_stmt_extension;
-typedef struct st_mysql_stmt
+} MYBLOCKCHAIN_BIND;
+struct st_myblockchain_stmt_extension;
+typedef struct st_myblockchain_stmt
 {
   MEM_ROOT mem_root;
   LIST list;
-  MYSQL *mysql;
-  MYSQL_BIND *params;
-  MYSQL_BIND *bind;
-  MYSQL_FIELD *fields;
-  MYSQL_DATA result;
-  MYSQL_ROWS *data_cursor;
-  int (*read_row_func)(struct st_mysql_stmt *stmt,
+  MYBLOCKCHAIN *myblockchain;
+  MYBLOCKCHAIN_BIND *params;
+  MYBLOCKCHAIN_BIND *bind;
+  MYBLOCKCHAIN_FIELD *fields;
+  MYBLOCKCHAIN_DATA result;
+  MYBLOCKCHAIN_ROWS *data_cursor;
+  int (*read_row_func)(struct st_myblockchain_stmt *stmt,
                                   unsigned char **row);
   my_ulonglong affected_rows;
   my_ulonglong insert_id;
@@ -622,7 +622,7 @@ typedef struct st_mysql_stmt
   unsigned int last_errno;
   unsigned int param_count;
   unsigned int field_count;
-  enum enum_mysql_stmt_state state;
+  enum enum_myblockchain_stmt_state state;
   char last_error[512];
   char sqlstate[5 +1];
   my_bool send_types_to_server;
@@ -630,56 +630,56 @@ typedef struct st_mysql_stmt
   unsigned char bind_result_done;
   my_bool unbuffered_fetch_cancelled;
   my_bool update_max_length;
-  struct st_mysql_stmt_extension *extension;
-} MYSQL_STMT;
+  struct st_myblockchain_stmt_extension *extension;
+} MYBLOCKCHAIN_STMT;
 enum enum_stmt_attr_type
 {
   STMT_ATTR_UPDATE_MAX_LENGTH,
   STMT_ATTR_CURSOR_TYPE,
   STMT_ATTR_PREFETCH_ROWS
 };
-MYSQL_STMT * mysql_stmt_init(MYSQL *mysql);
-int mysql_stmt_prepare(MYSQL_STMT *stmt, const char *query,
+MYBLOCKCHAIN_STMT * myblockchain_stmt_init(MYBLOCKCHAIN *myblockchain);
+int myblockchain_stmt_prepare(MYBLOCKCHAIN_STMT *stmt, const char *query,
                                unsigned long length);
-int mysql_stmt_execute(MYSQL_STMT *stmt);
-int mysql_stmt_fetch(MYSQL_STMT *stmt);
-int mysql_stmt_fetch_column(MYSQL_STMT *stmt, MYSQL_BIND *bind_arg,
+int myblockchain_stmt_execute(MYBLOCKCHAIN_STMT *stmt);
+int myblockchain_stmt_fetch(MYBLOCKCHAIN_STMT *stmt);
+int myblockchain_stmt_fetch_column(MYBLOCKCHAIN_STMT *stmt, MYBLOCKCHAIN_BIND *bind_arg,
                                     unsigned int column,
                                     unsigned long offset);
-int mysql_stmt_store_result(MYSQL_STMT *stmt);
-unsigned long mysql_stmt_param_count(MYSQL_STMT * stmt);
-my_bool mysql_stmt_attr_set(MYSQL_STMT *stmt,
+int myblockchain_stmt_store_result(MYBLOCKCHAIN_STMT *stmt);
+unsigned long myblockchain_stmt_param_count(MYBLOCKCHAIN_STMT * stmt);
+my_bool myblockchain_stmt_attr_set(MYBLOCKCHAIN_STMT *stmt,
                                     enum enum_stmt_attr_type attr_type,
                                     const void *attr);
-my_bool mysql_stmt_attr_get(MYSQL_STMT *stmt,
+my_bool myblockchain_stmt_attr_get(MYBLOCKCHAIN_STMT *stmt,
                                     enum enum_stmt_attr_type attr_type,
                                     void *attr);
-my_bool mysql_stmt_bind_param(MYSQL_STMT * stmt, MYSQL_BIND * bnd);
-my_bool mysql_stmt_bind_result(MYSQL_STMT * stmt, MYSQL_BIND * bnd);
-my_bool mysql_stmt_close(MYSQL_STMT * stmt);
-my_bool mysql_stmt_reset(MYSQL_STMT * stmt);
-my_bool mysql_stmt_free_result(MYSQL_STMT *stmt);
-my_bool mysql_stmt_send_long_data(MYSQL_STMT *stmt,
+my_bool myblockchain_stmt_bind_param(MYBLOCKCHAIN_STMT * stmt, MYBLOCKCHAIN_BIND * bnd);
+my_bool myblockchain_stmt_bind_result(MYBLOCKCHAIN_STMT * stmt, MYBLOCKCHAIN_BIND * bnd);
+my_bool myblockchain_stmt_close(MYBLOCKCHAIN_STMT * stmt);
+my_bool myblockchain_stmt_reset(MYBLOCKCHAIN_STMT * stmt);
+my_bool myblockchain_stmt_free_result(MYBLOCKCHAIN_STMT *stmt);
+my_bool myblockchain_stmt_send_long_data(MYBLOCKCHAIN_STMT *stmt,
                                           unsigned int param_number,
                                           const char *data,
                                           unsigned long length);
-MYSQL_RES * mysql_stmt_result_metadata(MYSQL_STMT *stmt);
-MYSQL_RES * mysql_stmt_param_metadata(MYSQL_STMT *stmt);
-unsigned int mysql_stmt_errno(MYSQL_STMT * stmt);
-const char * mysql_stmt_error(MYSQL_STMT * stmt);
-const char * mysql_stmt_sqlstate(MYSQL_STMT * stmt);
-MYSQL_ROW_OFFSET mysql_stmt_row_seek(MYSQL_STMT *stmt,
-                                             MYSQL_ROW_OFFSET offset);
-MYSQL_ROW_OFFSET mysql_stmt_row_tell(MYSQL_STMT *stmt);
-void mysql_stmt_data_seek(MYSQL_STMT *stmt, my_ulonglong offset);
-my_ulonglong mysql_stmt_num_rows(MYSQL_STMT *stmt);
-my_ulonglong mysql_stmt_affected_rows(MYSQL_STMT *stmt);
-my_ulonglong mysql_stmt_insert_id(MYSQL_STMT *stmt);
-unsigned int mysql_stmt_field_count(MYSQL_STMT *stmt);
-my_bool mysql_commit(MYSQL * mysql);
-my_bool mysql_rollback(MYSQL * mysql);
-my_bool mysql_autocommit(MYSQL * mysql, my_bool auto_mode);
-my_bool mysql_more_results(MYSQL *mysql);
-int mysql_next_result(MYSQL *mysql);
-int mysql_stmt_next_result(MYSQL_STMT *stmt);
-void mysql_close(MYSQL *sock);
+MYBLOCKCHAIN_RES * myblockchain_stmt_result_metadata(MYBLOCKCHAIN_STMT *stmt);
+MYBLOCKCHAIN_RES * myblockchain_stmt_param_metadata(MYBLOCKCHAIN_STMT *stmt);
+unsigned int myblockchain_stmt_errno(MYBLOCKCHAIN_STMT * stmt);
+const char * myblockchain_stmt_error(MYBLOCKCHAIN_STMT * stmt);
+const char * myblockchain_stmt_sqlstate(MYBLOCKCHAIN_STMT * stmt);
+MYBLOCKCHAIN_ROW_OFFSET myblockchain_stmt_row_seek(MYBLOCKCHAIN_STMT *stmt,
+                                             MYBLOCKCHAIN_ROW_OFFSET offset);
+MYBLOCKCHAIN_ROW_OFFSET myblockchain_stmt_row_tell(MYBLOCKCHAIN_STMT *stmt);
+void myblockchain_stmt_data_seek(MYBLOCKCHAIN_STMT *stmt, my_ulonglong offset);
+my_ulonglong myblockchain_stmt_num_rows(MYBLOCKCHAIN_STMT *stmt);
+my_ulonglong myblockchain_stmt_affected_rows(MYBLOCKCHAIN_STMT *stmt);
+my_ulonglong myblockchain_stmt_insert_id(MYBLOCKCHAIN_STMT *stmt);
+unsigned int myblockchain_stmt_field_count(MYBLOCKCHAIN_STMT *stmt);
+my_bool myblockchain_commit(MYBLOCKCHAIN * myblockchain);
+my_bool myblockchain_rollback(MYBLOCKCHAIN * myblockchain);
+my_bool myblockchain_autocommit(MYBLOCKCHAIN * myblockchain, my_bool auto_mode);
+my_bool myblockchain_more_results(MYBLOCKCHAIN *myblockchain);
+int myblockchain_next_result(MYBLOCKCHAIN *myblockchain);
+int myblockchain_stmt_next_result(MYBLOCKCHAIN_STMT *stmt);
+void myblockchain_close(MYBLOCKCHAIN *sock);

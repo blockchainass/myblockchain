@@ -73,7 +73,7 @@ typedef struct st_key_cache
   uchar *block_mem;              /* memory for block buffers                 */
   BLOCK_LINK *used_last;         /* ptr to the last block of the LRU chain   */
   BLOCK_LINK *used_ins;          /* ptr to the insertion block in LRU chain  */
-  mysql_mutex_t cache_lock;      /* to lock access to the cache structure    */
+  myblockchain_mutex_t cache_lock;      /* to lock access to the cache structure    */
   KEYCACHE_WQUEUE resize_queue;  /* threads waiting during resize operation  */
   /*
     Waiting for a zero resize count. Using a queue for symmetry though
@@ -103,7 +103,7 @@ typedef struct st_key_cache
   ulonglong global_cache_read;      /* number of reads from files to cache   */
 
   int blocks;                   /* max number of blocks in the cache        */
-  my_bool in_init;		/* Set to 1 in MySQL during init/resize     */
+  my_bool in_init;		/* Set to 1 in MyBlockchain during init/resize     */
 } KEY_CACHE;
 
 /* The default key cache */

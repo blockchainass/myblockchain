@@ -19,8 +19,8 @@
 #define THREAD_POOL_PRIV_INCLUDED
 
 /*
-  The thread pool requires access to some MySQL server error codes, this is
-  accessed from mysqld_error.h.
+  The thread pool requires access to some MyBlockchain server error codes, this is
+  accessed from myblockchaind_error.h.
   We need access to the struct that defines the thread pool plugin interface
   which is accessed through scheduler.h.
   All accesses to THD variables and functions are defined in this header file.
@@ -29,8 +29,8 @@
   To handle definitions of Information Schema plugins it is also required
   to include sql_profile.h and table.h.
 */
-#include <mysqld_error.h> /* To get ER_ERROR_ON_READ */
-#define MYSQL_SERVER 1
+#include <myblockchaind_error.h> /* To get ER_ERROR_ON_READ */
+#define MYBLOCKCHAIN_SERVER 1
 #include <conn_handler/channel_info.h>
 #include <conn_handler/connection_handler_manager.h>
 #include <debug_sync.h>
@@ -128,7 +128,7 @@ ulong  thd_get_net_wait_timeout(THD *thd);
 my_socket thd_get_fd(THD *thd);
 int thd_store_globals(THD* thd);
 
-/* Print to the MySQL error log */
+/* Print to the MyBlockchain error log */
 void sql_print_error(const char *format, ...);
 void sql_print_warning(const char *format, ...);
 void sql_print_information(const char *format, ...);
@@ -145,16 +145,16 @@ bool do_command(THD *thd);
 
 /*
   The thread pool requires an interface to the connection logic in the
-  MySQL Server since the thread pool will maintain the event logic on
-  the TCP connection of the MySQL Server. Thus new connections, dropped
+  MyBlockchain Server since the thread pool will maintain the event logic on
+  the TCP connection of the MyBlockchain Server. Thus new connections, dropped
   connections will be discovered by the thread pool and it needs to
-  ensure that the proper MySQL Server logic attached to these events is
+  ensure that the proper MyBlockchain Server logic attached to these events is
   executed.
 */
 /* Prepare connection as part of connection set-up */
 bool thd_prepare_connection(THD *thd);
 /* Release auditing before executing statement */
-void mysql_audit_release(THD *thd);
+void myblockchain_audit_release(THD *thd);
 /* Check if connection is still alive */
 bool thd_is_connection_alive(THD *thd);
 /* Close connection with possible error code */

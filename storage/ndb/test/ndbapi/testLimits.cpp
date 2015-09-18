@@ -105,7 +105,7 @@ int testSegmentedSectionPk(NDBT_Context* ctx, NDBT_Step* step){
    * Long TCKEYREQ     Initial import, not last
    *                     TCKEYREQ in batch      Consume + send
    * No testing of short TCKEYREQ variants as they cannot be
-   * generated in mysql-5.1-telco-6.4+
+   * generated in myblockchain-5.1-telco-6.4+
    * TODO : Add short variant testing to testUpgrade.
    */
 

@@ -17,7 +17,7 @@
    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA */
 
 /**
-  MySQL condition variable implementation.
+  MyBlockchain condition variable implementation.
 
   There are three "layers":
   1) native_cond_*()
@@ -27,9 +27,9 @@
   2) my_cond_*()
        Functions that use SAFE_MUTEX (default for debug).
        Otherwise native_cond_*() is used.
-  3) mysql_cond*()
+  3) myblockchain_cond*()
        Functions that include Performance Schema instrumentation.
-       See include/mysql/psi/mysql_thread.h
+       See include/myblockchain/psi/myblockchain_thread.h
 */
 
 #include "my_thread.h"
@@ -89,7 +89,7 @@ static inline int native_cond_init(native_cond_t *cond)
   InitializeConditionVariable(cond);
   return 0;
 #else
-  /* pthread_condattr_t is not used in MySQL */
+  /* pthread_condattr_t is not used in MyBlockchain */
   return pthread_cond_init(cond, NULL);
 #endif
 }

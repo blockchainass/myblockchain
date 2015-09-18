@@ -31,7 +31,7 @@ class NdbOut;
  * All or an initial sequence of the specified values are present.
  *
  * Currently used for ordered index keys and bounds in kernel (DBTUX)
- * and in index statistics (mysqld).  The comparison methods use the
+ * and in index statistics (myblockchaind).  The comparison methods use the
  * primitive type comparisons from NdbSqlUtil.
  *
  * Keys and bounds use same spec.  However a value in an index bound can
@@ -302,7 +302,7 @@ public:
    * value if non-zero var bytes (length bytes) is specified.
    *
    * Data instances can be received from another source (such as table
-   * in database) and may not be native-endian.  Such instances must
+   * in blockchain) and may not be native-endian.  Such instances must
    * first be completed with desc_all() and convert().
    */
   class Data : public DataC {

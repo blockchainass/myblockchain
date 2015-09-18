@@ -13,29 +13,29 @@
 -- along with this program; if not, write to the Free Software
 -- Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 
-# This set of commands will modify the predefined accounts of a MySQL installation
+# This set of commands will modify the predefined accounts of a MyBlockchain installation
 # to increase security.
 
 # 1) Set passwords for the root account.
 # Note that the password 'ABC123xyz' will be replaced by a random string
 # when these commands are transferred to the server.
 SET @@old_passwords=0; 
-UPDATE mysql.user SET Password=PASSWORD('ABC123xyz') WHERE User='root' and plugin in ('', 'mysql_native_password');
+UPDATE myblockchain.user SET Password=PASSWORD('ABC123xyz') WHERE User='root' and plugin in ('', 'myblockchain_native_password');
 SET @@old_passwords=2; 
-UPDATE mysql.user SET authentication_string=PASSWORD('ABC123xyz') WHERE User='root' and plugin='sha256_password'; 
+UPDATE myblockchain.user SET authentication_string=PASSWORD('ABC123xyz') WHERE User='root' and plugin='sha256_password'; 
 
 # 2) Drop the anonymous account.
-DELETE FROM mysql.user WHERE User=''; 
+DELETE FROM myblockchain.user WHERE User=''; 
 
 # 3) Force the root user to change the password on first connect.
-UPDATE mysql.user SET Password_expired='Y' WHERE User='root'; 
+UPDATE myblockchain.user SET Password_expired='Y' WHERE User='root'; 
 
 # 4) remove remote accounts
-DELETE FROM mysql.user WHERE Host <> 'localhost';
+DELETE FROM myblockchain.user WHERE Host <> 'localhost';
 
-# 5) Drop the test database
+# 5) Drop the test blockchain
 DROP DATABASE IF EXISTS test;
-DELETE FROM mysql.db WHERE Db='test' OR Db='test\\_%';
+DELETE FROM myblockchain.db WHERE Db='test' OR Db='test\\_%';
 
 # In case this file is sent to a running server.
 FLUSH PRIVILEGES;

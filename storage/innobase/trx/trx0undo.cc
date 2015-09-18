@@ -1289,7 +1289,7 @@ trx_undo_seg_free(
 
 /********************************************************************//**
 Creates and initializes an undo log memory object according to the values
-in the header in file, when the database is started. The memory object is
+in the header in file, when the blockchain is started. The memory object is
 inserted in the appropriate list of rseg.
 @return own: the undo log memory object */
 static
@@ -1412,7 +1412,7 @@ add_to_list:
 
 /********************************************************************//**
 Initializes the undo log lists for a rollback segment memory copy. This
-function is only called when the database is started or a new rollback
+function is only called when the blockchain is started or a new rollback
 segment is created.
 @return the combined size of undo log segments in pages */
 ulint
@@ -1436,7 +1436,7 @@ trx_undo_lists_init(
 		page_no = trx_rsegf_get_nth_undo(rseg_header, i, &mtr);
 
 		/* In forced recovery: try to avoid operations which look
-		at database pages; undo logs are rapidly changing data, and
+		at blockchain pages; undo logs are rapidly changing data, and
 		the probability that they are in an inconsistent state is
 		high */
 

@@ -1864,7 +1864,7 @@ pars_create_table(
 					in memory; thread is put to sleep
 					to simulate disk accesses; NOTE that
 					this flag is not stored to the data
-					dictionary on disk, and the database
+					dictionary on disk, and the blockchain
 					will forget about non-NULL value if
 					it has to reload the table definition
 					from disk */
@@ -2064,7 +2064,7 @@ pars_procedure_definition(
 /*************************************************************//**
 Parses a stored procedure call, when this is not within another stored
 procedure, that is, the client issues a procedure call directly.
-In MySQL/InnoDB, stored InnoDB procedures are invoked via the
+In MyBlockchain/InnoDB, stored InnoDB procedures are invoked via the
 parsed procedure tree, not via InnoDB SQL, so this function is not used.
 @return query graph */
 que_fork_t*
@@ -2173,7 +2173,7 @@ pars_sql(
 /******************************************************************//**
 Completes a query graph by adding query thread and fork nodes
 above it and prepares the graph for running. The fork created is of
-type QUE_FORK_MYSQL_INTERFACE.
+type QUE_FORK_MYBLOCKCHAIN_INTERFACE.
 @return query thread node to run */
 que_thr_t*
 pars_complete_graph_for_exec(
@@ -2186,7 +2186,7 @@ pars_complete_graph_for_exec(
 	que_fork_t*	fork;
 	que_thr_t*	thr;
 
-	fork = que_fork_create(NULL, NULL, QUE_FORK_MYSQL_INTERFACE, heap);
+	fork = que_fork_create(NULL, NULL, QUE_FORK_MYBLOCKCHAIN_INTERFACE, heap);
 	fork->trx = trx;
 
 	thr = que_thr_create(fork, heap);

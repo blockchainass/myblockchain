@@ -21,21 +21,21 @@
 
   Authentication is successful if the connection is done via a unix socket and
   the owner of the client process matches the user name that was used when
-  connecting to mysqld.
+  connecting to myblockchaind.
 */
 #ifndef _GNU_SOURCE
 #define _GNU_SOURCE /* for struct ucred */
 #endif
 
-#include <mysql/plugin_auth.h>
+#include <myblockchain/plugin_auth.h>
 #include <sys/socket.h>
 #include <pwd.h>
 #include <string.h>
 
-static int socket_auth(MYSQL_PLUGIN_VIO *vio, MYSQL_SERVER_AUTH_INFO *info)
+static int socket_auth(MYBLOCKCHAIN_PLUGIN_VIO *vio, MYBLOCKCHAIN_SERVER_AUTH_INFO *info)
 {
   unsigned char *pkt;
-  MYSQL_PLUGIN_VIO_INFO vio_info;
+  MYBLOCKCHAIN_PLUGIN_VIO_INFO vio_info;
   struct ucred cred;
   socklen_t cred_len= sizeof(cred);
   struct passwd pwd_buf, *pwd;
@@ -51,7 +51,7 @@ static int socket_auth(MYSQL_PLUGIN_VIO *vio, MYSQL_SERVER_AUTH_INFO *info)
   info->password_used= PASSWORD_USED_NO_MENTION;
 
   vio->info(vio, &vio_info);
-  if (vio_info.protocol != MYSQL_VIO_SOCKET)
+  if (vio_info.protocol != MYBLOCKCHAIN_VIO_SOCKET)
     return CR_ERROR;
 
   /* get the UID of the client process */
@@ -101,9 +101,9 @@ int set_salt(const char* password __attribute__((unused)),
   return 0;
 }
 
-static struct st_mysql_auth socket_auth_handler=
+static struct st_myblockchain_auth socket_auth_handler=
 {
-  MYSQL_AUTHENTICATION_INTERFACE_VERSION,
+  MYBLOCKCHAIN_AUTHENTICATION_INTERFACE_VERSION,
   0,
   socket_auth,
   generate_auth_string_hash,
@@ -112,9 +112,9 @@ static struct st_mysql_auth socket_auth_handler=
   AUTH_FLAG_PRIVILEGED_USER_FOR_PASSWORD_CHANGE
 };
 
-mysql_declare_plugin(socket_auth)
+myblockchain_declare_plugin(socket_auth)
 {
-  MYSQL_AUTHENTICATION_PLUGIN,
+  MYBLOCKCHAIN_AUTHENTICATION_PLUGIN,
   &socket_auth_handler,
   "auth_socket",
   "Sergei Golubchik",
@@ -128,5 +128,5 @@ mysql_declare_plugin(socket_auth)
   NULL,
   0,
 }
-mysql_declare_plugin_end;
+myblockchain_declare_plugin_end;
 

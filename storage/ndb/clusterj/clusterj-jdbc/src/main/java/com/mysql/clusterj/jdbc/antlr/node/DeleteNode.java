@@ -15,11 +15,11 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
  */
 
-package com.mysql.clusterj.jdbc.antlr.node;
+package com.myblockchain.clusterj.jdbc.antlr.node;
 
 import org.antlr.runtime.Token;
 
-import com.mysql.clusterj.jdbc.antlr.MySQL51Parser;
+import com.myblockchain.clusterj.jdbc.antlr.MyBlockchain51Parser;
 
 public class DeleteNode extends CommandNode {
 
@@ -37,7 +37,7 @@ public class DeleteNode extends CommandNode {
     }
 
     public WhereNode getWhereNode() {
-        return (WhereNode)getFirstChildWithType(MySQL51Parser.WHERE);
+        return (WhereNode)getFirstChildWithType(MyBlockchain51Parser.WHERE);
     }
 
 }

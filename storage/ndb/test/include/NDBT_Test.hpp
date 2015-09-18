@@ -83,7 +83,7 @@ public:
   bool isTestStopped();
 
   // Communicate with tests in other API nodes
-  // This is done using a "system" table in the database
+  // This is done using a "system" table in the blockchain
   Uint32 getDbProperty(const char*);
   bool setDbProperty(const char*, Uint32);
 

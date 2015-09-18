@@ -63,20 +63,20 @@ FILE *my_fopen(const char *filename, int flags, myf MyFlags)
     int filedesc= my_fileno(fd);
     if ((uint)filedesc >= my_file_limit)
     {
-      mysql_mutex_lock(&THR_LOCK_open);
+      myblockchain_mutex_lock(&THR_LOCK_open);
       my_stream_opened++;
-      mysql_mutex_unlock(&THR_LOCK_open);
+      myblockchain_mutex_unlock(&THR_LOCK_open);
       DBUG_RETURN(fd);				/* safeguard */
     }
     dup_filename= my_strdup(key_memory_my_file_info, filename, MyFlags);
     if (dup_filename != NULL)
     {
-      mysql_mutex_lock(&THR_LOCK_open);
+      myblockchain_mutex_lock(&THR_LOCK_open);
       my_file_info[filedesc].name= dup_filename;
       my_stream_opened++;
       my_file_total_opened++;
       my_file_info[filedesc].type= STREAM_BY_FOPEN;
-      mysql_mutex_unlock(&THR_LOCK_open);
+      myblockchain_mutex_unlock(&THR_LOCK_open);
       DBUG_PRINT("exit",("stream: 0x%lx", (long) fd));
       DBUG_RETURN(fd);
     }
@@ -182,7 +182,7 @@ int my_fclose(FILE *fd, myf MyFlags)
   DBUG_ENTER("my_fclose");
   DBUG_PRINT("my",("stream: 0x%lx  MyFlags: %d", (long) fd, MyFlags));
 
-  mysql_mutex_lock(&THR_LOCK_open);
+  myblockchain_mutex_lock(&THR_LOCK_open);
   file= my_fileno(fd);
 #ifndef _WIN32
   err= fclose(fd);
@@ -206,7 +206,7 @@ int my_fclose(FILE *fd, myf MyFlags)
     my_file_info[file].type = UNOPEN;
     my_free(my_file_info[file].name);
   }
-  mysql_mutex_unlock(&THR_LOCK_open);
+  myblockchain_mutex_unlock(&THR_LOCK_open);
   DBUG_RETURN(err);
 } /* my_fclose */
 
@@ -240,7 +240,7 @@ FILE *my_fdopen(File Filedes, const char *name, int Flags, myf MyFlags)
   }
   else
   {
-    mysql_mutex_lock(&THR_LOCK_open);
+    myblockchain_mutex_lock(&THR_LOCK_open);
     my_stream_opened++;
     if ((uint) Filedes < (uint) my_file_limit)
     {
@@ -255,7 +255,7 @@ FILE *my_fdopen(File Filedes, const char *name, int Flags, myf MyFlags)
       }
       my_file_info[Filedes].type = STREAM_BY_FDOPEN;
     }
-    mysql_mutex_unlock(&THR_LOCK_open);
+    myblockchain_mutex_unlock(&THR_LOCK_open);
   }
 
   DBUG_PRINT("exit",("stream: 0x%lx", (long) fd));

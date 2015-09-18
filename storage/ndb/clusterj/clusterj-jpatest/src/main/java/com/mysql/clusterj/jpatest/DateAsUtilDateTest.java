@@ -16,15 +16,15 @@
    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-package com.mysql.clusterj.jpatest;
+package com.myblockchain.clusterj.jpatest;
 
 import java.util.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import com.mysql.clusterj.jpatest.model.DateAsUtilDateTypes;
-import com.mysql.clusterj.jpatest.model.IdBase;
+import com.myblockchain.clusterj.jpatest.model.DateAsUtilDateTypes;
+import com.myblockchain.clusterj.jpatest.model.IdBase;
 
 /** Test that Dates can be read and written. 
  * case 1: Write using JDBC, read using JPA.

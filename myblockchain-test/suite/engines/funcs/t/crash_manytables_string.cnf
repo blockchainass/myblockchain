@@ -1,0 +1,4 @@
+!include include/default_myblockchaind.cnf
+
+[myblockchaind.1]
+open_files_limit=0

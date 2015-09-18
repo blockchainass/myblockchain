@@ -14,12 +14,12 @@
    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA */
 
 /*
-  mysqltest
+  myblockchaintest
 
   Tool used for executing a .test file
 
-  See the "MySQL Test framework manual" for more information
-  http://dev.mysql.com/doc/mysqltest/en/index.html
+  See the "MyBlockchain Test framework manual" for more information
+  http://dev.myblockchain.com/doc/myblockchaintest/en/index.html
 
   Please keep the test framework tools identical in all versions!
 */
@@ -28,8 +28,8 @@
 
 #include "client_priv.h"
 #include "my_default.h"
-#include <mysql_version.h>
-#include <mysqld_error.h>
+#include <myblockchain_version.h>
+#include <myblockchaind_error.h>
 #include <sql_common.h>
 #include <m_ctype.h>
 #include <my_dir.h>
@@ -156,7 +156,7 @@ static my_bool abort_on_error= 1;
 static my_bool server_initialized= 0;
 static my_bool is_windows= 0;
 static char **default_argv;
-static const char *load_default_groups[]= { "mysqltest", "client", 0 };
+static const char *load_default_groups[]= { "myblockchaintest", "client", 0 };
 static char line_buffer[MAX_DELIMITER_LENGTH], *line_buffer_pos= line_buffer;
 #if !defined(HAVE_YASSL)
 static const char *opt_server_public_key= 0;
@@ -250,7 +250,7 @@ static const char *embedded_server_groups[]=
 {
   "server",
   "embedded",
-  "mysqltest_SERVER",
+  "myblockchaintest_SERVER",
   NullS
 };
 
@@ -327,12 +327,12 @@ HASH var_hash;
 
 struct st_connection
 {
-  MYSQL mysql;
+  MYBLOCKCHAIN myblockchain;
   /* Used when creating views and sp, to avoid implicit commit */
-  MYSQL* util_mysql;
+  MYBLOCKCHAIN* util_myblockchain;
   char *name;
   size_t name_len;
-  MYSQL_STMT* stmt;
+  MYBLOCKCHAIN_STMT* stmt;
   /* Set after send to disallow other queries before reap */
   my_bool pending;
 
@@ -354,7 +354,7 @@ struct st_connection *connections= NULL;
 struct st_connection* cur_con= NULL, *next_con, *connections_end;
 
 /*
-  List of commands in mysqltest
+  List of commands in myblockchaintest
   Must match the "command_names" array
   Add new commands before Q_UNKNOWN!
 */
@@ -867,14 +867,14 @@ my_thread_attr_t cn_thd_attrib;
   This procedure represents the connection and actually
   runs queries when in the EMBEDDED-SERVER mode.
   The run_query_normal() just sends request for running
-  mysql_send_query and mysql_read_query_result() here.
+  myblockchain_send_query and myblockchain_read_query_result() here.
 */
 
 extern "C" void *connection_thread(void *arg)
 {
   struct st_connection *cn= (struct st_connection*)arg;
 
-  mysql_thread_init();
+  myblockchain_thread_init();
   while (cn->command != EMB_END_CONNECTION)
   {
     if (!cn->command)
@@ -889,11 +889,11 @@ extern "C" void *connection_thread(void *arg)
       case EMB_END_CONNECTION:
         goto end_thread;
       case EMB_SEND_QUERY:
-        cn->result= mysql_send_query(&cn->mysql, cn->cur_query,
+        cn->result= myblockchain_send_query(&cn->myblockchain, cn->cur_query,
                                      static_cast<ulong>(cn->cur_query_len));
         break;
       case EMB_READ_QUERY_RESULT:
-        cn->result= mysql_read_query_result(&cn->mysql);
+        cn->result= myblockchain_read_query_result(&cn->myblockchain);
         break;
       default:
         DBUG_ASSERT(0);
@@ -907,7 +907,7 @@ extern "C" void *connection_thread(void *arg)
 
 end_thread:
   cn->query_done= 1;
-  mysql_thread_end();
+  myblockchain_thread_end();
   my_thread_exit(0);
   return 0;
 }
@@ -940,13 +940,13 @@ static void signal_connection_thd(struct st_connection *cn, int command)
   Sometimes we try to execute queries when the connection is closed.
   It's done to make sure it was closed completely.
   So that if our connection is closed (cn->has_thread == 0), we just return
-  the mysql_send_query() result which is an error in this case.
+  the myblockchain_send_query() result which is an error in this case.
 */
 
 static int do_send_query(struct st_connection *cn, const char *q, size_t q_len)
 {
   if (!cn->has_thread)
-    return mysql_send_query(&cn->mysql, q, static_cast<ulong>(q_len));
+    return myblockchain_send_query(&cn->myblockchain, q, static_cast<ulong>(q_len));
   cn->cur_query= q;
   cn->cur_query_len= q_len;
   signal_connection_thd(cn, EMB_SEND_QUERY);
@@ -994,8 +994,8 @@ static void init_connection_thd(struct st_connection *cn)
 
 #else /*EMBEDDED_LIBRARY*/
 
-#define do_send_query(cn,q,q_len) mysql_send_query(&cn->mysql, q, static_cast<ulong>(q_len))
-#define do_read_query_result(cn) mysql_read_query_result(&cn->mysql)
+#define do_send_query(cn,q,q_len) myblockchain_send_query(&cn->myblockchain, q, static_cast<ulong>(q_len))
+#define do_read_query_result(cn) myblockchain_read_query_result(&cn->myblockchain)
 
 #endif /*EMBEDDED_LIBRARY*/
 
@@ -1066,43 +1066,43 @@ void do_eval(DYNAMIC_STRING *query_eval, const char *query,
 
   SYNOPSIS
   show_query
-  mysql - connection to use
+  myblockchain - connection to use
   query - query to run
 
 */
 
-static void show_query(MYSQL* mysql, const char* query)
+static void show_query(MYBLOCKCHAIN* myblockchain, const char* query)
 {
-  MYSQL_RES* res;
+  MYBLOCKCHAIN_RES* res;
   DBUG_ENTER("show_query");
 
-  if (!mysql)
+  if (!myblockchain)
     DBUG_VOID_RETURN;
 
-  if (mysql_query(mysql, query))
+  if (myblockchain_query(myblockchain, query))
   {
     log_msg("Error running query '%s': %d %s",
-            query, mysql_errno(mysql), mysql_error(mysql));
+            query, myblockchain_errno(myblockchain), myblockchain_error(myblockchain));
     DBUG_VOID_RETURN;
   }
 
-  if ((res= mysql_store_result(mysql)) == NULL)
+  if ((res= myblockchain_store_result(myblockchain)) == NULL)
   {
     /* No result set returned */
     DBUG_VOID_RETURN;
   }
 
   {
-    MYSQL_ROW row;
+    MYBLOCKCHAIN_ROW row;
     unsigned int i;
     unsigned int row_num= 0;
-    unsigned int num_fields= mysql_num_fields(res);
-    MYSQL_FIELD *fields= mysql_fetch_fields(res);
+    unsigned int num_fields= myblockchain_num_fields(res);
+    MYBLOCKCHAIN_FIELD *fields= myblockchain_fetch_fields(res);
 
     fprintf(stderr, "=== %s ===\n", query);
-    while ((row= mysql_fetch_row(res)))
+    while ((row= myblockchain_fetch_row(res)))
     {
-      unsigned long *lengths= mysql_fetch_lengths(res);
+      unsigned long *lengths= myblockchain_fetch_lengths(res);
       row_num++;
 
       fprintf(stderr, "---- %d. ----\n", row_num);
@@ -1119,7 +1119,7 @@ static void show_query(MYSQL* mysql, const char* query)
       fprintf(stderr, "=");
     fprintf(stderr, "\n\n");
   }
-  mysql_free_result(res);
+  myblockchain_free_result(res);
 
   DBUG_VOID_RETURN;
 }
@@ -1134,49 +1134,49 @@ static void show_query(MYSQL* mysql, const char* query)
 
   SYNOPSIS
   show_warnings_before_error
-  mysql - connection to use
+  myblockchain - connection to use
 
 */
 
-static void show_warnings_before_error(MYSQL* mysql)
+static void show_warnings_before_error(MYBLOCKCHAIN* myblockchain)
 {
-  MYSQL_RES* res;
+  MYBLOCKCHAIN_RES* res;
   const char* query= "SHOW WARNINGS";
   DBUG_ENTER("show_warnings_before_error");
 
-  if (!mysql)
+  if (!myblockchain)
     DBUG_VOID_RETURN;
 
-  if (mysql_query(mysql, query))
+  if (myblockchain_query(myblockchain, query))
   {
     log_msg("Error running query '%s': %d %s",
-            query, mysql_errno(mysql), mysql_error(mysql));
+            query, myblockchain_errno(myblockchain), myblockchain_error(myblockchain));
     DBUG_VOID_RETURN;
   }
 
-  if ((res= mysql_store_result(mysql)) == NULL)
+  if ((res= myblockchain_store_result(myblockchain)) == NULL)
   {
     /* No result set returned */
     DBUG_VOID_RETURN;
   }
 
-  if (mysql_num_rows(res) <= 1)
+  if (myblockchain_num_rows(res) <= 1)
   {
     /* Don't display the last row, it's "last error" */
   }
   else
   {
-    MYSQL_ROW row;
+    MYBLOCKCHAIN_ROW row;
     unsigned int row_num= 0;
-    unsigned int num_fields= mysql_num_fields(res);
+    unsigned int num_fields= myblockchain_num_fields(res);
 
     fprintf(stderr, "\nWarnings from just before the error:\n");
-    while ((row= mysql_fetch_row(res)))
+    while ((row= myblockchain_fetch_row(res)))
     {
       unsigned int i;
-      unsigned long *lengths= mysql_fetch_lengths(res);
+      unsigned long *lengths= myblockchain_fetch_lengths(res);
 
-      if (++row_num >= mysql_num_rows(res))
+      if (++row_num >= myblockchain_num_rows(res))
       {
         /* Don't display the last row, it's "last error" */
         break;
@@ -1192,7 +1192,7 @@ static void show_warnings_before_error(MYSQL* mysql)
       fprintf(stderr, "\n");
     }
   }
-  mysql_free_result(res);
+  myblockchain_free_result(res);
 
   DBUG_VOID_RETURN;
 }
@@ -1360,11 +1360,11 @@ void close_connections()
     emb_close_connection(next_con);
 #endif
     if (next_con->stmt)
-      mysql_stmt_close(next_con->stmt);
+      myblockchain_stmt_close(next_con->stmt);
     next_con->stmt= 0;
-    mysql_close(&next_con->mysql);
-    if (next_con->util_mysql)
-      mysql_close(next_con->util_mysql);
+    myblockchain_close(&next_con->myblockchain);
+    if (next_con->util_myblockchain)
+      myblockchain_close(next_con->util_myblockchain);
     my_free(next_con->name);
   }
   my_free(connections);
@@ -1379,7 +1379,7 @@ void close_statements()
   for (con= connections; con < next_con; con++)
   {
     if (con->stmt)
-      mysql_stmt_close(con->stmt);
+      myblockchain_stmt_close(con->stmt);
     con->stmt= 0;
   }
   DBUG_VOID_RETURN;
@@ -1440,11 +1440,11 @@ void free_used_memory()
   free_win_path_patterns();
 #endif
 
-  /* Only call mysql_server_end if mysql_server_init has been called */
+  /* Only call myblockchain_server_end if myblockchain_server_init has been called */
   if (server_initialized)
-    mysql_server_end();
+    myblockchain_server_end();
 
-  /* Don't use DBUG after mysql_server_end() */
+  /* Don't use DBUG after myblockchain_server_end() */
   return;
 }
 
@@ -1510,7 +1510,7 @@ void die(const char *fmt, ...)
   dying= 1;
 
   /* Print the error message */
-  fprintf(stderr, "mysqltest: ");
+  fprintf(stderr, "myblockchaintest: ");
   if (cur_file && cur_file != file_stack)
   {
     fprintf(stderr, "In included ");
@@ -1537,7 +1537,7 @@ void die(const char *fmt, ...)
     been produced prior to the error
   */
   if (cur_con && !cur_con->pending)
-    show_warnings_before_error(&cur_con->mysql);
+    show_warnings_before_error(&cur_con->myblockchain);
 
   cleanup_and_exit(1);
 }
@@ -1571,7 +1571,7 @@ void abort_not_supported_test(const char *fmt, ...)
 
 void abort_not_in_this_version()
 {
-  die("Not available in this version of mysqltest");
+  die("Not available in this version of myblockchaintest");
 }
 
 
@@ -1583,7 +1583,7 @@ void verbose_msg(const char *fmt, ...)
     DBUG_VOID_RETURN;
 
   va_start(args, fmt);
-  fprintf(stderr, "mysqltest: ");
+  fprintf(stderr, "myblockchaintest: ");
   if (cur_file && cur_file != file_stack)
     fprintf(stderr, "In included file \"%s\": ",
             cur_file->file_name);
@@ -2427,13 +2427,13 @@ void var_set_int(const char* name, int value)
 
 /*
   Store an integer (typically the returncode of the last SQL)
-  statement in the mysqltest builtin variable $mysql_errno
+  statement in the myblockchaintest builtin variable $myblockchain_errno
 */
 
 void var_set_errno(int sql_errno)
 {
-  var_set_int("$mysql_errno", sql_errno);
-  var_set_string("$mysql_errname", get_errname_from_code(sql_errno));
+  var_set_int("$myblockchain_errno", sql_errno);
+  var_set_string("$myblockchain_errname", get_errname_from_code(sql_errno));
 }
 
 /* Functions to handle --disable and --enable properties */
@@ -2508,9 +2508,9 @@ void var_query_set(VAR *var, const char *query, const char** query_end)
 {
   char *end = (char*)((query_end && *query_end) ?
 		      *query_end : query + strlen(query));
-  MYSQL_RES *res= NULL;
-  MYSQL_ROW row;
-  MYSQL* mysql = &cur_con->mysql;
+  MYBLOCKCHAIN_RES *res= NULL;
+  MYBLOCKCHAIN_ROW row;
+  MYBLOCKCHAIN* myblockchain = &cur_con->myblockchain;
   DYNAMIC_STRING ds_query;
   DBUG_ENTER("var_query_set");
 
@@ -2530,22 +2530,22 @@ void var_query_set(VAR *var, const char *query, const char** query_end)
   init_dynamic_string(&ds_query, 0, (end - query) + 32, 256);
   do_eval(&ds_query, query, end, FALSE);
 
-  if (mysql_real_query(mysql, ds_query.str,
+  if (myblockchain_real_query(myblockchain, ds_query.str,
                        static_cast<ulong>(ds_query.length)))
   {
-    handle_error (curr_command, mysql_errno(mysql), mysql_error(mysql),
-                  mysql_sqlstate(mysql), &ds_res);
+    handle_error (curr_command, myblockchain_errno(myblockchain), myblockchain_error(myblockchain),
+                  myblockchain_sqlstate(myblockchain), &ds_res);
     /* If error was acceptable, return empty string */
     dynstr_free(&ds_query);
     eval_expr(var, "", 0);
     DBUG_VOID_RETURN;
   }
   
-  if (!(res= mysql_store_result(mysql)))
+  if (!(res= myblockchain_store_result(myblockchain)))
     die("Query '%s' didn't return a result set", ds_query.str);
   dynstr_free(&ds_query);
 
-  if ((row= mysql_fetch_row(res)) && row[0])
+  if ((row= myblockchain_fetch_row(res)) && row[0])
   {
     /*
       Concatenate all fields in the first row with tab in between
@@ -2556,8 +2556,8 @@ void var_query_set(VAR *var, const char *query, const char** query_end)
     ulong *lengths;
 
     init_dynamic_string(&result, "", 512, 512);
-    lengths= mysql_fetch_lengths(res);
-    for (i= 0; i < mysql_num_fields(res); i++)
+    lengths= myblockchain_fetch_lengths(res);
+    for (i= 0; i < myblockchain_num_fields(res); i++)
     {
       if (row[i])
       {
@@ -2590,7 +2590,7 @@ void var_query_set(VAR *var, const char *query, const char** query_end)
   else
     eval_expr(var, "", 0);
 
-  mysql_free_result(res);
+  myblockchain_free_result(res);
   DBUG_VOID_RETURN;
 }
 
@@ -2659,7 +2659,7 @@ typedef struct
 static st_error global_error_names[] =
 {
   { "<No error>", (uint)-1, "" },
-#include <mysqld_ername.h>
+#include <myblockchaind_ername.h>
   { 0, 0, 0 }
 };
 
@@ -2753,8 +2753,8 @@ void var_set_query_get_value(struct st_command *command, VAR *var)
 {
   long row_no;
   int col_no= -1;
-  MYSQL_RES* res= NULL;
-  MYSQL* mysql= &cur_con->mysql;
+  MYBLOCKCHAIN_RES* res= NULL;
+  MYBLOCKCHAIN* myblockchain= &cur_con->myblockchain;
 
   static DYNAMIC_STRING ds_query;
   static DYNAMIC_STRING ds_col;
@@ -2787,11 +2787,11 @@ void var_set_query_get_value(struct st_command *command, VAR *var)
     die("Mismatched \"'s around query '%s'", ds_query.str);
 
   /* Run the query */
-  if (mysql_real_query(mysql, ds_query.str,
+  if (myblockchain_real_query(myblockchain, ds_query.str,
                        static_cast<ulong>(ds_query.length)))
   {
-    handle_error (curr_command, mysql_errno(mysql), mysql_error(mysql),
-                  mysql_sqlstate(mysql), &ds_res);
+    handle_error (curr_command, myblockchain_errno(myblockchain), myblockchain_error(myblockchain),
+                  myblockchain_sqlstate(myblockchain), &ds_res);
     /* If error was acceptable, return empty string */
     dynstr_free(&ds_query);
     dynstr_free(&ds_col);
@@ -2799,14 +2799,14 @@ void var_set_query_get_value(struct st_command *command, VAR *var)
     DBUG_VOID_RETURN;
   }
 
-  if (!(res= mysql_store_result(mysql)))
+  if (!(res= myblockchain_store_result(myblockchain)))
     die("Query '%s' didn't return a result set", ds_query.str);
 
   {
     /* Find column number from the given column name */
     uint i;
-    uint num_fields= mysql_num_fields(res);
-    MYSQL_FIELD *fields= mysql_fetch_fields(res);
+    uint num_fields= myblockchain_num_fields(res);
+    MYBLOCKCHAIN_FIELD *fields= myblockchain_fetch_fields(res);
 
     for (i= 0; i < num_fields; i++)
     {
@@ -2819,7 +2819,7 @@ void var_set_query_get_value(struct st_command *command, VAR *var)
     }
     if (col_no == -1)
     {
-      mysql_free_result(res);
+      myblockchain_free_result(res);
       die("Could not find column '%s' in the result of '%s'",
           ds_col.str, ds_query.str);
     }
@@ -2830,11 +2830,11 @@ void var_set_query_get_value(struct st_command *command, VAR *var)
 
   {
     /* Get the value */
-    MYSQL_ROW row;
+    MYBLOCKCHAIN_ROW row;
     long rows= 0;
     const char* value= "No such row";
 
-    while ((row= mysql_fetch_row(res)))
+    while ((row= myblockchain_fetch_row(res)))
     {
       if (++rows == row_no)
       {
@@ -2853,7 +2853,7 @@ void var_set_query_get_value(struct st_command *command, VAR *var)
     eval_expr(var, value, 0, false, false);
   }
   dynstr_free(&ds_query);
-  mysql_free_result(res);
+  myblockchain_free_result(res);
 
   DBUG_VOID_RETURN;
 }
@@ -3112,7 +3112,7 @@ static void init_builtin_echo(void)
 #ifdef _WIN32
   size_t echo_length;
 
-  /* Look for "echo.exe" in same dir as mysqltest was started from */
+  /* Look for "echo.exe" in same dir as myblockchaintest was started from */
   dirname_part(builtin_echo, my_progname, &echo_length);
   fn_format(builtin_echo, ".\\echo.exe",
             builtin_echo, "", MYF(MY_REPLACE_DIR));
@@ -3182,9 +3182,9 @@ static int replace(DYNAMIC_STRING *ds_str,
   It can thus be used to execute a command that shall fail.
 
   NOTE
-  Although mysqltest is executed from cygwin shell, the command will be
+  Although myblockchaintest is executed from cygwin shell, the command will be
   executed in "cmd.exe". Thus commands like "rm" etc can NOT be used, use
-  mysqltest commmand(s) like "remove_file" for that
+  myblockchaintest commmand(s) like "remove_file" for that
 */
 
 void do_exec(struct st_command *command)
@@ -3373,7 +3373,7 @@ int do_modify_var(struct st_command *command,
   DESCRIPTION
   Auxiliary function to set "our" wild chars before calling wild_compare
   This is needed because the default values are changed to SQL syntax
-  in mysqltest_embedded.
+  in myblockchaintest_embedded.
 */
 
 void set_wild_chars (my_bool set)
@@ -4210,7 +4210,7 @@ void do_send_quit(struct st_command *command)
   if (!(con= find_connection_by_name(name)))
     die("connection '%s' not found in connection pool", name);
 
-  simple_command(&con->mysql,COM_QUIT,0,0,1);
+  simple_command(&con->myblockchain,COM_QUIT,0,0,1);
 
   DBUG_VOID_RETURN;
 }
@@ -4225,21 +4225,21 @@ void do_send_quit(struct st_command *command)
   change_user [<user>], [<passwd>], [<db>]
   <user> - user to change to
   <passwd> - user password
-  <db> - default database
+  <db> - default blockchain
 
-  Changes the user and causes the database specified by db to become
-  the default (current) database for the the current connection.
+  Changes the user and causes the blockchain specified by db to become
+  the default (current) blockchain for the the current connection.
 
 */
 
 void do_change_user(struct st_command *command)
 {
-  MYSQL *mysql = &cur_con->mysql;
+  MYBLOCKCHAIN *myblockchain = &cur_con->myblockchain;
   static DYNAMIC_STRING ds_user, ds_passwd, ds_db;
   const struct command_arg change_user_args[] = {
     { "user", ARG_STRING, FALSE, &ds_user, "User to connect as" },
     { "password", ARG_STRING, FALSE, &ds_passwd, "Password used when connecting" },
-    { "database", ARG_STRING, FALSE, &ds_db, "Database to select after connect" },
+    { "blockchain", ARG_STRING, FALSE, &ds_db, "Database to select after connect" },
   };
 
   DBUG_ENTER("do_change_user");
@@ -4251,26 +4251,26 @@ void do_change_user(struct st_command *command)
 
   if (cur_con->stmt)
   {
-    mysql_stmt_close(cur_con->stmt);
+    myblockchain_stmt_close(cur_con->stmt);
     cur_con->stmt= NULL;
   }
 
   if (!ds_user.length)
   {
-    dynstr_set(&ds_user, mysql->user);
+    dynstr_set(&ds_user, myblockchain->user);
 
     if (!ds_passwd.length)
-      dynstr_set(&ds_passwd, mysql->passwd);
+      dynstr_set(&ds_passwd, myblockchain->passwd);
 
     if (!ds_db.length)
-      dynstr_set(&ds_db, mysql->db);
+      dynstr_set(&ds_db, myblockchain->db);
   }
 
-  DBUG_PRINT("info",("connection: '%s' user: '%s' password: '%s' database: '%s'",
+  DBUG_PRINT("info",("connection: '%s' user: '%s' password: '%s' blockchain: '%s'",
                       cur_con->name, ds_user.str, ds_passwd.str, ds_db.str));
 
-  if (mysql_change_user(mysql, ds_user.str, ds_passwd.str, ds_db.str))
-    die("change user failed: %s", mysql_error(mysql));
+  if (myblockchain_change_user(myblockchain, ds_user.str, ds_passwd.str, ds_db.str))
+    die("change user failed: %s", myblockchain_error(myblockchain));
 
   dynstr_free(&ds_user);
   dynstr_free(&ds_passwd);
@@ -4338,7 +4338,7 @@ void do_perl(struct st_command *command)
     DBUG_PRINT("info", ("Executing perl: %s", ds_script.str));
 
     /* Create temporary file name */
-    if ((fd= create_temp_file(temp_file_path, getenv("MYSQLTEST_VARDIR"),
+    if ((fd= create_temp_file(temp_file_path, getenv("MYBLOCKCHAINTEST_VARDIR"),
                               "tmp", O_CREAT | O_SHARE | O_RDWR,
                               MYF(MY_WME))) < 0)
       die("Failed to create temporary file for perl command");
@@ -4430,24 +4430,24 @@ int do_echo(struct st_command *command)
 void do_wait_for_slave_to_stop(struct st_command *c __attribute__((unused)))
 {
   static int SLAVE_POLL_INTERVAL= 300000;
-  MYSQL* mysql = &cur_con->mysql;
+  MYBLOCKCHAIN* myblockchain = &cur_con->myblockchain;
   for (;;)
   {
-    MYSQL_RES *res= NULL;
-    MYSQL_ROW row;
+    MYBLOCKCHAIN_RES *res= NULL;
+    MYBLOCKCHAIN_ROW row;
     int done;
 
-    if (mysql_query(mysql,"show status like 'Slave_running'") ||
-	!(res=mysql_store_result(mysql)))
+    if (myblockchain_query(myblockchain,"show status like 'Slave_running'") ||
+	!(res=myblockchain_store_result(myblockchain)))
       die("Query failed while probing slave for stop: %s",
-	  mysql_error(mysql));
-    if (!(row=mysql_fetch_row(res)) || !row[1])
+	  myblockchain_error(myblockchain));
+    if (!(row=myblockchain_fetch_row(res)) || !row[1])
     {
-      mysql_free_result(res);
+      myblockchain_free_result(res);
       die("Strange result from query while probing slave for stop");
     }
     done = !strcmp(row[1],"OFF");
-    mysql_free_result(res);
+    myblockchain_free_result(res);
     if (done)
       break;
     my_sleep(SLAVE_POLL_INTERVAL);
@@ -4458,9 +4458,9 @@ void do_wait_for_slave_to_stop(struct st_command *c __attribute__((unused)))
 
 void do_sync_with_master2(struct st_command *command, long offset)
 {
-  MYSQL_RES *res;
-  MYSQL_ROW row;
-  MYSQL *mysql= &cur_con->mysql;
+  MYBLOCKCHAIN_RES *res;
+  MYBLOCKCHAIN_ROW row;
+  MYBLOCKCHAIN *myblockchain= &cur_con->myblockchain;
   char query_buf[FN_REFLEN+128];
   int timeout= 300; /* seconds */
 
@@ -4470,15 +4470,15 @@ void do_sync_with_master2(struct st_command *command, long offset)
   sprintf(query_buf, "select master_pos_wait('%s', %ld, %d)",
           master_pos.file, master_pos.pos + offset, timeout);
 
-  if (mysql_query(mysql, query_buf))
-    die("failed in '%s': %d: %s", query_buf, mysql_errno(mysql),
-        mysql_error(mysql));
+  if (myblockchain_query(myblockchain, query_buf))
+    die("failed in '%s': %d: %s", query_buf, myblockchain_errno(myblockchain),
+        myblockchain_error(myblockchain));
 
-  if (!(res= mysql_store_result(mysql)))
-    die("mysql_store_result() returned NULL for '%s'", query_buf);
-  if (!(row= mysql_fetch_row(res)))
+  if (!(res= myblockchain_store_result(myblockchain)))
+    die("myblockchain_store_result() returned NULL for '%s'", query_buf);
+  if (!(row= myblockchain_fetch_row(res)))
   {
-    mysql_free_result(res);
+    myblockchain_free_result(res);
     die("empty result in %s", query_buf);
   }
 
@@ -4487,14 +4487,14 @@ void do_sync_with_master2(struct st_command *command, long offset)
   if (result_str)
     result= atoi(result_str);
 
-  mysql_free_result(res);
+  myblockchain_free_result(res);
 
   if (!result_str || result < 0)
   {
     /* master_pos_wait returned NULL or < 0 */
-    show_query(mysql, "SHOW MASTER STATUS");
-    show_query(mysql, "SHOW SLAVE STATUS");
-    show_query(mysql, "SHOW PROCESSLIST");
+    show_query(myblockchain, "SHOW MASTER STATUS");
+    show_query(myblockchain, "SHOW SLAVE STATUS");
+    show_query(myblockchain, "SHOW PROCESSLIST");
     fprintf(stderr, "analyze: sync_with_master\n");
 
     if (!result_str)
@@ -4546,30 +4546,30 @@ void do_sync_with_master(struct st_command *command)
 
 /*
   Wait for ndb binlog injector to be up-to-date with all changes
-  done on the local mysql server
+  done on the local myblockchain server
 */
 
 static void
 ndb_wait_for_binlog_injector(void)
 {
-  MYSQL_RES *res;
-  MYSQL_ROW row;
-  MYSQL *mysql = &cur_con->mysql;
+  MYBLOCKCHAIN_RES *res;
+  MYBLOCKCHAIN_ROW row;
+  MYBLOCKCHAIN *myblockchain = &cur_con->myblockchain;
   const char *query;
   ulong have_ndbcluster;
-  if (mysql_query(mysql, query=
+  if (myblockchain_query(myblockchain, query=
                   "select count(*) from information_schema.engines"
                   "  where engine = 'ndbcluster' and"
                   "        support in ('YES', 'DEFAULT')"))
     die("'%s' failed: %d %s", query,
-        mysql_errno(mysql), mysql_error(mysql));
-  if (!(res= mysql_store_result(mysql)))
-    die("mysql_store_result() returned NULL for '%s'", query);
-  if (!(row= mysql_fetch_row(res)))
+        myblockchain_errno(myblockchain), myblockchain_error(myblockchain));
+  if (!(res= myblockchain_store_result(myblockchain)))
+    die("myblockchain_store_result() returned NULL for '%s'", query);
+  if (!(row= myblockchain_fetch_row(res)))
     die("Query '%s' returned empty result", query);
 
   have_ndbcluster= strcmp(row[0], "1") == 0;
-  mysql_free_result(res);
+  myblockchain_free_result(res);
 
   if (!have_ndbcluster)
   {
@@ -4595,12 +4595,12 @@ ndb_wait_for_binlog_injector(void)
     if (count)
       my_sleep(100*1000); /* 100ms */
 
-    if (mysql_query(mysql, query= "show engine ndb status"))
+    if (myblockchain_query(myblockchain, query= "show engine ndb status"))
       die("failed in '%s': %d %s", query,
-          mysql_errno(mysql), mysql_error(mysql));
-    if (!(res= mysql_store_result(mysql)))
-      die("mysql_store_result() returned NULL for '%s'", query);
-    while ((row= mysql_fetch_row(res)))
+          myblockchain_errno(myblockchain), myblockchain_error(myblockchain));
+    if (!(res= myblockchain_store_result(myblockchain)))
+      die("myblockchain_store_result() returned NULL for '%s'", query);
+    while ((row= myblockchain_fetch_row(res)))
     {
       if (strcmp(row[1], binlog) == 0)
       {
@@ -4667,35 +4667,35 @@ ndb_wait_for_binlog_injector(void)
           start_handled_binlog_epoch & 0xffffffff);
     }
 
-    mysql_free_result(res);
+    myblockchain_free_result(res);
   }
 }
 
 
 int do_save_master_pos()
 {
-  MYSQL_RES *res;
-  MYSQL_ROW row;
-  MYSQL *mysql = &cur_con->mysql;
+  MYBLOCKCHAIN_RES *res;
+  MYBLOCKCHAIN_ROW row;
+  MYBLOCKCHAIN *myblockchain = &cur_con->myblockchain;
   const char *query;
   DBUG_ENTER("do_save_master_pos");
   /*
     when ndb binlog is on, this call will wait until last updated epoch
-    (locally in the mysqld) has been received into the binlog
+    (locally in the myblockchaind) has been received into the binlog
   */
   ndb_wait_for_binlog_injector();
 
-  if (mysql_query(mysql, query= "show master status"))
+  if (myblockchain_query(myblockchain, query= "show master status"))
     die("failed in 'show master status': %d %s",
-	mysql_errno(mysql), mysql_error(mysql));
+	myblockchain_errno(myblockchain), myblockchain_error(myblockchain));
 
-  if (!(res = mysql_store_result(mysql)))
-    die("mysql_store_result() retuned NULL for '%s'", query);
-  if (!(row = mysql_fetch_row(res)))
+  if (!(res = myblockchain_store_result(myblockchain)))
+    die("myblockchain_store_result() retuned NULL for '%s'", query);
+  if (!(row = myblockchain_fetch_row(res)))
     die("empty result in show master status");
   my_stpnmov(master_pos.file, row[0], sizeof(master_pos.file)-1);
   master_pos.pos = strtoul(row[1], (char**) 0, 10);
-  mysql_free_result(res);
+  myblockchain_free_result(res);
   DBUG_RETURN(0);
 }
 
@@ -4867,27 +4867,27 @@ void do_set_charset(struct st_command *command)
   first row and <column>
 */
 
-int query_get_string(MYSQL* mysql, const char* query,
+int query_get_string(MYBLOCKCHAIN* myblockchain, const char* query,
                      int column, std::string* ds)
 {
-  MYSQL_RES *res= NULL;
-  MYSQL_ROW row;
+  MYBLOCKCHAIN_RES *res= NULL;
+  MYBLOCKCHAIN_ROW row;
 
-  if (mysql_query(mysql, query))
+  if (myblockchain_query(myblockchain, query))
     die("'%s' failed: %d %s", query,
-        mysql_errno(mysql), mysql_error(mysql));
-  if ((res= mysql_store_result(mysql)) == NULL)
+        myblockchain_errno(myblockchain), myblockchain_error(myblockchain));
+  if ((res= myblockchain_store_result(myblockchain)) == NULL)
     die("Failed to store result: %d %s",
-        mysql_errno(mysql), mysql_error(mysql));
+        myblockchain_errno(myblockchain), myblockchain_error(myblockchain));
 
-  if ((row= mysql_fetch_row(res)) == NULL)
+  if ((row= myblockchain_fetch_row(res)) == NULL)
   {
-    mysql_free_result(res);
+    myblockchain_free_result(res);
     ds= 0;
     return 1;
   }
   ds->assign(row[column] ? row[column] : "NULL");
-  mysql_free_result(res);
+  myblockchain_free_result(res);
   return 0;
 }
 
@@ -4967,11 +4967,11 @@ static void abort_process(int pid, const char *path)
 
     if (path)
     {
-      /* Append mysqld.<pid>.dmp to the path. */
+      /* Append myblockchaind.<pid>.dmp to the path. */
       strncpy(name, path, sizeof(name) - 1);
       name[sizeof(name) - 1]= '\0';
       end= name + strlen(name);
-      /* Make sure "/mysqld.nnnnnnnnnn.dmp" fits */
+      /* Make sure "/myblockchaind.nnnnnnnnnn.dmp" fits */
       if ((end - name) < (sizeof(name) - 23))
       {
         if (end[-1] != FN_LIBCHAR && end[-1] != FN_LIBCHAR2)
@@ -4979,7 +4979,7 @@ static void abort_process(int pid, const char *path)
           end[0]= FN_LIBCHAR2;   // datadir path normally uses '/'.
           end++;
         }
-        my_snprintf(end, sizeof(name) + name - end - 1, "mysqld.%d.dmp", pid);
+        my_snprintf(end, sizeof(name) + name - end - 1, "myblockchaind.%d.dmp", pid);
 
         verbose_msg("Creating minidump.\n");
         my_create_minidump(name, proc, pid);
@@ -5035,7 +5035,7 @@ void do_shutdown_server(struct st_command *command)
   long timeout=60;
   int pid, error= 0;
   std::string ds_file_name;
-  MYSQL* mysql = &cur_con->mysql;
+  MYBLOCKCHAIN* myblockchain = &cur_con->myblockchain;
   static DYNAMIC_STRING ds_timeout;
   const struct command_arg shutdown_args[] = {
     {"timeout", ARG_STRING, FALSE, &ds_timeout, "Timeout before killing server"}
@@ -5056,7 +5056,7 @@ void do_shutdown_server(struct st_command *command)
   dynstr_free(&ds_timeout);
 
   /* Get the servers pid_file name and use it to read pid */
-  if (query_get_string(mysql, "SHOW VARIABLES LIKE 'pid_file'", 1,
+  if (query_get_string(myblockchain, "SHOW VARIABLES LIKE 'pid_file'", 1,
                        &ds_file_name))
     die("Failed to get pid_file from server");
 
@@ -5084,20 +5084,20 @@ void do_shutdown_server(struct st_command *command)
   if (timeout)
   {
     /* Check if we should generate a minidump on timeout. */
-    if (query_get_string(mysql, "SHOW VARIABLES LIKE 'core_file'", 1,
+    if (query_get_string(myblockchain, "SHOW VARIABLES LIKE 'core_file'", 1,
                          &ds_file_name) || strcmp("ON", ds_file_name.c_str()))
     {
     }
     else
     {
       /* Get the data dir and use it as path for a minidump if needed. */
-      if (query_get_string(mysql, "SHOW VARIABLES LIKE 'datadir'", 1,
+      if (query_get_string(myblockchain, "SHOW VARIABLES LIKE 'datadir'", 1,
                            &ds_file_name))
         die("Failed to get datadir from server");
     }
 
     /* Tell server to shutdown if timeout > 0. */
-    if (timeout > 0 && mysql_shutdown(mysql, SHUTDOWN_DEFAULT))
+    if (timeout > 0 && myblockchain_shutdown(myblockchain, SHUTDOWN_DEFAULT))
     {
       error= 1;   /* Failed to issue shutdown command. */
       goto end;
@@ -5218,7 +5218,7 @@ void do_get_errcodes(struct st_command *command)
 
     next=end;
 
-    /* code to handle variables passed to mysqltest */
+    /* code to handle variables passed to myblockchaintest */
      if( *p == '$')
      {
         const char* fin= NULL;
@@ -5401,26 +5401,26 @@ char *get_string(char **to_ptr, char **from_ptr,
 }
 
 
-void set_reconnect(MYSQL* mysql, int val)
+void set_reconnect(MYBLOCKCHAIN* myblockchain, int val)
 {
   my_bool reconnect= val;
   DBUG_ENTER("set_reconnect");
   DBUG_PRINT("info", ("val: %d", val));
-  mysql_options(mysql, MYSQL_OPT_RECONNECT, (char *)&reconnect);
+  myblockchain_options(myblockchain, MYBLOCKCHAIN_OPT_RECONNECT, (char *)&reconnect);
   DBUG_VOID_RETURN;
 }
 
 
 /**
   Change the current connection to the given st_connection, and update
-  $mysql_get_server_version and $CURRENT_CONNECTION accordingly.
+  $myblockchain_get_server_version and $CURRENT_CONNECTION accordingly.
 */
 void set_current_connection(struct st_connection *con)
 {
   cur_con= con;
-  /* Update $mysql_get_server_version to that of current connection */
-  var_set_int("$mysql_get_server_version",
-              mysql_get_server_version(&con->mysql));
+  /* Update $myblockchain_get_server_version to that of current connection */
+  var_set_int("$myblockchain_get_server_version",
+              myblockchain_get_server_version(&con->myblockchain));
   /* Update $CURRENT_CONNECTION to the name of the current connection */
   var_set_string("$CURRENT_CONNECTION", con->name);
 }
@@ -5493,11 +5493,11 @@ void do_close_connection(struct st_command *command)
 #ifndef EMBEDDED_LIBRARY
   if (command->type == Q_DIRTY_CLOSE)
   {
-    if (con->mysql.net.vio)
+    if (con->myblockchain.net.vio)
     {
-      vio_delete(con->mysql.net.vio);
-      con->mysql.net.vio = 0;
-      end_server(&con->mysql);
+      vio_delete(con->myblockchain.net.vio);
+      con->myblockchain.net.vio = 0;
+      end_server(&con->myblockchain);
     }
   }
 #else
@@ -5509,14 +5509,14 @@ void do_close_connection(struct st_command *command)
   emb_close_connection(con);
 #endif /*EMBEDDED_LIBRARY*/
   if (con->stmt)
-    mysql_stmt_close(con->stmt);
+    myblockchain_stmt_close(con->stmt);
   con->stmt= 0;
 
-  mysql_close(&con->mysql);
+  myblockchain_close(&con->myblockchain);
 
-  if (con->util_mysql)
-    mysql_close(con->util_mysql);
-  con->util_mysql= 0;
+  if (con->util_myblockchain)
+    myblockchain_close(con->util_myblockchain);
+  con->util_myblockchain= 0;
   con->pending= FALSE;
   
   my_free(con->name);
@@ -5532,7 +5532,7 @@ void do_close_connection(struct st_command *command)
   if (con == cur_con)
   {
     /* Current connection was closed */
-    var_set_int("$mysql_get_server_version", 0xFFFFFFFF);
+    var_set_int("$myblockchain_get_server_version", 0xFFFFFFFF);
     var_set_string("$CURRENT_CONNECTION", con->name);
   }
 
@@ -5576,7 +5576,7 @@ void do_close_connection(struct st_command *command)
 
 */
 
-void safe_connect(MYSQL* mysql, const char *name, const char *host,
+void safe_connect(MYBLOCKCHAIN* myblockchain, const char *name, const char *host,
                   const char *user, const char *pass, const char *db,
                   int port, const char *sock)
 {
@@ -5588,12 +5588,12 @@ void safe_connect(MYSQL* mysql, const char *name, const char *host,
               ", connection '%s', attempt %d ...", 
               host, port, sock, user, name, failed_attempts);
 
-  mysql_options(mysql, MYSQL_OPT_CONNECT_ATTR_RESET, 0);
-  mysql_options4(mysql, MYSQL_OPT_CONNECT_ATTR_ADD,
-                 "program_name", "mysqltest");
-  mysql_options(mysql, MYSQL_OPT_CAN_HANDLE_EXPIRED_PASSWORDS,
+  myblockchain_options(myblockchain, MYBLOCKCHAIN_OPT_CONNECT_ATTR_RESET, 0);
+  myblockchain_options4(myblockchain, MYBLOCKCHAIN_OPT_CONNECT_ATTR_ADD,
+                 "program_name", "myblockchaintest");
+  myblockchain_options(myblockchain, MYBLOCKCHAIN_OPT_CAN_HANDLE_EXPIRED_PASSWORDS,
                 &can_handle_expired_passwords);
-  while(!mysql_real_connect(mysql, host,user, pass, db, port, sock,
+  while(!myblockchain_real_connect(myblockchain, host,user, pass, db, port, sock,
                             CLIENT_MULTI_STATEMENTS | CLIENT_REMEMBER_OPTIONS))
   {
     /*
@@ -5604,23 +5604,23 @@ void safe_connect(MYSQL* mysql, const char *name, const char *host,
       on protocol/connection type
     */
 
-    if ((mysql_errno(mysql) == CR_CONN_HOST_ERROR ||
-         mysql_errno(mysql) == CR_CONNECTION_ERROR) &&
+    if ((myblockchain_errno(myblockchain) == CR_CONN_HOST_ERROR ||
+         myblockchain_errno(myblockchain) == CR_CONNECTION_ERROR) &&
         failed_attempts < opt_max_connect_retries)
     {
       verbose_msg("Connect attempt %d/%d failed: %d: %s", failed_attempts,
-                  opt_max_connect_retries, mysql_errno(mysql),
-                  mysql_error(mysql));
+                  opt_max_connect_retries, myblockchain_errno(myblockchain),
+                  myblockchain_error(myblockchain));
       my_sleep(connection_retry_sleep);
     }
     else
     {
       if (failed_attempts > 0)
         die("Could not open connection '%s' after %d attempts: %d %s", name,
-            failed_attempts, mysql_errno(mysql), mysql_error(mysql));
+            failed_attempts, myblockchain_errno(myblockchain), myblockchain_error(myblockchain));
       else
         die("Could not open connection '%s': %d %s", name,
-            mysql_errno(mysql), mysql_error(mysql));
+            myblockchain_errno(myblockchain), myblockchain_error(myblockchain));
     }
     failed_attempts++;
   }
@@ -5653,7 +5653,7 @@ void safe_connect(MYSQL* mysql, const char *name, const char *host,
 */
 
 int connect_n_handle_errors(struct st_command *command,
-                            MYSQL* con, const char* host,
+                            MYBLOCKCHAIN* con, const char* host,
                             const char* user, const char* pass,
                             const char* db, int port, const char* sock)
 {
@@ -5694,11 +5694,11 @@ int connect_n_handle_errors(struct st_command *command,
     dynstr_append_mem(ds, ";\n", 2);
   }
   
-  mysql_options(con, MYSQL_OPT_CONNECT_ATTR_RESET, 0);
-  mysql_options4(con, MYSQL_OPT_CONNECT_ATTR_ADD, "program_name", "mysqltest");
-  mysql_options(con, MYSQL_OPT_CAN_HANDLE_EXPIRED_PASSWORDS,
+  myblockchain_options(con, MYBLOCKCHAIN_OPT_CONNECT_ATTR_RESET, 0);
+  myblockchain_options4(con, MYBLOCKCHAIN_OPT_CONNECT_ATTR_ADD, "program_name", "myblockchaintest");
+  myblockchain_options(con, MYBLOCKCHAIN_OPT_CAN_HANDLE_EXPIRED_PASSWORDS,
                 &can_handle_expired_passwords);
-  while (!mysql_real_connect(con, host, user, pass, db, port, sock ? sock: 0,
+  while (!myblockchain_real_connect(con, host, user, pass, db, port, sock ? sock: 0,
                           CLIENT_MULTI_STATEMENTS))
   {
     /*
@@ -5717,13 +5717,13 @@ int connect_n_handle_errors(struct st_command *command,
       exceeded.
     */
 
-    if (((mysql_errno(con) == ER_TOO_MANY_USER_CONNECTIONS) ||
-         (mysql_errno(con) == ER_USER_LIMIT_REACHED)) &&
+    if (((myblockchain_errno(con) == ER_TOO_MANY_USER_CONNECTIONS) ||
+         (myblockchain_errno(con) == ER_USER_LIMIT_REACHED)) &&
         (failed_attempts++ < opt_max_connect_retries))
     {
       int i;
 
-      i= match_expected_error(command, mysql_errno(con), mysql_sqlstate(con));
+      i= match_expected_error(command, myblockchain_errno(con), myblockchain_sqlstate(con));
 
       if (i >= 0)
         goto do_handle_error;                 /* expected error, handle */
@@ -5733,9 +5733,9 @@ int connect_n_handle_errors(struct st_command *command,
     }
 
 do_handle_error:
-    var_set_errno(mysql_errno(con));
-    handle_error(command, mysql_errno(con), mysql_error(con),
-		 mysql_sqlstate(con), ds);
+    var_set_errno(myblockchain_errno(con));
+    handle_error(command, myblockchain_errno(con), myblockchain_error(con),
+		 myblockchain_sqlstate(con), ds);
     return 0; /* Not connected */
   }
 
@@ -5747,7 +5747,7 @@ do_handle_error:
 
 
 /*
-  Open a new connection to MySQL Server with the parameters
+  Open a new connection to MyBlockchain Server with the parameters
   specified. Make the new connection the current connection.
 
   SYNOPSIS
@@ -5789,7 +5789,7 @@ void do_connect(struct st_command *command)
   static DYNAMIC_STRING ds_host;
   static DYNAMIC_STRING ds_user;
   static DYNAMIC_STRING ds_password;
-  static DYNAMIC_STRING ds_database;
+  static DYNAMIC_STRING ds_blockchain;
   static DYNAMIC_STRING ds_port;
   static DYNAMIC_STRING ds_sock;
   static DYNAMIC_STRING ds_options;
@@ -5802,7 +5802,7 @@ void do_connect(struct st_command *command)
     { "host", ARG_STRING, TRUE, &ds_host, "Host to connect to" },
     { "user", ARG_STRING, FALSE, &ds_user, "User to connect as" },
     { "passsword", ARG_STRING, FALSE, &ds_password, "Password used when connecting" },
-    { "database", ARG_STRING, FALSE, &ds_database, "Database to select after connect" },
+    { "blockchain", ARG_STRING, FALSE, &ds_blockchain, "Database to select after connect" },
     { "port", ARG_STRING, FALSE, &ds_port, "Port to connect to" },
     { "socket", ARG_STRING, FALSE, &ds_sock, "Socket to connect with" },
     { "options", ARG_STRING, FALSE, &ds_options, "Options to use while connecting" },
@@ -5897,20 +5897,20 @@ void do_connect(struct st_command *command)
   init_connection_thd(con_slot);
 #endif /*EMBEDDED_LIBRARY*/
 
-  if (!mysql_init(&con_slot->mysql))
-    die("Failed on mysql_init()");
+  if (!myblockchain_init(&con_slot->myblockchain))
+    die("Failed on myblockchain_init()");
 
   if (opt_connect_timeout)
-    mysql_options(&con_slot->mysql, MYSQL_OPT_CONNECT_TIMEOUT,
+    myblockchain_options(&con_slot->myblockchain, MYBLOCKCHAIN_OPT_CONNECT_TIMEOUT,
                   (void *) &opt_connect_timeout);
 
   if (opt_compress || con_compress)
-    mysql_options(&con_slot->mysql, MYSQL_OPT_COMPRESS, NullS);
-  mysql_options(&con_slot->mysql, MYSQL_OPT_LOCAL_INFILE, 0);
-  mysql_options(&con_slot->mysql, MYSQL_SET_CHARSET_NAME,
+    myblockchain_options(&con_slot->myblockchain, MYBLOCKCHAIN_OPT_COMPRESS, NullS);
+  myblockchain_options(&con_slot->myblockchain, MYBLOCKCHAIN_OPT_LOCAL_INFILE, 0);
+  myblockchain_options(&con_slot->myblockchain, MYBLOCKCHAIN_SET_CHARSET_NAME,
                 charset_info->csname);
   if (opt_charsets_dir)
-    mysql_options(&con_slot->mysql, MYSQL_SET_CHARSET_DIR,
+    myblockchain_options(&con_slot->myblockchain, MYBLOCKCHAIN_SET_CHARSET_DIR,
                   opt_charsets_dir);
 
 #if defined(HAVE_OPENSSL) && !defined(EMBEDDED_LIBRARY)
@@ -5929,10 +5929,10 @@ void do_connect(struct st_command *command)
   /* keep the compiler happy about con_ssl */
   con_ssl = con_ssl ? TRUE : FALSE;
 #endif
-  SSL_SET_OPTIONS(&con_slot->mysql);
+  SSL_SET_OPTIONS(&con_slot->myblockchain);
 #if defined(HAVE_OPENSSL) && !defined(EMBEDDED_LIBRARY)
-  /* Setting default as not ssl for mysqltest because of performance implications.*/
-  mysql_options(&con_slot->mysql, MYSQL_OPT_SSL_ENFORCE, &con_ssl);
+  /* Setting default as not ssl for myblockchaintest because of performance implications.*/
+  myblockchain_options(&con_slot->myblockchain, MYBLOCKCHAIN_OPT_SSL_ENFORCE, &con_ssl);
   opt_use_ssl= save_opt_use_ssl;
   opt_ssl_enforce= save_opt_ssl_enforce;
 #endif
@@ -5940,61 +5940,61 @@ void do_connect(struct st_command *command)
   if (con_pipe)
   {
 #if defined(_WIN32) && !defined(EMBEDDED_LIBRARY)
-    opt_protocol= MYSQL_PROTOCOL_PIPE;
+    opt_protocol= MYBLOCKCHAIN_PROTOCOL_PIPE;
 #endif
   }
 
 #ifndef EMBEDDED_LIBRARY
   if (opt_protocol)
-    mysql_options(&con_slot->mysql, MYSQL_OPT_PROTOCOL, (char*) &opt_protocol);
+    myblockchain_options(&con_slot->myblockchain, MYBLOCKCHAIN_OPT_PROTOCOL, (char*) &opt_protocol);
 #endif
 
   if (con_shm)
   {
 #if defined (_WIN32) && !defined (EMBEDDED_LIBRARY)
-    uint protocol= MYSQL_PROTOCOL_MEMORY;
+    uint protocol= MYBLOCKCHAIN_PROTOCOL_MEMORY;
     if (!ds_shm.length)
       die("Missing shared memory base name");
-    mysql_options(&con_slot->mysql, MYSQL_SHARED_MEMORY_BASE_NAME, ds_shm.str);
-    mysql_options(&con_slot->mysql, MYSQL_OPT_PROTOCOL, &protocol);
+    myblockchain_options(&con_slot->myblockchain, MYBLOCKCHAIN_SHARED_MEMORY_BASE_NAME, ds_shm.str);
+    myblockchain_options(&con_slot->myblockchain, MYBLOCKCHAIN_OPT_PROTOCOL, &protocol);
 #endif
   }
 #if defined (_WIN32) && !defined (EMBEDDED_LIBRARY)
   else if (shared_memory_base_name)
   {
-    mysql_options(&con_slot->mysql, MYSQL_SHARED_MEMORY_BASE_NAME,
+    myblockchain_options(&con_slot->myblockchain, MYBLOCKCHAIN_SHARED_MEMORY_BASE_NAME,
                   shared_memory_base_name);
   }
 #endif
 
   /* Use default db name */
-  if (ds_database.length == 0)
-    dynstr_set(&ds_database, opt_db);
+  if (ds_blockchain.length == 0)
+    dynstr_set(&ds_blockchain, opt_db);
 
   if (opt_plugin_dir && *opt_plugin_dir)
-    mysql_options(&con_slot->mysql, MYSQL_PLUGIN_DIR, opt_plugin_dir);
+    myblockchain_options(&con_slot->myblockchain, MYBLOCKCHAIN_PLUGIN_DIR, opt_plugin_dir);
 
   if (ds_default_auth.length)
-    mysql_options(&con_slot->mysql, MYSQL_DEFAULT_AUTH, ds_default_auth.str);
+    myblockchain_options(&con_slot->myblockchain, MYBLOCKCHAIN_DEFAULT_AUTH, ds_default_auth.str);
 
 #if !defined(HAVE_YASSL)
   /* Set server public_key */
   if (opt_server_public_key && *opt_server_public_key)
-    mysql_options(&con_slot->mysql, MYSQL_SERVER_PUBLIC_KEY,
+    myblockchain_options(&con_slot->myblockchain, MYBLOCKCHAIN_SERVER_PUBLIC_KEY,
                   opt_server_public_key);
 #endif
   
   if (con_cleartext_enable)
-    mysql_options(&con_slot->mysql, MYSQL_ENABLE_CLEARTEXT_PLUGIN,
+    myblockchain_options(&con_slot->myblockchain, MYBLOCKCHAIN_ENABLE_CLEARTEXT_PLUGIN,
                   (char*) &con_cleartext_enable);
 
-  /* Special database to allow one to connect without a database name */
-  if (ds_database.length && !strcmp(ds_database.str,"*NO-ONE*"))
-    dynstr_set(&ds_database, "");
+  /* Special blockchain to allow one to connect without a blockchain name */
+  if (ds_blockchain.length && !strcmp(ds_blockchain.str,"*NO-ONE*"))
+    dynstr_set(&ds_blockchain, "");
 
-  if (connect_n_handle_errors(command, &con_slot->mysql,
+  if (connect_n_handle_errors(command, &con_slot->myblockchain,
                               ds_host.str,ds_user.str,
-                              ds_password.str, ds_database.str,
+                              ds_password.str, ds_blockchain.str,
                               con_port, ds_sock.str))
   {
     DBUG_PRINT("info", ("Inserting connection %s in connection pool",
@@ -6014,7 +6014,7 @@ void do_connect(struct st_command *command)
   dynstr_free(&ds_host);
   dynstr_free(&ds_user);
   dynstr_free(&ds_password);
-  dynstr_free(&ds_database);
+  dynstr_free(&ds_blockchain);
   dynstr_free(&ds_port);
   dynstr_free(&ds_sock);
   dynstr_free(&ds_options);
@@ -6344,14 +6344,14 @@ void do_delimiter(struct st_command* command)
 */
 void do_reset_connection()
 {
-  MYSQL *mysql = &cur_con->mysql;
+  MYBLOCKCHAIN *myblockchain = &cur_con->myblockchain;
 
   DBUG_ENTER("do_reset_connection");
-  if (mysql_reset_connection(mysql))
-    die("reset connection failed: %s", mysql_error(mysql));
+  if (myblockchain_reset_connection(myblockchain))
+    die("reset connection failed: %s", myblockchain_error(myblockchain));
   if (cur_con->stmt)
   {
-    mysql_stmt_close(cur_con->stmt);
+    myblockchain_stmt_close(cur_con->stmt);
     cur_con->stmt= NULL;
   }
   DBUG_VOID_RETURN;
@@ -6868,7 +6868,7 @@ static struct my_option my_long_options[] =
   {"cursor-protocol", OPT_CURSOR_PROTOCOL, "Use cursors for prepared statements.",
    &cursor_protocol, &cursor_protocol, 0,
    GET_BOOL, NO_ARG, 0, 0, 0, 0, 0, 0},
-  {"database", 'D', "Database to use.", &opt_db, &opt_db, 0,
+  {"blockchain", 'D', "Database to use.", &opt_db, &opt_db, 0,
    GET_STR, REQUIRED_ARG, 0, 0, 0, 0, 0, 0},
 #ifdef DBUG_OFF
   {"debug", '#', "This is a non-debug version. Catch this and exit.",
@@ -6908,14 +6908,14 @@ static struct my_option my_long_options[] =
    GET_INT, REQUIRED_ARG, 128, 8, 5120, 0, 0, 0},
   {"password", 'p', "Password to use when connecting to server.",
    0, 0, 0, GET_STR, OPT_ARG, 0, 0, 0, 0, 0, 0},
-  {"protocol", OPT_MYSQL_PROTOCOL, "The protocol of connection (tcp,socket,pipe,memory).",
+  {"protocol", OPT_MYBLOCKCHAIN_PROTOCOL, "The protocol of connection (tcp,socket,pipe,memory).",
    0, 0, 0, GET_STR,  REQUIRED_ARG, 0, 0, 0, 0, 0, 0},
   {"port", 'P', "Port number to use for connection or 0 for default to, in "
-   "order of preference, my.cnf, $MYSQL_TCP_PORT, "
-#if MYSQL_PORT_DEFAULT == 0
+   "order of preference, my.cnf, $MYBLOCKCHAIN_TCP_PORT, "
+#if MYBLOCKCHAIN_PORT_DEFAULT == 0
    "/etc/services, "
 #endif
-   "built-in default (" STRINGIFY_ARG(MYSQL_PORT) ").",
+   "built-in default (" STRINGIFY_ARG(MYBLOCKCHAIN_PORT) ").",
    &opt_port, &opt_port, 0, GET_INT, REQUIRED_ARG, 0, 0, 0, 0, 0, 0},
   {"ps-protocol", OPT_PS_PROTOCOL, 
    "Use prepared-statement protocol for communication.",
@@ -7004,15 +7004,15 @@ static struct my_option my_long_options[] =
 void print_version(void)
 {
   printf("%s  Ver %s Distrib %s, for %s (%s)\n",my_progname,MTEST_VERSION,
-	 MYSQL_SERVER_VERSION,SYSTEM_TYPE,MACHINE_TYPE);
+	 MYBLOCKCHAIN_SERVER_VERSION,SYSTEM_TYPE,MACHINE_TYPE);
 }
 
 void usage()
 {
   print_version();
   puts(ORACLE_WELCOME_COPYRIGHT_NOTICE("2000"));
-  printf("Runs a test against the mysql server and compares output with a results file.\n\n");
-  printf("Usage: %s [OPTIONS] [database] < test_file\n", my_progname);
+  printf("Runs a test against the myblockchain server and compares output with a results file.\n\n");
+  printf("Usage: %s [OPTIONS] [blockchain] < test_file\n", my_progname);
   my_print_help(my_long_options);
   printf("  --no-defaults       Don't read default options from any options file.\n");
   my_print_variables(my_long_options);
@@ -7072,7 +7072,7 @@ get_one_option(int optid, const struct my_option *opt, char *argument)
   switch(optid) {
   case '#':
 #ifndef DBUG_OFF
-    DBUG_PUSH(argument ? argument : "d:t:S:i:O,/tmp/mysqltest.trace");
+    DBUG_PUSH(argument ? argument : "d:t:S:i:O,/tmp/myblockchaintest.trace");
     debug_check_flag= 1;
 #endif
     break;
@@ -7156,7 +7156,7 @@ get_one_option(int optid, const struct my_option *opt, char *argument)
   case 'V':
     print_version();
     exit(0);
-  case OPT_MYSQL_PROTOCOL:
+  case OPT_MYBLOCKCHAIN_PROTOCOL:
 #ifndef EMBEDDED_LIBRARY
     opt_protocol= find_type_or_exit(argument, &sql_protocol_typelib,
                                     opt->name);
@@ -7285,12 +7285,12 @@ Patterns *patterns;
 void init_win_path_patterns()
 {
   /* List of string patterns to match in order to find paths */
-  const char* paths[] = { "$MYSQL_TEST_DIR",
-                          "$MYSQL_TMP_DIR",
-                          "$MYSQLTEST_VARDIR",
+  const char* paths[] = { "$MYBLOCKCHAIN_TEST_DIR",
+                          "$MYBLOCKCHAIN_TMP_DIR",
+                          "$MYBLOCKCHAINTEST_VARDIR",
                           "$MASTER_MYSOCK",
-                          "$MYSQL_SHAREDIR",
-                          "$MYSQL_LIBDIR",
+                          "$MYBLOCKCHAIN_SHAREDIR",
+                          "$MYBLOCKCHAIN_LIBDIR",
                           "./test/",
                           ".ibd",
                           "ibdata",
@@ -7360,9 +7360,9 @@ void free_win_path_patterns()
   filenames that are found.
 
   Ex:
-  val = 'Error "c:\mysql\mysql-test\var\test\t1.frm" didn't exist'
-  => $MYSQL_TEST_DIR is found by strstr
-  => all \ from c:\mysql\m... until next space is converted into /
+  val = 'Error "c:\myblockchain\myblockchain-test\var\test\t1.frm" didn't exist'
+  => $MYBLOCKCHAIN_TEST_DIR is found by strstr
+  => all \ from c:\myblockchain\m... until next space is converted into /
 */
 
 void fix_win_paths(const char *val, size_t len)
@@ -7405,7 +7405,7 @@ void fix_win_paths(const char *val, size_t len)
   Append the result for one field to the dynamic string ds
 */
 
-void append_field(DYNAMIC_STRING *ds, uint col_idx, MYSQL_FIELD* field,
+void append_field(DYNAMIC_STRING *ds, uint col_idx, MYBLOCKCHAIN_FIELD* field,
                   char* val, size_t len, my_bool is_null)
 {
   char null[]= "NULL";
@@ -7421,8 +7421,8 @@ void append_field(DYNAMIC_STRING *ds, uint col_idx, MYSQL_FIELD* field,
     len= 4;
   }
 #ifdef _WIN32
-  else if ((field->type == MYSQL_TYPE_DOUBLE ||
-            field->type == MYSQL_TYPE_FLOAT ) &&
+  else if ((field->type == MYBLOCKCHAIN_TYPE_DOUBLE ||
+            field->type == MYBLOCKCHAIN_TYPE_FLOAT ) &&
            field->decimals >= 31)
   {
     /* Convert 1.2e+018 to 1.2e+18 and 1.2e-018 to 1.2e-18 */
@@ -7468,17 +7468,17 @@ void append_field(DYNAMIC_STRING *ds, uint col_idx, MYSQL_FIELD* field,
   Values may be converted with 'replace_column'
 */
 
-void append_result(DYNAMIC_STRING *ds, MYSQL_RES *res)
+void append_result(DYNAMIC_STRING *ds, MYBLOCKCHAIN_RES *res)
 {
-  MYSQL_ROW row;
-  uint num_fields= mysql_num_fields(res);
-  MYSQL_FIELD *fields= mysql_fetch_fields(res);
+  MYBLOCKCHAIN_ROW row;
+  uint num_fields= myblockchain_num_fields(res);
+  MYBLOCKCHAIN_FIELD *fields= myblockchain_fetch_fields(res);
   ulong *lengths;
 
-  while ((row = mysql_fetch_row(res)))
+  while ((row = myblockchain_fetch_row(res)))
   {
     uint i;
-    lengths = mysql_fetch_lengths(res);
+    lengths = myblockchain_fetch_lengths(res);
     for (i = 0; i < num_fields; i++)
     {
       /* looks ugly , but put here to convince parfait */
@@ -7497,17 +7497,17 @@ void append_result(DYNAMIC_STRING *ds, MYSQL_RES *res)
   with '\t'. Values may be converted with 'replace_column'
 */
 
-void append_stmt_result(DYNAMIC_STRING *ds, MYSQL_STMT *stmt,
-                        MYSQL_FIELD *fields, uint num_fields)
+void append_stmt_result(DYNAMIC_STRING *ds, MYBLOCKCHAIN_STMT *stmt,
+                        MYBLOCKCHAIN_FIELD *fields, uint num_fields)
 {
-  MYSQL_BIND *my_bind;
+  MYBLOCKCHAIN_BIND *my_bind;
   my_bool *is_null;
   ulong *length;
   uint i;
 
   /* Allocate array with bind structs, lengths and NULL flags */
-  my_bind= (MYSQL_BIND*) my_malloc(PSI_NOT_INSTRUMENTED,
-                                   num_fields * sizeof(MYSQL_BIND),
+  my_bind= (MYBLOCKCHAIN_BIND*) my_malloc(PSI_NOT_INSTRUMENTED,
+                                   num_fields * sizeof(MYBLOCKCHAIN_BIND),
 				MYF(MY_WME | MY_FAE | MY_ZEROFILL));
   length= (ulong*) my_malloc(PSI_NOT_INSTRUMENTED,
                              num_fields * sizeof(ulong),
@@ -7520,7 +7520,7 @@ void append_stmt_result(DYNAMIC_STRING *ds, MYSQL_STMT *stmt,
   for (i= 0; i < num_fields; i++)
   {
     size_t max_length= fields[i].max_length + 1;
-    my_bind[i].buffer_type= MYSQL_TYPE_STRING;
+    my_bind[i].buffer_type= MYBLOCKCHAIN_TYPE_STRING;
     my_bind[i].buffer= my_malloc(PSI_NOT_INSTRUMENTED,
                                  max_length, MYF(MY_WME | MY_FAE));
     my_bind[i].buffer_length= static_cast<ulong>(max_length);
@@ -7532,11 +7532,11 @@ void append_stmt_result(DYNAMIC_STRING *ds, MYSQL_STMT *stmt,
                         my_bind[i].buffer_length));
   }
 
-  if (mysql_stmt_bind_result(stmt, my_bind))
-    die("mysql_stmt_bind_result failed: %d: %s",
-	mysql_stmt_errno(stmt), mysql_stmt_error(stmt));
+  if (myblockchain_stmt_bind_result(stmt, my_bind))
+    die("myblockchain_stmt_bind_result failed: %d: %s",
+	myblockchain_stmt_errno(stmt), myblockchain_stmt_error(stmt));
 
-  while (mysql_stmt_fetch(stmt) == 0)
+  while (myblockchain_stmt_fetch(stmt) == 0)
   {
     for (i= 0; i < num_fields; i++)
       append_field(ds, i, &fields[i], (char*)my_bind[i].buffer,
@@ -7546,9 +7546,9 @@ void append_stmt_result(DYNAMIC_STRING *ds, MYSQL_STMT *stmt,
   }
 
   int rc;
-  if ((rc= mysql_stmt_fetch(stmt)) != MYSQL_NO_DATA)
-    die("fetch didn't end with MYSQL_NO_DATA from statement: %d: %s; rc=%d",
-        mysql_stmt_errno(stmt), mysql_stmt_error(stmt), rc);
+  if ((rc= myblockchain_stmt_fetch(stmt)) != MYBLOCKCHAIN_NO_DATA)
+    die("fetch didn't end with MYBLOCKCHAIN_NO_DATA from statement: %d: %s; rc=%d",
+        myblockchain_stmt_errno(stmt), myblockchain_stmt_error(stmt), rc);
 
   for (i= 0; i < num_fields; i++)
   {
@@ -7567,10 +7567,10 @@ void append_stmt_result(DYNAMIC_STRING *ds, MYSQL_STMT *stmt,
 */
 
 void append_metadata(DYNAMIC_STRING *ds,
-                     MYSQL_FIELD *field,
+                     MYBLOCKCHAIN_FIELD *field,
                      uint num_fields)
 {
-  MYSQL_FIELD *field_end;
+  MYBLOCKCHAIN_FIELD *field_end;
   dynstr_append(ds,"Catalog\tDatabase\tTable\tTable_alias\tColumn\t"
                 "Column_alias\tType\tLength\tMax length\tIs_null\t"
                 "Flags\tDecimals\tCharsetnr\n");
@@ -7637,17 +7637,17 @@ void append_info(DYNAMIC_STRING *ds, ulonglong affected_rows,
   @brief Append state change information (received through Ok packet) to the output.
 
   @param ds    [INOUT]      Dynamic string to hold the content to be printed.
-  @param mysql [IN]         Connection handle.
+  @param myblockchain [IN]         Connection handle.
 */
 
-void append_session_track_info(DYNAMIC_STRING *ds, MYSQL *mysql)
+void append_session_track_info(DYNAMIC_STRING *ds, MYBLOCKCHAIN *myblockchain)
 {
   for (unsigned int type= SESSION_TRACK_BEGIN; type <= SESSION_TRACK_END; type++)
   {
     const char *data;
     size_t data_length;
 
-    if (!mysql_session_track_get_first(mysql,
+    if (!myblockchain_session_track_get_first(myblockchain,
                                        (enum_session_state_type) type,
                                        &data, &data_length))
     {
@@ -7661,7 +7661,7 @@ void append_session_track_info(DYNAMIC_STRING *ds, MYSQL *mysql)
     }
     else
       continue;
-    while (!mysql_session_track_get_next(mysql,
+    while (!myblockchain_session_track_get_next(myblockchain,
                                         (enum_session_state_type) type,
                                         &data, &data_length))
     {
@@ -7677,7 +7677,7 @@ void append_session_track_info(DYNAMIC_STRING *ds, MYSQL *mysql)
 */
 
 void append_table_headings(DYNAMIC_STRING *ds,
-                           MYSQL_FIELD *field,
+                           MYBLOCKCHAIN_FIELD *field,
                            uint num_fields)
 {
   uint col_idx;
@@ -7697,13 +7697,13 @@ void append_table_headings(DYNAMIC_STRING *ds,
   Number of warnings appended to ds
 */
 
-int append_warnings(DYNAMIC_STRING *ds, MYSQL* mysql)
+int append_warnings(DYNAMIC_STRING *ds, MYBLOCKCHAIN* myblockchain)
 {
   uint count;
-  MYSQL_RES *warn_res;
+  MYBLOCKCHAIN_RES *warn_res;
   DBUG_ENTER("append_warnings");
 
-  if (!(count= mysql_warning_count(mysql)))
+  if (!(count= myblockchain_warning_count(myblockchain)))
     DBUG_RETURN(0);
 
   /*
@@ -7711,17 +7711,17 @@ int append_warnings(DYNAMIC_STRING *ds, MYSQL* mysql)
     through PS API we should not issue SHOW WARNINGS until
     we have not read all results...
   */
-  DBUG_ASSERT(!mysql_more_results(mysql));
+  DBUG_ASSERT(!myblockchain_more_results(myblockchain));
 
-  if (mysql_real_query(mysql, "SHOW WARNINGS", 13))
-    die("Error running query \"SHOW WARNINGS\": %s", mysql_error(mysql));
+  if (myblockchain_real_query(myblockchain, "SHOW WARNINGS", 13))
+    die("Error running query \"SHOW WARNINGS\": %s", myblockchain_error(myblockchain));
 
-  if (!(warn_res= mysql_store_result(mysql)))
+  if (!(warn_res= myblockchain_store_result(myblockchain)))
     die("Warning count is %u but didn't get any warnings",
 	count);
 
   append_result(ds, warn_res);
-  mysql_free_result(warn_res);
+  myblockchain_free_result(warn_res);
 
   DBUG_PRINT("warnings", ("%s", ds->str));
 
@@ -7730,11 +7730,11 @@ int append_warnings(DYNAMIC_STRING *ds, MYSQL* mysql)
 
 
 /*
-  Run query using MySQL C API
+  Run query using MyBlockchain C API
 
   SYNOPSIS
     run_query_normal()
-    mysql	mysql handle
+    myblockchain	myblockchain handle
     command	current command pointer
     flags	flags indicating if we should SEND and/or REAP
     query	query string to execute
@@ -7746,8 +7746,8 @@ void run_query_normal(struct st_connection *cn, struct st_command *command,
                       int flags, char *query, size_t query_len,
                       DYNAMIC_STRING *ds, DYNAMIC_STRING *ds_warnings)
 {
-  MYSQL_RES *res= 0;
-  MYSQL *mysql= &cn->mysql;
+  MYBLOCKCHAIN_RES *res= 0;
+  MYBLOCKCHAIN *myblockchain= &cn->myblockchain;
   int err= 0, counter= 0;
   DBUG_ENTER("run_query_normal");
   DBUG_PRINT("enter",("flags: %d", flags));
@@ -7760,8 +7760,8 @@ void run_query_normal(struct st_connection *cn, struct st_command *command,
     */
     if (do_send_query(cn, query, query_len))
     {
-      handle_error(command, mysql_errno(mysql), mysql_error(mysql),
-		   mysql_sqlstate(mysql), ds);
+      handle_error(command, myblockchain_errno(myblockchain), myblockchain_error(myblockchain),
+		   myblockchain_sqlstate(myblockchain), ds);
       goto end;
     }
   }
@@ -7774,15 +7774,15 @@ void run_query_normal(struct st_connection *cn, struct st_command *command,
   do
   {
     /*
-      When  on first result set, call mysql_read_query_result to retrieve
+      When  on first result set, call myblockchain_read_query_result to retrieve
       answer to the query sent earlier
     */
     if ((counter==0) && do_read_query_result(cn))
     {
       /* we've failed to collect the result set */
       cn->pending= TRUE;
-      handle_error(command, mysql_errno(mysql), mysql_error(mysql),
-		   mysql_sqlstate(mysql), ds);
+      handle_error(command, myblockchain_errno(myblockchain), myblockchain_error(myblockchain),
+		   myblockchain_sqlstate(myblockchain), ds);
       goto end;
 
     }
@@ -7790,10 +7790,10 @@ void run_query_normal(struct st_connection *cn, struct st_command *command,
     /*
       Store the result of the query if it will return any fields
     */
-    if (mysql_field_count(mysql) && ((res= mysql_store_result(mysql)) == 0))
+    if (myblockchain_field_count(myblockchain) && ((res= myblockchain_store_result(myblockchain)) == 0))
     {
-      handle_error(command, mysql_errno(mysql), mysql_error(mysql),
-		   mysql_sqlstate(mysql), ds);
+      handle_error(command, myblockchain_errno(myblockchain), myblockchain_error(myblockchain),
+		   myblockchain_sqlstate(myblockchain), ds);
       goto end;
     }
 
@@ -7801,8 +7801,8 @@ void run_query_normal(struct st_connection *cn, struct st_command *command,
     {
       if (res)
       {
-	MYSQL_FIELD *fields= mysql_fetch_fields(res);
-	uint num_fields= mysql_num_fields(res);
+	MYBLOCKCHAIN_FIELD *fields= myblockchain_fetch_fields(res);
+	uint num_fields= myblockchain_num_fields(res);
 
 	if (display_metadata)
           append_metadata(ds, fields, num_fields);
@@ -7814,23 +7814,23 @@ void run_query_normal(struct st_connection *cn, struct st_command *command,
       }
 
       /*
-        Need to call mysql_affected_rows() before the "new"
+        Need to call myblockchain_affected_rows() before the "new"
         query to find the warnings.
       */
       if (!disable_info)
-	append_info(ds, mysql_affected_rows(mysql), mysql_info(mysql));
+	append_info(ds, myblockchain_affected_rows(myblockchain), myblockchain_info(myblockchain));
 
       if (display_session_track_info)
-        append_session_track_info(ds, mysql);
+        append_session_track_info(ds, myblockchain);
 
       /*
         Add all warnings to the result. We can't do this if we are in
         the middle of processing results from multi-statement, because
         this will break protocol.
       */
-      if (!disable_warnings && !mysql_more_results(mysql))
+      if (!disable_warnings && !myblockchain_more_results(myblockchain))
       {
-	if (append_warnings(ds_warnings, mysql) || ds_warnings->length)
+	if (append_warnings(ds_warnings, myblockchain) || ds_warnings->length)
 	{
 	  dynstr_append_mem(ds, "Warnings:\n", 10);
 	  dynstr_append_mem(ds, ds_warnings->str, ds_warnings->length);
@@ -7840,16 +7840,16 @@ void run_query_normal(struct st_connection *cn, struct st_command *command,
 
     if (res)
     {
-      mysql_free_result(res);
+      myblockchain_free_result(res);
       res= 0;
     }
     counter++;
-  } while (!(err= mysql_next_result(mysql)));
+  } while (!(err= myblockchain_next_result(myblockchain)));
   if (err > 0)
   {
-    /* We got an error from mysql_next_result, maybe expected */
-    handle_error(command, mysql_errno(mysql), mysql_error(mysql),
-		 mysql_sqlstate(mysql), ds);
+    /* We got an error from myblockchain_next_result, maybe expected */
+    handle_error(command, myblockchain_errno(myblockchain), myblockchain_error(myblockchain),
+		 myblockchain_sqlstate(myblockchain), ds);
     goto end;
   }
   DBUG_ASSERT(err == -1); /* Successful and there are no more results */
@@ -7862,11 +7862,11 @@ end:
 
   cn->pending= FALSE;
   /*
-    We save the return code (mysql_errno(mysql)) from the last call sent
-    to the server into the mysqltest builtin variable $mysql_errno. This
+    We save the return code (myblockchain_errno(myblockchain)) from the last call sent
+    to the server into the myblockchaintest builtin variable $myblockchain_errno. This
     variable then can be used from the test case itself.
   */
-  var_set_errno(mysql_errno(mysql));
+  var_set_errno(myblockchain_errno(myblockchain));
   DBUG_VOID_RETURN;
 }
 
@@ -7933,7 +7933,7 @@ static int match_expected_error(struct st_command *command,
   ds    - dynamic string which is used for output buffer
 
   NOTE
-    If there is an unexpected error this function will abort mysqltest
+    If there is an unexpected error this function will abort myblockchaintest
     immediately.
 */
 
@@ -8061,7 +8061,7 @@ void handle_no_error(struct st_command *command)
 
   SYNPOSIS
   run_query_stmt
-  mysql - mysql handle
+  myblockchain - myblockchain handle
   command - currrent command pointer
   query - query string to execute
   query_len - length query string to execute
@@ -8071,12 +8071,12 @@ void handle_no_error(struct st_command *command)
   error - function will not return
 */
 
-void run_query_stmt(MYSQL *mysql, struct st_command *command,
+void run_query_stmt(MYBLOCKCHAIN *myblockchain, struct st_command *command,
                     char *query, size_t query_len, DYNAMIC_STRING *ds,
                     DYNAMIC_STRING *ds_warnings)
 {
-  MYSQL_RES *res= NULL;     /* Note that here 'res' is meta data result set */
-  MYSQL_STMT *stmt;
+  MYBLOCKCHAIN_RES *res= NULL;     /* Note that here 'res' is meta data result set */
+  MYBLOCKCHAIN_STMT *stmt;
   DYNAMIC_STRING ds_prepare_warnings;
   DYNAMIC_STRING ds_execute_warnings;
   DBUG_ENTER("run_query_stmt");
@@ -8087,7 +8087,7 @@ void run_query_stmt(MYSQL *mysql, struct st_command *command,
   */
   if(!(stmt= cur_con->stmt))
   {
-    if (!(stmt= mysql_stmt_init(mysql)))
+    if (!(stmt= myblockchain_stmt_init(myblockchain)))
       die("unable to init stmt structure");
     cur_con->stmt= stmt;
   }
@@ -8102,22 +8102,22 @@ void run_query_stmt(MYSQL *mysql, struct st_command *command,
   /*
     Prepare the query
   */
-  if (mysql_stmt_prepare(stmt, query, static_cast<ulong>(query_len)))
+  if (myblockchain_stmt_prepare(stmt, query, static_cast<ulong>(query_len)))
   {
-    handle_error(command,  mysql_stmt_errno(stmt),
-                 mysql_stmt_error(stmt), mysql_stmt_sqlstate(stmt), ds);
+    handle_error(command,  myblockchain_stmt_errno(stmt),
+                 myblockchain_stmt_error(stmt), myblockchain_stmt_sqlstate(stmt), ds);
     goto end;
   }
 
   /*
-    Get the warnings from mysql_stmt_prepare and keep them in a
+    Get the warnings from myblockchain_stmt_prepare and keep them in a
     separate string
   */
   if (!disable_warnings)
-    append_warnings(&ds_prepare_warnings, mysql);
+    append_warnings(&ds_prepare_warnings, myblockchain);
 
   /*
-    No need to call mysql_stmt_bind_param() because we have no
+    No need to call myblockchain_stmt_bind_param() because we have no
     parameter markers.
   */
 
@@ -8127,18 +8127,18 @@ void run_query_stmt(MYSQL *mysql, struct st_command *command,
       Use cursor when retrieving result
     */
     ulong type= CURSOR_TYPE_READ_ONLY;
-    if (mysql_stmt_attr_set(stmt, STMT_ATTR_CURSOR_TYPE, (void*) &type))
-      die("mysql_stmt_attr_set(STMT_ATTR_CURSOR_TYPE) failed': %d %s",
-          mysql_stmt_errno(stmt), mysql_stmt_error(stmt));
+    if (myblockchain_stmt_attr_set(stmt, STMT_ATTR_CURSOR_TYPE, (void*) &type))
+      die("myblockchain_stmt_attr_set(STMT_ATTR_CURSOR_TYPE) failed': %d %s",
+          myblockchain_stmt_errno(stmt), myblockchain_stmt_error(stmt));
   }
 
   /*
     Execute the query
   */
-  if (mysql_stmt_execute(stmt))
+  if (myblockchain_stmt_execute(stmt))
   {
-    handle_error(command, mysql_stmt_errno(stmt),
-                 mysql_stmt_error(stmt), mysql_stmt_sqlstate(stmt), ds);
+    handle_error(command, myblockchain_stmt_errno(stmt),
+                 myblockchain_stmt_error(stmt), myblockchain_stmt_sqlstate(stmt), ds);
     goto end;
   }
 
@@ -8147,18 +8147,18 @@ void run_query_stmt(MYSQL *mysql, struct st_command *command,
     and keep them in a separate string for later.
   */
   if (cursor_protocol_enabled && !disable_warnings)
-    append_warnings(&ds_execute_warnings, mysql);
+    append_warnings(&ds_execute_warnings, myblockchain);
 
   /*
     We instruct that we want to update the "max_length" field in
-    mysql_stmt_store_result(), this is our only way to know how much
+    myblockchain_stmt_store_result(), this is our only way to know how much
     buffer to allocate for result data
   */
   {
     my_bool one= 1;
-    if (mysql_stmt_attr_set(stmt, STMT_ATTR_UPDATE_MAX_LENGTH, (void*) &one))
-      die("mysql_stmt_attr_set(STMT_ATTR_UPDATE_MAX_LENGTH) failed': %d %s",
-          mysql_stmt_errno(stmt), mysql_stmt_error(stmt));
+    if (myblockchain_stmt_attr_set(stmt, STMT_ATTR_UPDATE_MAX_LENGTH, (void*) &one))
+      die("myblockchain_stmt_attr_set(STMT_ATTR_UPDATE_MAX_LENGTH) failed': %d %s",
+          myblockchain_stmt_errno(stmt), myblockchain_stmt_error(stmt));
   }
 
   /*
@@ -8166,10 +8166,10 @@ void run_query_stmt(MYSQL *mysql, struct st_command *command,
     get data. Note that this can still give errors found during execution!
     Store the result of the query if if will return any fields
   */
-  if (mysql_stmt_field_count(stmt) && mysql_stmt_store_result(stmt))
+  if (myblockchain_stmt_field_count(stmt) && myblockchain_stmt_store_result(stmt))
   {
-    handle_error(command, mysql_stmt_errno(stmt),
-                 mysql_stmt_error(stmt), mysql_stmt_sqlstate(stmt), ds);
+    handle_error(command, myblockchain_stmt_errno(stmt),
+                 myblockchain_stmt_error(stmt), myblockchain_stmt_sqlstate(stmt), ds);
     goto end;
   }
 
@@ -8183,11 +8183,11 @@ void run_query_stmt(MYSQL *mysql, struct st_command *command,
       data. This set can be handled almost like any other non prepared
       statement result set.
     */
-    if ((res= mysql_stmt_result_metadata(stmt)) != NULL)
+    if ((res= myblockchain_stmt_result_metadata(stmt)) != NULL)
     {
       /* Take the column count from meta info */
-      MYSQL_FIELD *fields= mysql_fetch_fields(res);
-      uint num_fields= mysql_num_fields(res);
+      MYBLOCKCHAIN_FIELD *fields= myblockchain_fetch_fields(res);
+      uint num_fields= myblockchain_num_fields(res);
 
       if (display_metadata)
         append_metadata(ds, fields, num_fields);
@@ -8197,13 +8197,13 @@ void run_query_stmt(MYSQL *mysql, struct st_command *command,
 
       append_stmt_result(ds, stmt, fields, num_fields);
 
-      mysql_free_result(res);     /* Free normal result set with meta data */
+      myblockchain_free_result(res);     /* Free normal result set with meta data */
 
       /*
         Clear prepare warnings if there are execute warnings,
         since they are probably duplicated.
       */
-      if (ds_execute_warnings.length || mysql->warning_count)
+      if (ds_execute_warnings.length || myblockchain->warning_count)
         dynstr_set(&ds_prepare_warnings, NULL);
     }
     else
@@ -8219,17 +8219,17 @@ void run_query_stmt(MYSQL *mysql, struct st_command *command,
     */
 
     if (!disable_info)
-      append_info(ds, mysql_stmt_affected_rows(stmt), mysql_info(mysql));
+      append_info(ds, myblockchain_stmt_affected_rows(stmt), myblockchain_info(myblockchain));
 
     if (display_session_track_info)
-      append_session_track_info(ds, mysql);
+      append_session_track_info(ds, myblockchain);
 
     if (!disable_warnings)
     {
       /* Get the warnings from execute */
 
       /* Append warnings to ds - if there are any */
-      if (append_warnings(&ds_execute_warnings, mysql) ||
+      if (append_warnings(&ds_execute_warnings, myblockchain) ||
           ds_execute_warnings.length ||
           ds_prepare_warnings.length ||
           ds_warnings->length)
@@ -8257,17 +8257,17 @@ end:
   revert_properties();
 
   /*
-    We save the return code (mysql_stmt_errno(stmt)) from the last call sent
-    to the server into the mysqltest builtin variable $mysql_errno. This
+    We save the return code (myblockchain_stmt_errno(stmt)) from the last call sent
+    to the server into the myblockchaintest builtin variable $myblockchain_errno. This
     variable then can be used from the test case itself.
   */
 
-  var_set_errno(mysql_stmt_errno(stmt));
+  var_set_errno(myblockchain_stmt_errno(stmt));
 
   /* Close the statement if - no reconnect, need new prepare */
-  if (mysql->reconnect)
+  if (myblockchain->reconnect)
   {
-    mysql_stmt_close(stmt);
+    myblockchain_stmt_close(stmt);
     cur_con->stmt= NULL;
   }
 
@@ -8284,31 +8284,31 @@ end:
   as view, sp etc.
 */
 
-int util_query(MYSQL* org_mysql, const char* query){
+int util_query(MYBLOCKCHAIN* org_myblockchain, const char* query){
 
-  MYSQL* mysql;
+  MYBLOCKCHAIN* myblockchain;
   DBUG_ENTER("util_query");
 
-  if(!(mysql= cur_con->util_mysql))
+  if(!(myblockchain= cur_con->util_myblockchain))
   {
-    DBUG_PRINT("info", ("Creating util_mysql"));
-    if (!(mysql= mysql_init(mysql)))
-      die("Failed in mysql_init()");
+    DBUG_PRINT("info", ("Creating util_myblockchain"));
+    if (!(myblockchain= myblockchain_init(myblockchain)))
+      die("Failed in myblockchain_init()");
 
     if (opt_connect_timeout)
-      mysql_options(mysql, MYSQL_OPT_CONNECT_TIMEOUT,
+      myblockchain_options(myblockchain, MYBLOCKCHAIN_OPT_CONNECT_TIMEOUT,
                     (void *) &opt_connect_timeout);
 
     /* enable local infile, in non-binary builds often disabled by default */
-    mysql_options(mysql, MYSQL_OPT_LOCAL_INFILE, 0);
-    safe_connect(mysql, "util", org_mysql->host, org_mysql->user,
-                 org_mysql->passwd, org_mysql->db, org_mysql->port,
-                 org_mysql->unix_socket);
+    myblockchain_options(myblockchain, MYBLOCKCHAIN_OPT_LOCAL_INFILE, 0);
+    safe_connect(myblockchain, "util", org_myblockchain->host, org_myblockchain->user,
+                 org_myblockchain->passwd, org_myblockchain->db, org_myblockchain->port,
+                 org_myblockchain->unix_socket);
 
-    cur_con->util_mysql= mysql;
+    cur_con->util_myblockchain= myblockchain;
   }
 
- DBUG_RETURN(mysql_query(mysql, query));
+ DBUG_RETURN(myblockchain_query(myblockchain, query));
 }
 
 
@@ -8318,7 +8318,7 @@ int util_query(MYSQL* org_mysql, const char* query){
 
   SYNPOSIS
     run_query()
-     mysql	mysql handle
+     myblockchain	myblockchain handle
      command	currrent command pointer
 
   flags control the phased/stages of query execution to be performed
@@ -8328,7 +8328,7 @@ int util_query(MYSQL* org_mysql, const char* query){
 
 void run_query(struct st_connection *cn, struct st_command *command, int flags)
 {
-  MYSQL *mysql= &cn->mysql;
+  MYBLOCKCHAIN *myblockchain= &cn->myblockchain;
   DYNAMIC_STRING *ds;
   DYNAMIC_STRING *save_ds= NULL;
   DYNAMIC_STRING ds_result;
@@ -8397,14 +8397,14 @@ void run_query(struct st_connection *cn, struct st_command *command, int flags)
   {
     /*
       Create the query as a view.
-      Use replace since view can exist from a failed mysqltest run
+      Use replace since view can exist from a failed myblockchaintest run
     */
     DYNAMIC_STRING query_str;
     init_dynamic_string(&query_str,
-			"CREATE OR REPLACE VIEW mysqltest_tmp_v AS ",
+			"CREATE OR REPLACE VIEW myblockchaintest_tmp_v AS ",
 			query_len+64, 256);
     dynstr_append_mem(&query_str, query, query_len);
-    if (util_query(mysql, query_str.str))
+    if (util_query(myblockchain, query_str.str))
     {
       /*
 	Failed to create the view, this is not fatal
@@ -8412,11 +8412,11 @@ void run_query(struct st_connection *cn, struct st_command *command, int flags)
       */
       DBUG_PRINT("view_create_error",
 		 ("Failed to create view '%s': %d: %s", query_str.str,
-		  mysql_errno(mysql), mysql_error(mysql)));
+		  myblockchain_errno(myblockchain), myblockchain_error(myblockchain)));
 
       /* Log error to create view */
       verbose_msg("Failed to create view '%s' %d: %s", query_str.str,
-		  mysql_errno(mysql), mysql_error(mysql));
+		  myblockchain_errno(myblockchain), myblockchain_error(myblockchain));
     }
     else
     {
@@ -8424,14 +8424,14 @@ void run_query(struct st_connection *cn, struct st_command *command, int flags)
 	Yes, it was possible to create this query as a view
       */
       view_created= 1;
-      query= (char*)"SELECT * FROM mysqltest_tmp_v";
+      query= (char*)"SELECT * FROM myblockchaintest_tmp_v";
       query_len = strlen(query);
 
       /*
         Collect warnings from create of the view that should otherwise
         have been produced when the SELECT was executed
       */
-      append_warnings(&ds_warnings, cur_con->util_mysql);
+      append_warnings(&ds_warnings, cur_con->util_myblockchain);
     }
 
     dynstr_free(&query_str);
@@ -8444,16 +8444,16 @@ void run_query(struct st_connection *cn, struct st_command *command, int flags)
   {
     /*
       Create the query as a stored procedure
-      Drop first since sp can exist from a failed mysqltest run
+      Drop first since sp can exist from a failed myblockchaintest run
     */
     DYNAMIC_STRING query_str;
     init_dynamic_string(&query_str,
-			"DROP PROCEDURE IF EXISTS mysqltest_tmp_sp;",
+			"DROP PROCEDURE IF EXISTS myblockchaintest_tmp_sp;",
 			query_len+64, 256);
-    util_query(mysql, query_str.str);
-    dynstr_set(&query_str, "CREATE PROCEDURE mysqltest_tmp_sp()\n");
+    util_query(myblockchain, query_str.str);
+    dynstr_set(&query_str, "CREATE PROCEDURE myblockchaintest_tmp_sp()\n");
     dynstr_append_mem(&query_str, query, query_len);
-    if (util_query(mysql, query_str.str))
+    if (util_query(myblockchain, query_str.str))
     {
       /*
 	Failed to create the stored procedure for this query,
@@ -8461,18 +8461,18 @@ void run_query(struct st_connection *cn, struct st_command *command, int flags)
       */
       DBUG_PRINT("sp_create_error",
 		 ("Failed to create sp '%s': %d: %s", query_str.str,
-		  mysql_errno(mysql), mysql_error(mysql)));
+		  myblockchain_errno(myblockchain), myblockchain_error(myblockchain)));
 
       /* Log error to create sp */
       verbose_msg("Failed to create sp '%s' %d: %s", query_str.str,
-		  mysql_errno(mysql), mysql_error(mysql));
+		  myblockchain_errno(myblockchain), myblockchain_error(myblockchain));
 
     }
     else
     {
       sp_created= 1;
 
-      query= (char*)"CALL mysqltest_tmp_sp()";
+      query= (char*)"CALL myblockchaintest_tmp_sp()";
       query_len = strlen(query);
     }
     dynstr_free(&query_str);
@@ -8502,7 +8502,7 @@ void run_query(struct st_connection *cn, struct st_command *command, int flags)
   if (ps_protocol_enabled &&
       complete_query &&
       match_re(&ps_re, query))
-    run_query_stmt(mysql, command, query, query_len, ds, &ds_warnings);
+    run_query_stmt(myblockchain, command, query, query_len, ds, &ds_warnings);
   else
     run_query_normal(cn, command, flags, query, query_len,
 		     ds, &ds_warnings);
@@ -8522,15 +8522,15 @@ void run_query(struct st_connection *cn, struct st_command *command, int flags)
 
   if (sp_created)
   {
-    if (util_query(mysql, "DROP PROCEDURE mysqltest_tmp_sp "))
-      die("Failed to drop sp: %d: %s", mysql_errno(mysql), mysql_error(mysql));
+    if (util_query(myblockchain, "DROP PROCEDURE myblockchaintest_tmp_sp "))
+      die("Failed to drop sp: %d: %s", myblockchain_errno(myblockchain), myblockchain_error(myblockchain));
   }
 
   if (view_created)
   {
-    if (util_query(mysql, "DROP VIEW mysqltest_tmp_v "))
+    if (util_query(myblockchain, "DROP VIEW myblockchaintest_tmp_v "))
       die("Failed to drop view: %d: %s",
-	  mysql_errno(mysql), mysql_error(mysql));
+	  myblockchain_errno(myblockchain), myblockchain_error(myblockchain));
   }
 
   if (command->require_file[0])
@@ -8651,7 +8651,7 @@ void init_re(void)
 {
   /*
     Filter for queries that can be run using the
-    MySQL Prepared Statements C API
+    MyBlockchain Prepared Statements C API
   */
   const char *ps_re_str =
     "^("
@@ -8781,18 +8781,18 @@ void get_command_type(struct st_command* command)
   }
   else
   {
-    /* No mysqltest command matched */
+    /* No myblockchaintest command matched */
 
     if (command->type != Q_COMMENT_WITH_COMMAND)
     {
-      /* A query that will sent to mysqld */
+      /* A query that will sent to myblockchaind */
       command->type= Q_QUERY;
     }
     else
     {
-      /* -- "comment" that didn't contain a mysqltest command */
+      /* -- "comment" that didn't contain a myblockchaintest command */
       die("Found line beginning with --  that didn't contain "\
-          "a valid mysqltest command, check your syntax or "\
+          "a valid myblockchaintest command, check your syntax or "\
           "use # if you intended to write a comment");
     }
   }
@@ -8888,7 +8888,7 @@ static void dump_backtrace(void)
 
 static void signal_handler(int sig)
 {
-  fprintf(stderr, "mysqltest got " SIGNAL_FMT "\n", sig);
+  fprintf(stderr, "myblockchaintest got " SIGNAL_FMT "\n", sig);
   dump_backtrace();
 
   fprintf(stderr, "Writing a core file...\n");
@@ -9015,13 +9015,13 @@ int main(int argc, char **argv)
     char path_separator[]= { FN_LIBCHAR, 0 };
     var_set_string("SYSTEM_PATH_SEPARATOR", path_separator);
   }
-  var_set_string("MYSQL_SERVER_VERSION", MYSQL_SERVER_VERSION);
-  var_set_string("MYSQL_SYSTEM_TYPE", SYSTEM_TYPE);
-  var_set_string("MYSQL_MACHINE_TYPE", MACHINE_TYPE);
+  var_set_string("MYBLOCKCHAIN_SERVER_VERSION", MYBLOCKCHAIN_SERVER_VERSION);
+  var_set_string("MYBLOCKCHAIN_SYSTEM_TYPE", SYSTEM_TYPE);
+  var_set_string("MYBLOCKCHAIN_MACHINE_TYPE", MACHINE_TYPE);
   if (sizeof(void *) == 8) {
-    var_set_string("MYSQL_SYSTEM_ARCHITECTURE", "64");
+    var_set_string("MYBLOCKCHAIN_SYSTEM_ARCHITECTURE", "64");
   } else {
-    var_set_string("MYSQL_SYSTEM_ARCHITECTURE", "32");
+    var_set_string("MYBLOCKCHAIN_SYSTEM_ARCHITECTURE", "32");
   }
 
   memset(&master_pos, 0, sizeof(master_pos));
@@ -9075,10 +9075,10 @@ int main(int argc, char **argv)
                      result_file_name ? result_file_name : ""));
   verbose_msg("Results saved in '%s'.", 
               result_file_name ? result_file_name : "");
-  if (mysql_server_init(embedded_server_arg_count,
+  if (myblockchain_server_init(embedded_server_arg_count,
 			embedded_server_args,
 			(char**) embedded_server_groups))
-    die("Can't initialize MySQL server");
+    die("Can't initialize MyBlockchain server");
   server_initialized= 1;
   if (cur_file == file_stack && cur_file->file == 0)
   {
@@ -9087,7 +9087,7 @@ int main(int argc, char **argv)
                                    "<stdin>", MYF(MY_WME));
     cur_file->lineno= 1;
   }
-  var_set_string("MYSQLTEST_FILE", cur_file->file_name);
+  var_set_string("MYBLOCKCHAINTEST_FILE", cur_file->file_name);
   init_re();
 
   /* Cursor protcol implies ps protocol */
@@ -9108,23 +9108,23 @@ int main(int argc, char **argv)
     die("--ps-protocol is not supported in embedded mode");
   init_connection_thd(con);
 #endif /*EMBEDDED_LIBRARY*/
-  if (!( mysql_init(&con->mysql)))
-    die("Failed in mysql_init()");
+  if (!( myblockchain_init(&con->myblockchain)))
+    die("Failed in myblockchain_init()");
   if (opt_connect_timeout)
-    mysql_options(&con->mysql, MYSQL_OPT_CONNECT_TIMEOUT,
+    myblockchain_options(&con->myblockchain, MYBLOCKCHAIN_OPT_CONNECT_TIMEOUT,
                   (void *) &opt_connect_timeout);
   if (opt_compress)
-    mysql_options(&con->mysql,MYSQL_OPT_COMPRESS,NullS);
-  mysql_options(&con->mysql, MYSQL_OPT_LOCAL_INFILE, 0);
-  mysql_options(&con->mysql, MYSQL_SET_CHARSET_NAME,
+    myblockchain_options(&con->myblockchain,MYBLOCKCHAIN_OPT_COMPRESS,NullS);
+  myblockchain_options(&con->myblockchain, MYBLOCKCHAIN_OPT_LOCAL_INFILE, 0);
+  myblockchain_options(&con->myblockchain, MYBLOCKCHAIN_SET_CHARSET_NAME,
                 charset_info->csname);
   if (opt_charsets_dir)
-    mysql_options(&con->mysql, MYSQL_SET_CHARSET_DIR,
+    myblockchain_options(&con->myblockchain, MYBLOCKCHAIN_SET_CHARSET_DIR,
                   opt_charsets_dir);
 
 #ifndef EMBEDDED_LIBRARY
   if (opt_protocol)
-    mysql_options(&con->mysql,MYSQL_OPT_PROTOCOL,(char*)&opt_protocol);
+    myblockchain_options(&con->myblockchain,MYBLOCKCHAIN_OPT_PROTOCOL,(char*)&opt_protocol);
 #endif
 
 
@@ -9135,26 +9135,26 @@ int main(int argc, char **argv)
     opt_ssl_verify_server_cert= opt_host && !strcmp(opt_host, "localhost");
   }
 #endif
-  SSL_SET_OPTIONS(&con->mysql);
+  SSL_SET_OPTIONS(&con->myblockchain);
 
 
 #if defined (_WIN32) && !defined (EMBEDDED_LIBRARY)
   if (shared_memory_base_name)
-    mysql_options(&con->mysql,MYSQL_SHARED_MEMORY_BASE_NAME,shared_memory_base_name);
+    myblockchain_options(&con->myblockchain,MYBLOCKCHAIN_SHARED_MEMORY_BASE_NAME,shared_memory_base_name);
 #endif
 
   if (!(con->name = my_strdup(PSI_NOT_INSTRUMENTED,
                               "default", MYF(MY_WME))))
     die("Out of memory");
 
-  safe_connect(&con->mysql, con->name, opt_host, opt_user, opt_pass,
+  safe_connect(&con->myblockchain, con->name, opt_host, opt_user, opt_pass,
                opt_db, opt_port, unix_sock);
 
   /* Use all time until exit if no explicit 'start_timer' */
   timer_start= timer_now();
 
   /*
-    Initialize $mysql_errno with -1, so we can
+    Initialize $myblockchain_errno with -1, so we can
     - distinguish it from valid values ( >= 0 ) and
     - detect if there was never a command sent to the server
   */
@@ -9482,14 +9482,14 @@ int main(int argc, char **argv)
         dynstr_append(&ds_res, "\n");
         break;
       case Q_PING:
-        handle_command_error(command, mysql_ping(&cur_con->mysql));
+        handle_command_error(command, myblockchain_ping(&cur_con->myblockchain));
         break;
       case Q_RESET_CONNECTION:
         do_reset_connection();
         break;
       case Q_SEND_SHUTDOWN:
         handle_command_error(command,
-                             mysql_shutdown(&cur_con->mysql,
+                             myblockchain_shutdown(&cur_con->myblockchain,
                                             SHUTDOWN_DEFAULT));
         break;
       case Q_SHUTDOWN_SERVER:
@@ -9505,7 +9505,7 @@ int main(int argc, char **argv)
 	timer_start= timer_now();
 	break;
       case Q_END_TIMER:
-	/* End timer before ending mysqltest */
+	/* End timer before ending myblockchaintest */
 	timer_output();
 	break;
       case Q_CHARACTER_SET:
@@ -9520,10 +9520,10 @@ int main(int argc, char **argv)
         set_property(command, P_PS, ps_protocol);
         break;
       case Q_DISABLE_RECONNECT:
-        set_reconnect(&cur_con->mysql, 0);
+        set_reconnect(&cur_con->myblockchain, 0);
         break;
       case Q_ENABLE_RECONNECT:
-        set_reconnect(&cur_con->mysql, 1);
+        set_reconnect(&cur_con->myblockchain, 1);
         /* Close any open statements - no reconnect, need new prepare */
         close_statements();
         break;
@@ -9691,17 +9691,17 @@ int main(int argc, char **argv)
   A primitive timer that give results in milliseconds if the
   --timer-file=<filename> is given. The timer result is written
   to that file when the result is available. To not confuse
-  mysql-test-run with an old obsolete result, we remove the file
+  myblockchain-test-run with an old obsolete result, we remove the file
   before executing any commands. The time we measure is
 
   - If no explicit 'start_timer' or 'end_timer' is given in the
-  test case, the timer measure how long we execute in mysqltest.
+  test case, the timer measure how long we execute in myblockchaintest.
 
   - If only 'start_timer' is given we measure how long we execute
-  from that point until we terminate mysqltest.
+  from that point until we terminate myblockchaintest.
 
   - If only 'end_timer' is given we measure how long we execute
-  from that we enter mysqltest to the 'end_timer' is command is
+  from that we enter myblockchaintest to the 'end_timer' is command is
   executed.
 
   - If both 'start_timer' and 'end_timer' are given we measure

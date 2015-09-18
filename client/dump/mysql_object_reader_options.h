@@ -15,11 +15,11 @@
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifndef MYSQL_OBJECT_READER_OPTIONS_INCLUDED
-#define MYSQL_OBJECT_READER_OPTIONS_INCLUDED
+#ifndef MYBLOCKCHAIN_OBJECT_READER_OPTIONS_INCLUDED
+#define MYBLOCKCHAIN_OBJECT_READER_OPTIONS_INCLUDED
 
 #include "base/abstract_options_provider.h"
-#include "mysql_chain_element_options.h"
+#include "myblockchain_chain_element_options.h"
 
 namespace Mysql{
 namespace Tools{
@@ -32,12 +32,12 @@ class Mysql_object_reader_options
 {
 public:
   Mysql_object_reader_options(
-    const Mysql_chain_element_options* mysql_chain_element_options);
+    const Mysql_chain_element_options* myblockchain_chain_element_options);
 
   void create_options();
 
   uint64 m_row_group_size;
-  const Mysql_chain_element_options* m_mysql_chain_element_options;
+  const Mysql_chain_element_options* m_myblockchain_chain_element_options;
 };
 
 }

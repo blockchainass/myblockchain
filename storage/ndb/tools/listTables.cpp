@@ -35,7 +35,7 @@ static int _unqualified = 0;
 static int _parsable = 0;
 static int show_temp_status = 0;
 
-const char *load_default_groups[]= { "mysql_cluster",0 };
+const char *load_default_groups[]= { "myblockchain_cluster",0 };
 
 static void
 fatal(char const* fmt, ...)
@@ -86,9 +86,9 @@ list(const char * tabname,
       if (ndb->usingFullyQualifiedNames())
       {
         if (show_temp_status)
-          ndbout_c("%-5s %-20s %-8s %-7s %-4s %-12s %-8s %s", "id", "type", "state", "logging", "temp", "database", "schema", "name");
+          ndbout_c("%-5s %-20s %-8s %-7s %-4s %-12s %-8s %s", "id", "type", "state", "logging", "temp", "blockchain", "schema", "name");
         else
-          ndbout_c("%-5s %-20s %-8s %-7s %-12s %-8s %s", "id", "type", "state", "logging", "database", "schema", "name");
+          ndbout_c("%-5s %-20s %-8s %-7s %-12s %-8s %s", "id", "type", "state", "logging", "blockchain", "schema", "name");
       }
       else
       {
@@ -226,16 +226,16 @@ list(const char * tabname,
           if (_parsable)
           {
             if (show_temp_status)
-              ndbout_c("%d\t'%s'\t'%s'\t'%s'\t'%s'\t'%s'\t'%s'\t'%s'", elt.id, type, state, store, temp, (elt.database)?elt.database:"", (elt.schema)?elt.schema:"", elt.name);
+              ndbout_c("%d\t'%s'\t'%s'\t'%s'\t'%s'\t'%s'\t'%s'\t'%s'", elt.id, type, state, store, temp, (elt.blockchain)?elt.blockchain:"", (elt.schema)?elt.schema:"", elt.name);
             else
-              ndbout_c("%d\t'%s'\t'%s'\t'%s'\t'%s'\t'%s'\t'%s'", elt.id, type, state, store, (elt.database)?elt.database:"", (elt.schema)?elt.schema:"", elt.name);
+              ndbout_c("%d\t'%s'\t'%s'\t'%s'\t'%s'\t'%s'\t'%s'", elt.id, type, state, store, (elt.blockchain)?elt.blockchain:"", (elt.schema)?elt.schema:"", elt.name);
           }
           else
           {
             if (show_temp_status)
-              ndbout_c("%-5d %-20s %-8s %-7s %-4s %-12s %-8s %s", elt.id, type, state, store, temp, (elt.database)?elt.database:"", (elt.schema)?elt.schema:"", elt.name);
+              ndbout_c("%-5d %-20s %-8s %-7s %-4s %-12s %-8s %s", elt.id, type, state, store, temp, (elt.blockchain)?elt.blockchain:"", (elt.schema)?elt.schema:"", elt.name);
             else
-              ndbout_c("%-5d %-20s %-8s %-7s %-12s %-8s %s", elt.id, type, state, store, (elt.database)?elt.database:"", (elt.schema)?elt.schema:"", elt.name);
+              ndbout_c("%-5d %-20s %-8s %-7s %-12s %-8s %s", elt.id, type, state, store, (elt.blockchain)?elt.blockchain:"", (elt.schema)?elt.schema:"", elt.name);
           }
         }
         else
@@ -268,7 +268,7 @@ static int _type;
 static struct my_option my_long_options[] =
 {
   NDB_STD_OPTS("ndb_show_tables"),
-  { "database", 'd', "Name of database table is in. Requires table-name in argument",
+  { "blockchain", 'd', "Name of blockchain table is in. Requires table-name in argument",
     (uchar**) &_dbname, (uchar**) &_dbname, 0,
     GET_STR, REQUIRED_ARG, 0, 0, 0, 0, 0, 0 },
   { "loops", 'l', "loops",
@@ -280,7 +280,7 @@ static struct my_option my_long_options[] =
   { "unqualified", 'u', "Use unqualified table names",
     (uchar**) &_unqualified, (uchar**) &_unqualified, 0,
     GET_BOOL, NO_ARG, 0, 0, 0, 0, 0, 0 }, 
-  { "parsable", 'p', "Return output suitable for mysql LOAD DATA INFILE",
+  { "parsable", 'p', "Return output suitable for myblockchain LOAD DATA INFILE",
     (uchar**) &_parsable, (uchar**) &_parsable, 0,
     GET_BOOL, NO_ARG, 0, 0, 0, 0, 0, 0 }, 
   { "show-temp-status", NDB_OPT_NOSHORT, "Show table temporary flag",

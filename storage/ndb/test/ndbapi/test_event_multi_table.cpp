@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2005, 2006, 2008 MySQL AB
+   Copyright (C) 2005, 2006, 2008 MyBlockchain AB
     All rights reserved. Use is subject to license terms.
 
    This program is free software; you can redistribute it and/or modify
@@ -258,7 +258,7 @@ static const char* _dbname = "TEST_DB";
 struct my_option my_long_options[] =
 {
   NDB_STD_OPTS(""),
-  { "database", 'd', "Name of database table is in",
+  { "blockchain", 'd', "Name of blockchain table is in",
     (uchar**) &_dbname, (uchar**) &_dbname, 0,
     GET_STR, REQUIRED_ARG, 0, 0, 0, 0, 0, 0 },
   { 0, 0, 0, 0, 0, 0, GET_NO_ARG, NO_ARG, 0, 0, 0, 0, 0, 0}
@@ -268,7 +268,7 @@ int
 main(int argc, char** argv)
 {
   NDB_INIT(argv[0]);
-  const char *load_default_groups[]= { "mysql_cluster",0 };
+  const char *load_default_groups[]= { "myblockchain_cluster",0 };
   ndb_load_defaults(NULL,load_default_groups,&argc,&argv);
 
   int ho_error;

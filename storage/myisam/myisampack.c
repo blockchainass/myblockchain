@@ -428,7 +428,7 @@ static MI_INFO *open_isam_file(char *name,int mode)
     (void) mi_close(isam_file);
     DBUG_RETURN(0);
   }
-  (void) mi_lock_database(isam_file,F_WRLCK);
+  (void) mi_lock_blockchain(isam_file,F_WRLCK);
   DBUG_RETURN(isam_file);
 }
 
@@ -759,7 +759,7 @@ static int compress(PACK_MRG_INFO *mrg,char *result_table)
 /** 
   Create FRM for the destination table for --join operation
   Copy the first table FRM as the destination table FRM file. Doing so
-  will help the mysql server to recognize the newly created table.
+  will help the myblockchain server to recognize the newly created table.
   See Bug#36573.
   
   @param    source_table    Name of the source table 

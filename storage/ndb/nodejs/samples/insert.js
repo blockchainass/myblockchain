@@ -23,7 +23,7 @@
 var nosql = require('..');
 var lib = require('./lib.js');
 var adapter = 'ndb';
-global.mysql_conn_properties = {};
+global.myblockchain_conn_properties = {};
 
 var user_args = [];
 // *** program starts here ***
@@ -34,13 +34,13 @@ var usageMessage =
   "Usage: node insert author message\n" +
   "          -h or --help: print this message\n" +
   "         -d or --debug: set the debug flag\n" +
-  "  --mysql_socket=value: set the mysql socket\n" +
-  "    --mysql_port=value: set the mysql port\n" +
-  "    --mysql_host=value: set the mysql host\n" +
-  "    --mysql_user=value: set the mysql user\n" +
-  "--mysql_password=value: set the mysql password\n" +
+  "  --myblockchain_socket=value: set the myblockchain socket\n" +
+  "    --myblockchain_port=value: set the myblockchain port\n" +
+  "    --myblockchain_host=value: set the myblockchain host\n" +
+  "    --myblockchain_user=value: set the myblockchain user\n" +
+  "--myblockchain_password=value: set the myblockchain password\n" +
   "              --detail: set the detail debug flag\n" +
-  "   --adapter=<adapter>: run on the named adapter (e.g. ndb or mysql)\n"
+  "   --adapter=<adapter>: run on the named adapter (e.g. ndb or myblockchain)\n"
   ;
 
 // handle command line arguments
@@ -69,20 +69,20 @@ for(i = 2; i < process.argv.length ; i++) {
       case '--adapter':
         adapter = values[1];
         break;
-      case '--mysql_socket':
-        mysql_conn_properties.mysql_socket = values[1];
+      case '--myblockchain_socket':
+        myblockchain_conn_properties.myblockchain_socket = values[1];
         break;
-      case '--mysql_port':
-        mysql_conn_properties.mysql_port = values[1];
+      case '--myblockchain_port':
+        myblockchain_conn_properties.myblockchain_port = values[1];
         break;
-      case '--mysql_host':
-        mysql_conn_properties.mysql_host = values[1];
+      case '--myblockchain_host':
+        myblockchain_conn_properties.myblockchain_host = values[1];
         break;
-      case '--mysql_user':
-        mysql_conn_properties.mysql_user = values[1];
+      case '--myblockchain_user':
+        myblockchain_conn_properties.myblockchain_user = values[1];
         break;
-      case '--mysql_password':
-        mysql_conn_properties.mysql_password = values[1];
+      case '--myblockchain_password':
+        myblockchain_conn_properties.myblockchain_password = values[1];
         break;
       default:
         console.log('Invalid option ' + val);
@@ -105,7 +105,7 @@ if (exit) {
 }
 
 console.log('Running insert with adapter', adapter, user_args);
-//create a database properties object
+//create a blockchain properties object
 
 var dbProperties = nosql.ConnectionProperties(adapter);
 
@@ -135,6 +135,6 @@ var onSession = function(err, session) {
   }
 };
 
-// connect to the database
+// connect to the blockchain
 nosql.openSession(dbProperties, lib.Tweet, onSession);
 

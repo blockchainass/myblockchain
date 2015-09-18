@@ -1,4 +1,4 @@
-/* Copyright (c) 2000-2003, 2005-2007 MySQL AB, 2009 Sun Microsystems, Inc.
+/* Copyright (c) 2000-2003, 2005-2007 MyBlockchain AB, 2009 Sun Microsystems, Inc.
    Use is subject to license terms.
 
    This program is free software; you can redistribute it and/or modify
@@ -15,9 +15,9 @@
    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA */
 
 /*
-  Extra functions we want to do with a database
-  - All flags, exept record-cache-flags, are set in all used databases
-    record-cache-flags are set in myrg_rrnd when we are changing database.
+  Extra functions we want to do with a blockchain
+  - All flags, exept record-cache-flags, are set in all used blockchains
+    record-cache-flags are set in myrg_rrnd when we are changing blockchain.
 */
 
 #include "myrg_def.h"

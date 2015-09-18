@@ -13,15 +13,15 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 
-# my.cnf -- MySQL Server configuration file (options case-sensitive)
+# my.cnf -- MyBlockchain Server configuration file (options case-sensitive)
 
 [client]
 
-[mysql_cluster]
+[myblockchain_cluster]
 
 ndb-connectstring=127.0.0.1
 
-[mysqld]
+[myblockchaind]
 # ndb<=7.1: enable innodb plugin
 ignore-builtin-innodb
 plugin-load=innodb=ha_innodb_plugin.so

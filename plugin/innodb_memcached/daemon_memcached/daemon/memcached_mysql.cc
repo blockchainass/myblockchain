@@ -18,22 +18,22 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 ***********************************************************************/
 
 /**************************************************//**
-@file memcached_mysql.cc
+@file memcached_myblockchain.cc
 InnoDB Memcached Plugin
 
 Created 04/12/2011 Jimmy Yang
 *******************************************************/
 
-#include "memcached_mysql.h"
+#include "memcached_myblockchain.h"
 #include <stdlib.h>
 #include <ctype.h>
-#include <mysql_version.h>
+#include <myblockchain_version.h>
 #include "sql_plugin.h"
 
 /** Configuration info passed to memcached, including
 the name of our Memcached InnoDB engine and memcached configure
 string to be loaded by memcached. */
-struct mysql_memcached_context
+struct myblockchain_memcached_context
 {
 	pthread_t		memcached_thread;
 	memcached_context_t	memcached_conf;
@@ -47,48 +47,48 @@ static unsigned int mci_r_batch_size = 1048576;
 static unsigned int mci_w_batch_size = 32;
 static my_bool	mci_enable_binlog = false;
 
-static MYSQL_SYSVAR_STR(engine_lib_name, mci_engine_library,
+static MYBLOCKCHAIN_SYSVAR_STR(engine_lib_name, mci_engine_library,
 			PLUGIN_VAR_READONLY | PLUGIN_VAR_MEMALLOC,
 			"memcached engine library name", NULL, NULL,
 			"innodb_engine.so");
 
-static MYSQL_SYSVAR_STR(engine_lib_path, mci_eng_lib_path,
+static MYBLOCKCHAIN_SYSVAR_STR(engine_lib_path, mci_eng_lib_path,
 			PLUGIN_VAR_READONLY | PLUGIN_VAR_MEMALLOC,
 			"memcached engine library path", NULL, NULL, NULL);
 
-static MYSQL_SYSVAR_STR(option, mci_memcached_option,
+static MYBLOCKCHAIN_SYSVAR_STR(option, mci_memcached_option,
 			PLUGIN_VAR_READONLY | PLUGIN_VAR_MEMALLOC,
 			"memcached option string", NULL, NULL, NULL);
 
-static MYSQL_SYSVAR_UINT(r_batch_size, mci_r_batch_size,
+static MYBLOCKCHAIN_SYSVAR_UINT(r_batch_size, mci_r_batch_size,
 			 PLUGIN_VAR_READONLY,
 			 "read batch commit size", 0, 0, 1,
 			 1, 1073741824, 0);
 
-static MYSQL_SYSVAR_UINT(w_batch_size, mci_w_batch_size,
+static MYBLOCKCHAIN_SYSVAR_UINT(w_batch_size, mci_w_batch_size,
 			 PLUGIN_VAR_READONLY,
 			 "write batch commit size", 0, 0, 1,
 			 1, 1048576, 0);
 
-static MYSQL_SYSVAR_BOOL(enable_binlog, mci_enable_binlog,
+static MYBLOCKCHAIN_SYSVAR_BOOL(enable_binlog, mci_enable_binlog,
 			 PLUGIN_VAR_READONLY,
 			 "whether to enable binlog",
 			 NULL, NULL, FALSE);
 
-static struct st_mysql_sys_var *daemon_memcached_sys_var[] = {
-	MYSQL_SYSVAR(engine_lib_name),
-	MYSQL_SYSVAR(engine_lib_path),
-	MYSQL_SYSVAR(option),
-	MYSQL_SYSVAR(r_batch_size),
-	MYSQL_SYSVAR(w_batch_size),
-	MYSQL_SYSVAR(enable_binlog),
+static struct st_myblockchain_sys_var *daemon_memcached_sys_var[] = {
+	MYBLOCKCHAIN_SYSVAR(engine_lib_name),
+	MYBLOCKCHAIN_SYSVAR(engine_lib_path),
+	MYBLOCKCHAIN_SYSVAR(option),
+	MYBLOCKCHAIN_SYSVAR(r_batch_size),
+	MYBLOCKCHAIN_SYSVAR(w_batch_size),
+	MYBLOCKCHAIN_SYSVAR(enable_binlog),
 	0
 };
 
 static int daemon_memcached_plugin_deinit(void *p)
 {
 	struct st_plugin_int*		plugin = (struct st_plugin_int *)p;
-	struct mysql_memcached_context*	con = NULL;
+	struct myblockchain_memcached_context*	con = NULL;
 	int				loop_count = 0;
 
         /* If memcached plugin is still initializing, wait for a
@@ -121,7 +121,7 @@ static int daemon_memcached_plugin_deinit(void *p)
 			" the thread\n");
 	}
 
-	con = (struct mysql_memcached_context*) (plugin->data);
+	con = (struct myblockchain_memcached_context*) (plugin->data);
 
 	pthread_cancel(con->memcached_thread);
 
@@ -136,11 +136,11 @@ static int daemon_memcached_plugin_deinit(void *p)
 
 static int daemon_memcached_plugin_init(void *p)
 {
-	struct mysql_memcached_context*	con;
+	struct myblockchain_memcached_context*	con;
 	pthread_attr_t			attr;
 	struct st_plugin_int*		plugin = (struct st_plugin_int *)p;
 
-	con = (mysql_memcached_context*) my_malloc(PSI_INSTRUMENT_ME,
+	con = (myblockchain_memcached_context*) my_malloc(PSI_INSTRUMENT_ME,
                                                    sizeof(*con), MYF(0));
 
 	if (mci_engine_library) {
@@ -183,12 +183,12 @@ static int daemon_memcached_plugin_init(void *p)
 	return(0);
 }
 
-struct st_mysql_daemon daemon_memcached_plugin =
-	{MYSQL_DAEMON_INTERFACE_VERSION};
+struct st_myblockchain_daemon daemon_memcached_plugin =
+	{MYBLOCKCHAIN_DAEMON_INTERFACE_VERSION};
 
-mysql_declare_plugin(daemon_memcached)
+myblockchain_declare_plugin(daemon_memcached)
 {
-	MYSQL_DAEMON_PLUGIN,
+	MYBLOCKCHAIN_DAEMON_PLUGIN,
 	&daemon_memcached_plugin,
 	"daemon_memcached",
 	"Oracle Corporation",
@@ -202,4 +202,4 @@ mysql_declare_plugin(daemon_memcached)
 	NULL,				/* config options */
 	0				/* flags */
 }
-mysql_declare_plugin_end;
+myblockchain_declare_plugin_end;

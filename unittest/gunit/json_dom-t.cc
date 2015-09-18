@@ -253,21 +253,21 @@ TEST_F(JsonDomTest, BasicTest)
   EXPECT_EQ(std::string("[null, false, true]"), format(c.get()));
 
   /* DATETIME scalar */
-  MYSQL_TIME dt;
+  MYBLOCKCHAIN_TIME dt;
   std::memset(&dt, 0, sizeof dt);
-  MYSQL_TIME_STATUS status;
+  MYBLOCKCHAIN_TIME_STATUS status;
   EXPECT_FALSE(str_to_datetime(&my_charset_utf8mb4_bin,
                                "19990412",
                                8,
                                &dt,
                                (my_time_flags_t)0,
                                &status));
-  const Json_datetime scalar(dt, MYSQL_TYPE_DATETIME);
+  const Json_datetime scalar(dt, MYBLOCKCHAIN_TYPE_DATETIME);
   EXPECT_EQ(Json_dom::J_DATETIME, scalar.json_type());
 
-  const MYSQL_TIME *dt_out= scalar.value();
+  const MYBLOCKCHAIN_TIME *dt_out= scalar.value();
 
-  EXPECT_FALSE(std::memcmp(&dt, dt_out, sizeof(MYSQL_TIME)));
+  EXPECT_FALSE(std::memcmp(&dt, dt_out, sizeof(MYBLOCKCHAIN_TIME)));
   EXPECT_EQ(std::string("\"1999-04-12\""), format(scalar));
 
   a.clear();
@@ -281,17 +281,17 @@ TEST_F(JsonDomTest, BasicTest)
                                (my_time_flags_t)0,
                                &status));
 
-  Json_datetime scalar2(dt, MYSQL_TYPE_DATETIME);
+  Json_datetime scalar2(dt, MYBLOCKCHAIN_TYPE_DATETIME);
   EXPECT_EQ(std::string("\"2014-11-15 12:04:55.123456\""), format(scalar2));
 
   /* Opaque type storage scalar */
   const uint32 i= 0xCAFEBABE;
   char i_as_char[4];
   int4store(i_as_char, i);
-  Json_opaque opaque(MYSQL_TYPE_TINY_BLOB, i_as_char, sizeof(i_as_char));
+  Json_opaque opaque(MYBLOCKCHAIN_TYPE_TINY_BLOB, i_as_char, sizeof(i_as_char));
   EXPECT_EQ(Json_dom::J_OPAQUE, opaque.json_type());
   EXPECT_EQ(i, uint4korr(opaque.value()));
-  EXPECT_EQ(MYSQL_TYPE_TINY_BLOB, opaque.type());
+  EXPECT_EQ(MYBLOCKCHAIN_TYPE_TINY_BLOB, opaque.type());
   EXPECT_EQ(sizeof(i_as_char), opaque.size());
   EXPECT_EQ(std::string("\"base64:type249:vrr+yg==\""),
             format(opaque));

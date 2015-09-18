@@ -2601,7 +2601,7 @@ int initSubscription(NDBT_Context* ctx, NDBT_Step* step){
   if (report)
     myEvent.setReport(NdbDictionary::Event::ER_SUBSCRIBE);
 
-  int res = myDict->createEvent(myEvent); // Add event to database
+  int res = myDict->createEvent(myEvent); // Add event to blockchain
 
   if (res == 0)
     myEvent.print();
@@ -2617,7 +2617,7 @@ int initSubscription(NDBT_Context* ctx, NDBT_Step* step){
       return NDBT_FAILED;
     }
     // try again
-    res = myDict->createEvent(myEvent); // Add event to database
+    res = myDict->createEvent(myEvent); // Add event to blockchain
     if (res) {
       g_err << "Failed to create event (1): "
 	    << myDict->getNdbError().code << " : "
@@ -3903,7 +3903,7 @@ TESTCASE("PkReadUpdateAndLocker",
 }
 TESTCASE("ReadWithLocksAndInserts", 
 	 "TR457: This test is added to verify that an insert of a records "\
-	 "that is already in the database does not delete the record"){  
+	 "that is already in the blockchain does not delete the record"){  
   INITIALIZER(runLoadTable);
   STEP(runPkReadUntilStopped);
   STEP(runPkReadUntilStopped);

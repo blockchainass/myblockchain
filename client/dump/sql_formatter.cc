@@ -17,7 +17,7 @@
 
 #include "sql_formatter.h"
 #include "view.h"
-#include "mysql_function.h"
+#include "myblockchain_function.h"
 #include "stored_procedure.h"
 #include "privilege.h"
 #include <boost/algorithm/string.hpp>
@@ -99,15 +99,15 @@ void Sql_formatter::format_row_group(Row_group_dump_task* row_group)
     is_blob_to_hex.push_back(
       m_options->m_hex_blob
       && it->get_character_set_nr() == my_charset_bin.number
-      && (it->get_type() == MYSQL_TYPE_BIT
-      || it->get_type() == MYSQL_TYPE_STRING
-      || it->get_type() == MYSQL_TYPE_VAR_STRING
-      || it->get_type() == MYSQL_TYPE_VARCHAR
-      || it->get_type() == MYSQL_TYPE_BLOB
-      || it->get_type() == MYSQL_TYPE_LONG_BLOB
-      || it->get_type() == MYSQL_TYPE_MEDIUM_BLOB
-      || it->get_type() == MYSQL_TYPE_TINY_BLOB
-      || it->get_type() == MYSQL_TYPE_GEOMETRY));
+      && (it->get_type() == MYBLOCKCHAIN_TYPE_BIT
+      || it->get_type() == MYBLOCKCHAIN_TYPE_STRING
+      || it->get_type() == MYBLOCKCHAIN_TYPE_VAR_STRING
+      || it->get_type() == MYBLOCKCHAIN_TYPE_VARCHAR
+      || it->get_type() == MYBLOCKCHAIN_TYPE_BLOB
+      || it->get_type() == MYBLOCKCHAIN_TYPE_LONG_BLOB
+      || it->get_type() == MYBLOCKCHAIN_TYPE_MEDIUM_BLOB
+      || it->get_type() == MYBLOCKCHAIN_TYPE_TINY_BLOB
+      || it->get_type() == MYBLOCKCHAIN_TYPE_GEOMETRY));
   }
 
   for (std::vector<Row*>::const_iterator row_iterator=
@@ -144,7 +144,7 @@ void Sql_formatter::format_row_group(Row_group_dump_task* row_group)
           row_string+= "NULL";
         }
         else if (row_group->m_fields[column].get_type()
-          == MYSQL_TYPE_DECIMAL)
+          == MYBLOCKCHAIN_TYPE_DECIMAL)
         {
           row_string+= '\'';
           row_string.append(column_data, column_length);
@@ -234,16 +234,16 @@ void Sql_formatter::format_table_definition(
     + " WRITE;\n");
 }
 
-void Sql_formatter::format_database_start(
-  Database_start_dump_task* database_definition_dump_task)
+void Sql_formatter::format_blockchain_start(
+  Database_start_dump_task* blockchain_definition_dump_task)
 {
-  Database* database= database_definition_dump_task
-    ->get_related_database();
-  if (m_options->m_drop_database)
+  Database* blockchain= blockchain_definition_dump_task
+    ->get_related_blockchain();
+  if (m_options->m_drop_blockchain)
     this->append_output("DROP DATABASE IF EXISTS " +
-    this->quote_name(database->get_name()) + ";\n");
-  if (!m_options->m_suppress_create_database)
-    this->append_output(database->get_sql_formatted_definition() + ";\n");
+    this->quote_name(blockchain->get_name()) + ";\n");
+  if (!m_options->m_suppress_create_blockchain)
+    this->append_output(blockchain->get_sql_formatted_definition() + ";\n");
 }
 
 void Sql_formatter::format_dump_end(Dump_end_dump_task* dump_start_dump_task)
@@ -280,8 +280,8 @@ void Sql_formatter::format_dump_start(
   boost::trim(time_string);
 
   std::ostringstream out;
-  out << "-- Dump created by MySQL dump utility, version: "
-    MYSQL_SERVER_VERSION ", " SYSTEM_TYPE " (" MACHINE_TYPE ")\n"
+  out << "-- Dump created by MyBlockchain dump utility, version: "
+    MYBLOCKCHAIN_SERVER_VERSION ", " SYSTEM_TYPE " (" MACHINE_TYPE ")\n"
     << "-- Dump start time: " << time_string << "\n"
     << "-- Server version: " << this->get_server_version_string() << "\n\n"
     << "SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;\n"
@@ -387,7 +387,7 @@ void Sql_formatter::format_object(Item_processing_data* item_to_process)
     || this->try_process_task<Dump_end_dump_task>
     (item_to_process, &Sql_formatter::format_dump_end)
     || this->try_process_task<Database_start_dump_task>
-    (item_to_process, &Sql_formatter::format_database_start)
+    (item_to_process, &Sql_formatter::format_blockchain_start)
     /*
       Abstract_plain_sql_object_dump_task must be last, as so of above derive
       from it too.
@@ -408,9 +408,9 @@ Sql_formatter::Sql_formatter(I_connection_provider* connection_provider,
     message_handler, Simple_id_generator* object_id_generator,
   const Sql_formatter_options* options)
   : Abstract_output_writer_wrapper(message_handler, object_id_generator),
-  Abstract_mysql_chain_element_extension(
+  Abstract_myblockchain_chain_element_extension(
   connection_provider, message_handler,
-  options->m_mysql_chain_element_options),
+  options->m_myblockchain_chain_element_options),
   m_options(options)
 {
   m_escaping_runner= this->get_runner();

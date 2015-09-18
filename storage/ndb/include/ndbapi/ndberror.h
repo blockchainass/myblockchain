@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2004-2006 MySQL AB
+   Copyright (C) 2004-2006 MyBlockchain AB
     All rights reserved. Use is subject to license terms.
 
    This program is free software; you can redistribute it and/or modify
@@ -77,7 +77,7 @@ typedef struct {
   /**
    * Mysql error code
    */
-  int mysql_code;
+  int myblockchain_code;
 
   /**
    * Error message

@@ -78,7 +78,7 @@ function InsertFunction(data) {
   };
 }
 
-var mapping = new mynode.TableMapping("test.mysql56strings");
+var mapping = new mynode.TableMapping("test.myblockchain56strings");
 mapping.mapAllColumns = true;
 mapping.applyToClass(TestData);
 

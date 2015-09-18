@@ -20,7 +20,7 @@
 #include <m_string.h>
 #include <my_dir.h>
 #include <my_xml.h>
-#include "mysql/psi/mysql_file.h"
+#include "myblockchain/psi/myblockchain_file.h"
 
 /*
   The code below implements this functionality:
@@ -361,10 +361,10 @@ my_read_charset_file(MY_CHARSET_LOADER *loader,
                                  len,myflags)))
     return TRUE;
   
-  if ((fd= mysql_file_open(key_file_charset, filename, O_RDONLY, myflags)) < 0)
+  if ((fd= myblockchain_file_open(key_file_charset, filename, O_RDONLY, myflags)) < 0)
     goto error;
-  tmp_len= mysql_file_read(fd, buf, len, myflags);
-  mysql_file_close(fd, myflags);
+  tmp_len= myblockchain_file_read(fd, buf, len, myflags);
+  myblockchain_file_close(fd, myflags);
   if (tmp_len != len)
     goto error;
   
@@ -538,7 +538,7 @@ get_internal_charset(MY_CHARSET_LOADER *loader, uint cs_number, myf flags)
       To make things thread safe we are not allowing other threads to interfere
       while we may changing the cs_info_table
     */
-    mysql_mutex_lock(&THR_LOCK_charset);
+    myblockchain_mutex_lock(&THR_LOCK_charset);
 
     if (!(cs->state & (MY_CS_COMPILED|MY_CS_LOADED))) /* if CS is not in memory */
     {
@@ -564,7 +564,7 @@ get_internal_charset(MY_CHARSET_LOADER *loader, uint cs_number, myf flags)
     else
       cs= NULL;
 
-    mysql_mutex_unlock(&THR_LOCK_charset);
+    myblockchain_mutex_unlock(&THR_LOCK_charset);
   }
   return cs;
 }
@@ -748,7 +748,7 @@ my_bool resolve_collation(const char *cl_name,
   Escape string with backslashes (\)
 
   SYNOPSIS
-    escape_string_for_mysql()
+    escape_string_for_myblockchain()
     charset_info        Charset of the strings
     to                  Buffer for escaped string
     to_length           Length of destination buffer, or 0
@@ -769,7 +769,7 @@ my_bool resolve_collation(const char *cl_name,
     #           The length of the escaped string
 */
 
-size_t escape_string_for_mysql(const CHARSET_INFO *charset_info,
+size_t escape_string_for_myblockchain(const CHARSET_INFO *charset_info,
                                char *to, size_t to_length,
                                const char *from, size_t length)
 {
@@ -809,7 +809,7 @@ size_t escape_string_for_mysql(const CHARSET_INFO *charset_info,
       escape= *from;
     else
     switch (*from) {
-    case 0:				/* Must be escaped for 'mysql' */
+    case 0:				/* Must be escaped for 'myblockchain' */
       escape= '0';
       break;
     case '\n':				/* Must be escaped for logs */
@@ -888,7 +888,7 @@ CHARSET_INFO *fs_character_set()
   Escape apostrophes by doubling them up
 
   SYNOPSIS
-    escape_quotes_for_mysql()
+    escape_quotes_for_myblockchain()
     charset_info        Charset of the strings
     to                  Buffer for escaped string
     to_length           Length of destination buffer, or 0
@@ -902,7 +902,7 @@ CHARSET_INFO *fs_character_set()
     NO_BACKSLASH_ESCAPES SQL_MODE is in effect on the server.
 
   NOTE
-    To be consistent with escape_string_for_mysql(), to_length may be 0 to
+    To be consistent with escape_string_for_myblockchain(), to_length may be 0 to
     mean "big enough"
 
   RETURN VALUES
@@ -910,7 +910,7 @@ CHARSET_INFO *fs_character_set()
     >=0         The length of the escaped string
 */
 
-size_t escape_quotes_for_mysql(CHARSET_INFO *charset_info,
+size_t escape_quotes_for_myblockchain(CHARSET_INFO *charset_info,
                                char *to, size_t to_length,
                                const char *from, size_t length, char quote)
 {

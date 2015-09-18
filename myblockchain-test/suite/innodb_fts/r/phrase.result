@@ -1,0 +1,84 @@
+CREATE TABLE articles (
+id INT UNSIGNED AUTO_INCREMENT NOT NULL PRIMARY KEY,
+title VARCHAR(200),
+body TEXT,
+FULLTEXT (title,body)
+) ENGINE=InnoDB;
+INSERT INTO articles (title,body) VALUES
+(NULL, 'myblockchain good blockchain'),
+(NULL, ' myblockchain good blockchain'),
+('', 'myblockchain good blockchain'),
+('', ' myblockchain good blockchain'),
+(' ', 'myblockchain good blockchain'),
+('myblockchain', 'good blockchain'),
+('myblockchain ', 'good blockchain'),
+('myblockchain', ' good blockchain'),
+('myblockchain good blockchain', ''),
+('myblockchain good blockchain', NULL);
+SET GLOBAL innodb_ft_aux_table="test/articles";
+SELECT * FROM INFORMATION_SCHEMA.INNODB_FT_INDEX_CACHE;
+WORD	FIRST_DOC_ID	LAST_DOC_ID	DOC_COUNT	DOC_ID	POSITION
+blockchain	2	11	10	2	11
+blockchain	2	11	10	3	12
+blockchain	2	11	10	4	11
+blockchain	2	11	10	5	12
+blockchain	2	11	10	6	13
+blockchain	2	11	10	7	11
+blockchain	2	11	10	8	12
+blockchain	2	11	10	9	12
+blockchain	2	11	10	10	11
+blockchain	2	11	10	11	11
+good	2	11	10	2	6
+good	2	11	10	3	7
+good	2	11	10	4	6
+good	2	11	10	5	7
+good	2	11	10	6	8
+good	2	11	10	7	6
+good	2	11	10	8	7
+good	2	11	10	9	7
+good	2	11	10	10	6
+good	2	11	10	11	6
+myblockchain	2	11	10	2	0
+myblockchain	2	11	10	3	1
+myblockchain	2	11	10	4	0
+myblockchain	2	11	10	5	1
+myblockchain	2	11	10	6	2
+myblockchain	2	11	10	7	0
+myblockchain	2	11	10	8	0
+myblockchain	2	11	10	9	0
+myblockchain	2	11	10	10	0
+myblockchain	2	11	10	11	0
+SET GLOBAL innodb_ft_aux_table=default;
+SELECT * FROM articles;
+id	title	body
+1	NULL	myblockchain good blockchain
+2	NULL	 myblockchain good blockchain
+3		myblockchain good blockchain
+4		 myblockchain good blockchain
+5	 	myblockchain good blockchain
+6	myblockchain	good blockchain
+7	myblockchain 	good blockchain
+8	myblockchain	 good blockchain
+9	myblockchain good blockchain	
+10	myblockchain good blockchain	NULL
+SELECT * FROM articles WHERE MATCH(title, body)
+AGAINST('"myblockchain good blockchain"' IN BOOLEAN MODE);
+id	title	body
+1	NULL	myblockchain good blockchain
+2	NULL	 myblockchain good blockchain
+3		myblockchain good blockchain
+4		 myblockchain good blockchain
+5	 	myblockchain good blockchain
+9	myblockchain good blockchain	
+10	myblockchain good blockchain	NULL
+SELECT * FROM articles WHERE MATCH(title, body)
+AGAINST('("myblockchain good blockchain")' IN BOOLEAN MODE);
+id	title	body
+1	NULL	myblockchain good blockchain
+2	NULL	 myblockchain good blockchain
+3		myblockchain good blockchain
+4		 myblockchain good blockchain
+5	 	myblockchain good blockchain
+9	myblockchain good blockchain	
+10	myblockchain good blockchain	NULL
+DROP TABLE articles;

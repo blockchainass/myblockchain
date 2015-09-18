@@ -1,36 +1,36 @@
-2000-11-27  Michael Widenius  <monty@mysql.com>
+2000-11-27  Michael Widenius  <monty@myblockchain.com>
 
 * Changed mi_create.c to use less stack.
 
-2000-08-23  Michael Widenius  <monty@mysql.com>
+2000-08-23  Michael Widenius  <monty@myblockchain.com>
 
 * Fixed bug when comparing DECIMAL/NUMERIC key parts.
 
-2000-08-17  Michael Widenius  <monty@mysql.com>
+2000-08-17  Michael Widenius  <monty@myblockchain.com>
 
 * Add a new flag in share.staus so that we can quickly check if a table
   is analyzed or not!
 
-2000-07-02  Michael Widenius  <monty@mysql.com>
+2000-07-02  Michael Widenius  <monty@myblockchain.com>
 
 * Added safety margin to guard against full index file.
 
-2000-05-22  Michael Widenius  <monty@mysql.com>
+2000-05-22  Michael Widenius  <monty@myblockchain.com>
 
 * Fixed that --join works with myisampack.
 
-2000-05-14  Michael Widenius  <monty@mysql.com>
+2000-05-14  Michael Widenius  <monty@myblockchain.com>
 
 * Don't lock datafile during myisamchk (only indexfile is locked;  This is good
   enough for all MyISAM functions); This made it possible to close datafile
   in rep_by_sort().
 
-2000-05-04  Michael Widenius  <monty@mysql.com>
+2000-05-04  Michael Widenius  <monty@myblockchain.com>
 
 * Fixed bug in code that scanned after rows in a crashed table.
   This could cause an infinite loop when repairing tables.
 	
-2000-04-26  Michael Widenius  <monty@mysql.com>
+2000-04-26  Michael Widenius  <monty@myblockchain.com>
 
 * Fixed bug when doing read_next after a delete/insert which balanced key
   pages (In this case one internal buffer was wrongly reused)
@@ -42,7 +42,7 @@
   that is bigger than all other keys;  This will improve inserts when
   doing these in sorted order.
 	
-2000-04-04  Michael Widenius  <monty@mysql.com>
+2000-04-04  Michael Widenius  <monty@myblockchain.com>
 
 * Added support for different languages on key part level.
 

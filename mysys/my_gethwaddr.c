@@ -143,7 +143,7 @@ my_bool my_gethwaddr(uchar *to)
 /*
   The following typedef is for dynamically loading iphlpapi.dll /
   GetAdaptersAddresses. Dynamic loading is used because
-  GetAdaptersAddresses is not available on Windows 2000 which MySQL
+  GetAdaptersAddresses is not available on Windows 2000 which MyBlockchain
   still supports. Static linking would cause an unresolved export.
 */
 typedef DWORD (WINAPI *pfnGetAdaptersAddresses)(IN ULONG Family,

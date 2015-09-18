@@ -1,0 +1,23 @@
+# This test should work in embedded server after we fix myblockchaintest
+-- source include/not_embedded.inc
+-- source include/have_ssl_communication.inc
+-- source include/have_openssl.inc
+
+let $crllen=`select length(trim(coalesce(@@ssl_crl, ''))) + length(trim(coalesce(@@ssl_crlpath, '')))`;
+if (!$crllen)
+{
+  skip Needs OpenSSL;
+}
+
+--echo # test --crl for the client : should connect
+--replace_result $MYBLOCKCHAIN_TEST_DIR MYBLOCKCHAIN_TEST_DIR
+--exec $MYBLOCKCHAIN --ssl --ssl-ca=$MYBLOCKCHAIN_TEST_DIR/std_data/crl-ca-cert.pem --ssl-key=$MYBLOCKCHAIN_TEST_DIR/std_data/crl-client-key.pem --ssl-cert=$MYBLOCKCHAIN_TEST_DIR/std_data/crl-client-cert.pem test --ssl-crl=$MYBLOCKCHAIN_TEST_DIR/std_data/crl-client-revoked.crl -e "SHOW VARIABLES like '%ssl%';"
+
+--echo # test --crlpath for the client : should connect
+--replace_result $MYBLOCKCHAIN_TEST_DIR MYBLOCKCHAIN_TEST_DIR
+--exec $MYBLOCKCHAIN --ssl --ssl-ca=$MYBLOCKCHAIN_TEST_DIR/std_data/crl-ca-cert.pem --ssl-key=$MYBLOCKCHAIN_TEST_DIR/std_data/crl-client-key.pem --ssl-cert=$MYBLOCKCHAIN_TEST_DIR/std_data/crl-client-cert.pem --ssl-crlpath=$MYBLOCKCHAIN_TEST_DIR/std_data/crldir test -e "SHOW VARIABLES like '%ssl%';"
+
+--echo # try logging in with a certificate in the server's --ssl-crl : should fail
+--replace_result $MYBLOCKCHAIN_TEST_DIR MYBLOCKCHAIN_TEST_DIR
+--error 1
+--exec $MYBLOCKCHAIN --ssl --ssl-ca=$MYBLOCKCHAIN_TEST_DIR/std_data/crl-ca-cert.pem --ssl-key=$MYBLOCKCHAIN_TEST_DIR/std_data/crl-client-revoked-key.pem --ssl-cert=$MYBLOCKCHAIN_TEST_DIR/std_data/crl-client-revoked-cert.pem test -e "SHOW VARIABLES like '%ssl%';"

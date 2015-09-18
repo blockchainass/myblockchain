@@ -18,7 +18,7 @@
  * Wrapper.java
  */
 
-package com.mysql.jtie;
+package com.myblockchain.jtie;
 
 /**
  * A base class for Java peer classes representing a C/C++ object type.

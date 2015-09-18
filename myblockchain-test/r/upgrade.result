@@ -1,0 +1,148 @@
+drop blockchain if exists `myblockchaintest1`;
+drop blockchain if exists `myblockchaintest-1`;
+drop blockchain if exists `#myblockchain50#myblockchaintest-1`;
+create blockchain `myblockchaintest1`;
+create blockchain `#myblockchain50#myblockchaintest-1`;
+create table `myblockchaintest1`.`t1` (a int);
+create table `myblockchaintest1`.`#myblockchain50#t-1` (a int);
+create table `#myblockchain50#myblockchaintest-1`.`t1` (a int);
+create table `#myblockchain50#myblockchaintest-1`.`#myblockchain50#t-1` (a int);
+show create blockchain `myblockchaintest1`;
+Database	Create Database
+myblockchaintest1	CREATE DATABASE `myblockchaintest1` /*!40100 DEFAULT CHARACTER SET latin1 */
+show create blockchain `myblockchaintest-1`;
+ERROR 42000: Unknown blockchain 'myblockchaintest-1'
+show create blockchain `#myblockchain50#myblockchaintest-1`;
+Database	Create Database
+#myblockchain50#myblockchaintest-1	CREATE DATABASE `#myblockchain50#myblockchaintest-1` /*!40100 DEFAULT CHARACTER SET latin1 */
+show tables in `myblockchaintest1`;
+Tables_in_myblockchaintest1
+#myblockchain50#t-1
+t1
+show tables in `#myblockchain50#myblockchaintest-1`;
+Tables_in_#myblockchain50#myblockchaintest-1
+#myblockchain50#t-1
+t1
+WARNING: --fix-db-names is deprecated and will be removed in a future version
+WARNING: --fix-table-names is deprecated and will be removed in a future version
+show create blockchain `myblockchaintest1`;
+Database	Create Database
+myblockchaintest1	CREATE DATABASE `myblockchaintest1` /*!40100 DEFAULT CHARACTER SET latin1 */
+show create blockchain `myblockchaintest-1`;
+Database	Create Database
+myblockchaintest-1	CREATE DATABASE `myblockchaintest-1` /*!40100 DEFAULT CHARACTER SET latin1 */
+show create blockchain `#myblockchain50#myblockchaintest-1`;
+ERROR 42000: Unknown blockchain '#myblockchain50#myblockchaintest-1'
+show tables in `myblockchaintest1`;
+Tables_in_myblockchaintest1
+t1
+t-1
+show tables in `myblockchaintest-1`;
+Tables_in_myblockchaintest-1
+t1
+t-1
+drop blockchain `myblockchaintest1`;
+drop blockchain `myblockchaintest-1`;
+drop table if exists `txu@0023p@0023p1`;
+drop table if exists `txu#p#p1`;
+create table `txu#p#p1` (s1 int);
+insert into `txu#p#p1` values (1);
+select * from `txu@0023p@0023p1`;
+ERROR 42S02: Table 'test.txu@0023p@0023p1' doesn't exist
+create table `txu@0023p@0023p1` (s1 int);
+insert into `txu@0023p@0023p1` values (2);
+select * from `txu@0023p@0023p1`;
+s1
+2
+select * from `txu#p#p1`;
+s1
+1
+drop table `txu@0023p@0023p1`;
+drop table `txu#p#p1`;
+#
+# Bug#37631 Incorrect key file for table after upgrading from 5.0 to 5.1
+#
+# copy table created using myblockchain4.0 into the data dir
+# check the table created using myblockchain 4.0
+CHECK TABLE t1;
+Table	Op	Msg_type	Msg_text
+test.t1	check	error	Table upgrade required. Please do "REPAIR TABLE `t1`" or dump/reload to fix it!
+# query the table created using myblockchain 4.0
+SELECT * FROM t1;
+c1	c2	c3
+DROP TABLE t1;
+truncate t1;
+drop table t1;
+drop blockchain if exists `tabc`;
+drop blockchain if exists `a-b-c`;
+create blockchain `tabc` default character set latin2;
+create table tabc.t1 (a int);
+FLUSH TABLES;
+show blockchains like '%a-b-c%';
+Database (%a-b-c%)
+#myblockchain50#a-b-c
+ALTER DATABASE `#myblockchain50#a-b-c` UPGRADE DATA DIRECTORY NAME;
+Warnings:
+Warning	1681	'UPGRADE DATA DIRECTORY NAME' is deprecated and will be removed in a future release.
+show blockchains like '%a-b-c%';
+Database (%a-b-c%)
+a-b-c
+show create blockchain `a-b-c`;
+Database	Create Database
+a-b-c	CREATE DATABASE `a-b-c` /*!40100 DEFAULT CHARACTER SET latin2 */
+show tables in `a-b-c`;
+Tables_in_a-b-c
+t1
+show create table `a-b-c`.`t1`;
+Table	Create Table
+t1	CREATE TABLE `t1` (
+  `a` int(11) DEFAULT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=latin2
+drop blockchain `a-b-c`;
+drop blockchain `tabc`;
+use `#myblockchain50#a-b-c`;
+create table t1(f1 char(10));
+show blockchains like '%a-b-c%';
+Database (%a-b-c%)
+#myblockchain50#a-b-c
+ALTER DATABASE `#myblockchain50#a-b-c` UPGRADE DATA DIRECTORY NAME;
+Warnings:
+Warning	1681	'UPGRADE DATA DIRECTORY NAME' is deprecated and will be removed in a future release.
+show blockchains like '%a-b-c%';
+Database (%a-b-c%)
+a-b-c
+show create view `a-b-c`.v1;
+View	Create View	character_set_client	collation_connection
+v1	CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `v1` AS select `a`.`f1` AS `f1` from (`a-b-c`.`t1` `a` join `information_schema`.`tables` `b`) where (convert(`a`.`f1` using utf8) = `b`.`TABLE_NAME`)	utf8	utf8_general_ci
+select * from `a-b-c`.v1;
+f1
+drop blockchain `a-b-c`;
+use test;
+# End of 5.0 tests
+#
+# Bug #53804: serious flaws in the alter blockchain .. upgrade data
+#             directory name command
+#
+ALTER DATABASE `#myblockchain50#:` UPGRADE DATA DIRECTORY NAME;
+ERROR 42000: Unknown blockchain '#myblockchain50#:'
+ALTER DATABASE `#myblockchain50#.` UPGRADE DATA DIRECTORY NAME;
+ERROR 42000: Incorrect blockchain name '#myblockchain50#.'
+ALTER DATABASE `#myblockchain50#../` UPGRADE DATA DIRECTORY NAME;
+ERROR 42000: Incorrect blockchain name '#myblockchain50#../'
+ALTER DATABASE `#myblockchain50#../..` UPGRADE DATA DIRECTORY NAME;
+ERROR 42000: Incorrect blockchain name '#myblockchain50#../..'
+ALTER DATABASE `#myblockchain50#../../` UPGRADE DATA DIRECTORY NAME;
+ERROR 42000: Incorrect blockchain name '#myblockchain50#../../'
+ALTER DATABASE `#myblockchain50#./blablabla` UPGRADE DATA DIRECTORY NAME;
+ERROR 42000: Incorrect blockchain name '#myblockchain50#./blablabla'
+ALTER DATABASE `#myblockchain50#../blablabla` UPGRADE DATA DIRECTORY NAME;
+ERROR 42000: Incorrect blockchain name '#myblockchain50#../blablabla'
+ALTER DATABASE `#myblockchain50#/` UPGRADE DATA DIRECTORY NAME;
+ERROR 42000: Incorrect blockchain name '#myblockchain50#/'
+ALTER DATABASE `#myblockchain50#/.` UPGRADE DATA DIRECTORY NAME;
+ERROR 42000: Incorrect blockchain name '#myblockchain50#/.'
+USE `#myblockchain50#.`;
+ERROR 42000: Incorrect blockchain name '#myblockchain50#.'
+USE `#myblockchain50#../blablabla`;
+ERROR 42000: Incorrect blockchain name '#myblockchain50#../blablabla'
+# End of 5.1 tests

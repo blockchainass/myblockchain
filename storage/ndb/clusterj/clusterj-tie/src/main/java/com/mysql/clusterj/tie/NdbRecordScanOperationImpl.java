@@ -15,24 +15,24 @@
    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
  */
 
-package com.mysql.clusterj.tie;
+package com.myblockchain.clusterj.tie;
 
-import com.mysql.clusterj.ClusterJFatalInternalException;
-import com.mysql.clusterj.core.spi.QueryExecutionContext;
-import com.mysql.clusterj.core.store.ResultData;
-import com.mysql.clusterj.core.store.ScanFilter;
-import com.mysql.clusterj.core.store.ScanOperation;
-import com.mysql.clusterj.core.store.Table;
+import com.myblockchain.clusterj.ClusterJFatalInternalException;
+import com.myblockchain.clusterj.core.spi.QueryExecutionContext;
+import com.myblockchain.clusterj.core.store.ResultData;
+import com.myblockchain.clusterj.core.store.ScanFilter;
+import com.myblockchain.clusterj.core.store.ScanOperation;
+import com.myblockchain.clusterj.core.store.Table;
 
-import com.mysql.clusterj.Query.Ordering;
+import com.myblockchain.clusterj.Query.Ordering;
 
-import com.mysql.ndbjtie.ndbapi.NdbInterpretedCode;
-import com.mysql.ndbjtie.ndbapi.NdbOperationConst;
-import com.mysql.ndbjtie.ndbapi.NdbScanFilter;
-import com.mysql.ndbjtie.ndbapi.NdbScanOperation;
-import com.mysql.ndbjtie.ndbapi.NdbScanOperation.ScanFlag;
-import com.mysql.ndbjtie.ndbapi.NdbScanOperation.ScanOptions;
-import com.mysql.ndbjtie.ndbapi.NdbScanOperation.ScanOptionsConst.Type;
+import com.myblockchain.ndbjtie.ndbapi.NdbInterpretedCode;
+import com.myblockchain.ndbjtie.ndbapi.NdbOperationConst;
+import com.myblockchain.ndbjtie.ndbapi.NdbScanFilter;
+import com.myblockchain.ndbjtie.ndbapi.NdbScanOperation;
+import com.myblockchain.ndbjtie.ndbapi.NdbScanOperation.ScanFlag;
+import com.myblockchain.ndbjtie.ndbapi.NdbScanOperation.ScanOptions;
+import com.myblockchain.ndbjtie.ndbapi.NdbScanOperation.ScanOptionsConst.Type;
 
 /** NdbRecordScanOperationImpl performs table and index scans using NdbRecord.
  * The scans are set up via subclasses. After executing, the NdbRecordScanOperationImpl instance
@@ -130,7 +130,7 @@ public abstract class NdbRecordScanOperationImpl extends NdbRecordOperationImpl 
         int flags = 0;
         if (ordering != null
                 || multiRange
-                || lockMode != com.mysql.ndbjtie.ndbapi.NdbOperationConst.LockMode.LM_CommittedRead
+                || lockMode != com.myblockchain.ndbjtie.ndbapi.NdbOperationConst.LockMode.LM_CommittedRead
                 || ndbScanFilter != null) {
             // create scan options only if we have scan options to set
             scanOptions = db.createScanOptions();
@@ -153,7 +153,7 @@ public abstract class NdbRecordScanOperationImpl extends NdbRecordOperationImpl 
                 flags |= ScanFlag.SF_MultiRange;
                 flags |= ScanFlag.SF_ReadRangeNo;
             }
-            if (lockMode != com.mysql.ndbjtie.ndbapi.NdbOperationConst.LockMode.LM_CommittedRead) {
+            if (lockMode != com.myblockchain.ndbjtie.ndbapi.NdbOperationConst.LockMode.LM_CommittedRead) {
                 options |= Type.SO_SCANFLAGS;
                 flags |= ScanFlag.SF_KeyInfo;
             }
@@ -232,7 +232,7 @@ public abstract class NdbRecordScanOperationImpl extends NdbRecordOperationImpl 
      */
     public NdbOperationConst lockCurrentTuple() {
         NdbOperationConst result = null;
-        if (lockMode != com.mysql.ndbjtie.ndbapi.NdbOperationConst.LockMode.LM_CommittedRead) {
+        if (lockMode != com.myblockchain.ndbjtie.ndbapi.NdbOperationConst.LockMode.LM_CommittedRead) {
             result = ((NdbScanOperation)ndbOperation).lockCurrentTuple(
                     clusterTransaction.ndbTransaction, ndbRecordValues.getNdbRecord(),
                     null, null, null, 0);

@@ -218,8 +218,8 @@ function onLoadThenCompare(err, testCase, expectedObject, loadedObject) {
   testCase.failOnError();  
 }
 
-/* load uses the object it has and copies database values into it 
-    based on finding the object in the database. */
+/* load uses the object it has and copies blockchain values into it 
+    based on finding the object in the blockchain. */
 // Find_ModifyPK_Load
 var t7 = new harness.ConcurrentTest("Find_ModifyPK_Load");
 t7.run = function() {

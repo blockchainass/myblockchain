@@ -37,18 +37,18 @@ Created 2/23/1996 Heikki Tuuri
 Allocates memory for a persistent cursor object and initializes the cursor.
 @return own: persistent cursor */
 btr_pcur_t*
-btr_pcur_create_for_mysql(void)
+btr_pcur_create_for_myblockchain(void)
 /*============================*/
 {
 	btr_pcur_t*	pcur;
-	DBUG_ENTER("btr_pcur_create_for_mysql");
+	DBUG_ENTER("btr_pcur_create_for_myblockchain");
 
 	pcur = (btr_pcur_t*) ut_malloc_nokey(sizeof(btr_pcur_t));
 
 	pcur->btr_cur.index = NULL;
 	btr_pcur_init(pcur);
 
-	DBUG_PRINT("btr_pcur_create_for_mysql", ("pcur: %p", pcur));
+	DBUG_PRINT("btr_pcur_create_for_myblockchain", ("pcur: %p", pcur));
 	DBUG_RETURN(pcur);
 }
 
@@ -75,12 +75,12 @@ btr_pcur_reset(
 /**************************************************************//**
 Frees the memory for a persistent cursor object. */
 void
-btr_pcur_free_for_mysql(
+btr_pcur_free_for_myblockchain(
 /*====================*/
 	btr_pcur_t*	cursor)	/*!< in, own: persistent cursor */
 {
-	DBUG_ENTER("btr_pcur_free_for_mysql");
-	DBUG_PRINT("btr_pcur_free_for_mysql", ("pcur: %p", cursor));
+	DBUG_ENTER("btr_pcur_free_for_myblockchain");
+	DBUG_PRINT("btr_pcur_free_for_myblockchain", ("pcur: %p", cursor));
 
 	btr_pcur_free(cursor);
 	ut_free(cursor);

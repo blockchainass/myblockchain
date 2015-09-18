@@ -15,7 +15,7 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
  */
 
-package com.mysql.clusterj.jdbc;
+package com.myblockchain.clusterj.jdbc;
 
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
@@ -26,17 +26,17 @@ import java.sql.Timestamp;
 import java.util.Iterator;
 import java.util.List;
 
-import com.mysql.clusterj.ClusterJFatalInternalException;
-import com.mysql.clusterj.ClusterJUserException;
-import com.mysql.clusterj.ColumnMetadata;
-import com.mysql.clusterj.core.CacheManager;
-import com.mysql.clusterj.core.spi.DomainTypeHandler;
-import com.mysql.clusterj.core.spi.ValueHandlerBatching;
-import com.mysql.clusterj.core.util.I18NHelper;
-import com.mysql.clusterj.core.util.Logger;
-import com.mysql.clusterj.core.util.LoggerFactoryService;
-import com.mysql.jdbc.ServerPreparedStatement.BatchedBindValues;
-import com.mysql.jdbc.ServerPreparedStatement.BindValue;
+import com.myblockchain.clusterj.ClusterJFatalInternalException;
+import com.myblockchain.clusterj.ClusterJUserException;
+import com.myblockchain.clusterj.ColumnMetadata;
+import com.myblockchain.clusterj.core.CacheManager;
+import com.myblockchain.clusterj.core.spi.DomainTypeHandler;
+import com.myblockchain.clusterj.core.spi.ValueHandlerBatching;
+import com.myblockchain.clusterj.core.util.I18NHelper;
+import com.myblockchain.clusterj.core.util.Logger;
+import com.myblockchain.clusterj.core.util.LoggerFactoryService;
+import com.myblockchain.jdbc.ServerPreparedStatement.BatchedBindValues;
+import com.myblockchain.jdbc.ServerPreparedStatement.BindValue;
 
 /** This class handles retrieving parameter values from the parameterBindings
  * associated with a PreparedStatement.

@@ -900,7 +900,7 @@ my_charset_is_ascii_based(const CHARSET_INFO *cs)
   and it is pure ascii, i.e. doesn't have
   characters outside U+0000..U+007F
   This functions is shared between "conf_to_src"
-  and dynamic charsets loader in "mysqld".
+  and dynamic charsets loader in "myblockchaind".
 */
 my_bool
 my_charset_is_8bit_pure_ascii(const CHARSET_INFO *cs)

@@ -1,0 +1,26 @@
+# The include statement below is a temp one for tests that are yet to
+#be ported to run with InnoDB,
+#but needs to be kept for tests that would need MyISAM in future.
+--source include/force_myisam_default.inc
+
+--source include/not_embedded.inc
+--source include/have_ndb.inc
+
+--source ndbinfo_create.inc
+
+USE ndbinfo;
+
+#
+# Bug#54316 myblockchaindump and restore ndbinfo fails
+# - caused by "blocks" and "config_params" table being truncated
+#   when restoriung a dump without any data. Hack myblockchaindump
+#   to not include ndbinfo blockchain in --all-blockchains or
+#   when explicitly given on command line
+#
+let $dump_file = $MYBLOCKCHAINTEST_VARDIR/tmp/ndbinfo_dump.sql;
+select count(*) from blocks;
+--exec $MYBLOCKCHAIN_DUMP --no-data --blockchains test ndbinfo > $dump_file
+--exec $MYBLOCKCHAIN test < $dump_file
+select count(*) from blocks;
+
+--source ndbinfo_drop.inc

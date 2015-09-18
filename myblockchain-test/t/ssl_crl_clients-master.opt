@@ -1,0 +1,4 @@
+--ssl-ca=$MYBLOCKCHAIN_TEST_DIR/std_data/crl-ca-cert.pem
+--ssl-key=$MYBLOCKCHAIN_TEST_DIR/std_data/crl-client-revoked-key.pem
+--ssl-cert=$MYBLOCKCHAIN_TEST_DIR/std_data/crl-client-revoked-cert.pem
+--ssl-crl=$MYBLOCKCHAIN_TEST_DIR/std_data/crl-client-revoked.crl

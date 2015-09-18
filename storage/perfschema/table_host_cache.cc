@@ -311,7 +311,7 @@ void table_host_cache::make_row(Host_entry *entry, row_host_cache *row)
   row->m_count_ssl_errors= entry->m_errors.m_ssl;
   row->m_count_max_user_connection_errors= entry->m_errors.m_max_user_connection;
   row->m_count_max_user_connection_per_hour_errors= entry->m_errors.m_max_user_connection_per_hour;
-  row->m_count_default_database_errors= entry->m_errors.m_default_database;
+  row->m_count_default_blockchain_errors= entry->m_errors.m_default_blockchain;
   row->m_count_init_connect_errors= entry->m_errors.m_init_connect;
   row->m_count_local_errors= entry->m_errors.m_local;
 
@@ -450,7 +450,7 @@ int table_host_cache::read_row_values(TABLE *table,
         set_field_ulonglong(f, m_row->m_count_max_user_connection_per_hour_errors);
         break;
       case 21: /* COUNT_DEFAULT_DATABASE_ERRORS */
-        set_field_ulonglong(f, m_row->m_count_default_database_errors);
+        set_field_ulonglong(f, m_row->m_count_default_blockchain_errors);
         break;
       case 22: /* COUNT_INIT_CONNECT_ERRORS */
         set_field_ulonglong(f, m_row->m_count_init_connect_errors);

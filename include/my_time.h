@@ -21,7 +21,7 @@
 #ifndef _my_time_h_
 #define _my_time_h_
 #include "my_global.h"
-#include "mysql_time.h"
+#include "myblockchain_time.h"
 
 C_MODE_START
 
@@ -39,7 +39,7 @@ extern const char my_zero_datetime6[]; /* "0000-00-00 00:00:00.000000" */
 */
 typedef long my_time_t;
 
-typedef enum enum_mysql_timestamp_type timestamp_type;
+typedef enum enum_myblockchain_timestamp_type timestamp_type;
 
 #define MY_TIME_T_MAX LONG_MAX
 #define MY_TIME_T_MIN LONG_MIN
@@ -77,12 +77,12 @@ static const my_time_flags_t TIME_NO_ZERO_DATE=      32;
 static const my_time_flags_t TIME_INVALID_DATES=     64;
 
 /* Conversion warnings */
-#define MYSQL_TIME_WARN_TRUNCATED         1
-#define MYSQL_TIME_WARN_OUT_OF_RANGE      2
-#define MYSQL_TIME_WARN_INVALID_TIMESTAMP 4
-#define MYSQL_TIME_WARN_ZERO_DATE         8
-#define MYSQL_TIME_NOTE_TRUNCATED        16
-#define MYSQL_TIME_WARN_ZERO_IN_DATE     32
+#define MYBLOCKCHAIN_TIME_WARN_TRUNCATED         1
+#define MYBLOCKCHAIN_TIME_WARN_OUT_OF_RANGE      2
+#define MYBLOCKCHAIN_TIME_WARN_INVALID_TIMESTAMP 4
+#define MYBLOCKCHAIN_TIME_WARN_ZERO_DATE         8
+#define MYBLOCKCHAIN_TIME_NOTE_TRUNCATED        16
+#define MYBLOCKCHAIN_TIME_WARN_ZERO_IN_DATE     32
 
 /* Usefull constants */
 #define SECONDS_IN_24H 86400L
@@ -100,30 +100,30 @@ static const my_time_flags_t TIME_INVALID_DATES=     64;
   Structure to return status from
     str_to_datetime(), str_to_time(), number_to_datetime(), number_to_time()
 */
-typedef struct st_mysql_time_status
+typedef struct st_myblockchain_time_status
 {
   int warnings;
   uint fractional_digits;
   uint nanoseconds;
-} MYSQL_TIME_STATUS;
+} MYBLOCKCHAIN_TIME_STATUS;
 
-static inline void my_time_status_init(MYSQL_TIME_STATUS *status)
+static inline void my_time_status_init(MYBLOCKCHAIN_TIME_STATUS *status)
 {
   status->warnings= status->fractional_digits= status->nanoseconds= 0;
 }
 
 
-my_bool check_date(const MYSQL_TIME *ltime, my_bool not_zero_date,
+my_bool check_date(const MYBLOCKCHAIN_TIME *ltime, my_bool not_zero_date,
                    my_time_flags_t flags, int *was_cut);
-my_bool str_to_datetime(const char *str, size_t length, MYSQL_TIME *l_time,
-                        my_time_flags_t flags, MYSQL_TIME_STATUS *status);
-longlong number_to_datetime(longlong nr, MYSQL_TIME *time_res,
+my_bool str_to_datetime(const char *str, size_t length, MYBLOCKCHAIN_TIME *l_time,
+                        my_time_flags_t flags, MYBLOCKCHAIN_TIME_STATUS *status);
+longlong number_to_datetime(longlong nr, MYBLOCKCHAIN_TIME *time_res,
                             my_time_flags_t flags, int *was_cut);
-my_bool number_to_time(longlong nr, MYSQL_TIME *ltime, int *warnings);
-ulonglong TIME_to_ulonglong_datetime(const MYSQL_TIME *);
-ulonglong TIME_to_ulonglong_date(const MYSQL_TIME *);
-ulonglong TIME_to_ulonglong_time(const MYSQL_TIME *);
-ulonglong TIME_to_ulonglong(const MYSQL_TIME *);
+my_bool number_to_time(longlong nr, MYBLOCKCHAIN_TIME *ltime, int *warnings);
+ulonglong TIME_to_ulonglong_datetime(const MYBLOCKCHAIN_TIME *);
+ulonglong TIME_to_ulonglong_date(const MYBLOCKCHAIN_TIME *);
+ulonglong TIME_to_ulonglong_time(const MYBLOCKCHAIN_TIME *);
+ulonglong TIME_to_ulonglong(const MYBLOCKCHAIN_TIME *);
 
 #define MY_PACKED_TIME_GET_INT_PART(x)     ((x) >> 24)
 #define MY_PACKED_TIME_GET_FRAC_PART(x)    ((x) % (1LL << 24))
@@ -131,16 +131,16 @@ ulonglong TIME_to_ulonglong(const MYSQL_TIME *);
 #define MY_PACKED_TIME_MAKE_INT(i)         ((((longlong) (i)) << 24))
 
 longlong year_to_longlong_datetime_packed(long year);
-longlong TIME_to_longlong_datetime_packed(const MYSQL_TIME *);
-longlong TIME_to_longlong_date_packed(const MYSQL_TIME *);
-longlong TIME_to_longlong_time_packed(const MYSQL_TIME *);
-longlong TIME_to_longlong_packed(const MYSQL_TIME *);
+longlong TIME_to_longlong_datetime_packed(const MYBLOCKCHAIN_TIME *);
+longlong TIME_to_longlong_date_packed(const MYBLOCKCHAIN_TIME *);
+longlong TIME_to_longlong_time_packed(const MYBLOCKCHAIN_TIME *);
+longlong TIME_to_longlong_packed(const MYBLOCKCHAIN_TIME *);
 
-void TIME_from_longlong_datetime_packed(MYSQL_TIME *ltime, longlong nr);
-void TIME_from_longlong_time_packed(MYSQL_TIME *ltime, longlong nr);
-void TIME_from_longlong_date_packed(MYSQL_TIME *ltime, longlong nr);
-void TIME_set_yymmdd(MYSQL_TIME *ltime, uint yymmdd);
-void TIME_set_hhmmss(MYSQL_TIME *ltime, uint hhmmss);
+void TIME_from_longlong_datetime_packed(MYBLOCKCHAIN_TIME *ltime, longlong nr);
+void TIME_from_longlong_time_packed(MYBLOCKCHAIN_TIME *ltime, longlong nr);
+void TIME_from_longlong_date_packed(MYBLOCKCHAIN_TIME *ltime, longlong nr);
+void TIME_set_yymmdd(MYBLOCKCHAIN_TIME *ltime, uint yymmdd);
+void TIME_set_hhmmss(MYBLOCKCHAIN_TIME *ltime, uint hhmmss);
 
 void my_datetime_packed_to_binary(longlong nr, uchar *ptr, uint dec);
 longlong my_datetime_packed_from_binary(const uchar *ptr, uint dec);
@@ -151,13 +151,13 @@ longlong my_time_packed_from_binary(const uchar *ptr, uint dec);
 void my_timestamp_to_binary(const struct timeval *tm, uchar *ptr, uint dec);
 void my_timestamp_from_binary(struct timeval *tm, const uchar *ptr, uint dec);
 
-my_bool str_to_time(const char *str, size_t length, MYSQL_TIME *l_time,
-                    MYSQL_TIME_STATUS *status);
+my_bool str_to_time(const char *str, size_t length, MYBLOCKCHAIN_TIME *l_time,
+                    MYBLOCKCHAIN_TIME_STATUS *status);
 
-my_bool check_time_mmssff_range(const MYSQL_TIME *ltime);
-my_bool check_time_range_quick(const MYSQL_TIME *ltime);
-my_bool check_datetime_range(const MYSQL_TIME *ltime);
-void adjust_time_range(struct st_mysql_time *, int *warning);
+my_bool check_time_mmssff_range(const MYBLOCKCHAIN_TIME *ltime);
+my_bool check_time_range_quick(const MYBLOCKCHAIN_TIME *ltime);
+my_bool check_datetime_range(const MYBLOCKCHAIN_TIME *ltime);
+void adjust_time_range(struct st_myblockchain_time *, int *warning);
 
 long calc_daynr(uint year,uint month,uint day);
 uint calc_days_in_year(uint year);
@@ -170,16 +170,16 @@ void my_init_time(void);
   Function to check sanity of a TIMESTAMP value
 
   DESCRIPTION
-    Check if a given MYSQL_TIME value fits in TIMESTAMP range.
+    Check if a given MYBLOCKCHAIN_TIME value fits in TIMESTAMP range.
     This function doesn't make precise check, but rather a rough
     estimate.
 
   RETURN VALUES
     TRUE    The value seems sane
-    FALSE   The MYSQL_TIME value is definitely out of range
+    FALSE   The MYBLOCKCHAIN_TIME value is definitely out of range
 */
 
-static inline my_bool validate_timestamp_range(const MYSQL_TIME *t)
+static inline my_bool validate_timestamp_range(const MYBLOCKCHAIN_TIME *t)
 {
   if ((t->year > TIMESTAMP_MAX_YEAR || t->year < TIMESTAMP_MIN_YEAR) ||
       (t->year == TIMESTAMP_MAX_YEAR && (t->month > 1 || t->day > 19)) ||
@@ -190,12 +190,12 @@ static inline my_bool validate_timestamp_range(const MYSQL_TIME *t)
 }
 
 my_time_t 
-my_system_gmt_sec(const MYSQL_TIME *t, long *my_timezone,
+my_system_gmt_sec(const MYBLOCKCHAIN_TIME *t, long *my_timezone,
                   my_bool *in_dst_time_gap);
 
-void set_zero_time(MYSQL_TIME *tm, enum enum_mysql_timestamp_type time_type);
-void set_max_time(MYSQL_TIME *tm, my_bool neg);
-void set_max_hhmmss(MYSQL_TIME *tm);
+void set_zero_time(MYBLOCKCHAIN_TIME *tm, enum enum_myblockchain_timestamp_type time_type);
+void set_max_time(MYBLOCKCHAIN_TIME *tm, my_bool neg);
+void set_max_hhmmss(MYBLOCKCHAIN_TIME *tm);
 
 /*
   Required buffer length for my_time_to_str, my_date_to_str,
@@ -207,10 +207,10 @@ void set_max_hhmmss(MYSQL_TIME *tm);
 */
 #define MAX_DATE_STRING_REP_LENGTH 30
 
-int my_time_to_str(const MYSQL_TIME *l_time, char *to, uint dec);
-int my_date_to_str(const MYSQL_TIME *l_time, char *to);
-int my_datetime_to_str(const MYSQL_TIME *l_time, char *to, uint dec);
-int my_TIME_to_str(const MYSQL_TIME *l_time, char *to, uint dec);
+int my_time_to_str(const MYBLOCKCHAIN_TIME *l_time, char *to, uint dec);
+int my_date_to_str(const MYBLOCKCHAIN_TIME *l_time, char *to);
+int my_datetime_to_str(const MYBLOCKCHAIN_TIME *l_time, char *to, uint dec);
+int my_TIME_to_str(const MYBLOCKCHAIN_TIME *l_time, char *to, uint dec);
 
 int my_timeval_to_str(const struct timeval *tm, char *to, uint dec);
 

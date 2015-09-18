@@ -35,8 +35,8 @@ SET(WIXCA_LOCATION "@WIXCA_LOCATION@")
 SET(COPYING_RTF "@COPYING_RTF@")
 SET(CPACK_WIX_CONFIG "@CPACK_WIX_CONFIG@")
 SET(CPACK_WIX_INCLUDE "@CPACK_WIX_INCLUDE@")
-SET(PRODUCT_NAME "MySQL Server")
-SET(PRODUCT_DESCRIPTION "MySQL Database Server")
+SET(PRODUCT_NAME "MyBlockchain Server")
+SET(PRODUCT_DESCRIPTION "MyBlockchain Database Server")
 SET(UPGRADE_ID "F59F931A-0282-45D0-97CD-33F8B43AE3C2")
 SET(UPGRADE_CODE "F59F931A-0282-45D0-97CD-33F8B43AE3C2")
 
@@ -44,11 +44,11 @@ IF("${VERSION}" MATCHES "-ndb-")
   MESSAGE(STATUS "This is Cluster build")
 
   MESSAGE(STATUS "Overriding PRODUCT_NAME ${PRODUCT_NAME}")
-  SET(PRODUCT_NAME "MySQL Cluster")
+  SET(PRODUCT_NAME "MyBlockchain Cluster")
   MESSAGE(STATUS "PRODUCT_NAME: ${PRODUCT_NAME}")
 
   MESSAGE(STATUS "Overriding PRODUCT_DESCRIPTION ${PRODUCT_DESCRIPTION}")
-  SET(PRODUCT_DESCRIPTION "MySQL Cluster")
+  SET(PRODUCT_DESCRIPTION "MyBlockchain Cluster")
   MESSAGE(STATUS "PRODUCT_DESCRIPTION: ${PRODUCT_DESCRIPTION}")
 
   MESSAGE(STATUS "Overriding WIXCA_LOCATION ${WIXCA_LOCATION}")
@@ -69,21 +69,21 @@ LIST(APPEND EXCLUDE_DIRS
      bin/debug
      data/test
      lib/plugin/debug
-     mysql-test
+     myblockchain-test
      scripts
 )
 
 LIST(APPEND EXCLUDE_FILES
      bin/echo.exe
-     bin/mysql_client_test_embedded.exe
-     bin/mysqld-debug.exe
-     bin/mysqltest_embedded.exe
+     bin/myblockchain_client_test_embedded.exe
+     bin/myblockchaind-debug.exe
+     bin/myblockchaintest_embedded.exe
      bin/replace.exe
-     lib/debug/mysqlserver.lib
-     lib/libmysqld.dll
-     lib/libmysqld.lib
-     lib/mysqlserver.lib
-     lib/mysqlservices.lib
+     lib/debug/myblockchainserver.lib
+     lib/libmyblockchaind.dll
+     lib/libmyblockchaind.lib
+     lib/myblockchainserver.lib
+     lib/myblockchainservices.lib
 )
 
 IF(CMAKE_SIZEOF_VOID_P EQUAL 8)
@@ -383,8 +383,8 @@ SET(CPACK_WIX_INCLUDES
 ENDFOREACH()
 
 
-CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/mysql_server.wxs.in 
- ${CMAKE_CURRENT_BINARY_DIR}/mysql_server.wxs)
+CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/myblockchain_server.wxs.in 
+ ${CMAKE_CURRENT_BINARY_DIR}/myblockchain_server.wxs)
 
 SET(EXTRA_CANDLE_ARGS)
 IF("$ENV{EXTRA_CANDLE_ARGS}")
@@ -396,9 +396,9 @@ IF("$ENV{EXTRA_LIGHT_ARGS}")
 	SET(EXTRA_LIGHT_ARGS "$ENV{EXTRA_LIGHT_ARGS}")
 ENDIF()
 
-FILE(REMOVE mysql_server.wixobj)
+FILE(REMOVE myblockchain_server.wixobj)
 EXECUTE_PROCESS(
- COMMAND ${CANDLE_EXECUTABLE} -ext WixUtilExtension  mysql_server.wxs ${EXTRA_CANDLE_ARGS}
+ COMMAND ${CANDLE_EXECUTABLE} -ext WixUtilExtension  myblockchain_server.wxs ${EXTRA_CANDLE_ARGS}
  RESULT_VARIABLE CANDLE_RESULT
 )
 
@@ -408,7 +408,7 @@ ENDIF()
 
 EXECUTE_PROCESS(
  COMMAND ${LIGHT_EXECUTABLE} -ext WixUIExtension -ext WixUtilExtension
-  mysql_server.wixobj  -out  ${CMAKE_BINARY_DIR}/${CPACK_PACKAGE_FILE_NAME}.msi
+  myblockchain_server.wixobj  -out  ${CMAKE_BINARY_DIR}/${CPACK_PACKAGE_FILE_NAME}.msi
   ${EXTRA_LIGHT_ARGS}
  RESULT_VARIABLE LIGHT_RESULT
 )

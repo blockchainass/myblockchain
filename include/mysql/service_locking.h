@@ -32,9 +32,9 @@
 
 #ifdef __cplusplus
 class THD;
-#define MYSQL_THD THD*
+#define MYBLOCKCHAIN_THD THD*
 #else
-#define MYSQL_THD void*
+#define MYBLOCKCHAIN_THD void*
 #endif
 
 #ifdef __cplusplus
@@ -49,7 +49,7 @@ extern "C" {
 enum enum_locking_service_lock_type
 { LOCKING_SERVICE_READ, LOCKING_SERVICE_WRITE };
 
-extern struct mysql_locking_service_st {
+extern struct myblockchain_locking_service_st {
   /**
     Acquire locking service locks.
 
@@ -66,7 +66,7 @@ extern struct mysql_locking_service_st {
     @note both lock_namespace and lock_names are limited to 64 characters max.
     Names are compared using binary comparison.
   */
-  int (*mysql_acquire_locks)(MYSQL_THD opaque_thd, const char* lock_namespace,
+  int (*myblockchain_acquire_locks)(MYBLOCKCHAIN_THD opaque_thd, const char* lock_namespace,
                              const char**lock_names, size_t lock_num,
                              enum enum_locking_service_lock_type lock_type,
                              unsigned long lock_timeout);
@@ -81,31 +81,31 @@ extern struct mysql_locking_service_st {
     @retval 1              Release failed, error has been reported.
     @retval 0              Release sucessfull, all locks acquired.
   */
-  int (*mysql_release_locks)(MYSQL_THD opaque_thd, const char* lock_namespace);
-} *mysql_locking_service;
+  int (*myblockchain_release_locks)(MYBLOCKCHAIN_THD opaque_thd, const char* lock_namespace);
+} *myblockchain_locking_service;
 
-#ifdef MYSQL_DYNAMIC_PLUGIN
+#ifdef MYBLOCKCHAIN_DYNAMIC_PLUGIN
 
-#define mysql_acquire_locking_service_locks(_THD, _NAMESPACE, _NAMES, _NUM, \
+#define myblockchain_acquire_locking_service_locks(_THD, _NAMESPACE, _NAMES, _NUM, \
                                             _TYPE, _TIMEOUT)            \
-  mysql_locking_service->mysql_acquire_locks(_THD, _NAMESPACE, _NAMES, _NUM, \
+  myblockchain_locking_service->myblockchain_acquire_locks(_THD, _NAMESPACE, _NAMES, _NUM, \
                                              _TYPE, _TIMEOUT)
-#define mysql_release_locking_service_locks(_THD, _NAMESPACE) \
-  mysql_locking_service->mysql_release_locks(_THD, _NAMESPACE)
+#define myblockchain_release_locking_service_locks(_THD, _NAMESPACE) \
+  myblockchain_locking_service->myblockchain_release_locks(_THD, _NAMESPACE)
 
 #else
 
-int mysql_acquire_locking_service_locks(MYSQL_THD opaque_thd,
+int myblockchain_acquire_locking_service_locks(MYBLOCKCHAIN_THD opaque_thd,
                                         const char* lock_namespace,
                                         const char**lock_names,
                                         size_t lock_num,
                                         enum enum_locking_service_lock_type lock_type,
                                         unsigned long lock_timeout);
 
-int mysql_release_locking_service_locks(MYSQL_THD opaque_thd,
+int myblockchain_release_locking_service_locks(MYBLOCKCHAIN_THD opaque_thd,
                                         const char* lock_namespace);
 
-#endif /* MYSQL_DYNAMIC_PLUGIN */
+#endif /* MYBLOCKCHAIN_DYNAMIC_PLUGIN */
 
 #ifdef __cplusplus
 }

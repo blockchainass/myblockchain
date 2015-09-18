@@ -15,7 +15,7 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
  */
 
-package com.mysql.clusterj.jdbc;
+package com.myblockchain.clusterj.jdbc;
 
 import java.io.InputStream;
 import java.io.Reader;
@@ -38,14 +38,14 @@ import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Map;
 
-import com.mysql.clusterj.core.util.I18NHelper;
-import com.mysql.clusterj.core.util.Logger;
-import com.mysql.clusterj.core.util.LoggerFactoryService;
-import com.mysql.jdbc.CachedResultSetMetaData;
-import com.mysql.jdbc.Field;
-import com.mysql.jdbc.PreparedStatement;
-import com.mysql.jdbc.ResultSetInternalMethods;
-import com.mysql.jdbc.StatementImpl;
+import com.myblockchain.clusterj.core.util.I18NHelper;
+import com.myblockchain.clusterj.core.util.Logger;
+import com.myblockchain.clusterj.core.util.LoggerFactoryService;
+import com.myblockchain.jdbc.CachedResultSetMetaData;
+import com.myblockchain.jdbc.Field;
+import com.myblockchain.jdbc.PreparedStatement;
+import com.myblockchain.jdbc.ResultSetInternalMethods;
+import com.myblockchain.jdbc.StatementImpl;
 
 public abstract class AbstractResultSetInternalMethods implements
         ResultSetInternalMethods {

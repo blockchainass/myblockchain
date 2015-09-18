@@ -41,7 +41,7 @@ Created 3/14/1997 Heikki Tuuri
 #include "row0row.h"
 #include "row0upd.h"
 #include "row0vers.h"
-#include "row0mysql.h"
+#include "row0myblockchain.h"
 #include "row0log.h"
 #include "log0log.h"
 #include "srv0mon.h"
@@ -583,7 +583,7 @@ row_purge_remove_sec_if_poss(
 retry:
 	success = row_purge_remove_sec_if_poss_tree(node, index, entry);
 	/* The delete operation may fail if we have little
-	file space left: TODO: easiest to crash the database
+	file space left: TODO: easiest to crash the blockchain
 	and restart with more file space */
 
 	if (!success && n_tries < BTR_CUR_RETRY_DELETE_N_TIMES) {
@@ -840,7 +840,7 @@ try_again:
 	if (node->table->n_v_cols && !node->table->vc_templ
 	    && dict_table_has_indexed_v_cols(node->table)) {
 		/* Need server fully up for virtual column computation */
-		if (!mysqld_server_started) {
+		if (!myblockchaind_server_started) {
 
 			dict_table_close(node->table, FALSE, FALSE);
 			rw_lock_s_unlock(dict_operation_lock);

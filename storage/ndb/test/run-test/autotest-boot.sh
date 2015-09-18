@@ -266,7 +266,7 @@ fi
 
 ##########################################
 # Build the source, make installs, and   #
-# create the database to be rsynced	 #
+# create the blockchain to be rsynced	 #
 ##########################################
 
 function build_cluster()
@@ -317,7 +317,7 @@ fi
 # Start run script             #
 ################################
 
-script=$install_dir0/mysql-test/ndb/autotest-run.sh
+script=$install_dir0/myblockchain-test/ndb/autotest-run.sh
 for R in $RUN
 do
     sh -x $script $save_args --conf=$conf --run-dir=$install_dir --install-dir0=$install_dir0 --install-dir1=$install_dir1 --suite=$R --nolock $extra_args

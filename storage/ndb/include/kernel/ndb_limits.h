@@ -74,7 +74,7 @@
 #define MAX_TUPLES_BITS 13 		/* 13 bits = 8191 tuples per page */
 #define NDB_MAX_TABLES 20320                /* SchemaFile.hpp */
 #define MAX_TAB_NAME_SIZE 128
-#define MAX_ATTR_NAME_SIZE NAME_LEN       /* From mysql_com.h */
+#define MAX_ATTR_NAME_SIZE NAME_LEN       /* From myblockchain_com.h */
 #define MAX_ATTR_DEFAULT_VALUE_SIZE ((MAX_TUPLE_SIZE_IN_WORDS + 1) * 4)  //Add 1 word for AttributeHeader
 #define MAX_ATTRIBUTES_IN_TABLE 512
 #define MAX_ATTRIBUTES_IN_INDEX 32
@@ -336,7 +336,7 @@
  * (one word for each key level).  The SAMPLEs table STAT_VALUE column
  * is longer to allow future changes.
  *
- * Stats tables are "lifted" to mysql level so for max key size use
+ * Stats tables are "lifted" to myblockchain level so for max key size use
  * MAX_KEY_LENGTH/4 instead of the bigger MAX_KEY_SIZE_IN_WORDS.  The
  * definition is not available by default, use 3072 directly now.
  */

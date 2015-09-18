@@ -70,9 +70,9 @@ table_session_status::create(void)
 
 ha_rows table_session_status::get_row_count(void)
 {
-  mysql_mutex_lock(&LOCK_status);
+  myblockchain_mutex_lock(&LOCK_status);
   ha_rows status_var_count= all_status_vars.size();
-  mysql_mutex_unlock(&LOCK_status);
+  myblockchain_mutex_unlock(&LOCK_status);
   return status_var_count;
 }
 

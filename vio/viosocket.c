@@ -18,7 +18,7 @@
 
 /*
   Note that we can't have assertion on file descriptors;  The reason for
-  this is that during mysql shutdown, another thread can close a file
+  this is that during myblockchain shutdown, another thread can close a file
   we are working on.  In this case we should just return read errors from
   the file descriptior.
 */
@@ -120,7 +120,7 @@ size_t vio_read(Vio *vio, uchar *buf, size_t size)
   if (vio->read_timeout >= 0)
     flags= VIO_DONTWAIT;
 
-  while ((ret= mysql_socket_recv(vio->mysql_socket, (SOCKBUF_T *)buf, size, flags)) == -1)
+  while ((ret= myblockchain_socket_recv(vio->myblockchain_socket, (SOCKBUF_T *)buf, size, flags)) == -1)
   {
     int error= socket_errno;
 
@@ -148,7 +148,7 @@ size_t vio_read_buff(Vio *vio, uchar* buf, size_t size)
 #define VIO_UNBUFFERED_READ_MIN_SIZE 2048
   DBUG_ENTER("vio_read_buff");
   DBUG_PRINT("enter", ("sd: %d  buf: 0x%lx  size: %u",
-             mysql_socket_getfd(vio->mysql_socket), (long)buf, (uint)size));
+             myblockchain_socket_getfd(vio->myblockchain_socket), (long)buf, (uint)size));
 
   if (vio->read_pos < vio->read_end)
   {
@@ -198,7 +198,7 @@ size_t vio_write(Vio *vio, const uchar* buf, size_t size)
   if (vio->write_timeout >= 0)
     flags= VIO_DONTWAIT;
 
-  while ((ret= mysql_socket_send(vio->mysql_socket, (SOCKBUF_T *)buf, size, flags)) == -1)
+  while ((ret= myblockchain_socket_send(vio->myblockchain_socket, (SOCKBUF_T *)buf, size, flags)) == -1)
   {
     int error= socket_errno;
 
@@ -225,14 +225,14 @@ static int vio_set_blocking(Vio *vio, my_bool status)
   {
     int ret;
     u_long arg= status ? 0 : 1;
-    ret= ioctlsocket(mysql_socket_getfd(vio->mysql_socket), FIONBIO, &arg);
+    ret= ioctlsocket(myblockchain_socket_getfd(vio->myblockchain_socket), FIONBIO, &arg);
     DBUG_RETURN(ret);
   }
 #else
   {
     int flags;
 
-    if ((flags= fcntl(mysql_socket_getfd(vio->mysql_socket), F_GETFL, NULL)) < 0)
+    if ((flags= fcntl(myblockchain_socket_getfd(vio->myblockchain_socket), F_GETFL, NULL)) < 0)
       DBUG_RETURN(-1);
 
     /*
@@ -246,7 +246,7 @@ static int vio_set_blocking(Vio *vio, my_bool status)
     else
       flags|= O_NONBLOCK;
 
-    if (fcntl(mysql_socket_getfd(vio->mysql_socket), F_SETFL, flags) == -1)
+    if (fcntl(myblockchain_socket_getfd(vio->myblockchain_socket), F_SETFL, flags) == -1)
       DBUG_RETURN(-1);
   }
 #endif
@@ -294,7 +294,7 @@ int vio_socket_timeout(Vio *vio,
         timeout= vio->read_timeout;
     }
 
-    ret= mysql_socket_setsockopt(vio->mysql_socket, SOL_SOCKET, optname,
+    ret= myblockchain_socket_setsockopt(vio->myblockchain_socket, SOL_SOCKET, optname,
 	                             optval, sizeof(timeout));
   }
 #else
@@ -331,7 +331,7 @@ int vio_fastsend(Vio * vio __attribute__((unused)))
 #if defined(IPTOS_THROUGHPUT)
   {
     int tos = IPTOS_THROUGHPUT;
-    r= mysql_socket_setsockopt(vio->mysql_socket, IPPROTO_IP, IP_TOS,
+    r= myblockchain_socket_setsockopt(vio->myblockchain_socket, IPPROTO_IP, IP_TOS,
 	                           (void *)&tos, sizeof(tos));
   }
 #endif                                    /* IPTOS_THROUGHPUT */
@@ -343,7 +343,7 @@ int vio_fastsend(Vio * vio __attribute__((unused)))
     int nodelay = 1;
 #endif
 
-    r= mysql_socket_setsockopt(vio->mysql_socket, IPPROTO_TCP, TCP_NODELAY,
+    r= myblockchain_socket_setsockopt(vio->myblockchain_socket, IPPROTO_TCP, TCP_NODELAY,
                   IF_WIN((const char*), (void*)) &nodelay,
                   sizeof(nodelay));
 
@@ -363,12 +363,12 @@ int vio_keepalive(Vio* vio, my_bool set_keep_alive)
   uint opt = 0;
   DBUG_ENTER("vio_keepalive");
   DBUG_PRINT("enter", ("sd: %d  set_keep_alive: %d",
-             mysql_socket_getfd(vio->mysql_socket), (int)set_keep_alive));
+             myblockchain_socket_getfd(vio->myblockchain_socket), (int)set_keep_alive));
   if (vio->type != VIO_TYPE_NAMEDPIPE)
   {
     if (set_keep_alive)
       opt = 1;
-    r = mysql_socket_setsockopt(vio->mysql_socket, SOL_SOCKET, SO_KEEPALIVE,
+    r = myblockchain_socket_setsockopt(vio->myblockchain_socket, SOL_SOCKET, SO_KEEPALIVE,
 	                            (char *)&opt, sizeof(opt));
   }
   DBUG_RETURN(r);
@@ -420,19 +420,19 @@ int vio_shutdown(Vio * vio)
       vio->type == VIO_TYPE_SOCKET ||
       vio->type == VIO_TYPE_SSL);
 
-    DBUG_ASSERT(mysql_socket_getfd(vio->mysql_socket) >= 0);
-    if (mysql_socket_shutdown(vio->mysql_socket, SHUT_RDWR))
+    DBUG_ASSERT(myblockchain_socket_getfd(vio->myblockchain_socket) >= 0);
+    if (myblockchain_socket_shutdown(vio->myblockchain_socket, SHUT_RDWR))
       r= -1;
-    if (mysql_socket_close(vio->mysql_socket))
+    if (myblockchain_socket_close(vio->myblockchain_socket))
       r= -1;
   }
   if (r)
   {
     DBUG_PRINT("vio_error", ("close() failed, error: %d",socket_errno));
-    /* FIXME: error handling (not critical for MySQL) */
+    /* FIXME: error handling (not critical for MyBlockchain) */
   }
   vio->inactive= TRUE;
-  vio->mysql_socket= MYSQL_INVALID_SOCKET;
+  vio->myblockchain_socket= MYBLOCKCHAIN_INVALID_SOCKET;
   DBUG_RETURN(r);
 }
 
@@ -443,7 +443,7 @@ const char *vio_description(Vio * vio)
   {
     my_snprintf(vio->desc, VIO_DESCRIPTION_SIZE,
                 (vio->type == VIO_TYPE_SOCKET ? "socket (%d)" : "TCP/IP (%d)"),
-                mysql_socket_getfd(vio->mysql_socket));
+                myblockchain_socket_getfd(vio->myblockchain_socket));
   }
   return vio->desc;
 }
@@ -455,7 +455,7 @@ enum enum_vio_type vio_type(Vio* vio)
 
 my_socket vio_fd(Vio* vio)
 {
-  return mysql_socket_getfd(vio->mysql_socket);
+  return myblockchain_socket_getfd(vio->myblockchain_socket);
 }
 
 /**
@@ -597,7 +597,7 @@ my_bool vio_peer_addr(Vio *vio, char *ip_buffer, uint16 *port,
 {
   DBUG_ENTER("vio_peer_addr");
   DBUG_PRINT("enter", ("Client socked fd: %d",
-            (int)mysql_socket_getfd(vio->mysql_socket)));
+            (int)myblockchain_socket_getfd(vio->myblockchain_socket)));
 
   if (vio->localhost)
   {
@@ -628,7 +628,7 @@ my_bool vio_peer_addr(Vio *vio, char *ip_buffer, uint16 *port,
 
     /* Get sockaddr by socked fd. */
 
-    err_code= mysql_socket_getpeername(vio->mysql_socket, addr, &addr_length);
+    err_code= myblockchain_socket_getpeername(vio->myblockchain_socket, addr, &addr_length);
 
     if (err_code)
     {
@@ -677,7 +677,7 @@ my_bool vio_peer_addr(Vio *vio, char *ip_buffer, uint16 *port,
 // WL#4896: Not covered
 static my_bool socket_peek_read(Vio *vio, uint *bytes)
 {
-  my_socket sd= mysql_socket_getfd(vio->mysql_socket);
+  my_socket sd= myblockchain_socket_getfd(vio->myblockchain_socket);
 #if defined(_WIN32)
   int len;
   if (ioctlsocket(sd, FIONREAD, &len))
@@ -748,8 +748,8 @@ int vio_io_wait(Vio *vio, enum enum_vio_io_event event, int timeout)
   short revents= 0;
 #endif
   struct pollfd pfd;
-  my_socket sd= mysql_socket_getfd(vio->mysql_socket);
-  MYSQL_SOCKET_WAIT_VARIABLES(locker, state) /* no ';' */
+  my_socket sd= myblockchain_socket_getfd(vio->myblockchain_socket);
+  MYBLOCKCHAIN_SOCKET_WAIT_VARIABLES(locker, state) /* no ';' */
   DBUG_ENTER("vio_io_wait");
 
   memset(&pfd, 0, sizeof(pfd));
@@ -777,7 +777,7 @@ int vio_io_wait(Vio *vio, enum enum_vio_io_event event, int timeout)
     break;
   }
 
-  MYSQL_START_SOCKET_WAIT(locker, &state, vio->mysql_socket, PSI_SOCKET_SELECT, 0);
+  MYBLOCKCHAIN_START_SOCKET_WAIT(locker, &state, vio->myblockchain_socket, PSI_SOCKET_SELECT, 0);
 
   /*
     Wait for the I/O event and return early in case of
@@ -801,7 +801,7 @@ int vio_io_wait(Vio *vio, enum enum_vio_io_event event, int timeout)
     break;
   }
 
-  MYSQL_END_SOCKET_WAIT(locker, 0);
+  MYBLOCKCHAIN_END_SOCKET_WAIT(locker, 0);
   DBUG_RETURN(ret);
 }
 
@@ -813,10 +813,10 @@ int vio_io_wait(Vio *vio, enum enum_vio_io_event event, int timeout)
   struct timeval tm;
   my_socket fd;
   fd_set readfds, writefds, exceptfds;
-  MYSQL_SOCKET_WAIT_VARIABLES(locker, state) /* no ';' */
+  MYBLOCKCHAIN_SOCKET_WAIT_VARIABLES(locker, state) /* no ';' */
   DBUG_ENTER("vio_io_wait");
 
-  fd= mysql_socket_getfd(vio->mysql_socket);
+  fd= myblockchain_socket_getfd(vio->myblockchain_socket);
 
   if (fd == INVALID_SOCKET)
     DBUG_RETURN(-1);
@@ -853,13 +853,13 @@ int vio_io_wait(Vio *vio, enum enum_vio_io_event event, int timeout)
     break;
   }
 
-  MYSQL_START_SOCKET_WAIT(locker, &state, vio->mysql_socket, PSI_SOCKET_SELECT, 0);
+  MYBLOCKCHAIN_START_SOCKET_WAIT(locker, &state, vio->myblockchain_socket, PSI_SOCKET_SELECT, 0);
 
   /* The first argument is ignored on Windows. */
   ret= select((int)(fd + 1), &readfds, &writefds, &exceptfds, 
               (timeout >= 0) ? &tm : NULL);
 
-  MYSQL_END_SOCKET_WAIT(locker, 0);
+  MYBLOCKCHAIN_END_SOCKET_WAIT(locker, 0);
 
   /* Set error code to indicate a timeout error. */
   if (ret == 0)
@@ -926,7 +926,7 @@ vio_socket_connect(Vio *vio, struct sockaddr *addr, socklen_t len, int timeout)
     DBUG_RETURN(TRUE);
 
   /* Initiate the connection. */
-  ret= mysql_socket_connect(vio->mysql_socket, addr, len);
+  ret= myblockchain_socket_connect(vio->myblockchain_socket, addr, len);
 
 #ifdef _WIN32
   wait= (ret == SOCKET_ERROR) &&
@@ -964,7 +964,7 @@ vio_socket_connect(Vio *vio, struct sockaddr *addr, socklen_t len, int timeout)
       it was really a success. Otherwise we might prevent the caller
       from trying another address to connect to.
     */
-    if (!(ret= mysql_socket_getsockopt(vio->mysql_socket, SOL_SOCKET, SO_ERROR, optval, &optlen)))
+    if (!(ret= myblockchain_socket_getsockopt(vio->myblockchain_socket, SOL_SOCKET, SO_ERROR, optval, &optlen)))
     {
 #ifdef _WIN32
       WSASetLastError(error);

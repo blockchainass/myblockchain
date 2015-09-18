@@ -16,12 +16,12 @@
    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-package com.mysql.clusterj.openjpa;
+package com.myblockchain.clusterj.openjpa;
 
-import com.mysql.clusterj.core.util.I18NHelper;
-import com.mysql.clusterj.core.util.Logger;
-import com.mysql.clusterj.core.util.LoggerFactory;
-import com.mysql.clusterj.core.util.LoggerFactoryService;
+import com.myblockchain.clusterj.core.util.I18NHelper;
+import com.myblockchain.clusterj.core.util.Logger;
+import com.myblockchain.clusterj.core.util.LoggerFactory;
+import com.myblockchain.clusterj.core.util.LoggerFactoryService;
 
 import java.util.Map;
 
@@ -41,7 +41,7 @@ public class NdbOpenJPAProductDerivation extends AbstractProductDerivation
     /** Register logger for Ndb OpenJPA stuff. */
     static final LoggerFactory loggerFactory = LoggerFactoryService.getFactory();
     static {
-        loggerFactory.registerLogger("com.mysql.clusterj.openjpa");
+        loggerFactory.registerLogger("com.myblockchain.clusterj.openjpa");
     }
 
     /** My logger */

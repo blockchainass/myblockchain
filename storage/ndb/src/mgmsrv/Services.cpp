@@ -677,9 +677,9 @@ MgmApiSession::getVersion(Parser<MgmApiSession>::Context &,
   m_output->println("minor: %d", NDB_VERSION_MINOR);
   m_output->println("build: %d", NDB_VERSION_BUILD);
   m_output->println("string: %s", m_mgmsrv.get_version_string());
-  m_output->println("mysql_major: %d", NDB_MYSQL_VERSION_MAJOR);
-  m_output->println("mysql_minor: %d", NDB_MYSQL_VERSION_MINOR);
-  m_output->println("mysql_build: %d", NDB_MYSQL_VERSION_BUILD);
+  m_output->println("myblockchain_major: %d", NDB_MYBLOCKCHAIN_VERSION_MAJOR);
+  m_output->println("myblockchain_minor: %d", NDB_MYBLOCKCHAIN_VERSION_MINOR);
+  m_output->println("myblockchain_build: %d", NDB_MYBLOCKCHAIN_VERSION_BUILD);
   m_output->println("%s", "");
 }
 
@@ -998,13 +998,13 @@ printNodeStatus(OutputStream *output,
   while(mgmsrv.getNextNodeId(&nodeId, type)) {
     enum ndb_mgm_node_status status;
     Uint32 startPhase = 0, 
-      version = 0, mysql_version = 0,
+      version = 0, myblockchain_version = 0,
       dynamicId = 0, 
       nodeGroup = 0,
       connectCount = 0;
     bool system;
     const char *address= NULL;
-    mgmsrv.status(nodeId, &status, &version, &mysql_version, &startPhase,
+    mgmsrv.status(nodeId, &status, &version, &myblockchain_version, &startPhase,
 		  &system, &dynamicId, &nodeGroup, &connectCount,
 		  &address);
     output->println("node.%d.type: %s",
@@ -1014,7 +1014,7 @@ printNodeStatus(OutputStream *output,
 		      nodeId,
 		    ndb_mgm_get_node_status_string(status));
     output->println("node.%d.version: %d", nodeId, version);
-    output->println("node.%d.mysql_version: %d", nodeId, mysql_version);
+    output->println("node.%d.myblockchain_version: %d", nodeId, myblockchain_version);
     output->println("node.%d.startphase: %d", nodeId, startPhase);
     output->println("node.%d.dynamic_id: %d", nodeId, dynamicId);
     output->println("node.%d.node_group: %d", nodeId, nodeGroup);

@@ -813,7 +813,7 @@ NdbReceiver::get_range_no() const
 /**
  * handle_bitfield_ndbrecord
  * Packed bitfield handling for NdbRecord - also deals with 
- * mapping the bitfields into MySQLD format if necessary.
+ * mapping the bitfields into MyBlockchainD format if necessary.
  */
 ATTRIBUTE_NOINLINE
 static void
@@ -831,10 +831,10 @@ handle_bitfield_ndbrecord(const NdbRecord::Attr* col,
   }
 
   char* dest;
-  Uint64 mysqldSpace;
+  Uint64 myblockchaindSpace;
 
   /* For MySqldBitField, we read it as normal into a local on the 
-   * stack and then use the put_mysqld_bitfield function to rearrange
+   * stack and then use the put_myblockchaind_bitfield function to rearrange
    * and write it to the row
    */
   bool isMDBitfield= (col->flags & NdbRecord::IsMysqldBitfield) != 0;
@@ -842,7 +842,7 @@ handle_bitfield_ndbrecord(const NdbRecord::Attr* col,
   if (isMDBitfield)
   {
     assert(len <= 64);
-    dest= (char*) &mysqldSpace;
+    dest= (char*) &myblockchaindSpace;
   }
   else
   {
@@ -858,7 +858,7 @@ handle_bitfield_ndbrecord(const NdbRecord::Attr* col,
   if (isMDBitfield)
   {
     /* Rearrange bitfield from stack to row storage */
-    col->put_mysqld_bitfield(row, dest);
+    col->put_myblockchaind_bitfield(row, dest);
   }
 }
 

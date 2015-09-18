@@ -1,0 +1,7 @@
+--ssl-ca=$MYBLOCKCHAIN_TEST_DIR/std_data/crl-ca-cert.pem
+--ssl-key=$MYBLOCKCHAIN_TEST_DIR/std_data/crl-client-revoked-key.pem
+--ssl-cert=$MYBLOCKCHAIN_TEST_DIR/std_data/crl-client-revoked-cert.pem
+--ssl-crl=$MYBLOCKCHAIN_TEST_DIR/std_data/crl-client-revoked.crl
+--loose-sha256_password_private_key_path=$MYBLOCKCHAIN_TEST_DIR/std_data/rsa_private_key.pem
+--loose-sha256_password_public_key_path=$MYBLOCKCHAIN_TEST_DIR/std_data/rsa_public_key.pem
+

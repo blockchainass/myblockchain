@@ -17,15 +17,15 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-package com.mysql.cluster.benchmark.tws;
+package com.myblockchain.cluster.benchmark.tws;
 
-import com.mysql.ndbjtie.ndbapi.Ndb_cluster_connection;
-import com.mysql.ndbjtie.ndbapi.Ndb;
-import com.mysql.ndbjtie.ndbapi.NdbDictionary.Dictionary;
-import com.mysql.ndbjtie.ndbapi.NdbDictionary.TableConst;
-import com.mysql.ndbjtie.ndbapi.NdbError;
-import com.mysql.ndbjtie.ndbapi.NdbTransaction;
-import com.mysql.ndbjtie.ndbapi.NdbOperation;
+import com.myblockchain.ndbjtie.ndbapi.Ndb_cluster_connection;
+import com.myblockchain.ndbjtie.ndbapi.Ndb;
+import com.myblockchain.ndbjtie.ndbapi.NdbDictionary.Dictionary;
+import com.myblockchain.ndbjtie.ndbapi.NdbDictionary.TableConst;
+import com.myblockchain.ndbjtie.ndbapi.NdbError;
+import com.myblockchain.ndbjtie.ndbapi.NdbTransaction;
+import com.myblockchain.ndbjtie.ndbapi.NdbOperation;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -63,7 +63,7 @@ class NdbjtieLoad extends TwsLoad {
     static protected final CharsetEncoder csEncoder;
     static protected final CharsetDecoder csDecoder;
     static {
-        // default charset for mysql is "ISO-8859-1" ("US-ASCII", "UTF-8")
+        // default charset for myblockchain is "ISO-8859-1" ("US-ASCII", "UTF-8")
         cs = Charset.forName("ISO-8859-1");
         csDecoder = cs.newDecoder();
         csEncoder = cs.newEncoder();
@@ -96,7 +96,7 @@ class NdbjtieLoad extends TwsLoad {
         mgmdConnect = driver.props.getProperty("ndb.mgmdConnect", "localhost");
         assert mgmdConnect != null;
 
-        // the database
+        // the blockchain
         catalog = driver.props.getProperty("ndb.catalog", "crunddb");
         assert catalog != null;
 
@@ -190,8 +190,8 @@ class NdbjtieLoad extends TwsLoad {
         }
         out.println("      [ok]");
 
-        // connect to database
-        out.print("connecting to database ...");
+        // connect to blockchain
+        out.print("connecting to blockchain ...");
         ndb = Ndb.create(mgmd, catalog, schema);
         final int max_no_tx = 10; // maximum number of parallel tx (<=1024)
         // note each scan or index scan operation uses one extra transaction
@@ -241,7 +241,7 @@ class NdbjtieLoad extends TwsLoad {
 
         closeNdbjtieModel();
 
-        out.print("closing database connection ...");
+        out.print("closing blockchain connection ...");
         out.flush();
         Ndb.delete(ndb);
         ndb = null;

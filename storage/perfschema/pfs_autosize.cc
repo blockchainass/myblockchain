@@ -24,7 +24,7 @@
 
 #include <my_thread.h> /* For pthread_t */
 /* Make sure HAVE_PSI_XXX_INTERFACE flags are set */
-#include "mysql/psi/psi.h"
+#include "myblockchain/psi/psi.h"
 
 #include <algorithm>
 using std::min;

@@ -49,7 +49,7 @@ struct fts_doc_stats_t {
 };
 
 /** It's main purpose is to store the SQL prepared statements that
-are required to retrieve a document from the database. */
+are required to retrieve a document from the blockchain. */
 struct fts_get_doc_t {
 	fts_index_cache_t*
 			index_cache;	/*!< The index cache instance */
@@ -254,7 +254,7 @@ struct fts_doc_t {
 	fts_string_t	text;		/*!< document text */
 
 	ibool		found;		/*!< TRUE if the document was found
-					successfully in the database */
+					successfully in the blockchain */
 
 	ib_rbt_t*	tokens;		/*!< This is filled when the document
 					is tokenized. Tokens; indexed by
@@ -268,7 +268,7 @@ struct fts_doc_t {
 					the vector of token positions */
 	CHARSET_INFO*	charset;	/*!< Document's charset info */
 
-	st_mysql_ftparser* parser;	/*!< fts plugin parser */
+	st_myblockchain_ftparser* parser;	/*!< fts plugin parser */
 
 	bool		is_ngram;	/*!< Whether it is a ngram parser */
 

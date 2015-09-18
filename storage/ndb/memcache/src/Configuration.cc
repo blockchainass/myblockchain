@@ -74,11 +74,11 @@ bool Configuration::connectToPrimary() {
   
   /* Connect to the primary cluster */
   logger->log(LOG_WARNING, 0, 
-              "%s NDB Memcache %s started [NDB %d.%d.%d; MySQL %d.%d.%d]\n" 
+              "%s NDB Memcache %s started [NDB %d.%d.%d; MyBlockchain %d.%d.%d]\n" 
               "Contacting primary management server (%s) ... \n", timestamp, 
               VERSION, NDB_VERSION_MAJOR, NDB_VERSION_MINOR, NDB_VERSION_BUILD,
-              NDB_MYSQL_VERSION_MAJOR, NDB_MYSQL_VERSION_MINOR, 
-              NDB_MYSQL_VERSION_BUILD, primary_connect_string);
+              NDB_MYBLOCKCHAIN_VERSION_MAJOR, NDB_MYBLOCKCHAIN_VERSION_MINOR, 
+              NDB_MYBLOCKCHAIN_VERSION_BUILD, primary_connect_string);
               
   primary_conn = ClusterConnectionPool::connect(primary_connect_string);
 
@@ -315,7 +315,7 @@ config_ver_enum Configuration::get_supported_version() {
     if(fetch_meta_record(&plan, &db, "1.0a")) {
       DEBUG_PRINT("1.0a");
       logger->log(LOG_WARNING, 0, "\nThe configuration schema from prototype2 is"
-                  " no longer supported.\nPlease drop your ndbmemcache database,"
+                  " no longer supported.\nPlease drop your ndbmemcache blockchain,"
                   " run the new metadata.sql script, and try again.\n\n");
       return CONFIG_VER_UNSUPPORTED;      
     }
@@ -356,7 +356,7 @@ void Configuration::store_default_prefix() {
   pfx.info.usable = 1;
   
   /* The default prefix has a length of zero and a prefix ID of zero.
-     It defines "cache-only" operations with no database access. 
+     It defines "cache-only" operations with no blockchain access. 
      If the configuration supplies a zero-length prefix config, 
      that config will override this one.
   */

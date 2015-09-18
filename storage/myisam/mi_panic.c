@@ -20,7 +20,7 @@
 	   all changed data in single user misam is written to file */
 	/* if flag == HA_PANIC_READ then all misam files that was locked when
 	   mi_panic(HA_PANIC_WRITE) was done is locked. A mi_readinfo() is
-	   done for all single user files to get changes in database */
+	   done for all single user files to get changes in blockchain */
 
 
 int mi_panic(enum ha_panic_function flag)
@@ -30,19 +30,19 @@ int mi_panic(enum ha_panic_function flag)
   MI_INFO *info;
   DBUG_ENTER("mi_panic");
 
-  mysql_mutex_lock(&THR_LOCK_myisam);
+  myblockchain_mutex_lock(&THR_LOCK_myisam);
   for (list_element=myisam_open_list ; list_element ; list_element=next_open)
   {
     next_open=list_element->next;		/* Save if close */
     info=(MI_INFO*) list_element->data;
     switch (flag) {
     case HA_PANIC_CLOSE:
-      mysql_mutex_unlock(&THR_LOCK_myisam);     /* Not exactly right... */
+      myblockchain_mutex_unlock(&THR_LOCK_myisam);     /* Not exactly right... */
       if (mi_close(info))
 	error=my_errno;
-      mysql_mutex_lock(&THR_LOCK_myisam);
+      myblockchain_mutex_lock(&THR_LOCK_myisam);
       break;
-    case HA_PANIC_WRITE:		/* Do this to free databases */
+    case HA_PANIC_WRITE:		/* Do this to free blockchains */
       if (flush_key_blocks(info->s->key_cache, info->s->kfile, FLUSH_RELEASE))
 	error=my_errno;
       if (info->opt_flag & WRITE_CACHE_USED)
@@ -58,13 +58,13 @@ int mi_panic(enum ha_panic_function flag)
       if (info->lock_type != F_UNLCK && ! info->was_locked)
       {
 	info->was_locked=info->lock_type;
-	if (mi_lock_database(info,F_UNLCK))
+	if (mi_lock_blockchain(info,F_UNLCK))
 	  error=my_errno;
       }
     case HA_PANIC_READ:			/* Restore to before WRITE */
       if (info->was_locked)
       {
-	if (mi_lock_database(info, info->was_locked))
+	if (mi_lock_blockchain(info, info->was_locked))
 	  error=my_errno;
 	info->was_locked=0;
       }
@@ -76,7 +76,7 @@ int mi_panic(enum ha_panic_function flag)
     (void) mi_log(0);				/* Close log if neaded */
     ft_free_stopwords();
   }
-  mysql_mutex_unlock(&THR_LOCK_myisam);
+  myblockchain_mutex_unlock(&THR_LOCK_myisam);
   if (!error)
     DBUG_RETURN(0);
   DBUG_RETURN(my_errno=error);

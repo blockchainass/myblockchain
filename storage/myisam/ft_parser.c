@@ -107,7 +107,7 @@ my_bool ft_boolean_check_syntax_string(const uchar *str)
   4 - stopword found
 */
 uchar ft_get_word(const CHARSET_INFO *cs, uchar **start, uchar *end,
-                  FT_WORD *word, MYSQL_FTPARSER_BOOLEAN_INFO *param)
+                  FT_WORD *word, MYBLOCKCHAIN_FTPARSER_BOOLEAN_INFO *param)
 {
   uchar *doc=*start;
   int ctype;
@@ -255,16 +255,16 @@ void ft_parse_init(TREE *wtree, const CHARSET_INFO *cs)
 }
 
 
-static int ft_add_word(MYSQL_FTPARSER_PARAM *param,
+static int ft_add_word(MYBLOCKCHAIN_FTPARSER_PARAM *param,
                        char *word, int word_len,
-             MYSQL_FTPARSER_BOOLEAN_INFO *boolean_info __attribute__((unused)))
+             MYBLOCKCHAIN_FTPARSER_BOOLEAN_INFO *boolean_info __attribute__((unused)))
 {
   TREE *wtree;
   FT_WORD w;
-  MY_FT_PARSER_PARAM *ft_param=param->mysql_ftparam;
+  MY_FT_PARSER_PARAM *ft_param=param->myblockchain_ftparam;
   DBUG_ENTER("ft_add_word");
   wtree= ft_param->wtree;
-  if (param->flags & MYSQL_FTFLAGS_NEED_COPY)
+  if (param->flags & MYBLOCKCHAIN_FTFLAGS_NEED_COPY)
   {
     uchar *ptr;
     DBUG_ASSERT(wtree->with_delete == 0);
@@ -284,26 +284,26 @@ static int ft_add_word(MYSQL_FTPARSER_PARAM *param,
 }
 
 
-static int ft_parse_internal(MYSQL_FTPARSER_PARAM *param,
+static int ft_parse_internal(MYBLOCKCHAIN_FTPARSER_PARAM *param,
                              char *doc_arg, int doc_len)
 {
   uchar *doc= (uchar*) doc_arg;
   uchar *end= doc + doc_len;
-  MY_FT_PARSER_PARAM *ft_param=param->mysql_ftparam;
+  MY_FT_PARSER_PARAM *ft_param=param->myblockchain_ftparam;
   TREE *wtree= ft_param->wtree;
   FT_WORD w;
   DBUG_ENTER("ft_parse_internal");
 
   while (ft_simple_get_word(wtree->custom_arg, &doc, end, &w, TRUE))
-    if (param->mysql_add_word(param, (char*) w.pos, w.len, 0))
+    if (param->myblockchain_add_word(param, (char*) w.pos, w.len, 0))
       DBUG_RETURN(1);
   DBUG_RETURN(0);
 }
 
 
 int ft_parse(TREE *wtree, uchar *doc, int doclen,
-             struct st_mysql_ftparser *parser,
-             MYSQL_FTPARSER_PARAM *param, MEM_ROOT *mem_root)
+             struct st_myblockchain_ftparser *parser,
+             MYBLOCKCHAIN_FTPARSER_PARAM *param, MEM_ROOT *mem_root)
 {
   MY_FT_PARSER_PARAM my_param;
   DBUG_ENTER("ft_parse");
@@ -312,20 +312,20 @@ int ft_parse(TREE *wtree, uchar *doc, int doclen,
   my_param.wtree= wtree;
   my_param.mem_root= mem_root;
 
-  param->mysql_parse= ft_parse_internal;
-  param->mysql_add_word= ft_add_word;
-  param->mysql_ftparam= &my_param;
+  param->myblockchain_parse= ft_parse_internal;
+  param->myblockchain_add_word= ft_add_word;
+  param->myblockchain_ftparam= &my_param;
   param->cs= wtree->custom_arg;
   param->doc= (char*) doc;
   param->length= doclen;
-  param->mode= MYSQL_FTPARSER_SIMPLE_MODE;
+  param->mode= MYBLOCKCHAIN_FTPARSER_SIMPLE_MODE;
   DBUG_RETURN(parser->parse(param));
 }
 
 
 #define MAX_PARAM_NR 2
 
-MYSQL_FTPARSER_PARAM* ftparser_alloc_param(MI_INFO *info)
+MYBLOCKCHAIN_FTPARSER_PARAM* ftparser_alloc_param(MI_INFO *info)
 {
   if (!info->ftparser_param)
   {
@@ -339,9 +339,9 @@ MYSQL_FTPARSER_PARAM* ftparser_alloc_param(MI_INFO *info)
       ftb_find_relevance_add_word) calls ftb_check_phrase... parser
       (ftb_check_phrase_internal, ftb_phrase_add_word). Thus MAX_PARAM_NR=2.
     */
-    info->ftparser_param= (MYSQL_FTPARSER_PARAM *)
+    info->ftparser_param= (MYBLOCKCHAIN_FTPARSER_PARAM *)
       my_malloc(mi_key_memory_FTPARSER_PARAM,
-                MAX_PARAM_NR * sizeof(MYSQL_FTPARSER_PARAM) *
+                MAX_PARAM_NR * sizeof(MYBLOCKCHAIN_FTPARSER_PARAM) *
                 info->s->ftkeys, MYF(MY_WME | MY_ZEROFILL));
     init_alloc_root(mi_key_memory_ft_memroot,
                     &info->ft_memroot, FTPARSER_MEMROOT_ALLOC_SIZE, 0);
@@ -350,11 +350,11 @@ MYSQL_FTPARSER_PARAM* ftparser_alloc_param(MI_INFO *info)
 }
 
 
-MYSQL_FTPARSER_PARAM *ftparser_call_initializer(MI_INFO *info,
+MYBLOCKCHAIN_FTPARSER_PARAM *ftparser_call_initializer(MI_INFO *info,
                                                 uint keynr, uint paramnr)
 {
   uint32 ftparser_nr;
-  struct st_mysql_ftparser *parser;
+  struct st_myblockchain_ftparser *parser;
   
   if (!ftparser_alloc_param(info))
     return 0;
@@ -371,15 +371,15 @@ MYSQL_FTPARSER_PARAM *ftparser_call_initializer(MI_INFO *info,
   }
   DBUG_ASSERT(paramnr < MAX_PARAM_NR);
   ftparser_nr= ftparser_nr*MAX_PARAM_NR + paramnr;
-  if (! info->ftparser_param[ftparser_nr].mysql_add_word)
+  if (! info->ftparser_param[ftparser_nr].myblockchain_add_word)
   {
-    /* Note, that mysql_add_word is used here as a flag:
-       mysql_add_word == 0 - parser is not initialized
-       mysql_add_word != 0 - parser is initialized, or no
+    /* Note, that myblockchain_add_word is used here as a flag:
+       myblockchain_add_word == 0 - parser is not initialized
+       myblockchain_add_word != 0 - parser is initialized, or no
                              initialization needed. */
-    info->ftparser_param[ftparser_nr].mysql_add_word=
-      (int (*)(struct st_mysql_ftparser_param *, char *, int,
-              MYSQL_FTPARSER_BOOLEAN_INFO *)) 1;
+    info->ftparser_param[ftparser_nr].myblockchain_add_word=
+      (int (*)(struct st_myblockchain_ftparser_param *, char *, int,
+              MYBLOCKCHAIN_FTPARSER_BOOLEAN_INFO *)) 1;
     if (parser->init && parser->init(&info->ftparser_param[ftparser_nr]))
       return 0;
   }
@@ -397,13 +397,13 @@ void ftparser_call_deinitializer(MI_INFO *info)
     MI_KEYDEF *keyinfo= &info->s->keyinfo[i];
     for (j=0; j < MAX_PARAM_NR; j++)
     {
-      MYSQL_FTPARSER_PARAM *ftparser_param=
+      MYBLOCKCHAIN_FTPARSER_PARAM *ftparser_param=
         &info->ftparser_param[keyinfo->ftkey_nr * MAX_PARAM_NR + j];
-      if (keyinfo->flag & HA_FULLTEXT && ftparser_param->mysql_add_word)
+      if (keyinfo->flag & HA_FULLTEXT && ftparser_param->myblockchain_add_word)
       {
         if (keyinfo->parser->deinit)
           keyinfo->parser->deinit(ftparser_param);
-        ftparser_param->mysql_add_word= 0;
+        ftparser_param->myblockchain_add_word= 0;
       }
       else
         break;

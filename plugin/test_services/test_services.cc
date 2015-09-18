@@ -14,8 +14,8 @@
    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA */
 
 #include <my_global.h>
-#include <mysql_version.h>
-#include <mysql/plugin.h>
+#include <myblockchain_version.h>
+#include <myblockchain/plugin.h>
 #include "my_sys.h"                             // my_write, my_malloc
 #include "m_string.h"                           // strlen
 //#include "sql_plugin.h"                         // st_plugin_int
@@ -29,7 +29,7 @@ enum t_test_status { BUSY= 0, READY= 1 };
 static volatile t_test_status test_status;
 
 /* declaration of status variable for plugin */
-static struct st_mysql_show_var test_services_status[]=
+static struct st_myblockchain_show_var test_services_status[]=
 {
   { "test_services_status",
     (char *) &test_status,
@@ -39,25 +39,25 @@ static struct st_mysql_show_var test_services_status[]=
 
 /* SQL (system) variables to control test execution                     */
 /* SQL (system) variables to switch on/off test of services, default=on */
-/* Only be effective at start od mysqld by setting it as option --loose-...  */
+/* Only be effective at start od myblockchaind by setting it as option --loose-...  */
 static int     with_snprintf_val= 0;
-static MYSQL_SYSVAR_INT  (with_snprintf, with_snprintf_val , PLUGIN_VAR_RQCMDARG, 
+static MYBLOCKCHAIN_SYSVAR_INT  (with_snprintf, with_snprintf_val , PLUGIN_VAR_RQCMDARG, 
 		"Switch on/off test of snprintf service", NULL, NULL, 1, 0, 1, 0);
 
 static int     with_log_message_val= 0;
-static MYSQL_SYSVAR_INT  (with_log_message, with_log_message_val, PLUGIN_VAR_RQCMDARG, 
+static MYBLOCKCHAIN_SYSVAR_INT  (with_log_message, with_log_message_val, PLUGIN_VAR_RQCMDARG, 
 		"Switch on/off test of log message service", NULL, NULL, 1, 0, 1, 0);
 
-static struct st_mysql_sys_var *test_services_sysvars[]= {
-  MYSQL_SYSVAR(with_snprintf),
-  MYSQL_SYSVAR(with_log_message),
+static struct st_myblockchain_sys_var *test_services_sysvars[]= {
+  MYBLOCKCHAIN_SYSVAR(with_snprintf),
+  MYBLOCKCHAIN_SYSVAR(with_log_message),
   NULL
 };
 
 /* The test cases for snprintf service.  */
 static int test_snprintf()
 {
-  DBUG_ENTER("mysql_outfile");
+  DBUG_ENTER("myblockchain_outfile");
   char filename[FN_REFLEN];
   char buffer[STRING_BUFFER];
 
@@ -88,13 +88,13 @@ static int test_snprintf()
 static int test_my_plugin_log_message(void *p)
 {
   DBUG_ENTER("my_plugin_log_message");
-/* Writes to mysqld.1.err: Plugin test_services reports an info text */
+/* Writes to myblockchaind.1.err: Plugin test_services reports an info text */
   int ret = my_plugin_log_message(&p, MY_INFORMATION_LEVEL, "This is the test plugin for services testing info report output");
 
-/* Writes to mysqld.1.err: Plugin test_services reports a warning. */
+/* Writes to myblockchaind.1.err: Plugin test_services reports a warning. */
   ret = my_plugin_log_message(&p, MY_WARNING_LEVEL, "This is a warning from test plugin for services testing warning report output");
 
-/* Writes to mysqld.1.err: Plugin test_services reports an error. */
+/* Writes to myblockchaind.1.err: Plugin test_services reports an error. */
   ret = my_plugin_log_message(&p, MY_ERROR_LEVEL, "This is an error from test plugin for services testing error report output");
 
   DBUG_RETURN(ret);
@@ -108,7 +108,7 @@ static int test_services_plugin_init(void *p)
   int ret=0; 
   test_status= BUSY;
 /* Test of service: snprintf */
-  /* Log the value of the switch in mysqld.err. */
+  /* Log the value of the switch in myblockchaind.err. */
   ret = my_plugin_log_message(&p, MY_INFORMATION_LEVEL, "Test_services with_snprintf_val: %d", 
 		               with_snprintf_val);
   if (with_snprintf_val==1){
@@ -118,7 +118,7 @@ static int test_services_plugin_init(void *p)
      ret = my_plugin_log_message(&p, MY_INFORMATION_LEVEL, "Test of snprintf switched off");
   }
 /* Test of service: my_plugin_log_message */
-  /* Log the value of the switch in mysqld.err. */
+  /* Log the value of the switch in myblockchaind.err. */
   ret = my_plugin_log_message(&p, MY_INFORMATION_LEVEL, "Test_services with_log_message_val: %d", 
 		               with_log_message_val);
   if (with_log_message_val==1){
@@ -141,12 +141,12 @@ static int test_services_plugin_deinit(void *p)
 }
 
 /* Mandatory structure describing the properties of the plugin. */
-struct st_mysql_daemon test_services_plugin=
-{ MYSQL_DAEMON_INTERFACE_VERSION  };
+struct st_myblockchain_daemon test_services_plugin=
+{ MYBLOCKCHAIN_DAEMON_INTERFACE_VERSION  };
 
-mysql_declare_plugin(test_daemon)
+myblockchain_declare_plugin(test_daemon)
 {
-  MYSQL_DAEMON_PLUGIN,
+  MYBLOCKCHAIN_DAEMON_PLUGIN,
   &test_services_plugin,
   "test_services",
   "Horst Hunger",
@@ -160,4 +160,4 @@ mysql_declare_plugin(test_daemon)
   NULL,                       /* config options                  */
   0,                          /* flags                           */
 }
-mysql_declare_plugin_end;
+myblockchain_declare_plugin_end;

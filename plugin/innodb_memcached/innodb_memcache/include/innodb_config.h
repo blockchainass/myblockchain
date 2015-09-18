@@ -67,7 +67,7 @@ system tables */
 operation to a consistent InnoDB table */
 typedef enum container {
 	CONTAINER_NAME,		/*!< name for this mapping */
-	CONTAINER_DB,		/*!< database name */
+	CONTAINER_DB,		/*!< blockchain name */
 	CONTAINER_TABLE,	/*!< table name */
 	CONTAINER_KEY,		/*!< column name for column maps to
 				memcached "key" */

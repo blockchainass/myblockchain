@@ -15,37 +15,37 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
  */
 
-package com.mysql.clusterj.jdbc;
+package com.myblockchain.clusterj.jdbc;
 
-import com.mysql.clusterj.ClusterJFatalInternalException;
-import com.mysql.clusterj.ClusterJHelper;
-import com.mysql.clusterj.ClusterJUserException;
-import com.mysql.clusterj.LockMode;
-import com.mysql.clusterj.SessionFactory;
-import com.mysql.clusterj.core.query.PredicateImpl;
-import com.mysql.clusterj.core.query.QueryDomainTypeImpl;
-import com.mysql.clusterj.core.spi.SessionSPI;
-import com.mysql.clusterj.core.store.Dictionary;
-import com.mysql.clusterj.core.util.I18NHelper;
-import com.mysql.clusterj.core.util.Logger;
-import com.mysql.clusterj.core.util.LoggerFactoryService;
-import com.mysql.jdbc.Connection;
-import com.mysql.jdbc.ResultSetInternalMethods;
-import com.mysql.jdbc.ServerPreparedStatement;
-import com.mysql.jdbc.Statement;
-import com.mysql.jdbc.ServerPreparedStatement.BatchedBindValues;
-import com.mysql.jdbc.ServerPreparedStatement.BindValue;
-import com.mysql.clusterj.jdbc.antlr.ANTLRNoCaseStringStream;
-import com.mysql.clusterj.jdbc.antlr.MySQL51Parser;
-import com.mysql.clusterj.jdbc.antlr.MySQL51Lexer;
-import com.mysql.clusterj.jdbc.antlr.QueuingErrorListener;
-import com.mysql.clusterj.jdbc.antlr.node.Node;
-import com.mysql.clusterj.jdbc.antlr.node.PlaceholderNode;
-import com.mysql.clusterj.jdbc.antlr.node.SelectNode;
-import com.mysql.clusterj.jdbc.antlr.node.WhereNode;
-import com.mysql.clusterj.query.Predicate;
+import com.myblockchain.clusterj.ClusterJFatalInternalException;
+import com.myblockchain.clusterj.ClusterJHelper;
+import com.myblockchain.clusterj.ClusterJUserException;
+import com.myblockchain.clusterj.LockMode;
+import com.myblockchain.clusterj.SessionFactory;
+import com.myblockchain.clusterj.core.query.PredicateImpl;
+import com.myblockchain.clusterj.core.query.QueryDomainTypeImpl;
+import com.myblockchain.clusterj.core.spi.SessionSPI;
+import com.myblockchain.clusterj.core.store.Dictionary;
+import com.myblockchain.clusterj.core.util.I18NHelper;
+import com.myblockchain.clusterj.core.util.Logger;
+import com.myblockchain.clusterj.core.util.LoggerFactoryService;
+import com.myblockchain.jdbc.Connection;
+import com.myblockchain.jdbc.ResultSetInternalMethods;
+import com.myblockchain.jdbc.ServerPreparedStatement;
+import com.myblockchain.jdbc.Statement;
+import com.myblockchain.jdbc.ServerPreparedStatement.BatchedBindValues;
+import com.myblockchain.jdbc.ServerPreparedStatement.BindValue;
+import com.myblockchain.clusterj.jdbc.antlr.ANTLRNoCaseStringStream;
+import com.myblockchain.clusterj.jdbc.antlr.MyBlockchain51Parser;
+import com.myblockchain.clusterj.jdbc.antlr.MyBlockchain51Lexer;
+import com.myblockchain.clusterj.jdbc.antlr.QueuingErrorListener;
+import com.myblockchain.clusterj.jdbc.antlr.node.Node;
+import com.myblockchain.clusterj.jdbc.antlr.node.PlaceholderNode;
+import com.myblockchain.clusterj.jdbc.antlr.node.SelectNode;
+import com.myblockchain.clusterj.jdbc.antlr.node.WhereNode;
+import com.myblockchain.clusterj.query.Predicate;
 
-import com.mysql.clusterj.jdbc.SQLExecutor.Executor;
+import com.myblockchain.clusterj.jdbc.SQLExecutor.Executor;
 
 import java.io.InputStream;
 import java.sql.SQLException;
@@ -71,7 +71,7 @@ import org.antlr.runtime.tree.TreeAdaptor;
  * is used to interact with the cluster. There is exactly one statement interceptor and one
  * connection lifecycle interceptor associated with the interceptor.
  * All of the SQL post-parsing behavior is contained here, and uses classes in the org.antlr.runtime and
- * com.mysql.clusterj.jdbc.antlr packages to perform the parsing of the SQL statement. Analysis
+ * com.myblockchain.clusterj.jdbc.antlr packages to perform the parsing of the SQL statement. Analysis
  * of the parsed SQL statement occurs here, and clusterj artifacts are constructed for use in
  * other classes, in particular SQLExecutor and its command-specific subclasses.
  */
@@ -79,7 +79,7 @@ public class InterceptorImpl {
 
     /** Register logger for JDBC stuff. */
     static {
-        LoggerFactoryService.getFactory().registerLogger("com.mysql.clusterj.jdbc");
+        LoggerFactoryService.getFactory().registerLogger("com.myblockchain.clusterj.jdbc");
     }
 
     /** My message translator */
@@ -128,10 +128,10 @@ public class InterceptorImpl {
         if (logger.isDebugEnabled()) logger.debug("constructed with properties: " + properties);
         this.properties = properties;
         this.connection = connection;
-        // if database name is not specified, translate DBNAME to the required clusterj property
-        String dbname = properties.getProperty("com.mysql.clusterj.database",
+        // if blockchain name is not specified, translate DBNAME to the required clusterj property
+        String dbname = properties.getProperty("com.myblockchain.clusterj.blockchain",
                 properties.getProperty("DBNAME"));
-        properties.put("com.mysql.clusterj.database", dbname);
+        properties.put("com.myblockchain.clusterj.blockchain", dbname);
     }
 
     /** Return the interceptor for the connection lifecycle callbacks.
@@ -255,9 +255,9 @@ public class InterceptorImpl {
         assertReady();
         if (logger.isDebugEnabled() && statement != null) 
             logger.debug(statement.getClass().getName() + ": " + sql);
-        if (statement instanceof com.mysql.jdbc.PreparedStatement) {
-            com.mysql.jdbc.PreparedStatement preparedStatement =
-                (com.mysql.jdbc.PreparedStatement)statement;
+        if (statement instanceof com.myblockchain.jdbc.PreparedStatement) {
+            com.myblockchain.jdbc.PreparedStatement preparedStatement =
+                (com.myblockchain.jdbc.PreparedStatement)statement;
             // key must be interned because we are using IdentityHashMap
             // TODO: in case of DELETE, the SQL has already been rewritten at this point, 
             // and the original SQL is gone
@@ -288,7 +288,7 @@ public class InterceptorImpl {
             }
         } else {
             if (logger.isDebugEnabled() && statement != null) 
-                logger.debug(statement.getClass().getName() + " is not instanceof com.mysql.jdbc.PreparedStatement");
+                logger.debug(statement.getClass().getName() + " is not instanceof com.myblockchain.jdbc.PreparedStatement");
             // not a prepared statement; won't execute this
             return null;
         }
@@ -315,14 +315,14 @@ public class InterceptorImpl {
         QueryDomainTypeImpl<?> queryDomainType = null;
         int numberOfParameters = 0;
         switch (tokenType) {
-            case MySQL51Parser.INSERT:
-                tableNode = (CommonTree)root.getFirstChildWithType(MySQL51Parser.TABLE);
+            case MyBlockchain51Parser.INSERT:
+                tableNode = (CommonTree)root.getFirstChildWithType(MyBlockchain51Parser.TABLE);
                 tableName = getTableName(tableNode);
                 getSession();
                 dictionary = session.getDictionary();
                 domainTypeHandler = getDomainTypeHandler(tableName, dictionary);
-                CommonTree insertValuesNode = (CommonTree)root.getFirstChildWithType(MySQL51Parser.INSERT_VALUES);
-                CommonTree columnsNode = (CommonTree)insertValuesNode.getFirstChildWithType(MySQL51Parser.COLUMNS);
+                CommonTree insertValuesNode = (CommonTree)root.getFirstChildWithType(MyBlockchain51Parser.INSERT_VALUES);
+                CommonTree columnsNode = (CommonTree)insertValuesNode.getFirstChildWithType(MyBlockchain51Parser.COLUMNS);
                 List<CommonTree> fields = columnsNode.getChildren();
                 for (CommonTree field: fields) {
                     columnNames.add(getColumnName(field));
@@ -332,8 +332,8 @@ public class InterceptorImpl {
                         + " COLUMNS " + columnNames);
                 result = new SQLExecutor.Insert(domainTypeHandler, columnNames);
                 break;
-            case MySQL51Parser.SELECT:
-                CommonTree fromNode = (CommonTree)root.getFirstChildWithType(MySQL51Parser.FROM);
+            case MyBlockchain51Parser.SELECT:
+                CommonTree fromNode = (CommonTree)root.getFirstChildWithType(MyBlockchain51Parser.FROM);
                 if (fromNode == null) {
                     // no from clause; cannot handle this case so return a do-nothing ParsedSQL
                     result = new SQLExecutor.Noop();
@@ -341,7 +341,7 @@ public class InterceptorImpl {
                 }
                 try {
                     // this currently handles only FROM clauses with a single table
-                    tableNode = (CommonTree) fromNode.getFirstChildWithType(MySQL51Parser.TABLE);
+                    tableNode = (CommonTree) fromNode.getFirstChildWithType(MyBlockchain51Parser.TABLE);
                     tableName = getTableName(tableNode);
                 } catch (Exception e) {
                     // trouble with the FROM clause; log the SQL statement and the parser output
@@ -350,8 +350,8 @@ public class InterceptorImpl {
                     result = new SQLExecutor.Noop();
                     break;
                 }
-                boolean forUpdate = null != (CommonTree)root.getFirstChildWithType(MySQL51Parser.FOR);
-                boolean lockShared = null != (CommonTree)root.getFirstChildWithType(MySQL51Parser.LOCK);
+                boolean forUpdate = null != (CommonTree)root.getFirstChildWithType(MyBlockchain51Parser.FOR);
+                boolean lockShared = null != (CommonTree)root.getFirstChildWithType(MyBlockchain51Parser.LOCK);
                 LockMode lockMode = LockMode.READ_COMMITTED;
                 if (forUpdate) {
                     lockMode = LockMode.EXCLUSIVE;
@@ -361,7 +361,7 @@ public class InterceptorImpl {
                 getSession();
                 dictionary = session.getDictionary();
                 domainTypeHandler = getDomainTypeHandler(tableName, dictionary);
-                columnsNode = (CommonTree)root.getFirstChildWithType(MySQL51Parser.COLUMNS);
+                columnsNode = (CommonTree)root.getFirstChildWithType(MyBlockchain51Parser.COLUMNS);
                 List<CommonTree> selectExprNodes = columnsNode.getChildren();
                 for (CommonTree selectExprNode: selectExprNodes) {
                     columnNames.add(getColumnName(getFieldNode(selectExprNode)));
@@ -402,13 +402,13 @@ public class InterceptorImpl {
                 }
                 logger.info(preparedSql + ": " + whereType);
                 break;
-            case MySQL51Parser.DELETE:
-                tableNode = (CommonTree)root.getFirstChildWithType(MySQL51Parser.TABLE);
+            case MyBlockchain51Parser.DELETE:
+                tableNode = (CommonTree)root.getFirstChildWithType(MyBlockchain51Parser.TABLE);
                 tableName = getTableName(tableNode);
                 getSession();
                 dictionary = session.getDictionary();
                 domainTypeHandler = getDomainTypeHandler(tableName, dictionary);
-                whereNode = ((WhereNode)root.getFirstChildWithType(MySQL51Parser.WHERE));
+                whereNode = ((WhereNode)root.getFirstChildWithType(MyBlockchain51Parser.WHERE));
                 if (whereNode == null) {
                     // no where clause (delete all rows)
                     result = new SQLExecutor.Delete(domainTypeHandler);
@@ -436,14 +436,14 @@ public class InterceptorImpl {
                         + " number of parameters " + numberOfParameters);
                 logger.info(preparedSql + ": " + whereType);
                 break;
-            case MySQL51Parser.UPDATE:
+            case MyBlockchain51Parser.UPDATE:
                 // UPDATE table SET column = value, column = value WHERE where-clause
-                tableNode = (CommonTree)root.getFirstChildWithType(MySQL51Parser.TABLE);
+                tableNode = (CommonTree)root.getFirstChildWithType(MyBlockchain51Parser.TABLE);
                 tableName = getTableName(tableNode);
                 getSession();
                 dictionary = session.getDictionary();
                 domainTypeHandler = getDomainTypeHandler(tableName, dictionary);
-                CommonTree setNode = (CommonTree)root.getFirstChildWithType(MySQL51Parser.SET);
+                CommonTree setNode = (CommonTree)root.getFirstChildWithType(MyBlockchain51Parser.SET);
                 // create list of columns to update
                 // SET node has one child for each <field> = <value
                 List<CommonTree> equalNodes = setNode.getChildren();
@@ -455,7 +455,7 @@ public class InterceptorImpl {
                     parameterNumbers.add(parameterNode.getId());
                 }
                 if (logger.isDetailEnabled()) logger.detail("Update " + columnNames + " values " + parameterNumbers);
-                whereNode = ((WhereNode)root.getFirstChildWithType(MySQL51Parser.WHERE));
+                whereNode = ((WhereNode)root.getFirstChildWithType(MyBlockchain51Parser.WHERE));
                 if (whereNode == null) {
                     // no where clause (update all rows)
                     whereType = "non-clusterj";
@@ -499,7 +499,7 @@ public class InterceptorImpl {
     private String getPrimaryKeyFieldName(CommonTree whereNode) {
         String result = null;
         CommonTree operation = (CommonTree) whereNode.getChild(0);
-        if (MySQL51Parser.EQUALS == operation.getType()) {
+        if (MyBlockchain51Parser.EQUALS == operation.getType()) {
             result = operation.getChild(0).getChild(0).getText();
         } else {
             throw new ClusterJUserException("Cannot find primary key in WHERE clause.");
@@ -544,7 +544,7 @@ public class InterceptorImpl {
     private CommonTree parse(String preparedSql) {
         CommonTree result = null;
         ANTLRNoCaseStringStream inputStream = new ANTLRNoCaseStringStream(preparedSql);
-        MySQL51Lexer lexer = new MySQL51Lexer(inputStream);
+        MyBlockchain51Lexer lexer = new MyBlockchain51Lexer(inputStream);
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         lexer.setErrorListener(new QueuingErrorListener(lexer));
         tokens.getTokens();
@@ -553,7 +553,7 @@ public class InterceptorImpl {
             return result;
         }
         PlaceholderNode.resetId();
-        MySQL51Parser parser = new MySQL51Parser(tokens);
+        MyBlockchain51Parser parser = new MyBlockchain51Parser(tokens);
         parser.setTreeAdaptor(mySQLTreeAdaptor);
         parser.setErrorListener(new QueuingErrorListener(parser));
         try {

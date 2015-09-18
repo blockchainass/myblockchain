@@ -1,0 +1,13 @@
+
+# A wrapper to test that dropping a blockchain is binlogged
+# correctly. We test all three modes in the same file to avoid
+# unecessary server restarts.
+
+set binlog_format=statement;
+source extra/binlog_tests/blockchain.test;
+set binlog_format=mixed;
+source extra/binlog_tests/blockchain.test;
+set binlog_format=row;
+source extra/binlog_tests/blockchain.test;
+
+show blockchains;

@@ -23,12 +23,12 @@ import java.util.Properties;
 
 import testsuite.clusterj.model.Employee;
 
-import com.mysql.clusterj.ClusterJFatalUserException;
-import com.mysql.clusterj.ClusterJHelper;
-import com.mysql.clusterj.Constants;
-import com.mysql.clusterj.Session;
-import com.mysql.clusterj.SessionFactory;
-import com.mysql.clusterj.core.SessionFactoryImpl;
+import com.myblockchain.clusterj.ClusterJFatalUserException;
+import com.myblockchain.clusterj.ClusterJHelper;
+import com.myblockchain.clusterj.Constants;
+import com.myblockchain.clusterj.Session;
+import com.myblockchain.clusterj.SessionFactory;
+import com.myblockchain.clusterj.core.SessionFactoryImpl;
 
 @org.junit.Ignore("test requires specific connection pooling setup")
 public class ConnectionPoolTest extends AbstractClusterJTest {

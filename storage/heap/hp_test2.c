@@ -564,7 +564,7 @@ end:
   my_end(MY_GIVE_INFO);
   return(0);
 err:
-  printf("Got error: %d when using heap-database\n",my_errno);
+  printf("Got error: %d when using heap-blockchain\n",my_errno);
   (void) heap_close(file);
   return(1);
 } /* main */

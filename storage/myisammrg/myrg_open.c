@@ -24,8 +24,8 @@
 	if handle_locking is 0 then exit with error if some table is locked
 	if handle_locking is 1 then wait if table is locked
 
-        NOTE: This function is not used in the MySQL server. It is for
-        MERGE use independent from MySQL. Currently there is some code
+        NOTE: This function is not used in the MyBlockchain server. It is for
+        MERGE use independent from MyBlockchain. Currently there is some code
         duplication between myrg_open() and myrg_parent_open() +
         myrg_attach_children(). Please duplicate changes in these
         functions or make common sub-functions.
@@ -47,7 +47,7 @@ MYRG_INFO *myrg_open(const char *name, int mode, int handle_locking)
   DBUG_ENTER("myrg_open");
 
   memset(&file, 0, sizeof(file));
-  if ((fd= mysql_file_open(rg_key_file_MRG,
+  if ((fd= myblockchain_file_open(rg_key_file_MRG,
                            fn_format(name_buff, name, "", MYRG_NAME_EXT,
                                      MY_UNPACK_FILENAME|MY_APPEND_EXT),
                            O_RDONLY | O_SHARE, MYF(0))) < 0)
@@ -167,14 +167,14 @@ MYRG_INFO *myrg_open(const char *name, int mode, int handle_locking)
   m_info->last_used_table=m_info->open_tables;
   m_info->children_attached= TRUE;
 
-  (void) mysql_file_close(fd, MYF(0));
+  (void) myblockchain_file_close(fd, MYF(0));
   end_io_cache(&file);
-  mysql_mutex_init(rg_key_mutex_MYRG_INFO_mutex,
+  myblockchain_mutex_init(rg_key_mutex_MYRG_INFO_mutex,
                    &m_info->mutex, MY_MUTEX_INIT_FAST);
   m_info->open_list.data=(void*) m_info;
-  mysql_mutex_lock(&THR_LOCK_open);
+  myblockchain_mutex_lock(&THR_LOCK_open);
   myrg_open_list=list_add(myrg_open_list,&m_info->open_list);
-  mysql_mutex_unlock(&THR_LOCK_open);
+  myblockchain_mutex_unlock(&THR_LOCK_open);
   DBUG_RETURN(m_info);
 
 bad_children:
@@ -191,7 +191,7 @@ err:
     end_io_cache(&file);
     /* Fall through */
   case 1:
-    (void) mysql_file_close(fd, MYF(0));
+    (void) myblockchain_file_close(fd, MYF(0));
   }
   my_errno=save_errno;
   DBUG_RETURN (NULL);
@@ -205,7 +205,7 @@ err:
     tables. Count the children. Allocate and initialize MYRG_INFO
     structure. Call a callback function for each child table.
 
-  @param[in]    parent_name     merge table name path as "database/table"
+  @param[in]    parent_name     merge table name path as "blockchain/table"
   @param[in]    callback        function to call for each child table
   @param[in]    callback_param  data pointer to give to the callback
 
@@ -240,7 +240,7 @@ MYRG_INFO *myrg_parent_open(const char *parent_name,
   memset(&file_cache, 0, sizeof(file_cache));
 
   /* Open MERGE meta file. */
-  if ((fd= mysql_file_open(rg_key_file_MRG,
+  if ((fd= myblockchain_file_open(rg_key_file_MRG,
                            fn_format(parent_name_buff, parent_name,
                                      "", MYRG_NAME_EXT,
                                      MY_UNPACK_FILENAME|MY_APPEND_EXT),
@@ -320,14 +320,14 @@ MYRG_INFO *myrg_parent_open(const char *parent_name,
   }
 
   end_io_cache(&file_cache);
-  (void) mysql_file_close(fd, MYF(0));
-  mysql_mutex_init(rg_key_mutex_MYRG_INFO_mutex,
+  (void) myblockchain_file_close(fd, MYF(0));
+  myblockchain_mutex_init(rg_key_mutex_MYRG_INFO_mutex,
                    &m_info->mutex, MY_MUTEX_INIT_FAST);
 
   m_info->open_list.data= (void*) m_info;
-  mysql_mutex_lock(&THR_LOCK_open);
+  myblockchain_mutex_lock(&THR_LOCK_open);
   myrg_open_list= list_add(myrg_open_list, &m_info->open_list);
-  mysql_mutex_unlock(&THR_LOCK_open);
+  myblockchain_mutex_unlock(&THR_LOCK_open);
 
   DBUG_RETURN(m_info);
 
@@ -342,7 +342,7 @@ MYRG_INFO *myrg_parent_open(const char *parent_name,
     end_io_cache(&file_cache);
     /* Fall through */
   case 1:
-    (void) mysql_file_close(fd, MYF(0));
+    (void) myblockchain_file_close(fd, MYF(0));
   }
   my_errno= save_errno;
   DBUG_RETURN (NULL);
@@ -399,7 +399,7 @@ int myrg_attach_children(MYRG_INFO *m_info, int handle_locking,
     'open_tables' has all the pointers to the children. Use of a mutex
     here and in ha_myisammrg::store_lock() forces consistent data.
   */
-  mysql_mutex_lock(&m_info->mutex);
+  myblockchain_mutex_lock(&m_info->mutex);
   errpos= 0;
   file_offset= 0;
   min_keys= 0;
@@ -486,7 +486,7 @@ int myrg_attach_children(MYRG_INFO *m_info, int handle_locking,
   m_info->keys= min_keys;
   m_info->last_used_table= m_info->open_tables;
   m_info->children_attached= TRUE;
-  mysql_mutex_unlock(&m_info->mutex);
+  myblockchain_mutex_unlock(&m_info->mutex);
   DBUG_RETURN(0);
 
 bad_children:
@@ -498,7 +498,7 @@ err:
     my_free(m_info->rec_per_key_part);
     m_info->rec_per_key_part= NULL;
   }
-  mysql_mutex_unlock(&m_info->mutex);
+  myblockchain_mutex_unlock(&m_info->mutex);
   my_errno= save_errno;
   DBUG_RETURN(1);
 }
@@ -521,7 +521,7 @@ int myrg_detach_children(MYRG_INFO *m_info)
 {
   DBUG_ENTER("myrg_detach_children");
   /* For symmetry with myrg_attach_children() we use the mutex here. */
-  mysql_mutex_lock(&m_info->mutex);
+  myblockchain_mutex_lock(&m_info->mutex);
   if (m_info->tables)
   {
     /* Do not attach/detach an empty child list. */
@@ -532,7 +532,7 @@ int myrg_detach_children(MYRG_INFO *m_info)
   m_info->del= 0;
   m_info->data_file_length= 0;
   m_info->options= 0;
-  mysql_mutex_unlock(&m_info->mutex);
+  myblockchain_mutex_unlock(&m_info->mutex);
   DBUG_RETURN(0);
 }
 

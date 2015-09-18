@@ -282,8 +282,8 @@ page_cur_rec_field_extends(
 	    || type->mtype == DATA_BINARY
 	    || type->mtype == DATA_BLOB
 	    || DATA_GEOMETRY_MTYPE(type->mtype)
-	    || type->mtype == DATA_VARMYSQL
-	    || type->mtype == DATA_MYSQL) {
+	    || type->mtype == DATA_VARMYBLOCKCHAIN
+	    || type->mtype == DATA_MYBLOCKCHAIN) {
 
 		if (dfield_get_len(dfield) != UNIV_SQL_NULL
 		    && rec_f_len != UNIV_SQL_NULL
@@ -2421,7 +2421,7 @@ page_copy_rec_list_end_to_created_page(
 				 <= PAGE_DIR_SLOT_MAX_N_OWNED)) {
 		/* We can merge the two last dir slots. This operation is
 		here to make this function imitate exactly the equivalent
-		task made using page_cur_insert_rec, which we use in database
+		task made using page_cur_insert_rec, which we use in blockchain
 		recovery to reproduce the task performed by this function.
 		To be able to check the correctness of recovery, it is good
 		that it imitates exactly. */

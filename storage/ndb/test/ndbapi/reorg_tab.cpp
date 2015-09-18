@@ -31,7 +31,7 @@ int main(int argc, const char** argv){
   const char* _connectstr = NULL;
 
   struct getargs args[] = {
-    { "database", 'd', arg_string, &db, "database", 0 },
+    { "blockchain", 'd', arg_string, &db, "blockchain", 0 },
     { "connstr", 'c', arg_string, &_connectstr, "Connect string", "cs" },
     { "partitions", 'p', arg_integer, &_p, "New no of partitions", 0},
     { "usage", '?', arg_flag, &_help, "Print help", "" }

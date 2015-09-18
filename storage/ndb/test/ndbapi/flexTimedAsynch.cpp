@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2003-2007 MySQL AB
+   Copyright (C) 2003-2007 MyBlockchain AB
     All rights reserved. Use is subject to license terms.
 
    This program is free software; you can redistribute it and/or modify
@@ -30,8 +30,8 @@
         -c Number of operations per transaction
 	-s Size of each attribute in 32 bit word, default 1 (Primary Key is always of size 1,
 	                                      independent of this value)
-	-simple           Use simple read to read from database
-        -dirty            Use dirty read to read from database
+	-simple           Use simple read to read from blockchain
+        -dirty            Use dirty read to read from blockchain
 	-write            Use writeTuple in insert and update
         -n                Use standard table names
         -no_table_create  Don't create tables in db
@@ -726,8 +726,8 @@ void readArguments(int argc, const char** argv)
 	  ndbout << "-c Number of operations per transaction, default 1 " << endl;
 	  ndbout << "-s Size of each attribute in 32 bit word, default 1" 
 	    "(Primary Key is always of size 1, independent of this value) " << endl;
-	  ndbout << "-simple           Use simple read to read from database " << endl;
-	  ndbout << "-dirty            Use dirty read to read from database " << endl;
+	  ndbout << "-simple           Use simple read to read from blockchain " << endl;
+	  ndbout << "-dirty            Use dirty read to read from blockchain " << endl;
 	  ndbout << "-write            Use writeTuple in insert and update " << endl;
 	  ndbout << "-n                Use standard table names " << endl;
 	  ndbout << "-no_table_create  Don't create tables in db " << endl;

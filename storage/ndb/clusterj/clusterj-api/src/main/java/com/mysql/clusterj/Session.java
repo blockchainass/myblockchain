@@ -15,10 +15,10 @@
    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-package com.mysql.clusterj;
+package com.myblockchain.clusterj;
 
-import com.mysql.clusterj.query.QueryBuilder;
-import com.mysql.clusterj.query.QueryDefinition;
+import com.myblockchain.clusterj.query.QueryBuilder;
+import com.myblockchain.clusterj.query.QueryDefinition;
 
 /** Session is the primary user interface to the cluster.
  *
@@ -63,23 +63,23 @@ public interface Session {
 
     /** Create an instance of an interface or dynamic class that maps to a table
      * and set the primary key of the new instance. The new instance
-     * can be used to create, delete, or update a record in the database.
+     * can be used to create, delete, or update a record in the blockchain.
      * @param cls the interface for which to create an instance
      * @return an instance that implements the interface
      */
     <T> T newInstance(Class<T> cls, Object key);
 
-    /** Insert the instance into the database.
-     * If the instance already exists in the database, an exception is thrown.
+    /** Insert the instance into the blockchain.
+     * If the instance already exists in the blockchain, an exception is thrown.
      * @see Session#savePersistent(java.lang.Object)
      * @param instance the instance to insert
      * @return the instance
      */
     <T> T makePersistent(T instance);
 
-    /** Load the instance from the database into memory. Loading
+    /** Load the instance from the blockchain into memory. Loading
      * is asynchronous and will be executed when an operation requiring
-     * database access is executed: find, flush, or query. The instance must
+     * blockchain access is executed: find, flush, or query. The instance must
      * have been returned from find or query; or
      * created via session.newInstance and its primary key initialized.
      * @param instance the instance to load
@@ -88,8 +88,8 @@ public interface Session {
      */
     <T> T load(T instance);
 
-    /** Was the row corresponding to this instance found in the database?
-     * @param instance the instance corresponding to the row in the database
+    /** Was the row corresponding to this instance found in the blockchain?
+     * @param instance the instance corresponding to the row in the blockchain
      * @return <ul><li>null if the instance is null or was created via newInstance and never loaded;
      * </li><li>true if the instance was returned from a find or query
      * or created via newInstance and successfully loaded;
@@ -100,19 +100,19 @@ public interface Session {
      */
     Boolean found(Object instance);
     
-    /** Insert the instance into the database. This method has identical
+    /** Insert the instance into the blockchain. This method has identical
      * semantics to makePersistent.
      * @param instance the instance to insert
      */
     void persist(Object instance);
 
-    /** Insert the instances into the database.
+    /** Insert the instances into the blockchain.
      * @param instances the instances to insert.
      * @return the instances
      */
     Iterable<?> makePersistentAll(Iterable<?> instances);
 
-    /** Delete an instance of a class from the database given its primary key.
+    /** Delete an instance of a class from the blockchain given its primary key.
      * For single-column keys, the key parameter is a wrapper (e.g. Integer).
      * For multi-column keys, the key parameter is an Object[] in which
      * elements correspond to the primary keys in order as defined in the schema.
@@ -121,53 +121,53 @@ public interface Session {
      */
     public <T> void deletePersistent(Class<T> cls, Object key);
 
-    /** Delete the instance from the database. Only the id field is used
+    /** Delete the instance from the blockchain. Only the id field is used
      * to determine which instance is to be deleted.
-     * If the instance does not exist in the database, an exception is thrown.
+     * If the instance does not exist in the blockchain, an exception is thrown.
      * @param instance the instance to delete
      */
     void deletePersistent(Object instance);
 
-    /** Delete the instance from the database. This method has identical
+    /** Delete the instance from the blockchain. This method has identical
      * semantics to deletePersistent.
      * @param instance the instance to delete
      */
     void remove(Object instance);
 
-    /** Delete all instances of this class from the database.
-     * No exception is thrown even if there are no instances in the database.
+    /** Delete all instances of this class from the blockchain.
+     * No exception is thrown even if there are no instances in the blockchain.
      * @param cls the interface or dynamic class
      * @return the number of instances deleted
      */
     <T> int deletePersistentAll(Class<T> cls);
 
-    /** Delete all parameter instances from the database.
+    /** Delete all parameter instances from the blockchain.
      * @param instances the instances to delete
      */
     void deletePersistentAll(Iterable<?> instances);
 
-    /** Update the instance in the database without necessarily retrieving it.
+    /** Update the instance in the blockchain without necessarily retrieving it.
      * The id field is used to determine which instance is to be updated.
-     * If the instance does not exist in the database, an exception is thrown.
+     * If the instance does not exist in the blockchain, an exception is thrown.
      * This method cannot be used to change the primary key.
      * @param instance the instance to update
      */
     void updatePersistent(Object instance);
 
-    /** Update all parameter instances in the database.
+    /** Update all parameter instances in the blockchain.
      * @param instances the instances to update
      */
     void updatePersistentAll(Iterable<?> instances);
 
-    /** Save the instance in the database without checking for existence.
+    /** Save the instance in the blockchain without checking for existence.
      * The id field is used to determine which instance is to be saved.
-     * If the instance exists in the database it will be updated.
+     * If the instance exists in the blockchain it will be updated.
      * If the instance does not exist, it will be created.
      * @param instance the instance to update
      */
     <T> T savePersistent(T instance);
 
-    /** Update all parameter instances in the database.
+    /** Update all parameter instances in the blockchain.
      * @param instances the instances to update
      */
     Iterable<?> savePersistentAll(Iterable<?> instances);
@@ -230,7 +230,7 @@ public interface Session {
     void markModified(Object instance, String fieldName);
 
     /** Unload the schema definition for a class. This must be done after the schema
-     * definition has changed in the database due to an alter table command.
+     * definition has changed in the blockchain due to an alter table command.
      * The next time the class is used the schema will be reloaded.
      * @param cls the class for which the schema is unloaded
      * @return the name of the schema that was unloaded

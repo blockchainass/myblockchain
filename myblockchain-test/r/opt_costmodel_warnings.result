@@ -1,0 +1,72 @@
+SELECT * FROM myblockchain.server_cost;
+cost_name	cost_value	last_update	comment
+disk_temptable_create_cost	NULL	#	NULL
+disk_temptable_row_cost	NULL	#	NULL
+key_compare_cost	NULL	#	NULL
+memory_temptable_create_cost	NULL	#	NULL
+memory_temptable_row_cost	NULL	#	NULL
+row_evaluate_cost	NULL	#	NULL
+SELECT * FROM myblockchain.engine_cost;
+engine_name	device_type	cost_name	cost_value	last_update	comment
+default	0	io_block_read_cost	NULL	#	NULL
+default	0	memory_block_read_cost	NULL	#	NULL
+RENAME TABLE myblockchain.engine_cost TO myblockchain.engine_cost_renamed;
+"Restarting MyBlockchain server"
+# restart
+"MyBlockchain restarted"
+RENAME TABLE myblockchain.engine_cost_renamed TO myblockchain.engine_cost;
+SELECT * FROM myblockchain.engine_cost;
+engine_name	device_type	cost_name	cost_value	last_update	comment
+default	0	io_block_read_cost	NULL	#	NULL
+default	0	memory_block_read_cost	NULL	#	NULL
+INSERT INTO myblockchain.server_cost
+VALUES ("lunch_cost", 1.0, CURRENT_TIMESTAMP, "Lunch is important");
+UPDATE myblockchain.server_cost
+SET cost_value=-1.0
+WHERE cost_name="row_evaluate_cost";
+UPDATE myblockchain.server_cost
+SET cost_value=0.0
+WHERE cost_name="key_compare_cost";
+"Restarting MyBlockchain server"
+# restart
+"MyBlockchain restarted"
+DELETE FROM myblockchain.server_cost
+WHERE cost_name LIKE "lunch_cost%";
+UPDATE myblockchain.server_cost
+SET cost_value=NULL
+WHERE cost_name="row_evaluate_cost";
+UPDATE myblockchain.server_cost
+SET cost_value=NULL
+WHERE cost_name="key_compare_cost";
+INSERT INTO myblockchain.engine_cost
+VALUES ("InnoDB", 0, "lunch_cost", 1.0, CURRENT_TIMESTAMP, "Lunch is important");
+UPDATE myblockchain.engine_cost
+SET cost_value=0.0
+WHERE cost_name="io_block_read_cost";
+INSERT INTO myblockchain.engine_cost
+VALUES ("Falcon", 0, "io_block_read_cost", 1.0, CURRENT_TIMESTAMP, "Unknown storage engine");
+INSERT INTO myblockchain.engine_cost
+VALUES ("InnoDB", -1, "io_block_read_cost", 1.0, CURRENT_TIMESTAMP, "1 is an illegal device type");
+"Restarting MyBlockchain server"
+# restart
+"MyBlockchain restarted"
+DELETE FROM myblockchain.engine_cost
+WHERE cost_name LIKE "lunch_cost%";
+UPDATE myblockchain.engine_cost
+SET cost_value=NULL;
+DELETE FROM myblockchain.engine_cost
+WHERE device_type = -1;
+DELETE FROM myblockchain.engine_cost
+WHERE engine_name LIKE "Falcon";
+SELECT * FROM myblockchain.server_cost;
+cost_name	cost_value	last_update	comment
+disk_temptable_create_cost	NULL	#	NULL
+disk_temptable_row_cost	NULL	#	NULL
+key_compare_cost	NULL	#	NULL
+memory_temptable_create_cost	NULL	#	NULL
+memory_temptable_row_cost	NULL	#	NULL
+row_evaluate_cost	NULL	#	NULL
+SELECT * FROM myblockchain.engine_cost;
+engine_name	device_type	cost_name	cost_value	last_update	comment
+default	0	io_block_read_cost	NULL	#	NULL
+default	0	memory_block_read_cost	NULL	#	NULL

@@ -28,8 +28,8 @@
   won't have to worry about portability.
 */
 SYSLOG_FACILITY syslog_facility[] = {
-  { LOG_DAEMON, "daemon" }, /* default for mysqld */
-  { LOG_USER,   "user"   }, /* default for mysql command-line client */
+  { LOG_DAEMON, "daemon" }, /* default for myblockchaind */
+  { LOG_USER,   "user"   }, /* default for myblockchain command-line client */
 
   { LOG_LOCAL0, "local0" }, { LOG_LOCAL1, "local1" }, { LOG_LOCAL2, "local2" },
   { LOG_LOCAL3, "local3" }, { LOG_LOCAL4, "local4" }, { LOG_LOCAL5, "local5" },
@@ -125,7 +125,7 @@ err:
 
 /**
    Create a key in the Windows registry.
-   We'll setup a "MySQL" key in the EventLog branch (RegCreateKey),
+   We'll setup a "MyBlockchain" key in the EventLog branch (RegCreateKey),
    set our executable name (GetModuleFileName) as file-name
    ("EventMessageFile"), then set the message types we expect to
    be logging ("TypesSupported").
@@ -135,7 +135,7 @@ err:
    privileges, but that is non-fatal.
 
   @param key [in]         Name of the event generator.
-                          (Only last part of the key, e.g. "MySQL")
+                          (Only last part of the key, e.g. "MyBlockchain")
 
   @return
      0 Success
@@ -173,7 +173,7 @@ static int windows_eventlog_create_registry_entry(const char *key)
   {
     if (dwError == ERROR_ACCESS_DENIED)
     {
-      my_message_stderr(0, "Could not create or access the registry key needed for the MySQL application\n"
+      my_message_stderr(0, "Could not create or access the registry key needed for the MyBlockchain application\n"
                            "to log to the Windows EventLog. Run the application with sufficient\n"
                            "privileges once to create the key, add the key manually, or turn off\n"
                            "logging for that application.", MYF(0));

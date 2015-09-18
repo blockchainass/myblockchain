@@ -1,16 +1,16 @@
 Following are simple steps to get everything started:
 
-1) Build MySQL server. Please note libevent 1.4.12 is linked statically into daemon memcached.
+1) Build MyBlockchain server. Please note libevent 1.4.12 is linked statically into daemon memcached.
 
-2) Start MySQL server. (make sure libmemcached.so and innodb_engine.so are copied to MySQL plugin directory).
+2) Start MyBlockchain server. (make sure libmemcached.so and innodb_engine.so are copied to MyBlockchain plugin directory).
 
 3) Create the configure table and a demo table by running innodb_memcached_config.sql
 
-mysql < scripts/innodb_memcached_config.sql
+myblockchain < scripts/innodb_memcached_config.sql
 
 4) Install the memcached daemon plugin:
 
-mysql> install plugin daemon_memcached soname "libmemcached.so";
+myblockchain> install plugin daemon_memcached soname "libmemcached.so";
 
 5) Test it out
 telnet 127.0.0.1 11211
@@ -26,7 +26,7 @@ END
 6) Run memcapable
 Memcapable is part of libmemcached package, it is available at "https://code.launchpad.net/~libmemcached-developers/libmemcached/trunk". If you did not install libevent by yourself, you might need to set LD_LIBRARY_PATH to point libevent.so in the libevent directory.
 
-jy@jy-laptop:~/work2/mysql-5.6-labs-innodb-memcached/bld/mysql-test$ memcapable -v
+jy@jy-laptop:~/work2/myblockchain-5.6-labs-innodb-memcached/bld/myblockchain-test$ memcapable -v
 ascii quit                              [pass]
 ascii version                           [pass]
 ascii verbosity                         [pass]
@@ -83,7 +83,7 @@ binary prependq                         [pass]
 binary stat                             [pass]
 All tests passed
 
-7) memcached command line options now can be set by specifying MySQL configure variable "daemon_memcached-option"
+7) memcached command line options now can be set by specifying MyBlockchain configure variable "daemon_memcached-option"
 
 8) You can also configure the commit batch size by specifying boot time system variable "daemon_memcached-w_batch_size" and "daemon_memcached-r_batch_size" (--loose-daemon_memcached-w_batch_size=100).
 

@@ -19,7 +19,7 @@
 
 #include "locking_service.h"
 #include "mdl.h"
-#include "mysqld_error.h"
+#include "myblockchaind_error.h"
 #include "test_utils.h"
 #include "thread_utils.h"
 

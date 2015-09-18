@@ -15,7 +15,7 @@
    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
  */
 
-package com.mysql.clusterj.tie;
+package com.myblockchain.clusterj.tie;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -23,14 +23,14 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.mysql.clusterj.ClusterJFatalInternalException;
+import com.myblockchain.clusterj.ClusterJFatalInternalException;
 
-import com.mysql.clusterj.core.store.Column;
-import com.mysql.clusterj.core.store.Index;
-import com.mysql.clusterj.core.store.IndexScanOperation;
-import com.mysql.clusterj.core.store.Table;
+import com.myblockchain.clusterj.core.store.Column;
+import com.myblockchain.clusterj.core.store.Index;
+import com.myblockchain.clusterj.core.store.IndexScanOperation;
+import com.myblockchain.clusterj.core.store.Table;
 
-import com.mysql.ndbjtie.ndbapi.NdbIndexScanOperation;
+import com.myblockchain.ndbjtie.ndbapi.NdbIndexScanOperation;
 
 /** NdbRecordIndexScanOperationImpl performs index scans using NdbRecord.
  * Two NdbRecordImpl instances are used: one to define the bounds (low and high)

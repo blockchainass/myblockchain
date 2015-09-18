@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Copyright (C) 2003, 2005 MySQL AB
+# Copyright (C) 2003, 2005 MyBlockchain AB
 # Use is subject to license terms
 #
 # This program is free software; you can redistribute it and/or
@@ -19,19 +19,19 @@
 # MA 02110-1301, USA
 
 #
-# preflight - this script will be executed before the MySQL PKG
+# preflight - this script will be executed before the MyBlockchain PKG
 # installation will be performed.
 #
-# If this package has been compiled with a prefix ending with "mysql" (e.g.
-# /usr/local/mysql or /opt/mysql), it will rename any previously existing
+# If this package has been compiled with a prefix ending with "myblockchain" (e.g.
+# /usr/local/myblockchain or /opt/myblockchain), it will rename any previously existing
 # directory with this name before installing the new package (which includes
-# a symlink named "mysql", pointing to the newly installed directory, which
-# is named mysql-<version>)
+# a symlink named "myblockchain", pointing to the newly installed directory, which
+# is named myblockchain-<version>)
 #
 
 PREFIX="@prefix@"
 BASENAME=`basename $PREFIX`
 
-if [ -d $PREFIX -a ! -L $PREFIX -a $BASENAME = "mysql" ] ; then
+if [ -d $PREFIX -a ! -L $PREFIX -a $BASENAME = "myblockchain" ] ; then
 	mv $PREFIX $PREFIX.bak
 fi

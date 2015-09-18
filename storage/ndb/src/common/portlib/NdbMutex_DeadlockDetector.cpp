@@ -166,7 +166,7 @@ ndb_mutex_locked(NdbMutex* p)
   {
     /**
      * These are threads not started with NdbThread_Create(...)
-     *   e.g mysql-server threads...ignore these for now
+     *   e.g myblockchain-server threads...ignore these for now
      */
     return;
   }
@@ -207,7 +207,7 @@ ndb_mutex_unlocked(NdbMutex* m)
   {
     /**
      * These are threads not started with NdbThread_Create(...)
-     *   e.g mysql-server threads...ignore these for now
+     *   e.g myblockchain-server threads...ignore these for now
      */
     return;
   }
@@ -241,7 +241,7 @@ ndb_mutex_thread_exit()
   {
     /**
      * These are threads not started with NdbThread_Create(...)
-     *   e.g mysql-server threads...ignore these for now
+     *   e.g myblockchain-server threads...ignore these for now
      */
     return;
   }

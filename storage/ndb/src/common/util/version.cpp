@@ -45,13 +45,13 @@ extern "C"
 const char * ndbGetOwnVersionString()
 {
   static char ndb_version_string_buf[NDB_VERSION_STRING_BUF_SZ];
-  return ndbGetVersionString(NDB_VERSION, NDB_MYSQL_VERSION_D, NDB_VERSION_STATUS,
+  return ndbGetVersionString(NDB_VERSION, NDB_MYBLOCKCHAIN_VERSION_D, NDB_VERSION_STATUS,
                              ndb_version_string_buf,
                              sizeof(ndb_version_string_buf));
 }
 
 extern "C"
-const char * ndbGetVersionString(Uint32 version, Uint32 mysql_version,
+const char * ndbGetVersionString(Uint32 version, Uint32 myblockchain_version,
                                  const char * status,
                                  char *buf, unsigned sz)
 {
@@ -61,12 +61,12 @@ const char * ndbGetVersionString(Uint32 version, Uint32 mysql_version,
   else
     tmp[0] = 0;
 
-  if (mysql_version)
+  if (myblockchain_version)
   {
-    basestring_snprintf(buf, sz, "mysql-%d.%d.%d ndb-%d.%d.%d%s",
-			getMajor(mysql_version),
-			getMinor(mysql_version),
-			getBuild(mysql_version),
+    basestring_snprintf(buf, sz, "myblockchain-%d.%d.%d ndb-%d.%d.%d%s",
+			getMajor(myblockchain_version),
+			getMinor(myblockchain_version),
+			getBuild(myblockchain_version),
 			getMajor(version),
 			getMinor(version),
 			getBuild(version),
@@ -323,11 +323,11 @@ TAPTEST(ndb_version)
 {
   printf("Checking NDB version defines and functions...\n\n");
 
-  printf(" version string: '%s'\n", MYSQL_SERVER_VERSION);
+  printf(" version string: '%s'\n", MYBLOCKCHAIN_SERVER_VERSION);
 
-  printf(" NDB_MYSQL_VERSION_MAJOR: %d\n", NDB_MYSQL_VERSION_MAJOR);
-  printf(" NDB_MYSQL_VERSION_MINOR: %d\n", NDB_MYSQL_VERSION_MINOR);
-  printf(" NDB_MYSQL_VERSION_BUILD: %d\n\n", NDB_MYSQL_VERSION_BUILD);
+  printf(" NDB_MYBLOCKCHAIN_VERSION_MAJOR: %d\n", NDB_MYBLOCKCHAIN_VERSION_MAJOR);
+  printf(" NDB_MYBLOCKCHAIN_VERSION_MINOR: %d\n", NDB_MYBLOCKCHAIN_VERSION_MINOR);
+  printf(" NDB_MYBLOCKCHAIN_VERSION_BUILD: %d\n\n", NDB_MYBLOCKCHAIN_VERSION_BUILD);
   printf(" NDB_VERSION_MAJOR: %d\n", NDB_VERSION_MAJOR);
   printf(" NDB_VERSION_MINOR: %d\n", NDB_VERSION_MINOR);
   printf(" NDB_VERSION_BUILD: %d\n", NDB_VERSION_BUILD);
@@ -337,34 +337,34 @@ TAPTEST(ndb_version)
 
   /*
     Parse the VERSION string as X.X.X-status */
-  unsigned mysql_major, mysql_minor, mysql_build;
-  char mysql_status[100];
-  const int matches_version = sscanf(MYSQL_SERVER_VERSION, "%u.%u.%u-%s",
-                                     &mysql_major, &mysql_minor,
-                                     &mysql_build, mysql_status);
+  unsigned myblockchain_major, myblockchain_minor, myblockchain_build;
+  char myblockchain_status[100];
+  const int matches_version = sscanf(MYBLOCKCHAIN_SERVER_VERSION, "%u.%u.%u-%s",
+                                     &myblockchain_major, &myblockchain_minor,
+                                     &myblockchain_build, myblockchain_status);
   OK(matches_version == 3 || matches_version == 4);
 
   /*
-    Check that defined MySQL version numbers X.X.X match those parsed
+    Check that defined MyBlockchain version numbers X.X.X match those parsed
     from the version string
   */
-  OK(NDB_MYSQL_VERSION_MAJOR == mysql_major ||
-     NDB_MYSQL_VERSION_MINOR == mysql_minor ||
-     NDB_MYSQL_VERSION_BUILD == mysql_build);
+  OK(NDB_MYBLOCKCHAIN_VERSION_MAJOR == myblockchain_major ||
+     NDB_MYBLOCKCHAIN_VERSION_MINOR == myblockchain_minor ||
+     NDB_MYBLOCKCHAIN_VERSION_BUILD == myblockchain_build);
 
   if (matches_version == 4 &&
-      strncmp(mysql_status, "ndb", 3) == 0)
+      strncmp(myblockchain_status, "ndb", 3) == 0)
   {
-    /* This is a MySQL Cluster build */
+    /* This is a MyBlockchain Cluster build */
     unsigned ndb_major, ndb_minor, ndb_build;
     char ndb_status[100];
-    int matches_ndb = sscanf(mysql_status, "ndb-%u.%u.%u%s",
+    int matches_ndb = sscanf(myblockchain_status, "ndb-%u.%u.%u%s",
                              &ndb_major, &ndb_minor,
                              &ndb_build, ndb_status);
 
-    printf("This is a MySQL Cluster build!\n");
-    printf(" MySQL Server version(X.X.X): %u.%u.%u\n",
-           mysql_major, mysql_minor, mysql_build);
+    printf("This is a MyBlockchain Cluster build!\n");
+    printf(" MyBlockchain Server version(X.X.X): %u.%u.%u\n",
+           myblockchain_major, myblockchain_minor, myblockchain_build);
     printf(" NDB version(Y.Y.Y): %u.%u.%u\n",
            ndb_major, ndb_minor, ndb_build);
 
@@ -381,24 +381,24 @@ TAPTEST(ndb_version)
   }
   else
   {
-    /* This is a MySQL Server with NDB build */
-    printf("This is a MySQL Server with NDB build!\n");
-    printf(" MySQL Server version(X.X.X): %u.%u.%u\n",
-           mysql_major, mysql_minor, mysql_build);
+    /* This is a MyBlockchain Server with NDB build */
+    printf("This is a MyBlockchain Server with NDB build!\n");
+    printf(" MyBlockchain Server version(X.X.X): %u.%u.%u\n",
+           myblockchain_major, myblockchain_minor, myblockchain_build);
     printf(" NDB version(Y.Y.Y): %u.%u.%u\n",
            NDB_VERSION_MAJOR, NDB_VERSION_MINOR, NDB_VERSION_BUILD);
 
-    /* Check that MySQL and NDB version are not the same */
-    if (NDB_MYSQL_VERSION_MAJOR == NDB_VERSION_MAJOR &&
-        NDB_MYSQL_VERSION_MINOR == NDB_VERSION_MINOR &&
-        NDB_MYSQL_VERSION_BUILD == NDB_VERSION_BUILD)
+    /* Check that MyBlockchain and NDB version are not the same */
+    if (NDB_MYBLOCKCHAIN_VERSION_MAJOR == NDB_VERSION_MAJOR &&
+        NDB_MYBLOCKCHAIN_VERSION_MINOR == NDB_VERSION_MINOR &&
+        NDB_MYBLOCKCHAIN_VERSION_BUILD == NDB_VERSION_BUILD)
     {
       /*
-        Building a MySQL Server with NDB set to same version
+        Building a MyBlockchain Server with NDB set to same version
         is most likely an error, not so severe
         though -> print warning
       */
-      printf("WARNING: The NDB version is set to same version as MySQL, "
+      printf("WARNING: The NDB version is set to same version as MyBlockchain, "
              "this is most likelky a configuration error!!\n\n");
     }
   }
@@ -435,23 +435,23 @@ TAPTEST(ndb_version)
   OK(ndbGetOwnVersion() == NDB_VERSION_D);
   OK(ndbGetOwnVersion() == NDB_VERSION);
 
-  /* NDB_MYSQL_VERSION_D */
-  OK(NDB_MYSQL_VERSION_D == ndbMakeVersion(NDB_MYSQL_VERSION_MAJOR,
-                                           NDB_MYSQL_VERSION_MINOR,
-                                           NDB_MYSQL_VERSION_BUILD));
+  /* NDB_MYBLOCKCHAIN_VERSION_D */
+  OK(NDB_MYBLOCKCHAIN_VERSION_D == ndbMakeVersion(NDB_MYBLOCKCHAIN_VERSION_MAJOR,
+                                           NDB_MYBLOCKCHAIN_VERSION_MINOR,
+                                           NDB_MYBLOCKCHAIN_VERSION_BUILD));
 
   /* Check sanity of version defines(we don't own a time machine yet...) */
-  OK(ndbMakeVersion(NDB_MYSQL_VERSION_MAJOR,
-                    NDB_MYSQL_VERSION_MINOR,
-                    NDB_MYSQL_VERSION_BUILD) >= 0x0005012F); // 5.1.47
+  OK(ndbMakeVersion(NDB_MYBLOCKCHAIN_VERSION_MAJOR,
+                    NDB_MYBLOCKCHAIN_VERSION_MINOR,
+                    NDB_MYBLOCKCHAIN_VERSION_BUILD) >= 0x0005012F); // 5.1.47
   OK(ndbMakeVersion(NDB_VERSION_MAJOR,
                     NDB_VERSION_MINOR,
                     NDB_VERSION_BUILD) >= 0x00070011); // 7.0.17
 
-  /* Check MYSQL_VERSION_ID matches NDB_MYSQL_VERSION_XX variables */
-  OK(MYSQL_VERSION_ID == (NDB_MYSQL_VERSION_MAJOR * 10000 +
-                          NDB_MYSQL_VERSION_MINOR * 100 +
-                          NDB_MYSQL_VERSION_BUILD));
+  /* Check MYBLOCKCHAIN_VERSION_ID matches NDB_MYBLOCKCHAIN_VERSION_XX variables */
+  OK(MYBLOCKCHAIN_VERSION_ID == (NDB_MYBLOCKCHAIN_VERSION_MAJOR * 10000 +
+                          NDB_MYBLOCKCHAIN_VERSION_MINOR * 100 +
+                          NDB_MYBLOCKCHAIN_VERSION_BUILD));
 
   return 1; // OK
 }

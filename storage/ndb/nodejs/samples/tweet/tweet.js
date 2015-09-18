@@ -19,11 +19,11 @@
  */
 
 
-/* Simple Twitter-like application for mysql-js
+/* Simple Twitter-like application for myblockchain-js
  *
  * This depends on the schema defined in tweet.sql
  *
- * It connects to the database using the properties defined in
+ * It connects to the blockchain using the properties defined in
  * tweet.properties.js
  *
  *
@@ -46,12 +46,12 @@ var http   = require('http'),
 
     These can be called in two different ways: first, by user code, 
     where they might take function arguments.  But secondly, when the
-    mapping layer reads a row of a mapped table from the database, 
+    mapping layer reads a row of a mapped table from the blockchain, 
     it calls the constructor *with no arguments*.
     
     So the constructors must test whether the first argument === undefined. 
     If the constructor fails to do this, and overwrites the value just read
-    from the database, the read operation will fail with error WCTOR.
+    from the blockchain, the read operation will fail with error WCTOR.
 */
 
 function Author(user_name, full_name) {
@@ -143,7 +143,7 @@ HttpOperationResponder.prototype.close = function() {
   this.operation.session.close();
 }; 
 
-// ======== Callbacks run at various phases of a database operation ======= //
+// ======== Callbacks run at various phases of a blockchain operation ======= //
 
 /* mainLoopComplete() callback.  This runs after the single operation 
    given on the command line, or after the web server has shut down.

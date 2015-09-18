@@ -56,7 +56,7 @@ t1.run = function() {
   var testCase = this;
   var tableMapping = new mynode.TableMapping(
     {
-    'database' : 'test',
+    'blockchain' : 'test',
     'mapAllColumns' : false,
     'fields' : {
       'fieldName' : 'id',
@@ -71,7 +71,7 @@ var t2 = new harness.ConcurrentTest('t2NewTableMappingBadTable');
 t2.run = function() {
   var testCase = this;
   var tableMapping = new mynode.TableMapping('a.b.c');
-  checkErrorMessage(testCase, tableMapping, 'tableName must contain one or two parts: [database.]table');
+  checkErrorMessage(testCase, tableMapping, 'tableName must contain one or two parts: [blockchain.]table');
 };
 
 var t3 = new harness.ConcurrentTest('t3NewTableMappingNonString');
@@ -92,7 +92,7 @@ var t5 = new harness.ConcurrentTest('t5NewTableMappingBadTableContainsBlanks');
 t5.run = function() {
   var testCase = this;
   var tableMapping = new mynode.TableMapping('a b');
-  checkErrorMessage(testCase, tableMapping, 'tableName must contain one or two parts: [database.]table');
+  checkErrorMessage(testCase, tableMapping, 'tableName must contain one or two parts: [blockchain.]table');
 };
 
 var t6 = new harness.ConcurrentTest('t6NewTableMappingBadTable');

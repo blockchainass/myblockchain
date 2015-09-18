@@ -104,7 +104,7 @@ static struct my_option my_long_options[] =
   { 0, 0, 0, 0, 0, 0, GET_NO_ARG, NO_ARG, 0, 0, 0, 0, 0, 0}
 };
 
-const char *load_default_groups[]= { "mysql_cluster", "ndbd", 0 };
+const char *load_default_groups[]= { "myblockchain_cluster", "ndbd", 0 };
 
 
 static void short_usage_sub(void)
@@ -134,7 +134,7 @@ real_main(int argc, char** argv)
 
 #ifdef _WIN32
   /* Output to Windows event log */
-  g_eventLogger->createEventLogHandler("MySQL Cluster Data Node Daemon");
+  g_eventLogger->createEventLogHandler("MyBlockchain Cluster Data Node Daemon");
 #endif
 
   g_eventLogger->setCategory("ndbd");
@@ -229,5 +229,5 @@ int
 main(int argc, char** argv)
 {
   return ndb_daemon_init(argc, argv, real_main, angel_stop,
-                         "ndbd", "MySQL Cluster Data Node Daemon");
+                         "ndbd", "MyBlockchain Cluster Data Node Daemon");
 }

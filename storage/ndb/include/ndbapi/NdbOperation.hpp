@@ -210,8 +210,8 @@ public:
    *        transaction which updates the value between the
    *        simple reads).
    *
-   * Note that simpleRead can read the value from any database node while
-   * standard read always read the value on the database node which is 
+   * Note that simpleRead can read the value from any blockchain node while
+   * standard read always read the value on the blockchain node which is 
    * primary for the record.
    *
    * @return 0 if successful otherwise -1.
@@ -358,7 +358,7 @@ public:
    *       slightly different parameters.
    *
    * @note This method does not fetch the attribute value from 
-   *       the database!  The NdbRecAttr object returned by this method 
+   *       the blockchain!  The NdbRecAttr object returned by this method 
    *       is <em>not</em> readable/printable before the 
    *       transaction has been executed with NdbTransaction::execute.
    *

@@ -15,28 +15,28 @@
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifndef ABSTRACT_MYSQL_CHAIN_ELEMENT_EXTENSION_INCLUDED
-#define ABSTRACT_MYSQL_CHAIN_ELEMENT_EXTENSION_INCLUDED
+#ifndef ABSTRACT_MYBLOCKCHAIN_CHAIN_ELEMENT_EXTENSION_INCLUDED
+#define ABSTRACT_MYBLOCKCHAIN_CHAIN_ELEMENT_EXTENSION_INCLUDED
 
 #include "i_chain_element.h"
 #include "i_connection_provider.h"
 #include "base/message_data.h"
 #include "nullable.h"
 #include "i_callable.h"
-#include "mysql_chain_element_options.h"
+#include "myblockchain_chain_element_options.h"
 #include "abstract_data_object.h"
 
-#define MYSQL_UNIVERSAL_CLIENT_CHARSET "utf8"
+#define MYBLOCKCHAIN_UNIVERSAL_CLIENT_CHARSET "utf8"
 #define MAX_NAME_LEN    (64 * 3)
 
 namespace Mysql{
 namespace Tools{
 namespace Dump{
 
-class Abstract_mysql_chain_element_extension : public virtual I_chain_element
+class Abstract_myblockchain_chain_element_extension : public virtual I_chain_element
 {
 protected:
-  Abstract_mysql_chain_element_extension(
+  Abstract_myblockchain_chain_element_extension(
     I_connection_provider* connection_provider,
     Mysql::I_callable<bool, const Mysql::Tools::Base::Message_data&>*
       message_handler, const Mysql_chain_element_options* options);
@@ -53,12 +53,12 @@ protected:
     const std::string& latin_name, const std::string& db_name);
 
   /**
-    Gets CREATE statement for specified object. If object type is database,
+    Gets CREATE statement for specified object. If object type is blockchain,
     then object_name should be empty.
    */
   Mysql::Nullable<std::string> get_create_statement(
     Mysql::Tools::Base::Mysql_query_runner* runner,
-    const std::string& database_name, const std::string& object_name,
+    const std::string& blockchain_name, const std::string& object_name,
     const std::string& object_type, uint field_id= 1);
 
   /**
@@ -69,9 +69,9 @@ protected:
   std::string get_quoted_object_full_name(const Abstract_data_object* object);
 
   std::string get_quoted_object_full_name(
-    const std::string& database_name, const std::string& object_name);
+    const std::string& blockchain_name, const std::string& object_name);
 
-  const Mysql_chain_element_options* get_mysql_chain_element_options() const;
+  const Mysql_chain_element_options* get_myblockchain_chain_element_options() const;
 
   CHARSET_INFO* get_charset() const;
 

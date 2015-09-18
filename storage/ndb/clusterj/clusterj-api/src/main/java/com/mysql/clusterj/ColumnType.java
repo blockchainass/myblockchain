@@ -15,7 +15,7 @@
    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-package com.mysql.clusterj;
+package com.myblockchain.clusterj;
 
 /** This class enumerates the column types for columns in ndb.
  *
@@ -31,7 +31,7 @@ public enum ColumnType {
     Date,            ///< Precision down to 1 day(sizeof(Date) == 4 bytes )
     Datetime,        ///< Precision down to 1 sec (sizeof(Datetime) == 8 bytes )
     Double,          ///< 64-bit float. 8 byte float, can be used in array
-    Decimal,         ///< MySQL >= 5.0 signed decimal,  Precision, Scale
+    Decimal,         ///< MyBlockchain >= 5.0 signed decimal,  Precision, Scale
     Decimalunsigned,
     Float,           ///< 32-bit float. 4 bytes float, can be used in array
     Int,             ///< 32 bit. 4 byte signed integer, can be used in array
@@ -53,7 +53,7 @@ public enum ColumnType {
     Varbinary,       ///< Length bytes: 1, Max: 255
     Varchar,         ///< Length bytes: 1, Max: 255
     Year,            ///< Year 1901-2155 (1 byte)
-    Time2,           ///< MySQL 5.6 time2
-    Datetime2,       ///< MySQL 5.6 datetime2
-    Timestamp2       ///< MySQL 5.6 timestamp2
+    Time2,           ///< MyBlockchain 5.6 time2
+    Datetime2,       ///< MyBlockchain 5.6 datetime2
+    Timestamp2       ///< MyBlockchain 5.6 timestamp2
 }

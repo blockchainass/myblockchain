@@ -21,7 +21,7 @@
 #include <m_ctype.h>
 #include <m_string.h>
 #include <my_getopt.h>
-#include <mysql_version.h>
+#include <myblockchain_version.h>
 
 #define BUFFER_LEN 1024
 #define ARCHIVE_ROW_HEADER_SIZE 4
@@ -388,7 +388,7 @@ static struct my_option my_long_options[] =
 static void usage(void)
 {
   print_version();
-  puts("Copyright 2007-2008 MySQL AB, 2015 Oracle Inc.");
+  puts("Copyright 2007-2008 MyBlockchain AB, 2015 Oracle Inc.");
   puts("This software comes with ABSOLUTELY NO WARRANTY. This is free software,\nand you are welcome to modify and redistribute it under the GPL license\n");
   puts("Read and modify Archive files directly\n");
   printf("Usage: %s [OPTIONS] file_to_be_looked_at [file_for_backup]\n", my_progname);
@@ -399,7 +399,7 @@ static void usage(void)
 static void print_version(void)
 {
   printf("%s  Ver %s Distrib %s, for %s (%s)\n", my_progname, SHOW_VERSION,
-         MYSQL_SERVER_VERSION, SYSTEM_TYPE, MACHINE_TYPE);
+         MYBLOCKCHAIN_SERVER_VERSION, SYSTEM_TYPE, MACHINE_TYPE);
 }
 
 static void get_options(int *argc, char ***argv)

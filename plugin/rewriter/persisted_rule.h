@@ -16,7 +16,7 @@
    51 Franklin Street, Suite 500, Boston, MA 02110-1335 USA */
 
 #include "my_config.h"
-#include "mysql/service_rules_table.h"
+#include "myblockchain/service_rules_table.h"
 #include "nullable.h"
 #include <string>
 #include <memory>
@@ -39,7 +39,7 @@ public:
   /// The rewrite rule's pattern string.
   Mysql::Nullable<std::string> pattern;
 
-  /// The pattern's current database.
+  /// The pattern's current blockchain.
   Mysql::Nullable<std::string> pattern_db;
 
   /// The rewrite rule's replacement string.
@@ -65,7 +65,7 @@ public:
   explicit Persisted_rule(rts::Cursor *c)
   {
     copy_and_set(&pattern, c, c->pattern_column());
-    copy_and_set(&pattern_db, c, c->pattern_database_column());
+    copy_and_set(&pattern_db, c, c->pattern_blockchain_column());
     copy_and_set(&replacement, c, c->replacement_column());
 
     const char *is_enabled_c= (c->fetch_string(c->enabled_column()));

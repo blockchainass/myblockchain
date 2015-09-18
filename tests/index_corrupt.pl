@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# Copyright (C) 2005 MySQL AB
+# Copyright (C) 2005 MyBlockchain AB
 # Use is subject to license terms
 # 
 # This program is free software; you can redistribute it and/or modify
@@ -18,7 +18,7 @@
 
 #
 # This is a test for a key cache bug (bug #10167)
-# To expose the bug mysqld should be started with --key-buffer-size=64K
+# To expose the bug myblockchaind should be started with --key-buffer-size=64K
 #
 
 $opt_loop_count=100000; # Change this to make test harder/easier
@@ -42,7 +42,7 @@ $opt_verbose=$opt_debug=$opt_lock_tables=$opt_fast_insert=$opt_fast=$opt_skip_in
 
 $firsttable  = "bench_f1";
 $secondtable = "bench_f2";
-$kill_file= "/tmp/mysqltest_index_corrupt.$$";
+$kill_file= "/tmp/myblockchaintest_index_corrupt.$$";
 
 ####
 ####  Start timeing and start test
@@ -51,7 +51,7 @@ $kill_file= "/tmp/mysqltest_index_corrupt.$$";
 $start_time=new Benchmark;
 if (!$opt_skip_create)
 {
-  $dbh = DBI->connect("DBI:mysql:$opt_db:$opt_host",
+  $dbh = DBI->connect("DBI:myblockchain:$opt_db:$opt_host",
 		      $opt_user, $opt_password,
 		    { PrintError => 0}) || die $DBI::errstr;
   $dbh->do("drop table if exists $firsttable, $secondtable");
@@ -111,7 +111,7 @@ while (($pid=wait()) != -1)
 
 if (!$opt_skip_delete && !$errors)
 {
-  $dbh = DBI->connect("DBI:mysql:$opt_db:$opt_host",
+  $dbh = DBI->connect("DBI:myblockchain:$opt_db:$opt_host",
 		      $opt_user, $opt_password,
 		    { PrintError => 0}) || die $DBI::errstr;
   $dbh->do("drop table $firsttable, $secondtable");
@@ -134,7 +134,7 @@ sub insert_in_bench
 {
   my ($dbh,$rows,$found,$i);
 
-  $dbh = DBI->connect("DBI:mysql:$opt_db:$opt_host",
+  $dbh = DBI->connect("DBI:myblockchain:$opt_db:$opt_host",
 		      $opt_user, $opt_password,
 		    { PrintError => 0}) || die $DBI::errstr;
   for ($rows= 1; $rows <= $opt_loop_count ; $rows++)
@@ -179,7 +179,7 @@ sub select_from_bench
 {
   my ($dbh,$rows,$cursor);
 
-  $dbh = DBI->connect("DBI:mysql:$opt_db:$opt_host",
+  $dbh = DBI->connect("DBI:myblockchain:$opt_db:$opt_host",
 		      $opt_user, $opt_password,
 		    { PrintError => 0}) || die $DBI::errstr;
   for ($rows= 1; $rows < $opt_loop_count ; $rows++)
@@ -206,7 +206,7 @@ sub delete_from_bench
 {
   my ($dbh,$row, $t_value, $t2_value, $statement, $cursor);
 
-  $dbh = DBI->connect("DBI:mysql:$opt_db:$opt_host",
+  $dbh = DBI->connect("DBI:myblockchain:$opt_db:$opt_host",
 		      $opt_user, $opt_password,
 		    { PrintError => 0}) || die $DBI::errstr;
 

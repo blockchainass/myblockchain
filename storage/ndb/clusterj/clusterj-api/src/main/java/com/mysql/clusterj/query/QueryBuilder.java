@@ -16,10 +16,10 @@
    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-package com.mysql.clusterj.query;
+package com.myblockchain.clusterj.query;
 
 /** QueryBuilder represents a factory for queries.
- * @see com.mysql.clusterj.Session#getQueryBuilder()
+ * @see com.myblockchain.clusterj.Session#getQueryBuilder()
  *
  */
 public interface QueryBuilder {

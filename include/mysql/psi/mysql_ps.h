@@ -13,43 +13,43 @@
   along with this program; if not, write to the Free Software
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA */
 
-#ifndef MYSQL_PS_H
-#define MYSQL_PS_H
+#ifndef MYBLOCKCHAIN_PS_H
+#define MYBLOCKCHAIN_PS_H
 
 /**
-  @file mysql/psi/mysql_ps.h
+  @file myblockchain/psi/myblockchain_ps.h
   Instrumentation helpers for prepared statements.
 */
 
-#include "mysql/psi/psi.h"
+#include "myblockchain/psi/psi.h"
 
 #ifndef PSI_PS_CALL
 #define PSI_PS_CALL(M) PSI_DYNAMIC_CALL(M)                               
 #endif    
 
 #ifdef HAVE_PSI_PS_INTERFACE
-  #define MYSQL_CREATE_PS(IDENTITY, ID, LOCKER, NAME, NAME_LENGTH, SQLTEXT, SQLTEXT_LENGTH) \
-    inline_mysql_create_prepared_stmt(IDENTITY, ID, LOCKER, NAME, NAME_LENGTH, SQLTEXT, SQLTEXT_LENGTH)
-  #define MYSQL_EXECUTE_PS(LOCKER, PREPARED_STMT) \
-    inline_mysql_execute_prepared_stmt(LOCKER, PREPARED_STMT)
-  #define MYSQL_DESTROY_PS(PREPARED_STMT) \
-    inline_mysql_destroy_prepared_stmt(PREPARED_STMT)
-  #define MYSQL_REPREPARE_PS(PREPARED_STMT) \
-    inline_mysql_reprepare_prepared_stmt(PREPARED_STMT)
+  #define MYBLOCKCHAIN_CREATE_PS(IDENTITY, ID, LOCKER, NAME, NAME_LENGTH, SQLTEXT, SQLTEXT_LENGTH) \
+    inline_myblockchain_create_prepared_stmt(IDENTITY, ID, LOCKER, NAME, NAME_LENGTH, SQLTEXT, SQLTEXT_LENGTH)
+  #define MYBLOCKCHAIN_EXECUTE_PS(LOCKER, PREPARED_STMT) \
+    inline_myblockchain_execute_prepared_stmt(LOCKER, PREPARED_STMT)
+  #define MYBLOCKCHAIN_DESTROY_PS(PREPARED_STMT) \
+    inline_myblockchain_destroy_prepared_stmt(PREPARED_STMT)
+  #define MYBLOCKCHAIN_REPREPARE_PS(PREPARED_STMT) \
+    inline_myblockchain_reprepare_prepared_stmt(PREPARED_STMT)
 #else
-  #define MYSQL_CREATE_PS(IDENTITY, ID, LOCKER, NAME, NAME_LENGTH, SQLTEXT, SQLTEXT_LENGTH) \
+  #define MYBLOCKCHAIN_CREATE_PS(IDENTITY, ID, LOCKER, NAME, NAME_LENGTH, SQLTEXT, SQLTEXT_LENGTH) \
     NULL
-  #define MYSQL_EXECUTE_PS(LOCKER, PREPARED_STMT) \
+  #define MYBLOCKCHAIN_EXECUTE_PS(LOCKER, PREPARED_STMT) \
     do {} while (0)
-  #define MYSQL_DESTROY_PS(PREPARED_STMT) \
+  #define MYBLOCKCHAIN_DESTROY_PS(PREPARED_STMT) \
     do {} while (0)
-  #define MYSQL_REPREPARE_PS(PREPARED_STMT) \
+  #define MYBLOCKCHAIN_REPREPARE_PS(PREPARED_STMT) \
     do {} while (0)
 #endif
 
 #ifdef HAVE_PSI_PS_INTERFACE
 static inline struct PSI_prepared_stmt*
-inline_mysql_create_prepared_stmt(void *identity, uint stmt_id,
+inline_myblockchain_create_prepared_stmt(void *identity, uint stmt_id,
                                   PSI_statement_locker *locker,
                                   const char *stmt_name, size_t stmt_name_length,
                                   const char *sqltext, size_t sqltext_length)
@@ -63,7 +63,7 @@ inline_mysql_create_prepared_stmt(void *identity, uint stmt_id,
 }
 
 static inline void 
-inline_mysql_execute_prepared_stmt(PSI_statement_locker *locker,
+inline_myblockchain_execute_prepared_stmt(PSI_statement_locker *locker,
                                    PSI_prepared_stmt* prepared_stmt)
 {
   if (prepared_stmt != NULL && locker != NULL)
@@ -71,14 +71,14 @@ inline_mysql_execute_prepared_stmt(PSI_statement_locker *locker,
 }
 
 static inline void 
-inline_mysql_destroy_prepared_stmt(PSI_prepared_stmt *prepared_stmt)
+inline_myblockchain_destroy_prepared_stmt(PSI_prepared_stmt *prepared_stmt)
 {
   if (prepared_stmt != NULL)
     PSI_PS_CALL(destroy_prepared_stmt)(prepared_stmt);
 }
 
 static inline void 
-inline_mysql_reprepare_prepared_stmt(PSI_prepared_stmt *prepared_stmt)
+inline_myblockchain_reprepare_prepared_stmt(PSI_prepared_stmt *prepared_stmt)
 {
   if (prepared_stmt != NULL)
     PSI_PS_CALL(reprepare_prepared_stmt)(prepared_stmt);

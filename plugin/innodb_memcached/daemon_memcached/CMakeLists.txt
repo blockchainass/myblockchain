@@ -20,7 +20,7 @@ INCLUDE_DIRECTORIES(${LIBEVENT_INCLUDE_DIR}
 		    ${CMAKE_SOURCE_DIR}/bld/include
 		    ${CMAKE_SOURCE_DIR}/regex
 		    ${CMAKE_SOURCE_DIR}/libevent
-		    ${CMAKE_SOURCE_DIR}/include/mysql
+		    ${CMAKE_SOURCE_DIR}/include/myblockchain
 		    ${CMAKE_C_IMPLICIT_LINK_DIRECTORIES}
 		    ${CMAKE_SOURCE_DIR}/plugin/innodb_memcached/daemon_memcached/include
 		    ${CMAKE_SOURCE_DIR}/plugin/innodb_memcached/daemon_memcached/include/memcached
@@ -56,8 +56,8 @@ ADD_LIBRARY(memcached_utilities STATIC ${LIBMEMCACHED_UTILITIES_SOURCES})
 SET(CMAKE_CPP_FLAGS "${CMAKE_CPP_FLAGS} ${CMAKE_SHARED_LIBRARY_C_FLAGS} -I${CMAKE_SOURCE_DIR}/plugin/innodb_memcached/daemon_memcached/daemon")
 
 SET(MEMCACHED_SOURCES
-		daemon/memcached_mysql.h
-		daemon/memcached_mysql.cc
+		daemon/memcached_myblockchain.h
+		daemon/memcached_myblockchain.cc
 		daemon/cache.h
 		daemon/cache.c
 		config_static.h
@@ -75,7 +75,7 @@ SET(MEMCACHED_SOURCES
 		daemon/topkeys.h
 		trace.h)
 
-MYSQL_ADD_PLUGIN(libmemcached ${MEMCACHED_SOURCES}
+MYBLOCKCHAIN_ADD_PLUGIN(libmemcached ${MEMCACHED_SOURCES}
 		MODULE_ONLY MODULE_OUTPUT_NAME "libmemcached")
 
 TARGET_LINK_LIBRARIES(libmemcached ${LIBEVENT_LIBRARY})

@@ -52,12 +52,12 @@ TODO:
 #include <m_string.h>
 #include <errno.h>
 #include "my_thread_local.h"
-#include "mysql/psi/mysql_file.h"
+#include "myblockchain/psi/myblockchain_file.h"
 
 #define lock_append_buffer(info) \
-  mysql_mutex_lock(&(info)->append_buffer_lock)
+  myblockchain_mutex_lock(&(info)->append_buffer_lock)
 #define unlock_append_buffer(info) \
-  mysql_mutex_unlock(&(info)->append_buffer_lock)
+  myblockchain_mutex_unlock(&(info)->append_buffer_lock)
 
 #define IO_ROUND_UP(X) (((X)+IO_SIZE-1) & ~(IO_SIZE-1))
 #define IO_ROUND_DN(X) ( (X)            & ~(IO_SIZE-1))
@@ -163,7 +163,7 @@ int init_io_cache(IO_CACHE *info, File file, size_t cachesize,
 
   if (file >= 0)
   {
-    pos= mysql_file_tell(file, MYF(0));
+    pos= myblockchain_file_tell(file, MYF(0));
     if ((pos == (my_off_t) -1) && (my_errno == ESPIPE))
     {
       /*
@@ -193,7 +193,7 @@ int init_io_cache(IO_CACHE *info, File file, size_t cachesize,
     if (!(cache_myflags & MY_DONT_CHECK_FILESIZE))
     {
       /* Calculate end of file to avoid allocating oversized buffers */
-      end_of_file= mysql_file_seek(file, 0L, MY_SEEK_END, MYF(0));
+      end_of_file= myblockchain_file_seek(file, 0L, MY_SEEK_END, MYF(0));
       /* Need to reset seek_not_done now that we just did a seek. */
       info->seek_not_done= end_of_file == seek_offset ? 0 : 1;
       if (end_of_file < seek_offset)
@@ -252,7 +252,7 @@ int init_io_cache(IO_CACHE *info, File file, size_t cachesize,
   {
     info->append_read_pos = info->write_pos = info->write_buffer;
     info->write_end = info->write_buffer + info->buffer_length;
-    mysql_mutex_init(key_IO_CACHE_append_buffer_lock,
+    myblockchain_mutex_init(key_IO_CACHE_append_buffer_lock,
                      &info->append_buffer_lock, MY_MUTEX_INIT_FAST);
   }
 #if defined(SAFE_MUTEX)
@@ -422,7 +422,7 @@ int _my_b_read(IO_CACHE *info, uchar *Buffer, size_t Count)
   */
   if (info->seek_not_done)
   {
-    if ((mysql_file_seek(info->file, pos_in_file, MY_SEEK_SET, MYF(0)) 
+    if ((myblockchain_file_seek(info->file, pos_in_file, MY_SEEK_SET, MYF(0)) 
         != MY_FILEPOS_ERROR))
     {
       /* No error, reset seek_not_done flag. */
@@ -466,7 +466,7 @@ int _my_b_read(IO_CACHE *info, uchar *Buffer, size_t Count)
       end aligned with a block.
     */
     length=(Count & (size_t) ~(IO_SIZE-1))-diff_length;
-    if ((read_length= mysql_file_read(info->file,Buffer, length, info->myflags))
+    if ((read_length= myblockchain_file_read(info->file,Buffer, length, info->myflags))
 	!= length)
     {
       /*
@@ -509,7 +509,7 @@ int _my_b_read(IO_CACHE *info, uchar *Buffer, size_t Count)
     }
     length=0;				/* Didn't read any chars */
   }
-  else if ((length= mysql_file_read(info->file,info->buffer, max_length,
+  else if ((length= myblockchain_file_read(info->file,info->buffer, max_length,
                             info->myflags)) < Count ||
 	   length == (size_t) -1)
   {
@@ -619,10 +619,10 @@ void init_io_cache_share(IO_CACHE *read_cache, IO_CACHE_SHARE *cshare,
   DBUG_ASSERT(read_cache->type == READ_CACHE);
   DBUG_ASSERT(!write_cache || (write_cache->type == WRITE_CACHE));
 
-  mysql_mutex_init(key_IO_CACHE_SHARE_mutex,
+  myblockchain_mutex_init(key_IO_CACHE_SHARE_mutex,
                    &cshare->mutex, MY_MUTEX_INIT_FAST);
-  mysql_cond_init(key_IO_CACHE_SHARE_cond, &cshare->cond);
-  mysql_cond_init(key_IO_CACHE_SHARE_cond_writer, &cshare->cond_writer);
+  myblockchain_cond_init(key_IO_CACHE_SHARE_cond, &cshare->cond);
+  myblockchain_cond_init(key_IO_CACHE_SHARE_cond_writer, &cshare->cond_writer);
 
   cshare->running_threads= num_threads;
   cshare->total_threads=   num_threads;
@@ -673,7 +673,7 @@ void remove_io_thread(IO_CACHE *cache)
   if (cache == cshare->source_cache)
     flush_io_cache(cache);
 
-  mysql_mutex_lock(&cshare->mutex);
+  myblockchain_mutex_lock(&cshare->mutex);
   DBUG_PRINT("io_cache_share", ("%s: 0x%lx",
                                 (cache == cshare->source_cache) ?
                                 "writer" : "reader", (long) cache));
@@ -696,18 +696,18 @@ void remove_io_thread(IO_CACHE *cache)
   if (!--cshare->running_threads)
   {
     DBUG_PRINT("io_cache_share", ("the last running thread leaves, wake all"));
-    mysql_cond_signal(&cshare->cond_writer);
-    mysql_cond_broadcast(&cshare->cond);
+    myblockchain_cond_signal(&cshare->cond_writer);
+    myblockchain_cond_broadcast(&cshare->cond);
   }
 
-  mysql_mutex_unlock(&cshare->mutex);
+  myblockchain_mutex_unlock(&cshare->mutex);
 
   if (!total)
   {
     DBUG_PRINT("io_cache_share", ("last thread removed, destroy share"));
-    mysql_cond_destroy (&cshare->cond_writer);
-    mysql_cond_destroy (&cshare->cond);
-    mysql_mutex_destroy(&cshare->mutex);
+    myblockchain_cond_destroy (&cshare->cond_writer);
+    myblockchain_cond_destroy (&cshare->cond);
+    myblockchain_mutex_destroy(&cshare->mutex);
   }
 
   DBUG_VOID_RETURN;
@@ -748,7 +748,7 @@ static int lock_io_cache(IO_CACHE *cache, my_off_t pos)
   DBUG_ENTER("lock_io_cache");
 
   /* Enter the lock. */
-  mysql_mutex_lock(&cshare->mutex);
+  myblockchain_mutex_lock(&cshare->mutex);
   cshare->running_threads--;
   DBUG_PRINT("io_cache_share", ("%s: 0x%lx  pos: %lu  running: %u",
                                 (cache == cshare->source_cache) ?
@@ -765,7 +765,7 @@ static int lock_io_cache(IO_CACHE *cache, my_off_t pos)
       while (cshare->running_threads)
       {
         DBUG_PRINT("io_cache_share", ("writer waits in lock"));
-        mysql_cond_wait(&cshare->cond_writer, &cshare->mutex);
+        myblockchain_cond_wait(&cshare->cond_writer, &cshare->mutex);
       }
       DBUG_PRINT("io_cache_share", ("writer awoke, going to copy"));
 
@@ -777,7 +777,7 @@ static int lock_io_cache(IO_CACHE *cache, my_off_t pos)
     if (!cshare->running_threads)
     {
       DBUG_PRINT("io_cache_share", ("waking writer"));
-      mysql_cond_signal(&cshare->cond_writer);
+      myblockchain_cond_signal(&cshare->cond_writer);
     }
 
     /*
@@ -789,7 +789,7 @@ static int lock_io_cache(IO_CACHE *cache, my_off_t pos)
            cshare->source_cache)
     {
       DBUG_PRINT("io_cache_share", ("reader waits in lock"));
-      mysql_cond_wait(&cshare->cond, &cshare->mutex);
+      myblockchain_cond_wait(&cshare->cond, &cshare->mutex);
     }
 
     /*
@@ -831,7 +831,7 @@ static int lock_io_cache(IO_CACHE *cache, my_off_t pos)
            cshare->running_threads)
     {
       DBUG_PRINT("io_cache_share", ("reader waits in lock"));
-      mysql_cond_wait(&cshare->cond, &cshare->mutex);
+      myblockchain_cond_wait(&cshare->cond, &cshare->mutex);
     }
 
     /* If the block is not yet read, continue with a locked cache and read. */
@@ -853,7 +853,7 @@ static int lock_io_cache(IO_CACHE *cache, my_off_t pos)
     Leave the lock. Do not call unlock_io_cache() later. The thread that
     filled the buffer did this and marked all threads as running.
   */
-  mysql_mutex_unlock(&cshare->mutex);
+  myblockchain_mutex_unlock(&cshare->mutex);
   DBUG_RETURN(0);
 }
 
@@ -896,8 +896,8 @@ static void unlock_io_cache(IO_CACHE *cache)
                                 cshare->total_threads));
 
   cshare->running_threads= cshare->total_threads;
-  mysql_cond_broadcast(&cshare->cond);
-  mysql_mutex_unlock(&cshare->mutex);
+  myblockchain_cond_broadcast(&cshare->cond);
+  myblockchain_mutex_unlock(&cshare->mutex);
   DBUG_VOID_RETURN;
 }
 
@@ -992,7 +992,7 @@ int _my_b_read_r(IO_CACHE *cache, uchar *Buffer, size_t Count)
         */
         if (cache->seek_not_done)
         {
-          if (mysql_file_seek(cache->file, pos_in_file, MY_SEEK_SET, MYF(0))
+          if (myblockchain_file_seek(cache->file, pos_in_file, MY_SEEK_SET, MYF(0))
               == MY_FILEPOS_ERROR)
           {
             cache->error= -1;
@@ -1000,7 +1000,7 @@ int _my_b_read_r(IO_CACHE *cache, uchar *Buffer, size_t Count)
             DBUG_RETURN(1);
           }
         }
-        len= mysql_file_read(cache->file, cache->buffer, length, cache->myflags);
+        len= myblockchain_file_read(cache->file, cache->buffer, length, cache->myflags);
       }
       DBUG_PRINT("io_cache_share", ("read %lu bytes", (ulong) len));
 
@@ -1138,7 +1138,7 @@ int _my_b_seq_read(IO_CACHE *info, uchar *Buffer, size_t Count)
     With read-append cache we must always do a seek before we read,
     because the write could have moved the file pointer astray
   */
-  if (mysql_file_seek(info->file, pos_in_file, MY_SEEK_SET, MYF(0)) == MY_FILEPOS_ERROR)
+  if (myblockchain_file_seek(info->file, pos_in_file, MY_SEEK_SET, MYF(0)) == MY_FILEPOS_ERROR)
   {
    info->error= -1;
    unlock_append_buffer(info);
@@ -1155,7 +1155,7 @@ int _my_b_seq_read(IO_CACHE *info, uchar *Buffer, size_t Count)
     size_t read_length;
 
     length=(Count & (size_t) ~(IO_SIZE-1))-diff_length;
-    if ((read_length= mysql_file_read(info->file,Buffer, length,
+    if ((read_length= myblockchain_file_read(info->file,Buffer, length,
                                       info->myflags)) == (size_t) -1)
     {
       info->error= -1;
@@ -1189,7 +1189,7 @@ int _my_b_seq_read(IO_CACHE *info, uchar *Buffer, size_t Count)
   }
   else
   {
-    length= mysql_file_read(info->file,info->buffer, max_length, info->myflags);
+    length= myblockchain_file_read(info->file,info->buffer, max_length, info->myflags);
     if (length == (size_t) -1)
     {
       info->error= -1;
@@ -1316,14 +1316,14 @@ int _my_b_write(IO_CACHE *info, const uchar *Buffer, size_t Count)
         "seek_not_done" to indicate this to other functions operating
         on the IO_CACHE.
       */
-      if (mysql_file_seek(info->file, info->pos_in_file, MY_SEEK_SET, MYF(0)))
+      if (myblockchain_file_seek(info->file, info->pos_in_file, MY_SEEK_SET, MYF(0)))
       {
         info->error= -1;
         return (1);
       }
       info->seek_not_done=0;
     }
-    if (mysql_file_write(info->file, Buffer, length, info->myflags | MY_NABP))
+    if (myblockchain_file_write(info->file, Buffer, length, info->myflags | MY_NABP))
       return info->error= -1;
 
     /*
@@ -1382,7 +1382,7 @@ int my_b_append(IO_CACHE *info, const uchar *Buffer, size_t Count)
   if (Count >= IO_SIZE)
   {					/* Fill first intern buffer */
     length=Count & (size_t) ~(IO_SIZE-1);
-    if (mysql_file_write(info->file,Buffer, length, info->myflags | MY_NABP))
+    if (myblockchain_file_write(info->file,Buffer, length, info->myflags | MY_NABP))
     {
       unlock_append_buffer(info);
       return info->error= -1;
@@ -1436,11 +1436,11 @@ int my_block_write(IO_CACHE *info, const uchar *Buffer, size_t Count,
   {
     /* Of no overlap, write everything without buffering */
     if (pos + Count <= info->pos_in_file)
-      return (int)mysql_file_pwrite(info->file, Buffer, Count, pos,
+      return (int)myblockchain_file_pwrite(info->file, Buffer, Count, pos,
                                     info->myflags | MY_NABP);
     /* Write the part of the block that is before buffer */
     length= (uint) (info->pos_in_file - pos);
-    if (mysql_file_pwrite(info->file, Buffer, length, pos, info->myflags | MY_NABP))
+    if (myblockchain_file_pwrite(info->file, Buffer, length, pos, info->myflags | MY_NABP))
       info->error= error= -1;
     Buffer+=length;
     pos+=  length;
@@ -1520,7 +1520,7 @@ int my_b_flush_io_cache(IO_CACHE *info,
       */
       if (!append_cache && info->seek_not_done)
       {					/* File touched, do seek */
-	if (mysql_file_seek(info->file, pos_in_file, MY_SEEK_SET, MYF(0)) ==
+	if (myblockchain_file_seek(info->file, pos_in_file, MY_SEEK_SET, MYF(0)) ==
 	    MY_FILEPOS_ERROR)
 	{
 	  UNLOCK_APPEND_BUFFER;
@@ -1534,7 +1534,7 @@ int my_b_flush_io_cache(IO_CACHE *info,
       info->write_end= (info->write_buffer+info->buffer_length-
 			((pos_in_file+length) & (IO_SIZE-1)));
 
-      if (mysql_file_write(info->file,info->write_buffer,length,
+      if (myblockchain_file_write(info->file,info->write_buffer,length,
 		   info->myflags | MY_NABP))
 	info->error= -1;
       else
@@ -1546,7 +1546,7 @@ int my_b_flush_io_cache(IO_CACHE *info,
       else
       {
 	info->end_of_file+=(info->write_pos-info->append_read_pos);
-	DBUG_ASSERT(info->end_of_file == mysql_file_tell(info->file, MYF(0)));
+	DBUG_ASSERT(info->end_of_file == myblockchain_file_tell(info->file, MYF(0)));
       }
 
       info->append_read_pos=info->write_pos=info->write_buffer;
@@ -1606,7 +1606,7 @@ int end_io_cache(IO_CACHE *info)
   {
     /* Destroy allocated mutex */
     info->type= TYPE_NOT_SET;
-    mysql_mutex_destroy(&info->append_buffer_lock);
+    myblockchain_mutex_destroy(&info->append_buffer_lock);
   }
   DBUG_RETURN(error);
 } /* end_io_cache */

@@ -15,14 +15,14 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
  */
 
-lexer grammar MySQL51Lexer; 
+lexer grammar MyBlockchain51Lexer; 
 
 options {
-	superClass=MySQLLexer;
+	superClass=MyBlockchainLexer;
 }
 
 @header{
-package com.mysql.clusterj.jdbc.antlr;
+package com.myblockchain.clusterj.jdbc.antlr;
 }
 
 // $<Keywords 
@@ -807,7 +807,7 @@ HEXA_VALUE
 
 /*
  * Character sets and collations are handled in the parser, as both allow whitespace between the string and the modifiers.
- * The n and N 'national character set' (UTF8 for MySQL 4.1 and up) modifiers do _not_ allow whitespace and thus must be handled here.
+ * The n and N 'national character set' (UTF8 for MyBlockchain 4.1 and up) modifiers do _not_ allow whitespace and thus must be handled here.
  *
  * Quoting quotes: By doubling the quote character used to start the string, you can quote that character itself:
  *        Input such as  "He said:""Foo!""" results in the single token STRING with the text: < He said:"Foo!" >
@@ -817,7 +817,7 @@ HEXA_VALUE
  */
 fragment
 STRING
-	:	'N'?			// "introducer" for the national character set (UTF8 for MySQL 4.1 and up). must immediately precede the first quote character.
+	:	'N'?			// "introducer" for the national character set (UTF8 for MyBlockchain 4.1 and up). must immediately precede the first quote character.
 		(	'"' 
 			(	('""')=> '""'
 //			|	(ESCAPE_SEQUENCE)=> ESCAPE_SEQUENCE

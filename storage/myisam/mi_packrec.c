@@ -148,7 +148,7 @@ my_bool _mi_read_pack_info(MI_INFO *info, pbool fix_keys)
 
   file=info->dfile;
   my_errno=0;
-  if (mysql_file_read(file, (uchar*) header, sizeof(header), MYF(MY_NABP)))
+  if (myblockchain_file_read(file, (uchar*) header, sizeof(header), MYF(MY_NABP)))
   {
     if (!my_errno)
       my_errno=HA_ERR_END_OF_FILE;
@@ -224,7 +224,7 @@ my_bool _mi_read_pack_info(MI_INFO *info, pbool fix_keys)
   tmp_buff=share->decode_tables+length;
   disk_cache= (uchar*) (tmp_buff+OFFSET_TABLE_SIZE);
 
-  if (mysql_file_read(file, disk_cache,
+  if (myblockchain_file_read(file, disk_cache,
                       (uint) (share->pack.header_length-sizeof(header)),
                       MYF(MY_NABP)))
     goto err2;
@@ -718,7 +718,7 @@ int _mi_read_pack_record(MI_INFO *info, my_off_t filepos, uchar *buf)
   if (_mi_pack_get_block_info(info, &info->bit_buff, &block_info,
                               &info->rec_buff, file, filepos))
     goto err;
-  if (mysql_file_read(file, (uchar*) info->rec_buff + block_info.offset,
+  if (myblockchain_file_read(file, (uchar*) info->rec_buff + block_info.offset,
                       block_info.rec_len - block_info.offset, MYF(MY_NABP)))
     goto panic;
   info->update|= HA_STATE_AKTIV;
@@ -1339,7 +1339,7 @@ int _mi_read_rnd_pack_record(MI_INFO *info, uchar *buf,
   }
   else
   {
-    if (mysql_file_read(info->dfile,
+    if (myblockchain_file_read(info->dfile,
                         (uchar*) info->rec_buff + block_info.offset,
                         block_info.rec_len-block_info.offset, MYF(MY_NABP)))
       goto err;
@@ -1369,11 +1369,11 @@ uint _mi_pack_get_block_info(MI_INFO *myisam, MI_BIT_BUFF *bit_buff,
   {
     ref_length=myisam->s->pack.ref_length;
     /*
-      We can't use mysql_file_pread() here because mi_read_rnd_pack_record assumes
+      We can't use myblockchain_file_pread() here because mi_read_rnd_pack_record assumes
       position is ok
     */
-    mysql_file_seek(file, filepos, MY_SEEK_SET, MYF(0));
-    if (mysql_file_read(file, header, ref_length, MYF(MY_NABP)))
+    myblockchain_file_seek(file, filepos, MY_SEEK_SET, MYF(0));
+    if (myblockchain_file_read(file, header, ref_length, MYF(MY_NABP)))
       return BLOCK_FATAL_ERROR;
     DBUG_DUMP("header",(uchar*) header,ref_length);
   }
@@ -1499,11 +1499,11 @@ my_bool _mi_memmap_file(MI_INFO *info)
 
     if (myisam_mmap_size != SIZE_T_MAX)
     {
-      mysql_mutex_lock(&THR_LOCK_myisam_mmap);
+      myblockchain_mutex_lock(&THR_LOCK_myisam_mmap);
       eom= data_file_length > myisam_mmap_size - myisam_mmap_used - MEMMAP_EXTRA_MARGIN;
       if (!eom)
         myisam_mmap_used+= data_file_length + MEMMAP_EXTRA_MARGIN;
-      mysql_mutex_unlock(&THR_LOCK_myisam_mmap);
+      myblockchain_mutex_unlock(&THR_LOCK_myisam_mmap);
     }
     else
       eom= data_file_length > myisam_mmap_size - MEMMAP_EXTRA_MARGIN;
@@ -1513,15 +1513,15 @@ my_bool _mi_memmap_file(MI_INFO *info)
       DBUG_PRINT("warning", ("File is too large for mmap"));
       DBUG_RETURN(0);
     }
-    if (mysql_file_seek(info->dfile, 0L, MY_SEEK_END, MYF(0)) <
+    if (myblockchain_file_seek(info->dfile, 0L, MY_SEEK_END, MYF(0)) <
         share->state.state.data_file_length+MEMMAP_EXTRA_MARGIN)
     {
       DBUG_PRINT("warning",("File isn't extended for memmap"));
       if (myisam_mmap_size != SIZE_T_MAX)
       {
-        mysql_mutex_lock(&THR_LOCK_myisam_mmap);
+        myblockchain_mutex_lock(&THR_LOCK_myisam_mmap);
         myisam_mmap_used-= data_file_length + MEMMAP_EXTRA_MARGIN;
-        mysql_mutex_unlock(&THR_LOCK_myisam_mmap);
+        myblockchain_mutex_unlock(&THR_LOCK_myisam_mmap);
       }
       DBUG_RETURN(0);
     }
@@ -1531,9 +1531,9 @@ my_bool _mi_memmap_file(MI_INFO *info)
     {
       if (myisam_mmap_size != SIZE_T_MAX)
       {
-        mysql_mutex_lock(&THR_LOCK_myisam_mmap);
+        myblockchain_mutex_lock(&THR_LOCK_myisam_mmap);
         myisam_mmap_used-= data_file_length + MEMMAP_EXTRA_MARGIN;
-        mysql_mutex_unlock(&THR_LOCK_myisam_mmap);
+        myblockchain_mutex_unlock(&THR_LOCK_myisam_mmap);
       }
       DBUG_RETURN(0);
     }
@@ -1553,9 +1553,9 @@ void _mi_unmap_file(MI_INFO *info)
 
   if (myisam_mmap_size != SIZE_T_MAX)
   {
-    mysql_mutex_lock(&THR_LOCK_myisam_mmap);
+    myblockchain_mutex_lock(&THR_LOCK_myisam_mmap);
     myisam_mmap_used-= info->s->mmaped_length;
-    mysql_mutex_unlock(&THR_LOCK_myisam_mmap);
+    myblockchain_mutex_unlock(&THR_LOCK_myisam_mmap);
   }
 }
 

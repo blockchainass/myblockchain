@@ -15,8 +15,8 @@
    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-package com.mysql.clusterj.openjpatest;
+package com.myblockchain.clusterj.openjpatest;
 
-public class BytePKTest extends com.mysql.clusterj.jpatest.BytePKTest {
+public class BytePKTest extends com.myblockchain.clusterj.jpatest.BytePKTest {
 
 }

@@ -18,7 +18,7 @@ this program; if not, write to the Free Software Foundation, Inc.,
 
 /******************************************************************//**
 @file include/mach0data.h
-Utilities for converting data from the database file
+Utilities for converting data from the blockchain file
 to the machine format.
 
 Created 11/28/1995 Heikki Tuuri
@@ -32,7 +32,7 @@ Created 11/28/1995 Heikki Tuuri
 #include "univ.i"
 #include "mtr0types.h"
 
-/* The data and all fields are always stored in a database file
+/* The data and all fields are always stored in a blockchain file
 in the same format: ascii, big-endian, ... .
 All data in the files MUST be accessed using the functions in this
 module. */

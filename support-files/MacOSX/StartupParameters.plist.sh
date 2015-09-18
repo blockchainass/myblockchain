@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <!--
-   Copyright (C) 2003 MySQL AB
+   Copyright (C) 2003 MyBlockchain AB
    Use is subject to license terms
 
    This program is free software; you can redistribute it and/or modify
@@ -20,12 +20,12 @@
 <plist version="1.0">
 <dict>
 	<key>Description</key>
-	<string>MySQL @VERSION@@MYSQL_SERVER_SUFFIX@</string>
+	<string>MyBlockchain @VERSION@@MYBLOCKCHAIN_SERVER_SUFFIX@</string>
 	<key>OrderPreference</key>
 	<string>None</string>
 	<key>Provides</key>
 	<array>
-		<string>MySQL</string>
+		<string>MyBlockchain</string>
 	</array>
 	<key>Uses</key>
 	<array>

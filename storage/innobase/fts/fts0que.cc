@@ -152,7 +152,7 @@ struct fts_query_t {
 
 	bool		multi_exist;	/*!< multiple FTS_EXIST oper */
 
-	st_mysql_ftparser*	parser;	/*!< fts plugin parser */
+	st_myblockchain_ftparser*	parser;	/*!< fts plugin parser */
 };
 
 /** For phrase matching, first we collect the documents and the positions
@@ -245,7 +245,7 @@ struct fts_phrase_t {
 	fts_proximity_t*	proximity_pos;
 
 	/** FTS plugin parser */
-	st_mysql_ftparser*	parser;
+	st_myblockchain_ftparser*	parser;
 };
 
 /** Paramter passed to fts phrase match by parser */
@@ -1606,7 +1606,7 @@ fts_query_match_phrase_terms(
 		int			result;
 		ulint			ret;
 
-		ret = innobase_mysql_fts_get_token(
+		ret = innobase_myblockchain_fts_get_token(
 			phrase->charset, ptr,
 			const_cast<byte*>(end), &match);
 
@@ -1697,7 +1697,7 @@ fts_proximity_is_word_in_range(
 			ulint		len;
 			fts_string_t	str;
 
-			len = innobase_mysql_fts_get_token(
+			len = innobase_myblockchain_fts_get_token(
 				phrase->charset,
 				start + cur_pos,
 				start + total_len, &str);
@@ -1731,16 +1731,16 @@ fts_proximity_is_word_in_range(
 
 /*****************************************************************//**
 FTS plugin parser 'myql_add_word' callback function for phrase match
-Refer to 'st_mysql_ftparser_param' for more detail.
+Refer to 'st_myblockchain_ftparser_param' for more detail.
 @return 0 if match, or return non-zero */
 static
 int
 fts_query_match_phrase_add_word_for_parser(
 /*=======================================*/
-	MYSQL_FTPARSER_PARAM*	param,		/*!< in: parser param */
+	MYBLOCKCHAIN_FTPARSER_PARAM*	param,		/*!< in: parser param */
 	char*			word,		/*!< in: token */
 	int			word_len,	/*!< in: token length */
-	MYSQL_FTPARSER_BOOLEAN_INFO* info)	/*!< in: token info */
+	MYBLOCKCHAIN_FTPARSER_BOOLEAN_INFO* info)	/*!< in: token info */
 {
 	fts_phrase_param_t*	phrase_param;
 	fts_phrase_t*		phrase;
@@ -1751,7 +1751,7 @@ fts_query_match_phrase_add_word_for_parser(
 	int			result;
 	mem_heap_t*		heap;
 
-	phrase_param = static_cast<fts_phrase_param_t*>(param->mysql_ftparam);
+	phrase_param = static_cast<fts_phrase_param_t*>(param->myblockchain_ftparam);
 	heap = phrase_param->heap;
 	phrase = phrase_param->phrase;
 	tokens = phrase->tokens;
@@ -1802,22 +1802,22 @@ ibool
 fts_query_match_phrase_terms_by_parser(
 /*===================================*/
 	fts_phrase_param_t*	phrase_param,	/* in/out: phrase param */
-	st_mysql_ftparser*	parser,		/* in: plugin fts parser */
+	st_myblockchain_ftparser*	parser,		/* in: plugin fts parser */
 	byte*			text,		/* in: text to check */
 	ulint			len)		/* in: text length */
 {
-	MYSQL_FTPARSER_PARAM	param;
+	MYBLOCKCHAIN_FTPARSER_PARAM	param;
 
 	ut_a(parser);
 
 	/* Set paramters for param */
-	param.mysql_parse = fts_tokenize_document_internal;
-	param.mysql_add_word = fts_query_match_phrase_add_word_for_parser;
-	param.mysql_ftparam = phrase_param;
+	param.myblockchain_parse = fts_tokenize_document_internal;
+	param.myblockchain_add_word = fts_query_match_phrase_add_word_for_parser;
+	param.myblockchain_ftparam = phrase_param;
 	param.cs = phrase_param->phrase->charset;
 	param.doc = reinterpret_cast<char*>(text);
 	param.length = static_cast<int>(len);
-	param.mode= MYSQL_FTPARSER_WITH_STOPWORDS;
+	param.mode= MYBLOCKCHAIN_FTPARSER_WITH_STOPWORDS;
 
 	PARSER_INIT(parser, &param);
 	parser->parse(&param);
@@ -1904,7 +1904,7 @@ fts_query_match_phrase(
 			ulint		ret;
 
 			match.f_str = ptr;
-			ret = innobase_mysql_fts_get_token(
+			ret = innobase_myblockchain_fts_get_token(
 				phrase->charset, start + pos,
 				const_cast<byte*>(end), &match);
 
@@ -2420,7 +2420,7 @@ fts_query_match_document(
 	fts_get_doc_t*	get_doc,	/*!< in: table and prepared statements */
 	fts_match_t*	match,		/*!< in: doc id and positions */
 	ulint		distance,	/*!< in: proximity distance */
-	st_mysql_ftparser* parser,	/*!< in: fts plugin parser */
+	st_myblockchain_ftparser* parser,	/*!< in: fts plugin parser */
 	ibool*		found)		/*!< out: TRUE if phrase found */
 {
 	dberr_t		error;
@@ -2632,7 +2632,7 @@ fts_query_phrase_split(
 				break;
 			}
 
-			cur_len = innobase_mysql_fts_get_token(
+			cur_len = innobase_myblockchain_fts_get_token(
 				query->fts_index_table.charset,
 				reinterpret_cast<const byte*>(phrase.f_str)
 				+ cur_pos,

@@ -17,16 +17,16 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-package com.mysql.cluster.benchmark.tws;
+package com.myblockchain.cluster.benchmark.tws;
 
-import com.mysql.clusterj.ClusterJHelper;
-import com.mysql.clusterj.SessionFactory;
-import com.mysql.clusterj.Session;
-import com.mysql.clusterj.LockMode;
-import com.mysql.clusterj.Constants;
-import com.mysql.clusterj.annotation.Index;
-import com.mysql.clusterj.annotation.PersistenceCapable;
-import com.mysql.clusterj.annotation.PrimaryKey;
+import com.myblockchain.clusterj.ClusterJHelper;
+import com.myblockchain.clusterj.SessionFactory;
+import com.myblockchain.clusterj.Session;
+import com.myblockchain.clusterj.LockMode;
+import com.myblockchain.clusterj.Constants;
+import com.myblockchain.clusterj.annotation.Index;
+import com.myblockchain.clusterj.annotation.PersistenceCapable;
+import com.myblockchain.clusterj.annotation.PrimaryKey;
 
 import java.util.Map;
 import java.util.Iterator;
@@ -74,7 +74,7 @@ class ClusterjLoad extends TwsLoad {
                  = driver.props.entrySet().iterator(); i.hasNext();) {
             Map.Entry<Object,Object> e = i.next();
             final String k = (String)e.getKey();
-            if (k.startsWith("com.mysql.clusterj")) {
+            if (k.startsWith("com.myblockchain.clusterj")) {
                 final StringBuilder s = new StringBuilder("..");
                 s.append(k, 18, k.length());
                 while (s.length() < 31) s.append(' ');

@@ -14,7 +14,7 @@
     along with this program; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA */
 
-#include <mysql/client_plugin.h>
+#include <myblockchain/client_plugin.h>
 
 #include <string.h>
 #include <stdio.h>
@@ -34,7 +34,7 @@
 /*
   client plugin used for testing the plugin API
 */
-#include <mysql.h>
+#include <myblockchain.h>
 
 /**
   The main function of the test plugin.
@@ -44,7 +44,7 @@
 
   @note
    1. this plugin shows how a client authentication plugin
-      may read a MySQL protocol OK packet internally - which is important
+      may read a MyBlockchain protocol OK packet internally - which is important
       where a number of packets is not known in advance.
    2. the first byte of the prompt is special. it is not
       shown to the user, but signals whether it is the last question
@@ -52,7 +52,7 @@
       and whether the input is a password (not echoed).
    3. the prompt is expected to be sent zero-terminated
 */
-static int test_plugin_client(MYSQL_PLUGIN_VIO *vio, MYSQL *mysql)
+static int test_plugin_client(MYBLOCKCHAIN_PLUGIN_VIO *vio, MYBLOCKCHAIN *myblockchain)
 {
   unsigned char *pkt, cmd= 0;
   int pkt_len, res;
@@ -68,7 +68,7 @@ static int test_plugin_client(MYSQL_PLUGIN_VIO *vio, MYSQL *mysql)
     if (pkt == 0)
     {
       /*
-        in mysql_change_user() the client sends the first packet, so
+        in myblockchain_change_user() the client sends the first packet, so
         the first vio->read_packet() does nothing (pkt == 0).
 
         We send the "password", assuming the client knows what its doing.
@@ -76,22 +76,22 @@ static int test_plugin_client(MYSQL_PLUGIN_VIO *vio, MYSQL *mysql)
         authentication plugin on the client if the first question
         asks for a password - which will be sent in cleat text, by the way)
       */
-      reply= mysql->passwd;
+      reply= myblockchain->passwd;
     }
     else
     {
       cmd= *pkt++;
 
-      /* is it MySQL protocol (0=OK or 254=need old password) packet ? */
+      /* is it MyBlockchain protocol (0=OK or 254=need old password) packet ? */
       if (cmd == 0 || cmd == 254)
         return CR_OK_HANDSHAKE_COMPLETE; /* yes. we're done */
 
       /*
-        asking for a password with an empty prompt means mysql->password
+        asking for a password with an empty prompt means myblockchain->password
         otherwise return an error
       */
       if ((cmd == LAST_PASSWORD[0] || cmd == PASSWORD_QUESTION[0]) && *pkt == 0)
-        reply= mysql->passwd;
+        reply= myblockchain->passwd;
       else
         return CR_ERROR;
     }
@@ -112,7 +112,7 @@ static int test_plugin_client(MYSQL_PLUGIN_VIO *vio, MYSQL *mysql)
 }
 
 
-mysql_declare_client_plugin(AUTHENTICATION)
+myblockchain_declare_client_plugin(AUTHENTICATION)
   "qa_auth_client",
   "Horst Hunger",
   "Dialog Client Authentication Plugin",
@@ -123,4 +123,4 @@ mysql_declare_client_plugin(AUTHENTICATION)
   NULL,
   NULL,
   test_plugin_client
-mysql_end_client_plugin;
+myblockchain_end_client_plugin;

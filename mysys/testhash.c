@@ -264,7 +264,7 @@ static int get_options(int argc, char **argv)
     case 'I':
     case '?':
       printf("%s  Ver 1.0 for %s at %s\n",progname,SYSTEM_TYPE,MACHINE_TYPE);
-      printf("MySQL AB, by Monty\n\n");
+      printf("MyBlockchain AB, by Monty\n\n");
       printf("Usage: %s [-?ABIKLWv] [-m#] [-t#]\n",progname);
       exit(0);
     case '#':

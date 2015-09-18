@@ -1749,7 +1749,7 @@ querystat(Rng& rng)
   NdbIndexStat::Bound bound_hi(g_is, bound_hi_buffer);
   NdbIndexStat::Range range(bound_lo, bound_hi);
 
-  // convert to IndexBound (like in mysqld)
+  // convert to IndexBound (like in myblockchaind)
   NdbIndexScanOperation::IndexBound ib;
   my_record low_key;
   my_record high_key;
@@ -2139,7 +2139,7 @@ doconnect()
   g_ndb = new Ndb(g_ncc, "TEST_DB");
   require(g_ndb != 0);
   chkdb(g_ndb->init() == 0 && g_ndb->waitUntilReady(30) == 0);
-  g_ndb_sys = new Ndb(g_ncc, "mysql");
+  g_ndb_sys = new Ndb(g_ncc, "myblockchain");
   require(g_ndb_sys != 0);
   chkdb(g_ndb_sys->init() == 0 && g_ndb_sys->waitUntilReady(30) == 0);
   g_is = new NdbIndexStat;
@@ -2209,7 +2209,7 @@ my_long_options[] =
 };
 
 const char*
-load_default_groups[] = { "mysql_cluster", 0 };
+load_default_groups[] = { "myblockchain_cluster", 0 };
 
 static void
 short_usage_sub()

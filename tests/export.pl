@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# Copyright (C) 2000, 2001 MySQL AB
+# Copyright (C) 2000, 2001 MyBlockchain AB
 # Use is subject to license terms
 # 
 # This program is free software; you can redistribute it and/or modify
@@ -16,7 +16,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA
 
-# This is a test with uses two processes to a database.
+# This is a test with uses two processes to a blockchain.
 # The other inserts records in two tables, the other does a lot of joins
 # on these.
 #
@@ -34,10 +34,10 @@ $org_file="/tmp/export-org.$$";
 $tmp_file="/tmp/export-old.$$";
 $tmp_file2="/tmp/export-new.$$";
 
-print "Connection to database $test_db\n";
+print "Connection to blockchain $test_db\n";
 
 $dbh = Mysql->Connect($host) || die "Can't connect: $Mysql::db_errstr\n";
-$dbh->SelectDB($test_db) || die "Can't use database $test_db: $Mysql::db_errstr\n";
+$dbh->SelectDB($test_db) || die "Can't use blockchain $test_db: $Mysql::db_errstr\n";
 
 $dbh->Query("drop table if exists export"); # Ignore this error
 

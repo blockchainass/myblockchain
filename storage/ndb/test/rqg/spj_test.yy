@@ -31,7 +31,7 @@
 #           more standards-compliant queries for use with other DBMS's
 #  
 #           We keep the grammar here as it is in order to also test certain
-#           MySQL-specific syntax variants.
+#           MyBlockchain-specific syntax variants.
 ################################################################################
 
 query:
@@ -230,12 +230,12 @@ qualified_join:
 
 cross_join:
    table_ref CROSS JOIN table_ref
-   # Stupid MySQL extension where missing 'cross' join is determined based on no join_condition  
+   # Stupid MyBlockchain extension where missing 'cross' join is determined based on no join_condition  
  | table_ref INNER JOIN table_ref
  | table_ref JOIN table_ref
  ;
 
-# MySQL has the (stupid) cross_join extension (above) where it actually is the presence of the join_cond which
+# MyBlockchain has the (stupid) cross_join extension (above) where it actually is the presence of the join_cond which
 # determines if the join is a cross- or inner-join. This creates ambigous parser precedence rules which requires
 # us to enclose right side argument in paranthesis - Else the 'outer_join:' rule is more in accordance
 # with the ISO 9075 standards.
@@ -747,8 +747,8 @@ int_indexed:
  ;
 
 #################################################################
-# Charset and collation should be specified when starting mysqld
-# or creating the database.
+# Charset and collation should be specified when starting myblockchaind
+# or creating the blockchain.
 # In order to get a deterministic resultset for 'ORDER BY ... LIMIT'
 # ensure that the collation is case sensitive (or binary).
 #################################################################

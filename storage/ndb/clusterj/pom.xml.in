@@ -23,7 +23,7 @@
   </properties>
 
   <modelVersion>4.0.0</modelVersion>
-  <groupId>com.mysql.clusterj</groupId>
+  <groupId>com.myblockchain.clusterj</groupId>
   <artifactId>clusterj-aggregate</artifactId>
   <packaging>pom</packaging>
   <version>@JAVA_NDB_VERSION@@JAVA_MVN_SUFFIX@</version>
@@ -76,33 +76,33 @@
         <version>2.2.2</version>
       </dependency>
     <dependency>
-      <groupId>mysql</groupId>
-      <artifactId>mysql-connector-java</artifactId>
+      <groupId>myblockchain</groupId>
+      <artifactId>myblockchain-connector-java</artifactId>
       <version>5.1.17</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>com.mysql.clusterj</groupId>
+      <groupId>com.myblockchain.clusterj</groupId>
       <artifactId>clusterj-api</artifactId>
       <version>@JAVA_NDB_VERSION@@JAVA_MVN_SUFFIX@</version>
     </dependency>
     <dependency>
-      <groupId>com.mysql.clusterj</groupId>
+      <groupId>com.myblockchain.clusterj</groupId>
       <artifactId>clusterj-core</artifactId>
       <version>@JAVA_NDB_VERSION@@JAVA_MVN_SUFFIX@</version>
     </dependency>
     <dependency>
-      <groupId>com.mysql.clusterj</groupId>
+      <groupId>com.myblockchain.clusterj</groupId>
       <artifactId>clusterj-test</artifactId>
       <version>@JAVA_NDB_VERSION@@JAVA_MVN_SUFFIX@</version>
     </dependency>
     <dependency>
-      <groupId>com.mysql.clusterj</groupId>
+      <groupId>com.myblockchain.clusterj</groupId>
       <artifactId>clusterj-tie</artifactId>
       <version>@JAVA_NDB_VERSION@@JAVA_MVN_SUFFIX@</version>
     </dependency>
     <dependency>
-      <groupId>com.mysql.clusterj</groupId>
+      <groupId>com.myblockchain.clusterj</groupId>
       <artifactId>clusterj-jpatest</artifactId>
       <version>@JAVA_NDB_VERSION@@JAVA_MVN_SUFFIX@</version>
     </dependency>
@@ -112,7 +112,7 @@
       <version>@JAVA_NDB_VERSION@@JAVA_MVN_SUFFIX@</version>
     </dependency>
     <dependency>
-      <groupId>com.mysql.clusterj</groupId>
+      <groupId>com.myblockchain.clusterj</groupId>
       <artifactId>clusterj-unit</artifactId>
       <version>@JAVA_NDB_VERSION@@JAVA_MVN_SUFFIX@</version>
       <scope>test</scope>

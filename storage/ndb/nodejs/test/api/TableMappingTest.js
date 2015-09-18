@@ -35,7 +35,7 @@ t1.run = function() {
   var tablemapping = new mynode.TableMapping(
     {
     "table" : "t_basic",
-    "database" : "test",
+    "blockchain" : "test",
     "mapAllColumns" : false,
     "fields" : {
       "fieldName" : "id",

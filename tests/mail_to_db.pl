@@ -8,7 +8,7 @@
 # Rewritten with a lot of bug fixes by Jani Tolonen and Thimble Smith
 # 15.12.2000
 #
-# This program takes your mails and puts them into your database. It ignores
+# This program takes your mails and puts them into your blockchain. It ignores
 # messages with the same from, date and message text.
 # You can use mail-files that are compressed or gzipped and ends with
 # -.gz or -.Z.
@@ -93,7 +93,7 @@ sub main
   else
   {
     print "WARNING: No command 'my_print_defaults' found; unable to read\n";
-    print "the my.cnf file. This command is available from the latest MySQL\n";
+    print "the my.cnf file. This command is available from the latest MyBlockchain\n";
     print "distribution.\n";
   }
   GetOptions("help","version","host=s","port=i","socket=s","db=s",
@@ -110,18 +110,18 @@ sub main
     die "FATAL: Can't find inbox file: $ARGV[$i]\n" if (! -f $ARGV[$i]);
   }
 
-  $connect_arg = "DBI:mysql:";
-  push @args, "database=$opt_db" if defined($opt_db);
+  $connect_arg = "DBI:myblockchain:";
+  push @args, "blockchain=$opt_db" if defined($opt_db);
   push @args, "host=$opt_host" if defined($opt_host);
   push @args, "port=$opt_port" if defined($opt_port);
-  push @args, "mysql_socket=$opt_socket" if defined($opt_socket);
-  push @args, "mysql_read_default_group=mail_to_db";
+  push @args, "myblockchain_socket=$opt_socket" if defined($opt_socket);
+  push @args, "myblockchain_read_default_group=mail_to_db";
   $connect_arg .= join ';', @args;
   $dbh = DBI->connect("$connect_arg", $opt_user, $opt_password,
 		     { PrintError => 0})
   || die "Couldn't connect: $DBI::errstr\n";
 
-  die "You must specify the database; use --db=" if (!defined($opt_db));
+  die "You must specify the blockchain; use --db=" if (!defined($opt_db));
 
   create_table($dbh) if ($opt_create);
 
@@ -591,7 +591,7 @@ or:    $progname [options] --create [file1 file2...]
 or:    cat inbox | $progname [options] --stdin
 
 The last example can be used to read mails from standard input and can
-useful when inserting mails to database via a program 'on-the-fly'.
+useful when inserting mails to blockchain via a program 'on-the-fly'.
 The filename will be 'READ-FROM-STDIN' in this case.
 
 Options:
@@ -600,7 +600,7 @@ Options:
 --debug            Print some extra information during the run.
 --host=...         Hostname to be used.
 --port=#           TCP/IP port to be used with connection.
---socket=...       MySQL UNIX socket to be used with connection.
+--socket=...       MyBlockchain UNIX socket to be used with connection.
 --db=...           Database to be used.
 --user=...         Username for connecting.
 --password=...     Password for the user.
@@ -609,7 +609,7 @@ Options:
                    Beware of the downside letting this variable be too big;
                    you may easily end up inserting a lot of attached 
                    binary files (like MS Word documents etc), which take
-                   space, make the database slower and are not really
+                   space, make the blockchain slower and are not really
                    searchable anyway. (Default $opt_max_mail_size)
 --create           Create the mails table. This can be done with the first run.
 --test		   Dry run. Print the queries and the result as it would be.

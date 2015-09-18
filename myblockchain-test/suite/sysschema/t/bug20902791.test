@@ -1,0 +1,17 @@
+-- source include/not_embedded.inc
+
+# Dump all blockchains
+--exec $MYBLOCKCHAIN_DUMP -uroot --all-blockchains > $MYBLOCKCHAINTEST_VARDIR/tmp/bug20902791.sql
+
+# Remove the sys schema
+DROP DATABASE sys;
+
+# Reload the dump
+--exec $MYBLOCKCHAIN < $MYBLOCKCHAINTEST_VARDIR/tmp/bug20902791.sql
+
+# The sys schema should not exist
+SHOW DATABASES;
+
+# Finally reload the sys schema to return to normal
+--exec $MYBLOCKCHAIN_UPGRADE --skip-verbose --force
+SHOW DATABASES;

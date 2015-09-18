@@ -13,7 +13,7 @@
    along with this program; if not, write to the Free Software
    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA */
 
-/* close a isam-database */
+/* close a isam-blockchain */
 
 #include "myrg_def.h"
 
@@ -25,17 +25,17 @@ int myrg_close(MYRG_INFO *info)
 
   /*
     Assume that info->children_attached means that this is called from
-    direct use of MERGE, not from a MySQL server. In this case the
+    direct use of MERGE, not from a MyBlockchain server. In this case the
     children must be closed and info->rec_per_key_part is part of the
     'info' multi_alloc.
-    If info->children_attached is false, this is called from a MySQL
+    If info->children_attached is false, this is called from a MyBlockchain
     server. Children are closed independently but info->rec_per_key_part
     must be freed.
     Just in case of a server panic (myrg_panic()) info->children_attached
     might be true. We would close the children though they should be
     closed independently and info->rec_per_key_part is not freed.
     This should be acceptable for a panic.
-    In case of a MySQL server and no children, children_attached is
+    In case of a MyBlockchain server and no children, children_attached is
     always true. In this case no rec_per_key_part has been allocated.
     So it is correct to use the branch where an empty list of tables is
     (not) closed.
@@ -55,10 +55,10 @@ int myrg_close(MYRG_INFO *info)
   else
     my_free(info->rec_per_key_part);
   delete_queue(&info->by_key);
-  mysql_mutex_lock(&THR_LOCK_open);
+  myblockchain_mutex_lock(&THR_LOCK_open);
   myrg_open_list=list_delete(myrg_open_list,&info->open_list);
-  mysql_mutex_unlock(&THR_LOCK_open);
-  mysql_mutex_destroy(&info->mutex);
+  myblockchain_mutex_unlock(&THR_LOCK_open);
+  myblockchain_mutex_destroy(&info->mutex);
   my_free(info);
   if (error)
   {

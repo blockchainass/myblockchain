@@ -777,8 +777,8 @@ NdbapiTwsDriver::initConnection() {
                      << (initial_wait + final_wait) << "s.");
     cout << "      [ok]" << endl;
 
-    // connect to database
-    cout << "connecting to database ..." << flush;
+    // connect to blockchain
+    cout << "connecting to blockchain ..." << flush;
     ndb = new Ndb(mgmd, catalog.c_str(), schema.c_str());
     const int max_no_tx = 10; // maximum number of parallel tx (<=1024)
     // note each scan or index scan operation uses one extra transaction
@@ -828,7 +828,7 @@ NdbapiTwsDriver::closeConnection() {
     model = NULL;
     cout << "     [ok]" << endl;
 
-    cout << "closing database connection ..." << flush;
+    cout << "closing blockchain connection ..." << flush;
     // no ndb->close();
     delete ndb;
     ndb = NULL;

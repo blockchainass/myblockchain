@@ -15,8 +15,8 @@
    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#include <mysql.h>
-#include <mysqld_error.h>
+#include <myblockchain.h>
+#include <myblockchaind_error.h>
 
 //#include <iostream>
 //#include <stdio.h>
@@ -45,9 +45,9 @@
 #endif
 
 
-//const char* databaseName = "TEST_DB";
+//const char* blockchainName = "TEST_DB";
 //const char* tableName = "T";
-const char* databaseName = "PTDB";
+const char* blockchainName = "PTDB";
 const char* tableName = "TT";
 
 class TestParameters{
@@ -100,7 +100,7 @@ private:
   const NdbRecord* m_resultRec;
   const NdbRecord* m_keyRec; 
   const NdbRecord* m_indexRec;
-  MYSQL m_mysql;
+  MYBLOCKCHAIN m_myblockchain;
 
   /** Entry point for POSIX thread.*/
   void run();
@@ -114,21 +114,21 @@ static void *callback(void* thread){
   return NULL;
 }
 
-static void printMySQLError(MYSQL& mysql, const char* before=NULL){
+static void printMyBlockchainError(MYBLOCKCHAIN& myblockchain, const char* before=NULL){
   if(before!=NULL){
     ndbout << before;
   }
-  ndbout << mysql_error(&mysql) << endl;
+  ndbout << myblockchain_error(&myblockchain) << endl;
   exit(-1);
 }
 
-static void mySQLExec(MYSQL& mysql, const char* stmt){
+static void mySQLExec(MYBLOCKCHAIN& myblockchain, const char* stmt){
   //ndbout << stmt << endl;
-  if(mysql_query(&mysql, stmt) != 0){
+  if(myblockchain_query(&myblockchain, stmt) != 0){
     ndbout << "Error executing '" << stmt << "' : ";
-    printMySQLError(mysql);
+    printMyBlockchainError(myblockchain);
   }
-  mysql_free_result(mysql_use_result(&mysql));
+  myblockchain_free_result(myblockchain_use_result(&myblockchain));
 }
 
 // TestThread methods.
@@ -136,7 +136,7 @@ TestThread::TestThread(Ndb_cluster_connection& con,
                        const char* host, 
                        int port): 
   m_params(NULL),
-  m_ndb(&con, databaseName),
+  m_ndb(&con, blockchainName),
   m_state(State_Active){
   require(m_ndb.init()==0);
   require(pthread_mutex_init(&m_mutex, NULL)==0);
@@ -167,15 +167,15 @@ TestThread::TestThread(Ndb_cluster_connection& con,
   require(m_indexRec != NULL);
 
   // Make SQL connection.
-  require(mysql_init(&m_mysql));
-  if(!mysql_real_connect(&m_mysql, host, "root", "", "",
+  require(myblockchain_init(&m_myblockchain));
+  if(!myblockchain_real_connect(&m_myblockchain, host, "root", "", "",
                          port, NULL, 0)){
-    printMySQLError(m_mysql, "mysql_real_connect() failed:");
+    printMyBlockchainError(m_myblockchain, "myblockchain_real_connect() failed:");
     require(false);
   }
   char text[50];
-  sprintf(text, "use %s", databaseName);
-  mySQLExec(m_mysql, text);
+  sprintf(text, "use %s", blockchainName);
+  mySQLExec(m_myblockchain, text);
 }
 
 TestThread::~TestThread(){
@@ -436,11 +436,11 @@ static bool printQuery = false;
 
 void TestThread::doSQLTest(){
   if(m_params->m_useLinkedOperations){
-    mySQLExec(m_mysql, "set ndb_join_pushdown = on;");
+    mySQLExec(m_myblockchain, "set ndb_join_pushdown = on;");
   }else{
-    mySQLExec(m_mysql, "set ndb_join_pushdown = off;");
+    mySQLExec(m_myblockchain, "set ndb_join_pushdown = off;");
   }
-  mySQLExec(m_mysql, "SET SESSION query_cache_type = OFF");
+  mySQLExec(m_myblockchain, "SET SESSION query_cache_type = OFF");
 
   class TextBuf{
   public:
@@ -481,7 +481,7 @@ void TestThread::doSQLTest(){
   }
           
   for(int i = 0; i < m_params->m_iterations; i++){
-    mySQLExec(m_mysql, text.m_buffer);
+    mySQLExec(m_myblockchain, text.m_buffer);
   }
 }
 
@@ -497,28 +497,28 @@ void TestThread::wait(){
 
 
 static void makeDatabase(const char* host, int port, int rowCount){
-  MYSQL mysql;
-  require(mysql_init(&mysql));
-  if(!mysql_real_connect(&mysql, host, "root", "", "",
+  MYBLOCKCHAIN myblockchain;
+  require(myblockchain_init(&myblockchain));
+  if(!myblockchain_real_connect(&myblockchain, host, "root", "", "",
                          port, NULL, 0)){
-    printMySQLError(mysql, "mysql_real_connect() failed:");
+    printMyBlockchainError(myblockchain, "myblockchain_real_connect() failed:");
     require(false);
   }
   char text[200];
-  sprintf(text, "create database if not exists %s", databaseName);
-  mySQLExec(mysql, text);
-  sprintf(text, "use %s", databaseName);
-  mySQLExec(mysql, text);
+  sprintf(text, "create blockchain if not exists %s", blockchainName);
+  mySQLExec(myblockchain, text);
+  sprintf(text, "use %s", blockchainName);
+  mySQLExec(myblockchain, text);
   sprintf(text, "drop table if exists %s", tableName);
-  mySQLExec(mysql, text);
+  mySQLExec(myblockchain, text);
   sprintf(text, "create table %s(a int not null," 
           "b int not null,"
           "primary key(a)) ENGINE=NDB", tableName);
-  mySQLExec(mysql, text);
+  mySQLExec(myblockchain, text);
   for(int i = 0; i<rowCount; i++){
     sprintf(text, "insert into %s values(%d, %d)", tableName, 
             i, (i+1)%rowCount);
-    mySQLExec(mysql, text);
+    mySQLExec(myblockchain, text);
   }
 }
 
@@ -640,7 +640,7 @@ int main(int argc, char* argv[]){
   NDB_INIT(argv[0]);
   if(argc!=4 && argc!=5){
     ndbout << "Usage: " << argv[0] << " [--print-query]" 
-           << " <mysql IP address> <mysql port> <cluster connect string>" 
+           << " <myblockchain IP address> <myblockchain port> <cluster connect string>" 
            << endl;
     return -1;
   }

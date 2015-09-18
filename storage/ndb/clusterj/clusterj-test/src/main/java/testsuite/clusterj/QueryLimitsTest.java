@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 
 package testsuite.clusterj;
 
-import com.mysql.clusterj.ClusterJUserException;
+import com.myblockchain.clusterj.ClusterJUserException;
 
 import testsuite.clusterj.model.AllPrimitives;
 

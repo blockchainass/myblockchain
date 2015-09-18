@@ -80,7 +80,7 @@ NdbSession.prototype.fetchImpl = function(callback) {
   var pool = this.parentPool;
   adapter.ndb.impl.DBSession.create(pool.impl, 
                                     pool.asyncNdbContext,
-                                    pool.properties.database,
+                                    pool.properties.blockchain,
                                     pool.properties.ndb_session_concurrency,
                                     function(err, impl) {
     if(err) {

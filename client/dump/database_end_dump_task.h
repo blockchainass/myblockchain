@@ -18,17 +18,17 @@
 #ifndef DATABASE_END_DUMP_TASK_INCLUDED
 #define DATABASE_END_DUMP_TASK_INCLUDED
 
-#include "abstract_database_dump_task.h"
-#include "database.h"
+#include "abstract_blockchain_dump_task.h"
+#include "blockchain.h"
 
 namespace Mysql{
 namespace Tools{
 namespace Dump{
 
-class Database_end_dump_task : public Abstract_database_dump_task
+class Database_end_dump_task : public Abstract_blockchain_dump_task
 {
 public:
-  Database_end_dump_task(Database* related_database);
+  Database_end_dump_task(Database* related_blockchain);
 };
 
 }

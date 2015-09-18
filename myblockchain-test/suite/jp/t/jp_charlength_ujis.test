@@ -1,0 +1,66 @@
+--source include/have_ujis.inc
+--source include/have_innodb.inc
+
+--disable_warnings
+drop table if exists `�ԣ�`;
+drop table if exists `�ԣ�`;
+drop table if exists `�ԣ�`;
+drop table if exists `�ԣ�`;
+drop table if exists `�ԣ�`;
+drop table if exists `�ԣ�`;
+drop table if exists `�ԣ�`;
+drop table if exists `�ԣ�`;
+drop table if exists `�ԣ�`;
+--enable_warnings
+
+#
+# Test CHAR_LENGTH() function with Japanese character in ujis encoding
+#
+
+SET NAMES ujis;
+SET character_set_blockchain = ujis;
+
+CREATE TABLE `�ԣ�` (`�ã�` char(5), INDEX(`�ã�`)) DEFAULT CHARSET = ujis engine = innodb;
+CREATE TABLE `�ԣ�` (`�ã�` char(5), INDEX(`�ã�`)) DEFAULT CHARSET = ujis engine = innodb;
+CREATE TABLE `�ԣ�` (`�ã�` char(5), INDEX(`�ã�`)) DEFAULT CHARSET = ujis engine = innodb;
+CREATE TABLE `�ԣ�` (`�ã�` char(5), INDEX(`�ã�`)) DEFAULT CHARSET = ujis engine = myisam;
+CREATE TABLE `�ԣ�` (`�ã�` char(5), INDEX(`�ã�`)) DEFAULT CHARSET = ujis engine = myisam;
+CREATE TABLE `�ԣ�` (`�ã�` char(5), INDEX(`�ã�`)) DEFAULT CHARSET = ujis engine = myisam;
+CREATE TABLE `�ԣ�` (`�ã�` char(5), INDEX(`�ã�`)) DEFAULT CHARSET = ujis engine = MEMORY;
+CREATE TABLE `�ԣ�` (`�ã�` char(5), INDEX(`�ã�`)) DEFAULT CHARSET = ujis engine = MEMORY;
+CREATE TABLE `�ԣ�` (`�ã�` char(5), INDEX(`�ã�`)) DEFAULT CHARSET = ujis engine = MEMORY;
+
+INSERT INTO `�ԣ�` VALUES ('����������'),('��������'),('������'),('����'),('��'),('');
+INSERT INTO `�ԣ�` VALUES ('����������'),('��������'),('������'),('����'),('��'),('');
+INSERT INTO `�ԣ�` VALUES ('��܏�ݏ�ޏ�ߏ��'),('��܏�ݏ�ޏ��'),('��܏�ݏ��'),('��܏��'),('���'),('');
+INSERT INTO `�ԣ�` VALUES ('����������'),('��������'),('������'),('����'),('��'),('');
+INSERT INTO `�ԣ�` VALUES ('����������'),('��������'),('������'),('����'),('��'),('');
+INSERT INTO `�ԣ�` VALUES ('��܏�ݏ�ޏ�ߏ��'),('��܏�ݏ�ޏ��'),('��܏�ݏ��'),('��܏��'),('���'),('');
+INSERT INTO `�ԣ�` VALUES ('����������'),('��������'),('������'),('����'),('��'),('');
+INSERT INTO `�ԣ�` VALUES ('����������'),('��������'),('������'),('����'),('��'),('');
+INSERT INTO `�ԣ�` VALUES ('��܏�ݏ�ޏ�ߏ��'),('��܏�ݏ�ޏ��'),('��܏�ݏ��'),('��܏��'),('���'),('');
+
+#InnoDB
+SELECT `�ã�`, CHAR_LENGTH(`�ã�`) FROM `�ԣ�`;
+SELECT `�ã�`, CHAR_LENGTH(`�ã�`) FROM `�ԣ�`;
+SELECT `�ã�`, CHAR_LENGTH(`�ã�`) FROM `�ԣ�`;
+
+#MyISAM
+SELECT `�ã�`, CHAR_LENGTH(`�ã�`) FROM `�ԣ�`;
+SELECT `�ã�`, CHAR_LENGTH(`�ã�`) FROM `�ԣ�`;
+SELECT `�ã�`, CHAR_LENGTH(`�ã�`) FROM `�ԣ�`;
+
+#MEMORY
+SELECT `�ã�`, CHAR_LENGTH(`�ã�`) FROM `�ԣ�`;
+SELECT `�ã�`, CHAR_LENGTH(`�ã�`) FROM `�ԣ�`;
+SELECT `�ã�`, CHAR_LENGTH(`�ã�`) FROM `�ԣ�`;
+
+DROP TABLE `�ԣ�`;
+DROP TABLE `�ԣ�`;
+DROP TABLE `�ԣ�`;
+DROP TABLE `�ԣ�`;
+DROP TABLE `�ԣ�`;
+DROP TABLE `�ԣ�`;
+DROP TABLE `�ԣ�`;
+DROP TABLE `�ԣ�`;
+DROP TABLE `�ԣ�`;

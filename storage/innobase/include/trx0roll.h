@@ -116,18 +116,18 @@ trx_rollback_step(
 /*==============*/
 	que_thr_t*	thr);	/*!< in: query thread */
 /*******************************************************************//**
-Rollback a transaction used in MySQL.
+Rollback a transaction used in MyBlockchain.
 @return error code or DB_SUCCESS */
 dberr_t
-trx_rollback_for_mysql(
+trx_rollback_for_myblockchain(
 /*===================*/
 	trx_t*	trx)	/*!< in/out: transaction */
 	__attribute__((nonnull));
 /*******************************************************************//**
-Rollback the latest SQL statement for MySQL.
+Rollback the latest SQL statement for MyBlockchain.
 @return error code or DB_SUCCESS */
 dberr_t
-trx_rollback_last_sql_stat_for_mysql(
+trx_rollback_last_sql_stat_for_myblockchain(
 /*=================================*/
 	trx_t*	trx)	/*!< in/out: transaction */
 	__attribute__((nonnull));
@@ -152,13 +152,13 @@ were set after this savepoint are deleted.
 @return if no savepoint of the name found then DB_NO_SAVEPOINT,
 otherwise DB_SUCCESS */
 dberr_t
-trx_rollback_to_savepoint_for_mysql(
+trx_rollback_to_savepoint_for_myblockchain(
 /*================================*/
 	trx_t*		trx,			/*!< in: transaction handle */
 	const char*	savepoint_name,		/*!< in: savepoint name */
-	int64_t*	mysql_binlog_cache_pos)	/*!< out: the MySQL binlog cache
+	int64_t*	myblockchain_binlog_cache_pos)	/*!< out: the MyBlockchain binlog cache
 						position corresponding to this
-						savepoint; MySQL needs this
+						savepoint; MyBlockchain needs this
 						information to remove the
 						binlog entries of the queries
 						executed after the savepoint */
@@ -170,11 +170,11 @@ savepoint and replaces it with a new. Savepoints are deleted in a transaction
 commit or rollback.
 @return always DB_SUCCESS */
 dberr_t
-trx_savepoint_for_mysql(
+trx_savepoint_for_myblockchain(
 /*====================*/
 	trx_t*		trx,			/*!< in: transaction handle */
 	const char*	savepoint_name,		/*!< in: savepoint name */
-	int64_t		binlog_cache_pos)	/*!< in: MySQL binlog cache
+	int64_t		binlog_cache_pos)	/*!< in: MyBlockchain binlog cache
 						position corresponding to this
 						connection at the time of the
 						savepoint */
@@ -185,7 +185,7 @@ were set after this savepoint are deleted.
 @return if no savepoint of the name found then DB_NO_SAVEPOINT,
 otherwise DB_SUCCESS */
 dberr_t
-trx_release_savepoint_for_mysql(
+trx_release_savepoint_for_myblockchain(
 /*============================*/
 	trx_t*		trx,			/*!< in: transaction handle */
 	const char*	savepoint_name)		/*!< in: savepoint name */
@@ -225,10 +225,10 @@ struct trx_named_savept_t{
 	char*		name;		/*!< savepoint name */
 	trx_savept_t	savept;		/*!< the undo number corresponding to
 					the savepoint */
-	int64_t		mysql_binlog_cache_pos;
-					/*!< the MySQL binlog cache position
+	int64_t		myblockchain_binlog_cache_pos;
+					/*!< the MyBlockchain binlog cache position
 					corresponding to this savepoint, not
-					defined if the MySQL binlogging is not
+					defined if the MyBlockchain binlogging is not
 					enabled */
 	UT_LIST_NODE_T(trx_named_savept_t)
 			trx_savepoints;	/*!< the list of savepoints of a

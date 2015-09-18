@@ -25,9 +25,9 @@ import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
 
-import com.mysql.clusterj.Query;
-import com.mysql.clusterj.Session;
-import com.mysql.clusterj.query.QueryDomainType;
+import com.myblockchain.clusterj.Query;
+import com.myblockchain.clusterj.Session;
+import com.myblockchain.clusterj.query.QueryDomainType;
 
 import testsuite.clusterj.model.Customer;
 import testsuite.clusterj.model.Order;
@@ -112,9 +112,9 @@ public class MultithreadedTest extends AbstractClusterJModelTest {
     /** The test method creates numberOfThreads threads and starts them.
      * Once the threads are started, the main thread waits until all threads complete.
      * The main thread then checks that the proper number of instances are
-     * created in the database and verifies that all orders are consistent
+     * created in the blockchain and verifies that all orders are consistent
      * with their order lines. Inconsistency might be due to thread interaction
-     * or improper database updates.
+     * or improper blockchain updates.
      */
     public void test() {
         List<Thread> threads = new ArrayList<Thread>();
@@ -343,7 +343,7 @@ public class MultithreadedTest extends AbstractClusterJModelTest {
         }
     }
 
-    /** Delete an order from the database.
+    /** Delete an order from the blockchain.
      * 
      * @param session the session
      * @param random a random number generator

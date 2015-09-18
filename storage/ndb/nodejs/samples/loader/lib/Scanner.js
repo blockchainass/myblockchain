@@ -29,7 +29,7 @@
    Token types:
      name = alphabetic { alpha + numeric + underscore } (SQL REGULAR IDENTIFIER)
      number = digit { digit } .                     (NON-NEGATIVE INTEGERS ONLY)
-     variable = '@' { char } .                              (MYSQL "@" VARIABLE)
+     variable = '@' { char } .                              (MYBLOCKCHAIN "@" VARIABLE)
 
      operator = valid single-character operator
      string  = text quoted in single, double, or backtick quotes
@@ -255,7 +255,7 @@ function tokenize (source) {
 // Data File Scanners
 //
 
-/* From http://dev.mysql.com/doc/refman/5.5/en/load-data.html
+/* From http://dev.myblockchain.com/doc/refman/5.5/en/load-data.html
    The FIELD and LINE terminators can be strings
    The escape sequences are:
      \0 ASCII NULL, \b backspace, \n newline, \r return,

@@ -1,0 +1,475 @@
+# This is the basic function tests for innodb FTS savepoint
+
+-- source include/have_innodb.inc
+
+
+CREATE TABLE articles (
+	id INT UNSIGNED NOT NULL PRIMARY KEY,
+	title VARCHAR(200),
+	FULLTEXT (title)
+	) ENGINE= InnoDB;
+
+# Test Part 1: ROLLBACK TO SAVEPOINT
+# Test rollback to savepoint 1(S1,RB1)
+TRUNCATE TABLE articles;
+
+INSERT INTO articles(id, title) VALUES(1, 'myblockchain');
+
+BEGIN;
+
+INSERT INTO articles(id, title) VALUES(2, 'myblockchain');
+
+SAVEPOINT sp1;
+
+INSERT INTO articles(id, title) VALUES(3, 'myblockchain');
+
+ROLLBACK TO SAVEPOINT sp1;
+
+INSERT INTO articles(id, title) VALUES(4, 'myblockchain');
+
+COMMIT;
+
+INSERT INTO articles(id, title) VALUES(5, 'myblockchain');
+
+SELECT * FROM articles WHERE MATCH(title) AGAINST('myblockchain');
+
+# Test rollback to savepoint 2(S1,RB1,S2,RB2)
+TRUNCATE TABLE articles;
+
+INSERT INTO articles(id, title) VALUES(1, 'myblockchain');
+
+BEGIN;
+
+INSERT INTO articles(id, title) VALUES(2, 'myblockchain');
+
+SAVEPOINT sp1;
+
+INSERT INTO articles(id, title) VALUES(3, 'myblockchain');
+
+ROLLBACK TO SAVEPOINT sp1;
+
+INSERT INTO articles(id, title) VALUES(4, 'myblockchain');
+
+SAVEPOINT sp2;
+
+INSERT INTO articles(id, title) VALUES(5, 'myblockchain');
+
+ROLLBACK TO SAVEPOINT sp2;
+
+INSERT INTO articles(id, title) VALUES(6, 'myblockchain');
+
+COMMIT;
+
+INSERT INTO articles(id, title) VALUES(7, 'myblockchain');
+
+SELECT * FROM articles WHERE MATCH(title) AGAINST('myblockchain');
+
+# Test rollback to savepoint 3(S1,S2,RB1)
+TRUNCATE TABLE articles;
+
+INSERT INTO articles(id, title) VALUES(1, 'myblockchain');
+
+BEGIN;
+
+INSERT INTO articles(id, title) VALUES(2, 'myblockchain');
+
+SAVEPOINT sp1;
+
+INSERT INTO articles(id, title) VALUES(3, 'myblockchain');
+
+SAVEPOINT sp2;
+
+INSERT INTO articles(id, title) VALUES(4, 'myblockchain');
+
+ROLLBACK TO SAVEPOINT sp1;
+
+INSERT INTO articles(id, title) VALUES(5, 'myblockchain');
+
+COMMIT;
+
+INSERT INTO articles(id, title) VALUES(6, 'myblockchain');
+
+SELECT * FROM articles WHERE MATCH(title) AGAINST('myblockchain');
+
+# Test rollback to savepoint 4(S1,S2,RB2,RB1)
+TRUNCATE TABLE articles;
+
+INSERT INTO articles(id, title) VALUES(1, 'myblockchain');
+
+BEGIN;
+
+INSERT INTO articles(id, title) VALUES(2, 'myblockchain');
+
+SAVEPOINT sp1;
+
+INSERT INTO articles(id, title) VALUES(3, 'myblockchain');
+
+SAVEPOINT sp2;
+
+INSERT INTO articles(id, title) VALUES(4, 'myblockchain');
+
+ROLLBACK TO SAVEPOINT sp2;
+
+INSERT INTO articles(id, title) VALUES(5, 'myblockchain');
+
+ROLLBACK TO SAVEPOINT sp1;
+
+INSERT INTO articles(id, title) VALUES(6, 'myblockchain');
+
+COMMIT;
+
+INSERT INTO articles(id, title) VALUES(7, 'myblockchain');
+
+SELECT * FROM articles WHERE MATCH(title) AGAINST('myblockchain');
+
+# Test Part 2: RELEASE SAVEPOINT
+# Test release savepoint 1(S1,RL1)
+TRUNCATE TABLE articles;
+
+INSERT INTO articles(id, title) VALUES(1, 'myblockchain');
+
+BEGIN;
+
+INSERT INTO articles(id, title) VALUES(2, 'myblockchain');
+
+SAVEPOINT sp1;
+
+INSERT INTO articles(id, title) VALUES(3, 'myblockchain');
+
+RELEASE SAVEPOINT sp1;
+
+INSERT INTO articles(id, title) VALUES(4, 'myblockchain');
+
+COMMIT;
+
+INSERT INTO articles(id, title) VALUES(5, 'myblockchain');
+
+SELECT * FROM articles WHERE MATCH(title) AGAINST('myblockchain');
+
+# Test release savepoint 2(S1,RL1,S2,RL2)
+TRUNCATE TABLE articles;
+
+INSERT INTO articles(id, title) VALUES(1, 'myblockchain');
+
+BEGIN;
+
+INSERT INTO articles(id, title) VALUES(2, 'myblockchain');
+
+SAVEPOINT sp1;
+
+INSERT INTO articles(id, title) VALUES(3, 'myblockchain');
+
+RELEASE SAVEPOINT sp1;
+
+INSERT INTO articles(id, title) VALUES(4, 'myblockchain');
+
+SAVEPOINT sp2;
+
+INSERT INTO articles(id, title) VALUES(5, 'myblockchain');
+
+RELEASE SAVEPOINT sp2;
+
+INSERT INTO articles(id, title) VALUES(6, 'myblockchain');
+
+COMMIT;
+
+INSERT INTO articles(id, title) VALUES(7, 'myblockchain');
+
+SELECT * FROM articles WHERE MATCH(title) AGAINST('myblockchain');
+
+# Test release savepoint 3(S1,S2,RL1)
+TRUNCATE TABLE articles;
+
+INSERT INTO articles(id, title) VALUES(1, 'myblockchain');
+
+BEGIN;
+
+INSERT INTO articles(id, title) VALUES(2, 'myblockchain');
+
+SAVEPOINT sp1;
+
+INSERT INTO articles(id, title) VALUES(3, 'myblockchain');
+
+SAVEPOINT sp2;
+
+INSERT INTO articles(id, title) VALUES(4, 'myblockchain');
+
+RELEASE SAVEPOINT sp1;
+
+INSERT INTO articles(id, title) VALUES(5, 'myblockchain');
+
+COMMIT;
+
+INSERT INTO articles(id, title) VALUES(6, 'myblockchain');
+
+SELECT * FROM articles WHERE MATCH(title) AGAINST('myblockchain');
+
+# Test release savepoint 4(S1,S2,RL2,RL1)
+TRUNCATE TABLE articles;
+
+INSERT INTO articles(id, title) VALUES(1, 'myblockchain');
+
+BEGIN;
+
+INSERT INTO articles(id, title) VALUES(2, 'myblockchain');
+
+SAVEPOINT sp1;
+
+INSERT INTO articles(id, title) VALUES(3, 'myblockchain');
+
+SAVEPOINT sp2;
+
+INSERT INTO articles(id, title) VALUES(4, 'myblockchain');
+
+RELEASE SAVEPOINT sp2;
+
+INSERT INTO articles(id, title) VALUES(5, 'myblockchain');
+
+RELEASE SAVEPOINT sp1;
+
+INSERT INTO articles(id, title) VALUES(6, 'myblockchain');
+
+COMMIT;
+
+INSERT INTO articles(id, title) VALUES(7, 'myblockchain');
+
+SELECT * FROM articles WHERE MATCH(title) AGAINST('myblockchain');
+
+# Test Part 3: RELEASE & ROLLBACK TO SAVEPOINT
+# Test release & rollback to savepoint 1(S1,RB1,S2,RL2)
+TRUNCATE TABLE articles;
+
+INSERT INTO articles(id, title) VALUES(1, 'myblockchain');
+
+BEGIN;
+
+INSERT INTO articles(id, title) VALUES(2, 'myblockchain');
+
+SAVEPOINT sp1;
+
+INSERT INTO articles(id, title) VALUES(3, 'myblockchain');
+
+ROLLBACK TO SAVEPOINT sp1;
+
+INSERT INTO articles(id, title) VALUES(4, 'myblockchain');
+
+SAVEPOINT sp2;
+
+INSERT INTO articles(id, title) VALUES(5, 'myblockchain');
+
+RELEASE SAVEPOINT sp2;
+
+INSERT INTO articles(id, title) VALUES(6, 'myblockchain');
+
+COMMIT;
+
+INSERT INTO articles(id, title) VALUES(7, 'myblockchain');
+
+SELECT * FROM articles WHERE MATCH(title) AGAINST('myblockchain');
+
+# Test release & rollback to savepoint 2(S1,RL1,S2,RB2)
+TRUNCATE TABLE articles;
+
+INSERT INTO articles(id, title) VALUES(1, 'myblockchain');
+
+BEGIN;
+
+INSERT INTO articles(id, title) VALUES(2, 'myblockchain');
+
+SAVEPOINT sp1;
+
+INSERT INTO articles(id, title) VALUES(3, 'myblockchain');
+
+RELEASE SAVEPOINT sp1;
+
+INSERT INTO articles(id, title) VALUES(4, 'myblockchain');
+
+SAVEPOINT sp2;
+
+INSERT INTO articles(id, title) VALUES(5, 'myblockchain');
+
+ROLLBACK TO SAVEPOINT sp2;
+
+INSERT INTO articles(id, title) VALUES(6, 'myblockchain');
+
+COMMIT;
+
+INSERT INTO articles(id, title) VALUES(7, 'myblockchain');
+
+SELECT * FROM articles WHERE MATCH(title) AGAINST('myblockchain');
+
+# Test release & rollback to savepoint 3(S1,S2,RL2,RB1)
+TRUNCATE TABLE articles;
+
+INSERT INTO articles(id, title) VALUES(1, 'myblockchain');
+
+BEGIN;
+
+INSERT INTO articles(id, title) VALUES(2, 'myblockchain');
+
+SAVEPOINT sp1;
+
+INSERT INTO articles(id, title) VALUES(3, 'myblockchain');
+
+SAVEPOINT sp2;
+
+INSERT INTO articles(id, title) VALUES(4, 'myblockchain');
+
+RELEASE SAVEPOINT sp2;
+
+INSERT INTO articles(id, title) VALUES(5, 'myblockchain');
+
+ROLLBACK TO SAVEPOINT sp1;
+
+INSERT INTO articles(id, title) VALUES(6, 'myblockchain');
+
+COMMIT;
+
+INSERT INTO articles(id, title) VALUES(7, 'myblockchain');
+
+SELECT * FROM articles WHERE MATCH(title) AGAINST('myblockchain');
+
+# Test release & rollback to savepoint 4(S1,S2,RB2,RL1)
+TRUNCATE TABLE articles;
+
+INSERT INTO articles(id, title) VALUES(1, 'myblockchain');
+
+BEGIN;
+
+INSERT INTO articles(id, title) VALUES(2, 'myblockchain');
+
+SAVEPOINT sp1;
+
+INSERT INTO articles(id, title) VALUES(3, 'myblockchain');
+
+SAVEPOINT sp2;
+
+INSERT INTO articles(id, title) VALUES(4, 'myblockchain');
+
+ROLLBACK TO SAVEPOINT sp2;
+
+INSERT INTO articles(id, title) VALUES(5, 'myblockchain');
+
+RELEASE SAVEPOINT sp1;
+
+INSERT INTO articles(id, title) VALUES(6, 'myblockchain');
+
+COMMIT;
+
+INSERT INTO articles(id, title) VALUES(7, 'myblockchain');
+
+SELECT * FROM articles WHERE MATCH(title) AGAINST('myblockchain');
+
+# Test Part 4: ROLLBACK & SAVEPOINT
+# Test rollback 1
+TRUNCATE TABLE articles;
+
+INSERT INTO articles(id, title) VALUES(1, 'myblockchain');
+
+BEGIN;
+
+INSERT INTO articles(id, title) VALUES(2, 'myblockchain');
+
+ROLLBACK;
+
+INSERT INTO articles(id, title) VALUES(3, 'myblockchain');
+
+SELECT * FROM articles WHERE MATCH(title) AGAINST('myblockchain');
+
+# Test rollback 2(S1)
+TRUNCATE TABLE articles;
+
+INSERT INTO articles(id, title) VALUES(1, 'myblockchain');
+
+BEGIN;
+
+INSERT INTO articles(id, title) VALUES(2, 'myblockchain');
+
+SAVEPOINT sp1;
+
+INSERT INTO articles(id, title) VALUES(3, 'myblockchain');
+
+ROLLBACK;
+
+INSERT INTO articles(id, title) VALUES(4, 'myblockchain');
+
+SELECT * FROM articles WHERE MATCH(title) AGAINST('myblockchain');
+
+# Test rollback 3(S1,RL1)
+TRUNCATE TABLE articles;
+
+INSERT INTO articles(id, title) VALUES(1, 'myblockchain');
+
+BEGIN;
+
+INSERT INTO articles(id, title) VALUES(2, 'myblockchain');
+
+SAVEPOINT sp1;
+
+INSERT INTO articles(id, title) VALUES(3, 'myblockchain');
+
+RELEASE SAVEPOINT sp1;
+
+INSERT INTO articles(id, title) VALUES(4, 'myblockchain');
+
+ROLLBACK;
+
+INSERT INTO articles(id, title) VALUES(5, 'myblockchain');
+
+SELECT * FROM articles WHERE MATCH(title) AGAINST('myblockchain');
+
+# Test rollback 4(S1,RB1)
+TRUNCATE TABLE articles;
+
+INSERT INTO articles(id, title) VALUES(1, 'myblockchain');
+
+BEGIN;
+
+INSERT INTO articles(id, title) VALUES(2, 'myblockchain');
+
+SAVEPOINT sp1;
+
+INSERT INTO articles(id, title) VALUES(3, 'myblockchain');
+
+ROLLBACK TO SAVEPOINT sp1;
+
+INSERT INTO articles(id, title) VALUES(4, 'myblockchain');
+
+ROLLBACK;
+
+INSERT INTO articles(id, title) VALUES(5, 'myblockchain');
+
+SELECT * FROM articles WHERE MATCH(title) AGAINST('myblockchain');
+
+# Test rollback 5(S1,S2,RB2,RL1)
+TRUNCATE TABLE articles;
+
+INSERT INTO articles(id, title) VALUES(1, 'myblockchain');
+
+BEGIN;
+
+INSERT INTO articles(id, title) VALUES(2, 'myblockchain');
+
+SAVEPOINT sp1;
+
+INSERT INTO articles(id, title) VALUES(3, 'myblockchain');
+
+SAVEPOINT sp2;
+
+INSERT INTO articles(id, title) VALUES(4, 'myblockchain');
+
+ROLLBACK TO SAVEPOINT sp2;
+
+INSERT INTO articles(id, title) VALUES(5, 'myblockchain');
+
+RELEASE SAVEPOINT sp1;
+
+INSERT INTO articles(id, title) VALUES(6, 'myblockchain');
+
+ROLLBACK;
+
+INSERT INTO articles(id, title) VALUES(7, 'myblockchain');
+
+SELECT * FROM articles WHERE MATCH(title) AGAINST('myblockchain');
+
+DROP TABLE articles;

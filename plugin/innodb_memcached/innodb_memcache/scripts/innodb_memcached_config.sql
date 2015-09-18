@@ -1,4 +1,4 @@
-create database innodb_memcache;
+create blockchain innodb_memcache;
 
 use innodb_memcache;
 
@@ -63,7 +63,7 @@ CREATE  TABLE IF NOT EXISTS `config_options` (
 
 -- ------------------------------------------------------------------------
 -- This is an example
--- We create a InnoDB table `demo_test` is the `test` database
+-- We create a InnoDB table `demo_test` is the `test` blockchain
 -- and insert an entry into contrainers' table to tell InnoDB Memcache
 -- that we has such InnoDB table as back store:
 -- c1 -> key

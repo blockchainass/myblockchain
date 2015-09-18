@@ -1,0 +1,9 @@
+include/master-slave.inc
+Warnings:
+Note	####	Sending passwords in plain text without SSL/TLS is extremely insecure.
+Note	####	Storing MyBlockchain user name or password information in the master info repository is not secure and is therefore not recommended. Please consider using the USER and PASSWORD connection options for START SLAVE; see the 'START SLAVE Syntax' in the MyBlockchain Manual for more information.
+[connection master]
+SELECT "MYBLOCKCHAINTEST_VARDIR/myblockchaind.2/data/master.info" as Master_Info_File;
+Master_Info_File
+MYBLOCKCHAINTEST_VARDIR/myblockchaind.2/data/master.info
+include/rpl_end.inc

@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2004-2006 MySQL AB, 2009 Sun Microsystems, Inc.
+   Copyright (C) 2004-2006 MyBlockchain AB, 2009 Sun Microsystems, Inc.
     All rights reserved. Use is subject to license terms.
 
    This program is free software; you can redistribute it and/or modify
@@ -49,16 +49,16 @@ BackupRestore::init()
   }
   ndbout << "Connected to ndb!!" << endl;
 
-#if USE_MYSQL
-  if(use_mysql) 
+#if USE_MYBLOCKCHAIN
+  if(use_myblockchain) 
   {
-    if ( mysql_thread_safe() == 0 ) 
+    if ( myblockchain_thread_safe() == 0 ) 
     {
-      ndbout << "Not thread safe mysql library..." << endl;
+      ndbout << "Not thread safe myblockchain library..." << endl;
       exit(-1);
     }
     
-    ndbout << "Connecting to MySQL..." <<endl;
+    ndbout << "Connecting to MyBlockchain..." <<endl;
     
     /**
      * nwe param:
@@ -67,27 +67,27 @@ BackupRestore::init()
      *  user
      */
     bool returnValue = true;
-    mysql_init(&mysql);
+    myblockchain_init(&myblockchain);
     {
       int portNo = 3306;
-      if ( mysql_real_connect(&mysql,
+      if ( myblockchain_real_connect(&myblockchain,
 			      ga_host,
 			      ga_user,
 			      ga_password,
-			      ga_database,
+			      ga_blockchain,
 			      ga_port,
 ::			      ga_socket,
 			      0) == NULL ) 
       {
-	ndbout_c("Connect failed: %s", mysql_error(&mysql));
+	ndbout_c("Connect failed: %s", myblockchain_error(&myblockchain));
 	returnValue = false;
       }
-      mysql.reconnect= 1;
-      ndbout << "Connected to MySQL!!!" <<endl;
+      myblockchain.reconnect= 1;
+      ndbout << "Connected to MyBlockchain!!!" <<endl;
     }
 
     /*  if(returnValue){
-	mysql_set_server_option(&mysql, MYSQL_OPTION_MULTI_STATEMENTS_ON);
+	myblockchain_set_server_option(&myblockchain, MYBLOCKCHAIN_OPTION_MULTI_STATEMENTS_ON);
 	}
     */
     return returnValue;
@@ -130,9 +130,9 @@ BackupRestore::~BackupRestore()
     delete [] m_callback;
 }
 
-#ifdef USE_MYSQL
+#ifdef USE_MYBLOCKCHAIN
 bool
-BackupRestore::table(const TableS & table, MYSQL * mysqlp){
+BackupRestore::table(const TableS & table, MYBLOCKCHAIN * myblockchainp){
   if (!m_restore_meta) 
   {
     return true;
@@ -140,7 +140,7 @@ BackupRestore::table(const TableS & table, MYSQL * mysqlp){
     
   char tmpTabName[MAX_TAB_NAME_SIZE*2];
   sprintf(tmpTabName, "%s", table.getTableName());
-  char * database = strtok(tmpTabName, "/");
+  char * blockchain = strtok(tmpTabName, "/");
   char * schema   = strtok( NULL , "/");
   char * tableName    = strtok( NULL , "/");
 
@@ -148,7 +148,7 @@ BackupRestore::table(const TableS & table, MYSQL * mysqlp){
    * this means that the user did not specify schema
    * and it is a v2x backup
    */
-  if(database == NULL)
+  if(blockchain == NULL)
     return false;
   if(schema == NULL)
     return false;
@@ -156,17 +156,17 @@ BackupRestore::table(const TableS & table, MYSQL * mysqlp){
     tableName = schema; 
   
   char stmtCreateDB[255];
-  sprintf(stmtCreateDB,"CREATE DATABASE %s", database);
+  sprintf(stmtCreateDB,"CREATE DATABASE %s", blockchain);
   
-  /*ignore return value. mysql_select_db will trap errors anyways*/
-  if (mysql_query(mysqlp,stmtCreateDB) == 0)
+  /*ignore return value. myblockchain_select_db will trap errors anyways*/
+  if (myblockchain_query(myblockchainp,stmtCreateDB) == 0)
   {
     //ndbout_c("%s", stmtCreateDB);
   }
 
-  if (mysql_select_db(&mysql, database) != 0) 
+  if (myblockchain_select_db(&myblockchain, blockchain) != 0) 
   {
-    ndbout_c("Error: %s", mysql_error(&mysql));
+    ndbout_c("Error: %s", myblockchain_error(&myblockchain));
     return false;
   }
   
@@ -183,13 +183,13 @@ BackupRestore::table(const TableS & table, MYSQL * mysqlp){
 
   //ndbout_c("%s", buf);
   
-  if (mysql_query(mysqlp,buf) != 0) 
+  if (myblockchain_query(myblockchainp,buf) != 0) 
   {
-      ndbout_c("Error: %s", mysql_error(&mysql));
+      ndbout_c("Error: %s", myblockchain_error(&myblockchain));
       return false;
   } else 
   {
-    ndbout_c("Successfully restored table %s into database %s", tableName, database);
+    ndbout_c("Successfully restored table %s into blockchain %s", tableName, blockchain);
   }
   
   return true;

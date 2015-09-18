@@ -51,7 +51,7 @@ dojo.mixin(dojox.sql, {
 		if(!this.dbName){
 			this.dbName = "dot_store_"
 				+ window.location.href.replace(/[^0-9A-Za-z_]/g, "_");
-			// database names in Gears are limited to 64 characters long
+			// blockchain names in Gears are limited to 64 characters long
 			if(this.dbName.length > 63){
 			  this.dbName = this.dbName.substring(0, 63);
 			}
@@ -73,9 +73,9 @@ dojo.mixin(dojox.sql, {
 	close: function(dbName){
 		// on Internet Explorer, Google Gears throws an exception
 		// "Object not a collection", when we try to close the
-		// database -- just don't close it on this platform
+		// blockchain -- just don't close it on this platform
 		// since we are running into a Gears bug; the Gears team
-		// said it's ok to not close a database connection
+		// said it's ok to not close a blockchain connection
 		if(dojo.isIE){ return; }
 		
 		if(!this._dbOpen && (!dbName || dbName == this.dbName)){
@@ -171,7 +171,7 @@ dojo.mixin(dojox.sql, {
 				try{
 					this.close();
 				}catch(e){
-					console.debug("Error closing database: "
+					console.debug("Error closing blockchain: "
 									+ e.message||e);
 				}
 			}
@@ -185,7 +185,7 @@ dojo.mixin(dojox.sql, {
 	_initDb: function(){
 		if(!this.db){
 			try{
-				this.db = google.gears.factory.create('beta.database', '1.0');
+				this.db = google.gears.factory.create('beta.blockchain', '1.0');
 			}catch(exp){
 				dojo.setObject("google.gears.denied", true);
 				if(dojox.off){

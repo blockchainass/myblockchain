@@ -16,12 +16,12 @@
    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-package com.mysql.clusterj.openjpatest;
+package com.myblockchain.clusterj.openjpatest;
 
-import com.mysql.clusterj.jpatest.AbstractJPABaseTest;
-import com.mysql.clusterj.jpatest.model.LongLongStringFKManyOne;
-import com.mysql.clusterj.jpatest.model.LongLongStringPKOneMany;
-import com.mysql.clusterj.jpatest.model.LongLongStringOid;
+import com.myblockchain.clusterj.jpatest.AbstractJPABaseTest;
+import com.myblockchain.clusterj.jpatest.model.LongLongStringFKManyOne;
+import com.myblockchain.clusterj.jpatest.model.LongLongStringPKOneMany;
+import com.myblockchain.clusterj.jpatest.model.LongLongStringOid;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;

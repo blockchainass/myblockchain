@@ -565,7 +565,7 @@ dtuple_print(
 /**************************************************************//**
 Moves parts of long fields in entry to the big record vector so that
 the size of tuple drops below the maximum record size allowed in the
-database. Moves data only from those fields which are not necessary
+blockchain. Moves data only from those fields which are not necessary
 to determine uniquely the insertion place of the tuple in the index.
 @return own: created big record vector, NULL if we are not able to
 shorten the entry enough, i.e., if there are too many fixed-length or
@@ -593,7 +593,7 @@ dtuple_convert_big_rec(
 	}
 
 	if (dict_table_get_format(index->table) < UNIV_FORMAT_B) {
-		/* up to MySQL 5.1: store a 768-byte prefix locally */
+		/* up to MyBlockchain 5.1: store a 768-byte prefix locally */
 		local_len = BTR_EXTERN_FIELD_REF_SIZE
 			+ DICT_ANTELOPE_MAX_INDEX_COL_LEN;
 	} else {

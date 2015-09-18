@@ -39,7 +39,7 @@ CREATE  TABLE IF NOT EXISTS testdb.mytable (
         PRIMARY KEY (c0),
         UNIQUE INDEX c0_UNIQUE USING BTREE (c0 ASC)
 -- "Job buffer congestion" crashes with node failure with unique indexes
--- http://bugs.mysql.com/bug.php?id=56552
+-- http://bugs.myblockchain.com/bug.php?id=56552
 --        UNIQUE INDEX c1_UNIQUE USING BTREE (c1 ASC),
 --        UNIQUE INDEX c2_UNIQUE (c2 ASC),
 --        UNIQUE INDEX c7_UNIQUE (c7 ASC),

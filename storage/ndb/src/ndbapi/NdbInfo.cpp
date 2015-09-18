@@ -47,13 +47,13 @@ NdbInfo::~NdbInfo(void)
   native_mutex_destroy(&m_mutex);
 }
 
-BaseString NdbInfo::mysql_table_name(const char* table_name) const
+BaseString NdbInfo::myblockchain_table_name(const char* table_name) const
 {
-  DBUG_ENTER("mysql_table_name");
-  BaseString mysql_name;
-  mysql_name.assfmt("%s%s", m_prefix.c_str(), table_name);
-  DBUG_PRINT("exit", ("mysql_name: %s", mysql_name.c_str()));
-  DBUG_RETURN(mysql_name);
+  DBUG_ENTER("myblockchain_table_name");
+  BaseString myblockchain_name;
+  myblockchain_name.assfmt("%s%s", m_prefix.c_str(), table_name);
+  DBUG_PRINT("exit", ("myblockchain_name: %s", myblockchain_name.c_str()));
+  DBUG_RETURN(myblockchain_name);
 }
 
 bool NdbInfo::load_hardcoded_tables(void)
@@ -65,7 +65,7 @@ bool NdbInfo::load_hardcoded_tables(void)
         !tabs.addColumn(Column("comment", 2, Column::String)))
       return false;
 
-    BaseString hash_key = mysql_table_name(tabs.getName());
+    BaseString hash_key = myblockchain_table_name(tabs.getName());
     if (!m_tables.insert(hash_key.c_str(), tabs))
       return false;
     if (!m_tables.search(hash_key.c_str(), &m_tables_table))
@@ -81,7 +81,7 @@ bool NdbInfo::load_hardcoded_tables(void)
         !cols.addColumn(Column("comment", 4, Column::String)))
       return false;
 
-    BaseString hash_key = mysql_table_name(cols.getName());
+    BaseString hash_key = myblockchain_table_name(cols.getName());
     if (!m_tables.insert(hash_key.c_str(), cols))
       return false;
     if (!m_tables.search(hash_key.c_str(), &m_columns_table))
@@ -155,7 +155,7 @@ bool NdbInfo::load_ndbinfo_tables(void)
         break;
 
       default:
-        BaseString hash_key = mysql_table_name(tableName);
+        BaseString hash_key = myblockchain_table_name(tableName);
         if (!m_tables.insert(hash_key.c_str(),
                              Table(tableName, tableId)))
         {

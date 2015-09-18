@@ -1,0 +1,114 @@
+--source include/have_ucs2.inc
+--source include/have_innodb.inc
+
+--disable_warnings
+drop table if exists `�ԣ�`;
+drop table if exists `�ԣ�`;
+drop table if exists `�ԣ�`;
+drop table if exists `�ԣ�`;
+drop table if exists `�ԣ�`;
+drop table if exists `�ԣ�`;
+drop table if exists `�ԣ�`;
+drop table if exists `�ԣ�`;
+drop table if exists `�ԣ�`;
+--enable_warnings
+
+#
+# Test LOCATE() function with Japanese characters in ucs2 encoding
+#
+
+SET NAMES ujis;
+SET character_set_blockchain = ucs2;
+SET collation_connection = ucs2_general_ci;
+
+CREATE TABLE `�ԣ�` (`�ã�` char(5), INDEX(`�ã�`)) DEFAULT CHARSET = ucs2 engine = innodb;
+CREATE TABLE `�ԣ�` (`�ã�` char(5), INDEX(`�ã�`)) DEFAULT CHARSET = ucs2 engine = innodb;
+CREATE TABLE `�ԣ�` (`�ã�` char(5), INDEX(`�ã�`)) DEFAULT CHARSET = ucs2 engine = innodb;
+CREATE TABLE `�ԣ�` (`�ã�` char(5), INDEX(`�ã�`)) DEFAULT CHARSET = ucs2 engine = myisam;
+CREATE TABLE `�ԣ�` (`�ã�` char(5), INDEX(`�ã�`)) DEFAULT CHARSET = ucs2 engine = myisam;
+CREATE TABLE `�ԣ�` (`�ã�` char(5), INDEX(`�ã�`)) DEFAULT CHARSET = ucs2 engine = myisam;
+CREATE TABLE `�ԣ�` (`�ã�` char(5), INDEX(`�ã�`)) DEFAULT CHARSET = ucs2 engine = MEMORY;
+CREATE TABLE `�ԣ�` (`�ã�` char(5), INDEX(`�ã�`)) DEFAULT CHARSET = ucs2 engine = MEMORY;
+CREATE TABLE `�ԣ�` (`�ã�` char(5), INDEX(`�ã�`)) DEFAULT CHARSET = ucs2 engine = MEMORY;
+
+INSERT INTO `�ԣ�` VALUES ('����������');
+INSERT INTO `�ԣ�` VALUES ('����������');
+INSERT INTO `�ԣ�` VALUES ('��܏�ݏ�ޏ�ߏ��');
+INSERT INTO `�ԣ�` VALUES ('����������');
+INSERT INTO `�ԣ�` VALUES ('����������');
+INSERT INTO `�ԣ�` VALUES ('��܏�ݏ�ޏ�ߏ��');
+INSERT INTO `�ԣ�` VALUES ('����������');
+INSERT INTO `�ԣ�` VALUES ('����������');
+INSERT INTO `�ԣ�` VALUES ('��܏�ݏ�ޏ�ߏ��');
+
+#InnoDB
+SELECT LOCATE('��',`�ã�`) from `�ԣ�`;
+SELECT LOCATE('��',`�ã�`) from `�ԣ�`;
+SELECT LOCATE('��',`�ã�`) from `�ԣ�`;
+SELECT LOCATE('��',`�ã�`) from `�ԣ�`;
+SELECT LOCATE('��',`�ã�`) from `�ԣ�`;
+SELECT LOCATE('��',`�ã�`) from `�ԣ�`;
+SELECT LOCATE('��',`�ã�`) from `�ԣ�`;
+SELECT LOCATE('��',`�ã�`) from `�ԣ�`;
+SELECT LOCATE('��',`�ã�`) from `�ԣ�`;
+SELECT LOCATE('��',`�ã�`) from `�ԣ�`;
+SELECT LOCATE('��',`�ã�`) from `�ԣ�`;
+SELECT LOCATE('��',`�ã�`) from `�ԣ�`;
+SELECT LOCATE('���',`�ã�`) from `�ԣ�`;
+SELECT LOCATE('���',`�ã�`) from `�ԣ�`;
+SELECT LOCATE('���',`�ã�`) from `�ԣ�`;
+SELECT LOCATE('���',`�ã�`) from `�ԣ�`;
+SELECT LOCATE('���',`�ã�`) from `�ԣ�`;
+SELECT LOCATE('���',`�ã�`) from `�ԣ�`;
+
+#MyISAM
+SELECT LOCATE('��',`�ã�`) from `�ԣ�`;
+SELECT LOCATE('��',`�ã�`) from `�ԣ�`;
+SELECT LOCATE('��',`�ã�`) from `�ԣ�`;
+SELECT LOCATE('��',`�ã�`) from `�ԣ�`;
+SELECT LOCATE('��',`�ã�`) from `�ԣ�`;
+SELECT LOCATE('��',`�ã�`) from `�ԣ�`;
+SELECT LOCATE('��',`�ã�`) from `�ԣ�`;
+SELECT LOCATE('��',`�ã�`) from `�ԣ�`;
+SELECT LOCATE('��',`�ã�`) from `�ԣ�`;
+SELECT LOCATE('��',`�ã�`) from `�ԣ�`;
+SELECT LOCATE('��',`�ã�`) from `�ԣ�`;
+SELECT LOCATE('��',`�ã�`) from `�ԣ�`;
+SELECT LOCATE('���',`�ã�`) from `�ԣ�`;
+SELECT LOCATE('���',`�ã�`) from `�ԣ�`;
+SELECT LOCATE('���',`�ã�`) from `�ԣ�`;
+SELECT LOCATE('���',`�ã�`) from `�ԣ�`;
+SELECT LOCATE('���',`�ã�`) from `�ԣ�`;
+SELECT LOCATE('���',`�ã�`) from `�ԣ�`;
+
+
+#MEMORY
+SELECT LOCATE('��',`�ã�`) from `�ԣ�`;
+SELECT LOCATE('��',`�ã�`) from `�ԣ�`;
+SELECT LOCATE('��',`�ã�`) from `�ԣ�`;
+SELECT LOCATE('��',`�ã�`) from `�ԣ�`;
+SELECT LOCATE('��',`�ã�`) from `�ԣ�`;
+SELECT LOCATE('��',`�ã�`) from `�ԣ�`;
+SELECT LOCATE('��',`�ã�`) from `�ԣ�`;
+SELECT LOCATE('��',`�ã�`) from `�ԣ�`;
+SELECT LOCATE('��',`�ã�`) from `�ԣ�`;
+SELECT LOCATE('��',`�ã�`) from `�ԣ�`;
+SELECT LOCATE('��',`�ã�`) from `�ԣ�`;
+SELECT LOCATE('��',`�ã�`) from `�ԣ�`;
+SELECT LOCATE('���',`�ã�`) from `�ԣ�`;
+SELECT LOCATE('���',`�ã�`) from `�ԣ�`;
+SELECT LOCATE('���',`�ã�`) from `�ԣ�`;
+SELECT LOCATE('���',`�ã�`) from `�ԣ�`;
+SELECT LOCATE('���',`�ã�`) from `�ԣ�`;
+SELECT LOCATE('���',`�ã�`) from `�ԣ�`;
+
+
+DROP TABLE `�ԣ�`;
+DROP TABLE `�ԣ�`;
+DROP TABLE `�ԣ�`;
+DROP TABLE `�ԣ�`;
+DROP TABLE `�ԣ�`;
+DROP TABLE `�ԣ�`;
+DROP TABLE `�ԣ�`;
+DROP TABLE `�ԣ�`;
+DROP TABLE `�ԣ�`;

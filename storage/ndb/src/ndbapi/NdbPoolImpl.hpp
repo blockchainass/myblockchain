@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2003, 2005, 2006 MySQL AB
+   Copyright (C) 2003, 2005, 2006 MyBlockchain AB
     All rights reserved. Use is subject to license terms.
 
    This program is free software; you can redistribute it and/or modify
@@ -18,7 +18,7 @@
 
 /**
   @section ndbPool              Pooling of NDB objects
-  This class implements pooling of NDB objects to support MySQL, ODBC and
+  This class implements pooling of NDB objects to support MyBlockchain, ODBC and
   any application with a great number of threads.
 
   The general idea is to let the NdbPool class administer all Ndb objects.
@@ -64,7 +64,7 @@
 
   When constructing the NdbPool one can set the number of NdbConnection
   objects which are allowed in all Ndb objects. For use in synchronous
-  applications such as the MySQL server 4 objects should be enough. When
+  applications such as the MyBlockchain server 4 objects should be enough. When
   using the NdbPool for asynchronous applications one should use 1024 to
   enable a high level of parallelism. It is also possible to set the
   maximum number of Ndb objects in the pool and the initial number of
@@ -114,7 +114,7 @@ class NdbPool {
   We have three lists:
   1) A list for entries not in use
   2) A list for free entries
-  3) A hash table with schema name and database name as key
+  3) A hash table with schema name and blockchain name as key
 
   These lists are all initialised in the init call.
   The list for entries not in use is very simple since the current

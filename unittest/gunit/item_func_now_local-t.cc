@@ -138,14 +138,14 @@ TEST_F(ItemFuncNowLocalTest, storeInTimestampf)
 TEST_F(ItemFuncNowLocalTest, storeInDatetime)
 {
   Mock_field_datetime f;
-  MYSQL_TIME now_time;
+  MYBLOCKCHAIN_TIME now_time;
   THD *thd= get_thd();
   timeval now= { 1313677243, 1234 }; // Thu Aug 18 16:20:43 CEST 2011 and 1234 ms
   thd->set_time(&now);
 
   Item_func_now_local::store_in(&f);
   thd->variables.time_zone->gmt_sec_to_TIME(&now_time, thd->start_time);
-  MYSQL_TIME stored_time;
+  MYBLOCKCHAIN_TIME stored_time;
   f.get_time(&stored_time);
 
   EXPECT_EQ(now_time.year,      stored_time.year);

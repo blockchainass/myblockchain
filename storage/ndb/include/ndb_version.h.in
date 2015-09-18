@@ -19,7 +19,7 @@
 #define NDB_VERSION_H
 
 #include <ndb_types.h>
-#include <mysql_version.h>
+#include <myblockchain_version.h>
 
 /*
   Creates a composite version number from major, minor and build
@@ -51,18 +51,18 @@
                                  NDB_VERSION_BUILD) NDB_VERSION_STATUS
 
 /*
-  The version number of the MySQL Server that NDB is built
-  with. Extracted from MYSQL_VERSION_ID
+  The version number of the MyBlockchain Server that NDB is built
+  with. Extracted from MYBLOCKCHAIN_VERSION_ID
 */
-#define NDB_MYSQL_VERSION_MAJOR ((MYSQL_VERSION_ID / 10000) % 100)
-#define NDB_MYSQL_VERSION_MINOR ((MYSQL_VERSION_ID /100) % 100)
-#define NDB_MYSQL_VERSION_BUILD (MYSQL_VERSION_ID % 100)
+#define NDB_MYBLOCKCHAIN_VERSION_MAJOR ((MYBLOCKCHAIN_VERSION_ID / 10000) % 100)
+#define NDB_MYBLOCKCHAIN_VERSION_MINOR ((MYBLOCKCHAIN_VERSION_ID /100) % 100)
+#define NDB_MYBLOCKCHAIN_VERSION_BUILD (MYBLOCKCHAIN_VERSION_ID % 100)
 
-/* Composite version number for MYSQL Server */
-#define NDB_MYSQL_VERSION_D \
-  NDB_MAKE_VERSION(NDB_MYSQL_VERSION_MAJOR, \
-                   NDB_MYSQL_VERSION_MINOR, \
-                   NDB_MYSQL_VERSION_BUILD)
+/* Composite version number for MYBLOCKCHAIN Server */
+#define NDB_MYBLOCKCHAIN_VERSION_D \
+  NDB_MAKE_VERSION(NDB_MYBLOCKCHAIN_VERSION_MAJOR, \
+                   NDB_MYBLOCKCHAIN_VERSION_MINOR, \
+                   NDB_MYBLOCKCHAIN_VERSION_BUILD)
 
 #define NDB_VERSION_STRING_BUF_SZ 100
 
@@ -80,7 +80,7 @@ Uint32 ndbGetMinor(Uint32 version);
   
 Uint32 ndbGetBuild(Uint32 version);
 
-const char* ndbGetVersionString(Uint32 version, Uint32 mysql_version, const char * status,
+const char* ndbGetVersionString(Uint32 version, Uint32 myblockchain_version, const char * status,
                                 char *buf, unsigned sz);
 const char* ndbGetOwnVersionString();
 

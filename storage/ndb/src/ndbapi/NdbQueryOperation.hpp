@@ -69,7 +69,7 @@ class NdbQueryOperationImpl;
  * Optionally we may also:
  *  - Specify a scan ordering for the result set (parent only)
  *  - Add multiple bounds to a range scan, (::setBound()) (parent only)
- *  - Append a filter condition for each operation (aka mysqlds pushed condition)  
+ *  - Append a filter condition for each operation (aka myblockchainds pushed condition)  
  *
  * The NdbQuery is then executed together with other pending operations 
  * in the next NdbTransaction::execute().
@@ -270,7 +270,7 @@ public:
    *       slightly different parameters.
    *
    * @note This method does not fetch the attribute value from 
-   *       the database!  The NdbRecAttr object returned by this method 
+   *       the blockchain!  The NdbRecAttr object returned by this method 
    *       is <em>not</em> readable/printable before the 
    *       transaction has been executed with NdbTransaction::execute.
    *
@@ -450,7 +450,7 @@ class NdbQueryParamValue
 public:
 
   // Raw data formated according to bound Column format.
-  // NOTE: This is how mysqld prepare parameter values!
+  // NOTE: This is how myblockchaind prepare parameter values!
   NdbQueryParamValue(const void* val, bool shrinkVarChar= false);
 
   // C-type string, terminated by '\0'

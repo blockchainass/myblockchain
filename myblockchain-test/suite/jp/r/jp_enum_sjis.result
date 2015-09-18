@@ -1,0 +1,281 @@
+drop table if exists `�s�P`;
+drop table if exists `�s�Q`;
+drop table if exists `�s�R`;
+drop table if exists `�s�S`;
+drop table if exists `�s�T`;
+drop table if exists `�s�U`;
+drop table if exists `�s�V`;
+drop table if exists `�s�W`;
+drop table if exists `�s�X`;
+drop table if exists t1;
+SET NAMES sjis;
+SET character_set_blockchain = sjis;
+Warnings:
+Warning	1681	Updating 'character_set_blockchain' is deprecated. It will be made read-only in a future release.
+CREATE TABLE `�s�P` (`�b�P` ENUM('�','�','�'), INDEX(`�b�P`)) DEFAULT CHARSET = sjis engine = innodb;
+CREATE TABLE `�s�Q` (`�b�P` ENUM('��','��','��'), INDEX(`�b�P`)) DEFAULT CHARSET = sjis engine = innodb;
+CREATE TABLE `�s�R` (`�b�P` ENUM('�\','�\','�\'), INDEX(`�b�P`)) DEFAULT CHARSET = sjis engine = innodb;
+CREATE TABLE `�s�S` (`�b�P` ENUM('�','�','�'), INDEX(`�b�P`)) DEFAULT CHARSET = sjis engine = myisam;
+CREATE TABLE `�s�T` (`�b�P` ENUM('��','��','��'), INDEX(`�b�P`)) DEFAULT CHARSET = sjis engine = myisam;
+CREATE TABLE `�s�U` (`�b�P` ENUM('�\','�\','�\'), INDEX(`�b�P`)) DEFAULT CHARSET = sjis engine = myisam;
+CREATE TABLE `�s�V` (`�b�P` ENUM('�','�','�'), INDEX(`�b�P`)) DEFAULT CHARSET = sjis engine = MEMORY;
+CREATE TABLE `�s�W` (`�b�P` ENUM('��','��','��'), INDEX(`�b�P`)) DEFAULT CHARSET = sjis engine = MEMORY;
+CREATE TABLE `�s�X` (`�b�P` ENUM('�\','�\','�\'), INDEX(`�b�P`)) DEFAULT CHARSET = sjis engine = MEMORY;
+INSERT INTO `�s�P` VALUES ('�'),('�'),('�');
+INSERT INTO `�s�Q` VALUES ('��'),('��'),('��');
+INSERT INTO `�s�R` VALUES ('�\'),('�\'),('�\');
+INSERT INTO `�s�S` VALUES ('�'),('�'),('�');
+INSERT INTO `�s�T` VALUES ('��'),('��'),('��');
+INSERT INTO `�s�U` VALUES ('�\'),('�\'),('�\');
+INSERT INTO `�s�V` VALUES ('�'),('�'),('�');
+INSERT INTO `�s�W` VALUES ('��'),('��'),('��');
+INSERT INTO `�s�X` VALUES ('�\'),('�\'),('�\');
+SELECT * FROM `�s�P`;
+�b�P
+�
+�
+�
+SELECT * FROM `�s�Q`;
+�b�P
+��
+��
+��
+SELECT * FROM `�s�R`;
+�b�P
+�\
+�\
+�\
+SELECT * FROM `�s�S`;
+�b�P
+�
+�
+�
+SELECT * FROM `�s�T`;
+�b�P
+��
+��
+��
+SELECT * FROM `�s�U`;
+�b�P
+�\
+�\
+�\
+SELECT * FROM `�s�V`;
+�b�P
+�
+�
+�
+SELECT * FROM `�s�W`;
+�b�P
+��
+��
+��
+SELECT * FROM `�s�X`;
+�b�P
+�\
+�\
+�\
+SHOW CREATE TABLE `�s�P`;
+Table	Create Table
+�s�P	CREATE TABLE `�s�P` (
+  `�b�P` enum('�','�','�') DEFAULT NULL,
+  KEY `�b�P` (`�b�P`)
+) ENGINE=InnoDB DEFAULT CHARSET=sjis
+SHOW CREATE TABLE `�s�Q`;
+Table	Create Table
+�s�Q	CREATE TABLE `�s�Q` (
+  `�b�P` enum('��','��','��') DEFAULT NULL,
+  KEY `�b�P` (`�b�P`)
+) ENGINE=InnoDB DEFAULT CHARSET=sjis
+SHOW CREATE TABLE `�s�R`;
+Table	Create Table
+�s�R	CREATE TABLE `�s�R` (
+  `�b�P` enum('�\','�\','�\') DEFAULT NULL,
+  KEY `�b�P` (`�b�P`)
+) ENGINE=InnoDB DEFAULT CHARSET=sjis
+SHOW CREATE TABLE `�s�S`;
+Table	Create Table
+�s�S	CREATE TABLE `�s�S` (
+  `�b�P` enum('�','�','�') DEFAULT NULL,
+  KEY `�b�P` (`�b�P`)
+) ENGINE=MyISAM DEFAULT CHARSET=sjis
+SHOW CREATE TABLE `�s�T`;
+Table	Create Table
+�s�T	CREATE TABLE `�s�T` (
+  `�b�P` enum('��','��','��') DEFAULT NULL,
+  KEY `�b�P` (`�b�P`)
+) ENGINE=MyISAM DEFAULT CHARSET=sjis
+SHOW CREATE TABLE `�s�U`;
+Table	Create Table
+�s�U	CREATE TABLE `�s�U` (
+  `�b�P` enum('�\','�\','�\') DEFAULT NULL,
+  KEY `�b�P` (`�b�P`)
+) ENGINE=MyISAM DEFAULT CHARSET=sjis
+SHOW CREATE TABLE `�s�V`;
+Table	Create Table
+�s�V	CREATE TABLE `�s�V` (
+  `�b�P` enum('�','�','�') DEFAULT NULL,
+  KEY `�b�P` (`�b�P`)
+) ENGINE=MEMORY DEFAULT CHARSET=sjis
+SHOW CREATE TABLE `�s�W`;
+Table	Create Table
+�s�W	CREATE TABLE `�s�W` (
+  `�b�P` enum('��','��','��') DEFAULT NULL,
+  KEY `�b�P` (`�b�P`)
+) ENGINE=MEMORY DEFAULT CHARSET=sjis
+SHOW CREATE TABLE `�s�X`;
+Table	Create Table
+�s�X	CREATE TABLE `�s�X` (
+  `�b�P` enum('�\','�\','�\') DEFAULT NULL,
+  KEY `�b�P` (`�b�P`)
+) ENGINE=MEMORY DEFAULT CHARSET=sjis
+DESC `�s�P`;
+Field	Type	Null	Key	Default	Extra
+�b�P	enum('�','�','�')	YES	MUL	NULL	
+DESC `�s�Q`;
+Field	Type	Null	Key	Default	Extra
+�b�P	enum('��','��','��')	YES	MUL	NULL	
+DESC `�s�R`;
+Field	Type	Null	Key	Default	Extra
+�b�P	enum('�\','�\','�\')	YES	MUL	NULL	
+DESC `�s�S`;
+Field	Type	Null	Key	Default	Extra
+�b�P	enum('�','�','�')	YES	MUL	NULL	
+DESC `�s�T`;
+Field	Type	Null	Key	Default	Extra
+�b�P	enum('��','��','��')	YES	MUL	NULL	
+DESC `�s�U`;
+Field	Type	Null	Key	Default	Extra
+�b�P	enum('�\','�\','�\')	YES	MUL	NULL	
+DESC `�s�V`;
+Field	Type	Null	Key	Default	Extra
+�b�P	enum('�','�','�')	YES	MUL	NULL	
+DESC `�s�W`;
+Field	Type	Null	Key	Default	Extra
+�b�P	enum('��','��','��')	YES	MUL	NULL	
+DESC `�s�X`;
+Field	Type	Null	Key	Default	Extra
+�b�P	enum('�\','�\','�\')	YES	MUL	NULL	
+ALTER TABLE `�s�P` ADD `�b�Q` CHAR(1) NOT NULL FIRST;
+ALTER TABLE `�s�Q` ADD `�b�Q` CHAR(1) NOT NULL FIRST;
+ALTER TABLE `�s�R` ADD `�b�Q` CHAR(1) NOT NULL FIRST;
+ALTER TABLE `�s�S` ADD `�b�Q` CHAR(1) NOT NULL FIRST;
+ALTER TABLE `�s�T` ADD `�b�Q` CHAR(1) NOT NULL FIRST;
+ALTER TABLE `�s�U` ADD `�b�Q` CHAR(1) NOT NULL FIRST;
+ALTER TABLE `�s�V` ADD `�b�Q` CHAR(1) NOT NULL FIRST;
+ALTER TABLE `�s�W` ADD `�b�Q` CHAR(1) NOT NULL FIRST;
+ALTER TABLE `�s�X` ADD `�b�Q` CHAR(1) NOT NULL FIRST;
+SHOW CREATE TABLE `�s�P`;
+Table	Create Table
+�s�P	CREATE TABLE `�s�P` (
+  `�b�Q` char(1) NOT NULL,
+  `�b�P` enum('�','�','�') DEFAULT NULL,
+  KEY `�b�P` (`�b�P`)
+) ENGINE=InnoDB DEFAULT CHARSET=sjis
+SHOW CREATE TABLE `�s�Q`;
+Table	Create Table
+�s�Q	CREATE TABLE `�s�Q` (
+  `�b�Q` char(1) NOT NULL,
+  `�b�P` enum('��','��','��') DEFAULT NULL,
+  KEY `�b�P` (`�b�P`)
+) ENGINE=InnoDB DEFAULT CHARSET=sjis
+SHOW CREATE TABLE `�s�R`;
+Table	Create Table
+�s�R	CREATE TABLE `�s�R` (
+  `�b�Q` char(1) NOT NULL,
+  `�b�P` enum('�\','�\','�\') DEFAULT NULL,
+  KEY `�b�P` (`�b�P`)
+) ENGINE=InnoDB DEFAULT CHARSET=sjis
+SHOW CREATE TABLE `�s�S`;
+Table	Create Table
+�s�S	CREATE TABLE `�s�S` (
+  `�b�Q` char(1) NOT NULL,
+  `�b�P` enum('�','�','�') DEFAULT NULL,
+  KEY `�b�P` (`�b�P`)
+) ENGINE=MyISAM DEFAULT CHARSET=sjis
+SHOW CREATE TABLE `�s�T`;
+Table	Create Table
+�s�T	CREATE TABLE `�s�T` (
+  `�b�Q` char(1) NOT NULL,
+  `�b�P` enum('��','��','��') DEFAULT NULL,
+  KEY `�b�P` (`�b�P`)
+) ENGINE=MyISAM DEFAULT CHARSET=sjis
+SHOW CREATE TABLE `�s�U`;
+Table	Create Table
+�s�U	CREATE TABLE `�s�U` (
+  `�b�Q` char(1) NOT NULL,
+  `�b�P` enum('�\','�\','�\') DEFAULT NULL,
+  KEY `�b�P` (`�b�P`)
+) ENGINE=MyISAM DEFAULT CHARSET=sjis
+SHOW CREATE TABLE `�s�V`;
+Table	Create Table
+�s�V	CREATE TABLE `�s�V` (
+  `�b�Q` char(1) NOT NULL,
+  `�b�P` enum('�','�','�') DEFAULT NULL,
+  KEY `�b�P` (`�b�P`)
+) ENGINE=MEMORY DEFAULT CHARSET=sjis
+SHOW CREATE TABLE `�s�W`;
+Table	Create Table
+�s�W	CREATE TABLE `�s�W` (
+  `�b�Q` char(1) NOT NULL,
+  `�b�P` enum('��','��','��') DEFAULT NULL,
+  KEY `�b�P` (`�b�P`)
+) ENGINE=MEMORY DEFAULT CHARSET=sjis
+SHOW CREATE TABLE `�s�X`;
+Table	Create Table
+�s�X	CREATE TABLE `�s�X` (
+  `�b�Q` char(1) NOT NULL,
+  `�b�P` enum('�\','�\','�\') DEFAULT NULL,
+  KEY `�b�P` (`�b�P`)
+) ENGINE=MEMORY DEFAULT CHARSET=sjis
+CREATE TABLE t1(c1 enum('�S','�s')) default character set = sjis;
+INSERT INTO t1 VALUES('�S'),('�s');
+SELECT * FROM t1 WHERE c1 LIKE '�S';
+c1
+�S
+DROP TABLE t1;
+DESC `�s�P`;
+Field	Type	Null	Key	Default	Extra
+�b�Q	char(1)	NO		NULL	
+�b�P	enum('�','�','�')	YES	MUL	NULL	
+DESC `�s�Q`;
+Field	Type	Null	Key	Default	Extra
+�b�Q	char(1)	NO		NULL	
+�b�P	enum('��','��','��')	YES	MUL	NULL	
+DESC `�s�R`;
+Field	Type	Null	Key	Default	Extra
+�b�Q	char(1)	NO		NULL	
+�b�P	enum('�\','�\','�\')	YES	MUL	NULL	
+DESC `�s�S`;
+Field	Type	Null	Key	Default	Extra
+�b�Q	char(1)	NO		NULL	
+�b�P	enum('�','�','�')	YES	MUL	NULL	
+DESC `�s�T`;
+Field	Type	Null	Key	Default	Extra
+�b�Q	char(1)	NO		NULL	
+�b�P	enum('��','��','��')	YES	MUL	NULL	
+DESC `�s�U`;
+Field	Type	Null	Key	Default	Extra
+�b�Q	char(1)	NO		NULL	
+�b�P	enum('�\','�\','�\')	YES	MUL	NULL	
+DESC `�s�V`;
+Field	Type	Null	Key	Default	Extra
+�b�Q	char(1)	NO		NULL	
+�b�P	enum('�','�','�')	YES	MUL	NULL	
+DESC `�s�W`;
+Field	Type	Null	Key	Default	Extra
+�b�Q	char(1)	NO		NULL	
+�b�P	enum('��','��','��')	YES	MUL	NULL	
+DESC `�s�X`;
+Field	Type	Null	Key	Default	Extra
+�b�Q	char(1)	NO		NULL	
+�b�P	enum('�\','�\','�\')	YES	MUL	NULL	
+DROP TABLE `�s�P`;
+DROP TABLE `�s�Q`;
+DROP TABLE `�s�R`;
+DROP TABLE `�s�S`;
+DROP TABLE `�s�T`;
+DROP TABLE `�s�U`;
+DROP TABLE `�s�V`;
+DROP TABLE `�s�W`;
+DROP TABLE `�s�X`;

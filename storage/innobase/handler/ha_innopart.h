@@ -16,7 +16,7 @@ this program; if not, write to the Free Software Foundation, Inc.,
 
 *****************************************************************************/
 
-/* The InnoDB Partition handler: the interface between MySQL and InnoDB. */
+/* The InnoDB Partition handler: the interface between MyBlockchain and InnoDB. */
 
 #ifndef ha_innopart_h
 #define ha_innopart_h
@@ -44,7 +44,7 @@ private:
 	/** Array of all included table definitions (one per partition). */
 	dict_table_t**		m_table_parts;
 
-	/** Instead of INNOBASE_SHARE::idx_trans_tbl. Maps MySQL index number
+	/** Instead of INNOBASE_SHARE::idx_trans_tbl. Maps MyBlockchain index number
 	to InnoDB index per partition. */
 	dict_index_t**		m_index_mapping;
 
@@ -104,12 +104,12 @@ public:
 		uint	part_id,
 		uint	keynr);
 
-	/** Get MySQL key number corresponding to InnoDB index.
+	/** Get MyBlockchain key number corresponding to InnoDB index.
 	@param[in]	part_id	Partition number.
 	@param[in]	index	InnoDB index.
-	@return	MySQL key number or MAX_KEY if non-existent. */
+	@return	MyBlockchain key number or MAX_KEY if non-existent. */
 	uint
-	get_mysql_key(
+	get_myblockchain_key(
 		uint			part_id,
 		const dict_index_t*	index);
 
@@ -151,7 +151,7 @@ public:
 
 	/** Set up the virtual column template for partition table, and points
 	all m_table_parts[]->vc_templ to it.
-	@param[in]      table           MySQL TABLE object
+	@param[in]      table           MyBlockchain TABLE object
 	@param[in]      ib_table        InnoDB dict_table_t
 	@param[in]      table_name      Table name (db/table_name) */
 	void
@@ -713,7 +713,7 @@ private:
 	innobase_initialize_autoinc();
 
 	/** Get the index for the current partition
-	@param[in]	keynr	MySQL index number.
+	@param[in]	keynr	MyBlockchain index number.
 	@return InnoDB index or NULL. */
 	dict_index_t*
 	innobase_get_index(
@@ -811,10 +811,10 @@ private:
 		uint	new_part);
 
 	/** Write a row in specific partition.
-	Stores a row in an InnoDB database, to the table specified in this
+	Stores a row in an InnoDB blockchain, to the table specified in this
 	handle.
 	@param[in]	part_id	Partition to write to.
-	@param[in]	row	A row in MySQL format.
+	@param[in]	row	A row in MyBlockchain format.
 	@return error code. */
 	int
 	write_row_in_part(
@@ -824,8 +824,8 @@ private:
 	/** Update a row in partition.
 	Updates a row given as a parameter to a new value.
 	@param[in]	part_id	Partition to update row in.
-	@param[in]	old_row	Old row in MySQL format.
-	@param[in]	new_row	New row in MySQL format.
+	@param[in]	old_row	Old row in MyBlockchain format.
+	@param[in]	new_row	New row in MyBlockchain format.
 	@return error number or 0. */
 	int
 	update_row_in_part(
@@ -835,7 +835,7 @@ private:
 
 	/** Deletes a row in partition.
 	@param[in]	part_id	Partition to delete from.
-	@param[in]	row	Row to delete in MySQL format.
+	@param[in]	row	Row to delete in MyBlockchain format.
 	@return error number or 0. */
 	int
 	delete_row_in_part(
@@ -1020,8 +1020,8 @@ private:
 		return(handler::rnd_pos_by_record(record));
 	}
 
-	/** Copy a cached MySQL record.
-	@param[out]	to_record	Where to copy the MySQL record.
+	/** Copy a cached MyBlockchain record.
+	@param[out]	to_record	Where to copy the MyBlockchain record.
 	@param[in]	from_record	Which record to copy. */
 	void
 	copy_cached_row(
@@ -1048,14 +1048,14 @@ private:
 	In an UPDATE or DELETE, if the row under the cursor was locked by
 	another transaction, and the engine used an optimistic read of the last
 	committed row value under the cursor, then the engine returns 1 from
-	this function. MySQL must NOT try to update this optimistic value. If
-	the optimistic value does not match the WHERE condition, MySQL can
+	this function. MyBlockchain must NOT try to update this optimistic value. If
+	the optimistic value does not match the WHERE condition, MyBlockchain can
 	decide to skip over this row. This can be used to avoid unnecessary
 	lock waits.
 
 	If this method returns true, it will also signal the storage
 	engine that the next read will be a locking re-read of the row.
-	@see handler.h and row0mysql.h
+	@see handler.h and row0myblockchain.h
 	@return	true if last read was semi consistent else false. */
 	bool was_semi_consistent_read();
 
@@ -1064,7 +1064,7 @@ private:
 	If yes, in an UPDATE or DELETE, if the row under the cursor was locked
 	by another transaction, the engine may try an optimistic read of
 	the last committed row value under the cursor.
-	@see handler.h and row0mysql.h
+	@see handler.h and row0myblockchain.h
 	@param[in]	yes	Should semi-consistent read be used. */
 	void try_semi_consistent_read(
 		bool	yes);
@@ -1294,7 +1294,7 @@ protected:
 	/** @} */
 
 	/** Updates and return statistics.
-	Returns statistics information of the table to the MySQL interpreter,
+	Returns statistics information of the table to the MyBlockchain interpreter,
 	in various fields of the handle object.
 	@param[in]	flag		Flags for what to update and return.
 	@param[in]	is_analyze	True if called from ::analyze().

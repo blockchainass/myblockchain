@@ -15,11 +15,11 @@
  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 */
 /*
- * mysql_utils_jtie.hpp
+ * myblockchain_utils_jtie.hpp
  */
 
-#ifndef mysql_utils_jtie_hpp
-#define mysql_utils_jtie_hpp
+#ifndef myblockchain_utils_jtie_hpp
+#define myblockchain_utils_jtie_hpp
 
 // API to implement against
 #include "decimal_utils.hpp"
@@ -32,7 +32,7 @@
 #include "jtie.hpp"
 
 // ---------------------------------------------------------------------------
-// MySQL Utilities JTie Type Definitions
+// MyBlockchain Utilities JTie Type Definitions
 // ---------------------------------------------------------------------------
 
 // type alias for mapping the 2-element int array in CharsetMap::recode();
@@ -48,7 +48,7 @@ JTIE_DEFINE_JINT_ENUM_TYPE_MAPPING(CharsetMap::RecodeStatus,
                                    c_m_n_m_CharsetMap_RecodeStatus)
 
 // ---------------------------------------------------------------------------
-// MySQL Utilities JTie Function Stubs
+// MyBlockchain Utilities JTie Function Stubs
 // ---------------------------------------------------------------------------
 
 // The API stub functions in this file have mangled names that adhere
@@ -69,41 +69,41 @@ extern "C" {
 
 // ---------------------------------------------------------------------------
 
-//#include "com_mysql_ndbjtie_mysql_CharsetMap.h"
+//#include "com_myblockchain_ndbjtie_myblockchain_CharsetMap.h"
 
 /*
- * Class:     com_mysql_ndbjtie_mysql_CharsetMap
+ * Class:     com_myblockchain_ndbjtie_myblockchain_CharsetMap
  * Method:    create
- * Signature: ()Lcom/mysql/ndbjtie/mysql/CharsetMap;
+ * Signature: ()Lcom/myblockchain/ndbjtie/myblockchain/CharsetMap;
  */
 JNIEXPORT jobject JNICALL
-Java_com_mysql_ndbjtie_mysql_CharsetMap_create(JNIEnv * env, jclass cls)
+Java_com_myblockchain_ndbjtie_myblockchain_CharsetMap_create(JNIEnv * env, jclass cls)
 {
-    TRACE("jobject Java_com_mysql_ndbjtie_mysql_CharsetMap_create(JNIEnv *, jclass)");
+    TRACE("jobject Java_com_myblockchain_ndbjtie_myblockchain_CharsetMap_create(JNIEnv *, jclass)");
     return gcreate< ttrait_c_m_n_m_CharsetMap_r >(env, cls);
 }
 
 /*
- * Class:     com_mysql_ndbjtie_mysql_CharsetMap
+ * Class:     com_myblockchain_ndbjtie_myblockchain_CharsetMap
  * Method:    delete
- * Signature: (Lcom/mysql/ndbjtie/mysql/CharsetMap;)V
+ * Signature: (Lcom/myblockchain/ndbjtie/myblockchain/CharsetMap;)V
  */
 JNIEXPORT void JNICALL
-Java_com_mysql_ndbjtie_mysql_CharsetMap_delete(JNIEnv * env, jclass cls, jobject p0)
+Java_com_myblockchain_ndbjtie_myblockchain_CharsetMap_delete(JNIEnv * env, jclass cls, jobject p0)
 {
-    TRACE("void Java_com_mysql_ndbjtie_mysql_CharsetMap_delete(JNIEnv *, jclass, jobject)");
+    TRACE("void Java_com_myblockchain_ndbjtie_myblockchain_CharsetMap_delete(JNIEnv *, jclass, jobject)");
     gdelete< ttrait_c_m_n_m_CharsetMap_r >(env, cls, p0);
 }
 
 /*
- * Class:     com_mysql_ndbjtie_mysql_CharsetMap
+ * Class:     com_myblockchain_ndbjtie_myblockchain_CharsetMap
  * Method:    getName
  * Signature: (I)Ljava/lang/String;
  */
 JNIEXPORT jstring JNICALL
-Java_com_mysql_ndbjtie_mysql_CharsetMap_getName(JNIEnv * env, jobject obj, jint p0)
+Java_com_myblockchain_ndbjtie_myblockchain_CharsetMap_getName(JNIEnv * env, jobject obj, jint p0)
 {
-    TRACE("jstring Java_com_mysql_ndbjtie_mysql_CharsetMap_getName(JNIEnv *, jobject, jint)");
+    TRACE("jstring Java_com_myblockchain_ndbjtie_myblockchain_CharsetMap_getName(JNIEnv *, jobject, jint)");
 #ifndef NDBJTIE_USE_WRAPPED_VARIANT_FOR_FUNCTION
     return gcall_mfr< ttrait_c_m_n_m_CharsetMap_ct, ttrait_char_cp_jutf8null, ttrait_int, &CharsetMap::getName >(env, obj, p0);
 #else
@@ -112,14 +112,14 @@ Java_com_mysql_ndbjtie_mysql_CharsetMap_getName(JNIEnv * env, jobject obj, jint 
 }
 
 /*
- * Class:     com_mysql_ndbjtie_mysql_CharsetMap
+ * Class:     com_myblockchain_ndbjtie_myblockchain_CharsetMap
  * Method:    getMysqlName
  * Signature: (I)Ljava/lang/String;
  */
 JNIEXPORT jstring JNICALL
-Java_com_mysql_ndbjtie_mysql_CharsetMap_getMysqlName(JNIEnv * env, jobject obj, jint p0)
+Java_com_myblockchain_ndbjtie_myblockchain_CharsetMap_getMysqlName(JNIEnv * env, jobject obj, jint p0)
 {
-    TRACE("jstring Java_com_mysql_ndbjtie_mysql_CharsetMap_getMysqlName(JNIEnv *, jobject, jint)");
+    TRACE("jstring Java_com_myblockchain_ndbjtie_myblockchain_CharsetMap_getMysqlName(JNIEnv *, jobject, jint)");
 #ifndef NDBJTIE_USE_WRAPPED_VARIANT_FOR_FUNCTION
     return gcall_mfr< ttrait_c_m_n_m_CharsetMap_ct, ttrait_char_cp_jutf8null, ttrait_int, &CharsetMap::getMysqlName >(env, obj, p0);
 #else
@@ -128,14 +128,14 @@ Java_com_mysql_ndbjtie_mysql_CharsetMap_getMysqlName(JNIEnv * env, jobject obj, 
 }
 
 /*
- * Class:     com_mysql_ndbjtie_mysql_CharsetMap
+ * Class:     com_myblockchain_ndbjtie_myblockchain_CharsetMap
  * Method:    getCharsetNumber
  * Signature: (Ljava/lang/String;)I
  */
 JNIEXPORT jint JNICALL
-Java_com_mysql_ndbjtie_mysql_CharsetMap_getCharsetNumber(JNIEnv * env, jobject obj, jstring p0)
+Java_com_myblockchain_ndbjtie_myblockchain_CharsetMap_getCharsetNumber(JNIEnv * env, jobject obj, jstring p0)
 {
-    TRACE("jint Java_com_mysql_ndbjtie_mysql_CharsetMap_getCharsetNumber(JNIEnv *, jobject, jstring)");
+    TRACE("jint Java_com_myblockchain_ndbjtie_myblockchain_CharsetMap_getCharsetNumber(JNIEnv *, jobject, jstring)");
 #ifndef NDBJTIE_USE_WRAPPED_VARIANT_FOR_FUNCTION
     return gcall_mfr< ttrait_c_m_n_m_CharsetMap_ct, ttrait_int, ttrait_char_cp_jutf8null, &CharsetMap::getCharsetNumber >(env, obj, p0);
 #else
@@ -144,14 +144,14 @@ Java_com_mysql_ndbjtie_mysql_CharsetMap_getCharsetNumber(JNIEnv * env, jobject o
 }
 
 /*
- * Class:     com_mysql_ndbjtie_mysql_CharsetMap
+ * Class:     com_myblockchain_ndbjtie_myblockchain_CharsetMap
  * Method:    getUTF8CharsetNumber
  * Signature: ()I
  */
 JNIEXPORT jint JNICALL
-Java_com_mysql_ndbjtie_mysql_CharsetMap_getUTF8CharsetNumber(JNIEnv * env, jobject obj)
+Java_com_myblockchain_ndbjtie_myblockchain_CharsetMap_getUTF8CharsetNumber(JNIEnv * env, jobject obj)
 {
-    TRACE("jint Java_com_mysql_ndbjtie_mysql_CharsetMap_getUTF8CharsetNumber(JNIEnv *, jobject)");
+    TRACE("jint Java_com_myblockchain_ndbjtie_myblockchain_CharsetMap_getUTF8CharsetNumber(JNIEnv *, jobject)");
 #ifndef NDBJTIE_USE_WRAPPED_VARIANT_FOR_FUNCTION
     return gcall_mfr< ttrait_c_m_n_m_CharsetMap_ct, ttrait_int, &CharsetMap::getUTF8CharsetNumber >(env, obj);
 #else
@@ -160,14 +160,14 @@ Java_com_mysql_ndbjtie_mysql_CharsetMap_getUTF8CharsetNumber(JNIEnv * env, jobje
 }
 
 /*
- * Class:     com_mysql_ndbjtie_mysql_CharsetMap
+ * Class:     com_myblockchain_ndbjtie_myblockchain_CharsetMap
  * Method:    getUTF16CharsetNumber
  * Signature: ()I
  */
 JNIEXPORT jint JNICALL
-Java_com_mysql_ndbjtie_mysql_CharsetMap_getUTF16CharsetNumber(JNIEnv * env, jobject obj)
+Java_com_myblockchain_ndbjtie_myblockchain_CharsetMap_getUTF16CharsetNumber(JNIEnv * env, jobject obj)
 {
-    TRACE("jint Java_com_mysql_ndbjtie_mysql_CharsetMap_getUTF16CharsetNumber(JNIEnv *, jobject)");
+    TRACE("jint Java_com_myblockchain_ndbjtie_myblockchain_CharsetMap_getUTF16CharsetNumber(JNIEnv *, jobject)");
 #ifndef NDBJTIE_USE_WRAPPED_VARIANT_FOR_FUNCTION
     return gcall_mfr< ttrait_c_m_n_m_CharsetMap_ct, ttrait_int, &CharsetMap::getUTF16CharsetNumber >(env, obj);
 #else
@@ -176,14 +176,14 @@ Java_com_mysql_ndbjtie_mysql_CharsetMap_getUTF16CharsetNumber(JNIEnv * env, jobj
 }
 
 /*
- * Class:     com_mysql_ndbjtie_mysql_CharsetMap
+ * Class:     com_myblockchain_ndbjtie_myblockchain_CharsetMap
  * Method:    isMultibyte
  * Signature: (I)[Z
  */
 JNIEXPORT jbooleanArray JNICALL
-Java_com_mysql_ndbjtie_mysql_CharsetMap_isMultibyte(JNIEnv * env, jobject jobj, jint p0)
+Java_com_myblockchain_ndbjtie_myblockchain_CharsetMap_isMultibyte(JNIEnv * env, jobject jobj, jint p0)
 {
-  TRACE("Java_com_mysql_ndbjtie_mysql_CharsetMap_isMultibyte(JNIEnv *, jobject, jint)");
+  TRACE("Java_com_myblockchain_ndbjtie_myblockchain_CharsetMap_isMultibyte(JNIEnv *, jobject, jint)");
 #ifndef NDBJTIE_USE_WRAPPED_VARIANT_FOR_FUNCTION
   return gcall_mfr< ttrait_c_m_n_m_CharsetMap_ct, ttrait_bool_1cp_a, ttrait_int, &CharsetMap::isMultibyte >(env, jobj, p0);
 #else
@@ -192,14 +192,14 @@ Java_com_mysql_ndbjtie_mysql_CharsetMap_isMultibyte(JNIEnv * env, jobject jobj, 
 }
    
 /*
- * Class:     com_mysql_ndbjtie_mysql_CharsetMap
+ * Class:     com_myblockchain_ndbjtie_myblockchain_CharsetMap
  * Method:    recode
  * Signature: ([IIILjava/nio/ByteBuffer;Ljava/nio/ByteBuffer;)I
  */
 JNIEXPORT jint JNICALL
-Java_com_mysql_ndbjtie_mysql_CharsetMap_recode(JNIEnv * env, jobject obj, jintArray p0, jint p1, jint p2, jobject p3, jobject p4)
+Java_com_myblockchain_ndbjtie_myblockchain_CharsetMap_recode(JNIEnv * env, jobject obj, jintArray p0, jint p1, jint p2, jobject p3, jobject p4)
 {
-    TRACE("jint Java_com_mysql_ndbjtie_mysql_CharsetMap_recode(JNIEnv *, jobject, jintArray, jint, jint, jobject, jobject)");
+    TRACE("jint Java_com_myblockchain_ndbjtie_myblockchain_CharsetMap_recode(JNIEnv *, jobject, jintArray, jint, jint, jobject, jobject)");
 #ifndef NDBJTIE_USE_WRAPPED_VARIANT_FOR_FUNCTION
     return gcall_mfr< ttrait_c_m_n_m_CharsetMap_ct, ttrait_c_m_n_m_CharsetMap_RecodeStatus_iv/*_enum_*/, ttrait_Int32_2p_a, ttrait_int, ttrait_int, ttrait_void_0cp_bb, ttrait_void_0p_bb, &CharsetMap::recode >(env, obj, p0, p1, p2, p3, p4);
 #else
@@ -209,17 +209,17 @@ Java_com_mysql_ndbjtie_mysql_CharsetMap_recode(JNIEnv * env, jobject obj, jintAr
 
 // ---------------------------------------------------------------------------
 
-//#include "com_mysql_ndbjtie_mysql_Utils.h"
+//#include "com_myblockchain_ndbjtie_myblockchain_Utils.h"
 
 /*
- * Class:     com_mysql_ndbjtie_mysql_Utils
+ * Class:     com_myblockchain_ndbjtie_myblockchain_Utils
  * Method:    decimal_str2bin
  * Signature: (Ljava/nio/ByteBuffer;IIILjava/nio/ByteBuffer;I)I
  */
 JNIEXPORT jint JNICALL
-Java_com_mysql_ndbjtie_mysql_Utils_decimal_1str2bin(JNIEnv * env, jclass cls, jobject p0, jint p1, jint p2, jint p3, jobject p4, jint p5)
+Java_com_myblockchain_ndbjtie_myblockchain_Utils_decimal_1str2bin(JNIEnv * env, jclass cls, jobject p0, jint p1, jint p2, jint p3, jobject p4, jint p5)
 {
-    TRACE("jint Java_com_mysql_ndbjtie_mysql_Utils_decimal_1str2bin(JNIEnv *, jclass, jobject, jint, jint, jint, jobject, jint)");
+    TRACE("jint Java_com_myblockchain_ndbjtie_myblockchain_Utils_decimal_1str2bin(JNIEnv *, jclass, jobject, jint, jint, jint, jobject, jint)");
 #ifndef NDBJTIE_USE_WRAPPED_VARIANT_FOR_FUNCTION
     return gcall_fr< ttrait_int, ttrait_char_0cp_bb, ttrait_int, ttrait_int, ttrait_int, ttrait_void_0p_bb, ttrait_int, &::decimal_str2bin >(env, cls, p0, p1, p2, p3, p4, p5);
 #else
@@ -228,14 +228,14 @@ Java_com_mysql_ndbjtie_mysql_Utils_decimal_1str2bin(JNIEnv * env, jclass cls, jo
 }
 
 /*
- * Class:     com_mysql_ndbjtie_mysql_Utils
+ * Class:     com_myblockchain_ndbjtie_myblockchain_Utils
  * Method:    decimal_bin2str
  * Signature: (Ljava/nio/ByteBuffer;IIILjava/nio/ByteBuffer;I)I
  */
 JNIEXPORT jint JNICALL
-Java_com_mysql_ndbjtie_mysql_Utils_decimal_1bin2str(JNIEnv * env, jclass cls, jobject p0, jint p1, jint p2, jint p3, jobject p4, jint p5)
+Java_com_myblockchain_ndbjtie_myblockchain_Utils_decimal_1bin2str(JNIEnv * env, jclass cls, jobject p0, jint p1, jint p2, jint p3, jobject p4, jint p5)
 {
-    TRACE("jint Java_com_mysql_ndbjtie_mysql_Utils_decimal_1bin2str(JNIEnv *, jclass, jobject, jint, jint, jint, jobject, jint)");
+    TRACE("jint Java_com_myblockchain_ndbjtie_myblockchain_Utils_decimal_1bin2str(JNIEnv *, jclass, jobject, jint, jint, jint, jobject, jint)");
 #ifndef NDBJTIE_USE_WRAPPED_VARIANT_FOR_FUNCTION
     return gcall_fr< ttrait_int, ttrait_void_0cp_bb, ttrait_int, ttrait_int, ttrait_int, ttrait_char_0p_bb, ttrait_int, &::decimal_bin2str >(env, cls, p0, p1, p2, p3, p4, p5);
 #else
@@ -244,14 +244,14 @@ Java_com_mysql_ndbjtie_mysql_Utils_decimal_1bin2str(JNIEnv * env, jclass cls, jo
 }
 
 /*
- * Class:     com_mysql_ndbjtie_mysql_Utils
+ * Class:     com_myblockchain_ndbjtie_myblockchain_Utils
  * Method:    dbugPush
  * Signature: (Ljava/lang/String;)V
  */
 JNIEXPORT void JNICALL
-Java_com_mysql_ndbjtie_mysql_Utils_dbugPush(JNIEnv * env, jclass cls, jstring p0)
+Java_com_myblockchain_ndbjtie_myblockchain_Utils_dbugPush(JNIEnv * env, jclass cls, jstring p0)
 {
-    TRACE("void Java_com_mysql_ndbjtie_mysql_Utils_dbugPush(JNIEnv *, jclass, jstring)");
+    TRACE("void Java_com_myblockchain_ndbjtie_myblockchain_Utils_dbugPush(JNIEnv *, jclass, jstring)");
 #ifndef NDBJTIE_USE_WRAPPED_VARIANT_FOR_FUNCTION
     gcall_fv< ttrait_char_cp_jutf8null, &::dbugPush >(env, cls, p0);
 #else
@@ -260,14 +260,14 @@ Java_com_mysql_ndbjtie_mysql_Utils_dbugPush(JNIEnv * env, jclass cls, jstring p0
 }
 
 /*
- * Class:     com_mysql_ndbjtie_mysql_Utils
+ * Class:     com_myblockchain_ndbjtie_myblockchain_Utils
  * Method:    dbugPop
  * Signature: ()V
  */
 JNIEXPORT void JNICALL
-Java_com_mysql_ndbjtie_mysql_Utils_dbugPop(JNIEnv * env, jclass cls)
+Java_com_myblockchain_ndbjtie_myblockchain_Utils_dbugPop(JNIEnv * env, jclass cls)
 {
-    TRACE("void Java_com_mysql_ndbjtie_mysql_Utils_dbugPop(JNIEnv *, jclass)");
+    TRACE("void Java_com_myblockchain_ndbjtie_myblockchain_Utils_dbugPop(JNIEnv *, jclass)");
 #ifndef NDBJTIE_USE_WRAPPED_VARIANT_FOR_FUNCTION
     gcall_fv< &::dbugPop >(env, cls);
 #else
@@ -276,14 +276,14 @@ Java_com_mysql_ndbjtie_mysql_Utils_dbugPop(JNIEnv * env, jclass cls)
 }
 
 /*
- * Class:     com_mysql_ndbjtie_mysql_Utils
+ * Class:     com_myblockchain_ndbjtie_myblockchain_Utils
  * Method:    dbugSet
  * Signature: (Ljava/lang/String;)V
  */
 JNIEXPORT void JNICALL
-Java_com_mysql_ndbjtie_mysql_Utils_dbugSet(JNIEnv * env, jclass cls, jstring p0)
+Java_com_myblockchain_ndbjtie_myblockchain_Utils_dbugSet(JNIEnv * env, jclass cls, jstring p0)
 {
-    TRACE("void Java_com_mysql_ndbjtie_mysql_Utils_dbugSet(JNIEnv *, jclass, jstring)");
+    TRACE("void Java_com_myblockchain_ndbjtie_myblockchain_Utils_dbugSet(JNIEnv *, jclass, jstring)");
 #ifndef NDBJTIE_USE_WRAPPED_VARIANT_FOR_FUNCTION
     gcall_fv< ttrait_char_cp_jutf8null, &::dbugSet >(env, cls, p0);
 #else
@@ -292,14 +292,14 @@ Java_com_mysql_ndbjtie_mysql_Utils_dbugSet(JNIEnv * env, jclass cls, jstring p0)
 }
 
 /*
- * Class:     com_mysql_ndbjtie_mysql_Utils
+ * Class:     com_myblockchain_ndbjtie_myblockchain_Utils
  * Method:    dbugExplain
  * Signature: (Ljava/nio/ByteBuffer;I)Ljava/lang/String;
  */
 JNIEXPORT jstring JNICALL
-Java_com_mysql_ndbjtie_mysql_Utils_dbugExplain(JNIEnv * env, jclass cls, jobject p0, jint p1)
+Java_com_myblockchain_ndbjtie_myblockchain_Utils_dbugExplain(JNIEnv * env, jclass cls, jobject p0, jint p1)
 {
-    TRACE("jstring Java_com_mysql_ndbjtie_mysql_Utils_dbugExplain(JNIEnv *, jclass, jobject, jint)");
+    TRACE("jstring Java_com_myblockchain_ndbjtie_myblockchain_Utils_dbugExplain(JNIEnv *, jclass, jobject, jint)");
 #ifndef NDBJTIE_USE_WRAPPED_VARIANT_FOR_FUNCTION
     return gcall_fr< ttrait_char_cp_jutf8null, ttrait_char_0p_bb, ttrait_int, &::dbugExplain >(env, cls, p0, p1);
 #else
@@ -308,14 +308,14 @@ Java_com_mysql_ndbjtie_mysql_Utils_dbugExplain(JNIEnv * env, jclass cls, jobject
 }
 
 /*
- * Class:     com_mysql_ndbjtie_mysql_Utils
+ * Class:     com_myblockchain_ndbjtie_myblockchain_Utils
  * Method:    dbugPrint
  * Signature: (Ljava/lang/String;Ljava/lang/String;)V
  */
 JNIEXPORT void JNICALL
-Java_com_mysql_ndbjtie_mysql_Utils_dbugPrint(JNIEnv * env, jclass cls, jstring p0, jstring p1)
+Java_com_myblockchain_ndbjtie_myblockchain_Utils_dbugPrint(JNIEnv * env, jclass cls, jstring p0, jstring p1)
 {
-    TRACE("void Java_com_mysql_ndbjtie_mysql_Utils_dbugPrint(JNIEnv *, jclass, jstring, jstring)");
+    TRACE("void Java_com_myblockchain_ndbjtie_myblockchain_Utils_dbugPrint(JNIEnv *, jclass, jstring, jstring)");
 #ifndef NDBJTIE_USE_WRAPPED_VARIANT_FOR_FUNCTION
     gcall_fv< ttrait_char_cp_jutf8null, ttrait_char_cp_jutf8null, &::dbugPrint >(env, cls, p0, p1);
 #else
@@ -327,4 +327,4 @@ Java_com_mysql_ndbjtie_mysql_Utils_dbugPrint(JNIEnv * env, jclass cls, jstring p
 
 } // extern "C"
 
-#endif // mysql_utils_jtie_hpp
+#endif // myblockchain_utils_jtie_hpp

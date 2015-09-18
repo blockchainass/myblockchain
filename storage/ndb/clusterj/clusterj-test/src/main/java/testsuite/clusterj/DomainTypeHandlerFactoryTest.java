@@ -26,7 +26,7 @@ import testsuite.clusterj.model.ThrowNullPointerException;
  * loadable DomainTypeHandlerFactory implementations. This is the way to
  * support abstract classes or concrete classes as domain types.
  * 
- * If a file META-INF/services/com.mysql.clusterj.spi.DomainTypeHandlerFactory
+ * If a file META-INF/services/com.myblockchain.clusterj.spi.DomainTypeHandlerFactory
  * exists that names a loadable class, the core implementation should use it
  * preferentially to load a DomainTypeHandler for an unregistered domain type.
  *

@@ -17,7 +17,7 @@
 
 package testsuite.clusterj;
 
-import com.mysql.clusterj.ClusterJUserException;
+import com.myblockchain.clusterj.ClusterJUserException;
 import testsuite.clusterj.model.BadEmployeeWrongPrimaryKeyAnnotationOnClass;
 import testsuite.clusterj.model.BadEmployeeNoPrimaryKeyAnnotationOnClass;
 import testsuite.clusterj.model.BadEmployeePrimaryKeyAnnotationColumnAndColumns;

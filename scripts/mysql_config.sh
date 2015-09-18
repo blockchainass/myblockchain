@@ -15,7 +15,7 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 
 # This script reports various configuration settings that may be needed
-# when using the MySQL client library.
+# when using the MyBlockchain client library.
 
 which ()
 {
@@ -37,9 +37,9 @@ which ()
 }
 
 #
-# If we can find the given directory relatively to where mysql_config is
+# If we can find the given directory relatively to where myblockchain_config is
 # we should use this instead of the incompiled one.
-# This is to ensure that this script also works with the binary MySQL
+# This is to ensure that this script also works with the binary MyBlockchain
 # version
 
 fix_path ()
@@ -76,8 +76,8 @@ get_full_path ()
 
 me=`get_full_path $0`
 
-# Script might have been renamed but assume mysql_<something>config<something>
-basedir=`echo $me | sed -e 's;/bin/mysql_.*config.*;;'`
+# Script might have been renamed but assume myblockchain_<something>config<something>
+basedir=`echo $me | sed -e 's;/bin/myblockchain_.*config.*;;'`
 
 ldata='@localstatedir@'
 execdir='@libexecdir@'
@@ -86,33 +86,33 @@ bindir='@bindir@'
 # If installed, search for the compiled in directory first (might be "lib64")
 pkglibdir='@pkglibdir@'
 pkglibdir_rel=`echo $pkglibdir | sed -e "s;^$basedir/;;"`
-fix_path pkglibdir $pkglibdir_rel @libsubdir@/mysql @libsubdir@
+fix_path pkglibdir $pkglibdir_rel @libsubdir@/myblockchain @libsubdir@
 
 plugindir='@pkgplugindir@'
 plugindir_rel=`echo $plugindir | sed -e "s;^$basedir/;;"`
-fix_path plugindir $plugindir_rel @libsubdir@/mysql/plugin @libsubdir@/plugin
+fix_path plugindir $plugindir_rel @libsubdir@/myblockchain/plugin @libsubdir@/plugin
 
 pkgincludedir='@pkgincludedir@'
-if [ -f "$basedir/include/mysql/mysql.h" ]; then
-  pkgincludedir="$basedir/include/mysql"
-elif [ -f "$basedir/include/mysql.h" ]; then
+if [ -f "$basedir/include/myblockchain/myblockchain.h" ]; then
+  pkgincludedir="$basedir/include/myblockchain"
+elif [ -f "$basedir/include/myblockchain.h" ]; then
   pkgincludedir="$basedir/include"
 fi
 
 version='@VERSION@'
-socket='@MYSQL_UNIX_ADDR@'
+socket='@MYBLOCKCHAIN_UNIX_ADDR@'
 ldflags='@LDFLAGS@'
 
-if [ @MYSQL_TCP_PORT_DEFAULT@ -eq 0 ]; then
+if [ @MYBLOCKCHAIN_TCP_PORT_DEFAULT@ -eq 0 ]; then
   port=0
 else
-  port=@MYSQL_TCP_PORT@
+  port=@MYBLOCKCHAIN_TCP_PORT@
 fi
 
 # Create options 
 libs="$ldflags"
 libs="$libs -L$pkglibdir"
-libs="$libs @RPATH_OPTION@ -lmysqlclient @ZLIB_DEPS@ @CLIENT_LIBS@"
+libs="$libs @RPATH_OPTION@ -lmyblockchainclient @ZLIB_DEPS@ @CLIENT_LIBS@"
 libs="$libs @openssl_libs@"
 libs="$libs @QUOTED_CMAKE_C_LINK_FLAGS@"
 
@@ -120,7 +120,7 @@ libs_r="$libs"
 
 embedded_libs="$ldflags"
 embedded_libs="$embedded_libs -L$pkglibdir"
-embedded_libs="$embedded_libs @RPATH_OPTION@ -lmysqld @ZLIB_DEPS@ @LIBS@"
+embedded_libs="$embedded_libs @RPATH_OPTION@ -lmyblockchaind @ZLIB_DEPS@ @LIBS@"
 embedded_libs="$embedded_libs @openssl_libs@"
 embedded_libs="$embedded_libs @QUOTED_CMAKE_CXX_LINK_FLAGS@"
 
@@ -145,7 +145,7 @@ Options:
         --plugindir      [$plugindir]
         --socket         [$socket]
         --port           [$port]
-        --version        [$version]@LIBMYSQLD_LIBS_USAGE@
+        --version        [$version]@LIBMYBLOCKCHAIND_LIBS_USAGE@
         --variable=VAR   VAR is one of:
                 pkgincludedir [$pkgincludedir]
                 pkglibdir     [$pkglibdir]
@@ -167,7 +167,7 @@ while test $# -gt 0; do
         --socket)  echo "$socket" ;;
         --port)    echo "$port" ;;
         --version) echo "$version" ;;
-        --embedded-libs | --embedded | --libmysqld-libs) @DISABLE_EMBEDDED_SH@ echo "$embedded_libs" ;;
+        --embedded-libs | --embedded | --libmyblockchaind-libs) @DISABLE_EMBEDDED_SH@ echo "$embedded_libs" ;;
         --variable=*)
           var=`echo "$1" | sed 's,^[^=]*=,,'`
           case "$var" in

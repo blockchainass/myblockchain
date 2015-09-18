@@ -48,7 +48,7 @@ struct PFS_events_statements : public PFS_events
   ulonglong m_lock_time;
 
   /** Diagnostics area, message text. */
-  char m_message_text[MYSQL_ERRMSG_SIZE+1];
+  char m_message_text[MYBLOCKCHAIN_ERRMSG_SIZE+1];
   /** Diagnostics area, error number. */
   uint m_sql_errno;
   /** Diagnostics area, SQLSTATE. */

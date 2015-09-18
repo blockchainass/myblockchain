@@ -13,8 +13,8 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 
-../*.dsc    usr/src/mysql/
-../*.tar.gz usr/src/mysql/
+../*.dsc    usr/src/myblockchain/
+../*.tar.gz usr/src/myblockchain/
 # legal
-usr/share/doc/mysql-community-source/COPYING
-usr/share/doc/mysql-community-source/README
+usr/share/doc/myblockchain-community-source/COPYING
+usr/share/doc/myblockchain-community-source/README

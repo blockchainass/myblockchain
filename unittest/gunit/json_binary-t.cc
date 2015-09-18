@@ -195,12 +195,12 @@ TEST_F(JsonBinaryTest, BasicTest)
 
   char blob[4];
   int4store(blob, 0xCAFEBABEU);
-  Json_opaque opaque(MYSQL_TYPE_TINY_BLOB, blob, 4);
+  Json_opaque opaque(MYBLOCKCHAIN_TYPE_TINY_BLOB, blob, 4);
   EXPECT_FALSE(serialize(&opaque, &buf));
   Value val10= parse_binary(buf.ptr(), buf.length());
   EXPECT_TRUE(val10.is_valid());
   EXPECT_EQ(Value::OPAQUE, val10.type());
-  EXPECT_EQ(MYSQL_TYPE_TINY_BLOB, val10.field_type());
+  EXPECT_EQ(MYBLOCKCHAIN_TYPE_TINY_BLOB, val10.field_type());
   EXPECT_EQ(4U, val10.get_data_length());
   EXPECT_EQ(0xCAFEBABEU, uint4korr(val10.get_data()));
 
@@ -283,7 +283,7 @@ TEST_F(JsonBinaryTest, BasicTest)
   Value val15= parse_binary(buf.ptr(), buf.length());
   EXPECT_TRUE(val15.is_valid());
   EXPECT_EQ(Value::OPAQUE, val15.type());
-  EXPECT_EQ(MYSQL_TYPE_NEWDECIMAL, val15.field_type());
+  EXPECT_EQ(MYBLOCKCHAIN_TYPE_NEWDECIMAL, val15.field_type());
 
   my_decimal md_out;
   EXPECT_FALSE(Json_decimal::convert_from_binary(val15.get_data(),
@@ -306,10 +306,10 @@ TEST_F(JsonBinaryTest, DateAndTimeTest)
   const char *tstr= "13:14:15.654321";
   const char *dstr= "20140517";
   const char *dtstr= "2015-01-15 15:16:17.123456";
-  MYSQL_TIME t;
-  MYSQL_TIME d;
-  MYSQL_TIME dt;
-  MYSQL_TIME_STATUS status;
+  MYBLOCKCHAIN_TIME t;
+  MYBLOCKCHAIN_TIME d;
+  MYBLOCKCHAIN_TIME dt;
+  MYBLOCKCHAIN_TIME_STATUS status;
   EXPECT_FALSE(str_to_time(&my_charset_utf8mb4_bin, tstr, strlen(tstr),
                            &t, 0, &status));
   EXPECT_FALSE(str_to_datetime(&my_charset_utf8mb4_bin, dstr, strlen(dstr),
@@ -319,9 +319,9 @@ TEST_F(JsonBinaryTest, DateAndTimeTest)
 
   // Create an array that contains a TIME, a DATE and a DATETIME.
   Json_array array;
-  Json_datetime tt(t, MYSQL_TYPE_TIME);
-  Json_datetime td(d, MYSQL_TYPE_DATE);
-  Json_datetime tdt(dt, MYSQL_TYPE_DATETIME);
+  Json_datetime tt(t, MYBLOCKCHAIN_TYPE_TIME);
+  Json_datetime td(d, MYBLOCKCHAIN_TYPE_DATE);
+  Json_datetime tdt(dt, MYBLOCKCHAIN_TYPE_DATETIME);
   array.append_clone(&tt);
   array.append_clone(&td);
   array.append_clone(&tdt);
@@ -339,37 +339,37 @@ TEST_F(JsonBinaryTest, DateAndTimeTest)
   // The first element should be the TIME "13:14:15.654321".
   Value t_val= val.element(0);
   EXPECT_EQ(Value::OPAQUE, t_val.type());
-  EXPECT_EQ(MYSQL_TYPE_TIME, t_val.field_type());
+  EXPECT_EQ(MYBLOCKCHAIN_TYPE_TIME, t_val.field_type());
   const size_t json_datetime_packed_size= Json_datetime::PACKED_SIZE;
   EXPECT_EQ(json_datetime_packed_size, t_val.get_data_length());
-  MYSQL_TIME t_out;
+  MYBLOCKCHAIN_TIME t_out;
   Json_datetime::from_packed(t_val.get_data(), t_val.field_type(), &t_out);
   EXPECT_EQ(13U, t_out.hour);
   EXPECT_EQ(14U, t_out.minute);
   EXPECT_EQ(15U, t_out.second);
   EXPECT_EQ(654321U, t_out.second_part);
   EXPECT_FALSE(t_out.neg);
-  EXPECT_EQ(MYSQL_TIMESTAMP_TIME, t_out.time_type);
+  EXPECT_EQ(MYBLOCKCHAIN_TIMESTAMP_TIME, t_out.time_type);
 
   // The second element should be the DATE "2014-05-17".
   Value d_val= val.element(1);
   EXPECT_EQ(Value::OPAQUE, d_val.type());
-  EXPECT_EQ(MYSQL_TYPE_DATE, d_val.field_type());
+  EXPECT_EQ(MYBLOCKCHAIN_TYPE_DATE, d_val.field_type());
   EXPECT_EQ(json_datetime_packed_size, d_val.get_data_length());
-  MYSQL_TIME d_out;
+  MYBLOCKCHAIN_TIME d_out;
   Json_datetime::from_packed(d_val.get_data(), d_val.field_type(), &d_out);
   EXPECT_EQ(2014U, d_out.year);
   EXPECT_EQ(5U, d_out.month);
   EXPECT_EQ(17U, d_out.day);
   EXPECT_FALSE(d_out.neg);
-  EXPECT_EQ(MYSQL_TIMESTAMP_DATE, d_out.time_type);
+  EXPECT_EQ(MYBLOCKCHAIN_TIMESTAMP_DATE, d_out.time_type);
 
   // The third element should be the DATETIME "2015-01-15 15:16:17.123456".
   Value dt_val= val.element(2);
   EXPECT_EQ(Value::OPAQUE, dt_val.type());
-  EXPECT_EQ(MYSQL_TYPE_DATETIME, dt_val.field_type());
+  EXPECT_EQ(MYBLOCKCHAIN_TYPE_DATETIME, dt_val.field_type());
   EXPECT_EQ(json_datetime_packed_size, dt_val.get_data_length());
-  MYSQL_TIME dt_out;
+  MYBLOCKCHAIN_TIME dt_out;
   Json_datetime::from_packed(dt_val.get_data(), dt_val.field_type(), &dt_out);
   EXPECT_EQ(2015U, dt_out.year);
   EXPECT_EQ(1U, dt_out.month);
@@ -379,7 +379,7 @@ TEST_F(JsonBinaryTest, DateAndTimeTest)
   EXPECT_EQ(17U, dt_out.second);
   EXPECT_EQ(123456U, dt_out.second_part);
   EXPECT_FALSE(dt_out.neg);
-  EXPECT_EQ(MYSQL_TIMESTAMP_DATETIME, dt_out.time_type);
+  EXPECT_EQ(MYBLOCKCHAIN_TIMESTAMP_DATETIME, dt_out.time_type);
 }
 
 
@@ -529,7 +529,7 @@ TEST_F(JsonBinaryTest, RawBinaryTest)
   array.append_clone(&jbt);
   Json_boolean jbf(false);
   array.append_clone(&jbf);
-  Json_opaque jo(MYSQL_TYPE_BLOB, "abcd", 4);
+  Json_opaque jo(MYBLOCKCHAIN_TYPE_BLOB, "abcd", 4);
   array.append_clone(&jo);
 
   Json_object object;
@@ -585,7 +585,7 @@ TEST_F(JsonBinaryTest, RawBinaryTest)
   EXPECT_FALSE(v1.element(7).raw_binary(&raw));
   Value v1_7= parse_binary(raw.ptr(), raw.length());
   EXPECT_EQ(Value::OPAQUE, v1_7.type());
-  EXPECT_EQ(MYSQL_TYPE_BLOB, v1_7.field_type());
+  EXPECT_EQ(MYBLOCKCHAIN_TYPE_BLOB, v1_7.field_type());
   EXPECT_EQ("abcd", std::string(v1_7.get_data(), v1_7.get_data_length()));
 
   EXPECT_FALSE(v1.element(8).raw_binary(&raw));

@@ -59,9 +59,9 @@ ADD_CUSTOM_COMMAND(OUTPUT "${FIXED_SCRIPT}"
 	COMMENT "fix_create_msi.cmake( create_msi.cmake ) -> ${FIXED_SCRIPT}"
 	VERBATIM)	
 
-SET(WXS_BASENAME mysql_cluster)
+SET(WXS_BASENAME myblockchain_cluster)
 
-# Run modified script to create intermediate mysql_cluster.wxs.in
+# Run modified script to create intermediate myblockchain_cluster.wxs.in
 # Note that since CONFIGURE_FILE has builtin dependency check which prevents 
 # .wxs.in from being generated if no variable has changed, we need to touch it to prevent it from
 # always being considered out of date.
@@ -71,11 +71,11 @@ ADD_CUSTOM_COMMAND(OUTPUT "${WXS_BASENAME}.wxs.in"
 	"${CONFIG_PARAM}"
 	-P "${CMAKE_CURRENT_BINARY_DIR}/${FIXED_SCRIPT}"
 	COMMAND ${CMAKE_COMMAND} -E touch "${WXS_BASENAME}.wxs.in"
- 	DEPENDS "${FIXED_SCRIPT}" "${CMAKE_SOURCE_DIR}/packaging/WiX/mysql_server.wxs.in" 
-	COMMENT "${FIXED_SCRIPT}( mysql_server.wxs.in ) -> ${WXS_BASENAME}.wxs.in"
+ 	DEPENDS "${FIXED_SCRIPT}" "${CMAKE_SOURCE_DIR}/packaging/WiX/myblockchain_server.wxs.in" 
+	COMMENT "${FIXED_SCRIPT}( myblockchain_server.wxs.in ) -> ${WXS_BASENAME}.wxs.in"
 	VERBATIM)
 
-# Run ndb_create_wxs.cmake to create a wxs from intermediate wxs.in that is suitable for MySQL Cluster
+# Run ndb_create_wxs.cmake to create a wxs from intermediate wxs.in that is suitable for MyBlockchain Cluster
 ADD_CUSTOM_COMMAND(OUTPUT "${WXS_BASENAME}.wxs"
 	${CMAKE_SCRIPT_SETUP}
 	"-DTOPDIR=${CMAKE_CURRENT_BINARY_DIR}/testinstall" "-DWXS_BASENAME=${WXS_BASENAME}"

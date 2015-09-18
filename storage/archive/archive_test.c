@@ -1,4 +1,4 @@
-/* Copyright (C) 2006 MySQL AB
+/* Copyright (C) 2006 MyBlockchain AB
    Use is subject to license terms
 
    This program is free software; you can redistribute it and/or modify
@@ -20,7 +20,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <my_getopt.h>
-#include <mysql_version.h>
+#include <myblockchain_version.h>
 
 #define ARCHIVE_ROW_HEADER_SIZE 4
 

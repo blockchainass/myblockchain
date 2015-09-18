@@ -30,7 +30,7 @@
 
 /* Iteration on THD from the sql layer. */
 #include "sql_class.h"
-#include "mysqld_thd_manager.h"
+#include "myblockchaind_thd_manager.h"
 
 class Find_thd_user_var : public Find_THD_Impl
 {
@@ -47,7 +47,7 @@ public:
     if (thd->user_vars.records == 0)
       return false;
 
-    mysql_mutex_lock(&thd->LOCK_thd_data);
+    myblockchain_mutex_lock(&thd->LOCK_thd_data);
     return true;
   }
 
@@ -69,7 +69,7 @@ void User_variables::materialize(PFS_thread *pfs, THD *thd)
   User_variable empty;
 
   /* Protects thd->user_vars. */
-  mysql_mutex_assert_owner(&thd->LOCK_thd_data);
+  myblockchain_mutex_assert_owner(&thd->LOCK_thd_data);
 
   for (;;)
   {
@@ -263,7 +263,7 @@ int table_uvar_by_thread::materialize(PFS_thread *thread)
     return 1;
 
   m_THD_cache.materialize(thread, safe_thd);
-  mysql_mutex_unlock(&safe_thd->LOCK_thd_data);
+  myblockchain_mutex_unlock(&safe_thd->LOCK_thd_data);
   return 0;
 }
 

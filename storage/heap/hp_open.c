@@ -13,7 +13,7 @@
    along with this program; if not, write to the Free Software
    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA */
 
-/* open a heap-database */
+/* open a heap-blockchain */
 
 #include "heapdef.h"
 #include "my_sys.h"
@@ -70,7 +70,7 @@ HP_INFO *heap_open_from_share_and_register(HP_SHARE *share, int mode)
   HP_INFO *info;
   DBUG_ENTER("heap_open_from_share_and_register");
 
-  mysql_mutex_lock(&THR_LOCK_heap);
+  myblockchain_mutex_lock(&THR_LOCK_heap);
   if ((info= heap_open_from_share(share, mode)))
   {
     info->open_list.data= (void*) info;
@@ -78,7 +78,7 @@ HP_INFO *heap_open_from_share_and_register(HP_SHARE *share, int mode)
     /* Unpin the share, it is now pinned by the file. */
     share->open_count--;
   }
-  mysql_mutex_unlock(&THR_LOCK_heap);
+  myblockchain_mutex_unlock(&THR_LOCK_heap);
   DBUG_RETURN(info);
 }
 
@@ -95,10 +95,10 @@ void heap_release_share(HP_SHARE *share, my_bool internal_table)
     hp_free(share);
   else
   {
-    mysql_mutex_lock(&THR_LOCK_heap);
+    myblockchain_mutex_lock(&THR_LOCK_heap);
     if (--share->open_count == 0)
       hp_free(share);
-    mysql_mutex_unlock(&THR_LOCK_heap);
+    myblockchain_mutex_unlock(&THR_LOCK_heap);
   }
 }
 
@@ -116,11 +116,11 @@ HP_INFO *heap_open(const char *name, int mode)
   HP_SHARE *share;
   DBUG_ENTER("heap_open");
 
-  mysql_mutex_lock(&THR_LOCK_heap);
+  myblockchain_mutex_lock(&THR_LOCK_heap);
   if (!(share= hp_find_named_heap(name)))
   {
     my_errno= ENOENT;
-    mysql_mutex_unlock(&THR_LOCK_heap);
+    myblockchain_mutex_unlock(&THR_LOCK_heap);
     DBUG_RETURN(0);
   }
   if ((info= heap_open_from_share(share, mode)))
@@ -128,7 +128,7 @@ HP_INFO *heap_open(const char *name, int mode)
     info->open_list.data= (void*) info;
     heap_open_list= list_add(heap_open_list,&info->open_list);
   }
-  mysql_mutex_unlock(&THR_LOCK_heap);
+  myblockchain_mutex_unlock(&THR_LOCK_heap);
   DBUG_RETURN(info);
 }
 
@@ -147,7 +147,7 @@ HP_SHARE *hp_find_named_heap(const char *name)
     info= (HP_SHARE*) pos->data;
     if (!strcmp(name, info->name))
     {
-      DBUG_PRINT("exit", ("Old heap_database: 0x%lx", (long) info));
+      DBUG_PRINT("exit", ("Old heap_blockchain: 0x%lx", (long) info));
       DBUG_RETURN(info);
     }
   }

@@ -47,7 +47,7 @@ public:
 
     @param item The current literal.
   */
-  bool visit(MYSQL_ITEM item) { return add_next_literal(item); }
+  bool visit(MYBLOCKCHAIN_ITEM item) { return add_next_literal(item); }
 
   /**
     To be called after visit() has been called for all literals in the parse
@@ -109,11 +109,11 @@ private:
     current literal does not match the pattern, or no more literals are needed
     to build the query.
   */
-  bool add_next_literal(MYSQL_ITEM item);
+  bool add_next_literal(MYBLOCKCHAIN_ITEM item);
 };
 
 
-bool Query_builder::add_next_literal(MYSQL_ITEM item)
+bool Query_builder::add_next_literal(MYBLOCKCHAIN_ITEM item)
 {
   std::string query_literal= services::print_item(item);
   std::string pattern_literal= *m_pattern_literals_iter;

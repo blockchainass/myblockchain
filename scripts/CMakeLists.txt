@@ -20,7 +20,7 @@ IF(NOT CMAKE_CROSSCOMPILING)
 ENDIF()
 
 
-# Build mysql_fix_privilege_tables.sql (concatenate 2 sql scripts)
+# Build myblockchain_fix_privilege_tables.sql (concatenate 2 sql scripts)
 IF(NOT WIN32 OR CMAKE_CROSSCOMPILING)
   FIND_PROGRAM(CAT_EXECUTABLE cat DOC "path to the executable")
   MARK_AS_ADVANCED(CAT_EXECUTABLE)
@@ -29,67 +29,67 @@ ENDIF()
 IF(CAT_EXECUTABLE)
   SET(CAT_COMMAND COMMAND 
     ${CMAKE_COMMAND} -E chdir  ${CMAKE_CURRENT_SOURCE_DIR}
-    ${CAT_EXECUTABLE} mysql_system_tables.sql mysql_system_tables_fix.sql >
-    ${CMAKE_CURRENT_BINARY_DIR}/mysql_fix_privilege_tables.sql
+    ${CAT_EXECUTABLE} myblockchain_system_tables.sql myblockchain_system_tables_fix.sql >
+    ${CMAKE_CURRENT_BINARY_DIR}/myblockchain_fix_privilege_tables.sql
   )
 ELSEIF(WIN32)
-  FILE(TO_NATIVE_PATH ${CMAKE_CURRENT_BINARY_DIR}/mysql_fix_privilege_tables.sql
+  FILE(TO_NATIVE_PATH ${CMAKE_CURRENT_BINARY_DIR}/myblockchain_fix_privilege_tables.sql
    native_outfile )
   SET(CAT_COMMAND
    COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_CURRENT_SOURCE_DIR}
-   cmd /c copy /b mysql_system_tables.sql + mysql_system_tables_fix.sql
+   cmd /c copy /b myblockchain_system_tables.sql + myblockchain_system_tables_fix.sql
    ${native_outfile} )
 ELSE()
   MESSAGE(FATAL_ERROR "Cannot concatenate files")
 ENDIF()
 
-# Build mysql_fix_privilege_tables.c
+# Build myblockchain_fix_privilege_tables.c
 ADD_CUSTOM_COMMAND(
-  OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/mysql_fix_privilege_tables_sql.c
+  OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/myblockchain_fix_privilege_tables_sql.c
   ${CAT_COMMAND}
   COMMAND comp_sql
-  mysql_fix_privilege_tables
-  mysql_fix_privilege_tables.sql
-  mysql_fix_privilege_tables_sql.c
+  myblockchain_fix_privilege_tables
+  myblockchain_fix_privilege_tables.sql
+  myblockchain_fix_privilege_tables_sql.c
   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
   DEPENDS comp_sql
-  ${CMAKE_CURRENT_SOURCE_DIR}/mysql_system_tables.sql
-  ${CMAKE_CURRENT_SOURCE_DIR}/mysql_system_tables_fix.sql
+  ${CMAKE_CURRENT_SOURCE_DIR}/myblockchain_system_tables.sql
+  ${CMAKE_CURRENT_SOURCE_DIR}/myblockchain_system_tables_fix.sql
 )
 
 # Add target for the above to be built
 ADD_CUSTOM_TARGET(GenFixPrivs
   ALL
-  DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/mysql_fix_privilege_tables_sql.c
+  DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/myblockchain_fix_privilege_tables_sql.c
   ${CMAKE_CURRENT_BINARY_DIR}/sql_commands_sys_schema.h
 )
 
 # If we do not have performance schema compiled in then sys will not work,
-# so only create an empty sys database with an auto-generated file,
+# so only create an empty sys blockchain with an auto-generated file,
 # otherwise, load the full schema file normally.
 IF(NOT WITH_PERFSCHEMA_STORAGE_ENGINE)
-  FILE(WRITE ${CMAKE_CURRENT_BINARY_DIR}/mysql_sys_schema_empty.sql "CREATE DATABASE sys;")
+  FILE(WRITE ${CMAKE_CURRENT_BINARY_DIR}/myblockchain_sys_schema_empty.sql "CREATE DATABASE sys;")
 
   ADD_CUSTOM_COMMAND(
     OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/sql_commands_sys_schema.h
     COMMAND comp_sql
-    mysql_sys_schema
-    ${CMAKE_CURRENT_BINARY_DIR}/mysql_sys_schema_empty.sql
+    myblockchain_sys_schema
+    ${CMAKE_CURRENT_BINARY_DIR}/myblockchain_sys_schema_empty.sql
     sql_commands_sys_schema.h
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
     DEPENDS comp_sql
-    ${CMAKE_CURRENT_BINARY_DIR}/mysql_sys_schema_empty.sql
+    ${CMAKE_CURRENT_BINARY_DIR}/myblockchain_sys_schema_empty.sql
   )
 ELSE()
   ADD_CUSTOM_COMMAND(
     OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/sql_commands_sys_schema.h
     COMMAND comp_sql
-    mysql_sys_schema
-    ${CMAKE_CURRENT_SOURCE_DIR}/mysql_sys_schema.sql
+    myblockchain_sys_schema
+    ${CMAKE_CURRENT_SOURCE_DIR}/myblockchain_sys_schema.sql
     sql_commands_sys_schema.h
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
     DEPENDS comp_sql
-    ${CMAKE_CURRENT_SOURCE_DIR}/mysql_sys_schema.sql
+    ${CMAKE_CURRENT_SOURCE_DIR}/myblockchain_sys_schema.sql
   )
 ENDIF()
 
@@ -103,23 +103,23 @@ ENDIF()
 ADD_CUSTOM_COMMAND(
   OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/sql_commands_system_data.h
   COMMAND comp_sql
-  mysql_system_data
-  ${CMAKE_CURRENT_SOURCE_DIR}/mysql_system_tables_data.sql
+  myblockchain_system_data
+  ${CMAKE_CURRENT_SOURCE_DIR}/myblockchain_system_tables_data.sql
   sql_commands_system_data.h
   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
   DEPENDS comp_sql
-  ${CMAKE_CURRENT_SOURCE_DIR}/mysql_system_tables_data.sql
+  ${CMAKE_CURRENT_SOURCE_DIR}/myblockchain_system_tables_data.sql
 )
 
 ADD_CUSTOM_COMMAND(
   OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/sql_commands_system_tables.h
   COMMAND comp_sql
-  mysql_system_tables
-  ${CMAKE_CURRENT_SOURCE_DIR}/mysql_system_tables.sql
+  myblockchain_system_tables
+  ${CMAKE_CURRENT_SOURCE_DIR}/myblockchain_system_tables.sql
   sql_commands_system_tables.h
   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
   DEPENDS comp_sql
-  ${CMAKE_CURRENT_SOURCE_DIR}/mysql_system_tables.sql
+  ${CMAKE_CURRENT_SOURCE_DIR}/myblockchain_system_tables.sql
 )
 
 ADD_CUSTOM_COMMAND(
@@ -153,15 +153,15 @@ ENDIF()
 
 IF(NOT WITHOUT_SERVER)
   INSTALL(FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/mysql_system_tables.sql
-    ${CMAKE_CURRENT_SOURCE_DIR}/mysql_system_tables_data.sql
+    ${CMAKE_CURRENT_SOURCE_DIR}/myblockchain_system_tables.sql
+    ${CMAKE_CURRENT_SOURCE_DIR}/myblockchain_system_tables_data.sql
     ${CMAKE_CURRENT_SOURCE_DIR}/fill_help_tables.sql
-    ${CMAKE_CURRENT_SOURCE_DIR}/mysql_sys_schema.sql
-    ${CMAKE_CURRENT_SOURCE_DIR}/mysql_test_data_timezone.sql
-    ${CMAKE_CURRENT_SOURCE_DIR}/mysql_security_commands.sql
-    ${CMAKE_CURRENT_SOURCE_DIR}/mysql_system_tables_fix_for_downgrade.sql
+    ${CMAKE_CURRENT_SOURCE_DIR}/myblockchain_sys_schema.sql
+    ${CMAKE_CURRENT_SOURCE_DIR}/myblockchain_test_data_timezone.sql
+    ${CMAKE_CURRENT_SOURCE_DIR}/myblockchain_security_commands.sql
+    ${CMAKE_CURRENT_SOURCE_DIR}/myblockchain_system_tables_fix_for_downgrade.sql
     ${FIX_PRIVILEGES_SQL}
-    DESTINATION ${INSTALL_MYSQLSHAREDIR} COMPONENT Server
+    DESTINATION ${INSTALL_MYBLOCKCHAINSHAREDIR} COMPONENT Server
   )
 ENDIF()
 
@@ -244,14 +244,14 @@ STRING(REGEX REPLACE "[ ]+$" "" CFLAGS   "${CFLAGS}")
 STRING(REGEX REPLACE "[ ]+$" "" CXXFLAGS "${CXXFLAGS}")
 
 IF(UNIX)
-  # FIND_PROC and CHECK_PID are used by mysqld_safe
+  # FIND_PROC and CHECK_PID are used by myblockchaind_safe
 IF(CMAKE_SYSTEM_NAME MATCHES "Linux")
   SET (FIND_PROC 
-    "ps wwwp $PID | grep -v mysqld_safe | grep -- $MYSQLD > /dev/null")
+    "ps wwwp $PID | grep -v myblockchaind_safe | grep -- $MYBLOCKCHAIND > /dev/null")
 ENDIF()
 IF(NOT FIND_PROC AND CMAKE_SYSTEM_NAME MATCHES "SunOS")
   SET (FIND_PROC 
-    "ps -p $PID | grep -v mysqld_safe | grep -- $MYSQLD > /dev/null")
+    "ps -p $PID | grep -v myblockchaind_safe | grep -- $MYBLOCKCHAIND > /dev/null")
 ENDIF()
 
 IF(NOT FIND_PROC)
@@ -259,7 +259,7 @@ IF(NOT FIND_PROC)
   EXECUTE_PROCESS(COMMAND ps -uaxww OUTPUT_QUIET ERROR_QUIET RESULT_VARIABLE result)
   IF(result MATCHES 0) 
      SET( FIND_PROC
-       "ps -uaxww | grep -v mysqld_safe | grep -- $MYSQLD | grep $PID > /dev/null")
+       "ps -uaxww | grep -v myblockchaind_safe | grep -- $MYBLOCKCHAIND | grep $PID > /dev/null")
   ENDIF()
 ENDIF()
 
@@ -267,7 +267,7 @@ IF(NOT FIND_PROC)
   # SysV style
   EXECUTE_PROCESS(COMMAND ps -ef OUTPUT_QUIET ERROR_QUIET RESULT_VARIABLE result)
   IF(result MATCHES 0)
-    SET( FIND_PROC "ps -ef | grep -v mysqld_safe | grep -- $MYSQLD | grep $PID > /dev/null")
+    SET( FIND_PROC "ps -ef | grep -v myblockchaind_safe | grep -- $MYBLOCKCHAIND | grep $PID > /dev/null")
   ENDIF()
 ENDIF()
   
@@ -279,7 +279,7 @@ ELSE()
 ENDIF()
 
 SET(HOSTNAME "hostname")
-SET(MYSQLD_USER "mysql")
+SET(MYBLOCKCHAIND_USER "myblockchain")
 
 ENDIF(UNIX)
 
@@ -287,11 +287,11 @@ SET(bindir ${prefix}/${INSTALL_BINDIR})
 SET(sbindir ${prefix}/${INSTALL_SBINDIR})
 SET(scriptdir ${prefix}/${INSTALL_BINDIR})
 SET(libexecdir ${prefix}/${INSTALL_SBINDIR})
-SET(pkgdatadir ${prefix}/${INSTALL_MYSQLSHAREDIR})
+SET(pkgdatadir ${prefix}/${INSTALL_MYBLOCKCHAINSHAREDIR})
 IF(INSTALL_LAYOUT MATCHES "STANDALONE")
   SET(localstatedir ${prefix}/data)
 ELSE()
-  SET(localstatedir ${MYSQL_DATADIR})
+  SET(localstatedir ${MYBLOCKCHAIN_DATADIR})
 ENDIF()
 
 SET(prefix "${CMAKE_INSTALL_PREFIX}")
@@ -299,13 +299,13 @@ SET(sysconfdir ${prefix})
 SET(bindir ${prefix}/${INSTALL_BINDIR})
 SET(libexecdir ${prefix}/${INSTALL_SBINDIR})
 SET(scriptdir ${prefix}/${INSTALL_BINDIR})
-SET(datadir ${prefix}/${INSTALL_MYSQLSHAREDIR})
-SET(pkgdatadir ${prefix}/${INSTALL_MYSQLSHAREDIR})
+SET(datadir ${prefix}/${INSTALL_MYBLOCKCHAINSHAREDIR})
+SET(pkgdatadir ${prefix}/${INSTALL_MYBLOCKCHAINSHAREDIR})
 SET(libsubdir  ${INSTALL_LIBDIR})
 SET(pkgincludedir ${prefix}/${INSTALL_INCLUDEDIR})
 SET(pkglibdir ${prefix}/${INSTALL_LIBDIR})
 SET(pkgplugindir ${prefix}/${INSTALL_PLUGINDIR})
-SET(localstatedir ${MYSQL_DATADIR})
+SET(localstatedir ${MYBLOCKCHAIN_DATADIR})
 
 SET(RPATH_OPTION "")
 IF(CMAKE_SYSTEM_NAME STREQUAL "SunOS")
@@ -320,7 +320,7 @@ ELSE()
 ENDIF()
 
 # Use cmake variables to inspect dependencies for 
-# mysqlclient library (add -l stuff)
+# myblockchainclient library (add -l stuff)
 SET(CLIENT_LIBS "")
 SET(LIBS "")
 
@@ -360,30 +360,30 @@ MACRO(EXTRACT_LINK_LIBRARIES target var)
   ENDIF()
 ENDMACRO()
 
-EXTRACT_LINK_LIBRARIES(mysqlclient CLIENT_LIBS)
-EXTRACT_LINK_LIBRARIES(mysqlserver LIBS)
+EXTRACT_LINK_LIBRARIES(myblockchainclient CLIENT_LIBS)
+EXTRACT_LINK_LIBRARIES(myblockchainserver LIBS)
 
-SET(LIBMYSQLD_LIBS_USAGE "
-        --libmysqld-libs [$embedded_libs]")
+SET(LIBMYBLOCKCHAIND_LIBS_USAGE "
+        --libmyblockchaind-libs [$embedded_libs]")
 SET(DISABLE_EMBEDDED_SH "")
 SET(DISABLE_EMBEDDED_PL "")
 IF(WITHOUT_SERVER)
-  SET(LIBMYSQLD_LIBS_USAGE)
+  SET(LIBMYBLOCKCHAIND_LIBS_USAGE)
   SET(DISABLE_EMBEDDED_SH  "usage; ")
   SET(DISABLE_EMBEDDED_PL "usage(); ")
 ENDIF()
 
-SET(mysql_config_COMPONENT COMPONENT Development)
+SET(myblockchain_config_COMPONENT COMPONENT Development)
 
 IF(WIN32)
   # On Windows, some .sh and some .pl.in files are configured 
   # The resulting files will have .pl extension (those are perl scripts)
 
   # Input files with pl.in extension
-  SET(PLIN_FILES mysql_config)
+  SET(PLIN_FILES myblockchain_config)
   # Input files with .sh extension
 
-  SET(SH_FILES mysqld_multi mysqldumpslow)
+  SET(SH_FILES myblockchaind_multi myblockchaindumpslow)
 
   FOREACH(file ${PLIN_FILES})
     IF(NOT ${file}_COMPONENT)
@@ -401,22 +401,22 @@ IF(WIN32)
   ENDFOREACH()
 ELSE()
   # Configure this one, for testing, but do not install it.
-  CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/mysql_config.pl.in
-    ${CMAKE_CURRENT_BINARY_DIR}/mysql_config.pl ESCAPE_QUOTES @ONLY)
+  CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/myblockchain_config.pl.in
+    ${CMAKE_CURRENT_BINARY_DIR}/myblockchain_config.pl ESCAPE_QUOTES @ONLY)
   # On Unix, most of the files end up in the bin directory
-  SET(mysql_config_COMPONENT COMPONENT Development)
+  SET(myblockchain_config_COMPONENT COMPONENT Development)
 
   IF(WITH_SYSTEMD)
     SET(BIN_SCRIPTS
-      mysql_config
-      mysqldumpslow
+      myblockchain_config
+      myblockchaindumpslow
       )
   ELSE()
     SET(BIN_SCRIPTS
-      mysql_config
-      mysqldumpslow
-      mysqld_multi
-      mysqld_safe
+      myblockchain_config
+      myblockchaindumpslow
+      myblockchaind_multi
+      myblockchaind_safe
       )
   ENDIF()
 
@@ -441,29 +441,29 @@ ELSE()
       COMPONENT ${${file}_COMPONENT}
      )
   ENDFOREACH()
-  IF(COPY_MYSQL_CONFIG)
-    CONFIGURE_FILE(${CMAKE_CURRENT_BINARY_DIR}/mysql_config
-       ${CMAKE_CURRENT_BINARY_DIR}/mysql_server_config COPYONLY)
+  IF(COPY_MYBLOCKCHAIN_CONFIG)
+    CONFIGURE_FILE(${CMAKE_CURRENT_BINARY_DIR}/myblockchain_config
+       ${CMAKE_CURRENT_BINARY_DIR}/myblockchain_server_config COPYONLY)
     INSTALL_SCRIPT(
-      ${CMAKE_CURRENT_BINARY_DIR}/mysql_server_config
+      ${CMAKE_CURRENT_BINARY_DIR}/myblockchain_server_config
       DESTINATION ${INSTALL_BINDIR}
-      COMPONENT ${mysql_server_config_COMPONENT}
+      COMPONENT ${myblockchain_server_config_COMPONENT}
     )
   ENDIF()
 
   # Systemd files
   IF(WITH_SYSTEMD)
-    CONFIGURE_FILE(systemd/mysqld_pre_systemd.in
-      ${CMAKE_CURRENT_BINARY_DIR}/mysqld_pre_systemd ESCAPE_QUOTES @ONLY)
+    CONFIGURE_FILE(systemd/myblockchaind_pre_systemd.in
+      ${CMAKE_CURRENT_BINARY_DIR}/myblockchaind_pre_systemd ESCAPE_QUOTES @ONLY)
 
-    CONFIGURE_FILE(systemd/mysqld.service.in
+    CONFIGURE_FILE(systemd/myblockchaind.service.in
       ${CMAKE_CURRENT_BINARY_DIR}/${SYSTEMD_SERVICE_NAME}.service ESCAPE_QUOTES @ONLY)
 
-    CONFIGURE_FILE(systemd/mysqld.tmpfiles.d.in
-      ${CMAKE_CURRENT_BINARY_DIR}/mysql.conf ESCAPE_QUOTES @ONLY)
+    CONFIGURE_FILE(systemd/myblockchaind.tmpfiles.d.in
+      ${CMAKE_CURRENT_BINARY_DIR}/myblockchain.conf ESCAPE_QUOTES @ONLY)
 
     INSTALL_SCRIPT(
-      ${CMAKE_CURRENT_BINARY_DIR}/mysqld_pre_systemd
+      ${CMAKE_CURRENT_BINARY_DIR}/myblockchaind_pre_systemd
       DESTINATION ${INSTALL_BINDIR}
       COMPONENT Server
     )
@@ -478,7 +478,7 @@ ELSE()
        DESTINATION ${SYSTEMD_INSTALL_PREFIX}${SYSTEMD_SERVICES_DIR} COMPONENT Server
        PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
     )
-    INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/mysql.conf
+    INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/myblockchain.conf
        DESTINATION ${SYSTEMD_INSTALL_PREFIX}${SYSTEMD_TMPFILES_DIR} COMPONENT Server
        PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
     )

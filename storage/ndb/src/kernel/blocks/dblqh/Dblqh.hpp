@@ -372,7 +372,7 @@ class Lgman;
  *   - Start phase 2: Initiate all records within the block
  *                    Connect LQH with ACC and TUP.
  *   - Start phase 4: Connect LQH with LQH.  Connect every LQH with 
- *                    every LQH in the database system.           
+ *                    every LQH in the blockchain system.           
  *	              If initial start, then create the fragment log files.
  *	              If system restart or node restart, 
  *                    then open the fragment log files and   

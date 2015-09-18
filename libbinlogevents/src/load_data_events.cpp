@@ -31,7 +31,7 @@ Execute_load_event(const uint32_t file_id_arg, const char* db_arg)
 }
 
 /**
-  The constructor is called by MySQL slave, while applying the events.
+  The constructor is called by MyBlockchain slave, while applying the events.
 */
 Execute_load_query_event::
 Execute_load_query_event(uint32_t file_id_arg,
@@ -46,7 +46,7 @@ Execute_load_query_event(uint32_t file_id_arg,
 
 /**
   The constructor used inorder to decode EXECUTE_LOAD_QUERY_EVENT from a
-  packet. It is used on the MySQL server acting as a slave.
+  packet. It is used on the MyBlockchain server acting as a slave.
 */
 Execute_load_query_event::
 Execute_load_query_event(const char* buf,
@@ -263,7 +263,7 @@ int Load_event::copy_load_event(const char *buf, unsigned long event_len,
 
   #ifndef DBUG_OFF
   /*
-    This is specific to mysql test run on the server
+    This is specific to myblockchain test run on the server
     for the keyword "simulate_invalid_address"
   */
   if (binary_log_debug::debug_simulate_invalid_address)
@@ -403,7 +403,7 @@ Execute_load_event::Execute_load_event(const char* buf, unsigned int len,
 }
 
 /**
-  Constructor receives a packet from the MySQL master or the binary
+  Constructor receives a packet from the MyBlockchain master or the binary
   log, containing a block of data to be appended to the file being loaded via
   LOAD_DATA_INFILE query; and decodes it to create an Append_block_event.
 */

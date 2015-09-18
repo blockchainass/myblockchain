@@ -16,7 +16,7 @@
    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-package com.mysql.clusterj.query;
+package com.myblockchain.clusterj.query;
 
 /** Used to combine multiple predicates with boolean operations.
  *

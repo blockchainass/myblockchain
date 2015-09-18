@@ -950,9 +950,9 @@ get_nodeid(NdbMgmd& mgmd,
   if (!call_args.contains("nodeid"))
     call_args.put("nodeid", 1);
   if (!call_args.contains("user"))
-    call_args.put("user", "mysqld");
+    call_args.put("user", "myblockchaind");
   if (!call_args.contains("password"))
-    call_args.put("password", "mysqld");
+    call_args.put("password", "myblockchaind");
   if (!call_args.contains("public key"))
   call_args.put("public key", "a public key");
   if (!call_args.contains("name"))

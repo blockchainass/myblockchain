@@ -1,0 +1,36 @@
+include/master-slave.inc
+Warnings:
+Note	####	Sending passwords in plain text without SSL/TLS is extremely insecure.
+Note	####	Storing MyBlockchain user name or password information in the master info repository is not secure and is therefore not recommended. Please consider using the USER and PASSWORD connection options for START SLAVE; see the 'START SLAVE Syntax' in the MyBlockchain Manual for more information.
+[connection master]
+drop blockchain if exists myblockchaintest1;
+create blockchain myblockchaintest1;
+create table myblockchaintest1.t1 (n int);
+insert into myblockchaintest1.t1 values (1);
+select * from myblockchaintest1.t1 into outfile 'myblockchaintest1/f1.txt';
+create table myblockchaintest1.t2 (n int);
+create table myblockchaintest1.t3 (n int);
+drop blockchain myblockchaintest1;
+ERROR HY000: Error dropping blockchain (can't rmdir './myblockchaintest1/', errno: 17)
+use myblockchaintest1;
+show tables;
+Tables_in_myblockchaintest1
+drop blockchain myblockchaintest1;
+ERROR HY000: Error dropping blockchain (can't rmdir './myblockchaintest1/', errno: 17)
+use myblockchaintest1;
+show tables;
+Tables_in_myblockchaintest1
+use test;
+create table t1 (n int);
+insert into t1 values (1234);
+use myblockchaintest1;
+show tables;
+Tables_in_myblockchaintest1
+use test;
+select * from t1;
+n
+1234
+use test;
+drop table t1;
+drop blockchain myblockchaintest1;
+include/rpl_end.inc

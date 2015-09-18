@@ -27,7 +27,7 @@
 #define strmov please_use_my_stpcpy_or_my_stpmov_rather_than_strmov
 #define strnmov please_use_my_stpncpy_or_my_stpnmov_rather_than_strnmov
 
-#include "mysql/service_my_snprintf.h"
+#include "myblockchain/service_my_snprintf.h"
 
 #if defined(__cplusplus)
 extern "C" {
@@ -227,22 +227,22 @@ extern char *longlong10_to_str(longlong val,char *dst,int radix);
 
 /*
   LEX_STRING -- a pair of a C-string and its length.
-  (it's part of the plugin API as a MYSQL_LEX_STRING)
+  (it's part of the plugin API as a MYBLOCKCHAIN_LEX_STRING)
 */
 
-#include <mysql/mysql_lex_string.h>
-typedef struct st_mysql_lex_string LEX_STRING;
+#include <myblockchain/myblockchain_lex_string.h>
+typedef struct st_myblockchain_lex_string LEX_STRING;
 
 #define STRING_WITH_LEN(X) (X), ((sizeof(X) - 1))
 #define USTRING_WITH_LEN(X) ((uchar*) X), ((sizeof(X) - 1))
 #define C_STRING_WITH_LEN(X) ((char *) (X)), ((sizeof(X) - 1))
 
-struct st_mysql_const_lex_string
+struct st_myblockchain_const_lex_string
 {
   const char *str;
   size_t length;
 };
-typedef struct st_mysql_const_lex_string LEX_CSTRING;
+typedef struct st_myblockchain_const_lex_string LEX_CSTRING;
 
 /**
   Skip trailing space.

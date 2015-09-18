@@ -15,18 +15,18 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
  */
 
-package com.mysql.clusterj.jdbc.antlr.node;
+package com.myblockchain.clusterj.jdbc.antlr.node;
 
 import org.antlr.runtime.tree.CommonTree;
 import org.antlr.runtime.Token;
 
-import com.mysql.clusterj.ClusterJFatalInternalException;
-import com.mysql.clusterj.core.util.I18NHelper;
-import com.mysql.clusterj.core.util.Logger;
-import com.mysql.clusterj.core.util.LoggerFactoryService;
-import com.mysql.clusterj.jdbc.SQLExecutor;
-import com.mysql.clusterj.query.Predicate;
-import com.mysql.clusterj.query.QueryDomainType;
+import com.myblockchain.clusterj.ClusterJFatalInternalException;
+import com.myblockchain.clusterj.core.util.I18NHelper;
+import com.myblockchain.clusterj.core.util.Logger;
+import com.myblockchain.clusterj.core.util.LoggerFactoryService;
+import com.myblockchain.clusterj.jdbc.SQLExecutor;
+import com.myblockchain.clusterj.query.Predicate;
+import com.myblockchain.clusterj.query.QueryDomainType;
 
 public class Node extends CommonTree {
 

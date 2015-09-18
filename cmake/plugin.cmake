@@ -14,10 +14,10 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA 
 
 
-GET_FILENAME_COMPONENT(MYSQL_CMAKE_SCRIPT_DIR ${CMAKE_CURRENT_LIST_FILE} PATH)
-INCLUDE(${MYSQL_CMAKE_SCRIPT_DIR}/cmake_parse_arguments.cmake)
+GET_FILENAME_COMPONENT(MYBLOCKCHAIN_CMAKE_SCRIPT_DIR ${CMAKE_CURRENT_LIST_FILE} PATH)
+INCLUDE(${MYBLOCKCHAIN_CMAKE_SCRIPT_DIR}/cmake_parse_arguments.cmake)
 
-# MYSQL_ADD_PLUGIN(plugin_name source1...sourceN
+# MYBLOCKCHAIN_ADD_PLUGIN(plugin_name source1...sourceN
 # [STORAGE_ENGINE]
 # [MANDATORY|DEFAULT]
 # [STATIC_ONLY|MODULE_ONLY]
@@ -42,15 +42,15 @@ MACRO(PLUGIN_APPEND_COLLECTIONS plugin)
     FOREACH(cfile ${collections})
       FILE(READ ${cfile} contents)
       GET_FILENAME_COMPONENT(fname ${cfile} NAME)
-      FILE(APPEND ${CMAKE_SOURCE_DIR}/mysql-test/collections/${fname} "${contents}")
+      FILE(APPEND ${CMAKE_SOURCE_DIR}/myblockchain-test/collections/${fname} "${contents}")
       FILE(APPEND ${fcopied} "${fname}\n")
       MESSAGE(STATUS "Appended ${cfile}")
     ENDFOREACH()
   ENDIF()
 ENDMACRO()
 
-MACRO(MYSQL_ADD_PLUGIN)
-  MYSQL_PARSE_ARGUMENTS(ARG
+MACRO(MYBLOCKCHAIN_ADD_PLUGIN)
+  MYBLOCKCHAIN_PARSE_ARGUMENTS(ARG
     "LINK_LIBRARIES;DEPENDENCIES;MODULE_OUTPUT_NAME;STATIC_OUTPUT_NAME"
     "STORAGE_ENGINE;STATIC_ONLY;MODULE_ONLY;MANDATORY;DEFAULT;DISABLED;NOT_FOR_EMBEDDED;RECOMPILE_FOR_EMBEDDED;TEST_ONLY"
     ${ARGN}
@@ -122,7 +122,7 @@ MACRO(MYSQL_ADD_PLUGIN)
   # Build either static library or module
   IF (WITH_${plugin} AND NOT ARG_MODULE_ONLY)
     ADD_LIBRARY(${target} STATIC ${SOURCES})
-    SET_TARGET_PROPERTIES(${target} PROPERTIES COMPILE_DEFINITONS "MYSQL_SERVER")
+    SET_TARGET_PROPERTIES(${target} PROPERTIES COMPILE_DEFINITONS "MYBLOCKCHAIN_SERVER")
     DTRACE_INSTRUMENT(${target})
     ADD_DEPENDENCIES(${target} GenError ${ARG_DEPENDENCIES})
     IF(WITH_EMBEDDED_SERVER AND NOT ARG_NOT_FOR_EMBEDDED)
@@ -134,7 +134,7 @@ MACRO(MYSQL_ADD_PLUGIN)
         DTRACE_INSTRUMENT(${target}_embedded)   
         IF(ARG_RECOMPILE_FOR_EMBEDDED)
           SET_TARGET_PROPERTIES(${target}_embedded 
-            PROPERTIES COMPILE_DEFINITIONS "MYSQL_SERVER;EMBEDDED_LIBRARY")
+            PROPERTIES COMPILE_DEFINITIONS "MYBLOCKCHAIN_SERVER;EMBEDDED_LIBRARY")
         ENDIF()
         ADD_DEPENDENCIES(${target}_embedded GenError)
       ENDIF()
@@ -145,13 +145,13 @@ MACRO(MYSQL_ADD_PLUGIN)
       OUTPUT_NAME ${ARG_STATIC_OUTPUT_NAME})
     ENDIF()
 
-    # Update mysqld dependencies
-    SET (MYSQLD_STATIC_PLUGIN_LIBS ${MYSQLD_STATIC_PLUGIN_LIBS} 
+    # Update myblockchaind dependencies
+    SET (MYBLOCKCHAIND_STATIC_PLUGIN_LIBS ${MYBLOCKCHAIND_STATIC_PLUGIN_LIBS} 
       ${target} ${ARG_LINK_LIBRARIES} CACHE INTERNAL "" FORCE)
 
-    # Update mysqld dependencies (embedded)
+    # Update myblockchaind dependencies (embedded)
     IF(NOT ARG_NOT_FOR_EMBEDDED)
-      SET (MYSQLD_STATIC_EMBEDDED_PLUGIN_LIBS ${MYSQLD_STATIC_EMBEDDED_PLUGIN_LIBS} 
+      SET (MYBLOCKCHAIND_STATIC_EMBEDDED_PLUGIN_LIBS ${MYBLOCKCHAIND_STATIC_EMBEDDED_PLUGIN_LIBS} 
         ${target} ${ARG_LINK_LIBRARIES} CACHE INTERNAL "" FORCE)
     ENDIF()
 
@@ -175,12 +175,12 @@ MACRO(MYSQL_ADD_PLUGIN)
       "${PLUGINS_IN_THIS_SCOPE}${THIS_PLUGIN_REFERENCE}")
 
     IF(ARG_MANDATORY)
-      SET (mysql_mandatory_plugins  
-        "${mysql_mandatory_plugins} ${PLUGINS_IN_THIS_SCOPE}" 
+      SET (myblockchain_mandatory_plugins  
+        "${myblockchain_mandatory_plugins} ${PLUGINS_IN_THIS_SCOPE}" 
         PARENT_SCOPE)
     ELSE()
-      SET (mysql_optional_plugins  
-        "${mysql_optional_plugins} ${PLUGINS_IN_THIS_SCOPE}"
+      SET (myblockchain_optional_plugins  
+        "${myblockchain_optional_plugins} ${PLUGINS_IN_THIS_SCOPE}"
         PARENT_SCOPE)
     ENDIF()
 
@@ -197,8 +197,8 @@ MACRO(MYSQL_ADD_PLUGIN)
     ADD_LIBRARY(${target} MODULE ${SOURCES}) 
     DTRACE_INSTRUMENT(${target})
     SET_TARGET_PROPERTIES (${target} PROPERTIES PREFIX ""
-      COMPILE_DEFINITIONS "MYSQL_DYNAMIC_PLUGIN")
-    TARGET_LINK_LIBRARIES (${target} mysqlservices)
+      COMPILE_DEFINITIONS "MYBLOCKCHAIN_DYNAMIC_PLUGIN")
+    TARGET_LINK_LIBRARIES (${target} myblockchainservices)
 
     GET_TARGET_PROPERTY(LINK_FLAGS ${target} LINK_FLAGS)
     IF(NOT LINK_FLAGS)
@@ -209,7 +209,7 @@ MACRO(MYSQL_ADD_PLUGIN)
       LINK_FLAGS "${CMAKE_SHARED_LIBRARY_C_FLAGS} ${LINK_FLAGS} "
     )
 
-    # Plugin uses symbols defined in mysqld executable.
+    # Plugin uses symbols defined in myblockchaind executable.
     # Some operating systems like Windows and OSX and are pretty strict about 
     # unresolved symbols. Others are less strict and allow unresolved symbols
     # in shared libraries. On Linux for example, CMake does not even add 
@@ -217,7 +217,7 @@ MACRO(MYSQL_ADD_PLUGIN)
     # Thus we skip TARGET_LINK_LIBRARIES on Linux, as it would only generate
     # an additional dependency.
     IF(NOT CMAKE_SYSTEM_NAME STREQUAL "Linux")
-      TARGET_LINK_LIBRARIES (${target} mysqld ${ARG_LINK_LIBRARIES})
+      TARGET_LINK_LIBRARIES (${target} myblockchaind ${ARG_LINK_LIBRARIES})
     ENDIF()
     ADD_DEPENDENCIES(${target} GenError ${ARG_DEPENDENCIES})
 
@@ -233,7 +233,7 @@ MACRO(MYSQL_ADD_PLUGIN)
     IF(ARG_TEST_ONLY)
       SET(INSTALL_COMPONENT Test)
     ENDIF()
-    MYSQL_INSTALL_TARGETS(${target}
+    MYBLOCKCHAIN_INSTALL_TARGETS(${target}
       DESTINATION ${INSTALL_PLUGINDIR}
       COMPONENT ${INSTALL_COMPONENT})
     INSTALL_DEBUG_TARGET(${target}

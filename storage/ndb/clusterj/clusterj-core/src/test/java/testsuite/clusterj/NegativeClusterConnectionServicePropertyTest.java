@@ -17,9 +17,9 @@
 
 package testsuite.clusterj;
 
-import com.mysql.clusterj.ClusterJFatalUserException;
-import com.mysql.clusterj.ClusterJHelper;
-import com.mysql.clusterj.core.store.ClusterConnectionService;
+import com.myblockchain.clusterj.ClusterJFatalUserException;
+import com.myblockchain.clusterj.ClusterJHelper;
+import com.myblockchain.clusterj.core.store.ClusterConnectionService;
 public class NegativeClusterConnectionServicePropertyTest extends AbstractClusterJCoreTest {
 
     public void testBadClassName() {

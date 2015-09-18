@@ -15,22 +15,22 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
  */
 
-package com.mysql.clusterj.jdbc;
+package com.myblockchain.clusterj.jdbc;
 
-import com.mysql.jdbc.Connection;
-import com.mysql.jdbc.ResultSetInternalMethods;
-import com.mysql.jdbc.Statement;
+import com.myblockchain.jdbc.Connection;
+import com.myblockchain.jdbc.ResultSetInternalMethods;
+import com.myblockchain.jdbc.Statement;
 
 import java.sql.SQLException;
 import java.util.Properties;
 
 /** This interceptor is called for execution of each statement of the associated connection.
  * It is registered with the connection via the connection URL parameter
- * statementInterceptors=com.mysql.clusterj.jdbc.StatementInterceptor.
+ * statementInterceptors=com.myblockchain.clusterj.jdbc.StatementInterceptor.
  * It must be used in conjunction with the ConnectionLifecycleInterceptor.
  */
 public class StatementInterceptor
-        implements com.mysql.jdbc.StatementInterceptorV2 {
+        implements com.myblockchain.jdbc.StatementInterceptorV2 {
 
     /** The delegate for all methods. */
     private InterceptorImpl interceptorImpl;

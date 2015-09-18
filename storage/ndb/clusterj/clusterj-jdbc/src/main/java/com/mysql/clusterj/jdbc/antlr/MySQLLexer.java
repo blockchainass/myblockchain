@@ -15,7 +15,7 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
  */
 
-package com.mysql.clusterj.jdbc.antlr;
+package com.myblockchain.clusterj.jdbc.antlr;
 
 import org.antlr.runtime.CharStream;
 import org.antlr.runtime.Lexer;
@@ -28,12 +28,12 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Abstract superclass for MySQL Lexers, for now containing some common code, so it's not in the grammar.
+ * Abstract superclass for MyBlockchain Lexers, for now containing some common code, so it's not in the grammar.
  * Author: kroepke
  */
-public abstract class MySQLLexer extends Lexer implements RecognizerErrorDelegate {
+public abstract class MyBlockchainLexer extends Lexer implements RecognizerErrorDelegate {
 
-    private static final Logger log = Logger.getLogger(MySQLLexer.class.getName());
+    private static final Logger log = Logger.getLogger(MyBlockchainLexer.class.getName());
     
     boolean nextTokenIsID = false;
     private ErrorListener errorListener;
@@ -47,17 +47,17 @@ public abstract class MySQLLexer extends Lexer implements RecognizerErrorDelegat
      * @return the new token type to emit a token with
      */
     public int checkFunctionAsID(int proposedType) {
-        return (input.LA(1) != '(') ? MySQL51Lexer.ID : proposedType;
+        return (input.LA(1) != '(') ? MyBlockchain51Lexer.ID : proposedType;
     }
 
-    public MySQLLexer() {} 
+    public MyBlockchainLexer() {} 
 
-    public MySQLLexer(CharStream input) {
+    public MyBlockchainLexer(CharStream input) {
         this(input, new RecognizerSharedState());
         errorListener = new BaseErrorListener(this);
     }
 
-    public MySQLLexer(CharStream input, RecognizerSharedState state) {
+    public MyBlockchainLexer(CharStream input, RecognizerSharedState state) {
         super(input, state);
         errorListener = new BaseErrorListener(this);
     }

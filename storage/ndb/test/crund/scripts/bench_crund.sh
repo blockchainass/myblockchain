@@ -63,7 +63,7 @@ iostat 5 > iostat5.txt 2>&1 &
 pid=$!
 
 echo "" | tee -a "$out"
-./mysql.sh -v < ../src/crund_schema.sql 2>&1 | tee -a "$out"
+./myblockchain.sh -v < ../src/crund_schema.sql 2>&1 | tee -a "$out"
 
 echo "RUNNING CRUND ..." | tee -a "$out"
 case $driver in

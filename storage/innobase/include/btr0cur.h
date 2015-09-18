@@ -649,10 +649,10 @@ btr_estimate_number_of_different_key_vals(
 /*======================================*/
 	dict_index_t*	index);	/*!< in: index */
 
-/** Gets the externally stored size of a record, in units of a database page.
+/** Gets the externally stored size of a record, in units of a blockchain page.
 @param[in]	rec	record
 @param[in]	offsets	array returned by rec_get_offsets()
-@return externally stored part, in units of a database page */
+@return externally stored part, in units of a blockchain page */
 ulint
 btr_rec_get_externally_stored_len(
 	const rec_t*	rec,

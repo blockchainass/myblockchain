@@ -91,7 +91,7 @@ return null;
 },_initDb:function(){
 if(!this.db){
 try{
-this.db=google.gears.factory.create("beta.database","1.0");
+this.db=google.gears.factory.create("beta.blockchain","1.0");
 }
 catch(exp){
 _2.setObject("google.gears.denied",true);

@@ -20,11 +20,11 @@
 /*
   Interface created to be able to use base64 functions
   using function signatures which does not change between
-  MySQL version
+  MyBlockchain version
 */
 
 #include <base64.h>
-#include <mysql_version.h>
+#include <myblockchain_version.h>
 
 /*
   Decode a base64 string into data
@@ -33,12 +33,12 @@ static inline
 int ndb_base64_decode(const char *src, size_t src_len,
                       void *dst, const char **end_ptr)
 {
-#ifndef MYSQL_VERSION_ID
-#error "Need MYSQL_VERSION_ID defined"
+#ifndef MYBLOCKCHAIN_VERSION_ID
+#error "Need MYBLOCKCHAIN_VERSION_ID defined"
 #endif
 
   return base64_decode(src, src_len, dst, end_ptr
-#if MYSQL_VERSION_ID >= 50603
+#if MYBLOCKCHAIN_VERSION_ID >= 50603
   // Signature of base64_decode changed to be extended
   // with a "flags" argument in 5.6.3, no flags needed for
   // vanilla base64_decode so ignore it in this impl.

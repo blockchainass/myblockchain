@@ -43,9 +43,9 @@ Ack_receiver::Ack_receiver()
   function_enter(kWho);
 
   m_status= ST_DOWN;
-  mysql_mutex_init(key_ss_mutex_Ack_receiver_mutex, &m_mutex,
+  myblockchain_mutex_init(key_ss_mutex_Ack_receiver_mutex, &m_mutex,
                    MY_MUTEX_INIT_FAST);
-  mysql_cond_init(key_ss_cond_Ack_receiver_cond, &m_cond);
+  myblockchain_cond_init(key_ss_cond_Ack_receiver_cond, &m_cond);
 
   function_exit(kWho);
 }
@@ -56,8 +56,8 @@ Ack_receiver::~Ack_receiver()
   function_enter(kWho);
 
   stop();
-  mysql_mutex_destroy(&m_mutex);
-  mysql_cond_destroy(&m_cond);
+  myblockchain_mutex_destroy(&m_mutex);
+  myblockchain_cond_destroy(&m_cond);
 
   function_exit(kWho);
 }
@@ -79,7 +79,7 @@ bool Ack_receiver::start()
         pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE) != 0 ||
         pthread_attr_setscope(&attr, PTHREAD_SCOPE_SYSTEM) != 0 ||
 #endif
-        mysql_thread_create(key_ss_thread_Ack_receiver_thread, &m_pid,
+        myblockchain_thread_create(key_ss_thread_Ack_receiver_thread, &m_pid,
                             &attr, ack_receive_handler, this))
     {
       sql_print_error("Failed to start semi-sync ACK receiver thread, "
@@ -101,13 +101,13 @@ void Ack_receiver::stop()
 
   if (m_status == ST_UP)
   {
-    mysql_mutex_lock(&m_mutex);
+    myblockchain_mutex_lock(&m_mutex);
     m_status= ST_STOPPING;
-    mysql_cond_broadcast(&m_cond);
+    myblockchain_cond_broadcast(&m_cond);
 
     while (m_status == ST_STOPPING)
-      mysql_cond_wait(&m_cond, &m_mutex);
-    mysql_mutex_unlock(&m_mutex);
+      myblockchain_cond_wait(&m_cond, &m_mutex);
+    myblockchain_mutex_unlock(&m_mutex);
 
     /*
       When arriving here, the ack thread already exists. Join failure has no
@@ -129,24 +129,24 @@ bool Ack_receiver::add_slave(THD *thd)
 
   slave.thd= thd;
   slave.vio= *thd->get_protocol_classic()->get_vio();
-  slave.vio.mysql_socket.m_psi= NULL;
+  slave.vio.myblockchain_socket.m_psi= NULL;
   slave.vio.read_timeout= 1;
 
   /* push_back() may throw an exception */
   try
   {
-    mysql_mutex_lock(&m_mutex);
+    myblockchain_mutex_lock(&m_mutex);
 
     DBUG_EXECUTE_IF("rpl_semisync_simulate_add_slave_failure", throw 1;);
 
     m_slaves.push_back(slave);
     m_slaves_changed= true;
-    mysql_cond_broadcast(&m_cond);
-    mysql_mutex_unlock(&m_mutex);
+    myblockchain_cond_broadcast(&m_cond);
+    myblockchain_mutex_unlock(&m_mutex);
   }
   catch (...)
   {
-    mysql_mutex_unlock(&m_mutex);
+    myblockchain_mutex_unlock(&m_mutex);
     return function_exit(kWho, true);
   }
   return function_exit(kWho, false);
@@ -157,7 +157,7 @@ void Ack_receiver::remove_slave(THD *thd)
   const char *kWho = "Ack_receiver::remove_slave";
   function_enter(kWho);
 
-  mysql_mutex_lock(&m_mutex);
+  myblockchain_mutex_lock(&m_mutex);
   Slave_vector_it it;
 
   for (it= m_slaves.begin(); it != m_slaves.end(); it++)
@@ -169,21 +169,21 @@ void Ack_receiver::remove_slave(THD *thd)
       break;
     }
   }
-  mysql_mutex_unlock(&m_mutex);
+  myblockchain_mutex_unlock(&m_mutex);
   function_exit(kWho);
 }
 
 inline void Ack_receiver::set_stage_info(const PSI_stage_info &stage)
 {
 #ifdef HAVE_PSI_STAGE_INTERFACE
-  MYSQL_SET_STAGE(stage.m_key, __FILE__, __LINE__);
+  MYBLOCKCHAIN_SET_STAGE(stage.m_key, __FILE__, __LINE__);
 #endif /* HAVE_PSI_STAGE_INTERFACE */
 }
 
 inline void Ack_receiver::wait_for_slave_connection()
 {
   set_stage_info(stage_waiting_for_semi_sync_slave);
-  mysql_cond_wait(&m_cond, &m_mutex);
+  myblockchain_cond_wait(&m_cond, &m_mutex);
 }
 
 my_socket Ack_receiver::get_slave_sockets(fd_set *fds)
@@ -225,9 +225,9 @@ void Ack_receiver::run()
 
   init_net(&net, net_buff, REPLY_MESSAGE_MAX_LENGTH);
 
-  mysql_mutex_lock(&m_mutex);
+  myblockchain_mutex_lock(&m_mutex);
   m_slaves_changed= true;
-  mysql_mutex_unlock(&m_mutex);
+  myblockchain_mutex_unlock(&m_mutex);
 
   while (1)
   {
@@ -235,7 +235,7 @@ void Ack_receiver::run()
     Slave_vector_it it;
     int ret;
 
-    mysql_mutex_lock(&m_mutex);
+    myblockchain_mutex_lock(&m_mutex);
     if (unlikely(m_status == ST_STOPPING))
       goto end;
 
@@ -245,7 +245,7 @@ void Ack_receiver::run()
       if (unlikely(m_slaves.empty()))
       {
         wait_for_slave_connection();
-        mysql_mutex_unlock(&m_mutex);
+        myblockchain_mutex_unlock(&m_mutex);
         continue;
       }
 
@@ -261,7 +261,7 @@ void Ack_receiver::run()
     ret= select(max_fd+1, &fds, NULL, NULL, &tv);
     if (ret <= 0)
     {
-      mysql_mutex_unlock(&m_mutex);
+      myblockchain_mutex_unlock(&m_mutex);
 
       ret= DBUG_EVALUATE_IF("rpl_semisync_simulate_select_error", -1, ret);
 
@@ -293,11 +293,11 @@ void Ack_receiver::run()
       }
       i++;
     }
-    mysql_mutex_unlock(&m_mutex);
+    myblockchain_mutex_unlock(&m_mutex);
   }
 end:
   sql_print_information("Stopping ack receiver thread");
   m_status= ST_DOWN;
-  mysql_cond_broadcast(&m_cond);
-  mysql_mutex_unlock(&m_mutex);
+  myblockchain_cond_broadcast(&m_cond);
+  myblockchain_mutex_unlock(&m_mutex);
 }

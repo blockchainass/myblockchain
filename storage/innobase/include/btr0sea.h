@@ -34,7 +34,7 @@ Created 2/17/1996 Heikki Tuuri
 #include "mtr0mtr.h"
 #include "ha0ha.h"
 
-/** Creates and initializes the adaptive search system at a database start.
+/** Creates and initializes the adaptive search system at a blockchain start.
 @param[in]	hash_size	hash table size. */
 void
 btr_search_sys_create(ulint hash_size);
@@ -44,7 +44,7 @@ btr_search_sys_create(ulint hash_size);
 void
 btr_search_sys_resize(ulint hash_size);
 
-/** Frees the adaptive search system at a database shutdown. */
+/** Frees the adaptive search system at a blockchain shutdown. */
 void
 btr_search_sys_free();
 
@@ -325,7 +325,7 @@ the hash index */
 #define BTR_SEARCH_ON_HASH_LIMIT	3
 
 /** We do this many searches before trying to keep the search latch
-over calls from MySQL. If we notice someone waiting for the latch, we
+over calls from MyBlockchain. If we notice someone waiting for the latch, we
 again set this much timeout. This is to reduce contention. */
 #define BTR_SEA_TIMEOUT			10000
 

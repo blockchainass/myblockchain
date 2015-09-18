@@ -53,7 +53,7 @@ ENDIF()
 SET(MUTEXTYPE "event" CACHE STRING "Mutex type: event, sys or futex")
 
 IF(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
-# After: WL#5825 Using C++ Standard Library with MySQL code
+# After: WL#5825 Using C++ Standard Library with MyBlockchain code
 #       we no longer use -fno-exceptions
 #	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-exceptions")
 

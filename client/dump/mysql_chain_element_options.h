@@ -15,8 +15,8 @@
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifndef MYSQL_CHAIN_ELEMENT_OPTIONS_INCLUDED
-#define MYSQL_CHAIN_ELEMENT_OPTIONS_INCLUDED
+#ifndef MYBLOCKCHAIN_CHAIN_ELEMENT_OPTIONS_INCLUDED
+#define MYBLOCKCHAIN_CHAIN_ELEMENT_OPTIONS_INCLUDED
 
 #include "base/abstract_options_provider.h"
 #include "base/abstract_connection_program.h"

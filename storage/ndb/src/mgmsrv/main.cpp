@@ -40,9 +40,9 @@ extern EventLogger * g_eventLogger;
 extern int g_errorInsert;
 #endif
 
-const char *load_default_groups[]= { "mysql_cluster","ndb_mgmd",0 };
+const char *load_default_groups[]= { "myblockchain_cluster","ndb_mgmd",0 };
 
-// copied from mysql.cc to get readline
+// copied from myblockchain.cc to get readline
 extern "C" {
 #if defined(_WIN32)
 #include <conio.h>
@@ -198,7 +198,7 @@ static int mgmd_main(int argc, char** argv)
 {
   NDB_INIT(argv[0]);
 
-  printf("MySQL Cluster Management Server %s\n", NDB_VERSION_STRING);
+  printf("MyBlockchain Cluster Management Server %s\n", NDB_VERSION_STRING);
 
   ndb_opt_set_usage_funcs(short_usage_sub, usage);
 
@@ -252,7 +252,7 @@ static int mgmd_main(int argc, char** argv)
 
 #ifdef _WIN32
   /* Output to Windows event log */
-  g_eventLogger->createEventLogHandler("MySQL Cluster Management Server");
+  g_eventLogger->createEventLogHandler("MyBlockchain Cluster Management Server");
 #endif
 
   if (opts.verbose)
@@ -327,7 +327,7 @@ static int mgmd_main(int argc, char** argv)
     }
     else
     {
-      g_eventLogger->info("MySQL Cluster Management Server %s started",
+      g_eventLogger->info("MyBlockchain Cluster Management Server %s started",
                           NDB_VERSION_STRING);
 
       while (!g_StopServer)
@@ -358,5 +358,5 @@ static void mgmd_stop(void)
 int main(int argc, char** argv)
 {
   return ndb_daemon_init(argc, argv, mgmd_main, mgmd_stop,
-                         "ndb_mgmd", "MySQL Cluster Management Server");
+                         "ndb_mgmd", "MyBlockchain Cluster Management Server");
 }

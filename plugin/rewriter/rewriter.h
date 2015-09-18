@@ -53,7 +53,7 @@ public:
   /**
     The number of rules currently loaded in the hash table. In case of rules
     that fail to load, this number will be lower than the number of rows in
-    the database.
+    the blockchain.
   */
   int get_number_loaded_rules() const { return m_digests.records; }
 
@@ -64,10 +64,10 @@ public:
 
     @return A Rewrite_result object.
   */
-  Rewrite_result rewrite_query(MYSQL_THD thd, const uchar* key);
+  Rewrite_result rewrite_query(MYBLOCKCHAIN_THD thd, const uchar* key);
 
   /// Empty the hashtable and reload all rules from disk table.
-  Load_status refresh(MYSQL_THD thd);
+  Load_status refresh(MYBLOCKCHAIN_THD thd);
 
   /**
     Implementation of the loading procedure. The server doesn't handle
@@ -77,7 +77,7 @@ public:
 
     @param sessions_thd The session to be used for loading rules.
   */
-  void do_refresh(MYSQL_THD session_thd);
+  void do_refresh(MYBLOCKCHAIN_THD session_thd);
 
 private:
   Rewriter::Load_status m_refresh_status;
@@ -85,8 +85,8 @@ private:
   /// The in-memory rules hash table.
   HASH m_digests;
 
-  /// Loads the rule retrieved from the database in the hash table.
-  bool load_rule(MYSQL_THD thd, Persisted_rule *diskrule);
+  /// Loads the rule retrieved from the blockchain in the hash table.
+  bool load_rule(MYBLOCKCHAIN_THD thd, Persisted_rule *diskrule);
 
 };
 

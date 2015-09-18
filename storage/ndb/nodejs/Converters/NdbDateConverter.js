@@ -21,15 +21,15 @@
 
 
 var path = require("path"),
-    MySQLTime = require(path.join(mynode.fs.spi_dir,"common","MySQLTime.js")),
+    MyBlockchainTime = require(path.join(mynode.fs.spi_dir,"common","MyBlockchainTime.js")),
     udebug = unified_debug.getLogger("NdbDateConverter.js");
 
 
 exports.toDB = function(jsdate) {
-  return new MySQLTime().initializeFromDateString(jsdate);
+  return new MyBlockchainTime().initializeFromDateString(jsdate);
 };
 
 exports.fromDB = function(dbTime) {
-  return MySQLTime.initializeFromNdb(dbTime).toDateString();
+  return MyBlockchainTime.initializeFromNdb(dbTime).toDateString();
 };
 

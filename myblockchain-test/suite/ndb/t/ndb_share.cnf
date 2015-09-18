@@ -1,0 +1,32 @@
+!include ../my.cnf
+
+[cluster_config.1]
+myblockchaind=,,,
+
+[myblockchaind.1.1]
+new
+log-bin=myblockchaind-bin
+
+[myblockchaind.2.1]
+new
+log-bin=myblockchaind-bin
+
+[myblockchaind.3.1]
+new
+skip-log-bin
+
+[myblockchaind.4.1]
+new
+skip-log-bin
+
+[ENV]
+
+NDB_CONNECTSTRING=             @myblockchain_cluster.1.ndb_connectstring
+MYBLOCKCHAIND1_SOCK=                  @myblockchaind.1.1.socket
+MYBLOCKCHAIND1_PORT=                  @myblockchaind.1.1.port
+MYBLOCKCHAIND2_SOCK=                  @myblockchaind.2.1.socket
+MYBLOCKCHAIND2_PORT=                  @myblockchaind.2.1.port
+MYBLOCKCHAIND3_SOCK=                  @myblockchaind.3.1.socket
+MYBLOCKCHAIND3_PORT=                  @myblockchaind.3.1.port
+MYBLOCKCHAIND4_SOCK=                  @myblockchaind.4.1.socket
+MYBLOCKCHAIND4_PORT=                  @myblockchaind.4.1.port

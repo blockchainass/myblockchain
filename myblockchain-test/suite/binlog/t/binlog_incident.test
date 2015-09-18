@@ -1,0 +1,36 @@
+
+# The purpose of this test is to provide a reference for how the
+# incident log event is represented in the output from the myblockchainbinlog
+# program.
+
+source include/have_log_bin.inc;
+source include/have_debug.inc;
+
+CALL mtr.add_suppression("Generate an incident log event before writing the "
+                         "real event to the binary log for testing purposes. "
+                         "An incident event has been written to the binary "
+                         "log which will stop the slaves.");
+
+let $MYBLOCKCHAIND_DATADIR= `select @@datadir`;
+RESET MASTER;
+
+let $start_pos= query_get_value("SHOW MASTER STATUS", Position, 1);
+let $master_binlog= query_get_value(SHOW MASTER STATUS, File, 1);
+CREATE TABLE t1 (a INT);
+
+INSERT INTO t1 VALUES (1),(2),(3);
+SELECT * FROM t1;
+
+# This will generate an incident log event and store it in the binary
+# log before the replace statement.
+REPLACE INTO t1 VALUES (4);
+
+DROP TABLE t1;
+FLUSH LOGS;
+
+exec $MYBLOCKCHAIN_BINLOG --start-position=$start_pos $MYBLOCKCHAIND_DATADIR/$master_binlog >$MYBLOCKCHAINTEST_VARDIR/tmp/binlog_incident-bug44442.sql;
+--disable_query_log
+eval SELECT cont LIKE '%RELOAD DATABASE; # Shall generate syntax error%' AS `Contain RELOAD DATABASE` FROM (SELECT load_file('$MYBLOCKCHAINTEST_VARDIR/tmp/binlog_incident-bug44442.sql') AS cont) AS tbl;
+--enable_query_log
+
+remove_file $MYBLOCKCHAINTEST_VARDIR/tmp/binlog_incident-bug44442.sql;

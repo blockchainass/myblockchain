@@ -3682,7 +3682,7 @@ runDropDDObjects(NDBT_Context* ctx, NDBT_Step* step){
       case NdbDictionary::Object::UserTable:
         tableFound = list.elements[i].name;
         if(tableFound != 0){
-          if(strcmp(list.elements[i].database, "TEST_DB") == 0 &&
+          if(strcmp(list.elements[i].blockchain, "TEST_DB") == 0 &&
              !is_prefix(tableFound, "NDB$BLOB"))
           { 
       	    if(pDict->dropTable(tableFound) != 0){
@@ -4646,7 +4646,7 @@ st_drop_all_tables(ST_Con& c)
     const NdbDictionary::Dictionary::List::Element& element =
       list.elements[n];
     if (element.type == NdbDictionary::Object::UserTable &&
-        strcmp(element.database, "TEST_DB") == 0) {
+        strcmp(element.blockchain, "TEST_DB") == 0) {
       chk2(c.dic->dropTable(element.name) == 0, c.dic->getNdbError());
     }
   }
@@ -5100,7 +5100,7 @@ st_set_create_tab(ST_Con& c, ST_Tab& tab, bool create)
   }
 }
 
-// verify against database listing
+// verify against blockchain listing
 
 static bool
 st_known_type(const NdbDictionary::Dictionary::List::Element& element)
@@ -5212,12 +5212,12 @@ st_match_obj(const ST_Obj& obj,
     g_info
       << "match:"
       << " " << obj.type << "-" << element.type
-      << " " << obj.dbname << "-" << element.database
+      << " " << obj.dbname << "-" << element.blockchain
       << " " << obj.realname() << "-" << element.name << endl;
   }
   return
     obj.type == element.type &&
-    strcmp(obj.dbname, element.database) == 0 &&
+    strcmp(obj.dbname, element.blockchain) == 0 &&
     strcmp(obj.realname(), element.name) == 0;
 }
 
@@ -5331,8 +5331,8 @@ st_verify_list(ST_Con& c)
         }
       }
     }
-    const char* dot = element.database[0] != 0 ? "." : "";
-    chk2(found == 1, element.database << dot << element.name);
+    const char* dot = element.blockchain[0] != 0 ? "." : "";
+    chk2(found == 1, element.blockchain << dot << element.name);
   }
   return 0;
 err:
@@ -5472,7 +5472,7 @@ err:
   return -1;
 }
 
-// verify against database objects (hits all nodes randomly)
+// verify against blockchain objects (hits all nodes randomly)
 
 static int
 st_verify_table(ST_Con& c, ST_Tab& tab)
@@ -9291,7 +9291,7 @@ runBug13416603(NDBT_Context* ctx, NDBT_Step* step)
 
   bool has_created_stat_tables = false;
   bool has_created_stat_events = false;
-  pNdb->setDatabaseName("mysql");
+  pNdb->setDatabaseName("myblockchain");
   if (is.create_systables(pNdb) == 0)
   {
     has_created_stat_tables = true;
@@ -9459,7 +9459,7 @@ runIndexStatCreate(NDBT_Context* ctx, NDBT_Step* step)
 
   const int loops = ctx->getNumLoops();
 
-  pNdb->setDatabaseName("mysql");
+  pNdb->setDatabaseName("myblockchain");
 
   Uint64 end = NdbTick_CurrentMillisecond() + 1000 * loops;
   do
@@ -9927,7 +9927,7 @@ fk_compare_element(const void* p1, const void* p2)
 
 static bool
 fk_find_element(const Fkdef::List& list, int type,
-                const char* database, const char* name)
+                const char* blockchain, const char* name)
 {
   int found = 0;
   for (int i = 0; i < (int)list.list->count; i++)
@@ -9935,7 +9935,7 @@ fk_find_element(const Fkdef::List& list, int type,
     const NdbDictionary::Dictionary::List::Element& e =
       list.list->elements[i];
     if (e.type == type &&
-        strcmp(e.database, database) == 0 &&
+        strcmp(e.blockchain, blockchain) == 0 &&
         strcmp(e.name, name) == 0)
     {
       found++;
@@ -10325,7 +10325,7 @@ fk_create_all(Fkdef& d, Ndb* pNdb)
   {
     CHK1(fk_create_tables(d, pNdb) == 0);
     CHK1(fk_create_keys(d, pNdb) == NDBT_OK);
-    // imitate mysqld by doing an alter table afterwards
+    // imitate myblockchaind by doing an alter table afterwards
     CHK1(fk_alter_tables(d, pNdb, true) == NDBT_OK);
   }
   while (0);
@@ -10496,16 +10496,16 @@ fk_retrieve_list(Fkdef& d, Ndb* pNdb, Fkdef::List& list)
     {
       NdbDictionary::Dictionary::List::Element& e =
         list.list->elements[i];
-      if (e.database == 0)
+      if (e.blockchain == 0)
       {
-        e.database = new char [1];
-        e.database[0] = 0;
+        e.blockchain = new char [1];
+        e.blockchain[0] = 0;
       }
       if (!fk_type(e.type))
         list.keystart++;
       g_info << "ob " << i << ":"
              << " type=" << e.type << " id=" << e.id
-             << " db=" << e.database << " name=" << e.name << endl;
+             << " db=" << e.blockchain << " name=" << e.name << endl;
       if (i > 0)
       {
         const NdbDictionary::Dictionary::List::Element& e2 =
@@ -10552,8 +10552,8 @@ fk_verify_list(Fkdef& d, Ndb* pNdb, bool ignore_keys)
              i << ": " << e1.type << " != " << e2.type);
         CHK2(e1.id == e2.id,
              i << ": " << e1.id << " != " << e2.id);
-        CHK2(strcmp(e1.database, e2.database) == 0,
-             i << ": " << e1.database << " != " << e2.database);
+        CHK2(strcmp(e1.blockchain, e2.blockchain) == 0,
+             i << ": " << e1.blockchain << " != " << e2.blockchain);
         CHK2(strcmp(e1.name, e2.name) == 0,
              i << ": " << e1.name << " != " << e2.name);
       }

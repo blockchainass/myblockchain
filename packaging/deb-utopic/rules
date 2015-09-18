@@ -25,29 +25,29 @@ export CXXFLAGS=
 override_dh_auto_configure:
 	@echo "RULES.$@"
 	cmake . \
-		-DBUILD_CONFIG=mysql_release \
+		-DBUILD_CONFIG=myblockchain_release \
 		-DCMAKE_INSTALL_PREFIX=/usr \
-		-DINSTALL_DOCDIR=share/mysql/docs \
-		-DINSTALL_DOCREADMEDIR=share/mysql \
-		-DINSTALL_INCLUDEDIR=include/mysql \
-		-DINSTALL_INFODIR=share/mysql/docs \
+		-DINSTALL_DOCDIR=share/myblockchain/docs \
+		-DINSTALL_DOCREADMEDIR=share/myblockchain \
+		-DINSTALL_INCLUDEDIR=include/myblockchain \
+		-DINSTALL_INFODIR=share/myblockchain/docs \
 		-DINSTALL_LIBDIR=lib/$(DEB_HOST_MULTIARCH) \
 		-DINSTALL_MANDIR=share/man \
-		-DINSTALL_MYSQLSHAREDIR=share/mysql \
-		-DINSTALL_MYSQLTESTDIR=lib/mysql-test \
-		-DINSTALL_PLUGINDIR=lib/mysql/plugin \
+		-DINSTALL_MYBLOCKCHAINSHAREDIR=share/myblockchain \
+		-DINSTALL_MYBLOCKCHAINTESTDIR=lib/myblockchain-test \
+		-DINSTALL_PLUGINDIR=lib/myblockchain/plugin \
 		-DINSTALL_SBINDIR=sbin \
 		-DINSTALL_SCRIPTDIR=bin \
-		-DINSTALL_SUPPORTFILESDIR=share/mysql \
-		-DSYSCONFDIR=/etc/mysql \
-		-DMYSQL_UNIX_ADDR=/var/run/mysqld/mysqld.sock \
+		-DINSTALL_SUPPORTFILESDIR=share/myblockchain \
+		-DSYSCONFDIR=/etc/myblockchain \
+		-DMYBLOCKCHAIN_UNIX_ADDR=/var/run/myblockchaind/myblockchaind.sock \
 		-DWITH_SSL=bundled \
 		-DWITH_ZLIB=system \
 		-DWITH_EXTRA_CHARSETS=all \
 		-DWITH_INNODB_MEMCACHED=1 \
 		-DWITH_MECAB=system \
 		-DDOWNLOAD_BOOST=1 \
-		-DCOMPILATION_COMMENT="MySQL Community Server (GPL)" \
+		-DCOMPILATION_COMMENT="MyBlockchain Community Server (GPL)" \
 		-DINSTALL_LAYOUT=DEB
 
 	cat CMakeCache.txt
@@ -70,63 +70,63 @@ override_dh_auto_install:
 	$(MAKE) install DESTDIR=debian/tmp
 	# remove all redundant files and links
 	rm debian/tmp/usr/lib/*/*_r*
-	rm debian/tmp/usr/lib/mysql-test/cmake_install.cmake
-	rm debian/tmp/usr/lib/mysql-test/CTestTestfile.cmake
-	rm debian/tmp/usr/lib/mysql-test/Makefile
+	rm debian/tmp/usr/lib/myblockchain-test/cmake_install.cmake
+	rm debian/tmp/usr/lib/myblockchain-test/CTestTestfile.cmake
+	rm debian/tmp/usr/lib/myblockchain-test/Makefile
 	# add missing man pages
-	install -g root -o root -m 0644 debian/extra/mysql_embedded.1 debian/tmp/usr/share/man/man1
-	# add MySQL Server configuration file my.cnf to mysql-common package
-	install -g root -o root -m 0644 -D debian/extra/my.cnf debian/tmp/etc/mysql/my.cnf
-	# add MySQL Server debug binary and library to package
-	install -g root -o root -m 0755 debian/extra/server-binary debian/tmp/usr/sbin/mysqld-debug
-	install -g root -o root -m 0755 debian/extra/embedded-server debian/tmp/usr/lib/$(DEB_HOST_MULTIARCH)/libmysqld-debug.a
+	install -g root -o root -m 0644 debian/extra/myblockchain_embedded.1 debian/tmp/usr/share/man/man1
+	# add MyBlockchain Server configuration file my.cnf to myblockchain-common package
+	install -g root -o root -m 0644 -D debian/extra/my.cnf debian/tmp/etc/myblockchain/my.cnf
+	# add MyBlockchain Server debug binary and library to package
+	install -g root -o root -m 0755 debian/extra/server-binary debian/tmp/usr/sbin/myblockchaind-debug
+	install -g root -o root -m 0755 debian/extra/embedded-server debian/tmp/usr/lib/$(DEB_HOST_MULTIARCH)/libmyblockchaind-debug.a
 	# add debug plugin libraries to package
-	install -g root -o root -m 0755 -d debian/tmp/usr/lib/mysql/plugin/debug
+	install -g root -o root -m 0755 -d debian/tmp/usr/lib/myblockchain/plugin/debug
 	for file in debian/extra/*-plugin; do NEW=`echo $$file | cut -d- -f1`; mv $$file $$NEW.so; done
-	install -g root -o root -m 0755 debian/extra/*.so debian/tmp/usr/lib/mysql/plugin/debug
-	install -g root -o root -m 0755 debian/extra/daemon_example.ini debian/tmp/usr/lib/mysql/plugin/debug
+	install -g root -o root -m 0755 debian/extra/*.so debian/tmp/usr/lib/myblockchain/plugin/debug
+	install -g root -o root -m 0755 debian/extra/daemon_example.ini debian/tmp/usr/lib/myblockchain/plugin/debug
 	# add apparmor profile
-	install -g root -o root -m 0644 -D debian/extra/apparmor-profile debian/tmp/etc/apparmor.d/usr.sbin.mysqld
+	install -g root -o root -m 0644 -D debian/extra/apparmor-profile debian/tmp/etc/apparmor.d/usr.sbin.myblockchaind
 	# add directory for legal docs
-	install -g root -o root -m 0755 -d debian/tmp/usr/share/doc/mysql-server
-	install -g root -o root -m 0755 -d debian/tmp/usr/share/doc/mysql-community-server
-	install -g root -o root -m 0755 -d debian/tmp/usr/share/doc/mysql-client
-	install -g root -o root -m 0755 -d debian/tmp/usr/share/doc/mysql-community-client
-	install -g root -o root -m 0755 -d debian/tmp/usr/share/doc/mysql-common
-	install -g root -o root -m 0755 -d debian/tmp/usr/share/doc/libmysqlclient20
-	install -g root -o root -m 0755 -d debian/tmp/usr/share/doc/libmysqlclient-dev
-	install -g root -o root -m 0755 -d debian/tmp/usr/share/doc/libmysqld-dev
-	install -g root -o root -m 0755 -d debian/tmp/usr/share/doc/mysql-testsuite
-	install -g root -o root -m 0755 -d debian/tmp/usr/share/doc/mysql-community-test
-	install -g root -o root -m 0755 -d debian/tmp/usr/share/doc/mysql-community-source
+	install -g root -o root -m 0755 -d debian/tmp/usr/share/doc/myblockchain-server
+	install -g root -o root -m 0755 -d debian/tmp/usr/share/doc/myblockchain-community-server
+	install -g root -o root -m 0755 -d debian/tmp/usr/share/doc/myblockchain-client
+	install -g root -o root -m 0755 -d debian/tmp/usr/share/doc/myblockchain-community-client
+	install -g root -o root -m 0755 -d debian/tmp/usr/share/doc/myblockchain-common
+	install -g root -o root -m 0755 -d debian/tmp/usr/share/doc/libmyblockchainclient20
+	install -g root -o root -m 0755 -d debian/tmp/usr/share/doc/libmyblockchainclient-dev
+	install -g root -o root -m 0755 -d debian/tmp/usr/share/doc/libmyblockchaind-dev
+	install -g root -o root -m 0755 -d debian/tmp/usr/share/doc/myblockchain-testsuite
+	install -g root -o root -m 0755 -d debian/tmp/usr/share/doc/myblockchain-community-test
+	install -g root -o root -m 0755 -d debian/tmp/usr/share/doc/myblockchain-community-source
 	# add COPYING file to each package
-	install -g root -o root -m 0644 debian/tmp/usr/share/mysql/COPYING debian/tmp/usr/share/doc/mysql-server/COPYING
-	install -g root -o root -m 0644 debian/tmp/usr/share/mysql/COPYING debian/tmp/usr/share/doc/mysql-community-server/COPYING
-	install -g root -o root -m 0644 debian/tmp/usr/share/mysql/COPYING debian/tmp/usr/share/doc/mysql-client/COPYING
-	install -g root -o root -m 0644 debian/tmp/usr/share/mysql/COPYING debian/tmp/usr/share/doc/mysql-community-client/COPYING
-	install -g root -o root -m 0644 debian/tmp/usr/share/mysql/COPYING debian/tmp/usr/share/doc/mysql-common/COPYING
-	install -g root -o root -m 0644 debian/tmp/usr/share/mysql/COPYING debian/tmp/usr/share/doc/libmysqlclient20/COPYING
-	install -g root -o root -m 0644 debian/tmp/usr/share/mysql/COPYING debian/tmp/usr/share/doc/libmysqlclient-dev/COPYING
-	install -g root -o root -m 0644 debian/tmp/usr/share/mysql/COPYING debian/tmp/usr/share/doc/libmysqld-dev/COPYING
-	install -g root -o root -m 0644 debian/tmp/usr/share/mysql/COPYING debian/tmp/usr/share/doc/mysql-testsuite/COPYING
-	install -g root -o root -m 0644 debian/tmp/usr/share/mysql/COPYING debian/tmp/usr/share/doc/mysql-community-test/COPYING
-	install -g root -o root -m 0644 debian/tmp/usr/share/mysql/COPYING debian/tmp/usr/share/doc/mysql-community-source/COPYING
+	install -g root -o root -m 0644 debian/tmp/usr/share/myblockchain/COPYING debian/tmp/usr/share/doc/myblockchain-server/COPYING
+	install -g root -o root -m 0644 debian/tmp/usr/share/myblockchain/COPYING debian/tmp/usr/share/doc/myblockchain-community-server/COPYING
+	install -g root -o root -m 0644 debian/tmp/usr/share/myblockchain/COPYING debian/tmp/usr/share/doc/myblockchain-client/COPYING
+	install -g root -o root -m 0644 debian/tmp/usr/share/myblockchain/COPYING debian/tmp/usr/share/doc/myblockchain-community-client/COPYING
+	install -g root -o root -m 0644 debian/tmp/usr/share/myblockchain/COPYING debian/tmp/usr/share/doc/myblockchain-common/COPYING
+	install -g root -o root -m 0644 debian/tmp/usr/share/myblockchain/COPYING debian/tmp/usr/share/doc/libmyblockchainclient20/COPYING
+	install -g root -o root -m 0644 debian/tmp/usr/share/myblockchain/COPYING debian/tmp/usr/share/doc/libmyblockchainclient-dev/COPYING
+	install -g root -o root -m 0644 debian/tmp/usr/share/myblockchain/COPYING debian/tmp/usr/share/doc/libmyblockchaind-dev/COPYING
+	install -g root -o root -m 0644 debian/tmp/usr/share/myblockchain/COPYING debian/tmp/usr/share/doc/myblockchain-testsuite/COPYING
+	install -g root -o root -m 0644 debian/tmp/usr/share/myblockchain/COPYING debian/tmp/usr/share/doc/myblockchain-community-test/COPYING
+	install -g root -o root -m 0644 debian/tmp/usr/share/myblockchain/COPYING debian/tmp/usr/share/doc/myblockchain-community-source/COPYING
 	# add README file to each package
-	install -g root -o root -m 0644 debian/tmp/usr/share/mysql/README debian/tmp/usr/share/doc/mysql-server/README
-	install -g root -o root -m 0644 debian/tmp/usr/share/mysql/README debian/tmp/usr/share/doc/mysql-community-server/README
-	install -g root -o root -m 0644 debian/tmp/usr/share/mysql/README debian/tmp/usr/share/doc/mysql-client/README
-	install -g root -o root -m 0644 debian/tmp/usr/share/mysql/README debian/tmp/usr/share/doc/mysql-community-client/README
-	install -g root -o root -m 0644 debian/tmp/usr/share/mysql/README debian/tmp/usr/share/doc/mysql-common/README
-	install -g root -o root -m 0644 debian/tmp/usr/share/mysql/README debian/tmp/usr/share/doc/libmysqlclient20/README
-	install -g root -o root -m 0644 debian/tmp/usr/share/mysql/README debian/tmp/usr/share/doc/libmysqlclient-dev/README
-	install -g root -o root -m 0644 debian/tmp/usr/share/mysql/README debian/tmp/usr/share/doc/libmysqld-dev/README
-	install -g root -o root -m 0644 debian/tmp/usr/share/mysql/README debian/tmp/usr/share/doc/mysql-testsuite/README
-	install -g root -o root -m 0644 debian/tmp/usr/share/mysql/README debian/tmp/usr/share/doc/mysql-community-test/README
-	install -g root -o root -m 0644 debian/tmp/usr/share/mysql/README debian/tmp/usr/share/doc/mysql-community-source/README
+	install -g root -o root -m 0644 debian/tmp/usr/share/myblockchain/README debian/tmp/usr/share/doc/myblockchain-server/README
+	install -g root -o root -m 0644 debian/tmp/usr/share/myblockchain/README debian/tmp/usr/share/doc/myblockchain-community-server/README
+	install -g root -o root -m 0644 debian/tmp/usr/share/myblockchain/README debian/tmp/usr/share/doc/myblockchain-client/README
+	install -g root -o root -m 0644 debian/tmp/usr/share/myblockchain/README debian/tmp/usr/share/doc/myblockchain-community-client/README
+	install -g root -o root -m 0644 debian/tmp/usr/share/myblockchain/README debian/tmp/usr/share/doc/myblockchain-common/README
+	install -g root -o root -m 0644 debian/tmp/usr/share/myblockchain/README debian/tmp/usr/share/doc/libmyblockchainclient20/README
+	install -g root -o root -m 0644 debian/tmp/usr/share/myblockchain/README debian/tmp/usr/share/doc/libmyblockchainclient-dev/README
+	install -g root -o root -m 0644 debian/tmp/usr/share/myblockchain/README debian/tmp/usr/share/doc/libmyblockchaind-dev/README
+	install -g root -o root -m 0644 debian/tmp/usr/share/myblockchain/README debian/tmp/usr/share/doc/myblockchain-testsuite/README
+	install -g root -o root -m 0644 debian/tmp/usr/share/myblockchain/README debian/tmp/usr/share/doc/myblockchain-community-test/README
+	install -g root -o root -m 0644 debian/tmp/usr/share/myblockchain/README debian/tmp/usr/share/doc/myblockchain-community-source/README
 	touch $@
 
 override_dh_installinit:
 	@echo "RULES.$@"
-	dh_apparmor -pmysql-community-server --profile-name=usr.sbin.mysqld
-	dh_installinit --name=mysql -- defaults 19 21
+	dh_apparmor -pmyblockchain-community-server --profile-name=usr.sbin.myblockchaind
+	dh_installinit --name=myblockchain -- defaults 19 21
 	touch $@

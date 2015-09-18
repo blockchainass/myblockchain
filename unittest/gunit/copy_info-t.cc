@@ -14,7 +14,7 @@
    51 Franklin Street, Suite 500, Boston, MA 02110-1335 USA */
 
 // First include (the generated) my_config.h, to get correct platform defines,
-// then gtest.h (before any other MySQL headers), to avoid min() macros etc ...
+// then gtest.h (before any other MyBlockchain headers), to avoid min() macros etc ...
 #include "my_config.h"
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>

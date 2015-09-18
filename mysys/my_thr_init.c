@@ -31,11 +31,11 @@ static uint    my_thread_end_wait_time= 5;
 static my_thread_id thread_id= 0;
 static thread_local_key_t THR_KEY_mysys;
 
-mysql_mutex_t THR_LOCK_malloc, THR_LOCK_open,
+myblockchain_mutex_t THR_LOCK_malloc, THR_LOCK_open,
               THR_LOCK_lock, THR_LOCK_myisam, THR_LOCK_heap,
               THR_LOCK_net, THR_LOCK_charset, THR_LOCK_threads,
               THR_LOCK_myisam_mmap;
-mysql_cond_t  THR_COND_threads;
+myblockchain_cond_t  THR_COND_threads;
 
 #ifdef PTHREAD_ADAPTIVE_MUTEX_INITIALIZER_NP
 native_mutexattr_t my_fast_mutexattr;
@@ -67,35 +67,35 @@ void my_thread_global_reinit()
   my_init_mysys_psi_keys();
 #endif
 
-  mysql_mutex_destroy(&THR_LOCK_heap);
-  mysql_mutex_init(key_THR_LOCK_heap, &THR_LOCK_heap, MY_MUTEX_INIT_FAST);
+  myblockchain_mutex_destroy(&THR_LOCK_heap);
+  myblockchain_mutex_init(key_THR_LOCK_heap, &THR_LOCK_heap, MY_MUTEX_INIT_FAST);
 
-  mysql_mutex_destroy(&THR_LOCK_net);
-  mysql_mutex_init(key_THR_LOCK_net, &THR_LOCK_net, MY_MUTEX_INIT_FAST);
+  myblockchain_mutex_destroy(&THR_LOCK_net);
+  myblockchain_mutex_init(key_THR_LOCK_net, &THR_LOCK_net, MY_MUTEX_INIT_FAST);
 
-  mysql_mutex_destroy(&THR_LOCK_myisam);
-  mysql_mutex_init(key_THR_LOCK_myisam, &THR_LOCK_myisam, MY_MUTEX_INIT_SLOW);
+  myblockchain_mutex_destroy(&THR_LOCK_myisam);
+  myblockchain_mutex_init(key_THR_LOCK_myisam, &THR_LOCK_myisam, MY_MUTEX_INIT_SLOW);
 
-  mysql_mutex_destroy(&THR_LOCK_malloc);
-  mysql_mutex_init(key_THR_LOCK_malloc, &THR_LOCK_malloc, MY_MUTEX_INIT_FAST);
+  myblockchain_mutex_destroy(&THR_LOCK_malloc);
+  myblockchain_mutex_init(key_THR_LOCK_malloc, &THR_LOCK_malloc, MY_MUTEX_INIT_FAST);
 
-  mysql_mutex_destroy(&THR_LOCK_open);
-  mysql_mutex_init(key_THR_LOCK_open, &THR_LOCK_open, MY_MUTEX_INIT_FAST);
+  myblockchain_mutex_destroy(&THR_LOCK_open);
+  myblockchain_mutex_init(key_THR_LOCK_open, &THR_LOCK_open, MY_MUTEX_INIT_FAST);
 
-  mysql_mutex_destroy(&THR_LOCK_charset);
-  mysql_mutex_init(key_THR_LOCK_charset, &THR_LOCK_charset, MY_MUTEX_INIT_FAST);
+  myblockchain_mutex_destroy(&THR_LOCK_charset);
+  myblockchain_mutex_init(key_THR_LOCK_charset, &THR_LOCK_charset, MY_MUTEX_INIT_FAST);
 
-  mysql_mutex_destroy(&THR_LOCK_threads);
-  mysql_mutex_init(key_THR_LOCK_threads, &THR_LOCK_threads, MY_MUTEX_INIT_FAST);
+  myblockchain_mutex_destroy(&THR_LOCK_threads);
+  myblockchain_mutex_init(key_THR_LOCK_threads, &THR_LOCK_threads, MY_MUTEX_INIT_FAST);
 
-  mysql_cond_destroy(&THR_COND_threads);
-  mysql_cond_init(key_THR_COND_threads, &THR_COND_threads);
+  myblockchain_cond_destroy(&THR_COND_threads);
+  myblockchain_cond_init(key_THR_COND_threads, &THR_COND_threads);
 
   tmp= mysys_thread_var();
   DBUG_ASSERT(tmp);
 
-  mysql_cond_destroy(&tmp->suspend);
-  mysql_cond_init(key_my_thread_var_suspend, &tmp->suspend);
+  myblockchain_cond_destroy(&tmp->suspend);
+  myblockchain_cond_init(key_my_thread_var_suspend, &tmp->suspend);
 }
 
 
@@ -152,16 +152,16 @@ my_bool my_thread_global_init()
   }
   THR_KEY_mysys_initialized= TRUE;
 
-  mysql_mutex_init(key_THR_LOCK_malloc, &THR_LOCK_malloc, MY_MUTEX_INIT_FAST);
-  mysql_mutex_init(key_THR_LOCK_open, &THR_LOCK_open, MY_MUTEX_INIT_FAST);
-  mysql_mutex_init(key_THR_LOCK_charset, &THR_LOCK_charset, MY_MUTEX_INIT_FAST);
-  mysql_mutex_init(key_THR_LOCK_threads, &THR_LOCK_threads, MY_MUTEX_INIT_FAST);
-  mysql_mutex_init(key_THR_LOCK_lock, &THR_LOCK_lock, MY_MUTEX_INIT_FAST);
-  mysql_mutex_init(key_THR_LOCK_myisam, &THR_LOCK_myisam, MY_MUTEX_INIT_SLOW);
-  mysql_mutex_init(key_THR_LOCK_myisam_mmap, &THR_LOCK_myisam_mmap, MY_MUTEX_INIT_FAST);
-  mysql_mutex_init(key_THR_LOCK_heap, &THR_LOCK_heap, MY_MUTEX_INIT_FAST);
-  mysql_mutex_init(key_THR_LOCK_net, &THR_LOCK_net, MY_MUTEX_INIT_FAST);
-  mysql_cond_init(key_THR_COND_threads, &THR_COND_threads);
+  myblockchain_mutex_init(key_THR_LOCK_malloc, &THR_LOCK_malloc, MY_MUTEX_INIT_FAST);
+  myblockchain_mutex_init(key_THR_LOCK_open, &THR_LOCK_open, MY_MUTEX_INIT_FAST);
+  myblockchain_mutex_init(key_THR_LOCK_charset, &THR_LOCK_charset, MY_MUTEX_INIT_FAST);
+  myblockchain_mutex_init(key_THR_LOCK_threads, &THR_LOCK_threads, MY_MUTEX_INIT_FAST);
+  myblockchain_mutex_init(key_THR_LOCK_lock, &THR_LOCK_lock, MY_MUTEX_INIT_FAST);
+  myblockchain_mutex_init(key_THR_LOCK_myisam, &THR_LOCK_myisam, MY_MUTEX_INIT_SLOW);
+  myblockchain_mutex_init(key_THR_LOCK_myisam_mmap, &THR_LOCK_myisam_mmap, MY_MUTEX_INIT_FAST);
+  myblockchain_mutex_init(key_THR_LOCK_heap, &THR_LOCK_heap, MY_MUTEX_INIT_FAST);
+  myblockchain_mutex_init(key_THR_LOCK_net, &THR_LOCK_net, MY_MUTEX_INIT_FAST);
+  myblockchain_cond_init(key_THR_COND_threads, &THR_COND_threads);
 
   return FALSE;
 }
@@ -173,17 +173,17 @@ void my_thread_global_end()
   my_bool all_threads_killed= TRUE;
 
   set_timespec(&abstime, my_thread_end_wait_time);
-  mysql_mutex_lock(&THR_LOCK_threads);
+  myblockchain_mutex_lock(&THR_LOCK_threads);
   while (THR_thread_count > 0)
   {
-    int error= mysql_cond_timedwait(&THR_COND_threads, &THR_LOCK_threads,
+    int error= myblockchain_cond_timedwait(&THR_COND_threads, &THR_LOCK_threads,
                                     &abstime);
     if (error == ETIMEDOUT || error == ETIME)
     {
 #ifndef _WIN32
       /*
         We shouldn't give an error here, because if we don't have
-        pthread_kill(), programs like mysqld can't ensure that all threads
+        pthread_kill(), programs like myblockchaind can't ensure that all threads
         are killed when we enter here.
       */
       if (THR_thread_count)
@@ -196,7 +196,7 @@ void my_thread_global_end()
       break;
     }
   }
-  mysql_mutex_unlock(&THR_LOCK_threads);
+  myblockchain_mutex_unlock(&THR_LOCK_threads);
 
   DBUG_ASSERT(THR_KEY_mysys_initialized);
   my_delete_thread_local_key(THR_KEY_mysys);
@@ -207,18 +207,18 @@ void my_thread_global_end()
 #ifdef PTHREAD_ERRORCHECK_MUTEX_INITIALIZER_NP
   pthread_mutexattr_destroy(&my_errorcheck_mutexattr);
 #endif
-  mysql_mutex_destroy(&THR_LOCK_malloc);
-  mysql_mutex_destroy(&THR_LOCK_open);
-  mysql_mutex_destroy(&THR_LOCK_lock);
-  mysql_mutex_destroy(&THR_LOCK_myisam);
-  mysql_mutex_destroy(&THR_LOCK_myisam_mmap);
-  mysql_mutex_destroy(&THR_LOCK_heap);
-  mysql_mutex_destroy(&THR_LOCK_net);
-  mysql_mutex_destroy(&THR_LOCK_charset);
+  myblockchain_mutex_destroy(&THR_LOCK_malloc);
+  myblockchain_mutex_destroy(&THR_LOCK_open);
+  myblockchain_mutex_destroy(&THR_LOCK_lock);
+  myblockchain_mutex_destroy(&THR_LOCK_myisam);
+  myblockchain_mutex_destroy(&THR_LOCK_myisam_mmap);
+  myblockchain_mutex_destroy(&THR_LOCK_heap);
+  myblockchain_mutex_destroy(&THR_LOCK_net);
+  myblockchain_mutex_destroy(&THR_LOCK_charset);
   if (all_threads_killed)
   {
-    mysql_mutex_destroy(&THR_LOCK_threads);
-    mysql_cond_destroy(&THR_COND_threads);
+    myblockchain_mutex_destroy(&THR_LOCK_threads);
+    myblockchain_cond_destroy(&THR_COND_threads);
   }
 
   my_thread_global_init_done= FALSE;
@@ -229,7 +229,7 @@ void my_thread_global_end()
   Allocate thread specific memory for the thread, used by mysys and dbug
 
   @note This function may called multiple times for a thread, for example
-  if one uses my_init() followed by mysql_server_init().
+  if one uses my_init() followed by myblockchain_server_init().
 
   @retval FALSE  ok
   @retval TRUE   Fatal error; mysys/dbug functions can't be used
@@ -252,12 +252,12 @@ my_bool my_thread_init()
   if (!(tmp= (struct st_my_thread_var *) calloc(1, sizeof(*tmp))))
     return TRUE;
 
-  mysql_cond_init(key_my_thread_var_suspend, &tmp->suspend);
+  myblockchain_cond_init(key_my_thread_var_suspend, &tmp->suspend);
 
-  mysql_mutex_lock(&THR_LOCK_threads);
+  myblockchain_mutex_lock(&THR_LOCK_threads);
   tmp->id= ++thread_id;
   ++THR_thread_count;
-  mysql_mutex_unlock(&THR_LOCK_threads);
+  myblockchain_mutex_unlock(&THR_LOCK_threads);
   set_mysys_thread_var(tmp);
 
   return FALSE;
@@ -268,8 +268,8 @@ my_bool my_thread_init()
   Deallocate memory used by the thread for book-keeping
 
   @note This may be called multiple times for a thread.
-  This happens for example when one calls 'mysql_server_init()'
-  mysql_server_end() and then ends with a mysql_end().
+  This happens for example when one calls 'myblockchain_server_init()'
+  myblockchain_server_end() and then ends with a myblockchain_end().
 */
 
 void my_thread_end()
@@ -296,7 +296,7 @@ void my_thread_end()
       tmp->dbug= NULL;
     }
 #endif
-    mysql_cond_destroy(&tmp->suspend);
+    myblockchain_cond_destroy(&tmp->suspend);
     free(tmp);
 
     /*
@@ -305,11 +305,11 @@ void my_thread_end()
       my_thread_end and thus freed all memory they have allocated in
       my_thread_init() and DBUG_xxxx
     */
-    mysql_mutex_lock(&THR_LOCK_threads);
+    myblockchain_mutex_lock(&THR_LOCK_threads);
     DBUG_ASSERT(THR_thread_count != 0);
     if (--THR_thread_count == 0)
-      mysql_cond_signal(&THR_COND_threads);
-    mysql_mutex_unlock(&THR_LOCK_threads);
+      myblockchain_cond_signal(&THR_COND_threads);
+    myblockchain_mutex_unlock(&THR_LOCK_threads);
   }
   set_mysys_thread_var(NULL);
 }

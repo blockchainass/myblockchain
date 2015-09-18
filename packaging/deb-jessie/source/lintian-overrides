@@ -14,5 +14,5 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 
 # We provide our own versioning scheme so this warning is overridden
-mysql-community source: changelog-should-mention-nmu
-mysql-community source: source-nmu-has-incorrect-version-number
+myblockchain-community source: changelog-should-mention-nmu
+myblockchain-community source: source-nmu-has-incorrect-version-number

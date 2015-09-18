@@ -209,15 +209,15 @@ public:
   }
   /*
   void setMysqlTableName(char * tableName) {
-    strpcpy(mysqlTableName, tableName);
+    strpcpy(myblockchainTableName, tableName);
   }
   
   char * 
-  void setMysqlDatabaseName(char * databaseName) {
-    strpcpy(mysqlDatabaseName, databaseName);
+  void setMysqlDatabaseName(char * blockchainName) {
+    strpcpy(myblockchainDatabaseName, blockchainName);
   }
 
-  table.setMysqlDatabaseName(database);
+  table.setMysqlDatabaseName(blockchain);
   */
   void setBackupVersion(Uint32 version) { 
     backupVersion = version;

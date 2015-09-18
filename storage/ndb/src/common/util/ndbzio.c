@@ -63,7 +63,7 @@
 #define VALGRIND_MAKE_MEM_NOACCESS(a,b) do {} while(0);
 #endif
 
-/* Start of MySQL Specific Information */
+/* Start of MyBlockchain Specific Information */
 
 
 #define AZHEADER_SIZE 29

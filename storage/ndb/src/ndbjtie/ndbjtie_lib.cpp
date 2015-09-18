@@ -30,7 +30,7 @@
 #include "CharsetMap.hpp"
 
 // global ndb client library definitions
-#include "mysql_utils_jtie.hpp"
+#include "myblockchain_utils_jtie.hpp"
 #include "mgmapi_jtie.hpp"
 #include "ndbapi_jtie.hpp"
 
@@ -39,98 +39,98 @@
 // ---------------------------------------------------------------------------
 
 JTIE_INSTANTIATE_PEER_CLASS_MAPPING(c_m_n_m_CharsetMap,
-                                    "com/mysql/ndbjtie/mysql/CharsetMap")
+                                    "com/myblockchain/ndbjtie/myblockchain/CharsetMap")
 
 // ---------------------------------------------------------------------------
 
 JTIE_INSTANTIATE_PEER_CLASS_MAPPING(c_m_n_n_Ndb,
-                                    "com/mysql/ndbjtie/ndbapi/Ndb")
+                                    "com/myblockchain/ndbjtie/ndbapi/Ndb")
 JTIE_INSTANTIATE_PEER_CLASS_MAPPING(c_m_n_n_NdbBlob,
-                                    "com/mysql/ndbjtie/ndbapi/NdbBlob")
+                                    "com/myblockchain/ndbjtie/ndbapi/NdbBlob")
 JTIE_INSTANTIATE_PEER_CLASS_MAPPING(c_m_n_n_NdbDictionary,
-                                    "com/mysql/ndbjtie/ndbapi/NdbDictionary")
+                                    "com/myblockchain/ndbjtie/ndbapi/NdbDictionary")
 JTIE_INSTANTIATE_PEER_CLASS_MAPPING(c_m_n_n_NdbDictionary_AutoGrowSpecification,
-                                    "com/mysql/ndbjtie/ndbapi/NdbDictionary$AutoGrowSpecification")
+                                    "com/myblockchain/ndbjtie/ndbapi/NdbDictionary$AutoGrowSpecification")
 JTIE_INSTANTIATE_PEER_CLASS_MAPPING(c_m_n_n_NdbDictionary_Column,
-                                    "com/mysql/ndbjtie/ndbapi/NdbDictionary$Column")
+                                    "com/myblockchain/ndbjtie/ndbapi/NdbDictionary$Column")
 JTIE_INSTANTIATE_PEER_CLASS_MAPPING(c_m_n_n_NdbDictionary_Datafile,
-                                    "com/mysql/ndbjtie/ndbapi/NdbDictionary$Datafile")
+                                    "com/myblockchain/ndbjtie/ndbapi/NdbDictionary$Datafile")
 JTIE_INSTANTIATE_PEER_CLASS_MAPPING(c_m_n_n_NdbDictionary_Dictionary,
-                                    "com/mysql/ndbjtie/ndbapi/NdbDictionary$Dictionary")
+                                    "com/myblockchain/ndbjtie/ndbapi/NdbDictionary$Dictionary")
 JTIE_INSTANTIATE_PEER_CLASS_MAPPING(c_m_n_n_NdbDictionary_DictionaryConst_List,
-                                    "com/mysql/ndbjtie/ndbapi/NdbDictionary$DictionaryConst$List")
+                                    "com/myblockchain/ndbjtie/ndbapi/NdbDictionary$DictionaryConst$List")
 JTIE_INSTANTIATE_PEER_CLASS_MAPPING(c_m_n_n_NdbDictionary_DictionaryConst_ListConst_Element,
-                                    "com/mysql/ndbjtie/ndbapi/NdbDictionary$DictionaryConst$ListConst$Element")
+                                    "com/myblockchain/ndbjtie/ndbapi/NdbDictionary$DictionaryConst$ListConst$Element")
 JTIE_INSTANTIATE_PEER_CLASS_MAPPING(c_m_n_n_NdbDictionary_DictionaryConst_ListConst_ElementArray,
-                                    "com/mysql/ndbjtie/ndbapi/NdbDictionary$DictionaryConst$ListConst$ElementArray")
+                                    "com/myblockchain/ndbjtie/ndbapi/NdbDictionary$DictionaryConst$ListConst$ElementArray")
 JTIE_INSTANTIATE_PEER_CLASS_MAPPING(c_m_n_n_NdbDictionary_Event,
-                                    "com/mysql/ndbjtie/ndbapi/NdbDictionary$Event")
+                                    "com/myblockchain/ndbjtie/ndbapi/NdbDictionary$Event")
 JTIE_INSTANTIATE_PEER_CLASS_MAPPING(c_m_n_n_NdbDictionary_Index,
-                                    "com/mysql/ndbjtie/ndbapi/NdbDictionary$Index")
+                                    "com/myblockchain/ndbjtie/ndbapi/NdbDictionary$Index")
 JTIE_INSTANTIATE_PEER_CLASS_MAPPING(c_m_n_n_NdbDictionary_LogfileGroup,
-                                    "com/mysql/ndbjtie/ndbapi/NdbDictionary$LogfileGroup")
+                                    "com/myblockchain/ndbjtie/ndbapi/NdbDictionary$LogfileGroup")
 JTIE_INSTANTIATE_PEER_CLASS_MAPPING(c_m_n_n_NdbDictionary_Object,
-                                    "com/mysql/ndbjtie/ndbapi/NdbDictionary$Object")
+                                    "com/myblockchain/ndbjtie/ndbapi/NdbDictionary$Object")
 JTIE_INSTANTIATE_PEER_CLASS_MAPPING(c_m_n_n_NdbDictionary_ObjectId,
-                                    "com/mysql/ndbjtie/ndbapi/NdbDictionary$ObjectId")
+                                    "com/myblockchain/ndbjtie/ndbapi/NdbDictionary$ObjectId")
 JTIE_INSTANTIATE_PEER_CLASS_MAPPING(c_m_n_n_NdbDictionary_OptimizeIndexHandle,
-                                    "com/mysql/ndbjtie/ndbapi/NdbDictionary$OptimizeIndexHandle")
+                                    "com/myblockchain/ndbjtie/ndbapi/NdbDictionary$OptimizeIndexHandle")
 JTIE_INSTANTIATE_PEER_CLASS_MAPPING(c_m_n_n_NdbDictionary_OptimizeTableHandle,
-                                    "com/mysql/ndbjtie/ndbapi/NdbDictionary$OptimizeTableHandle")
+                                    "com/myblockchain/ndbjtie/ndbapi/NdbDictionary$OptimizeTableHandle")
 JTIE_INSTANTIATE_PEER_CLASS_MAPPING(c_m_n_n_NdbDictionary_RecordSpecification,
-                                    "com/mysql/ndbjtie/ndbapi/NdbDictionary$RecordSpecification")
+                                    "com/myblockchain/ndbjtie/ndbapi/NdbDictionary$RecordSpecification")
 JTIE_INSTANTIATE_PEER_CLASS_MAPPING(c_m_n_n_NdbDictionary_RecordSpecificationArray,
-                                    "com/mysql/ndbjtie/ndbapi/NdbDictionary$RecordSpecificationArray")
+                                    "com/myblockchain/ndbjtie/ndbapi/NdbDictionary$RecordSpecificationArray")
 JTIE_INSTANTIATE_PEER_CLASS_MAPPING(c_m_n_n_NdbDictionary_Table,
-                                    "com/mysql/ndbjtie/ndbapi/NdbDictionary$Table")
+                                    "com/myblockchain/ndbjtie/ndbapi/NdbDictionary$Table")
 JTIE_INSTANTIATE_PEER_CLASS_MAPPING(c_m_n_n_NdbDictionary_Tablespace,
-                                    "com/mysql/ndbjtie/ndbapi/NdbDictionary$Tablespace")
+                                    "com/myblockchain/ndbjtie/ndbapi/NdbDictionary$Tablespace")
 JTIE_INSTANTIATE_PEER_CLASS_MAPPING(c_m_n_n_NdbDictionary_Undofile,
-                                    "com/mysql/ndbjtie/ndbapi/NdbDictionary$Undofile")
+                                    "com/myblockchain/ndbjtie/ndbapi/NdbDictionary$Undofile")
 JTIE_INSTANTIATE_PEER_CLASS_MAPPING(c_m_n_n_NdbError,
-                                    "com/mysql/ndbjtie/ndbapi/NdbError")
+                                    "com/myblockchain/ndbjtie/ndbapi/NdbError")
 JTIE_INSTANTIATE_PEER_CLASS_MAPPING(c_m_n_n_NdbEventOperation,
-                                    "com/mysql/ndbjtie/ndbapi/NdbEventOperation")
+                                    "com/myblockchain/ndbjtie/ndbapi/NdbEventOperation")
 JTIE_INSTANTIATE_PEER_CLASS_MAPPING(c_m_n_n_NdbIndexOperation,
-                                    "com/mysql/ndbjtie/ndbapi/NdbIndexOperation")
+                                    "com/myblockchain/ndbjtie/ndbapi/NdbIndexOperation")
 JTIE_INSTANTIATE_PEER_CLASS_MAPPING(c_m_n_n_NdbIndexScanOperation,
-                                    "com/mysql/ndbjtie/ndbapi/NdbIndexScanOperation")
+                                    "com/myblockchain/ndbjtie/ndbapi/NdbIndexScanOperation")
 JTIE_INSTANTIATE_PEER_CLASS_MAPPING(c_m_n_n_NdbIndexScanOperation_IndexBound,
-                                    "com/mysql/ndbjtie/ndbapi/NdbIndexScanOperation$IndexBound")
+                                    "com/myblockchain/ndbjtie/ndbapi/NdbIndexScanOperation$IndexBound")
 JTIE_INSTANTIATE_PEER_CLASS_MAPPING(c_m_n_n_NdbInterpretedCode,
-                                    "com/mysql/ndbjtie/ndbapi/NdbInterpretedCode")
+                                    "com/myblockchain/ndbjtie/ndbapi/NdbInterpretedCode")
 JTIE_INSTANTIATE_PEER_CLASS_MAPPING(c_m_n_n_NdbLockHandle,
-                                    "com/mysql/ndbjtie/ndbapi/NdbLockHandle")
+                                    "com/myblockchain/ndbjtie/ndbapi/NdbLockHandle")
 JTIE_INSTANTIATE_PEER_CLASS_MAPPING(c_m_n_n_NdbOperation,
-                                    "com/mysql/ndbjtie/ndbapi/NdbOperation")
+                                    "com/myblockchain/ndbjtie/ndbapi/NdbOperation")
 JTIE_INSTANTIATE_PEER_CLASS_MAPPING(c_m_n_n_NdbOperation_GetValueSpec,
-                                    "com/mysql/ndbjtie/ndbapi/NdbOperation$GetValueSpec")
+                                    "com/myblockchain/ndbjtie/ndbapi/NdbOperation$GetValueSpec")
 JTIE_INSTANTIATE_PEER_CLASS_MAPPING(c_m_n_n_NdbOperation_GetValueSpecArray,
-                                    "com/mysql/ndbjtie/ndbapi/NdbOperation$GetValueSpecArray")
+                                    "com/myblockchain/ndbjtie/ndbapi/NdbOperation$GetValueSpecArray")
 JTIE_INSTANTIATE_PEER_CLASS_MAPPING(c_m_n_n_NdbOperation_OperationOptions,
-                                    "com/mysql/ndbjtie/ndbapi/NdbOperation$OperationOptions")
+                                    "com/myblockchain/ndbjtie/ndbapi/NdbOperation$OperationOptions")
 JTIE_INSTANTIATE_PEER_CLASS_MAPPING(c_m_n_n_NdbOperation_SetValueSpec,
-                                    "com/mysql/ndbjtie/ndbapi/NdbOperation$SetValueSpec")
+                                    "com/myblockchain/ndbjtie/ndbapi/NdbOperation$SetValueSpec")
 JTIE_INSTANTIATE_PEER_CLASS_MAPPING(c_m_n_n_NdbOperation_SetValueSpecArray,
-                                    "com/mysql/ndbjtie/ndbapi/NdbOperation$SetValueSpecArray")
+                                    "com/myblockchain/ndbjtie/ndbapi/NdbOperation$SetValueSpecArray")
 JTIE_INSTANTIATE_PEER_CLASS_MAPPING(c_m_n_n_NdbRecAttr,
-                                    "com/mysql/ndbjtie/ndbapi/NdbRecAttr")
+                                    "com/myblockchain/ndbjtie/ndbapi/NdbRecAttr")
 JTIE_INSTANTIATE_PEER_CLASS_MAPPING(c_m_n_n_NdbRecord,
-                                    "com/mysql/ndbjtie/ndbapi/NdbRecord")
+                                    "com/myblockchain/ndbjtie/ndbapi/NdbRecord")
 JTIE_INSTANTIATE_PEER_CLASS_MAPPING(c_m_n_n_NdbScanFilter,
-                                    "com/mysql/ndbjtie/ndbapi/NdbScanFilter")
+                                    "com/myblockchain/ndbjtie/ndbapi/NdbScanFilter")
 JTIE_INSTANTIATE_PEER_CLASS_MAPPING(c_m_n_n_NdbScanOperation,
-                                    "com/mysql/ndbjtie/ndbapi/NdbScanOperation")
+                                    "com/myblockchain/ndbjtie/ndbapi/NdbScanOperation")
 JTIE_INSTANTIATE_PEER_CLASS_MAPPING(c_m_n_n_NdbScanOperation_ScanOptions,
-                                    "com/mysql/ndbjtie/ndbapi/NdbScanOperation$ScanOptions")
+                                    "com/myblockchain/ndbjtie/ndbapi/NdbScanOperation$ScanOptions")
 JTIE_INSTANTIATE_PEER_CLASS_MAPPING(c_m_n_n_NdbTransaction,
-                                    "com/mysql/ndbjtie/ndbapi/NdbTransaction")
+                                    "com/myblockchain/ndbjtie/ndbapi/NdbTransaction")
 JTIE_INSTANTIATE_PEER_CLASS_MAPPING(c_m_n_n_Ndb_Key_part_ptr,
-                                    "com/mysql/ndbjtie/ndbapi/Ndb$Key_part_ptr")
+                                    "com/myblockchain/ndbjtie/ndbapi/Ndb$Key_part_ptr")
 JTIE_INSTANTIATE_PEER_CLASS_MAPPING(c_m_n_n_Ndb_Key_part_ptrArray,
-                                    "com/mysql/ndbjtie/ndbapi/Ndb$Key_part_ptrArray")
+                                    "com/myblockchain/ndbjtie/ndbapi/Ndb$Key_part_ptrArray")
 JTIE_INSTANTIATE_PEER_CLASS_MAPPING(c_m_n_n_Ndb_cluster_connection,
-                                    "com/mysql/ndbjtie/ndbapi/Ndb_cluster_connection")
+                                    "com/myblockchain/ndbjtie/ndbapi/Ndb_cluster_connection")
 
 // ---------------------------------------------------------------------------
 
@@ -193,7 +193,7 @@ JNI_OnLoad(JavaVM * jvm, void * reserved)
     }
     VERBOSE("... initialized the NDBAPI resources");
 
-    VERBOSE("initializing the MySQL Utilities resources ...");
+    VERBOSE("initializing the MyBlockchain Utilities resources ...");
     // XXX add a return status to init_global_charset_map()
     //int stat = init_global_charset_map();
     CharsetMap::init();
@@ -201,7 +201,7 @@ JNI_OnLoad(JavaVM * jvm, void * reserved)
     //    PRINT_ERROR_CODE("init_global_charset_map() returned: ", stat);
     //    return JNI_ERR;
     //}
-    VERBOSE("... initialized the MySQL Utilities resources");
+    VERBOSE("... initialized the MyBlockchain Utilities resources");
 
     VERBOSE("... loaded the NDB JTie library");
     return required_jni_version;
@@ -216,9 +216,9 @@ JNI_OnUnload(JavaVM * jvm, void * reserved)
     TRACE("void JNI_OnUnload(JavaVM *, void *)");
     VERBOSE("unloading the NDB JTie library...");
 
-    VERBOSE("releasing the MySQL Utilities resources ...");
+    VERBOSE("releasing the MyBlockchain Utilities resources ...");
     CharsetMap::unload();
-    VERBOSE("... released the MySQL Utilities resources");
+    VERBOSE("... released the MyBlockchain Utilities resources");
 
     VERBOSE("releasing NDBAPI resources ...");
     ndb_end(0);

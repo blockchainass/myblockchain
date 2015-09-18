@@ -1,0 +1,132 @@
+############## myblockchain-test\t\collation_blockchain_func.test  #####################
+#                                                                             #
+# Variable Name: collation_blockchain                                           #
+# Scope: GLOBAL | SESSION                                                     #
+# Access Type: Dynamic                                                        #
+# Data Type: string                                                           #
+# Default Value:                                                              #
+# Range:                                                                      #
+#                                                                             #
+#                                                                             #
+# Creation Date: 2008-03-08                                                   #
+# Author:  Rizwan                                                             #
+#                                                                             #
+# Description: Test Cases of Dynamic System Variable collation_blockchain       #
+#              that checks the behavior of this variable                      #
+#                                                                             #
+# Reference: http://dev.myblockchain.com/doc/refman/5.1/en/                          #
+#  server-system-variables.html                                               #
+#                                                                             #
+###############################################################################
+
+--echo '#--------------------FN_DYNVARS_011_01-------------------------#'
+####################################################################
+# Check if setting collation_blockchain is changed in new connection # 
+####################################################################
+SET @global_collation_blockchain = @@global.collation_blockchain;
+SET @session_collation_blockchain = @@session.collation_blockchain;
+SET @session_collation_server = @@session.collation_server;
+
+
+SET @@global.collation_blockchain = latin1_danish_ci;
+--echo 'connect (con1,localhost,root,,,,)'
+connect (con1,localhost,root,,,,);
+--echo 'connection con1'
+connection con1; 
+SELECT @@global.collation_blockchain;
+SELECT @@session.collation_blockchain;
+disconnect con1;
+
+--echo '#--------------------FN_DYNVARS_011_02-------------------------#'
+#########################################################
+# Begin the functionality Testing of collation_blockchain #
+#########################################################
+
+--echo 'connection default'
+connection default;
+
+--disable_warnings
+DROP TABLE IF EXISTS t1,t2;
+--enable_warnings
+
+
+SELECT @@character_set_server,@@collation_server;
+#==============================================================================
+--echo '--check if setting collation_blockchain update character_set_blockchain--'
+#==============================================================================
+
+SET @@session.collation_blockchain = utf8_spanish_ci;
+SELECT @@collation_blockchain, @@character_set_blockchain;
+
+#==============================================================================
+--echo '--check if collation_blockchain effects blockchain/tables charset/collation'
+#==============================================================================
+SET @@session.collation_server = utf8_roman_ci;
+SET @@session.collation_blockchain = latin2_croatian_ci;
+CREATE DATABASE db1;
+USE db1;
+SHOW CREATE DATABASE db1;
+
+CREATE TABLE t1(a CHAR(20));
+SHOW CREATE TABLE t1;
+
+#==============================================================================
+--echo '---check if updating collation_blockchain effects new table/column---'
+#==============================================================================
+SET @@session.collation_blockchain = latin7_general_cs;
+CREATE TABLE t2(a CHAR(10));
+SHOW CREATE TABLE t2;
+
+DROP TABLE t1,t2;
+
+
+#==============================================================================
+--echo '--check value of collation and character set when current db is dropped'
+#==============================================================================
+DROP DATABASE db1;
+SELECT @@collation_blockchain,@@collation_server,@@character_set_blockchain,@@character_set_server;
+USE test;
+SELECT @@collation_blockchain,@@collation_server,@@character_set_blockchain,@@character_set_server;
+
+
+--echo 'fill table with some test data';
+CREATE TABLE t1(a CHAR(20))CHARACTER SET=latin1;
+INSERT INTO t1 VALUES('Muffler'),('M�ller'),('MX Systems');
+
+#==============================================================================
+--echo '---check if collation_blockchain effects results sort order---'
+#==============================================================================
+
+SET @@session.collation_blockchain = latin1_swedish_ci;
+SELECT * FROM t1 ORDER BY a;
+
+SET @@session.collation_blockchain = latin1_german1_ci;
+SELECT * FROM t1 ORDER BY a;
+
+--echo 'explicit Collate clause should effects results sort order';
+
+SELECT * FROM t1 ORDER BY a COLLATE latin1_swedish_ci;
+SELECT * FROM t1 ORDER BY a COLLATE latin1_german1_ci;
+
+
+#==============================================================================
+--echo '----check if indexing is effected by collation_blockchain---'
+#==============================================================================
+SET @@session.collation_blockchain = latin1_swedish_ci;
+ALTER TABLE t1 ADD PRIMARY KEY (a);
+SELECT * FROM t1 ORDER BY a;
+
+ALTER TABLE t1 DROP PRIMARY KEY;
+SET @@session.collation_blockchain = latin1_german1_ci;
+ALTER TABLE t1 ADD PRIMARY KEY (a);
+SELECT * FROM t1 ORDER BY a;
+
+# clean up
+DROP TABLE t1;
+SET @@global.collation_blockchain = @global_collation_blockchain;
+SET @@session.collation_blockchain = @session_collation_blockchain;
+SET @@session.collation_server = @session_collation_server;
+
+#######################################################
+# End of functionality Testing for collation_blockchain #
+#######################################################

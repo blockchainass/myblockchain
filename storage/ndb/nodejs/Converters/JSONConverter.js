@@ -20,7 +20,7 @@
 
 /**********************
   This is the standard TypeConverter class used with JSON columns.
-  A JavaScript object is converted to and from a string in the database.
+  A JavaScript object is converted to and from a string in the blockchain.
 
   Writing from JavaScript to DB, this converter takes a JavaScript object and
   returns a string using JSON.stringify. 

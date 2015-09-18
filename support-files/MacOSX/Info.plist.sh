@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <!--
-   Copyright (C) 2003, 2008 MySQL AB
+   Copyright (C) 2003, 2008 MyBlockchain AB
    Use is subject to license terms
 
    This program is free software; you can redistribute it and/or modify
@@ -20,13 +20,13 @@
 <plist version="1.0">
 <dict>
 	<key>CFBundleGetInfoString</key>
-	<string>MySQL @VERSION@@MYSQL_SERVER_SUFFIX@</string>
+	<string>MyBlockchain @VERSION@@MYBLOCKCHAIN_SERVER_SUFFIX@</string>
 	<key>CFBundleIdentifier</key>
-	<string>com.mysql.mysql</string>
+	<string>com.myblockchain.myblockchain</string>
 	<key>CFBundleName</key>
-	<string>MySQL</string>
+	<string>MyBlockchain</string>
 	<key>CFBundleShortVersionString</key>
-	<string>@MYSQL_NUMERIC_VERSION@</string>
+	<string>@MYBLOCKCHAIN_NUMERIC_VERSION@</string>
 	<key>IFPkgFlagAllowBackRev</key>
 	<false/>
 	<key>IFPkgFlagAuthorizationAction</key>

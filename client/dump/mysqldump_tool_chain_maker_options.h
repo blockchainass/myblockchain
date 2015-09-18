@@ -15,12 +15,12 @@
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifndef MYSQLDUMP_TOOL_CHAIN_MAKER_OPTIONS_INCLUDED
-#define MYSQLDUMP_TOOL_CHAIN_MAKER_OPTIONS_INCLUDED
+#ifndef MYBLOCKCHAINDUMP_TOOL_CHAIN_MAKER_OPTIONS_INCLUDED
+#define MYBLOCKCHAINDUMP_TOOL_CHAIN_MAKER_OPTIONS_INCLUDED
 
 #include "abstract_data_object.h"
 #include "sql_formatter_options.h"
-#include "mysql_object_reader_options.h"
+#include "myblockchain_object_reader_options.h"
 #include "object_filter.h"
 
 namespace Mysql{
@@ -32,7 +32,7 @@ class Mysqldump_tool_chain_maker_options
 {
 public:
   Mysqldump_tool_chain_maker_options(
-    const Mysql_chain_element_options* mysql_chain_element_options);
+    const Mysql_chain_element_options* myblockchain_chain_element_options);
 
   ~Mysqldump_tool_chain_maker_options();
 
@@ -46,12 +46,12 @@ public:
 
   bool is_object_included_in_dump(Abstract_data_object* object);
 
-  const Mysql_chain_element_options* m_mysql_chain_element_options;
+  const Mysql_chain_element_options* m_myblockchain_chain_element_options;
   Sql_formatter_options* m_formatter_options;
   Mysql_object_reader_options* m_object_reader_options;
 
-  bool m_dump_all_databases;
-  bool m_dump_selected_databases;
+  bool m_dump_all_blockchains;
+  bool m_dump_selected_blockchains;
   uint32 m_default_parallelism;
   Mysql::Nullable<std::string> m_result_file;
   Mysql::Nullable<std::string> m_compress_output_algorithm;
@@ -65,7 +65,7 @@ private:
     use --default-parallelism value.
    */
   std::map<int, int> m_object_queue_threads;
-  std::map<std::string, int> m_database_to_object_queue_id;
+  std::map<std::string, int> m_blockchain_to_object_queue_id;
   Mysql::Nullable<std::string> m_parallel_schemas_string;
   int m_last_parallel_schemas_queue_id;
   Object_filter m_object_filter;

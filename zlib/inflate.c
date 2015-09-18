@@ -574,7 +574,7 @@ int flush;
     static const unsigned short order[19] = /* permutation of code lengths */
         {16, 17, 18, 0, 8, 7, 9, 6, 10, 5, 11, 4, 12, 3, 13, 2, 14, 1, 15};
 
-    /* XXXMYSQL: To assert that put is never used uninitialized */
+    /* XXXMYBLOCKCHAIN: To assert that put is never used uninitialized */
 #ifdef DEBUG
     put = NULL;
 #endif /* DEBUG */
@@ -828,7 +828,7 @@ int flush;
                 if (copy > have) copy = have;
                 if (copy > left) copy = left;
                 if (copy == 0) goto inf_leave;
-                /* XXXMYSQL: Assert that put is not uninitialized */
+                /* XXXMYBLOCKCHAIN: Assert that put is not uninitialized */
                 Assert ( put != NULL, "put is uninitialized" );
                 zmemcpy(put, next, copy);
                 have -= copy;
@@ -1064,7 +1064,7 @@ int flush;
                 if (copy > state->length) copy = state->length;
             }
             else {                              /* copy from output */
-                /* XXXMYSQL: Assert that put is not uninitialized */
+                /* XXXMYBLOCKCHAIN: Assert that put is not uninitialized */
                 Assert ( put != NULL, "put is uninitialized" );
                 from = put - state->offset;
                 copy = state->length;
@@ -1090,7 +1090,7 @@ int flush;
                 strm->total_out += out;
                 state->total += out;
                 if (out) {
-                    /* XXXMYSQL: Assert that put is not uninitialized */
+                    /* XXXMYBLOCKCHAIN: Assert that put is not uninitialized */
                     Assert ( put != NULL, "put is uninitialized" );
                     strm->adler = state->check =
                         UPDATE(state->check, put - out, out);

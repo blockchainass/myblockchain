@@ -28,8 +28,8 @@ Created 1/16/1996 Heikki Tuuri
 # include "ha_prototypes.h"
 
 /*********************************************************************//**
-Gets the MySQL charset-collation code for MySQL string types.
-@return MySQL charset-collation code */
+Gets the MyBlockchain charset-collation code for MyBlockchain string types.
+@return MyBlockchain charset-collation code */
 UNIV_INLINE
 ulint
 dtype_get_charset_coll(
@@ -40,9 +40,9 @@ dtype_get_charset_coll(
 }
 
 /*********************************************************************//**
-Determines if a MySQL string type is a subset of UTF-8.  This function
+Determines if a MyBlockchain string type is a subset of UTF-8.  This function
 may return false negatives, in case further character-set collation
-codes are introduced in MySQL later.
+codes are introduced in MyBlockchain later.
 @return TRUE if a subset of UTF-8 */
 UNIV_INLINE
 ibool
@@ -65,11 +65,11 @@ dtype_is_utf8(
 }
 
 /*********************************************************************//**
-Gets the MySQL type code from a dtype.
-@return MySQL type code; this is NOT an InnoDB type code! */
+Gets the MyBlockchain type code from a dtype.
+@return MyBlockchain type code; this is NOT an InnoDB type code! */
 UNIV_INLINE
 ulint
-dtype_get_mysql_type(
+dtype_get_myblockchain_type(
 /*=================*/
 	const dtype_t*	type)	/*!< in: type struct */
 {
@@ -320,7 +320,7 @@ dtype_read_for_order_and_null_size(
 	type->len = mach_read_from_2(buf + 2);
 
 	type->prtype = dtype_form_prtype(type->prtype,
-					 data_mysql_default_charset_coll);
+					 data_myblockchain_default_charset_coll);
 	dtype_set_mblen(type);
 }
 
@@ -360,13 +360,13 @@ dtype_new_read_for_order_and_null_size(
 		ut_a(charset_coll <= MAX_CHAR_COLL_NUM);
 
 		if (charset_coll == 0) {
-			/* This insert buffer record was inserted with MySQL
+			/* This insert buffer record was inserted with MyBlockchain
 			version < 4.1.2, and the charset-collation code was not
 			explicitly stored to dtype->prtype at that time. It
-			must be the default charset-collation of this MySQL
+			must be the default charset-collation of this MyBlockchain
 			installation. */
 
-			charset_coll = data_mysql_default_charset_coll;
+			charset_coll = data_myblockchain_default_charset_coll;
 		}
 
 		type->prtype = dtype_form_prtype(type->prtype, charset_coll);
@@ -432,11 +432,11 @@ dtype_sql_name(
 		ut_snprintf(name, name_sz, "BINARY(%u)", len);
 		break;
 	case DATA_CHAR:
-	case DATA_MYSQL:
+	case DATA_MYBLOCKCHAIN:
 		ut_snprintf(name, name_sz, "CHAR(%u)", len);
 		break;
 	case DATA_VARCHAR:
-	case DATA_VARMYSQL:
+	case DATA_VARMYBLOCKCHAIN:
 		ut_snprintf(name, name_sz, "VARCHAR(%u)", len);
 		break;
 	case DATA_BINARY:
@@ -490,7 +490,7 @@ dtype_get_fixed_size_low(
 	switch (mtype) {
 	case DATA_SYS:
 #ifdef UNIV_DEBUG
-		switch (prtype & DATA_MYSQL_TYPE_MASK) {
+		switch (prtype & DATA_MYBLOCKCHAIN_TYPE_MASK) {
 		case DATA_ROW_ID:
 			ut_ad(len == DATA_ROW_ID_LEN);
 			break;
@@ -512,7 +512,7 @@ dtype_get_fixed_size_low(
 	case DATA_DOUBLE:
 	case DATA_POINT:
 		return(len);
-	case DATA_MYSQL:
+	case DATA_MYBLOCKCHAIN:
 #ifndef UNIV_HOTBACKUP
 		if (prtype & DATA_BINARY_TYPE) {
 			return(len);
@@ -541,7 +541,7 @@ dtype_get_fixed_size_low(
 	case DATA_VARCHAR:
 	case DATA_BINARY:
 	case DATA_DECIMAL:
-	case DATA_VARMYSQL:
+	case DATA_VARMYBLOCKCHAIN:
 	case DATA_VAR_POINT:
 	case DATA_GEOMETRY:
 	case DATA_BLOB:
@@ -570,7 +570,7 @@ dtype_get_min_size_low(
 	switch (mtype) {
 	case DATA_SYS:
 #ifdef UNIV_DEBUG
-		switch (prtype & DATA_MYSQL_TYPE_MASK) {
+		switch (prtype & DATA_MYBLOCKCHAIN_TYPE_MASK) {
 		case DATA_ROW_ID:
 			ut_ad(len == DATA_ROW_ID_LEN);
 			break;
@@ -592,7 +592,7 @@ dtype_get_min_size_low(
 	case DATA_DOUBLE:
 	case DATA_POINT:
 		return(len);
-	case DATA_MYSQL:
+	case DATA_MYBLOCKCHAIN:
 		if (prtype & DATA_BINARY_TYPE) {
 			return(len);
 		} else {
@@ -612,7 +612,7 @@ dtype_get_min_size_low(
 	case DATA_VARCHAR:
 	case DATA_BINARY:
 	case DATA_DECIMAL:
-	case DATA_VARMYSQL:
+	case DATA_VARMYBLOCKCHAIN:
 	case DATA_VAR_POINT:
 	case DATA_GEOMETRY:
 	case DATA_BLOB:
@@ -642,11 +642,11 @@ dtype_get_max_size_low(
 	case DATA_INT:
 	case DATA_FLOAT:
 	case DATA_DOUBLE:
-	case DATA_MYSQL:
+	case DATA_MYBLOCKCHAIN:
 	case DATA_VARCHAR:
 	case DATA_BINARY:
 	case DATA_DECIMAL:
-	case DATA_VARMYSQL:
+	case DATA_VARMYBLOCKCHAIN:
 	case DATA_POINT:
 		return(len);
 	case DATA_VAR_POINT:

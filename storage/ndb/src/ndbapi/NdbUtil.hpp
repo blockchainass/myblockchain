@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2003-2006 MySQL AB, 2010 Sun Microsystems, Inc.
+   Copyright (C) 2003-2006 MyBlockchain AB, 2010 Sun Microsystems, Inc.
     All rights reserved. Use is subject to license terms.
 
    This program is free software; you can redistribute it and/or modify
@@ -20,7 +20,7 @@
 Name:		NdbUtil.H
 Include:	
 Link:		
-Author:		UABRONM Mikael Ronström UAB/B/SD
+Author:		UABRONM Mikael Ronstrï¿½m UAB/B/SD
 Date:		991029
 Version:	0.4
 Description:	Utility classes for NDB API

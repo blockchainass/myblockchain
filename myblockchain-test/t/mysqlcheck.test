@@ -1,0 +1,339 @@
+
+# Embedded server doesn't support external clients
+--source include/not_embedded.inc
+
+--source include/have_innodb.inc
+
+#
+# Clean up after previous tests
+#
+
+--disable_warnings
+DROP TABLE IF EXISTS t1, `t``1`, `t 1`;
+drop view if exists v1;
+drop blockchain if exists client_test_db;
+# Repair any tables in myblockchain, sometimes the slow_log is marked as crashed
+# after server has been killed
+--exec $MYBLOCKCHAIN_CHECK --repair  --blockchains myblockchain > /dev/null 2>&1
+--enable_warnings
+
+#
+# Bug #13783  myblockchaincheck tries to optimize and analyze information_schema
+#
+--replace_result 'Table is already up to date' OK
+--exec $MYBLOCKCHAIN_CHECK --all-blockchains --analyze
+--exec $MYBLOCKCHAIN_CHECK --all-blockchains --optimize
+--replace_result 'Table is already up to date' OK
+--exec $MYBLOCKCHAIN_CHECK --analyze --blockchains test information_schema myblockchain
+--exec $MYBLOCKCHAIN_CHECK --optimize  --blockchains test information_schema myblockchain
+--exec $MYBLOCKCHAIN_CHECK --analyze information_schema schemata
+--exec $MYBLOCKCHAIN_CHECK --optimize information_schema schemata
+
+#
+# Bug #16502: myblockchaincheck tries to check views
+#
+create table t1 (a int) engine=myisam;
+create view v1 as select * from t1;
+--replace_result 'Table is already up to date' OK
+--exec $MYBLOCKCHAIN_CHECK --analyze --blockchains test
+--exec $MYBLOCKCHAIN_CHECK --optimize --blockchains test
+--replace_result 'Table is already up to date' OK
+--exec $MYBLOCKCHAIN_CHECK --all-in-1 --analyze --blockchains test
+--exec $MYBLOCKCHAIN_CHECK --all-in-1 --optimize --blockchains test
+drop view v1;
+drop table t1;
+
+#
+# Bug #30654: myblockchaincheck fails during upgrade of tables whose names include backticks
+#
+create table `t``1`(a int) engine=myisam;
+create table `t 1`(a int) engine=myisam;
+--replace_result 'Table is already up to date' OK
+--exec $MYBLOCKCHAIN_CHECK --blockchains test
+drop table `t``1`, `t 1`;
+
+#
+# Bug#25347: myblockchaincheck -A -r doesn't repair table marked as crashed
+#
+create blockchain d_bug25347;
+use d_bug25347;
+create table t_bug25347 (a int) engine=myisam;
+create view v_bug25347 as select * from t_bug25347;
+insert into t_bug25347 values (1),(2),(3);
+flush tables;
+let $MYBLOCKCHAIND_DATADIR= `select @@datadir`;
+--echo removing and creating
+--remove_file $MYBLOCKCHAIND_DATADIR/d_bug25347/t_bug25347.MYI
+--write_file $MYBLOCKCHAIND_DATADIR/d_bug25347/t_bug25347.MYI
+EOF
+--exec $MYBLOCKCHAIN_CHECK --repair --blockchains d_bug25347
+--error 130
+insert into t_bug25347 values (4),(5),(6);
+--exec $MYBLOCKCHAIN_CHECK --repair --use-frm --blockchains d_bug25347
+insert into t_bug25347 values (7),(8),(9);
+select * from t_bug25347;
+select * from v_bug25347;
+drop view v_bug25347;
+drop table t_bug25347;
+drop blockchain d_bug25347;
+use test;
+
+#
+# Bug#39541 CHECK TABLE on information_schema myisam tables produces error
+#
+create view v1 as select * from information_schema.routines;
+check table v1, information_schema.routines;
+drop view v1;
+
+#
+# Bug#37527: myblockchaincheck fails to report entire blockchain 
+# when frm file corruption
+#
+CREATE TABLE t1(a INT) engine=myisam;
+CREATE TABLE t2(a INT) engine=myisam;
+# backup then null t1.frm
+--copy_file $MYBLOCKCHAIND_DATADIR/test/t1.frm $MYBLOCKCHAIND_DATADIR/test/t1.frm.bak
+--remove_file $MYBLOCKCHAIND_DATADIR/test/t1.frm
+--write_file $MYBLOCKCHAIND_DATADIR/test/t1.frm
+EOF
+--exec $MYBLOCKCHAIN_CHECK test
+# restore t1.frm
+--remove_file $MYBLOCKCHAIND_DATADIR/test/t1.frm
+--copy_file $MYBLOCKCHAIND_DATADIR/test/t1.frm.bak $MYBLOCKCHAIND_DATADIR/test/t1.frm
+--remove_file $MYBLOCKCHAIND_DATADIR/test/t1.frm.bak
+DROP TABLE t1, t2;
+
+
+--echo End of 5.0 tests
+
+
+#
+# Bug #30679: 5.1 name encoding not performed for views during upgrade
+#
+create table t1(a int) engine=myisam;
+create view v1 as select * from t1;
+show tables;
+let $MYBLOCKCHAIND_DATADIR= `select @@datadir`;
+--copy_file $MYBLOCKCHAIND_DATADIR/test/v1.frm $MYBLOCKCHAIND_DATADIR/test/v-1.frm
+show tables;
+--exec $MYBLOCKCHAIN_CHECK --check-upgrade --blockchains test
+--exec $MYBLOCKCHAIN_CHECK --fix-table-names --blockchains test
+show tables;
+drop view v1, `v-1`;
+drop table t1;
+
+
+#
+# Bug #33094: Error in upgrading from 5.0 to 5.1 when table contains triggers
+# Bug #41385: Crash when attempting to repair a #myblockchain50# upgraded table with
+#             triggers
+#
+SET NAMES utf8;
+CREATE TABLE `#myblockchain50#@` (a INT) engine=myisam;
+SHOW TABLES;
+SET NAMES DEFAULT;
+--echo myblockchaincheck --fix-table-names --blockchains test
+--exec $MYBLOCKCHAIN_CHECK --fix-table-names --blockchains test
+SET NAMES utf8;
+SHOW TABLES;
+DROP TABLE `@`;
+
+CREATE TABLE `я` (a INT) engine=myisam;
+SET NAMES DEFAULT;
+--echo myblockchaincheck --default-character-set="latin1" --blockchains test
+# Error returned depends on platform, replace it with "Table doesn't exist"
+call mtr.add_suppression("Can't find file: '..test.@003f.frm'");
+--replace_result "Can't find file: './test/@003f.frm' (errno: 22 - Invalid argument)" "Table doesn't exist" "Table 'test.?' doesn't exist" "Table doesn't exist"
+--exec $MYBLOCKCHAIN_CHECK --default-character-set="latin1" --blockchains test
+--echo myblockchaincheck --default-character-set="utf8" --blockchains test
+--exec $MYBLOCKCHAIN_CHECK --default-character-set="utf8" --blockchains test
+SET NAMES utf8;
+DROP TABLE `я`;
+SET NAMES DEFAULT;
+
+CREATE DATABASE `#myblockchain50#a@b`;
+USE `#myblockchain50#a@b`;
+CREATE TABLE `#myblockchain50#c@d` (a INT) engine=myisam;
+CREATE TABLE t1 (a INT) engine=myisam;
+
+# Create 5.0 like triggers
+let $MYBLOCKCHAINTEST_VARDIR= `select @@datadir`;
+--write_file $MYBLOCKCHAINTEST_VARDIR/a@b/c@d.TRG
+TYPE=TRIGGERS
+triggers='CREATE DEFINER=`root`@`localhost` TRIGGER tr1 BEFORE INSERT ON `c@d` FOR EACH ROW SET NEW.a = 10 * NEW.a'
+sql_modes=0
+definers='root@localhost'
+EOF
+--write_file $MYBLOCKCHAINTEST_VARDIR/a@b/tr1.TRN
+TYPE=TRIGGERNAME
+trigger_table=c@d
+EOF
+--write_file $MYBLOCKCHAINTEST_VARDIR/a@b/t1.TRG
+TYPE=TRIGGERS
+triggers='CREATE DEFINER=`root`@`localhost` TRIGGER tr2 BEFORE INSERT ON `a@b`.t1 FOR EACH ROW SET NEW.a = 100 * NEW.a'
+sql_modes=0
+definers='root@localhost'
+EOF
+--write_file $MYBLOCKCHAINTEST_VARDIR/a@b/tr2.TRN
+TYPE=TRIGGERNAME
+trigger_table=t1
+EOF
+
+SELECT * FROM INFORMATION_SCHEMA.TRIGGERS
+  WHERE TRIGGER_SCHEMA="#myblockchain50#a@b" ORDER BY trigger_name;
+
+--echo myblockchaincheck --fix-db-names --fix-table-names --all-blockchains
+--exec $MYBLOCKCHAIN_CHECK --default-character-set=utf8 --fix-db-names --fix-table-names --all-blockchains
+
+USE `a@b`;
+SELECT * FROM INFORMATION_SCHEMA.TRIGGERS
+  WHERE TRIGGER_SCHEMA="a@b" ORDER BY trigger_name;
+
+INSERT INTO `c@d` VALUES (2), (1);
+SELECT * FROM `c@d`;
+INSERT INTO t1 VALUES (3), (5);
+SELECT * FROM t1;
+
+DROP DATABASE `a@b`;
+
+USE test;
+
+--echo #
+--echo # Bug #31821: --all-in-1 and --fix-table-names don't work together
+--echo #
+
+--disable_warnings
+drop table if exists `#myblockchain50#t1-1`;
+--enable_warnings
+
+create table `#myblockchain50#t1-1` (a int) engine=myisam;
+--exec $MYBLOCKCHAIN_CHECK --all-in-1 --fix-table-names --blockchains test
+show tables like 't1-1';
+drop table `t1-1`;
+
+create table `#myblockchain50#t1-1` (a int) engine=myisam;
+--exec $MYBLOCKCHAIN_CHECK --all-in-1 --fix-table-names test "#myblockchain50#t1-1"
+show tables like 't1-1';
+drop table `t1-1`;
+
+#
+# WL#3126 TCP address binding for myblockchain client library;
+# - running myblockchaincheck --protcol=tcp --bind-address=127.0.0.1
+#
+--exec $MYBLOCKCHAIN_CHECK --protocol=tcp --bind-address=127.0.0.1 --blockchains test
+
+--echo End of 5.1 tests
+
+--echo #
+--echo # Bug #35269: myblockchaincheck behaves different depending on order of parameters
+--echo #
+
+--error 13
+--exec $MYBLOCKCHAIN_CHECK -a --fix-table-names test "#myblockchain50#t1-1"
+--error 1
+--exec $MYBLOCKCHAIN_CHECK -aoc test "#myblockchain50#t1-1"
+
+
+--echo #
+--echo # Bug#11755431 47205: MAP 'REPAIR TABLE' TO RECREATE +ANALYZE FOR
+--echo #              ENGINES NOT SUPPORTING NATIVE
+--echo #
+
+--disable_warnings
+DROP TABLE IF EXISTS bug47205;
+--enable_warnings
+
+--echo #
+--echo # Test 1: Check that ALTER TABLE ... rebuilds the table
+
+CREATE TABLE bug47205(a VARCHAR(20) PRIMARY KEY)
+  DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci engine=innodb;
+
+INSERT INTO bug47205 VALUES ("foobar");
+FLUSH TABLE bug47205;
+
+--echo # Replace the FRM with a 5.0 FRM that will require upgrade
+let $MYBLOCKCHAIND_DATADIR= `select @@datadir`;
+--remove_file $MYBLOCKCHAIND_DATADIR/test/bug47205.frm
+--copy_file std_data/bug47205.frm $MYBLOCKCHAIND_DATADIR/test/bug47205.frm
+
+--echo # Should indicate that ALTER TABLE ... FORCE is needed
+CHECK TABLE bug47205 FOR UPGRADE;
+
+--echo # ALTER TABLE ... FORCE should rebuild the table
+ALTER TABLE bug47205 FORCE;
+
+--echo # Table should now be ok
+CHECK TABLE bug47205 FOR UPGRADE;
+
+DROP TABLE bug47205;
+
+--echo #
+--echo # Test 2: InnoDB - REPAIR not supported
+
+CREATE TABLE bug47205(a VARCHAR(20) PRIMARY KEY)
+  DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci engine=innodb;
+
+FLUSH TABLE bug47205;
+
+--echo # Replace the FRM with a 5.0 FRM that will require upgrade
+let $MYBLOCKCHAIND_DATADIR= `select @@datadir`;
+--remove_file $MYBLOCKCHAIND_DATADIR/test/bug47205.frm
+--copy_file std_data/bug47205.frm $MYBLOCKCHAIND_DATADIR/test/bug47205.frm
+
+--echo # Should indicate that ALTER TABLE .. FORCE is needed
+CHECK TABLE bug47205 FOR UPGRADE;
+
+--echo # Running myblockchaincheck to check and upgrade
+--exec $MYBLOCKCHAIN_CHECK --check-upgrade --auto-repair test
+
+--echo # Table should now be ok
+CHECK TABLE bug47205 FOR UPGRADE;
+
+DROP TABLE bug47205;
+
+--echo #
+--echo # Test 3: MyISAM - REPAIR supported
+
+--echo # Use an old FRM that will require upgrade
+--copy_file std_data/bug36055.frm $MYBLOCKCHAIND_DATADIR/test/bug47205.frm
+--copy_file std_data/bug36055.MYD $MYBLOCKCHAIND_DATADIR/test/bug47205.MYD
+--copy_file std_data/bug36055.MYI $MYBLOCKCHAIND_DATADIR/test/bug47205.MYI
+
+--echo # Should indicate that REPAIR TABLE is needed
+CHECK TABLE bug47205 FOR UPGRADE;
+
+--echo # Running myblockchaincheck to check and upgrade
+--exec $MYBLOCKCHAIN_CHECK --check-upgrade --auto-repair test
+
+--echo # Table should now be ok
+CHECK TABLE bug47205 FOR UPGRADE;
+
+DROP TABLE bug47205;
+
+
+--echo #
+--echo # Bug#12688860 : SECURITY RECOMMENDATION: PASSWORDS ON CLI
+--echo #
+
+--disable_warnings
+DROP DATABASE IF EXISTS b12688860_db;
+--enable_warnings
+
+CREATE DATABASE b12688860_db;
+--exec $MYBLOCKCHAIN_CHECK -uroot --password="" --fix-db-names b12688860_db 2>&1
+DROP DATABASE b12688860_db;
+
+--echo #
+--echo # WL#2284: Increase the length of a user name
+--echo #
+
+CREATE USER 'user_with_length_32_abcdefghijkl'@'localhost';
+GRANT ALL ON *.* TO 'user_with_length_32_abcdefghijkl'@'localhost';
+
+--exec $MYBLOCKCHAIN_CHECK --host=127.0.0.1 -P $MASTER_MYPORT --user=user_with_length_32_abcdefghijkl --protocol=TCP myblockchain user
+
+DROP USER 'user_with_length_32_abcdefghijkl'@'localhost';
+
+--echo
+--echo End of tests

@@ -29,8 +29,8 @@ my @defaults_options;   #  Leading --no-defaults, --defaults-file, etc.
 $opt_example       = 0;
 $opt_help          = 0;
 $opt_log           = undef();
-$opt_mysqladmin    = "@bindir@/mysqladmin";
-$opt_mysqld        = "@libexecdir@/mysqld";
+$opt_myblockchainadmin    = "@bindir@/myblockchainadmin";
+$opt_myblockchaind        = "@libexecdir@/myblockchaind";
 $opt_no_log        = 0;
 $opt_password      = undef();
 $opt_tcp_ip        = 0;
@@ -42,7 +42,7 @@ $opt_verbose       = 0;
 my $my_print_defaults_exists= 1;
 my $logdir= undef();
 
-my ($mysqld, $mysqladmin, $groupids, $homedir, $my_progname);
+my ($myblockchaind, $myblockchainadmin, $groupids, $homedir, $my_progname);
 
 $homedir = $ENV{HOME};
 $my_progname = $0;
@@ -87,7 +87,7 @@ sub main
     print "WARNING: my_print_defaults command not found.\n";
     print "Please make sure you have this command available and\n";
     print "in your path. The command is available from the latest\n";
-    print "MySQL distribution.\n";
+    print "MyBlockchain distribution.\n";
     $my_print_defaults_exists= 0;
   }
 
@@ -104,11 +104,11 @@ sub main
     $_ = quote_shell_word($_);
   }
 
-  # Add [mysqld_multi] options to front of @ARGV, ready for GetOptions()
-  unshift @ARGV, defaults_for_group('mysqld_multi');
+  # Add [myblockchaind_multi] options to front of @ARGV, ready for GetOptions()
+  unshift @ARGV, defaults_for_group('myblockchaind_multi');
 
   # We've already handled --no-defaults, --defaults-file, etc.
-  if (!GetOptions("help", "example", "version", "mysqld=s", "mysqladmin=s",
+  if (!GetOptions("help", "example", "version", "myblockchaind=s", "myblockchainadmin=s",
                   "user=s", "password=s", "log=s", "no-log",
                   "tcp-ip",  "silent", "verbose"))
   {
@@ -138,7 +138,7 @@ sub main
   if (!defined(my_which(my_print_defaults)))
   {
     print "ABORT: Can't find command 'my_print_defaults'.\n";
-    print "This command is available from the latest MySQL\n";
+    print "This command is available from the latest MyBlockchain\n";
     print "distribution. Please make sure you have the command\n";
     print "in your PATH.\n";
     exit(1);
@@ -162,35 +162,35 @@ sub main
   }
   if (($ARGV[0] =~ m/^start$/i) || ($ARGV[0] =~ m/^reload$/i))
   {
-    if (!defined(($mysqld= my_which($opt_mysqld))) && $opt_verbose)
+    if (!defined(($myblockchaind= my_which($opt_myblockchaind))) && $opt_verbose)
     {
-      print "WARNING: Couldn't find the default mysqld binary.\n";
-      print "Tried: $opt_mysqld\n";
-      print "This is OK, if you are using option \"mysqld=...\" in ";
-      print "groups [mysqldN] separately for each.\n\n";
+      print "WARNING: Couldn't find the default myblockchaind binary.\n";
+      print "Tried: $opt_myblockchaind\n";
+      print "This is OK, if you are using option \"myblockchaind=...\" in ";
+      print "groups [myblockchaindN] separately for each.\n\n";
     }
     if ($ARGV[0] =~ m/^start$/i) {
-      start_mysqlds();
+      start_myblockchainds();
     } elsif ($ARGV[0] =~ m/^reload$/i) {
-      reload_mysqlds();
+      reload_myblockchainds();
     }
   }
   else
   {
-    if (!defined(($mysqladmin= my_which($opt_mysqladmin))) && $opt_verbose)
+    if (!defined(($myblockchainadmin= my_which($opt_myblockchainadmin))) && $opt_verbose)
     {
-      print "WARNING: Couldn't find the default mysqladmin binary.\n";
-      print "Tried: $opt_mysqladmin\n";
-      print "This is OK, if you are using option \"mysqladmin=...\" in ";
-      print "groups [mysqldN] separately for each.\n\n";
+      print "WARNING: Couldn't find the default myblockchainadmin binary.\n";
+      print "Tried: $opt_myblockchainadmin\n";
+      print "This is OK, if you are using option \"myblockchainadmin=...\" in ";
+      print "groups [myblockchaindN] separately for each.\n\n";
     }
     if ($ARGV[0] =~ m/^report$/i)
     {
-      report_mysqlds();
+      report_myblockchainds();
     }
     else
     {
-      stop_mysqlds();
+      stop_myblockchainds();
     }
   }
 }
@@ -221,12 +221,12 @@ sub defaults_for_group
 
 ####
 #### Init log file. Check for appropriate place for log file, in the following
-#### order:  my_print_defaults mysqld datadir, @datadir@
+#### order:  my_print_defaults myblockchaind datadir, @datadir@
 ####
 
 sub init_log
 {
-  foreach my $opt (defaults_for_group('mysqld'))
+  foreach my $opt (defaults_for_group('myblockchaind'))
   {
     if ($opt =~ m/^--datadir=(.*)/ && -d "$1" && -w "$1")
     {
@@ -249,45 +249,45 @@ sub init_log
   }
   else
   {
-    $opt_log= "$logdir/mysqld_multi.log";
+    $opt_log= "$logdir/myblockchaind_multi.log";
   }
 }
 
 ####
-#### Report living and not running MySQL servers
+#### Report living and not running MyBlockchain servers
 ####
 
-sub report_mysqlds
+sub report_myblockchainds
 {
   my (@groups, $com, $i, @options, $pec);
 
-  print "Reporting MySQL servers\n";
+  print "Reporting MyBlockchain servers\n";
   if (!$opt_no_log)
   {
-    w2log("\nReporting MySQL servers","$opt_log",0,0);
+    w2log("\nReporting MyBlockchain servers","$opt_log",0,0);
   }
   @groups = &find_groups($groupids);
   for ($i = 0; defined($groups[$i]); $i++)
   {
-    $com= get_mysqladmin_options($i, @groups);
+    $com= get_myblockchainadmin_options($i, @groups);
     $com.= " ping >> /dev/null 2>&1";
     system($com);
     $pec = $? >> 8;
     if ($pec)
     {
-      print "MySQL server from group: $groups[$i] is not running\n";
+      print "MyBlockchain server from group: $groups[$i] is not running\n";
       if (!$opt_no_log)
       {
-	w2log("MySQL server from group: $groups[$i] is not running",
+	w2log("MyBlockchain server from group: $groups[$i] is not running",
 	      "$opt_log", 0, 0);
       }
     }
     else
     {
-      print "MySQL server from group: $groups[$i] is running\n";
+      print "MyBlockchain server from group: $groups[$i] is running\n";
       if (!$opt_no_log)
       {
-	w2log("MySQL server from group: $groups[$i] is running",
+	w2log("MyBlockchain server from group: $groups[$i] is running",
 	      "$opt_log", 0, 0);
       }
     }
@@ -306,17 +306,17 @@ sub report_mysqlds
 #### start multiple servers
 ####
 
-sub start_mysqlds()
+sub start_myblockchainds()
 {
-  my (@groups, $com, $tmp, $i, @options, $j, $mysqld_found, $info_sent);
+  my (@groups, $com, $tmp, $i, @options, $j, $myblockchaind_found, $info_sent);
 
   if (!$opt_no_log)
   {
-    w2log("\nStarting MySQL servers\n","$opt_log",0,0);
+    w2log("\nStarting MyBlockchain servers\n","$opt_log",0,0);
   }
   else
   {
-    print "\nStarting MySQL servers\n";
+    print "\nStarting MyBlockchain servers\n";
   }
   @groups = &find_groups($groupids);
   for ($i = 0; defined($groups[$i]); $i++)
@@ -324,9 +324,9 @@ sub start_mysqlds()
     @options = defaults_for_group($groups[$i]);
 
     $basedir_found= 0; # The default
-    $mysqld_found= 1; # The default
-    $mysqld_found= 0 if (!length($mysqld));
-    $com= "$mysqld";
+    $myblockchaind_found= 1; # The default
+    $myblockchaind_found= 0 if (!length($myblockchaind));
+    $com= "$myblockchaind";
     for ($j = 0, $tmp= ""; defined($options[$j]); $j++)
     {
       if ("--datadir=" eq substr($options[$j], 0, 10)) {
@@ -337,40 +337,40 @@ sub start_mysqlds()
           print "FATAL ERROR: Cannot create data directory $datadir: $!\n";
           exit(1);
         }
-        if (! -d $datadir."/mysql") {
+        if (! -d $datadir."/myblockchain") {
           if (-w $datadir) {
-            print "\n\nInstalling new database in $datadir\n\n";
-            $install_cmd="@bindir@/mysql_install_db ";
-            $install_cmd.="--user=mysql ";
+            print "\n\nInstalling new blockchain in $datadir\n\n";
+            $install_cmd="@bindir@/myblockchain_install_db ";
+            $install_cmd.="--user=myblockchain ";
             $install_cmd.="--datadir=$datadir";
             system($install_cmd);
           } else {
             print "\n";
-            print "FATAL ERROR: Tried to create mysqld under group [$groups[$i]],\n";
+            print "FATAL ERROR: Tried to create myblockchaind under group [$groups[$i]],\n";
             print "but the data directory is not writable.\n";
             print "data directory used: $datadir\n";
             exit(1);
           }
         }
 
-        if (! -d $datadir."/mysql") {
+        if (! -d $datadir."/myblockchain") {
           print "\n";
-          print "FATAL ERROR: Tried to start mysqld under group [$groups[$i]],\n";
+          print "FATAL ERROR: Tried to start myblockchaind under group [$groups[$i]],\n";
           print "but no data directory was found or could be created.\n";
           print "data directory used: $datadir\n";
           exit(1);
         }
       }
 
-      if ("--mysqladmin=" eq substr($options[$j], 0, 13))
+      if ("--myblockchainadmin=" eq substr($options[$j], 0, 13))
       {
 	# catch this and ignore
       }
-      elsif ("--mysqld=" eq substr($options[$j], 0, 9))
+      elsif ("--myblockchaind=" eq substr($options[$j], 0, 9))
       {
-	$options[$j]=~ s/\-\-mysqld\=//;
+	$options[$j]=~ s/\-\-myblockchaind\=//;
 	$com= $options[$j];
-        $mysqld_found= 1;
+        $myblockchaind_found= 1;
       }
       elsif ("--basedir=" eq substr($options[$j], 0, 10))
       {
@@ -386,24 +386,24 @@ sub start_mysqlds()
 	$tmp.= " $options[$j]";
       }
     }
-    if ($opt_verbose && $com =~ m/\/(safe_mysqld|mysqld_safe)$/ && !$info_sent)
+    if ($opt_verbose && $com =~ m/\/(safe_myblockchaind|myblockchaind_safe)$/ && !$info_sent)
     {
-      print "WARNING: $1 is being used to start mysqld. In this case you ";
-      print "may need to pass\n\"ledir=...\" under groups [mysqldN] to ";
-      print "$1 in order to find the actual mysqld binary.\n";
+      print "WARNING: $1 is being used to start myblockchaind. In this case you ";
+      print "may need to pass\n\"ledir=...\" under groups [myblockchaindN] to ";
+      print "$1 in order to find the actual myblockchaind binary.\n";
       print "ledir (library executable directory) should be the path to the ";
-      print "wanted mysqld binary.\n\n";
+      print "wanted myblockchaind binary.\n\n";
       $info_sent= 1;
     }
     $com.= $tmp;
     $com.= " >> $opt_log 2>&1" if (!$opt_no_log);
     $com.= " &";
-    if (!$mysqld_found)
+    if (!$myblockchaind_found)
     {
       print "\n";
-      print "FATAL ERROR: Tried to start mysqld under group [$groups[$i]], ";
-      print "but no mysqld binary was found.\n";
-      print "Please add \"mysqld=...\" in group [mysqld_multi], or add it to ";
+      print "FATAL ERROR: Tried to start myblockchaind under group [$groups[$i]], ";
+      print "but no myblockchaind binary was found.\n";
+      print "Please add \"myblockchaind=...\" in group [myblockchaind_multi], or add it to ";
       print "group [$groups[$i]] separately.\n";
       exit(1);
     }
@@ -420,7 +420,7 @@ sub start_mysqlds()
   }
   if (!$i && !$opt_no_log)
   {
-    w2log("No MySQL servers to be started (check your GNRs)",
+    w2log("No MyBlockchain servers to be started (check your GNRs)",
 	  "$opt_log", 0, 0);
   }
 }
@@ -429,34 +429,34 @@ sub start_mysqlds()
 #### reload multiple servers
 ####
 
-sub reload_mysqlds()
+sub reload_myblockchainds()
 {
   my (@groups, $com, $tmp, $i, @options, $j);
 
   if (!$opt_no_log)
   {
-    w2log("\nReloading MySQL servers\n","$opt_log",0,0);
+    w2log("\nReloading MyBlockchain servers\n","$opt_log",0,0);
   }
   else
   {
-    print "\nReloading MySQL servers\n";
+    print "\nReloading MyBlockchain servers\n";
   }
   @groups = &find_groups($groupids);
   for ($i = 0; defined($groups[$i]); $i++)
   {
-    $mysqld_server = $mysqld;
+    $myblockchaind_server = $myblockchaind;
     @options = defaults_for_group($groups[$i]);
 
     for ($j = 0, $tmp= ""; defined($options[$j]); $j++)
     {
-      if ("--mysqladmin=" eq substr($options[$j], 0, 13))
+      if ("--myblockchainadmin=" eq substr($options[$j], 0, 13))
       {
         # catch this and ignore
       }
-      elsif ("--mysqld=" eq substr($options[$j], 0, 9))
+      elsif ("--myblockchaind=" eq substr($options[$j], 0, 9))
       {
-        $options[$j] =~ s/\-\-mysqld\=//;
-        $mysqld_server = $options[$j];
+        $options[$j] =~ s/\-\-myblockchaind\=//;
+        $myblockchaind_server = $options[$j];
       }
       elsif ("--pid-file=" eq substr($options[$j], 0, 11))
       {
@@ -464,7 +464,7 @@ sub reload_mysqlds()
         $pid_file = $options[$j];
       }
     }
-    $com = "killproc -p $pid_file -HUP $mysqld_server";
+    $com = "killproc -p $pid_file -HUP $myblockchaind_server";
     system($com);
 
     $com = "touch $pid_file";
@@ -472,7 +472,7 @@ sub reload_mysqlds()
   }
   if (!$i && !$opt_no_log)
   {
-    w2log("No MySQL servers to be reloaded (check your GNRs)",
+    w2log("No MyBlockchain servers to be reloaded (check your GNRs)",
          "$opt_log", 0, 0);
   }
 }
@@ -481,22 +481,22 @@ sub reload_mysqlds()
 #### stop multiple servers
 ####
 
-sub stop_mysqlds()
+sub stop_myblockchainds()
 {
   my (@groups, $com, $i, @options);
 
   if (!$opt_no_log)
   {
-    w2log("\nStopping MySQL servers\n","$opt_log",0,0);
+    w2log("\nStopping MyBlockchain servers\n","$opt_log",0,0);
   }
   else
   {
-    print "\nStopping MySQL servers\n";
+    print "\nStopping MyBlockchain servers\n";
   }
   @groups = &find_groups($groupids);
   for ($i = 0; defined($groups[$i]); $i++)
   {
-    $com= get_mysqladmin_options($i, @groups);
+    $com= get_myblockchainadmin_options($i, @groups);
     $com.= " shutdown";
     $com.= " >> $opt_log 2>&1" if (!$opt_no_log);
     $com.= " &";
@@ -504,25 +504,25 @@ sub stop_mysqlds()
   }
   if (!$i && !$opt_no_log)
   {
-    w2log("No MySQL servers to be stopped (check your GNRs)",
+    w2log("No MyBlockchain servers to be stopped (check your GNRs)",
 	  "$opt_log", 0, 0);
   }
 }
 
 ####
-#### Sub function for mysqladmin option parsing
+#### Sub function for myblockchainadmin option parsing
 ####
 
-sub get_mysqladmin_options
+sub get_myblockchainadmin_options
 {
   my ($i, @groups)= @_;
-  my ($mysqladmin_found, $com, $tmp, $j);
+  my ($myblockchainadmin_found, $com, $tmp, $j);
 
   @options = defaults_for_group($groups[$i]);
 
-  $mysqladmin_found= 1; # The default
-  $mysqladmin_found= 0 if (!length($mysqladmin));
-  $com = "$mysqladmin";
+  $myblockchainadmin_found= 1; # The default
+  $myblockchainadmin_found= 0 if (!length($myblockchainadmin));
+  $com = "$myblockchainadmin";
   $tmp = " -u $opt_user";
   if (defined($opt_password)) {
     my $pw= $opt_password;
@@ -533,11 +533,11 @@ sub get_mysqladmin_options
   $tmp.= $opt_tcp_ip ? " -h 127.0.0.1" : "";
   for ($j = 0; defined($options[$j]); $j++)
   {
-    if ("--mysqladmin=" eq substr($options[$j], 0, 13))
+    if ("--myblockchainadmin=" eq substr($options[$j], 0, 13))
     {
-      $options[$j]=~ s/\-\-mysqladmin\=//;
+      $options[$j]=~ s/\-\-myblockchainadmin\=//;
       $com= $options[$j];
-      $mysqladmin_found= 1;
+      $myblockchainadmin_found= 1;
     }
     elsif ((($options[$j] =~ m/^(\-\-socket\=)(.*)$/) && !$opt_tcp_ip) ||
 	   ($options[$j] =~ m/^(\-\-port\=)(.*)$/))
@@ -545,12 +545,12 @@ sub get_mysqladmin_options
       $tmp.= " $options[$j]";
     }
   }
-  if (!$mysqladmin_found)
+  if (!$myblockchainadmin_found)
   {
     print "\n";
-    print "FATAL ERROR: Tried to use mysqladmin in group [$groups[$i]], ";
-    print "but no mysqladmin binary was found.\n";
-    print "Please add \"mysqladmin=...\" in group [mysqld_multi], or ";
+    print "FATAL ERROR: Tried to use myblockchainadmin in group [$groups[$i]], ";
+    print "but no myblockchainadmin binary was found.\n";
+    print "Please add \"myblockchainadmin=...\" in group [myblockchaind_multi], or ";
     print "in group [$groups[$i]].\n";
     exit(1);
   }
@@ -574,9 +574,9 @@ sub list_defaults_files
   my %seen;  # Don't list the same file more than once
   return grep { defined $_ and not $seen{$_}++ and -f $_ and -r $_ }
               ('/etc/my.cnf',
-               '/etc/mysql/my.cnf',
+               '/etc/myblockchain/my.cnf',
                '@sysconfdir@/my.cnf',
-               ($ENV{MYSQL_HOME} ? "$ENV{MYSQL_HOME}/my.cnf" : undef),
+               ($ENV{MYBLOCKCHAIN_HOME} ? "$ENV{MYBLOCKCHAIN_HOME}/my.cnf" : undef),
                $opt{'extra-file'},
                ($ENV{HOME} ? "$ENV{HOME}/.my.cnf" : undef));
 }
@@ -621,7 +621,7 @@ sub find_groups
 
     while (<CONF>)
     {
-      if (/^\s*\[\s*(mysqld)(\d+)\s*\]\s*$/)
+      if (/^\s*\[\s*(myblockchaind)(\d+)\s*\]\s*$/)
       {
         #warn "Found a group: $1$2\n";
         # Use $2 + 0 to normalize numbers (002 + 0 -> 2)
@@ -712,36 +712,36 @@ sub example
 #
 # 1.COMMON USER
 #
-#   Make sure that the MySQL user, who is stopping the mysqld services, has
-#   the same password to all MySQL servers being accessed by $my_progname.
+#   Make sure that the MyBlockchain user, who is stopping the myblockchaind services, has
+#   the same password to all MyBlockchain servers being accessed by $my_progname.
 #   This user needs to have the 'Shutdown_priv' -privilege, but for security
 #   reasons should have no other privileges. It is advised that you create a
-#   common 'multi_admin' user for all MySQL servers being controlled by
+#   common 'multi_admin' user for all MyBlockchain servers being controlled by
 #   $my_progname. Here is an example how to do it:
 #
 #   GRANT SHUTDOWN ON *.* TO multi_admin\@localhost IDENTIFIED BY 'password'
 #
-#   You will need to apply the above to all MySQL servers that are being
+#   You will need to apply the above to all MyBlockchain servers that are being
 #   controlled by $my_progname. 'multi_admin' will shutdown the servers
-#   using 'mysqladmin' -binary, when '$my_progname stop' is being called.
+#   using 'myblockchainadmin' -binary, when '$my_progname stop' is being called.
 #
 # 2.PID-FILE
 #
-#   If you are using mysqld_safe to start mysqld, make sure that every
-#   MySQL server has a separate pid-file. In order to use mysqld_safe
+#   If you are using myblockchaind_safe to start myblockchaind, make sure that every
+#   MyBlockchain server has a separate pid-file. In order to use myblockchaind_safe
 #   via $my_progname, you need to use two options:
 #
-#   mysqld=/path/to/mysqld_safe
-#   ledir=/path/to/mysqld-binary/
+#   myblockchaind=/path/to/myblockchaind_safe
+#   ledir=/path/to/myblockchaind-binary/
 #
-#   ledir (library executable directory), is an option that only mysqld_safe
-#   accepts, so you will get an error if you try to pass it to mysqld directly.
-#   For this reason you might want to use the above options within [mysqld#]
+#   ledir (library executable directory), is an option that only myblockchaind_safe
+#   accepts, so you will get an error if you try to pass it to myblockchaind directly.
+#   For this reason you might want to use the above options within [myblockchaind#]
 #   group directly.
 #
 # 3.DATA DIRECTORY
 #
-#   It is NOT advised to run many MySQL servers within the same data directory.
+#   It is NOT advised to run many MyBlockchain servers within the same data directory.
 #   You can do so, but please make sure to understand and deal with the
 #   underlying caveats. In short they are:
 #   - Speed penalty
@@ -756,75 +756,75 @@ sub example
 #
 #   Every server requires one and it must be unique.
 #
-# 5.[mysqld#] Groups
+# 5.[myblockchaind#] Groups
 #
-#   In the example below the first and the fifth mysqld group was
+#   In the example below the first and the fifth myblockchaind group was
 #   intentionally left out. You may have 'gaps' in the config file. This
 #   gives you more flexibility.
 #
-# 6.MySQL Server User
+# 6.MyBlockchain Server User
 #
-#   You can pass the user=... option inside [mysqld#] groups. This
+#   You can pass the user=... option inside [myblockchaind#] groups. This
 #   can be very handy in some cases, but then you need to run $my_progname
 #   as UNIX root.
 #
 # 7.A Start-up Manage Script for $my_progname
 #
-#   In the recent MySQL distributions you can find a file called
-#   mysqld_multi.server.sh. It is a wrapper for $my_progname. This can
+#   In the recent MyBlockchain distributions you can find a file called
+#   myblockchaind_multi.server.sh. It is a wrapper for $my_progname. This can
 #   be used to start and stop multiple servers during boot and shutdown.
 #
-#   You can place the file in /etc/init.d/mysqld_multi.server.sh and
+#   You can place the file in /etc/init.d/myblockchaind_multi.server.sh and
 #   make the needed symbolic links to it from various run levels
 #   (as per Linux/Unix standard). You may even replace the
-#   /etc/init.d/mysql.server script with it.
+#   /etc/init.d/myblockchain.server script with it.
 #
 #   Before using, you must create a my.cnf file either in @sysconfdir@/my.cnf
-#   or /root/.my.cnf and add the [mysqld_multi] and [mysqld#] groups.
+#   or /root/.my.cnf and add the [myblockchaind_multi] and [myblockchaind#] groups.
 #
-#   The script can be found from support-files/mysqld_multi.server.sh
-#   in MySQL distribution. (Verify the script before using)
+#   The script can be found from support-files/myblockchaind_multi.server.sh
+#   in MyBlockchain distribution. (Verify the script before using)
 #
 
-[mysqld_multi]
-mysqld     = @bindir@/mysqld_safe
-mysqladmin = @bindir@/mysqladmin
+[myblockchaind_multi]
+myblockchaind     = @bindir@/myblockchaind_safe
+myblockchainadmin = @bindir@/myblockchainadmin
 user       = multi_admin
 password   = my_password
 
-[mysqld2]
-socket     = /tmp/mysql.sock2
+[myblockchaind2]
+socket     = /tmp/myblockchain.sock2
 port       = 3307
 pid-file   = @localstatedir@2/hostname.pid2
 datadir    = @localstatedir@2
-language   = @datadir@/mysql/english
+language   = @datadir@/myblockchain/english
 user       = unix_user1
 
-[mysqld3]
-mysqld     = /path/to/mysqld_safe
-ledir      = /path/to/mysqld-binary/
-mysqladmin = /path/to/mysqladmin
-socket     = /tmp/mysql.sock3
+[myblockchaind3]
+myblockchaind     = /path/to/myblockchaind_safe
+ledir      = /path/to/myblockchaind-binary/
+myblockchainadmin = /path/to/myblockchainadmin
+socket     = /tmp/myblockchain.sock3
 port       = 3308
 pid-file   = @localstatedir@3/hostname.pid3
 datadir    = @localstatedir@3
-language   = @datadir@/mysql/swedish
+language   = @datadir@/myblockchain/swedish
 user       = unix_user2
 
-[mysqld4]
-socket     = /tmp/mysql.sock4
+[myblockchaind4]
+socket     = /tmp/myblockchain.sock4
 port       = 3309
 pid-file   = @localstatedir@4/hostname.pid4
 datadir    = @localstatedir@4
-language   = @datadir@/mysql/estonia
+language   = @datadir@/myblockchain/estonia
 user       = unix_user3
  
-[mysqld6]
-socket     = /tmp/mysql.sock6
+[myblockchaind6]
+socket     = /tmp/myblockchain.sock6
 port       = 3311
 pid-file   = @localstatedir@6/hostname.pid6
 datadir    = @localstatedir@6
-language   = @datadir@/mysql/japanese
+language   = @datadir@/myblockchain/japanese
 user       = unix_user4
 EOF
   exit(0);
@@ -841,24 +841,24 @@ $my_progname version $VER by Jani Tolonen
 
 Description:
 $my_progname can be used to start, reload, or stop any number of separate
-mysqld processes running in different TCP/IP ports and UNIX sockets.
+myblockchaind processes running in different TCP/IP ports and UNIX sockets.
 
-$my_progname can read group [mysqld_multi] from my.cnf file. You may
-want to put options mysqld=... and mysqladmin=... there.  Since
-version 2.10 these options can also be given under groups [mysqld#],
+$my_progname can read group [myblockchaind_multi] from my.cnf file. You may
+want to put options myblockchaind=... and myblockchainadmin=... there.  Since
+version 2.10 these options can also be given under groups [myblockchaind#],
 which gives more control over different versions.  One can have the
-default mysqld and mysqladmin under group [mysqld_multi], but this is
-not mandatory. Please note that if mysqld or mysqladmin is missing
-from both [mysqld_multi] and [mysqld#], a group that is tried to be
+default myblockchaind and myblockchainadmin under group [myblockchaind_multi], but this is
+not mandatory. Please note that if myblockchaind or myblockchainadmin is missing
+from both [myblockchaind_multi] and [myblockchaind#], a group that is tried to be
 used, $my_progname will abort with an error.
 
-$my_progname will search for groups named [mysqld#] from my.cnf (or
+$my_progname will search for groups named [myblockchaind#] from my.cnf (or
 the given --defaults-extra-file=...), where '#' can be any positive 
 integer starting from 1. These groups should be the same as the regular
-[mysqld] group, but with those port, socket and any other options
-that are to be used with each separate mysqld process. The number
+[myblockchaind] group, but with those port, socket and any other options
+that are to be used with each separate myblockchaind process. The number
 in the group name has another function; it can be used for starting,
-reloading, stopping, or reporting any specific mysqld server.
+reloading, stopping, or reporting any specific myblockchaind server.
 
 Usage: $my_progname [OPTIONS] {start|reload|stop|report} [GNR,GNR,GNR...]
 or     $my_progname [OPTIONS] {start|reload|stop|report} [GNR-GNR,GNR,GNR-GNR,...]
@@ -885,29 +885,29 @@ Using:  @{[join ' ', @defaults_options]}
 --log=...          Log file. Full path to and the name for the log file. NOTE:
                    If the file exists, everything will be appended.
                    Using: $opt_log
---mysqladmin=...   mysqladmin binary to be used for a server shutdown.
-                   Since version 2.10 this can be given within groups [mysqld#]
-                   Using: $mysqladmin
---mysqld=...       mysqld binary to be used. Note that you can give mysqld_safe
-                   to this option also. The options are passed to mysqld. Just
-                   make sure you have mysqld in your PATH or fix mysqld_safe.
-                   Using: $mysqld
-                   Please note: Since mysqld_multi version 2.3 you can also
-                   give this option inside groups [mysqld#] in ~/.my.cnf,
+--myblockchainadmin=...   myblockchainadmin binary to be used for a server shutdown.
+                   Since version 2.10 this can be given within groups [myblockchaind#]
+                   Using: $myblockchainadmin
+--myblockchaind=...       myblockchaind binary to be used. Note that you can give myblockchaind_safe
+                   to this option also. The options are passed to myblockchaind. Just
+                   make sure you have myblockchaind in your PATH or fix myblockchaind_safe.
+                   Using: $myblockchaind
+                   Please note: Since myblockchaind_multi version 2.3 you can also
+                   give this option inside groups [myblockchaind#] in ~/.my.cnf,
                    where '#' stands for an integer (number) of the group in
                    question. This will be recognised as a special option and
-                   will not be passed to the mysqld. This will allow one to
-                   start different mysqld versions with mysqld_multi.
+                   will not be passed to the myblockchaind. This will allow one to
+                   start different myblockchaind versions with myblockchaind_multi.
 --no-log           Print to stdout instead of the log file. By default the log
                    file is turned on.
---password=...     Password for mysqladmin user.
+--password=...     Password for myblockchainadmin user.
 --silent           Disable warnings.
---tcp-ip           Connect to the MySQL server(s) via the TCP/IP port instead
+--tcp-ip           Connect to the MyBlockchain server(s) via the TCP/IP port instead
                    of the UNIX socket. This affects stopping and reporting.
                    If a socket file is missing, the server may still be
                    running, but can be accessed only via the TCP/IP port.
                    By default connecting is done via the UNIX socket.
---user=...         mysqladmin user. Using: $opt_user
+--user=...         myblockchainadmin user. Using: $opt_user
 --verbose          Be more verbose.
 --version          Print the version number and exit.
 EOF

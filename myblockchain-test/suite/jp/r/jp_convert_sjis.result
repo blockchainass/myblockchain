@@ -1,0 +1,787 @@
+SET NAMES sjis;
+SET character_set_blockchain = sjis;
+Warnings:
+Warning	1681	Updating 'character_set_blockchain' is deprecated. It will be made read-only in a future release.
+drop table if exists `�s�P`;
+drop table if exists `�s�Q`;
+drop table if exists `�s�R`;
+drop table if exists `�s�S`;
+drop table if exists `�s�T`;
+drop table if exists `�s�U`;
+drop table if exists `�s�V`;
+drop table if exists `�s�W`;
+drop table if exists `�s�X`;
+CREATE TABLE `�s�P` (`�b�P` char(20), INDEX(`�b�P`)) DEFAULT CHARSET = sjis engine = innodb;
+CREATE TABLE `�s�Q` (`�b�P` char(20), INDEX(`�b�P`)) DEFAULT CHARSET = sjis engine = innodb;
+CREATE TABLE `�s�R` (`�b�P` char(20), INDEX(`�b�P`)) DEFAULT CHARSET = sjis engine = innodb;
+CREATE TABLE `�s�S` (`�b�P` char(20), INDEX(`�b�P`)) DEFAULT CHARSET = sjis engine = myisam;
+CREATE TABLE `�s�T` (`�b�P` char(20), INDEX(`�b�P`)) DEFAULT CHARSET = sjis engine = myisam;
+CREATE TABLE `�s�U` (`�b�P` char(20), INDEX(`�b�P`)) DEFAULT CHARSET = sjis engine = myisam;
+CREATE TABLE `�s�V` (`�b�P` char(20), INDEX(`�b�P`)) DEFAULT CHARSET = sjis engine = MEMORY;
+CREATE TABLE `�s�W` (`�b�P` char(20), INDEX(`�b�P`)) DEFAULT CHARSET = sjis engine = MEMORY;
+CREATE TABLE `�s�X` (`�b�P` char(20), INDEX(`�b�P`)) DEFAULT CHARSET = sjis engine = MEMORY;
+LOAD DATA LOCAL INFILE 'suite/jp/std_data/jisx0201_sjis.dat' INTO TABLE `�s�P`;
+LOAD DATA LOCAL INFILE 'suite/jp/std_data/jisx0208_sjis.dat' INTO TABLE `�s�Q`;
+LOAD DATA LOCAL INFILE 'suite/jp/std_data/jisx0208_sjis2.dat' INTO TABLE `�s�R`;
+LOAD DATA LOCAL INFILE 'suite/jp/std_data/jisx0201_sjis.dat' INTO TABLE `�s�S`;
+LOAD DATA LOCAL INFILE 'suite/jp/std_data/jisx0208_sjis.dat' INTO TABLE `�s�T`;
+LOAD DATA LOCAL INFILE 'suite/jp/std_data/jisx0208_sjis2.dat' INTO TABLE `�s�U`;
+LOAD DATA LOCAL INFILE 'suite/jp/std_data/jisx0201_sjis.dat' INTO TABLE `�s�V`;
+LOAD DATA LOCAL INFILE 'suite/jp/std_data/jisx0208_sjis.dat' INTO TABLE `�s�W`;
+LOAD DATA LOCAL INFILE 'suite/jp/std_data/jisx0208_sjis2.dat' INTO TABLE `�s�X`;
+SELECT `�b�P`, CONVERT(`�b�P` using utf8) FROM `�s�P`;
+�b�P	CONVERT(`�b�P` using utf8)
+ !"#$%&'()*+,-./	 !"#$%&'()*+,-./
+ ���������������	 ���������������
+0123456789:;<=>?	0123456789:;<=>?
+@ABCDEFGHIJKLMNO	@ABCDEFGHIJKLMNO
+abcdefghijklmno	abcdefghijklmno
+PQRSTUVWXYZ[\]^_	PQRSTUVWXYZ[�_]^_
+pqrstuvwxyz{|}~	pqrstuvwxyz{|}~
+����������������	����������������
+����������������	����������������
+����������������	����������������
+SELECT `�b�P`, CONVERT(`�b�P` using ucs2) FROM `�s�P`;
+�b�P	CONVERT(`�b�P` using ucs2)
+ !"#$%&'()*+,-./	 !"#$%&'()*+,-./
+ ���������������	 ���������������
+0123456789:;<=>?	0123456789:;<=>?
+@ABCDEFGHIJKLMNO	@ABCDEFGHIJKLMNO
+abcdefghijklmno	abcdefghijklmno
+PQRSTUVWXYZ[\]^_	PQRSTUVWXYZ[�_]^_
+pqrstuvwxyz{|}~	pqrstuvwxyz{|}~
+����������������	����������������
+����������������	����������������
+����������������	����������������
+SELECT `�b�P`, CONVERT(`�b�P` using ujis) FROM `�s�P`;
+�b�P	CONVERT(`�b�P` using ujis)
+ !"#$%&'()*+,-./	 !"#$%&'()*+,-./
+ ���������������	 ���������������
+0123456789:;<=>?	0123456789:;<=>?
+@ABCDEFGHIJKLMNO	@ABCDEFGHIJKLMNO
+abcdefghijklmno	abcdefghijklmno
+PQRSTUVWXYZ[\]^_	PQRSTUVWXYZ[�_]^_
+pqrstuvwxyz{|}~	pqrstuvwxyz{|}~
+����������������	����������������
+����������������	����������������
+����������������	����������������
+SELECT `�b�P`, CONVERT(`�b�P` using utf8) FROM `�s�Q`;
+�b�P	CONVERT(`�b�P` using utf8)
+�@�@�A�B�C�D�E�F�G�H�I�J�K�L�M�N�O�P�Q�R	�@�@�A�B�C�D�E�F�G�H�I�J�K�L�M�N�O�P�Q�R
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�O�P�Q�R	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�O�P�Q�R
+�E�E�E�E�E�E�E�E�E�p�q�r�s�t�u�v�w�x�y�z	�E�E�E�E�E�E�E�E�E�p�q�r�s�t�u�v�w�x�y�z
+�E�E�E�E�E�E�����������������E�E�E�E�E�E	�E�E�E�E�E�E�����������������E�E�E�E�E�E
+�E�E�E�E�E������������������������������	�E�E�E�E�E������������������������������
+�E�E�ȁɁʁˁ́́΁E�E�E�E�E�E�E�E�E�E�E	�E�E�ȁɁʁˁ́́΁E�E�E�E�E�E�E�E�E�E�E
+�E�E�����������������E�E�E�E���E�E�E�E�@	�E�E�����������������E�E�E�E���E�E�E�E�@
+�E�����������������������������E�E�E�E�E	�E�����������������������������E�E�E�E�E
+�E��������������������������������������	�E��������������������������������������
+�E�@�A�B�C�D�E�F�G�H�I�J�K�L�M�N�O�P�Q�R	�E�@�A�B�C�D�E�F�G�H�I�J�K�L�M�N�O�P�Q�R
+�E��������������������������������������	�E��������������������������������������
+�E�@�A�B�C�D�E�F�G�H�I�J�K�L�M�N�O�P�Q�R	�E�@�A�B�C�D�E�F�G�H�I�J�K�L�M�N�O�P�Q�R
+�E��������������������������������������	�E��������������������������������������
+�E��������������������������������������	�E��������������������������������������
+�E�@�A�B�C�D�E�F�G�H�I�J�K�L�M�N�O�P�Q�R	�E�@�A�B�C�D�E�F�G�H�I�J�K�L�M�N�O�P�Q�R
+�E��������������������������������������	�E��������������������������������������
+�E�@�A�B�C�D�E�F�G�H�I�J�K�L�M�N�O�P�Q�R	�E�@�A�B�C�D�E�F�G�H�I�J�K�L�M�N�O�P�Q�R
+�E����������꤁E�E�E�E�E�E�E�E�E�E�E�E�E	�E����������꤁E�E�E�E�E�E�E�E�E�E�E�E�E
+�S�T�U�V�W�X�Y�Z�[�\�]�^�_�`�a�b�c�d�e�f	�S�T�U�V�W�X�Y�Z�[�\�]�^�_�`�a�b�c�d�e�f
+�g�h�i�j�k�l�m�n�o�p�q�r�s�t�u�v�w�x�y�z	�g�h�i�j�k�l�m�n�o�p�q�r�s�t�u�v�w�x�y�z
+�{�]�}�~��������������������������������	�{�]�}�~��������������������������������
+�������������������������������E�E�E�E�E	�������������������������������E�E�E�E�E
+�ځہ܁݁ށ߁������������������E�E�E�E�E	�ځہ܁݁ށ߁������������������E�E�E�E�E
+�S�T�U�V�W�X�E�E�E�E�E�E�E�`�a�b�c�d�e�f	�S�T�U�V�W�X�E�E�E�E�E�E�E�`�a�b�c�d�e�f
+�g�h�i�j�k�l�m�n�o�p�q�r�s�t�u�v�w�x�y�E	�g�h�i�j�k�l�m�n�o�p�q�r�s�t�u�v�w�x�y�E
+�����������������������E�E�E�E�E�E�E�E�E	�����������������������E�E�E�E�E�E�E�E�E
+���������������������������������ÂĂ�	���������������������������������ÂĂ�
+�ƂǂȂɂʂ˂̂͂΂ςЂт҂ӂԂՂւׂ؂�	�ƂǂȂɂʂ˂̂͂΂ςЂт҂ӂԂՂւׂ؂�
+�ڂۂ܂݂ނ߂���������������������������	�ڂۂ܂݂ނ߂���������������������������
+���������E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	���������E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�S�T�U�V�W�X�Y�Z�[�\�]�^�_�`�a�b�c�d�e�f	�S�T�U�V�W�X�Y�Z�[�\�]�^�_�`�a�b�c�d�e�f
+�g�h�i�j�k�l�m�n�o�p�q�r�s�t�u�v�w�x�y�z	�g�h�i�j�k�l�m�n�o�p�q�r�s�t�u�v�w�x�y�z
+�{�|�}�~��������������������������������	�{�|�}�~��������������������������������
+���������������E�E�E�E�E�E�E�E�E�E�E�E�E	���������������E�E�E�E�E�E�E�E�E�E�E�E�E
+�����������E�E�E�E�E�E�E�E�������Ãă�	�����������E�E�E�E�E�E�E�E�������Ãă�
+�ƃǃȃɃʃ˃̃̓΃σЃу҃ӃԃՃցE�E�E	�ƃǃȃɃʃ˃̃̓΃σЃу҃ӃԃՃցE�E�E
+�S�T�U�V�W�X�Y�Z�[�\�]�^�_�`�E�E�E�E�E�E	�S�T�U�V�W�X�Y�Z�[�\�]�^�_�`�E�E�E�E�E�E
+�{�|�}�~��������������������������������	�{�|�}�~��������������������������������
+�����E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�����E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+���������������������������E�E�E�E�E�E�E	���������������������������E�E�E�E�E�E�E
+���������������������������������ÈĈ�	���������������������������������ÈĈ�
+�ƈǈȈɈʈˈ͈̈ΈψЈш҈ӈԈՈֈ׈؈�	�ƈǈȈɈʈˈ͈̈ΈψЈш҈ӈԈՈֈ׈؈�
+�ڈۈ܈݈ވ߈���������������������������	�ڈۈ܈݈ވ߈���������������������������
+�������������������������������E�E�E�E�E	�������������������������������E�E�E�E�E
+�S�T�U�V�W�X�Y�Z�[�\�]�^�_�`�a�b�c�d�e�f	�S�T�U�V�W�X�Y�Z�[�\�]�^�_�`�a�b�c�d�e�f
+�g�h�i�j�k�l�m�n�o�p�q�r�E�E�E�E�E�E�E�E	�g�h�i�j�k�l�m�n�o�p�q�r�E�E�E�E�E�E�E�E
+���������������������������������ØĘ�	���������������������������������ØĘ�
+�ƘǘȘɘʘ˘̘͘ΘϘИјҘӘԘ՘֘טؘ�	�ƘǘȘɘʘ˘̘͘ΘϘИјҘӘԘ՘֘טؘ�
+�ژۘܘݘޘߘ���������������������������	�ژۘܘݘޘߘ���������������������������
+�������������������������������E�E�E�E�E	�������������������������������E�E�E�E�E
+�S�T�U�V�W�X�Y�Z�[�\�]�^�_�`�a�b�c�d�e�f	�S�T�U�V�W�X�Y�Z�[�\�]�^�_�`�a�b�c�d�e�f
+�g�h�i�j�k�l�m�n�o�p�q�r�s�t�u�v�w�x�y�z	�g�h�i�j�k�l�m�n�o�p�q�r�s�t�u�v�w�x�y�z
+�{�|�}�~��������������������������������	�{�|�}�~��������������������������������
+����������������������������ꞁE�E�E�E�E	����������������������������ꞁE�E�E�E�E
+SELECT `�b�P`, CONVERT(`�b�P` using ucs2) FROM `�s�Q`;
+�b�P	CONVERT(`�b�P` using ucs2)
+�@�@�A�B�C�D�E�F�G�H�I�J�K�L�M�N�O�P�Q�R	�@�@�A�B�C�D�E�F�G�H�I�J�K�L�M�N�O�P�Q�R
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�O�P�Q�R	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�O�P�Q�R
+�E�E�E�E�E�E�E�E�E�p�q�r�s�t�u�v�w�x�y�z	�E�E�E�E�E�E�E�E�E�p�q�r�s�t�u�v�w�x�y�z
+�E�E�E�E�E�E�����������������E�E�E�E�E�E	�E�E�E�E�E�E�����������������E�E�E�E�E�E
+�E�E�E�E�E������������������������������	�E�E�E�E�E������������������������������
+�E�E�ȁɁʁˁ́́΁E�E�E�E�E�E�E�E�E�E�E	�E�E�ȁɁʁˁ́́΁E�E�E�E�E�E�E�E�E�E�E
+�E�E�����������������E�E�E�E���E�E�E�E�@	�E�E�����������������E�E�E�E���E�E�E�E�@
+�E�����������������������������E�E�E�E�E	�E�����������������������������E�E�E�E�E
+�E��������������������������������������	�E��������������������������������������
+�E�@�A�B�C�D�E�F�G�H�I�J�K�L�M�N�O�P�Q�R	�E�@�A�B�C�D�E�F�G�H�I�J�K�L�M�N�O�P�Q�R
+�E��������������������������������������	�E��������������������������������������
+�E�@�A�B�C�D�E�F�G�H�I�J�K�L�M�N�O�P�Q�R	�E�@�A�B�C�D�E�F�G�H�I�J�K�L�M�N�O�P�Q�R
+�E��������������������������������������	�E��������������������������������������
+�E��������������������������������������	�E��������������������������������������
+�E�@�A�B�C�D�E�F�G�H�I�J�K�L�M�N�O�P�Q�R	�E�@�A�B�C�D�E�F�G�H�I�J�K�L�M�N�O�P�Q�R
+�E��������������������������������������	�E��������������������������������������
+�E�@�A�B�C�D�E�F�G�H�I�J�K�L�M�N�O�P�Q�R	�E�@�A�B�C�D�E�F�G�H�I�J�K�L�M�N�O�P�Q�R
+�E����������꤁E�E�E�E�E�E�E�E�E�E�E�E�E	�E����������꤁E�E�E�E�E�E�E�E�E�E�E�E�E
+�S�T�U�V�W�X�Y�Z�[�\�]�^�_�`�a�b�c�d�e�f	�S�T�U�V�W�X�Y�Z�[�\�]�^�_�`�a�b�c�d�e�f
+�g�h�i�j�k�l�m�n�o�p�q�r�s�t�u�v�w�x�y�z	�g�h�i�j�k�l�m�n�o�p�q�r�s�t�u�v�w�x�y�z
+�{�]�}�~��������������������������������	�{�]�}�~��������������������������������
+�������������������������������E�E�E�E�E	�������������������������������E�E�E�E�E
+�ځہ܁݁ށ߁������������������E�E�E�E�E	�ځہ܁݁ށ߁������������������E�E�E�E�E
+�S�T�U�V�W�X�E�E�E�E�E�E�E�`�a�b�c�d�e�f	�S�T�U�V�W�X�E�E�E�E�E�E�E�`�a�b�c�d�e�f
+�g�h�i�j�k�l�m�n�o�p�q�r�s�t�u�v�w�x�y�E	�g�h�i�j�k�l�m�n�o�p�q�r�s�t�u�v�w�x�y�E
+�����������������������E�E�E�E�E�E�E�E�E	�����������������������E�E�E�E�E�E�E�E�E
+���������������������������������ÂĂ�	���������������������������������ÂĂ�
+�ƂǂȂɂʂ˂̂͂΂ςЂт҂ӂԂՂւׂ؂�	�ƂǂȂɂʂ˂̂͂΂ςЂт҂ӂԂՂւׂ؂�
+�ڂۂ܂݂ނ߂���������������������������	�ڂۂ܂݂ނ߂���������������������������
+���������E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	���������E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�S�T�U�V�W�X�Y�Z�[�\�]�^�_�`�a�b�c�d�e�f	�S�T�U�V�W�X�Y�Z�[�\�]�^�_�`�a�b�c�d�e�f
+�g�h�i�j�k�l�m�n�o�p�q�r�s�t�u�v�w�x�y�z	�g�h�i�j�k�l�m�n�o�p�q�r�s�t�u�v�w�x�y�z
+�{�|�}�~��������������������������������	�{�|�}�~��������������������������������
+���������������E�E�E�E�E�E�E�E�E�E�E�E�E	���������������E�E�E�E�E�E�E�E�E�E�E�E�E
+�����������E�E�E�E�E�E�E�E�������Ãă�	�����������E�E�E�E�E�E�E�E�������Ãă�
+�ƃǃȃɃʃ˃̃̓΃σЃу҃ӃԃՃցE�E�E	�ƃǃȃɃʃ˃̃̓΃σЃу҃ӃԃՃցE�E�E
+�S�T�U�V�W�X�Y�Z�[�\�]�^�_�`�E�E�E�E�E�E	�S�T�U�V�W�X�Y�Z�[�\�]�^�_�`�E�E�E�E�E�E
+�{�|�}�~��������������������������������	�{�|�}�~��������������������������������
+�����E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�����E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+���������������������������E�E�E�E�E�E�E	���������������������������E�E�E�E�E�E�E
+���������������������������������ÈĈ�	���������������������������������ÈĈ�
+�ƈǈȈɈʈˈ͈̈ΈψЈш҈ӈԈՈֈ׈؈�	�ƈǈȈɈʈˈ͈̈ΈψЈш҈ӈԈՈֈ׈؈�
+�ڈۈ܈݈ވ߈���������������������������	�ڈۈ܈݈ވ߈���������������������������
+�������������������������������E�E�E�E�E	�������������������������������E�E�E�E�E
+�S�T�U�V�W�X�Y�Z�[�\�]�^�_�`�a�b�c�d�e�f	�S�T�U�V�W�X�Y�Z�[�\�]�^�_�`�a�b�c�d�e�f
+�g�h�i�j�k�l�m�n�o�p�q�r�E�E�E�E�E�E�E�E	�g�h�i�j�k�l�m�n�o�p�q�r�E�E�E�E�E�E�E�E
+���������������������������������ØĘ�	���������������������������������ØĘ�
+�ƘǘȘɘʘ˘̘͘ΘϘИјҘӘԘ՘֘טؘ�	�ƘǘȘɘʘ˘̘͘ΘϘИјҘӘԘ՘֘טؘ�
+�ژۘܘݘޘߘ���������������������������	�ژۘܘݘޘߘ���������������������������
+�������������������������������E�E�E�E�E	�������������������������������E�E�E�E�E
+�S�T�U�V�W�X�Y�Z�[�\�]�^�_�`�a�b�c�d�e�f	�S�T�U�V�W�X�Y�Z�[�\�]�^�_�`�a�b�c�d�e�f
+�g�h�i�j�k�l�m�n�o�p�q�r�s�t�u�v�w�x�y�z	�g�h�i�j�k�l�m�n�o�p�q�r�s�t�u�v�w�x�y�z
+�{�|�}�~��������������������������������	�{�|�}�~��������������������������������
+����������������������������ꞁE�E�E�E�E	����������������������������ꞁE�E�E�E�E
+SELECT `�b�P`, CONVERT(`�b�P` using ujis) FROM `�s�Q`;
+�b�P	CONVERT(`�b�P` using ujis)
+�@�@�A�B�C�D�E�F�G�H�I�J�K�L�M�N�O�P�Q�R	�@�@�A�B�C�D�E�F�G�H�I�J�K�L�M�N�O�P�Q�R
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�O�P�Q�R	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�O�P�Q�R
+�E�E�E�E�E�E�E�E�E�p�q�r�s�t�u�v�w�x�y�z	�E�E�E�E�E�E�E�E�E�p�q�r�s�t�u�v�w�x�y�z
+�E�E�E�E�E�E�����������������E�E�E�E�E�E	�E�E�E�E�E�E�����������������E�E�E�E�E�E
+�E�E�E�E�E������������������������������	�E�E�E�E�E������������������������������
+�E�E�ȁɁʁˁ́́΁E�E�E�E�E�E�E�E�E�E�E	�E�E�ȁɁʁˁ́́΁E�E�E�E�E�E�E�E�E�E�E
+�E�E�����������������E�E�E�E���E�E�E�E�@	�E�E�����������������E�E�E�E���E�E�E�E�@
+�E�����������������������������E�E�E�E�E	�E�����������������������������E�E�E�E�E
+�E��������������������������������������	�E��������������������������������������
+�E�@�A�B�C�D�E�F�G�H�I�J�K�L�M�N�O�P�Q�R	�E�@�A�B�C�D�E�F�G�H�I�J�K�L�M�N�O�P�Q�R
+�E��������������������������������������	�E��������������������������������������
+�E�@�A�B�C�D�E�F�G�H�I�J�K�L�M�N�O�P�Q�R	�E�@�A�B�C�D�E�F�G�H�I�J�K�L�M�N�O�P�Q�R
+�E��������������������������������������	�E��������������������������������������
+�E��������������������������������������	�E��������������������������������������
+�E�@�A�B�C�D�E�F�G�H�I�J�K�L�M�N�O�P�Q�R	�E�@�A�B�C�D�E�F�G�H�I�J�K�L�M�N�O�P�Q�R
+�E��������������������������������������	�E��������������������������������������
+�E�@�A�B�C�D�E�F�G�H�I�J�K�L�M�N�O�P�Q�R	�E�@�A�B�C�D�E�F�G�H�I�J�K�L�M�N�O�P�Q�R
+�E����������꤁E�E�E�E�E�E�E�E�E�E�E�E�E	�E����������꤁E�E�E�E�E�E�E�E�E�E�E�E�E
+�S�T�U�V�W�X�Y�Z�[�\�]�^�_�`�a�b�c�d�e�f	�S�T�U�V�W�X�Y�Z�[�\�]�^�_�`�a�b�c�d�e�f
+�g�h�i�j�k�l�m�n�o�p�q�r�s�t�u�v�w�x�y�z	�g�h�i�j�k�l�m�n�o�p�q�r�s�t�u�v�w�x�y�z
+�{�]�}�~��������������������������������	�{�]�}�~��������������������������������
+�������������������������������E�E�E�E�E	�������������������������������E�E�E�E�E
+�ځہ܁݁ށ߁������������������E�E�E�E�E	�ځہ܁݁ށ߁������������������E�E�E�E�E
+�S�T�U�V�W�X�E�E�E�E�E�E�E�`�a�b�c�d�e�f	�S�T�U�V�W�X�E�E�E�E�E�E�E�`�a�b�c�d�e�f
+�g�h�i�j�k�l�m�n�o�p�q�r�s�t�u�v�w�x�y�E	�g�h�i�j�k�l�m�n�o�p�q�r�s�t�u�v�w�x�y�E
+�����������������������E�E�E�E�E�E�E�E�E	�����������������������E�E�E�E�E�E�E�E�E
+���������������������������������ÂĂ�	���������������������������������ÂĂ�
+�ƂǂȂɂʂ˂̂͂΂ςЂт҂ӂԂՂւׂ؂�	�ƂǂȂɂʂ˂̂͂΂ςЂт҂ӂԂՂւׂ؂�
+�ڂۂ܂݂ނ߂���������������������������	�ڂۂ܂݂ނ߂���������������������������
+���������E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	���������E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�S�T�U�V�W�X�Y�Z�[�\�]�^�_�`�a�b�c�d�e�f	�S�T�U�V�W�X�Y�Z�[�\�]�^�_�`�a�b�c�d�e�f
+�g�h�i�j�k�l�m�n�o�p�q�r�s�t�u�v�w�x�y�z	�g�h�i�j�k�l�m�n�o�p�q�r�s�t�u�v�w�x�y�z
+�{�|�}�~��������������������������������	�{�|�}�~��������������������������������
+���������������E�E�E�E�E�E�E�E�E�E�E�E�E	���������������E�E�E�E�E�E�E�E�E�E�E�E�E
+�����������E�E�E�E�E�E�E�E�������Ãă�	�����������E�E�E�E�E�E�E�E�������Ãă�
+�ƃǃȃɃʃ˃̃̓΃σЃу҃ӃԃՃցE�E�E	�ƃǃȃɃʃ˃̃̓΃σЃу҃ӃԃՃցE�E�E
+�S�T�U�V�W�X�Y�Z�[�\�]�^�_�`�E�E�E�E�E�E	�S�T�U�V�W�X�Y�Z�[�\�]�^�_�`�E�E�E�E�E�E
+�{�|�}�~��������������������������������	�{�|�}�~��������������������������������
+�����E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�����E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+���������������������������E�E�E�E�E�E�E	���������������������������E�E�E�E�E�E�E
+���������������������������������ÈĈ�	���������������������������������ÈĈ�
+�ƈǈȈɈʈˈ͈̈ΈψЈш҈ӈԈՈֈ׈؈�	�ƈǈȈɈʈˈ͈̈ΈψЈш҈ӈԈՈֈ׈؈�
+�ڈۈ܈݈ވ߈���������������������������	�ڈۈ܈݈ވ߈���������������������������
+�������������������������������E�E�E�E�E	�������������������������������E�E�E�E�E
+�S�T�U�V�W�X�Y�Z�[�\�]�^�_�`�a�b�c�d�e�f	�S�T�U�V�W�X�Y�Z�[�\�]�^�_�`�a�b�c�d�e�f
+�g�h�i�j�k�l�m�n�o�p�q�r�E�E�E�E�E�E�E�E	�g�h�i�j�k�l�m�n�o�p�q�r�E�E�E�E�E�E�E�E
+���������������������������������ØĘ�	���������������������������������ØĘ�
+�ƘǘȘɘʘ˘̘͘ΘϘИјҘӘԘ՘֘טؘ�	�ƘǘȘɘʘ˘̘͘ΘϘИјҘӘԘ՘֘טؘ�
+�ژۘܘݘޘߘ���������������������������	�ژۘܘݘޘߘ���������������������������
+�������������������������������E�E�E�E�E	�������������������������������E�E�E�E�E
+�S�T�U�V�W�X�Y�Z�[�\�]�^�_�`�a�b�c�d�e�f	�S�T�U�V�W�X�Y�Z�[�\�]�^�_�`�a�b�c�d�e�f
+�g�h�i�j�k�l�m�n�o�p�q�r�s�t�u�v�w�x�y�z	�g�h�i�j�k�l�m�n�o�p�q�r�s�t�u�v�w�x�y�z
+�{�|�}�~��������������������������������	�{�|�}�~��������������������������������
+����������������������������ꞁE�E�E�E�E	����������������������������ꞁE�E�E�E�E
+SELECT `�b�P`, CONVERT(`�b�P` using utf8) FROM `�s�R`;
+�b�P	CONVERT(`�b�P` using utf8)
+�\�\�\�\�\�\�\�\�\�\�\�\�\�\�\�\�\�\�\�\	�\�\�\�\�\�\�\�\�\�\�\�\�\�\�\�\�\�\�\�\
+SELECT `�b�P`, CONVERT(`�b�P` using ucs2) FROM `�s�R`;
+�b�P	CONVERT(`�b�P` using ucs2)
+�\�\�\�\�\�\�\�\�\�\�\�\�\�\�\�\�\�\�\�\	�\�\�\�\�\�\�\�\�\�\�\�\�\�\�\�\�\�\�\�\
+SELECT `�b�P`, CONVERT(`�b�P` using ujis) FROM `�s�R`;
+�b�P	CONVERT(`�b�P` using ujis)
+�\�\�\�\�\�\�\�\�\�\�\�\�\�\�\�\�\�\�\�\	�\�\�\�\�\�\�\�\�\�\�\�\�\�\�\�\�\�\�\�\
+SELECT `�b�P`, CONVERT(`�b�P` using utf8) FROM `�s�S`;
+�b�P	CONVERT(`�b�P` using utf8)
+ !"#$%&'()*+,-./	 !"#$%&'()*+,-./
+ ���������������	 ���������������
+0123456789:;<=>?	0123456789:;<=>?
+@ABCDEFGHIJKLMNO	@ABCDEFGHIJKLMNO
+abcdefghijklmno	abcdefghijklmno
+PQRSTUVWXYZ[\]^_	PQRSTUVWXYZ[�_]^_
+pqrstuvwxyz{|}~	pqrstuvwxyz{|}~
+����������������	����������������
+����������������	����������������
+����������������	����������������
+SELECT `�b�P`, CONVERT(`�b�P` using ucs2) FROM `�s�S`;
+�b�P	CONVERT(`�b�P` using ucs2)
+ !"#$%&'()*+,-./	 !"#$%&'()*+,-./
+ ���������������	 ���������������
+0123456789:;<=>?	0123456789:;<=>?
+@ABCDEFGHIJKLMNO	@ABCDEFGHIJKLMNO
+abcdefghijklmno	abcdefghijklmno
+PQRSTUVWXYZ[\]^_	PQRSTUVWXYZ[�_]^_
+pqrstuvwxyz{|}~	pqrstuvwxyz{|}~
+����������������	����������������
+����������������	����������������
+����������������	����������������
+SELECT `�b�P`, CONVERT(`�b�P` using ujis) FROM `�s�S`;
+�b�P	CONVERT(`�b�P` using ujis)
+ !"#$%&'()*+,-./	 !"#$%&'()*+,-./
+ ���������������	 ���������������
+0123456789:;<=>?	0123456789:;<=>?
+@ABCDEFGHIJKLMNO	@ABCDEFGHIJKLMNO
+abcdefghijklmno	abcdefghijklmno
+PQRSTUVWXYZ[\]^_	PQRSTUVWXYZ[�_]^_
+pqrstuvwxyz{|}~	pqrstuvwxyz{|}~
+����������������	����������������
+����������������	����������������
+����������������	����������������
+SELECT `�b�P`, CONVERT(`�b�P` using utf8) FROM `�s�T`;
+�b�P	CONVERT(`�b�P` using utf8)
+�@�@�A�B�C�D�E�F�G�H�I�J�K�L�M�N�O�P�Q�R	�@�@�A�B�C�D�E�F�G�H�I�J�K�L�M�N�O�P�Q�R
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�O�P�Q�R	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�O�P�Q�R
+�E�E�E�E�E�E�E�E�E�p�q�r�s�t�u�v�w�x�y�z	�E�E�E�E�E�E�E�E�E�p�q�r�s�t�u�v�w�x�y�z
+�E�E�E�E�E�E�����������������E�E�E�E�E�E	�E�E�E�E�E�E�����������������E�E�E�E�E�E
+�E�E�E�E�E������������������������������	�E�E�E�E�E������������������������������
+�E�E�ȁɁʁˁ́́΁E�E�E�E�E�E�E�E�E�E�E	�E�E�ȁɁʁˁ́́΁E�E�E�E�E�E�E�E�E�E�E
+�E�E�����������������E�E�E�E���E�E�E�E�@	�E�E�����������������E�E�E�E���E�E�E�E�@
+�E�����������������������������E�E�E�E�E	�E�����������������������������E�E�E�E�E
+�E��������������������������������������	�E��������������������������������������
+�E�@�A�B�C�D�E�F�G�H�I�J�K�L�M�N�O�P�Q�R	�E�@�A�B�C�D�E�F�G�H�I�J�K�L�M�N�O�P�Q�R
+�E��������������������������������������	�E��������������������������������������
+�E�@�A�B�C�D�E�F�G�H�I�J�K�L�M�N�O�P�Q�R	�E�@�A�B�C�D�E�F�G�H�I�J�K�L�M�N�O�P�Q�R
+�E��������������������������������������	�E��������������������������������������
+�E��������������������������������������	�E��������������������������������������
+�E�@�A�B�C�D�E�F�G�H�I�J�K�L�M�N�O�P�Q�R	�E�@�A�B�C�D�E�F�G�H�I�J�K�L�M�N�O�P�Q�R
+�E��������������������������������������	�E��������������������������������������
+�E�@�A�B�C�D�E�F�G�H�I�J�K�L�M�N�O�P�Q�R	�E�@�A�B�C�D�E�F�G�H�I�J�K�L�M�N�O�P�Q�R
+�E����������꤁E�E�E�E�E�E�E�E�E�E�E�E�E	�E����������꤁E�E�E�E�E�E�E�E�E�E�E�E�E
+�S�T�U�V�W�X�Y�Z�[�\�]�^�_�`�a�b�c�d�e�f	�S�T�U�V�W�X�Y�Z�[�\�]�^�_�`�a�b�c�d�e�f
+�g�h�i�j�k�l�m�n�o�p�q�r�s�t�u�v�w�x�y�z	�g�h�i�j�k�l�m�n�o�p�q�r�s�t�u�v�w�x�y�z
+�{�]�}�~��������������������������������	�{�]�}�~��������������������������������
+�������������������������������E�E�E�E�E	�������������������������������E�E�E�E�E
+�ځہ܁݁ށ߁������������������E�E�E�E�E	�ځہ܁݁ށ߁������������������E�E�E�E�E
+�S�T�U�V�W�X�E�E�E�E�E�E�E�`�a�b�c�d�e�f	�S�T�U�V�W�X�E�E�E�E�E�E�E�`�a�b�c�d�e�f
+�g�h�i�j�k�l�m�n�o�p�q�r�s�t�u�v�w�x�y�E	�g�h�i�j�k�l�m�n�o�p�q�r�s�t�u�v�w�x�y�E
+�����������������������E�E�E�E�E�E�E�E�E	�����������������������E�E�E�E�E�E�E�E�E
+���������������������������������ÂĂ�	���������������������������������ÂĂ�
+�ƂǂȂɂʂ˂̂͂΂ςЂт҂ӂԂՂւׂ؂�	�ƂǂȂɂʂ˂̂͂΂ςЂт҂ӂԂՂւׂ؂�
+�ڂۂ܂݂ނ߂���������������������������	�ڂۂ܂݂ނ߂���������������������������
+���������E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	���������E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�S�T�U�V�W�X�Y�Z�[�\�]�^�_�`�a�b�c�d�e�f	�S�T�U�V�W�X�Y�Z�[�\�]�^�_�`�a�b�c�d�e�f
+�g�h�i�j�k�l�m�n�o�p�q�r�s�t�u�v�w�x�y�z	�g�h�i�j�k�l�m�n�o�p�q�r�s�t�u�v�w�x�y�z
+�{�|�}�~��������������������������������	�{�|�}�~��������������������������������
+���������������E�E�E�E�E�E�E�E�E�E�E�E�E	���������������E�E�E�E�E�E�E�E�E�E�E�E�E
+�����������E�E�E�E�E�E�E�E�������Ãă�	�����������E�E�E�E�E�E�E�E�������Ãă�
+�ƃǃȃɃʃ˃̃̓΃σЃу҃ӃԃՃցE�E�E	�ƃǃȃɃʃ˃̃̓΃σЃу҃ӃԃՃցE�E�E
+�S�T�U�V�W�X�Y�Z�[�\�]�^�_�`�E�E�E�E�E�E	�S�T�U�V�W�X�Y�Z�[�\�]�^�_�`�E�E�E�E�E�E
+�{�|�}�~��������������������������������	�{�|�}�~��������������������������������
+�����E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�����E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+���������������������������E�E�E�E�E�E�E	���������������������������E�E�E�E�E�E�E
+���������������������������������ÈĈ�	���������������������������������ÈĈ�
+�ƈǈȈɈʈˈ͈̈ΈψЈш҈ӈԈՈֈ׈؈�	�ƈǈȈɈʈˈ͈̈ΈψЈш҈ӈԈՈֈ׈؈�
+�ڈۈ܈݈ވ߈���������������������������	�ڈۈ܈݈ވ߈���������������������������
+�������������������������������E�E�E�E�E	�������������������������������E�E�E�E�E
+�S�T�U�V�W�X�Y�Z�[�\�]�^�_�`�a�b�c�d�e�f	�S�T�U�V�W�X�Y�Z�[�\�]�^�_�`�a�b�c�d�e�f
+�g�h�i�j�k�l�m�n�o�p�q�r�E�E�E�E�E�E�E�E	�g�h�i�j�k�l�m�n�o�p�q�r�E�E�E�E�E�E�E�E
+���������������������������������ØĘ�	���������������������������������ØĘ�
+�ƘǘȘɘʘ˘̘͘ΘϘИјҘӘԘ՘֘טؘ�	�ƘǘȘɘʘ˘̘͘ΘϘИјҘӘԘ՘֘טؘ�
+�ژۘܘݘޘߘ���������������������������	�ژۘܘݘޘߘ���������������������������
+�������������������������������E�E�E�E�E	�������������������������������E�E�E�E�E
+�S�T�U�V�W�X�Y�Z�[�\�]�^�_�`�a�b�c�d�e�f	�S�T�U�V�W�X�Y�Z�[�\�]�^�_�`�a�b�c�d�e�f
+�g�h�i�j�k�l�m�n�o�p�q�r�s�t�u�v�w�x�y�z	�g�h�i�j�k�l�m�n�o�p�q�r�s�t�u�v�w�x�y�z
+�{�|�}�~��������������������������������	�{�|�}�~��������������������������������
+����������������������������ꞁE�E�E�E�E	����������������������������ꞁE�E�E�E�E
+SELECT `�b�P`, CONVERT(`�b�P` using ucs2) FROM `�s�T`;
+�b�P	CONVERT(`�b�P` using ucs2)
+�@�@�A�B�C�D�E�F�G�H�I�J�K�L�M�N�O�P�Q�R	�@�@�A�B�C�D�E�F�G�H�I�J�K�L�M�N�O�P�Q�R
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�O�P�Q�R	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�O�P�Q�R
+�E�E�E�E�E�E�E�E�E�p�q�r�s�t�u�v�w�x�y�z	�E�E�E�E�E�E�E�E�E�p�q�r�s�t�u�v�w�x�y�z
+�E�E�E�E�E�E�����������������E�E�E�E�E�E	�E�E�E�E�E�E�����������������E�E�E�E�E�E
+�E�E�E�E�E������������������������������	�E�E�E�E�E������������������������������
+�E�E�ȁɁʁˁ́́΁E�E�E�E�E�E�E�E�E�E�E	�E�E�ȁɁʁˁ́́΁E�E�E�E�E�E�E�E�E�E�E
+�E�E�����������������E�E�E�E���E�E�E�E�@	�E�E�����������������E�E�E�E���E�E�E�E�@
+�E�����������������������������E�E�E�E�E	�E�����������������������������E�E�E�E�E
+�E��������������������������������������	�E��������������������������������������
+�E�@�A�B�C�D�E�F�G�H�I�J�K�L�M�N�O�P�Q�R	�E�@�A�B�C�D�E�F�G�H�I�J�K�L�M�N�O�P�Q�R
+�E��������������������������������������	�E��������������������������������������
+�E�@�A�B�C�D�E�F�G�H�I�J�K�L�M�N�O�P�Q�R	�E�@�A�B�C�D�E�F�G�H�I�J�K�L�M�N�O�P�Q�R
+�E��������������������������������������	�E��������������������������������������
+�E��������������������������������������	�E��������������������������������������
+�E�@�A�B�C�D�E�F�G�H�I�J�K�L�M�N�O�P�Q�R	�E�@�A�B�C�D�E�F�G�H�I�J�K�L�M�N�O�P�Q�R
+�E��������������������������������������	�E��������������������������������������
+�E�@�A�B�C�D�E�F�G�H�I�J�K�L�M�N�O�P�Q�R	�E�@�A�B�C�D�E�F�G�H�I�J�K�L�M�N�O�P�Q�R
+�E����������꤁E�E�E�E�E�E�E�E�E�E�E�E�E	�E����������꤁E�E�E�E�E�E�E�E�E�E�E�E�E
+�S�T�U�V�W�X�Y�Z�[�\�]�^�_�`�a�b�c�d�e�f	�S�T�U�V�W�X�Y�Z�[�\�]�^�_�`�a�b�c�d�e�f
+�g�h�i�j�k�l�m�n�o�p�q�r�s�t�u�v�w�x�y�z	�g�h�i�j�k�l�m�n�o�p�q�r�s�t�u�v�w�x�y�z
+�{�]�}�~��������������������������������	�{�]�}�~��������������������������������
+�������������������������������E�E�E�E�E	�������������������������������E�E�E�E�E
+�ځہ܁݁ށ߁������������������E�E�E�E�E	�ځہ܁݁ށ߁������������������E�E�E�E�E
+�S�T�U�V�W�X�E�E�E�E�E�E�E�`�a�b�c�d�e�f	�S�T�U�V�W�X�E�E�E�E�E�E�E�`�a�b�c�d�e�f
+�g�h�i�j�k�l�m�n�o�p�q�r�s�t�u�v�w�x�y�E	�g�h�i�j�k�l�m�n�o�p�q�r�s�t�u�v�w�x�y�E
+�����������������������E�E�E�E�E�E�E�E�E	�����������������������E�E�E�E�E�E�E�E�E
+���������������������������������ÂĂ�	���������������������������������ÂĂ�
+�ƂǂȂɂʂ˂̂͂΂ςЂт҂ӂԂՂւׂ؂�	�ƂǂȂɂʂ˂̂͂΂ςЂт҂ӂԂՂւׂ؂�
+�ڂۂ܂݂ނ߂���������������������������	�ڂۂ܂݂ނ߂���������������������������
+���������E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	���������E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�S�T�U�V�W�X�Y�Z�[�\�]�^�_�`�a�b�c�d�e�f	�S�T�U�V�W�X�Y�Z�[�\�]�^�_�`�a�b�c�d�e�f
+�g�h�i�j�k�l�m�n�o�p�q�r�s�t�u�v�w�x�y�z	�g�h�i�j�k�l�m�n�o�p�q�r�s�t�u�v�w�x�y�z
+�{�|�}�~��������������������������������	�{�|�}�~��������������������������������
+���������������E�E�E�E�E�E�E�E�E�E�E�E�E	���������������E�E�E�E�E�E�E�E�E�E�E�E�E
+�����������E�E�E�E�E�E�E�E�������Ãă�	�����������E�E�E�E�E�E�E�E�������Ãă�
+�ƃǃȃɃʃ˃̃̓΃σЃу҃ӃԃՃցE�E�E	�ƃǃȃɃʃ˃̃̓΃σЃу҃ӃԃՃցE�E�E
+�S�T�U�V�W�X�Y�Z�[�\�]�^�_�`�E�E�E�E�E�E	�S�T�U�V�W�X�Y�Z�[�\�]�^�_�`�E�E�E�E�E�E
+�{�|�}�~��������������������������������	�{�|�}�~��������������������������������
+�����E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�����E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+���������������������������E�E�E�E�E�E�E	���������������������������E�E�E�E�E�E�E
+���������������������������������ÈĈ�	���������������������������������ÈĈ�
+�ƈǈȈɈʈˈ͈̈ΈψЈш҈ӈԈՈֈ׈؈�	�ƈǈȈɈʈˈ͈̈ΈψЈш҈ӈԈՈֈ׈؈�
+�ڈۈ܈݈ވ߈���������������������������	�ڈۈ܈݈ވ߈���������������������������
+�������������������������������E�E�E�E�E	�������������������������������E�E�E�E�E
+�S�T�U�V�W�X�Y�Z�[�\�]�^�_�`�a�b�c�d�e�f	�S�T�U�V�W�X�Y�Z�[�\�]�^�_�`�a�b�c�d�e�f
+�g�h�i�j�k�l�m�n�o�p�q�r�E�E�E�E�E�E�E�E	�g�h�i�j�k�l�m�n�o�p�q�r�E�E�E�E�E�E�E�E
+���������������������������������ØĘ�	���������������������������������ØĘ�
+�ƘǘȘɘʘ˘̘͘ΘϘИјҘӘԘ՘֘טؘ�	�ƘǘȘɘʘ˘̘͘ΘϘИјҘӘԘ՘֘טؘ�
+�ژۘܘݘޘߘ���������������������������	�ژۘܘݘޘߘ���������������������������
+�������������������������������E�E�E�E�E	�������������������������������E�E�E�E�E
+�S�T�U�V�W�X�Y�Z�[�\�]�^�_�`�a�b�c�d�e�f	�S�T�U�V�W�X�Y�Z�[�\�]�^�_�`�a�b�c�d�e�f
+�g�h�i�j�k�l�m�n�o�p�q�r�s�t�u�v�w�x�y�z	�g�h�i�j�k�l�m�n�o�p�q�r�s�t�u�v�w�x�y�z
+�{�|�}�~��������������������������������	�{�|�}�~��������������������������������
+����������������������������ꞁE�E�E�E�E	����������������������������ꞁE�E�E�E�E
+SELECT `�b�P`, CONVERT(`�b�P` using ujis) FROM `�s�T`;
+�b�P	CONVERT(`�b�P` using ujis)
+�@�@�A�B�C�D�E�F�G�H�I�J�K�L�M�N�O�P�Q�R	�@�@�A�B�C�D�E�F�G�H�I�J�K�L�M�N�O�P�Q�R
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�O�P�Q�R	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�O�P�Q�R
+�E�E�E�E�E�E�E�E�E�p�q�r�s�t�u�v�w�x�y�z	�E�E�E�E�E�E�E�E�E�p�q�r�s�t�u�v�w�x�y�z
+�E�E�E�E�E�E�����������������E�E�E�E�E�E	�E�E�E�E�E�E�����������������E�E�E�E�E�E
+�E�E�E�E�E������������������������������	�E�E�E�E�E������������������������������
+�E�E�ȁɁʁˁ́́΁E�E�E�E�E�E�E�E�E�E�E	�E�E�ȁɁʁˁ́́΁E�E�E�E�E�E�E�E�E�E�E
+�E�E�����������������E�E�E�E���E�E�E�E�@	�E�E�����������������E�E�E�E���E�E�E�E�@
+�E�����������������������������E�E�E�E�E	�E�����������������������������E�E�E�E�E
+�E��������������������������������������	�E��������������������������������������
+�E�@�A�B�C�D�E�F�G�H�I�J�K�L�M�N�O�P�Q�R	�E�@�A�B�C�D�E�F�G�H�I�J�K�L�M�N�O�P�Q�R
+�E��������������������������������������	�E��������������������������������������
+�E�@�A�B�C�D�E�F�G�H�I�J�K�L�M�N�O�P�Q�R	�E�@�A�B�C�D�E�F�G�H�I�J�K�L�M�N�O�P�Q�R
+�E��������������������������������������	�E��������������������������������������
+�E��������������������������������������	�E��������������������������������������
+�E�@�A�B�C�D�E�F�G�H�I�J�K�L�M�N�O�P�Q�R	�E�@�A�B�C�D�E�F�G�H�I�J�K�L�M�N�O�P�Q�R
+�E��������������������������������������	�E��������������������������������������
+�E�@�A�B�C�D�E�F�G�H�I�J�K�L�M�N�O�P�Q�R	�E�@�A�B�C�D�E�F�G�H�I�J�K�L�M�N�O�P�Q�R
+�E����������꤁E�E�E�E�E�E�E�E�E�E�E�E�E	�E����������꤁E�E�E�E�E�E�E�E�E�E�E�E�E
+�S�T�U�V�W�X�Y�Z�[�\�]�^�_�`�a�b�c�d�e�f	�S�T�U�V�W�X�Y�Z�[�\�]�^�_�`�a�b�c�d�e�f
+�g�h�i�j�k�l�m�n�o�p�q�r�s�t�u�v�w�x�y�z	�g�h�i�j�k�l�m�n�o�p�q�r�s�t�u�v�w�x�y�z
+�{�]�}�~��������������������������������	�{�]�}�~��������������������������������
+�������������������������������E�E�E�E�E	�������������������������������E�E�E�E�E
+�ځہ܁݁ށ߁������������������E�E�E�E�E	�ځہ܁݁ށ߁������������������E�E�E�E�E
+�S�T�U�V�W�X�E�E�E�E�E�E�E�`�a�b�c�d�e�f	�S�T�U�V�W�X�E�E�E�E�E�E�E�`�a�b�c�d�e�f
+�g�h�i�j�k�l�m�n�o�p�q�r�s�t�u�v�w�x�y�E	�g�h�i�j�k�l�m�n�o�p�q�r�s�t�u�v�w�x�y�E
+�����������������������E�E�E�E�E�E�E�E�E	�����������������������E�E�E�E�E�E�E�E�E
+���������������������������������ÂĂ�	���������������������������������ÂĂ�
+�ƂǂȂɂʂ˂̂͂΂ςЂт҂ӂԂՂւׂ؂�	�ƂǂȂɂʂ˂̂͂΂ςЂт҂ӂԂՂւׂ؂�
+�ڂۂ܂݂ނ߂���������������������������	�ڂۂ܂݂ނ߂���������������������������
+���������E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	���������E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�S�T�U�V�W�X�Y�Z�[�\�]�^�_�`�a�b�c�d�e�f	�S�T�U�V�W�X�Y�Z�[�\�]�^�_�`�a�b�c�d�e�f
+�g�h�i�j�k�l�m�n�o�p�q�r�s�t�u�v�w�x�y�z	�g�h�i�j�k�l�m�n�o�p�q�r�s�t�u�v�w�x�y�z
+�{�|�}�~��������������������������������	�{�|�}�~��������������������������������
+���������������E�E�E�E�E�E�E�E�E�E�E�E�E	���������������E�E�E�E�E�E�E�E�E�E�E�E�E
+�����������E�E�E�E�E�E�E�E�������Ãă�	�����������E�E�E�E�E�E�E�E�������Ãă�
+�ƃǃȃɃʃ˃̃̓΃σЃу҃ӃԃՃցE�E�E	�ƃǃȃɃʃ˃̃̓΃σЃу҃ӃԃՃցE�E�E
+�S�T�U�V�W�X�Y�Z�[�\�]�^�_�`�E�E�E�E�E�E	�S�T�U�V�W�X�Y�Z�[�\�]�^�_�`�E�E�E�E�E�E
+�{�|�}�~��������������������������������	�{�|�}�~��������������������������������
+�����E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�����E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+���������������������������E�E�E�E�E�E�E	���������������������������E�E�E�E�E�E�E
+���������������������������������ÈĈ�	���������������������������������ÈĈ�
+�ƈǈȈɈʈˈ͈̈ΈψЈш҈ӈԈՈֈ׈؈�	�ƈǈȈɈʈˈ͈̈ΈψЈш҈ӈԈՈֈ׈؈�
+�ڈۈ܈݈ވ߈���������������������������	�ڈۈ܈݈ވ߈���������������������������
+�������������������������������E�E�E�E�E	�������������������������������E�E�E�E�E
+�S�T�U�V�W�X�Y�Z�[�\�]�^�_�`�a�b�c�d�e�f	�S�T�U�V�W�X�Y�Z�[�\�]�^�_�`�a�b�c�d�e�f
+�g�h�i�j�k�l�m�n�o�p�q�r�E�E�E�E�E�E�E�E	�g�h�i�j�k�l�m�n�o�p�q�r�E�E�E�E�E�E�E�E
+���������������������������������ØĘ�	���������������������������������ØĘ�
+�ƘǘȘɘʘ˘̘͘ΘϘИјҘӘԘ՘֘טؘ�	�ƘǘȘɘʘ˘̘͘ΘϘИјҘӘԘ՘֘טؘ�
+�ژۘܘݘޘߘ���������������������������	�ژۘܘݘޘߘ���������������������������
+�������������������������������E�E�E�E�E	�������������������������������E�E�E�E�E
+�S�T�U�V�W�X�Y�Z�[�\�]�^�_�`�a�b�c�d�e�f	�S�T�U�V�W�X�Y�Z�[�\�]�^�_�`�a�b�c�d�e�f
+�g�h�i�j�k�l�m�n�o�p�q�r�s�t�u�v�w�x�y�z	�g�h�i�j�k�l�m�n�o�p�q�r�s�t�u�v�w�x�y�z
+�{�|�}�~��������������������������������	�{�|�}�~��������������������������������
+����������������������������ꞁE�E�E�E�E	����������������������������ꞁE�E�E�E�E
+SELECT `�b�P`, CONVERT(`�b�P` using utf8) FROM `�s�U`;
+�b�P	CONVERT(`�b�P` using utf8)
+�\�\�\�\�\�\�\�\�\�\�\�\�\�\�\�\�\�\�\�\	�\�\�\�\�\�\�\�\�\�\�\�\�\�\�\�\�\�\�\�\
+SELECT `�b�P`, CONVERT(`�b�P` using ucs2) FROM `�s�U`;
+�b�P	CONVERT(`�b�P` using ucs2)
+�\�\�\�\�\�\�\�\�\�\�\�\�\�\�\�\�\�\�\�\	�\�\�\�\�\�\�\�\�\�\�\�\�\�\�\�\�\�\�\�\
+SELECT `�b�P`, CONVERT(`�b�P` using ujis) FROM `�s�U`;
+�b�P	CONVERT(`�b�P` using ujis)
+�\�\�\�\�\�\�\�\�\�\�\�\�\�\�\�\�\�\�\�\	�\�\�\�\�\�\�\�\�\�\�\�\�\�\�\�\�\�\�\�\
+SELECT `�b�P`, CONVERT(`�b�P` using utf8) FROM `�s�V`;
+�b�P	CONVERT(`�b�P` using utf8)
+ !"#$%&'()*+,-./	 !"#$%&'()*+,-./
+0123456789:;<=>?	0123456789:;<=>?
+@ABCDEFGHIJKLMNO	@ABCDEFGHIJKLMNO
+PQRSTUVWXYZ[\]^_	PQRSTUVWXYZ[�_]^_
+abcdefghijklmno	abcdefghijklmno
+pqrstuvwxyz{|}~	pqrstuvwxyz{|}~
+ ���������������	 ���������������
+����������������	����������������
+����������������	����������������
+����������������	����������������
+SELECT `�b�P`, CONVERT(`�b�P` using ucs2) FROM `�s�V`;
+�b�P	CONVERT(`�b�P` using ucs2)
+ !"#$%&'()*+,-./	 !"#$%&'()*+,-./
+0123456789:;<=>?	0123456789:;<=>?
+@ABCDEFGHIJKLMNO	@ABCDEFGHIJKLMNO
+PQRSTUVWXYZ[\]^_	PQRSTUVWXYZ[�_]^_
+abcdefghijklmno	abcdefghijklmno
+pqrstuvwxyz{|}~	pqrstuvwxyz{|}~
+ ���������������	 ���������������
+����������������	����������������
+����������������	����������������
+����������������	����������������
+SELECT `�b�P`, CONVERT(`�b�P` using ujis) FROM `�s�V`;
+�b�P	CONVERT(`�b�P` using ujis)
+ !"#$%&'()*+,-./	 !"#$%&'()*+,-./
+0123456789:;<=>?	0123456789:;<=>?
+@ABCDEFGHIJKLMNO	@ABCDEFGHIJKLMNO
+PQRSTUVWXYZ[\]^_	PQRSTUVWXYZ[�_]^_
+abcdefghijklmno	abcdefghijklmno
+pqrstuvwxyz{|}~	pqrstuvwxyz{|}~
+ ���������������	 ���������������
+����������������	����������������
+����������������	����������������
+����������������	����������������
+SELECT `�b�P`, CONVERT(`�b�P` using utf8) FROM `�s�W`;
+�b�P	CONVERT(`�b�P` using utf8)
+�@�@�A�B�C�D�E�F�G�H�I�J�K�L�M�N�O�P�Q�R	�@�@�A�B�C�D�E�F�G�H�I�J�K�L�M�N�O�P�Q�R
+�S�T�U�V�W�X�Y�Z�[�\�]�^�_�`�a�b�c�d�e�f	�S�T�U�V�W�X�Y�Z�[�\�]�^�_�`�a�b�c�d�e�f
+�g�h�i�j�k�l�m�n�o�p�q�r�s�t�u�v�w�x�y�z	�g�h�i�j�k�l�m�n�o�p�q�r�s�t�u�v�w�x�y�z
+�{�]�}�~��������������������������������	�{�]�}�~��������������������������������
+�������������������������������E�E�E�E�E	�������������������������������E�E�E�E�E
+�E�����������������������������E�E�E�E�E	�E�����������������������������E�E�E�E�E
+�E�E�E�E�E�E�����������������E�E�E�E�E�E	�E�E�E�E�E�E�����������������E�E�E�E�E�E
+�E�E�ȁɁʁˁ́́΁E�E�E�E�E�E�E�E�E�E�E	�E�E�ȁɁʁˁ́́΁E�E�E�E�E�E�E�E�E�E�E
+�ځہ܁݁ށ߁������������������E�E�E�E�E	�ځہ܁݁ށ߁������������������E�E�E�E�E
+�E�E�����������������E�E�E�E���E�E�E�E�@	�E�E�����������������E�E�E�E���E�E�E�E�@
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�O�P�Q�R	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�O�P�Q�R
+�S�T�U�V�W�X�E�E�E�E�E�E�E�`�a�b�c�d�e�f	�S�T�U�V�W�X�E�E�E�E�E�E�E�`�a�b�c�d�e�f
+�g�h�i�j�k�l�m�n�o�p�q�r�s�t�u�v�w�x�y�E	�g�h�i�j�k�l�m�n�o�p�q�r�s�t�u�v�w�x�y�E
+�E�E�E�E�E������������������������������	�E�E�E�E�E������������������������������
+�����������������������E�E�E�E�E�E�E�E�E	�����������������������E�E�E�E�E�E�E�E�E
+�E��������������������������������������	�E��������������������������������������
+���������������������������������ÂĂ�	���������������������������������ÂĂ�
+�ƂǂȂɂʂ˂̂͂΂ςЂт҂ӂԂՂւׂ؂�	�ƂǂȂɂʂ˂̂͂΂ςЂт҂ӂԂՂւׂ؂�
+�ڂۂ܂݂ނ߂���������������������������	�ڂۂ܂݂ނ߂���������������������������
+���������E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	���������E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E�@�A�B�C�D�E�F�G�H�I�J�K�L�M�N�O�P�Q�R	�E�@�A�B�C�D�E�F�G�H�I�J�K�L�M�N�O�P�Q�R
+�S�T�U�V�W�X�Y�Z�[�\�]�^�_�`�a�b�c�d�e�f	�S�T�U�V�W�X�Y�Z�[�\�]�^�_�`�a�b�c�d�e�f
+�g�h�i�j�k�l�m�n�o�p�q�r�s�t�u�v�w�x�y�z	�g�h�i�j�k�l�m�n�o�p�q�r�s�t�u�v�w�x�y�z
+�{�|�}�~��������������������������������	�{�|�}�~��������������������������������
+���������������E�E�E�E�E�E�E�E�E�E�E�E�E	���������������E�E�E�E�E�E�E�E�E�E�E�E�E
+�E��������������������������������������	�E��������������������������������������
+�����������E�E�E�E�E�E�E�E�������Ãă�	�����������E�E�E�E�E�E�E�E�������Ãă�
+�ƃǃȃɃʃ˃̃̓΃σЃу҃ӃԃՃցE�E�E	�ƃǃȃɃʃ˃̃̓΃σЃу҃ӃԃՃցE�E�E
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E�@�A�B�C�D�E�F�G�H�I�J�K�L�M�N�O�P�Q�R	�E�@�A�B�C�D�E�F�G�H�I�J�K�L�M�N�O�P�Q�R
+�S�T�U�V�W�X�Y�Z�[�\�]�^�_�`�E�E�E�E�E�E	�S�T�U�V�W�X�Y�Z�[�\�]�^�_�`�E�E�E�E�E�E
+�E�E�E�E�E�E�E�E�E�p�q�r�s�t�u�v�w�x�y�z	�E�E�E�E�E�E�E�E�E�p�q�r�s�t�u�v�w�x�y�z
+�{�|�}�~��������������������������������	�{�|�}�~��������������������������������
+�����E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�����E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E��������������������������������������	�E��������������������������������������
+���������������������������E�E�E�E�E�E�E	���������������������������E�E�E�E�E�E�E
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E��������������������������������������	�E��������������������������������������
+���������������������������������ÈĈ�	���������������������������������ÈĈ�
+�ƈǈȈɈʈˈ͈̈ΈψЈш҈ӈԈՈֈ׈؈�	�ƈǈȈɈʈˈ͈̈ΈψЈш҈ӈԈՈֈ׈؈�
+�ڈۈ܈݈ވ߈���������������������������	�ڈۈ܈݈ވ߈���������������������������
+�������������������������������E�E�E�E�E	�������������������������������E�E�E�E�E
+�E�@�A�B�C�D�E�F�G�H�I�J�K�L�M�N�O�P�Q�R	�E�@�A�B�C�D�E�F�G�H�I�J�K�L�M�N�O�P�Q�R
+�S�T�U�V�W�X�Y�Z�[�\�]�^�_�`�a�b�c�d�e�f	�S�T�U�V�W�X�Y�Z�[�\�]�^�_�`�a�b�c�d�e�f
+�g�h�i�j�k�l�m�n�o�p�q�r�E�E�E�E�E�E�E�E	�g�h�i�j�k�l�m�n�o�p�q�r�E�E�E�E�E�E�E�E
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E��������������������������������������	�E��������������������������������������
+���������������������������������ØĘ�	���������������������������������ØĘ�
+�ƘǘȘɘʘ˘̘͘ΘϘИјҘӘԘ՘֘טؘ�	�ƘǘȘɘʘ˘̘͘ΘϘИјҘӘԘ՘֘טؘ�
+�ژۘܘݘޘߘ���������������������������	�ژۘܘݘޘߘ���������������������������
+�������������������������������E�E�E�E�E	�������������������������������E�E�E�E�E
+�E�@�A�B�C�D�E�F�G�H�I�J�K�L�M�N�O�P�Q�R	�E�@�A�B�C�D�E�F�G�H�I�J�K�L�M�N�O�P�Q�R
+�S�T�U�V�W�X�Y�Z�[�\�]�^�_�`�a�b�c�d�e�f	�S�T�U�V�W�X�Y�Z�[�\�]�^�_�`�a�b�c�d�e�f
+�g�h�i�j�k�l�m�n�o�p�q�r�s�t�u�v�w�x�y�z	�g�h�i�j�k�l�m�n�o�p�q�r�s�t�u�v�w�x�y�z
+�{�|�}�~��������������������������������	�{�|�}�~��������������������������������
+����������������������������ꞁE�E�E�E�E	����������������������������ꞁE�E�E�E�E
+�E����������꤁E�E�E�E�E�E�E�E�E�E�E�E�E	�E����������꤁E�E�E�E�E�E�E�E�E�E�E�E�E
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+SELECT `�b�P`, CONVERT(`�b�P` using ucs2) FROM `�s�W`;
+�b�P	CONVERT(`�b�P` using ucs2)
+�@�@�A�B�C�D�E�F�G�H�I�J�K�L�M�N�O�P�Q�R	�@�@�A�B�C�D�E�F�G�H�I�J�K�L�M�N�O�P�Q�R
+�S�T�U�V�W�X�Y�Z�[�\�]�^�_�`�a�b�c�d�e�f	�S�T�U�V�W�X�Y�Z�[�\�]�^�_�`�a�b�c�d�e�f
+�g�h�i�j�k�l�m�n�o�p�q�r�s�t�u�v�w�x�y�z	�g�h�i�j�k�l�m�n�o�p�q�r�s�t�u�v�w�x�y�z
+�{�]�}�~��������������������������������	�{�]�}�~��������������������������������
+�������������������������������E�E�E�E�E	�������������������������������E�E�E�E�E
+�E�����������������������������E�E�E�E�E	�E�����������������������������E�E�E�E�E
+�E�E�E�E�E�E�����������������E�E�E�E�E�E	�E�E�E�E�E�E�����������������E�E�E�E�E�E
+�E�E�ȁɁʁˁ́́΁E�E�E�E�E�E�E�E�E�E�E	�E�E�ȁɁʁˁ́́΁E�E�E�E�E�E�E�E�E�E�E
+�ځہ܁݁ށ߁������������������E�E�E�E�E	�ځہ܁݁ށ߁������������������E�E�E�E�E
+�E�E�����������������E�E�E�E���E�E�E�E�@	�E�E�����������������E�E�E�E���E�E�E�E�@
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�O�P�Q�R	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�O�P�Q�R
+�S�T�U�V�W�X�E�E�E�E�E�E�E�`�a�b�c�d�e�f	�S�T�U�V�W�X�E�E�E�E�E�E�E�`�a�b�c�d�e�f
+�g�h�i�j�k�l�m�n�o�p�q�r�s�t�u�v�w�x�y�E	�g�h�i�j�k�l�m�n�o�p�q�r�s�t�u�v�w�x�y�E
+�E�E�E�E�E������������������������������	�E�E�E�E�E������������������������������
+�����������������������E�E�E�E�E�E�E�E�E	�����������������������E�E�E�E�E�E�E�E�E
+�E��������������������������������������	�E��������������������������������������
+���������������������������������ÂĂ�	���������������������������������ÂĂ�
+�ƂǂȂɂʂ˂̂͂΂ςЂт҂ӂԂՂւׂ؂�	�ƂǂȂɂʂ˂̂͂΂ςЂт҂ӂԂՂւׂ؂�
+�ڂۂ܂݂ނ߂���������������������������	�ڂۂ܂݂ނ߂���������������������������
+���������E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	���������E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E�@�A�B�C�D�E�F�G�H�I�J�K�L�M�N�O�P�Q�R	�E�@�A�B�C�D�E�F�G�H�I�J�K�L�M�N�O�P�Q�R
+�S�T�U�V�W�X�Y�Z�[�\�]�^�_�`�a�b�c�d�e�f	�S�T�U�V�W�X�Y�Z�[�\�]�^�_�`�a�b�c�d�e�f
+�g�h�i�j�k�l�m�n�o�p�q�r�s�t�u�v�w�x�y�z	�g�h�i�j�k�l�m�n�o�p�q�r�s�t�u�v�w�x�y�z
+�{�|�}�~��������������������������������	�{�|�}�~��������������������������������
+���������������E�E�E�E�E�E�E�E�E�E�E�E�E	���������������E�E�E�E�E�E�E�E�E�E�E�E�E
+�E��������������������������������������	�E��������������������������������������
+�����������E�E�E�E�E�E�E�E�������Ãă�	�����������E�E�E�E�E�E�E�E�������Ãă�
+�ƃǃȃɃʃ˃̃̓΃σЃу҃ӃԃՃցE�E�E	�ƃǃȃɃʃ˃̃̓΃σЃу҃ӃԃՃցE�E�E
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E�@�A�B�C�D�E�F�G�H�I�J�K�L�M�N�O�P�Q�R	�E�@�A�B�C�D�E�F�G�H�I�J�K�L�M�N�O�P�Q�R
+�S�T�U�V�W�X�Y�Z�[�\�]�^�_�`�E�E�E�E�E�E	�S�T�U�V�W�X�Y�Z�[�\�]�^�_�`�E�E�E�E�E�E
+�E�E�E�E�E�E�E�E�E�p�q�r�s�t�u�v�w�x�y�z	�E�E�E�E�E�E�E�E�E�p�q�r�s�t�u�v�w�x�y�z
+�{�|�}�~��������������������������������	�{�|�}�~��������������������������������
+�����E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�����E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E��������������������������������������	�E��������������������������������������
+���������������������������E�E�E�E�E�E�E	���������������������������E�E�E�E�E�E�E
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E��������������������������������������	�E��������������������������������������
+���������������������������������ÈĈ�	���������������������������������ÈĈ�
+�ƈǈȈɈʈˈ͈̈ΈψЈш҈ӈԈՈֈ׈؈�	�ƈǈȈɈʈˈ͈̈ΈψЈш҈ӈԈՈֈ׈؈�
+�ڈۈ܈݈ވ߈���������������������������	�ڈۈ܈݈ވ߈���������������������������
+�������������������������������E�E�E�E�E	�������������������������������E�E�E�E�E
+�E�@�A�B�C�D�E�F�G�H�I�J�K�L�M�N�O�P�Q�R	�E�@�A�B�C�D�E�F�G�H�I�J�K�L�M�N�O�P�Q�R
+�S�T�U�V�W�X�Y�Z�[�\�]�^�_�`�a�b�c�d�e�f	�S�T�U�V�W�X�Y�Z�[�\�]�^�_�`�a�b�c�d�e�f
+�g�h�i�j�k�l�m�n�o�p�q�r�E�E�E�E�E�E�E�E	�g�h�i�j�k�l�m�n�o�p�q�r�E�E�E�E�E�E�E�E
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E��������������������������������������	�E��������������������������������������
+���������������������������������ØĘ�	���������������������������������ØĘ�
+�ƘǘȘɘʘ˘̘͘ΘϘИјҘӘԘ՘֘טؘ�	�ƘǘȘɘʘ˘̘͘ΘϘИјҘӘԘ՘֘טؘ�
+�ژۘܘݘޘߘ���������������������������	�ژۘܘݘޘߘ���������������������������
+�������������������������������E�E�E�E�E	�������������������������������E�E�E�E�E
+�E�@�A�B�C�D�E�F�G�H�I�J�K�L�M�N�O�P�Q�R	�E�@�A�B�C�D�E�F�G�H�I�J�K�L�M�N�O�P�Q�R
+�S�T�U�V�W�X�Y�Z�[�\�]�^�_�`�a�b�c�d�e�f	�S�T�U�V�W�X�Y�Z�[�\�]�^�_�`�a�b�c�d�e�f
+�g�h�i�j�k�l�m�n�o�p�q�r�s�t�u�v�w�x�y�z	�g�h�i�j�k�l�m�n�o�p�q�r�s�t�u�v�w�x�y�z
+�{�|�}�~��������������������������������	�{�|�}�~��������������������������������
+����������������������������ꞁE�E�E�E�E	����������������������������ꞁE�E�E�E�E
+�E����������꤁E�E�E�E�E�E�E�E�E�E�E�E�E	�E����������꤁E�E�E�E�E�E�E�E�E�E�E�E�E
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+SELECT `�b�P`, CONVERT(`�b�P` using ujis) FROM `�s�W`;
+�b�P	CONVERT(`�b�P` using ujis)
+�@�@�A�B�C�D�E�F�G�H�I�J�K�L�M�N�O�P�Q�R	�@�@�A�B�C�D�E�F�G�H�I�J�K�L�M�N�O�P�Q�R
+�S�T�U�V�W�X�Y�Z�[�\�]�^�_�`�a�b�c�d�e�f	�S�T�U�V�W�X�Y�Z�[�\�]�^�_�`�a�b�c�d�e�f
+�g�h�i�j�k�l�m�n�o�p�q�r�s�t�u�v�w�x�y�z	�g�h�i�j�k�l�m�n�o�p�q�r�s�t�u�v�w�x�y�z
+�{�]�}�~��������������������������������	�{�]�}�~��������������������������������
+�������������������������������E�E�E�E�E	�������������������������������E�E�E�E�E
+�E�����������������������������E�E�E�E�E	�E�����������������������������E�E�E�E�E
+�E�E�E�E�E�E�����������������E�E�E�E�E�E	�E�E�E�E�E�E�����������������E�E�E�E�E�E
+�E�E�ȁɁʁˁ́́΁E�E�E�E�E�E�E�E�E�E�E	�E�E�ȁɁʁˁ́́΁E�E�E�E�E�E�E�E�E�E�E
+�ځہ܁݁ށ߁������������������E�E�E�E�E	�ځہ܁݁ށ߁������������������E�E�E�E�E
+�E�E�����������������E�E�E�E���E�E�E�E�@	�E�E�����������������E�E�E�E���E�E�E�E�@
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�O�P�Q�R	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�O�P�Q�R
+�S�T�U�V�W�X�E�E�E�E�E�E�E�`�a�b�c�d�e�f	�S�T�U�V�W�X�E�E�E�E�E�E�E�`�a�b�c�d�e�f
+�g�h�i�j�k�l�m�n�o�p�q�r�s�t�u�v�w�x�y�E	�g�h�i�j�k�l�m�n�o�p�q�r�s�t�u�v�w�x�y�E
+�E�E�E�E�E������������������������������	�E�E�E�E�E������������������������������
+�����������������������E�E�E�E�E�E�E�E�E	�����������������������E�E�E�E�E�E�E�E�E
+�E��������������������������������������	�E��������������������������������������
+���������������������������������ÂĂ�	���������������������������������ÂĂ�
+�ƂǂȂɂʂ˂̂͂΂ςЂт҂ӂԂՂւׂ؂�	�ƂǂȂɂʂ˂̂͂΂ςЂт҂ӂԂՂւׂ؂�
+�ڂۂ܂݂ނ߂���������������������������	�ڂۂ܂݂ނ߂���������������������������
+���������E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	���������E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E�@�A�B�C�D�E�F�G�H�I�J�K�L�M�N�O�P�Q�R	�E�@�A�B�C�D�E�F�G�H�I�J�K�L�M�N�O�P�Q�R
+�S�T�U�V�W�X�Y�Z�[�\�]�^�_�`�a�b�c�d�e�f	�S�T�U�V�W�X�Y�Z�[�\�]�^�_�`�a�b�c�d�e�f
+�g�h�i�j�k�l�m�n�o�p�q�r�s�t�u�v�w�x�y�z	�g�h�i�j�k�l�m�n�o�p�q�r�s�t�u�v�w�x�y�z
+�{�|�}�~��������������������������������	�{�|�}�~��������������������������������
+���������������E�E�E�E�E�E�E�E�E�E�E�E�E	���������������E�E�E�E�E�E�E�E�E�E�E�E�E
+�E��������������������������������������	�E��������������������������������������
+�����������E�E�E�E�E�E�E�E�������Ãă�	�����������E�E�E�E�E�E�E�E�������Ãă�
+�ƃǃȃɃʃ˃̃̓΃σЃу҃ӃԃՃցE�E�E	�ƃǃȃɃʃ˃̃̓΃σЃу҃ӃԃՃցE�E�E
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E�@�A�B�C�D�E�F�G�H�I�J�K�L�M�N�O�P�Q�R	�E�@�A�B�C�D�E�F�G�H�I�J�K�L�M�N�O�P�Q�R
+�S�T�U�V�W�X�Y�Z�[�\�]�^�_�`�E�E�E�E�E�E	�S�T�U�V�W�X�Y�Z�[�\�]�^�_�`�E�E�E�E�E�E
+�E�E�E�E�E�E�E�E�E�p�q�r�s�t�u�v�w�x�y�z	�E�E�E�E�E�E�E�E�E�p�q�r�s�t�u�v�w�x�y�z
+�{�|�}�~��������������������������������	�{�|�}�~��������������������������������
+�����E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�����E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E��������������������������������������	�E��������������������������������������
+���������������������������E�E�E�E�E�E�E	���������������������������E�E�E�E�E�E�E
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E��������������������������������������	�E��������������������������������������
+���������������������������������ÈĈ�	���������������������������������ÈĈ�
+�ƈǈȈɈʈˈ͈̈ΈψЈш҈ӈԈՈֈ׈؈�	�ƈǈȈɈʈˈ͈̈ΈψЈш҈ӈԈՈֈ׈؈�
+�ڈۈ܈݈ވ߈���������������������������	�ڈۈ܈݈ވ߈���������������������������
+�������������������������������E�E�E�E�E	�������������������������������E�E�E�E�E
+�E�@�A�B�C�D�E�F�G�H�I�J�K�L�M�N�O�P�Q�R	�E�@�A�B�C�D�E�F�G�H�I�J�K�L�M�N�O�P�Q�R
+�S�T�U�V�W�X�Y�Z�[�\�]�^�_�`�a�b�c�d�e�f	�S�T�U�V�W�X�Y�Z�[�\�]�^�_�`�a�b�c�d�e�f
+�g�h�i�j�k�l�m�n�o�p�q�r�E�E�E�E�E�E�E�E	�g�h�i�j�k�l�m�n�o�p�q�r�E�E�E�E�E�E�E�E
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E��������������������������������������	�E��������������������������������������
+���������������������������������ØĘ�	���������������������������������ØĘ�
+�ƘǘȘɘʘ˘̘͘ΘϘИјҘӘԘ՘֘טؘ�	�ƘǘȘɘʘ˘̘͘ΘϘИјҘӘԘ՘֘טؘ�
+�ژۘܘݘޘߘ���������������������������	�ژۘܘݘޘߘ���������������������������
+�������������������������������E�E�E�E�E	�������������������������������E�E�E�E�E
+�E�@�A�B�C�D�E�F�G�H�I�J�K�L�M�N�O�P�Q�R	�E�@�A�B�C�D�E�F�G�H�I�J�K�L�M�N�O�P�Q�R
+�S�T�U�V�W�X�Y�Z�[�\�]�^�_�`�a�b�c�d�e�f	�S�T�U�V�W�X�Y�Z�[�\�]�^�_�`�a�b�c�d�e�f
+�g�h�i�j�k�l�m�n�o�p�q�r�s�t�u�v�w�x�y�z	�g�h�i�j�k�l�m�n�o�p�q�r�s�t�u�v�w�x�y�z
+�{�|�}�~��������������������������������	�{�|�}�~��������������������������������
+����������������������������ꞁE�E�E�E�E	����������������������������ꞁE�E�E�E�E
+�E����������꤁E�E�E�E�E�E�E�E�E�E�E�E�E	�E����������꤁E�E�E�E�E�E�E�E�E�E�E�E�E
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E	�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E�E
+SELECT `�b�P`, CONVERT(`�b�P` using utf8) FROM `�s�X`;
+�b�P	CONVERT(`�b�P` using utf8)
+�\�\�\�\�\�\�\�\�\�\�\�\�\�\�\�\�\�\�\�\	�\�\�\�\�\�\�\�\�\�\�\�\�\�\�\�\�\�\�\�\
+SELECT `�b�P`, CONVERT(`�b�P` using ucs2) FROM `�s�X`;
+�b�P	CONVERT(`�b�P` using ucs2)
+�\�\�\�\�\�\�\�\�\�\�\�\�\�\�\�\�\�\�\�\	�\�\�\�\�\�\�\�\�\�\�\�\�\�\�\�\�\�\�\�\
+SELECT `�b�P`, CONVERT(`�b�P` using ujis) FROM `�s�X`;
+�b�P	CONVERT(`�b�P` using ujis)
+�\�\�\�\�\�\�\�\�\�\�\�\�\�\�\�\�\�\�\�\	�\�\�\�\�\�\�\�\�\�\�\�\�\�\�\�\�\�\�\�\
+drop table `�s�P`;
+drop table `�s�Q`;
+drop table `�s�R`;
+drop table `�s�S`;
+drop table `�s�T`;
+drop table `�s�U`;
+drop table `�s�V`;
+drop table `�s�W`;
+drop table `�s�X`;

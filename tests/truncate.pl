@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# Copyright (C) 2002 MySQL AB
+# Copyright (C) 2002 MyBlockchain AB
 # Use is subject to license terms
 # 
 # This program is free software; you can redistribute it and/or modify
@@ -17,7 +17,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA
 
 #
-# This is a test with uses many processes to test a MySQL server.
+# This is a test with uses many processes to test a MyBlockchain server.
 #
 
 $opt_loop_count=10000; # Change this to make test harder/easier
@@ -47,7 +47,7 @@ print "Testing truncate from $opt_threads multiple connections $opt_loop_count t
 ####
 
 $start_time=new Benchmark;
-$dbh = DBI->connect("DBI:mysql:$opt_db:$opt_host",
+$dbh = DBI->connect("DBI:myblockchain:$opt_db:$opt_host",
 		    $opt_user, $opt_password,
 		  { PrintError => 0}) || die $DBI::errstr;
 if (!$opt_skip_create)
@@ -56,7 +56,7 @@ if (!$opt_skip_create)
   foreach $table_def (@testtables)
   {
     my ($table,$extra)= ($table_def->[0], $table_def->[1]);
-    print "Creating table $table in database $opt_db\n";
+    print "Creating table $table in blockchain $opt_db\n";
     $dbh->do("drop table if exists $table");
     $dbh->do("create table $table".
 	     " (id int(6) not null,".
@@ -100,7 +100,7 @@ while (($pid=wait()) != -1)
 if (!$opt_skip_delete && !$errors)
 {
   my $table_def;
-  $dbh = DBI->connect("DBI:mysql:$opt_db:$opt_host",
+  $dbh = DBI->connect("DBI:myblockchain:$opt_db:$opt_host",
 		      $opt_user, $opt_password,
 		    { PrintError => 0}) || die $DBI::errstr;
 
@@ -127,7 +127,7 @@ sub test_truncate
 {
   my ($dbh,$i,$j,$count,$table_def,$table);
 
-  $dbh = DBI->connect("DBI:mysql:$opt_db:$opt_host",
+  $dbh = DBI->connect("DBI:myblockchain:$opt_db:$opt_host",
 		      $opt_user, $opt_password,
 		    { PrintError => 0}) || die $DBI::errstr;
 

@@ -15,47 +15,47 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
  */
 
-package com.mysql.clusterj.tie;
+package com.myblockchain.clusterj.tie;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.mysql.clusterj.ClusterJDatastoreException;
-import com.mysql.clusterj.ClusterJFatalInternalException;
-import com.mysql.clusterj.ClusterJHelper;
-import com.mysql.clusterj.LockMode;
+import com.myblockchain.clusterj.ClusterJDatastoreException;
+import com.myblockchain.clusterj.ClusterJFatalInternalException;
+import com.myblockchain.clusterj.ClusterJHelper;
+import com.myblockchain.clusterj.LockMode;
 
-import com.mysql.clusterj.core.store.ClusterTransaction;
-import com.mysql.clusterj.core.store.Index;
-import com.mysql.clusterj.core.store.IndexOperation;
-import com.mysql.clusterj.core.store.IndexScanOperation;
-import com.mysql.clusterj.core.store.Operation;
-import com.mysql.clusterj.core.store.PartitionKey;
-import com.mysql.clusterj.core.store.ScanOperation;
-import com.mysql.clusterj.core.store.Table;
+import com.myblockchain.clusterj.core.store.ClusterTransaction;
+import com.myblockchain.clusterj.core.store.Index;
+import com.myblockchain.clusterj.core.store.IndexOperation;
+import com.myblockchain.clusterj.core.store.IndexScanOperation;
+import com.myblockchain.clusterj.core.store.Operation;
+import com.myblockchain.clusterj.core.store.PartitionKey;
+import com.myblockchain.clusterj.core.store.ScanOperation;
+import com.myblockchain.clusterj.core.store.Table;
 
-import com.mysql.clusterj.core.util.I18NHelper;
-import com.mysql.clusterj.core.util.Logger;
-import com.mysql.clusterj.core.util.LoggerFactoryService;
-import com.mysql.clusterj.tie.DbImpl.BufferManager;
+import com.myblockchain.clusterj.core.util.I18NHelper;
+import com.myblockchain.clusterj.core.util.Logger;
+import com.myblockchain.clusterj.core.util.LoggerFactoryService;
+import com.myblockchain.clusterj.tie.DbImpl.BufferManager;
 
-import com.mysql.ndbjtie.ndbapi.NdbErrorConst;
-import com.mysql.ndbjtie.ndbapi.NdbIndexOperation;
-import com.mysql.ndbjtie.ndbapi.NdbIndexScanOperation;
-import com.mysql.ndbjtie.ndbapi.NdbOperation;
-import com.mysql.ndbjtie.ndbapi.NdbOperationConst;
-import com.mysql.ndbjtie.ndbapi.NdbRecordConst;
-import com.mysql.ndbjtie.ndbapi.NdbScanOperation;
-import com.mysql.ndbjtie.ndbapi.NdbTransaction;
-import com.mysql.ndbjtie.ndbapi.NdbDictionary.Dictionary;
-import com.mysql.ndbjtie.ndbapi.NdbDictionary.IndexConst;
-import com.mysql.ndbjtie.ndbapi.NdbDictionary.TableConst;
-import com.mysql.ndbjtie.ndbapi.NdbOperation.OperationOptionsConst;
-import com.mysql.ndbjtie.ndbapi.NdbOperationConst.AbortOption;
-import com.mysql.ndbjtie.ndbapi.NdbScanOperation.ScanFlag;
-import com.mysql.ndbjtie.ndbapi.NdbScanOperation.ScanOptions;
-import com.mysql.ndbjtie.ndbapi.NdbScanOperation.ScanOptionsConst;
+import com.myblockchain.ndbjtie.ndbapi.NdbErrorConst;
+import com.myblockchain.ndbjtie.ndbapi.NdbIndexOperation;
+import com.myblockchain.ndbjtie.ndbapi.NdbIndexScanOperation;
+import com.myblockchain.ndbjtie.ndbapi.NdbOperation;
+import com.myblockchain.ndbjtie.ndbapi.NdbOperationConst;
+import com.myblockchain.ndbjtie.ndbapi.NdbRecordConst;
+import com.myblockchain.ndbjtie.ndbapi.NdbScanOperation;
+import com.myblockchain.ndbjtie.ndbapi.NdbTransaction;
+import com.myblockchain.ndbjtie.ndbapi.NdbDictionary.Dictionary;
+import com.myblockchain.ndbjtie.ndbapi.NdbDictionary.IndexConst;
+import com.myblockchain.ndbjtie.ndbapi.NdbDictionary.TableConst;
+import com.myblockchain.ndbjtie.ndbapi.NdbOperation.OperationOptionsConst;
+import com.myblockchain.ndbjtie.ndbapi.NdbOperationConst.AbortOption;
+import com.myblockchain.ndbjtie.ndbapi.NdbScanOperation.ScanFlag;
+import com.myblockchain.ndbjtie.ndbapi.NdbScanOperation.ScanOptions;
+import com.myblockchain.ndbjtie.ndbapi.NdbScanOperation.ScanOptionsConst;
 
 /**
  *
@@ -70,7 +70,7 @@ class ClusterTransactionImpl implements ClusterTransaction {
     static final Logger logger = LoggerFactoryService.getFactory()
             .getInstance(ClusterTransactionImpl.class);
 
-    protected final static String USE_NDBRECORD_NAME = "com.mysql.clusterj.UseNdbRecord";
+    protected final static String USE_NDBRECORD_NAME = "com.myblockchain.clusterj.UseNdbRecord";
     private static boolean USE_NDBRECORD = ClusterJHelper.getBooleanProperty(USE_NDBRECORD_NAME, "true");
 
     protected NdbTransaction ndbTransaction;
@@ -95,16 +95,16 @@ class ClusterTransactionImpl implements ClusterTransaction {
     private static boolean supportsGetCoordinatedTransactionId = true;
 
     /** Lock mode for find operations */
-    private int findLockMode = com.mysql.ndbjtie.ndbapi.NdbOperationConst.LockMode.LM_CommittedRead;
+    private int findLockMode = com.myblockchain.ndbjtie.ndbapi.NdbOperationConst.LockMode.LM_CommittedRead;
 
     /** Lock mode for index lookup operations */
-    private int lookupLockMode = com.mysql.ndbjtie.ndbapi.NdbOperationConst.LockMode.LM_CommittedRead;
+    private int lookupLockMode = com.myblockchain.ndbjtie.ndbapi.NdbOperationConst.LockMode.LM_CommittedRead;
 
     /** Lock mode for index scan operations */
-    private int indexScanLockMode = com.mysql.ndbjtie.ndbapi.NdbOperationConst.LockMode.LM_CommittedRead;
+    private int indexScanLockMode = com.myblockchain.ndbjtie.ndbapi.NdbOperationConst.LockMode.LM_CommittedRead;
 
     /** Lock mode for table scan operations */
-    private int tableScanLockMode = com.mysql.ndbjtie.ndbapi.NdbOperationConst.LockMode.LM_CommittedRead;
+    private int tableScanLockMode = com.myblockchain.ndbjtie.ndbapi.NdbOperationConst.LockMode.LM_CommittedRead;
 
     /** Autocommit flag if we are in an autocommit transaction */
     private boolean autocommit = false;
@@ -257,7 +257,7 @@ class ClusterTransactionImpl implements ClusterTransaction {
         handleError(ndbOperation, ndbTransaction);
         int scanFlags = 0;
         int lockMode = indexScanLockMode;
-        if (lockMode != com.mysql.ndbjtie.ndbapi.NdbOperationConst.LockMode.LM_CommittedRead) {
+        if (lockMode != com.myblockchain.ndbjtie.ndbapi.NdbOperationConst.LockMode.LM_CommittedRead) {
             scanFlags = ScanFlag.SF_KeyInfo;
         }
         int parallel = 0;
@@ -279,7 +279,7 @@ class ClusterTransactionImpl implements ClusterTransaction {
         handleError(ndbOperation, ndbTransaction);
         int scanFlags = ScanFlag.SF_OrderBy;
         int lockMode = indexScanLockMode;
-        if (lockMode != com.mysql.ndbjtie.ndbapi.NdbOperationConst.LockMode.LM_CommittedRead) {
+        if (lockMode != com.myblockchain.ndbjtie.ndbapi.NdbOperationConst.LockMode.LM_CommittedRead) {
             scanFlags |= ScanFlag.SF_KeyInfo;
         }
         scanFlags |= ScanFlag.SF_MultiRange;
@@ -297,7 +297,7 @@ class ClusterTransactionImpl implements ClusterTransaction {
         handleError(ndbIndex, ndbDictionary);
         NdbIndexScanOperation ndbOperation = ndbTransaction.getNdbIndexScanOperation(ndbIndex);
         handleError(ndbOperation, ndbTransaction);
-        int lockMode = com.mysql.ndbjtie.ndbapi.NdbOperationConst.LockMode.LM_Exclusive;
+        int lockMode = com.myblockchain.ndbjtie.ndbapi.NdbOperationConst.LockMode.LM_Exclusive;
         int scanFlags = ScanFlag.SF_KeyInfo;
         int parallel = 0;
         int batch = 0;
@@ -334,7 +334,7 @@ class ClusterTransactionImpl implements ClusterTransaction {
         handleError(ndbScanOperation, ndbTransaction);
         int lockMode = tableScanLockMode;
         int scanFlags = 0;
-        if (lockMode != com.mysql.ndbjtie.ndbapi.NdbOperationConst.LockMode.LM_CommittedRead) {
+        if (lockMode != com.myblockchain.ndbjtie.ndbapi.NdbOperationConst.LockMode.LM_CommittedRead) {
             scanFlags = ScanFlag.SF_KeyInfo;
         }
         int parallel = 0;
@@ -351,7 +351,7 @@ class ClusterTransactionImpl implements ClusterTransaction {
         handleError(ndbTable, ndbDictionary);
         NdbScanOperation ndbScanOperation = ndbTransaction.getNdbScanOperation(ndbTable);
         handleError(ndbScanOperation, ndbTransaction);
-        int lockMode = com.mysql.ndbjtie.ndbapi.NdbOperationConst.LockMode.LM_Exclusive;
+        int lockMode = com.myblockchain.ndbjtie.ndbapi.NdbOperationConst.LockMode.LM_Exclusive;
         int scanFlags = ScanFlag.SF_KeyInfo;
         int parallel = 0;
         int batch = 0;
@@ -558,10 +558,10 @@ class ClusterTransactionImpl implements ClusterTransaction {
         for (Operation op: operationsToCheck) {
             int code = op.getErrorCode();
             if (code != 0) {
-                int mysqlCode = op.getMysqlCode();
+                int myblockchainCode = op.getMysqlCode();
                 int status = op.getStatus();
                 int classification = op.getClassification();
-                String message = local.message("ERR_Datastore", -1, code, mysqlCode, status, classification,
+                String message = local.message("ERR_Datastore", -1, code, myblockchainCode, status, classification,
                         op.toString());
                 exceptionMessages.append(message);
                 exceptionMessages.append('\n');
@@ -683,11 +683,11 @@ class ClusterTransactionImpl implements ClusterTransaction {
     private int translateLockMode(LockMode lockmode) {
         switch(lockmode) {
             case READ_COMMITTED:
-                return com.mysql.ndbjtie.ndbapi.NdbOperationConst.LockMode.LM_CommittedRead;
+                return com.myblockchain.ndbjtie.ndbapi.NdbOperationConst.LockMode.LM_CommittedRead;
             case SHARED:
-                return com.mysql.ndbjtie.ndbapi.NdbOperationConst.LockMode.LM_Read;
+                return com.myblockchain.ndbjtie.ndbapi.NdbOperationConst.LockMode.LM_Read;
             case EXCLUSIVE:
-                return com.mysql.ndbjtie.ndbapi.NdbOperationConst.LockMode.LM_Exclusive;
+                return com.myblockchain.ndbjtie.ndbapi.NdbOperationConst.LockMode.LM_Exclusive;
             default:
                 throw new ClusterJFatalInternalException(local.message("ERR_Unknown_Lock_Mode", lockmode));
         }

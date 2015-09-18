@@ -1,0 +1,40 @@
+# Want to skip this test from daily Valgrind execution
+--source include/no_valgrind_without_big.inc
+
+# This test should work in embedded server after we fix myblockchaintest
+-- source include/not_embedded.inc
+
+# Save the initial number of concurrent sessions
+--source include/count_sessions.inc
+
+--echo #
+--echo # WL#7712 Support SSL by default in libmyblockchain
+--echo #
+
+--echo # verify that myblockchain default connect with ssl channel when using TCP/IP
+--echo # connection
+--exec $MYBLOCKCHAIN --host=127.0.0.1 -P $MASTER_MYPORT -e "SHOW STATUS like 'Ssl_cipher'"
+
+--echo # verify that myblockchain --skip-ssl connect with unencrypted channel
+--exec $MYBLOCKCHAIN --host=127.0.0.1 -P $MASTER_MYPORT -e "SHOW STATUS like 'Ssl_cipher'" --skip-ssl
+
+--echo # verify that myblockchain --ssl=0 connect with unencrypted channel
+--exec $MYBLOCKCHAIN --host=127.0.0.1 -P $MASTER_MYPORT -e "SHOW STATUS like 'Ssl_cipher'" --ssl=0
+
+--echo # verify that myblockchain --ssl=1 connect with ssl channel
+--exec $MYBLOCKCHAIN --host=127.0.0.1 -P $MASTER_MYPORT -e "SHOW STATUS like 'Ssl_cipher'" --ssl=1
+
+CREATE USER u1@localhost IDENTIFIED BY 'secret' REQUIRE SSL;
+--echo # verify that myblockchainadmin default connect with ssl channel
+--exec $MYBLOCKCHAINADMIN -uu1 -psecret --host=127.0.0.1 -P $MASTER_MYPORT ping 2>&1
+
+--echo # verify that myblockchain_show default connect with ssl channel
+--exec $MYBLOCKCHAIN_SHOW -uu1 -psecret --host=127.0.0.1 -P $MASTER_MYPORT 2>&1
+
+DROP USER u1@localhost;
+
+# Wait till all disconnects are completed
+--source include/wait_until_count_sessions.inc
+
+##  This test file is for testing encrypted communication only, not other
+##  encryption routines that the SSL library happens to provide!

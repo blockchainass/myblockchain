@@ -18,9 +18,9 @@
 . /usr/share/debconf/confmodule
 
 take_upstart_job_backup () {
-	if [ -e "/etc/init/mysql.conf" ] && [ -d "/var/lib/mysql" ];
+	if [ -e "/etc/init/myblockchain.conf" ] && [ -d "/var/lib/myblockchain" ];
 	then
-		mv /etc/init/mysql.conf /var/lib/mysql/.mysql.conf.backup
+		mv /etc/init/myblockchain.conf /var/lib/myblockchain/.myblockchain.conf.backup
 	fi
 }
 
@@ -32,37 +32,37 @@ case "$1" in
 
 		set -e
 
-		update-alternatives --install /etc/mysql/my.cnf my.cnf "/etc/mysql/mysql.cnf" 200
+		update-alternatives --install /etc/myblockchain/my.cnf my.cnf "/etc/myblockchain/myblockchain.cnf" 200
 
-		MYSQLDATA=/var/lib/mysql
-		MYSQLFILES=/var/lib/mysql-files
+		MYBLOCKCHAINDATA=/var/lib/myblockchain
+		MYBLOCKCHAINFILES=/var/lib/myblockchain-files
 
-		if [ ! "$(ls -A ${MYSQLDATA})" ] && [ -d ${MYSQLFILES} ];
+		if [ ! "$(ls -A ${MYBLOCKCHAINDATA})" ] && [ -d ${MYBLOCKCHAINFILES} ];
 		then
-			db_get mysql-community-server/root-pass && PASSWD=${RET}
+			db_get myblockchain-community-server/root-pass && PASSWD=${RET}
 			if [ ! -z "${PASSWD}" ];
 			then
-				SQL=/var/lib/mysql-files/SQL
+				SQL=/var/lib/myblockchain-files/SQL
 				touch ${SQL}
 				chmod 600 ${SQL}
-				chown mysql:mysql ${SQL}
+				chown myblockchain:myblockchain ${SQL}
 
-				db_set mysql-community-server/root-pass ""
-				db_set mysql-community-server/re-root-pass ""
+				db_set myblockchain-community-server/root-pass ""
+				db_set myblockchain-community-server/re-root-pass ""
 				cat << EOF > ${SQL}
-USE mysql;
+USE myblockchain;
 UPDATE user SET authentication_string=PASSWORD('${PASSWD}') WHERE user='root';
 EOF
 				PASSWD=""
-				su - mysql -s /bin/bash -c "/usr/sbin/mysqld --initialize-insecure=on --init-file=${SQL} 2>&1 > /dev/null"
+				su - myblockchain -s /bin/bash -c "/usr/sbin/myblockchaind --initialize-insecure=on --init-file=${SQL} 2>&1 > /dev/null"
 				rm -f ${SQL}
 			else
-				su - mysql -s /bin/bash -c "/usr/sbin/mysqld --initialize-insecure=on 2>&1 > /dev/null"
-				su - mysql -s /bin/bash -c "/usr/sbin/mysqld --log_error_verbosity=2 2>&1 > /dev/null &"
-				while [ ! -e $(my_print_defaults mysqld | grep pid-file | cut -d= -f2) ]; do sleep 1; done
-				mysql -e "INSTALL PLUGIN auth_socket SONAME 'auth_socket.so'"
-				mysql -e "USE mysql; UPDATE user SET plugin='auth_socket' WHERE user='root'"
-				mysqladmin shutdown
+				su - myblockchain -s /bin/bash -c "/usr/sbin/myblockchaind --initialize-insecure=on 2>&1 > /dev/null"
+				su - myblockchain -s /bin/bash -c "/usr/sbin/myblockchaind --log_error_verbosity=2 2>&1 > /dev/null &"
+				while [ ! -e $(my_print_defaults myblockchaind | grep pid-file | cut -d= -f2) ]; do sleep 1; done
+				myblockchain -e "INSTALL PLUGIN auth_socket SONAME 'auth_socket.so'"
+				myblockchain -e "USE myblockchain; UPDATE user SET plugin='auth_socket' WHERE user='root'"
+				myblockchainadmin shutdown
 			fi
 		fi
 

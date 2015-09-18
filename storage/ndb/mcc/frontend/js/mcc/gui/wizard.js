@@ -98,11 +98,11 @@ var configWizardPages = {
                 <div dojoType='dijit.layout.ContentPane' region='top'\
                         class='content-tab-top-panel'>\
                     <h2>Cluster Type and SSH Credentials</h2>\
-                    <span class='content-tab-sub-title'>MySQL Cluster is able \
+                    <span class='content-tab-sub-title'>MyBlockchain Cluster is able \
                             to operate in various configurations. Please \
                             specify the settings below to define the right \
                             cluster type that fits your use case. If you intend\
-                            to use remote hosts for deploying MySQL Cluster, \
+                            to use remote hosts for deploying MyBlockchain Cluster, \
                             SSH must be enabled. Unless key based SSH is \
                             possible, you must submit your user name and \
                             password below.\
@@ -199,7 +199,7 @@ var configWizardPages = {
                 <div dojoType='dijit.layout.ContentPane' region='top'\
                         class='content-main-top-panel'>\
                     <h2>Select and Edit Hosts</h2>\
-                    <span class='content-tab-sub-title'>MySQL Cluster can \
+                    <span class='content-tab-sub-title'>MyBlockchain Cluster can \
                             be deployed on several hosts. Please select the \
                             desired hosts by pressing the <i>Add host</i> \
                             button below and enter a comma separated list of \
@@ -248,9 +248,9 @@ var configWizardPages = {
                 <div dojoType='dijit.layout.ContentPane' region='top'>\
                     <h2>Define Processes and Cluster Topology</h2>\
                     <span class='content-tab-sub-title'>Various processes may \
-                            be part of a MySQL Cluster configuration. Please \
+                            be part of a MyBlockchain Cluster configuration. Please \
                             refer to the <a href='" + mcc.util.getDocUrlRoot() + 
-                            "mysql-cluster.html'>MySQL Cluster \
+                            "myblockchain-cluster.html'>MyBlockchain Cluster \
                             Documentation</a> for a description of the \
                             different process types. If you have added hosts \
                             previously, a default configuration will be \
@@ -358,10 +358,10 @@ var configWizardPages = {
                 <div dojoType='dijit.layout.ContentPane' region='top'>\
                     <h2>Define Processes Parameters</h2>\
                     <span class='content-tab-sub-title'>The processes in your \
-                            MySQL Cluster configuration can be tuned by setting\
+                            MyBlockchain Cluster configuration can be tuned by setting\
                             a number of configuration parameters. Please refer \
                             to the <a href='" + mcc.util.getDocUrlRoot() + 
-                            "mysql-cluster.html'>MySQL Cluster \
+                            "myblockchain-cluster.html'>MyBlockchain Cluster \
                             Documentation</a> for a description of the \
                             different process parameters. This page allows you \
                             to define a subset of the configuration parameters.\
@@ -478,9 +478,9 @@ var configWizardPages = {
         content: "\
             <div dojoType='dijit.layout.BorderContainer' gutters='false'>\
                 <div dojoType='dijit.layout.ContentPane' region='top'>\
-                    <h2>Deploy Configuration and start MySQL Cluster</h2>\
+                    <h2>Deploy Configuration and start MyBlockchain Cluster</h2>\
                     <span class='content-tab-sub-title'>Your \
-                            MySQL Cluster configuration can be reviewed \
+                            MyBlockchain Cluster configuration can be reviewed \
                             below. To the left are the processes you have \
                             defined, ordered by their startup sequence.\
                             Please select a process to view its startup \
@@ -678,7 +678,7 @@ function helpMenuSetup() {
         label: "Contents",
         onClick: function() {
             window.open("hlp/html/help.html",
-                "MySQL Cluster Configuration",
+                "MyBlockchain Cluster Configuration",
                 "scrollbars=1, \
                 width=1170, \
                 height=750, \
@@ -701,7 +701,7 @@ function helpMenuSetup() {
                 helpLabel = "#" + current.id;
             }
             window.open("hlp/html/help_cnt.html" + helpLabel, 
-                "MySQL Cluster Configuration",
+                "MyBlockchain Cluster Configuration",
                 "scrollbars=1, \
                 width=1170, \
                 height=750, \
@@ -719,10 +719,10 @@ function helpMenuSetup() {
             if (!dijit.byId("aboutDialog")) {
                 var dlg = new dijit.Dialog({
                     id: "aboutDialog",
-                    title: "About MySQL Cluster Configuration Tool",
+                    title: "About MyBlockchain Cluster Configuration Tool",
                     content: "\
                             <div><img src='img/content-title.png'></div>\
-                            <p>Version: mysql-5.6-cluster-7.3</p>\
+                            <p>Version: myblockchain-5.6-cluster-7.3</p>\
                             <button id='termsButton' \
                                     data-dojo-type='dijit.form.Button'\
                                     type='button'>\

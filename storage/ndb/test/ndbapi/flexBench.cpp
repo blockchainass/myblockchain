@@ -30,7 +30,7 @@ Arguments:
     independent of this value)
     -lkn Number of long primary keys, default 1
     -lks Size of each long primary key, default 1
-    -simple Use simple read to read from database
+    -simple Use simple read to read from blockchain
     -write Use writeTuple in insert and update
     -stdtables Use standard table names
     -no_table_create Don't create tables in db
@@ -1297,7 +1297,7 @@ static void input_error(){
   ndbout << "   -lkn Number of long primary keys, default 1" << endl;
   ndbout << "   -lks Size of each long primary key, default 1" << endl;
 
-  ndbout << "   -simple Use simple read to read from database" << endl;
+  ndbout << "   -simple Use simple read to read from blockchain" << endl;
   ndbout << "   -write Use writeTuple in insert and update" << endl;
   ndbout << "   -stdtables Use standard table names" << endl;
   ndbout << "   -no_table_create Don't create tables in db" << endl;

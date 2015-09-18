@@ -81,70 +81,70 @@ type: bench
 max-time: 600
 cmd: ndb-sql-perf.sh
 args: ndb-sql-perf-create-table.sh t1
-cmd-type: mysql
+cmd-type: myblockchain
 
 max-time: 600
 cmd: ndb-sql-perf.sh
 args: ndb-sql-perf-select.sh t1 1 64
-mysqld: --ndb-cluster-connection-pool=1
+myblockchaind: --ndb-cluster-connection-pool=1
 type: bench
-cmd-type: mysql
+cmd-type: myblockchain
 
 max-time: 600
 cmd: ndb-sql-perf.sh
 args: ndb-sql-perf-select.sh t1 1 64
-mysqld: --ndb-cluster-connection-pool=4
+myblockchaind: --ndb-cluster-connection-pool=4
 type: bench
-cmd-type: mysql
+cmd-type: myblockchain
 
 max-time: 600
 cmd: ndb-sql-perf.sh
 args: ndb-sql-perf-update.sh t1 1 64
-mysqld: --ndb-cluster-connection-pool=1
+myblockchaind: --ndb-cluster-connection-pool=1
 type: bench
-cmd-type: mysql
+cmd-type: myblockchain
 
 max-time: 600
 cmd: ndb-sql-perf.sh
 args: ndb-sql-perf-update.sh t1 1 64
-mysqld: --ndb-cluster-connection-pool=4
+myblockchaind: --ndb-cluster-connection-pool=4
 type: bench
-cmd-type: mysql
+cmd-type: myblockchain
 
 max-time: 600
 cmd: ndb-sql-perf.sh
 args: ndb-sql-perf-drop-table.sh t1
-cmd-type: mysql
+cmd-type: myblockchain
 
 # sql join
 max-time: 600
 cmd: ndb-sql-perf.sh
 args: ndb-sql-perf-load-tpcw.sh
-cmd-type: mysql
+cmd-type: myblockchain
 
 max-time: 600
 cmd: ndb-sql-perf.sh
 args: ndb-sql-perf-tpcw-getBestSeller.sh
-cmd-type: mysql
+cmd-type: myblockchain
 type: bench
 
 max-time: 600
 cmd: ndb-sql-perf.sh
 args: ndb-sql-perf-drop-tpcw.sh
-cmd-type: mysql
+cmd-type: myblockchain
 
 max-time: 600
 cmd: ndb-sql-perf.sh
 args: ndb-sql-perf-load-music-store.sh
-cmd-type: mysql
+cmd-type: myblockchain
 
 max-time: 600
 cmd: ndb-sql-perf.sh
 args: ndb-sql-perf-select-music-store.sh
-cmd-type: mysql
+cmd-type: myblockchain
 type: bench
 
 max-time: 600
 cmd: ndb-sql-perf.sh
 args: ndb-sql-perf-drop-music-store.sh
-cmd-type: mysql
+cmd-type: myblockchain

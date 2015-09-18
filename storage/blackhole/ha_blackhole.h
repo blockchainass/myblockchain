@@ -34,7 +34,7 @@ struct st_blackhole_share {
 */
 class ha_blackhole: public handler
 {
-  THR_LOCK_DATA lock;      /* MySQL lock */
+  THR_LOCK_DATA lock;      /* MyBlockchain lock */
   st_blackhole_share *share;
 
 public:

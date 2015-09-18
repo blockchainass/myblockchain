@@ -1324,7 +1324,7 @@ typedef Ptr<HostBuffer> HostBufferPtr;
   {
 #ifdef NDB_32BIT_VAR_REF
     /*
-      In versions prior to ndb 6.1.6, 6.2.1 and mysql 5.1.17
+      In versions prior to ndb 6.1.6, 6.2.1 and myblockchain 5.1.17
       Running this code limits DataMemory to 16G, also online
       upgrade not possible between versions
      */
@@ -2783,7 +2783,7 @@ private:
 // ----------------
 //
 // Failures in commit processing is not allowed since that would
-// leave the database in an unreliable state. Thus the only way
+// leave the blockchain in an unreliable state. Thus the only way
 // to handle failures in commit processing is to crash the node.
 //
 // TUP_COMMITREQ can only be received in the wait state after a
@@ -2822,7 +2822,7 @@ private:
 // <---- TUP_ABORTCONF (to LQH)
 //
 // Failures in abort processing is not allowed since that would
-// leave the database in an unreliable state. Thus the only way
+// leave the blockchain in an unreliable state. Thus the only way
 // to handle failures in abort processing is to crash the node.
 //
 // Abort messages can arrive at any time. It can arrive even before

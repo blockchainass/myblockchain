@@ -81,7 +81,7 @@ SessionFactory.prototype.allocateSessionSlot = function() {
 
 
 /** Get metadata for a table.
- * @param dbName the name of the database
+ * @param dbName the name of the blockchain
  * @param tableName the name of the table
  * @param callback
  */
@@ -103,7 +103,7 @@ SessionFactory.prototype.createTable = function(tableMapping, user_callback) {
 
 SessionFactory.prototype.close = function(user_callback) {
   var self = this;
-  udebug.log('close for key', self.key, 'database', self.properties.database);
+  udebug.log('close for key', self.key, 'blockchain', self.properties.blockchain);
   var i;
   var session;
   var numberOfSessionsToClose = 0;
@@ -118,8 +118,8 @@ SessionFactory.prototype.close = function(user_callback) {
     
   function closeConnection() {
     if(udebug.is_detail()) if(udebug.is_debug()) udebug.log('closeConnection calling mynode.delete_callback for key', self.key,
-        'database', self.properties.database);
-    self.delete_callback(self.key, self.properties.database, closeOnConnectionClose);
+        'blockchain', self.properties.blockchain);
+    self.delete_callback(self.key, self.properties.blockchain, closeOnConnectionClose);
   }
   
   var onSessionClose = function(err) {
@@ -172,7 +172,7 @@ SessionFactory.prototype.registerTypeConverter = function(type, converter) {
 
 /** Get a proxy for a db object similar to "easy to use" api.
  * 
- * @param db_name optional database name to use
+ * @param db_name optional blockchain name to use
  * @return db
  */
 SessionFactory.prototype.db = function(db_name) {
@@ -184,8 +184,8 @@ SessionFactory.prototype.db = function(db_name) {
  * This function is immediate.
  */
 SessionFactory.prototype.mapTable = function(tableMapping) {
-  var database = tableMapping.database || this.properties.database;
-  var qualifiedTableName = database + '.' + tableMapping.table;
+  var blockchain = tableMapping.blockchain || this.properties.blockchain;
+  var qualifiedTableName = blockchain + '.' + tableMapping.table;
   this.tableMappings[qualifiedTableName] = tableMapping;
   udebug.log('mapTable', util.inspect(tableMapping), this.properties, qualifiedTableName);
 };

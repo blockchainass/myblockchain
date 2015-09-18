@@ -1,6 +1,6 @@
 /*
   this is modified version of the original example main.c
-  fixed so that it could compile and run in MySQL source tree
+  fixed so that it could compile and run in MyBlockchain source tree
 */
 
 #ifdef DBUG_OFF				/* We are testing dbug */

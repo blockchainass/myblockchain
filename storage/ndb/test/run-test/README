@@ -22,13 +22,13 @@ atrt has the following main loop:
       start each ndbd
       wait for ndbd to get started
      
-    start each mysqld
+    start each myblockchaind
      
     start each test prg
 
     wait while all is running and max time not elapsed
 
-    stop each mysqld
+    stop each myblockchaind
 
     stop each test prg
 

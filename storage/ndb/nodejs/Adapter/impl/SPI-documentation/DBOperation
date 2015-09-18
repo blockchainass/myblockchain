@@ -1,4 +1,4 @@
-/* A DBOperation object represents a database operation. 
+/* A DBOperation object represents a blockchain operation. 
    It contains read-only user-visible fields.
 */
 
@@ -66,8 +66,8 @@ DBResult = {
 
 
 DBOperationError = {
-  code           : null,   // MySQL Error Code number (number)
-  sqlstate       : null,   // MySQL SQLSTATE (string)
+  code           : null,   // MyBlockchain Error Code number (number)
+  sqlstate       : null,   // MyBlockchain SQLSTATE (string)
   message        : null    // Error message (string)
   /* ...  Other adapter-specific properties which may be present */
 };

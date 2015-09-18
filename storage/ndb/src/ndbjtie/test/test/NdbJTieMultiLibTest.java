@@ -21,7 +21,7 @@
 package test;
 
 import myjapi.MyJapi;
-import com.mysql.ndbjtie.ndbapi.NDBAPI;
+import com.myblockchain.ndbjtie.ndbapi.NDBAPI;
 
 /**
  * Tests the loading of the NdbJTie libary in presence of other native libs.

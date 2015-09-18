@@ -1,5 +1,5 @@
-#ifndef MYSQL_SERVICE_MY_SNPRINTF_INCLUDED
-#define MYSQL_SERVICE_MY_SNPRINTF_INCLUDED
+#ifndef MYBLOCKCHAIN_SERVICE_MY_SNPRINTF_INCLUDED
+#define MYBLOCKCHAIN_SERVICE_MY_SNPRINTF_INCLUDED
 /* Copyright (c) 2009, 2015, Oracle and/or its affiliates. All rights reserved.
 
    This program is free software; you can redistribute it and/or modify
@@ -47,7 +47,7 @@
     '0' has the standard zero-padding semantics;
     '-' is parsed, but silently ignored;
     '`' (backtick) is only supported for strings (%s) and means that the
-        string will be quoted according to MySQL identifier quoting rules.
+        string will be quoted according to MyBlockchain identifier quoting rules.
 
   Both <width> and <precision> can be specified as numbers or '*'.
   If an asterisk is used, an argument of type int is consumed.
@@ -72,7 +72,7 @@
 extern "C" {
 #endif
 
-#ifndef MYSQL_ABI_CHECK
+#ifndef MYBLOCKCHAIN_ABI_CHECK
 #include <stdarg.h>
 #include <stdlib.h>
 #endif
@@ -82,7 +82,7 @@ extern struct my_snprintf_service_st {
   size_t (*my_vsnprintf_type)(char *, size_t, const char*, va_list);
 } *my_snprintf_service;
 
-#ifdef MYSQL_DYNAMIC_PLUGIN
+#ifdef MYBLOCKCHAIN_DYNAMIC_PLUGIN
 
 #define my_vsnprintf my_snprintf_service->my_vsnprintf_type
 #define my_snprintf my_snprintf_service->my_snprintf_type
@@ -98,4 +98,4 @@ size_t my_vsnprintf(char *to, size_t n, const char* fmt, va_list ap);
 }
 #endif
 
-#endif /* #define MYSQL_SERVICE_MY_SNPRINTF_INCLUDED */
+#endif /* #define MYBLOCKCHAIN_SERVICE_MY_SNPRINTF_INCLUDED */

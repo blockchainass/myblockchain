@@ -2508,7 +2508,7 @@ TESTCASE("ScanRead100RandomNoTableCreate",
 }
 TESTCASE("ScanWithLocksAndInserts", 
 	 "TR457: This test is added to verify that an insert of a records "\
-	 "that is already in the database does not delete the record"){  
+	 "that is already in the blockchain does not delete the record"){  
   INITIALIZER(runLoadTable);
   STEPS(runScanReadUntilStopped, 2);
   STEP(runLocker);

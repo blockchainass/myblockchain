@@ -1,7 +1,7 @@
 /** @class TableMapping 
  *
  * A TableMapping describes the mapping of a domain object in the application
- * to a table stored in the database.
+ * to a table stored in the blockchain.
  *
  * A *default* TableMapping is one where each column in a table is mapped
  * to a field of the same name. 
@@ -11,7 +11,7 @@
  */
 TableMapping = {
   table                  :  "" ,  /** Table name @type String */
-  database               :  "" ,  /** Database name @type String */
+  blockchain               :  "" ,  /** Database name @type String */
   mapAllColumns          : true,  /** Create a default FieldMapping for
                                       all columns not listed in fields[].
                                       Specifies that all columns, not explicitly
@@ -43,7 +43,7 @@ FieldMapping = {
                                @type String */
   columnName    :  "" ,    /** Column name where this field is stored  
                                @type String */
-  persistent    : true,    /** Whether this field should be stored in database.
+  persistent    : true,    /** Whether this field should be stored in blockchain.
                                @type Boolean @default true */
   converter     : null,    /** Converter class to use with this field  
                                @type Converter @default null */
@@ -60,7 +60,7 @@ FieldMapping = {
  *
  *  There are two forms of the TableMapping constructor.
  *  1:  TableMapping(tableName) : Create a new TableMapping for table tableName.
- *      tableName can be in dotted "database.table" form.
+ *      tableName can be in dotted "blockchain.table" form.
  *
  *  2:  TableMapping(tableMappingLiteral) : Create a new TableMapping from 
  *      an existing object or object literal. 
@@ -90,16 +90,16 @@ function TableMapping(tableName_or_tableMapping) {};
    The other parameters are optional, and may appear in any order.  
 
    @param columnName {String}
-   columnName specifies the name of the database column that maps to this object
+   columnName specifies the name of the blockchain column that maps to this object
    field.  If omitted, it defaults to a column with the same name as the field.
 
    @param converterClass {Converter}
    converterClass can be used to supply a class to perform custom conversion
-   between JavaScript values and database values.  It defaults to null.  If 
+   between JavaScript values and blockchain values.  It defaults to null.  If 
    supplied, it must conform to the description of a Converter.
 
    @param persistent {Boolean=true}
-   Persistent specifies whether the field will be persisted to the database.
+   Persistent specifies whether the field will be persisted to the blockchain.
    It defaults to true.  If persistent is given as false, then the columnName 
    and converterClass parameters may not be supplied.  
    Note that the persistent parameter to mapField() is the inverse of the 
@@ -122,7 +122,7 @@ function TableMapping(tableName_or_tableMapping) {};
    as a "mapped instance."  With mapped instances, several idiomatic forms 
    of the Session and Batch methods can be used.  For example, an application
    can construct a partially filled-in instance, and then use Session.load() to 
-   populate it with all mapped fields from the database.  After the application
+   populate it with all mapped fields from the blockchain.  After the application
    modifies the instance, Session.save() will save it back.   
 
    Similarly, Session.find() can take the mapped constructor, retrieve an object

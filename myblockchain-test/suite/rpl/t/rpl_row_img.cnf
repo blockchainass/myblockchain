@@ -1,0 +1,21 @@
+!include include/default_myblockchaind.cnf
+
+[myblockchaind.1]
+log-slave-updates
+new=1
+innodb_flush_log_at_trx_commit= 0
+
+[myblockchaind.2]
+log-slave-updates
+new=1
+innodb_flush_log_at_trx_commit= 0
+
+[myblockchaind.3]
+log-slave-updates
+new=1
+innodb_flush_log_at_trx_commit= 0
+
+[ENV]
+SERVER_MYPORT_1= @myblockchaind.1.port
+SERVER_MYPORT_2= @myblockchaind.2.port
+SERVER_MYPORT_3= @myblockchaind.3.port

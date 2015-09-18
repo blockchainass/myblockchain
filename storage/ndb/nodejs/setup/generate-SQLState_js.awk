@@ -18,7 +18,7 @@
 
 
 # 
-# The input to this script is {MYSQL TREE}/sql/share/errmsg-utf8.txt
+# The input to this script is {MYBLOCKCHAIN TREE}/sql/share/errmsg-utf8.txt
 # The output is {NODEJS ADAPTER TREE}/Adapter/impl/common/MysqlErrToSQLStateMap.js
 #
 
@@ -31,9 +31,9 @@
           print "module.exports = {"
         }
  /^ER/  { if($2) {
-            mysqlerr = "\"" $1 "\""
+            myblockchainerr = "\"" $1 "\""
             sqlstate = "\"" $2 "\""
-            printf("\t%45s : %s,\n", mysqlerr, errno);
+            printf("\t%45s : %s,\n", myblockchainerr, errno);
             printf("\t%45d : %s,\n", errno, sqlstate);
           }
           errno++

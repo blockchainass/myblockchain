@@ -178,7 +178,7 @@ dict_create_or_check_foreign_constraint_tables(void);
 Generate a foreign key constraint name when it was not named by the user.
 A generated constraint has a name of the format dbname/tablename_ibfk_NUMBER,
 where the numbers start from 1, and are given locally for this table, that is,
-the number is not global, as it used to be before MySQL 4.0.18.  */
+the number is not global, as it used to be before MyBlockchain 4.0.18.  */
 UNIV_INLINE
 dberr_t
 dict_create_add_foreign_id(
@@ -189,7 +189,7 @@ dict_create_add_foreign_id(
 	dict_foreign_t*	foreign);	/*!< in/out: foreign key */
 
 /** Adds the given set of foreign key objects to the dictionary tables
-in the database. This function does not modify the dictionary cache. The
+in the blockchain. This function does not modify the dictionary cache. The
 caller must ensure that all foreign key objects contain a valid constraint
 name in foreign->id.
 @param[in]	local_fk_set	set of foreign key objects, to be added to
@@ -335,7 +335,7 @@ original table), stored in the "POS" field of Sys_columns
 @return column position in original table */
 UNIV_INLINE
 ulint
-dict_get_v_col_mysql_pos(
+dict_get_v_col_myblockchain_pos(
         ulint   pos);
 
 /** Get a virtual column sequence (the "nth" virtual column) for a

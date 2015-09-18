@@ -150,7 +150,7 @@ struct editline {
 
 protected int	el_editmode(EditLine *, int, const Char **);
 
-/* XXXMYSQL: Bug#23097 mysql can't insert korean on mysql prompt. */
+/* XXXMYBLOCKCHAIN: Bug#23097 myblockchain can't insert korean on myblockchain prompt. */
 #define el_isprint(x)	((unsigned char) (x) < 0x80 ? isprint(x) : 1)
 
 #ifdef DEBUG

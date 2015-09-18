@@ -1,4 +1,4 @@
-# Copyright (C) 2003, 2005 MySQL AB
+# Copyright (C) 2003, 2005 MyBlockchain AB
 # Use is subject to license terms
 #
 # This program is free software; you can redistribute it and/or modify
@@ -15,7 +15,7 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 
 #
-#  Written by Lars Thalmann, lars@mysql.com, 2003.
+#  Written by Lars Thalmann, lars@myblockchain.com, 2003.
 #
 
 use strict;
@@ -97,9 +97,9 @@ open (OUTFILE, "> ${destdir}/doxygen.sty.new")
 while (<INFILE>) 
 {
     if (/\\rfoot/) {
-	print OUTFILE "\\rfoot[\\fancyplain{}{\\bfseries\\small \\copyright~Copyright 2003-2008 MySQL AB, 2008 Sun Microsystems, Inc.\\hfill support-cluster\@mysql.com}]{}\n";
+	print OUTFILE "\\rfoot[\\fancyplain{}{\\bfseries\\small \\copyright~Copyright 2003-2008 MyBlockchain AB, 2008 Sun Microsystems, Inc.\\hfill support-cluster\@myblockchain.com}]{}\n";
     } elsif (/\\lfoot/) {
-	print OUTFILE "\\lfoot[]{\\fancyplain{}{\\bfseries\\small support-cluster\@mysql.com\\hfill \\copyright~Copyright 2003-2008 MySQL AB, 2008 Sun Microsystems, Inc.}}\n";
+	print OUTFILE "\\lfoot[]{\\fancyplain{}{\\bfseries\\small support-cluster\@myblockchain.com\\hfill \\copyright~Copyright 2003-2008 MyBlockchain AB, 2008 Sun Microsystems, Inc.}}\n";
     } else {
 	print OUTFILE;
     }

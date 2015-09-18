@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 
 use strict;
-use lib "../../../../mysql-test/lib/";
+use lib "../../../../myblockchain-test/lib/";
 use My::Memcache;
 use Getopt::Long;
 use Carp;
@@ -22,7 +22,7 @@ GetOptions("flush"  => \$do_flush,
 
 
 if($create || $drop || $reconf) {
-  my $dsn = "DBI:mysql:database=ndbmemcache;host=localhost;port=3306";
+  my $dsn = "DBI:myblockchain:blockchain=ndbmemcache;host=localhost;port=3306";
   my $dbh = DBI->connect($dsn, "root", "");
   
   if($drop) {

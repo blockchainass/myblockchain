@@ -170,7 +170,7 @@ fi
 # Check that all interesting files are present#
 ###############################################
 
-test_dir=$install_dir0/mysql-test/ndb
+test_dir=$install_dir0/myblockchain-test/ndb
 atrt=$test_dir/atrt
 test_file=$test_dir/$RUN-tests.txt
 

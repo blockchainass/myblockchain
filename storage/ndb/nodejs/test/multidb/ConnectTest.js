@@ -29,13 +29,13 @@ var tbl3 = function(i, j) {
   this.i = i;
   this.j = j;
 };
-new mynode.TableMapping('mysqljs_multidb_test3.tbl3').applyToClass(tbl3);
+new mynode.TableMapping('myblockchainjs_multidb_test3.tbl3').applyToClass(tbl3);
 
 var tbl4 = function(i, j) {
   this.i = i;
   this.j = j;
 };
-new mynode.TableMapping('mysqljs_multidb_test4.tbl4').applyToClass(tbl4);
+new mynode.TableMapping('myblockchainjs_multidb_test4.tbl4').applyToClass(tbl4);
 
 var tbl7 = function(i, j) {
   this.i = i;
@@ -49,7 +49,7 @@ var tbl8 = function(i, j) {
 };
 new mynode.TableMapping('tbl8').applyToClass(tbl8);
 
-// badtbl8 is mapped to a table that only exists in database test8
+// badtbl8 is mapped to a table that only exists in blockchain test8
 var badtbl8 = function(i, j) {
   this.i = i;
   this.j = j;
@@ -61,7 +61,7 @@ var badtesttbl8 = function(i, j) {
   this.i = i;
   this.j = j;
 };
-new mynode.TableMapping('mysqljs_multidb_test.tbl8').applyToClass(badtesttbl8);
+new mynode.TableMapping('myblockchainjs_multidb_test.tbl8').applyToClass(badtesttbl8);
 
 // badtbl9 is not mapped
 var badtbl9 = function(i, j) {
@@ -69,7 +69,7 @@ var badtbl9 = function(i, j) {
   this.j = j;
 };
 
-// create all properties for connecting with different default databases
+// create all properties for connecting with different default blockchains
 var properties = mynode.ConnectionProperties(global.adapter);
 // make a local copy of the properties
 var propertiesList = [];
@@ -78,18 +78,18 @@ for (p = mindb; p < mindb + numberOfDBs; ++p) {
   for (x in properties) if (properties.hasOwnProperty(x)) {
     props[x] = properties[x];
   }
-  props.database = 'mysqljs_multidb_test' + p;
+  props.blockchain = 'myblockchainjs_multidb_test' + p;
   propertiesList[p] = props;
 }
 
 var connectWithDefaultDb = function(testCase, db, callback) {
-  console.log('ConnectTest openSession with', propertiesList[db].database);
+  console.log('ConnectTest openSession with', propertiesList[db].blockchain);
   var tbl = 'tbl' + db;
   mynode.openSession(propertiesList[db], tbl, function(err, session) {
     if (err) {
       testCase.appendErrorMessage('error opening session ' + db);
     } else {
-      console.log('ConnectTest openSession success for', propertiesList[db].database);
+      console.log('ConnectTest openSession success for', propertiesList[db].blockchain);
       // verify that the named table has an entry for cached metadata and chached table handler
 //      session.find()
     }
@@ -100,13 +100,13 @@ var connectWithDefaultDb = function(testCase, db, callback) {
 var verifyTableMetadataCached = function(testCase, sessionFactory, qualifiedTableName) {
   // look in sessionFactory to see if there is a cached table metadata
   var split = qualifiedTableName.split('\.'); 
-  var databaseName = split[0];
+  var blockchainName = split[0];
   var tableName = split[1];
   var tableMetadata = sessionFactory.tableMetadatas[qualifiedTableName];
   if (tableMetadata === undefined) {
     testCase.appendErrorMessage(tableName + 'was not cached in session factory.');
   } else {
-    testCase.errorIfNotEqual('verifyTableMetadataCached mismatch database name', tableMetadata.database, databaseName);
+    testCase.errorIfNotEqual('verifyTableMetadataCached mismatch blockchain name', tableMetadata.blockchain, blockchainName);
     testCase.errorIfNotEqual('verifyTableMetadataCached mismatch table name', tableMetadata.name, tableName);
   }
 };
@@ -115,13 +115,13 @@ var verifyConstructorMetadataCached = function(testCase, sessionFactory, qualifi
   verifyTableMetadataCached(testCase, sessionFactory, qualifiedTableName);
     // look in constructor to see if there is a cached table handler
   var split = qualifiedTableName.split('\.');
-  var databaseName = split[0];
+  var blockchainName = split[0];
   var tableName = split[1];
   var tableHandler = constructor.prototype.mynode.tableHandler;
   if (tableHandler === undefined) {
     testCase.appendErrorMessage(tableName + 'table handler was not cached in constructor.');
   } else {
-    testCase.errorIfNotEqual('verifyConstructorMetadataCached mismatch database name', tableHandler.dbTable.database, databaseName);
+    testCase.errorIfNotEqual('verifyConstructorMetadataCached mismatch blockchain name', tableHandler.dbTable.blockchain, blockchainName);
     testCase.errorIfNotEqual('verifyConstructorMetadataCached mismatch table name', tableHandler.dbTable.name, tableName);
   }
 };
@@ -129,12 +129,12 @@ var verifyConstructorMetadataCached = function(testCase, sessionFactory, qualifi
 var t1 = new harness.ConcurrentTest('testOpenSessionExplicitTable');
 t1.run = function() {
   var testCase = this;
-  mynode.openSession(propertiesList[1], 'mysqljs_multidb_test1.tbl1', function(err, session) {
+  mynode.openSession(propertiesList[1], 'myblockchainjs_multidb_test1.tbl1', function(err, session) {
     if (err) {
-      testCase.appendErrorMessage('t1 error on openSession with mysqljs_multidb_test1.tbl1');
+      testCase.appendErrorMessage('t1 error on openSession with myblockchainjs_multidb_test1.tbl1');
     } else {
       testCase.session = session;
-      verifyTableMetadataCached(testCase, session.sessionFactory, 'mysqljs_multidb_test1.tbl1');
+      verifyTableMetadataCached(testCase, session.sessionFactory, 'myblockchainjs_multidb_test1.tbl1');
     }
     testCase.failOnError();
   });
@@ -143,11 +143,11 @@ t1.run = function() {
 var t2 = new harness.ConcurrentTest('testConnectExplicitTable');
 t2.run = function() {
   var testCase = this;
-  mynode.connect(propertiesList[2], 'mysqljs_multidb_test2.tbl2', function(err, sessionFactory) {
+  mynode.connect(propertiesList[2], 'myblockchainjs_multidb_test2.tbl2', function(err, sessionFactory) {
     if (err) {
-      testCase.appendErrorMessage('t2 error on connect with mysqljs_multidb_test2.tbl2');
+      testCase.appendErrorMessage('t2 error on connect with myblockchainjs_multidb_test2.tbl2');
     } else {
-      verifyTableMetadataCached(testCase, sessionFactory, 'mysqljs_multidb_test2.tbl2');
+      verifyTableMetadataCached(testCase, sessionFactory, 'myblockchainjs_multidb_test2.tbl2');
     }
     testCase.failOnError();
   });
@@ -158,10 +158,10 @@ t3.run = function() {
   var testCase = this;
   mynode.openSession(propertiesList[3], tbl3, function(err, session) {
     if (err) {
-      testCase.appendErrorMessage('t3 error on openSession with mysqljs_multidb_test3.tbl3');
+      testCase.appendErrorMessage('t3 error on openSession with myblockchainjs_multidb_test3.tbl3');
     } else {
       testCase.session = session;
-      verifyConstructorMetadataCached(testCase, session.sessionFactory, 'mysqljs_multidb_test3.tbl3', tbl3);
+      verifyConstructorMetadataCached(testCase, session.sessionFactory, 'myblockchainjs_multidb_test3.tbl3', tbl3);
     }
     testCase.failOnError();
   });
@@ -172,9 +172,9 @@ t4.run = function() {
   var testCase = this;
   mynode.connect(propertiesList[4], tbl4, function(err, sessionFactory) {
     if (err) {
-      testCase.appendErrorMessage('t4 error on connect with mysqljs_multidb_test4.tbl4 ' + err);
+      testCase.appendErrorMessage('t4 error on connect with myblockchainjs_multidb_test4.tbl4 ' + err);
     } else {
-      verifyConstructorMetadataCached(testCase, sessionFactory, 'mysqljs_multidb_test4.tbl4', tbl4);
+      verifyConstructorMetadataCached(testCase, sessionFactory, 'myblockchainjs_multidb_test4.tbl4', tbl4);
     }
     testCase.failOnError();
   });
@@ -189,7 +189,7 @@ t5.run = function() {
           '\n' + util.inspect(propertiesList[5]) + '\n' + err);
     } else {
       testCase.session = session;
-      verifyTableMetadataCached(testCase, session.sessionFactory, 'mysqljs_multidb_test5.tbl5');
+      verifyTableMetadataCached(testCase, session.sessionFactory, 'myblockchainjs_multidb_test5.tbl5');
     }
     testCase.failOnError();
   });
@@ -203,7 +203,7 @@ t6.run = function() {
       testCase.appendErrorMessage('t6 error on connect with tbl6 with properties ' + 
           '\n' + util.inspect(propertiesList[6]) + '\n' + err);
     } else {
-      verifyTableMetadataCached(testCase, sessionFactory, 'mysqljs_multidb_test6.tbl6');
+      verifyTableMetadataCached(testCase, sessionFactory, 'myblockchainjs_multidb_test6.tbl6');
     }
     testCase.failOnError();
   });
@@ -218,7 +218,7 @@ t7.run = function() {
           '\n' + util.inspect(propertiesList[7]) + '\n' + err);
     } else {
       testCase.session = session;
-      verifyConstructorMetadataCached(testCase, session.sessionFactory, 'mysqljs_multidb_test7.tbl7', tbl7);
+      verifyConstructorMetadataCached(testCase, session.sessionFactory, 'myblockchainjs_multidb_test7.tbl7', tbl7);
     }
     testCase.failOnError();
   });
@@ -231,7 +231,7 @@ t8.run = function() {
     if (err) {
       testCase.appendErrorMessage('t8 error on connect with tbl8 ' + err);
     } else {
-      verifyConstructorMetadataCached(testCase, sessionFactory, 'mysqljs_multidb_test8.tbl8', tbl8);
+      verifyConstructorMetadataCached(testCase, sessionFactory, 'myblockchainjs_multidb_test8.tbl8', tbl8);
     }
     testCase.failOnError();
   });
@@ -255,9 +255,9 @@ t9.run = function() {
     reportResults(testCase);
   });
   ++testCase.expectedResultCount;
-  mynode.connect(properties, 'mysqljs_multidb_test.tbl8', function(err) {
+  mynode.connect(properties, 'myblockchainjs_multidb_test.tbl8', function(err) {
     if (!err) {
-      testCase.appendErrorMessage('t9 failed to return error on mysqljs_multidb_test.tbl8');
+      testCase.appendErrorMessage('t9 failed to return error on myblockchainjs_multidb_test.tbl8');
     }
     reportResults(testCase);
   });

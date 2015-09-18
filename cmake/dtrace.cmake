@@ -59,18 +59,18 @@ ENDMACRO()
 
 # Create provider headers
 IF(ENABLE_DTRACE)
-  CONFIGURE_FILE(${CMAKE_SOURCE_DIR}/include/probes_mysql.d.base 
-    ${CMAKE_BINARY_DIR}/include/probes_mysql.d COPYONLY)
+  CONFIGURE_FILE(${CMAKE_SOURCE_DIR}/include/probes_myblockchain.d.base 
+    ${CMAKE_BINARY_DIR}/include/probes_myblockchain.d COPYONLY)
   DTRACE_HEADER(
-   ${CMAKE_BINARY_DIR}/include/probes_mysql.d 
-   ${CMAKE_BINARY_DIR}/include/probes_mysql_dtrace.h
-   ${CMAKE_BINARY_DIR}/include/probes_mysql_nodtrace.h
+   ${CMAKE_BINARY_DIR}/include/probes_myblockchain.d 
+   ${CMAKE_BINARY_DIR}/include/probes_myblockchain_dtrace.h
+   ${CMAKE_BINARY_DIR}/include/probes_myblockchain_nodtrace.h
   )
   ADD_CUSTOM_TARGET(gen_dtrace_header
   DEPENDS  
-  ${CMAKE_BINARY_DIR}/include/probes_mysql.d
-  ${CMAKE_BINARY_DIR}/include/probes_mysql_dtrace.h
-  ${CMAKE_BINARY_DIR}/include/probes_mysql_nodtrace.h
+  ${CMAKE_BINARY_DIR}/include/probes_myblockchain.d
+  ${CMAKE_BINARY_DIR}/include/probes_myblockchain_dtrace.h
+  ${CMAKE_BINARY_DIR}/include/probes_myblockchain_nodtrace.h
   ) 
 ENDIF()
 
@@ -88,7 +88,7 @@ FUNCTION(DTRACE_INSTRUMENT target)
         COMMAND ${CMAKE_COMMAND}
           -DDTRACE=${DTRACE}	  
           -DOUTFILE=${outfile} 
-          -DDFILE=${CMAKE_BINARY_DIR}/include/probes_mysql.d
+          -DDFILE=${CMAKE_BINARY_DIR}/include/probes_myblockchain.d
           -DDTRACE_FLAGS=${DTRACE_FLAGS}
           -DDIRS=.
           -DTYPE=${target_type}
@@ -105,10 +105,10 @@ FUNCTION(DTRACE_INSTRUMENT target)
         C_FLAGS "${CMAKE_C_FLAGS}")
 
       SET(ENV{CFLAGS} ${C_FLAGS})
-      SET(outfile "${CMAKE_BINARY_DIR}/probes_mysql.o")
+      SET(outfile "${CMAKE_BINARY_DIR}/probes_myblockchain.o")
       # Systemtap object
       EXECUTE_PROCESS(
-        COMMAND ${DTRACE} -G -s ${CMAKE_SOURCE_DIR}/include/probes_mysql.d.base
+        COMMAND ${DTRACE} -G -s ${CMAKE_SOURCE_DIR}/include/probes_myblockchain.d.base
         -o ${outfile}
         )
       SET(ENV{CFLAGS} ${CFLAGS_SAVED})
@@ -143,9 +143,9 @@ ENDFUNCTION()
 # from static libraries, discussed e.g in this thread
 # (http://opensolaris.org/jive/thread.jspa?messageID=432454)
 # We have to collect all object files that may be instrumented
-# and go into the mysqld (also those that come from in static libs)
+# and go into the myblockchaind (also those that come from in static libs)
 # run them again through dtrace -G to generate an ELF file that links
-# to mysqld.
+# to myblockchaind.
 MACRO (DTRACE_INSTRUMENT_STATIC_LIBS target libs)
 IF(HAVE_REAL_DTRACE_INSTRUMENTING AND ENABLE_DTRACE)
   # Filter out non-static libraries in the list, if any
@@ -168,7 +168,7 @@ IF(HAVE_REAL_DTRACE_INSTRUMENTING AND ENABLE_DTRACE)
   COMMAND ${CMAKE_COMMAND}
    -DDTRACE=${DTRACE}	  
    -DOUTFILE=${obj} 
-   -DDFILE=${CMAKE_BINARY_DIR}/include/probes_mysql.d
+   -DDFILE=${CMAKE_BINARY_DIR}/include/probes_myblockchain.d
    -DDTRACE_FLAGS=${DTRACE_FLAGS}
    "-DDIRS=${dirs}"
    -DTYPE=MERGE

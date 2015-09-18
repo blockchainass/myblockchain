@@ -17,7 +17,7 @@
 #define PFS_INSTR_CLASS_H
 
 #include "my_global.h"
-#include "mysql_com.h"                          /* NAME_LEN */
+#include "myblockchain_com.h"                          /* NAME_LEN */
 #include "lf.h"
 #include "pfs_global.h"
 #include "pfs_atomic.h"
@@ -45,7 +45,7 @@
 
 #include <my_global.h>
 #include <my_sys.h>
-#include <mysql/psi/psi.h>
+#include <myblockchain/psi/psi.h>
 #include "pfs_lock.h"
 #include "pfs_stat.h"
 #include "pfs_column_types.h"

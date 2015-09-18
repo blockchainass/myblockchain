@@ -1,0 +1,2 @@
+--no-console
+--log-error=$MYBLOCKCHAIN_TMP_DIR/errors.err

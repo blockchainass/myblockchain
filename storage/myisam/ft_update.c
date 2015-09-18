@@ -95,10 +95,10 @@ uint _mi_ft_segiterator(FT_SEG_ITERATOR *ftsi)
 /* parses a document i.e. calls ft_parse for every keyseg */
 
 uint _mi_ft_parse(TREE *parsed, MI_INFO *info, uint keynr, const uchar *record,
-                  MYSQL_FTPARSER_PARAM *param, MEM_ROOT *mem_root)
+                  MYBLOCKCHAIN_FTPARSER_PARAM *param, MEM_ROOT *mem_root)
 {
   FT_SEG_ITERATOR ftsi= { 0, 0, NULL, NULL, NULL };
-  struct st_mysql_ftparser *parser;
+  struct st_myblockchain_ftparser *parser;
   DBUG_ENTER("_mi_ft_parse");
 
   _mi_ft_segiterator_init(info, keynr, record, &ftsi);
@@ -118,7 +118,7 @@ FT_WORD *_mi_ft_parserecord(MI_INFO *info, uint keynr, const uchar *record,
                              MEM_ROOT *mem_root)
 {
   TREE ptree;
-  MYSQL_FTPARSER_PARAM *param;
+  MYBLOCKCHAIN_FTPARSER_PARAM *param;
   DBUG_ENTER("_mi_ft_parserecord");
   if (! (param= ftparser_call_initializer(info, keynr, 0)))
     DBUG_RETURN(NULL);

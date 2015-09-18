@@ -201,7 +201,7 @@ NdbEventOperation::print()
 }
 
 /*
- * Internal for the mysql server
+ * Internal for the myblockchain server
  */
 const NdbDictionary::Table *NdbEventOperation::getTable() const
 {

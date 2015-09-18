@@ -66,12 +66,12 @@ enum SB_LevelType
  * the maximum receive message size to support online
  * upgrade
  * Maximum received size increased in :
- *   mysql-5.1-telco-6.3.18 from 16516 bytes to 32768
+ *   myblockchain-5.1-telco-6.3.18 from 16516 bytes to 32768
  * Maximum send size increased in :
- *   mysql-5.1-telco-6.4.0 from 16516 bytes to 32768
+ *   myblockchain-5.1-telco-6.4.0 from 16516 bytes to 32768
  *
- * Therefore mysql-5.1-telco-6.4.0 cannot safely communicate 
- * with nodes at versions lower than mysql-5.1-telco-6.3.18 
+ * Therefore myblockchain-5.1-telco-6.4.0 cannot safely communicate 
+ * with nodes at versions lower than myblockchain-5.1-telco-6.3.18 
  * 
  */
 const Uint32 MAX_RECV_MESSAGE_BYTESIZE = 32768;

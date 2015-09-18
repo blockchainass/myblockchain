@@ -1,13 +1,13 @@
 #include "plugin.h"
-typedef void * MYSQL_PLUGIN;
-struct st_mysql_xid {
+typedef void * MYBLOCKCHAIN_PLUGIN;
+struct st_myblockchain_xid {
   long formatID;
   long gtrid_length;
   long bqual_length;
   char data[128];
 };
-typedef struct st_mysql_xid MYSQL_XID;
-enum enum_mysql_show_type
+typedef struct st_myblockchain_xid MYBLOCKCHAIN_XID;
+enum enum_myblockchain_show_type
 {
   SHOW_UNDEF, SHOW_BOOL,
   SHOW_INT,
@@ -16,28 +16,28 @@ enum enum_mysql_show_type
   SHOW_CHAR, SHOW_CHAR_PTR,
   SHOW_ARRAY, SHOW_FUNC, SHOW_DOUBLE
 };
-enum enum_mysql_show_scope
+enum enum_myblockchain_show_scope
 {
   SHOW_SCOPE_UNDEF,
   SHOW_SCOPE_GLOBAL
 };
-struct st_mysql_show_var
+struct st_myblockchain_show_var
 {
   const char *name;
   char *value;
-  enum enum_mysql_show_type type;
-  enum enum_mysql_show_scope scope;
+  enum enum_myblockchain_show_type type;
+  enum enum_myblockchain_show_scope scope;
 };
-typedef int (*mysql_show_var_func)(void*, struct st_mysql_show_var*, char *);
-struct st_mysql_sys_var;
-struct st_mysql_value;
-typedef int (*mysql_var_check_func)(void* thd,
-                                    struct st_mysql_sys_var *var,
-                                    void *save, struct st_mysql_value *value);
-typedef void (*mysql_var_update_func)(void* thd,
-                                      struct st_mysql_sys_var *var,
+typedef int (*myblockchain_show_var_func)(void*, struct st_myblockchain_show_var*, char *);
+struct st_myblockchain_sys_var;
+struct st_myblockchain_value;
+typedef int (*myblockchain_var_check_func)(void* thd,
+                                    struct st_myblockchain_sys_var *var,
+                                    void *save, struct st_myblockchain_value *value);
+typedef void (*myblockchain_var_update_func)(void* thd,
+                                      struct st_myblockchain_sys_var *var,
                                       void *var_ptr, const void *save);
-struct st_mysql_plugin
+struct st_myblockchain_plugin
 {
   int type;
   void *info;
@@ -45,23 +45,23 @@ struct st_mysql_plugin
   const char *author;
   const char *descr;
   int license;
-  int (*init)(MYSQL_PLUGIN);
-  int (*deinit)(MYSQL_PLUGIN);
+  int (*init)(MYBLOCKCHAIN_PLUGIN);
+  int (*deinit)(MYBLOCKCHAIN_PLUGIN);
   unsigned int version;
-  struct st_mysql_show_var *status_vars;
-  struct st_mysql_sys_var **system_vars;
+  struct st_myblockchain_show_var *status_vars;
+  struct st_myblockchain_sys_var **system_vars;
   void * __reserved1;
   unsigned long flags;
 };
-struct st_mysql_daemon
+struct st_myblockchain_daemon
 {
   int interface_version;
 };
-struct st_mysql_information_schema
+struct st_myblockchain_information_schema
 {
   int interface_version;
 };
-struct st_mysql_storage_engine
+struct st_myblockchain_storage_engine
 {
   int interface_version;
 };
@@ -69,13 +69,13 @@ struct handlerton;
  struct Mysql_replication {
    int interface_version;
  };
-struct st_mysql_value
+struct st_myblockchain_value
 {
-  int (*value_type)(struct st_mysql_value *);
-  const char *(*val_str)(struct st_mysql_value *, char *buffer, int *length);
-  int (*val_real)(struct st_mysql_value *, double *realbuf);
-  int (*val_int)(struct st_mysql_value *, long long *intbuf);
-  int (*is_unsigned)(struct st_mysql_value *);
+  int (*value_type)(struct st_myblockchain_value *);
+  const char *(*val_str)(struct st_myblockchain_value *, char *buffer, int *length);
+  int (*val_real)(struct st_myblockchain_value *, double *realbuf);
+  int (*val_int)(struct st_myblockchain_value *, long long *intbuf);
+  int (*is_unsigned)(struct st_myblockchain_value *);
 };
 int thd_in_lock_tables(const void* thd);
 int thd_tablespace_op(const void* thd);
@@ -97,28 +97,28 @@ char *thd_security_context(void* thd, char *buffer, size_t length,
 void thd_inc_row_count(void* thd);
 int thd_allow_batch(void* thd);
 void thd_mark_transaction_to_rollback(void* thd, int all);
-int mysql_tmpfile(const char *prefix);
+int myblockchain_tmpfile(const char *prefix);
 int thd_killed(const void* thd);
 void thd_set_kill_status(const void* thd);
 void thd_binlog_pos(const void* thd,
                     const char **file_var,
                     unsigned long long *pos_var);
 unsigned long thd_get_thread_id(const void* thd);
-void thd_get_xid(const void* thd, MYSQL_XID *xid);
-void mysql_query_cache_invalidate4(void* thd,
+void thd_get_xid(const void* thd, MYBLOCKCHAIN_XID *xid);
+void myblockchain_query_cache_invalidate4(void* thd,
                                    const char *key, unsigned int key_length,
                                    int using_trx);
 void *thd_get_ha_data(const void* thd, const struct handlerton *hton);
 void thd_set_ha_data(void* thd, const struct handlerton *hton,
                      const void *ha_data);
-#include "mysql/mysql_lex_string.h"
-struct st_mysql_lex_string
+#include "myblockchain/myblockchain_lex_string.h"
+struct st_myblockchain_lex_string
 {
   char *str;
   size_t length;
 };
-typedef struct st_mysql_lex_string MYSQL_LEX_STRING;
-struct mysql_event_general
+typedef struct st_myblockchain_lex_string MYBLOCKCHAIN_LEX_STRING;
+struct myblockchain_event_general
 {
   unsigned int event_subclass;
   int general_error_code;
@@ -132,12 +132,12 @@ struct mysql_event_general
   struct charset_info_st *general_charset;
   unsigned long long general_time;
   unsigned long long general_rows;
-  MYSQL_LEX_STRING general_host;
-  MYSQL_LEX_STRING general_sql_command;
-  MYSQL_LEX_STRING general_external_user;
-  MYSQL_LEX_STRING general_ip;
+  MYBLOCKCHAIN_LEX_STRING general_host;
+  MYBLOCKCHAIN_LEX_STRING general_sql_command;
+  MYBLOCKCHAIN_LEX_STRING general_external_user;
+  MYBLOCKCHAIN_LEX_STRING general_ip;
 };
-struct mysql_event_connection
+struct myblockchain_event_connection
 {
   unsigned int event_subclass;
   int status;
@@ -154,11 +154,11 @@ struct mysql_event_connection
   unsigned int host_length;
   const char *ip;
   unsigned int ip_length;
-  const char *database;
-  unsigned int database_length;
+  const char *blockchain;
+  unsigned int blockchain_length;
   int connection_type;
 };
-struct mysql_event_parse
+struct myblockchain_event_parse
 {
   unsigned int event_subclass;
   int *flags;
@@ -167,7 +167,7 @@ struct mysql_event_parse
   char **rewritten_query;
   size_t *rewritten_query_length;
 };
-struct st_mysql_audit
+struct st_myblockchain_audit
 {
   int interface_version;
   void (*release_thd)(void*);

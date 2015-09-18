@@ -35,12 +35,12 @@ int mi_delete_table(const char *name)
       Symlink is pointing to file in data directory.
       Remove symlink, keep file.
     */
-    if (mysql_file_delete(mi_key_file_kfile, from, MYF(MY_WME)))
+    if (myblockchain_file_delete(mi_key_file_kfile, from, MYF(MY_WME)))
       DBUG_RETURN(my_errno);
   }
   else
   {
-    if (mysql_file_delete_with_symlink(mi_key_file_kfile, from, MYF(MY_WME)))
+    if (myblockchain_file_delete_with_symlink(mi_key_file_kfile, from, MYF(MY_WME)))
       DBUG_RETURN(my_errno);
   }
   fn_format(from,name,"",MI_NAME_DEXT,MY_UNPACK_FILENAME|MY_APPEND_EXT);
@@ -50,12 +50,12 @@ int mi_delete_table(const char *name)
       Symlink is pointing to file in data directory.
       Remove symlink, keep file.
     */
-    if (mysql_file_delete(mi_key_file_dfile, from, MYF(MY_WME)))
+    if (myblockchain_file_delete(mi_key_file_dfile, from, MYF(MY_WME)))
       DBUG_RETURN(my_errno);
   }
   else
   {
-    if (mysql_file_delete_with_symlink(mi_key_file_dfile, from, MYF(MY_WME)))
+    if (myblockchain_file_delete_with_symlink(mi_key_file_dfile, from, MYF(MY_WME)))
       DBUG_RETURN(my_errno);
   }
   DBUG_RETURN(0);

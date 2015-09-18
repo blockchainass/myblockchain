@@ -18,7 +18,7 @@ this program; if not, write to the Free Software Foundation, Inc.,
 
 /**************************************************//**
 @file include/buf0rea.h
-The database buffer read
+The blockchain buffer read
 
 Created 11/5/1995 Heikki Tuuri
 *******************************************************/

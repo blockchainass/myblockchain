@@ -53,7 +53,7 @@ of a scroll cursor easier */
 Allocates memory for a persistent cursor object and initializes the cursor.
 @return own: persistent cursor */
 btr_pcur_t*
-btr_pcur_create_for_mysql(void);
+btr_pcur_create_for_myblockchain(void);
 /*============================*/
 
 /**************************************************************//**
@@ -67,7 +67,7 @@ btr_pcur_reset(
 /**************************************************************//**
 Frees the memory for a persistent cursor object. */
 void
-btr_pcur_free_for_mysql(
+btr_pcur_free_for_myblockchain(
 /*====================*/
 	btr_pcur_t*	cursor);	/*!< in, own: persistent cursor */
 /**************************************************************//**

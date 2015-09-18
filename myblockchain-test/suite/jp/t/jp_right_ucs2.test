@@ -1,0 +1,112 @@
+--source include/have_ucs2.inc
+--source include/have_innodb.inc
+
+--disable_warnings
+drop table if exists `�ԣ�`;
+drop table if exists `�ԣ�`;
+drop table if exists `�ԣ�`;
+drop table if exists `�ԣ�`;
+drop table if exists `�ԣ�`;
+drop table if exists `�ԣ�`;
+drop table if exists `�ԣ�`;
+drop table if exists `�ԣ�`;
+drop table if exists `�ԣ�`;
+--enable_warnings
+
+#
+# Test RIGHT() function with Japanese character in ucs2 encoding
+#
+
+SET NAMES ujis;
+SET character_set_blockchain = ucs2;
+SET collation_connection = ucs2_general_ci;
+
+CREATE TABLE `�ԣ�` (`�ã�` char(5), INDEX(`�ã�`)) DEFAULT CHARSET = ucs2 engine = innodb;
+CREATE TABLE `�ԣ�` (`�ã�` char(5), INDEX(`�ã�`)) DEFAULT CHARSET = ucs2 engine = innodb;
+CREATE TABLE `�ԣ�` (`�ã�` char(5), INDEX(`�ã�`)) DEFAULT CHARSET = ucs2 engine = innodb;
+CREATE TABLE `�ԣ�` (`�ã�` char(5), INDEX(`�ã�`)) DEFAULT CHARSET = ucs2 engine = myisam;
+CREATE TABLE `�ԣ�` (`�ã�` char(5), INDEX(`�ã�`)) DEFAULT CHARSET = ucs2 engine = myisam;
+CREATE TABLE `�ԣ�` (`�ã�` char(5), INDEX(`�ã�`)) DEFAULT CHARSET = ucs2 engine = myisam;
+CREATE TABLE `�ԣ�` (`�ã�` char(5), INDEX(`�ã�`)) DEFAULT CHARSET = ucs2 engine = MEMORY;
+CREATE TABLE `�ԣ�` (`�ã�` char(5), INDEX(`�ã�`)) DEFAULT CHARSET = ucs2 engine = MEMORY;
+CREATE TABLE `�ԣ�` (`�ã�` char(5), INDEX(`�ã�`)) DEFAULT CHARSET = ucs2 engine = MEMORY;
+
+INSERT INTO `�ԣ�` VALUES ('����������'),('��������'),('������'),('����'),('��'),('');
+INSERT INTO `�ԣ�` VALUES ('����������'),('��������'),('������'),('����'),('��'),('');
+INSERT INTO `�ԣ�` VALUES ('��܏�ݏ�ޏ�ߏ��'),('��܏�ݏ�ޏ��'),('��܏�ݏ��'),('��܏��'),('���'),('');
+INSERT INTO `�ԣ�` VALUES ('����������'),('��������'),('������'),('����'),('��'),('');
+INSERT INTO `�ԣ�` VALUES ('����������'),('��������'),('������'),('����'),('��'),('');
+INSERT INTO `�ԣ�` VALUES ('��܏�ݏ�ޏ�ߏ��'),('��܏�ݏ�ޏ��'),('��܏�ݏ��'),('��܏��'),('���'),('');
+INSERT INTO `�ԣ�` VALUES ('����������'),('��������'),('������'),('����'),('��'),('');
+INSERT INTO `�ԣ�` VALUES ('����������'),('��������'),('������'),('����'),('��'),('');
+INSERT INTO `�ԣ�` VALUES ('��܏�ݏ�ޏ�ߏ��'),('��܏�ݏ�ޏ��'),('��܏�ݏ��'),('��܏��'),('���'),('');
+
+#InnoDB
+SELECT `�ã�`, RIGHT(`�ã�`,0) FROM `�ԣ�`;
+SELECT `�ã�`, RIGHT(`�ã�`,1) FROM `�ԣ�`;
+SELECT `�ã�`, RIGHT(`�ã�`,2) FROM `�ԣ�`;
+SELECT `�ã�`, RIGHT(`�ã�`,3) FROM `�ԣ�`;
+SELECT `�ã�`, RIGHT(`�ã�`,4) FROM `�ԣ�`;
+SELECT `�ã�`, RIGHT(`�ã�`,5) FROM `�ԣ�`;
+SELECT `�ã�`, RIGHT(`�ã�`,0) FROM `�ԣ�`;
+SELECT `�ã�`, RIGHT(`�ã�`,1) FROM `�ԣ�`;
+SELECT `�ã�`, RIGHT(`�ã�`,2) FROM `�ԣ�`;
+SELECT `�ã�`, RIGHT(`�ã�`,3) FROM `�ԣ�`;
+SELECT `�ã�`, RIGHT(`�ã�`,4) FROM `�ԣ�`;
+SELECT `�ã�`, RIGHT(`�ã�`,5) FROM `�ԣ�`;
+SELECT `�ã�`, RIGHT(`�ã�`,0) FROM `�ԣ�`;
+SELECT `�ã�`, RIGHT(`�ã�`,1) FROM `�ԣ�`;
+SELECT `�ã�`, RIGHT(`�ã�`,2) FROM `�ԣ�`;
+SELECT `�ã�`, RIGHT(`�ã�`,3) FROM `�ԣ�`;
+SELECT `�ã�`, RIGHT(`�ã�`,4) FROM `�ԣ�`;
+SELECT `�ã�`, RIGHT(`�ã�`,5) FROM `�ԣ�`;
+
+#MyISAM
+SELECT `�ã�`, RIGHT(`�ã�`,0) FROM `�ԣ�`;
+SELECT `�ã�`, RIGHT(`�ã�`,1) FROM `�ԣ�`;
+SELECT `�ã�`, RIGHT(`�ã�`,2) FROM `�ԣ�`;
+SELECT `�ã�`, RIGHT(`�ã�`,3) FROM `�ԣ�`;
+SELECT `�ã�`, RIGHT(`�ã�`,4) FROM `�ԣ�`;
+SELECT `�ã�`, RIGHT(`�ã�`,5) FROM `�ԣ�`;
+SELECT `�ã�`, RIGHT(`�ã�`,0) FROM `�ԣ�`;
+SELECT `�ã�`, RIGHT(`�ã�`,1) FROM `�ԣ�`;
+SELECT `�ã�`, RIGHT(`�ã�`,2) FROM `�ԣ�`;
+SELECT `�ã�`, RIGHT(`�ã�`,3) FROM `�ԣ�`;
+SELECT `�ã�`, RIGHT(`�ã�`,4) FROM `�ԣ�`;
+SELECT `�ã�`, RIGHT(`�ã�`,5) FROM `�ԣ�`;
+SELECT `�ã�`, RIGHT(`�ã�`,0) FROM `�ԣ�`;
+SELECT `�ã�`, RIGHT(`�ã�`,1) FROM `�ԣ�`;
+SELECT `�ã�`, RIGHT(`�ã�`,2) FROM `�ԣ�`;
+SELECT `�ã�`, RIGHT(`�ã�`,3) FROM `�ԣ�`;
+SELECT `�ã�`, RIGHT(`�ã�`,4) FROM `�ԣ�`;
+SELECT `�ã�`, RIGHT(`�ã�`,5) FROM `�ԣ�`;
+
+#MEMORY
+SELECT `�ã�`, RIGHT(`�ã�`,0) FROM `�ԣ�`;
+SELECT `�ã�`, RIGHT(`�ã�`,1) FROM `�ԣ�`;
+SELECT `�ã�`, RIGHT(`�ã�`,2) FROM `�ԣ�`;
+SELECT `�ã�`, RIGHT(`�ã�`,3) FROM `�ԣ�`;
+SELECT `�ã�`, RIGHT(`�ã�`,4) FROM `�ԣ�`;
+SELECT `�ã�`, RIGHT(`�ã�`,5) FROM `�ԣ�`;
+SELECT `�ã�`, RIGHT(`�ã�`,0) FROM `�ԣ�`;
+SELECT `�ã�`, RIGHT(`�ã�`,1) FROM `�ԣ�`;
+SELECT `�ã�`, RIGHT(`�ã�`,2) FROM `�ԣ�`;
+SELECT `�ã�`, RIGHT(`�ã�`,3) FROM `�ԣ�`;
+SELECT `�ã�`, RIGHT(`�ã�`,4) FROM `�ԣ�`;
+SELECT `�ã�`, RIGHT(`�ã�`,5) FROM `�ԣ�`;
+SELECT `�ã�`, RIGHT(`�ã�`,0) FROM `�ԣ�`;
+SELECT `�ã�`, RIGHT(`�ã�`,1) FROM `�ԣ�`;
+SELECT `�ã�`, RIGHT(`�ã�`,2) FROM `�ԣ�`;
+SELECT `�ã�`, RIGHT(`�ã�`,3) FROM `�ԣ�`;
+SELECT `�ã�`, RIGHT(`�ã�`,4) FROM `�ԣ�`;
+SELECT `�ã�`, RIGHT(`�ã�`,5) FROM `�ԣ�`;
+
+DROP TABLE `�ԣ�`;
+DROP TABLE `�ԣ�`;
+DROP TABLE `�ԣ�`;
+DROP TABLE `�ԣ�`;
+DROP TABLE `�ԣ�`;
+DROP TABLE `�ԣ�`;
+DROP TABLE `�ԣ�`;
+DROP TABLE `�ԣ�`;
+DROP TABLE `�ԣ�`;

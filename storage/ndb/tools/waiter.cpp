@@ -41,7 +41,7 @@ static const char* _wait_nodes = 0;
 static const char* _nowait_nodes = 0;
 static NdbNodeBitmask nowait_nodes_bitmask;
 
-const char *load_default_groups[]= { "mysql_cluster",0 };
+const char *load_default_groups[]= { "myblockchain_cluster",0 };
 
 static struct my_option my_long_options[] =
 {

@@ -14,6 +14,6 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 
 # Additional license file is needed so overriding this warning
-mysql-testsuite: extra-license-file usr/share/doc/mysql-testsuite/LICENSE.mysql
-mysql-testsuite: extra-license-file usr/share/doc/mysql-testsuite/COPYING.gz
-mysql-testsuite: copyright-should-refer-to-common-license-file-for-lgpl
+myblockchain-testsuite: extra-license-file usr/share/doc/myblockchain-testsuite/LICENSE.myblockchain
+myblockchain-testsuite: extra-license-file usr/share/doc/myblockchain-testsuite/COPYING.gz
+myblockchain-testsuite: copyright-should-refer-to-common-license-file-for-lgpl

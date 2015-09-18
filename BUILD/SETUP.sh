@@ -36,7 +36,7 @@ Usage: $0 [-h|-n] [configure-options]
                           Influences the debug flags. Old is default.
   --prefix=path           Build with prefix 'path'.
 
-Note: this script is intended for internal use by MySQL developers.
+Note: this script is intended for internal use by MyBlockchain developers.
 EOF
 }
 
@@ -68,13 +68,13 @@ parse_options()
 
 ########################################################################
 
-if test ! -f sql/mysqld.cc
+if test ! -f sql/myblockchaind.cc
 then
-  echo "You must run this script from the MySQL top-level directory"
+  echo "You must run this script from the MyBlockchain top-level directory"
   exit 1
 fi
 
-prefix="/usr/local/mysql"
+prefix="/usr/local/myblockchain"
 just_print=
 just_configure=
 warning_mode=
@@ -83,9 +83,9 @@ full_debug=
 
 parse_options "$@"
 
-if test -n "$MYSQL_BUILD_PREFIX"
+if test -n "$MYBLOCKCHAIN_BUILD_PREFIX"
 then
-  prefix="$MYSQL_BUILD_PREFIX"
+  prefix="$MYBLOCKCHAIN_BUILD_PREFIX"
 fi
 
 set -e
@@ -118,7 +118,7 @@ if [ "x$warning_mode" = "xpedantic" ]; then
 elif [ "x$warning_mode" = "xmaintainer" ]; then
   c_warnings="-Wall -Wextra"
   cxx_warnings="$c_warnings -Wno-unused-parameter"
-  maintainer_mode="--enable-mysql-maintainer-mode"
+  maintainer_mode="--enable-myblockchain-maintainer-mode"
   debug_extra_cflags="-g3"
 else
 # Both C and C++ warnings
@@ -138,7 +138,7 @@ fi
 
 # Set flags for various build configurations.
 # Used in -valgrind builds
-valgrind_flags="-DMYSQL_SERVER_SUFFIX=-valgrind-max"
+valgrind_flags="-DMYBLOCKCHAIN_SERVER_SUFFIX=-valgrind-max"
 valgrind_configs="--with-valgrind"
 #
 # Used in -debug builds
@@ -174,7 +174,7 @@ then
     base_configs="$base_configs --with-libedit"
 fi
 
-static_link="--with-mysqld-ldflags=-all-static "
+static_link="--with-myblockchaind-ldflags=-all-static "
 static_link="$static_link --with-client-ldflags=-all-static"
 # we need local-infile in all binaries for rpl000001
 # if you need to disable local-infile in the client, write a build script
@@ -237,7 +237,7 @@ fi
 
 gcov_compile_flags="-fprofile-arcs -ftest-coverage"
 gcov_compile_flags="$gcov_compile_flags -DDISABLE_TAO_ASM"
-gcov_compile_flags="$gcov_compile_flags -DMYSQL_SERVER_SUFFIX=-gcov -DHAVE_gcov"
+gcov_compile_flags="$gcov_compile_flags -DMYBLOCKCHAIN_SERVER_SUFFIX=-gcov -DHAVE_gcov"
 
 # GCC4 needs -fprofile-arcs -ftest-coverage on the linker command line (as well
 # as on the compiler command line), and this requires setting LDFLAGS for BDB.

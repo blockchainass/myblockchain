@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2008 MySQL AB
+   Copyright (C) 2008 MyBlockchain AB
     All rights reserved. Use is subject to license terms.
 
    This program is free software; you can redistribute it and/or modify
@@ -22,7 +22,7 @@
 #include <Vector.hpp>
 #include <BaseString.hpp>
 #include <Properties.hpp>
-#include <mysql.h>
+#include <myblockchain.h>
 
 class SqlResultSet : public Properties {
 public:
@@ -45,9 +45,9 @@ public:
   uint insertId();
   uint affectedRows();
   uint numRows(void);
-  uint mysqlErrno();
-  const char* mysqlError();
-  const char* mysqlSqlstate();
+  uint myblockchainErrno();
+  const char* myblockchainError();
+  const char* myblockchainSqlstate();
 
 private:
   uint get_int(const char* name);
@@ -60,7 +60,7 @@ private:
 
 class SqlClient {
 public:
-  SqlClient(MYSQL* mysql);
+  SqlClient(MYBLOCKCHAIN* myblockchain);
   SqlClient(const char* _user= "root",
              const char* _password= "",
              const char* _suffix= 0);
@@ -89,8 +89,8 @@ protected:
 
 protected:
   bool connected;
-  MYSQL* mysql;
-  bool free_mysql; /* Don't free mysql* if allocated elsewhere */
+  MYBLOCKCHAIN* myblockchain;
+  bool free_myblockchain; /* Don't free myblockchain* if allocated elsewhere */
   BaseString default_file;
   BaseString default_group;
   BaseString user;

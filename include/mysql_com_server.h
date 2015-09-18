@@ -18,8 +18,8 @@
   used in the networking layer to notify specific events.
 */
 
-#ifndef _mysql_com_server_h
-#define _mysql_com_server_h
+#ifndef _myblockchain_com_server_h
+#define _myblockchain_com_server_h
 
 struct st_net_server;
 

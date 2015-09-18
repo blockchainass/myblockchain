@@ -52,7 +52,7 @@ import testsuite.clusterj.model.CharsetUtf8;
  *   e) add the String to the list of String
  *   f) continue from c) until all characters have been represented in the list of String
  *   g) remove all rows of the table
- *   h) use JDBC or clusterj to write a row in the database for each String in the list
+ *   h) use JDBC or clusterj to write a row in the blockchain for each String in the list
  *   i) use JDBC or clusterj to read all rows and compare the String to the list of Strings
  *
  */
@@ -110,15 +110,15 @@ public class CharsetTest extends AbstractClusterJModelTest {
          * java.sql.SQLException: 
          * Failed to insert charsetsjis at instance 0 errant string: [... 165 167 168... ]
          * Incorrect string value: '\xC2\xA5\xC2\xA7\xC2\xA8...' for column 'smallcolumn' at row 1
-                                at com.mysql.jdbc.SQLError.createSQLException(SQLError.java:1055)
-                                at com.mysql.jdbc.SQLError.createSQLException(SQLError.java:956)
-                                at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3558)
-                                at com.mysql.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3490)
-                                at com.mysql.jdbc.MysqlIO.sendCommand(MysqlIO.java:1959)
-                                at com.mysql.jdbc.MysqlIO.sqlQueryDirect(MysqlIO.java:2109)
-                                at com.mysql.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2648)
-                                at com.mysql.jdbc.PreparedStatement.executeInternal(PreparedStatement.java:2077)
-                                at com.mysql.jdbc.PreparedStatement.execute(PreparedStatement.java:1356)
+                                at com.myblockchain.jdbc.SQLError.createSQLException(SQLError.java:1055)
+                                at com.myblockchain.jdbc.SQLError.createSQLException(SQLError.java:956)
+                                at com.myblockchain.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3558)
+                                at com.myblockchain.jdbc.MysqlIO.checkErrorPacket(MysqlIO.java:3490)
+                                at com.myblockchain.jdbc.MysqlIO.sendCommand(MysqlIO.java:1959)
+                                at com.myblockchain.jdbc.MysqlIO.sqlQueryDirect(MysqlIO.java:2109)
+                                at com.myblockchain.jdbc.ConnectionImpl.execSQL(ConnectionImpl.java:2648)
+                                at com.myblockchain.jdbc.PreparedStatement.executeInternal(PreparedStatement.java:2077)
+                                at com.myblockchain.jdbc.PreparedStatement.execute(PreparedStatement.java:1356)
                                 at testsuite.clusterj.CharsetTest.writeToJDBC(CharsetTest.java:317)
         writeJDBCreadJDBC("SJIS", "charsetsjis", CharsetSjis.class, ColumnDescriptor.SMALL);
         writeJDBCreadJDBC("SJIS", "charsetsjis", CharsetSjis.class, ColumnDescriptor.MEDIUM);

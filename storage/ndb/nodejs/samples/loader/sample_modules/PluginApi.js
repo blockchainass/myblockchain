@@ -27,7 +27,7 @@
      * access a raw line of data read from the data file
      * access a parsed record and modify its fields, route it to a
        different destination table, or reject it.
-     * receive callbacks for each row successfully loaded to the database
+     * receive callbacks for each row successfully loaded to the blockchain
        or for each error.
      
    A module must export an init() function which receives an instance of a
@@ -62,7 +62,7 @@ exports.init = function(dataLoader) {
       you modify record.row, different values will be stored.
 
       record.class holds the Domain Object Constructor that maps the object
-      to the database.  If you change record.class, you cause the record to be 
+      to the blockchain.  If you change record.class, you cause the record to be 
       stored in a different table.
 
       If onReadRecord returns false, the record will not be persisted.
@@ -102,7 +102,7 @@ exports.init = function(dataLoader) {
 
 
   /* onRecordError(record) 
-     Record has been sent to the database and caused an error;
+     Record has been sent to the blockchain and caused an error;
      record.error will be set.
    */
   // dataLoader.onRecordError = function(record) {

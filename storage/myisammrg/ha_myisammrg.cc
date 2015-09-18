@@ -21,7 +21,7 @@
 
   Besides the normal form file (.frm) a MERGE table has a meta file
   (.MRG) with a list of tables. These are paths to the MyISAM table
-  files. The last two components of the path contain the database name
+  files. The last two components of the path contain the blockchain name
   and the table name respectively.
 
   When a MERGE table is open, there exists an TABLE object for the MERGE
@@ -85,12 +85,12 @@
   They stay with the open table until its final close.
 */
 
-#define MYSQL_SERVER 1
+#define MYBLOCKCHAIN_SERVER 1
 #include "sql_cache.h"                          // query_cache_*
 #include "sql_show.h"                           // append_identifier
 #include "sql_table.h"                         // build_table_filename
-#include "probes_mysql.h"
-#include <mysql/plugin.h>
+#include "probes_myblockchain.h"
+#include <myblockchain/plugin.h>
 #include <m_ctype.h>
 #include "../myisam/ha_myisam.h"
 #include "ha_myisammrg.h"
@@ -244,18 +244,18 @@ extern "C" int myisammrg_parent_open_callback(void *callback_param,
   DBUG_ENTER("myisammrg_parent_open_callback");
 
   /*
-    Depending on MySQL version, filename may be encoded by table name to
+    Depending on MyBlockchain version, filename may be encoded by table name to
     file name encoding or not. Always encoded if parent table is created
     by 5.1.46+. Encoded if parent is created by 5.1.6+ and child table is
-    in different database.
+    in different blockchain.
   */
   if (!has_path(filename))
   {
-    /* Child is in the same database as parent. */
+    /* Child is in the same blockchain as parent. */
     db_length= parent->s->db.length;
     db= strmake_root(&ha_myrg->children_mem_root, parent->s->db.str, db_length);
     /* Child table name is encoded in parent dot-MRG starting with 5.1.46. */
-    if (parent->s->mysql_version >= 50146)
+    if (parent->s->myblockchain_version >= 50146)
     {
       table_name_length= filename_to_tablename(filename, name_buf,
                                                sizeof(name_buf));
@@ -273,10 +273,10 @@ extern "C" int myisammrg_parent_open_callback(void *callback_param,
   {
     DBUG_ASSERT(strlen(filename) < sizeof(dir_path));
     fn_format(dir_path, filename, "", "", 0);
-    /* Extract child table name and database name from filename. */
+    /* Extract child table name and blockchain name from filename. */
     dirlen= dirname_length(dir_path);
     /* Child db/table name is encoded in parent dot-MRG starting with 5.1.6. */
-    if (parent->s->mysql_version >= 50106)
+    if (parent->s->myblockchain_version >= 50106)
     {
       table_name_length= filename_to_tablename(dir_path + dirlen, name_buf,
                                                sizeof(name_buf));
@@ -1106,11 +1106,11 @@ int ha_myisammrg::index_read_map(uchar * buf, const uchar * key,
                                  enum ha_rkey_function find_flag)
 {
   DBUG_ASSERT(this->file->children_attached);
-  MYSQL_INDEX_READ_ROW_START(table_share->db.str, table_share->table_name.str);
+  MYBLOCKCHAIN_INDEX_READ_ROW_START(table_share->db.str, table_share->table_name.str);
   ha_statistic_increment(&SSV::ha_read_key_count);
   int error=myrg_rkey(file,buf,active_index, key, keypart_map, find_flag);
   table->status=error ? STATUS_NOT_FOUND: 0;
-  MYSQL_INDEX_READ_ROW_DONE(error);
+  MYBLOCKCHAIN_INDEX_READ_ROW_DONE(error);
   return error;
 }
 
@@ -1119,11 +1119,11 @@ int ha_myisammrg::index_read_idx_map(uchar * buf, uint index, const uchar * key,
                                      enum ha_rkey_function find_flag)
 {
   DBUG_ASSERT(this->file->children_attached);
-  MYSQL_INDEX_READ_ROW_START(table_share->db.str, table_share->table_name.str);
+  MYBLOCKCHAIN_INDEX_READ_ROW_START(table_share->db.str, table_share->table_name.str);
   ha_statistic_increment(&SSV::ha_read_key_count);
   int error=myrg_rkey(file,buf,index, key, keypart_map, find_flag);
   table->status=error ? STATUS_NOT_FOUND: 0;
-  MYSQL_INDEX_READ_ROW_DONE(error);
+  MYBLOCKCHAIN_INDEX_READ_ROW_DONE(error);
   return error;
 }
 
@@ -1131,56 +1131,56 @@ int ha_myisammrg::index_read_last_map(uchar *buf, const uchar *key,
                                       key_part_map keypart_map)
 {
   DBUG_ASSERT(this->file->children_attached);
-  MYSQL_INDEX_READ_ROW_START(table_share->db.str, table_share->table_name.str);
+  MYBLOCKCHAIN_INDEX_READ_ROW_START(table_share->db.str, table_share->table_name.str);
   ha_statistic_increment(&SSV::ha_read_key_count);
   int error=myrg_rkey(file,buf,active_index, key, keypart_map,
 		      HA_READ_PREFIX_LAST);
   table->status=error ? STATUS_NOT_FOUND: 0;
-  MYSQL_INDEX_READ_ROW_DONE(error);
+  MYBLOCKCHAIN_INDEX_READ_ROW_DONE(error);
   return error;
 }
 
 int ha_myisammrg::index_next(uchar * buf)
 {
   DBUG_ASSERT(this->file->children_attached);
-  MYSQL_INDEX_READ_ROW_START(table_share->db.str, table_share->table_name.str);
+  MYBLOCKCHAIN_INDEX_READ_ROW_START(table_share->db.str, table_share->table_name.str);
   ha_statistic_increment(&SSV::ha_read_next_count);
   int error=myrg_rnext(file,buf,active_index);
   table->status=error ? STATUS_NOT_FOUND: 0;
-  MYSQL_INDEX_READ_ROW_DONE(error);
+  MYBLOCKCHAIN_INDEX_READ_ROW_DONE(error);
   return error;
 }
 
 int ha_myisammrg::index_prev(uchar * buf)
 {
   DBUG_ASSERT(this->file->children_attached);
-  MYSQL_INDEX_READ_ROW_START(table_share->db.str, table_share->table_name.str);
+  MYBLOCKCHAIN_INDEX_READ_ROW_START(table_share->db.str, table_share->table_name.str);
   ha_statistic_increment(&SSV::ha_read_prev_count);
   int error=myrg_rprev(file,buf, active_index);
   table->status=error ? STATUS_NOT_FOUND: 0;
-  MYSQL_INDEX_READ_ROW_DONE(error);
+  MYBLOCKCHAIN_INDEX_READ_ROW_DONE(error);
   return error;
 }
 
 int ha_myisammrg::index_first(uchar * buf)
 {
   DBUG_ASSERT(this->file->children_attached);
-  MYSQL_INDEX_READ_ROW_START(table_share->db.str, table_share->table_name.str);
+  MYBLOCKCHAIN_INDEX_READ_ROW_START(table_share->db.str, table_share->table_name.str);
   ha_statistic_increment(&SSV::ha_read_first_count);
   int error=myrg_rfirst(file, buf, active_index);
   table->status=error ? STATUS_NOT_FOUND: 0;
-  MYSQL_INDEX_READ_ROW_DONE(error);
+  MYBLOCKCHAIN_INDEX_READ_ROW_DONE(error);
   return error;
 }
 
 int ha_myisammrg::index_last(uchar * buf)
 {
   DBUG_ASSERT(this->file->children_attached);
-  MYSQL_INDEX_READ_ROW_START(table_share->db.str, table_share->table_name.str);
+  MYBLOCKCHAIN_INDEX_READ_ROW_START(table_share->db.str, table_share->table_name.str);
   ha_statistic_increment(&SSV::ha_read_last_count);
   int error=myrg_rlast(file, buf, active_index);
   table->status=error ? STATUS_NOT_FOUND: 0;
-  MYSQL_INDEX_READ_ROW_DONE(error);
+  MYBLOCKCHAIN_INDEX_READ_ROW_DONE(error);
   return error;
 }
 
@@ -1190,14 +1190,14 @@ int ha_myisammrg::index_next_same(uchar * buf,
 {
   int error;
   DBUG_ASSERT(this->file->children_attached);
-  MYSQL_INDEX_READ_ROW_START(table_share->db.str, table_share->table_name.str);
+  MYBLOCKCHAIN_INDEX_READ_ROW_START(table_share->db.str, table_share->table_name.str);
   ha_statistic_increment(&SSV::ha_read_next_count);
   do
   {
     error= myrg_rnext_same(file,buf);
   } while (error == HA_ERR_RECORD_DELETED);
   table->status=error ? STATUS_NOT_FOUND: 0;
-  MYSQL_INDEX_READ_ROW_DONE(error);
+  MYBLOCKCHAIN_INDEX_READ_ROW_DONE(error);
   return error;
 }
 
@@ -1212,12 +1212,12 @@ int ha_myisammrg::rnd_init(bool scan)
 int ha_myisammrg::rnd_next(uchar *buf)
 {
   DBUG_ASSERT(this->file->children_attached);
-  MYSQL_READ_ROW_START(table_share->db.str, table_share->table_name.str,
+  MYBLOCKCHAIN_READ_ROW_START(table_share->db.str, table_share->table_name.str,
                        TRUE);
   ha_statistic_increment(&SSV::ha_read_rnd_next_count);
   int error=myrg_rrnd(file, buf, HA_OFFSET_ERROR);
   table->status=error ? STATUS_NOT_FOUND: 0;
-  MYSQL_READ_ROW_DONE(error);
+  MYBLOCKCHAIN_READ_ROW_DONE(error);
   return error;
 }
 
@@ -1225,12 +1225,12 @@ int ha_myisammrg::rnd_next(uchar *buf)
 int ha_myisammrg::rnd_pos(uchar * buf, uchar *pos)
 {
   DBUG_ASSERT(this->file->children_attached);
-  MYSQL_READ_ROW_START(table_share->db.str, table_share->table_name.str,
+  MYBLOCKCHAIN_READ_ROW_START(table_share->db.str, table_share->table_name.str,
                        TRUE);
   ha_statistic_increment(&SSV::ha_read_rnd_count);
   int error=myrg_rrnd(file, buf, my_get_ptr(pos,ref_length));
   table->status=error ? STATUS_NOT_FOUND: 0;
-  MYSQL_READ_ROW_DONE(error);
+  MYBLOCKCHAIN_READ_ROW_DONE(error);
   return error;
 }
 
@@ -1272,7 +1272,7 @@ int ha_myisammrg::info(uint flag)
   DBUG_ASSERT(this->file->children_attached);
   (void) myrg_status(file,&mrg_info,flag);
   /*
-    The following fails if one has not compiled MySQL with -DBIG_TABLES
+    The following fails if one has not compiled MyBlockchain with -DBIG_TABLES
     and one has more than 2^32 rows in the merge tables.
   */
   stats.records = (ha_rows) mrg_info.records;
@@ -1404,10 +1404,10 @@ int ha_myisammrg::external_lock(THD *thd, int lock_type)
     during FLUSH TABLES.
 
     If this handler instance has been cloned, we still must call
-    myrg_lock_database().
+    myrg_lock_blockchain().
   */
   if (is_cloned)
-    return myrg_lock_database(file, lock_type);
+    return myrg_lock_blockchain(file, lock_type);
   return 0;
 }
 
@@ -1425,7 +1425,7 @@ THR_LOCK_DATA **ha_myisammrg::store_lock(THD *thd,
 }
 
 
-/* Find out database name and table name from a filename */
+/* Find out blockchain name and table name from a filename */
 
 static void split_file_name(const char *file_name,
 			    LEX_STRING *db, LEX_STRING *name)
@@ -1438,7 +1438,7 @@ static void split_file_name(const char *file_name,
   dir_length= dirname_length(buff);
   if (dir_length > 1)
   {
-    /* Get database */
+    /* Get blockchain */
     buff[dir_length-1]= 0;			// Remove end '/'
     prefix_length= dirname_length(buff);
     db->str= (char*) file_name+ prefix_length;
@@ -1523,12 +1523,12 @@ int ha_myisammrg::create(const char *name, TABLE *form,
 
     /*
       Construct the path to the MyISAM table. Try to meet two conditions:
-      1.) Allow to include MyISAM tables from different databases, and
+      1.) Allow to include MyISAM tables from different blockchains, and
       2.) allow for moving DATADIR around in the file system.
       The first means that we need paths in the .MRG file. The second
       means that we should not have absolute paths in the .MRG file.
-      The best, we can do, is to use 'mysql_data_home', which is '.'
-      in mysqld and may be an absolute path in an embedded server.
+      The best, we can do, is to use 'myblockchain_data_home', which is '.'
+      in myblockchaind and may be an absolute path in an embedded server.
       This means that it might not be possible to move the DATADIR of
       an embedded server without changing the paths in the .MRG file.
 
@@ -1542,7 +1542,7 @@ int ha_myisammrg::create(const char *name, TABLE *form,
       If a MyISAM table is in the same directory as the MERGE table,
       we use the table name without a path. This means that the
       DATADIR can easily be moved even for an embedded server as long
-      as the MyISAM tables are from the same database as the MERGE table.
+      as the MyISAM tables are from the same blockchain as the MERGE table.
     */
     if ((dirname_length(buff) == dirlgt) && ! memcmp(buff, name, dirlgt))
     {
@@ -1597,7 +1597,7 @@ void ha_myisammrg::append_create_info(String *packet)
 
     if (open_table != first)
       packet->append(',');
-    /* Report database for mapped table if it isn't in current database */
+    /* Report blockchain for mapped table if it isn't in current blockchain */
     if (db.length &&
 	(db_length != db.length ||
 	 strncmp(current_db, db.str, db.length)))
@@ -1662,15 +1662,15 @@ static int myisammrg_init(void *p)
   return 0;
 }
 
-struct st_mysql_storage_engine myisammrg_storage_engine=
-{ MYSQL_HANDLERTON_INTERFACE_VERSION };
+struct st_myblockchain_storage_engine myisammrg_storage_engine=
+{ MYBLOCKCHAIN_HANDLERTON_INTERFACE_VERSION };
 
-mysql_declare_plugin(myisammrg)
+myblockchain_declare_plugin(myisammrg)
 {
-  MYSQL_STORAGE_ENGINE_PLUGIN,
+  MYBLOCKCHAIN_STORAGE_ENGINE_PLUGIN,
   &myisammrg_storage_engine,
   "MRG_MYISAM",
-  "MySQL AB",
+  "MyBlockchain AB",
   "Collection of identical MyISAM tables",
   PLUGIN_LICENSE_GPL,
   myisammrg_init, /* Plugin Init */
@@ -1681,4 +1681,4 @@ mysql_declare_plugin(myisammrg)
   NULL,                       /* config options                  */
   0,                          /* flags                           */
 }
-mysql_declare_plugin_end;
+myblockchain_declare_plugin_end;

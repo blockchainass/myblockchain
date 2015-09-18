@@ -18,14 +18,14 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 ***********************************************************************/
 
 /**************************************************//**
-@file memcached_mysql.h
+@file memcached_myblockchain.h
 InnoDB Memcached plugin
 
 Created 04/12/2011 Jimmy Yang
 *******************************************************/
 
-#ifndef MEMCACHED_MYSQL_H
-#define MEMCACHED_MYSQL_H
+#ifndef MEMCACHED_MYBLOCKCHAIN_H
+#define MEMCACHED_MYBLOCKCHAIN_H
 
 /** The main memcached header holding commonly used data
 structures and function prototypes. */
@@ -58,5 +58,5 @@ bool init_complete(void);
 }
 # endif
 
-#endif    /* MEMCACHED_MYSQL_H */
+#endif    /* MEMCACHED_MYBLOCKCHAIN_H */
 

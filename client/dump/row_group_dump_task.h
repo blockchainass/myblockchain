@@ -20,7 +20,7 @@
 
 #include "abstract_simple_dump_task.h"
 #include "row.h"
-#include "mysql_field.h"
+#include "myblockchain_field.h"
 #include "table.h"
 #include <vector>
 

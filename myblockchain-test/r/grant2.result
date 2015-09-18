@@ -1,0 +1,922 @@
+SET NAMES binary;
+set @orig_sql_mode_session= @@SESSION.sql_mode;
+set @orig_sql_mode_global= @@GLOBAL.sql_mode;
+set GLOBAL sql_mode= (select replace(@@GLOBAL.sql_mode,'NO_AUTO_CREATE_USER',''));
+Warnings:
+Warning	3090	Changing sql mode 'NO_AUTO_CREATE_USER' is deprecated. It will be removed in a future release.
+set SESSION sql_mode= (select replace(@@SESSION.sql_mode,'NO_AUTO_CREATE_USER',''));
+Warnings:
+Warning	3090	Changing sql mode 'NO_AUTO_CREATE_USER' is deprecated. It will be removed in a future release.
+drop blockchain if exists myblockchaintest;
+drop blockchain if exists myblockchaintest_1;
+delete from myblockchain.user where user like 'myblockchaintest\_%';
+delete from myblockchain.db where user like 'myblockchaintest\_%';
+delete from myblockchain.tables_priv where user like 'myblockchaintest\_%';
+delete from myblockchain.columns_priv where user like 'myblockchaintest\_%';
+flush privileges;
+call mtr.add_suppression("Did not write failed .* into binary log while "
+                         "granting/revoking privileges in blockchains.");
+call mtr.add_suppression("Did not write failed .* into binary log while "
+                         "revoking all_privileges from a list of users.");
+grant all privileges on `my\_1`.* to myblockchaintest_1@localhost with grant option;
+Warnings:
+Warning	1287	Using GRANT for creating new user is deprecated and will be removed in future release. Create new user with CREATE USER statement.
+grant create user on *.* to myblockchaintest_1@localhost;
+create user myblockchaintest_2@localhost;
+grant select on `my\_1`.* to myblockchaintest_2@localhost;
+grant select on `my\_1`.* to myblockchaintest_2@localhost identified by 'pass';
+ERROR 42000: Access denied for user 'myblockchaintest_1'@'localhost' to blockchain 'myblockchain'
+grant update on myblockchain.* to myblockchaintest_1@localhost;
+grant select on `my\_1`.* to myblockchaintest_2@localhost identified by 'pass';
+Warnings:
+Warning	1287	Using GRANT statement to modify existing user's properties other than privileges is deprecated and will be removed in future release. Use ALTER USER statement for this operation.
+grant select on `my\_1`.* to myblockchaintest_3@localhost;
+Warnings:
+Warning	1287	Using GRANT for creating new user is deprecated and will be removed in future release. Create new user with CREATE USER statement.
+grant insert on myblockchain.* to myblockchaintest_1@localhost;
+grant select on `my\_1`.* to myblockchaintest_3@localhost;
+grant select on `my\_1`.* to myblockchaintest_4@localhost identified by 'pass';
+Warnings:
+Warning	1287	Using GRANT for creating new user is deprecated and will be removed in future release. Create new user with CREATE USER statement.
+delete from myblockchain.user where user like 'myblockchaintest\_%';
+delete from myblockchain.db where user like 'myblockchaintest\_%';
+delete from myblockchain.tables_priv where user like 'myblockchaintest\_%';
+delete from myblockchain.columns_priv where user like 'myblockchaintest\_%';
+flush privileges;
+grant all privileges on `my\_%`.* to myblockchaintest_1@localhost with grant option;
+Warnings:
+Warning	1287	Using GRANT for creating new user is deprecated and will be removed in future release. Create new user with CREATE USER statement.
+grant create user on *.* to myblockchaintest_1@localhost;
+select current_user();
+current_user()
+myblockchaintest_1@localhost
+grant all privileges on `my\_1`.* to myblockchaintest_2@localhost with grant option;
+Warnings:
+Warning	1287	Using GRANT for creating new user is deprecated and will be removed in future release. Create new user with CREATE USER statement.
+grant all privileges on `my_%`.* to myblockchaintest_3@localhost with grant option;
+ERROR 42000: Access denied for user 'myblockchaintest_1'@'localhost' to blockchain 'my_%'
+set @@sql_mode='NO_AUTO_CREATE_USER';
+Warnings:
+Warning	3090	Changing sql mode 'NO_AUTO_CREATE_USER' is deprecated. It will be removed in a future release.
+select @@sql_mode;
+@@sql_mode
+NO_AUTO_CREATE_USER
+grant select on `my\_1`.* to myblockchaintest_4@localhost with grant option;
+ERROR 42000: Can't find any matching row in the user table
+grant select on `my\_1`.* to myblockchaintest_4@localhost identified by 'mypass'
+with grant option;
+Warnings:
+Warning	1287	Using GRANT for creating new user is deprecated and will be removed in future release. Create new user with CREATE USER statement.
+show grants for myblockchaintest_1@localhost;
+Grants for myblockchaintest_1@localhost
+GRANT CREATE USER ON *.* TO 'myblockchaintest_1'@'localhost'
+GRANT ALL PRIVILEGES ON `my\_%`.* TO 'myblockchaintest_1'@'localhost' WITH GRANT OPTION
+show grants for myblockchaintest_2@localhost;
+Grants for myblockchaintest_2@localhost
+GRANT USAGE ON *.* TO 'myblockchaintest_2'@'localhost'
+GRANT ALL PRIVILEGES ON `my\_1`.* TO 'myblockchaintest_2'@'localhost' WITH GRANT OPTION
+show grants for myblockchaintest_3@localhost;
+ERROR 42000: There is no such grant defined for user 'myblockchaintest_3' on host 'localhost'
+delete from myblockchain.user where user like 'myblockchaintest\_%';
+delete from myblockchain.db where user like 'myblockchaintest\_%';
+flush privileges;
+create blockchain myblockchaintest_1;
+grant all privileges on `myblockchaintest\_1`.* to myblockchaintest_1@localhost with grant option;
+Warnings:
+Warning	1287	Using GRANT for creating new user is deprecated and will be removed in future release. Create new user with CREATE USER statement.
+select current_user();
+current_user()
+myblockchaintest_1@localhost
+show blockchains;
+Database
+information_schema
+myblockchaintest_1
+test
+grant all privileges on `myblockchaintest_1`.* to myblockchaintest_1@localhost with grant option;
+ERROR 42000: Access denied for user 'myblockchaintest_1'@'localhost' to blockchain 'myblockchaintest_1'
+show grants for myblockchaintest_1@localhost;
+Grants for myblockchaintest_1@localhost
+GRANT USAGE ON *.* TO 'myblockchaintest_1'@'localhost'
+GRANT ALL PRIVILEGES ON `myblockchaintest\_1`.* TO 'myblockchaintest_1'@'localhost' WITH GRANT OPTION
+delete from myblockchain.user where user like 'myblockchaintest\_%';
+delete from myblockchain.db where user like 'myblockchaintest\_%';
+drop blockchain myblockchaintest_1;
+flush privileges;
+create blockchain myblockchaintest;
+grant INSERT, SELECT on myblockchaintest.* to myblockchaintest_1@localhost;
+Warnings:
+Warning	1287	Using GRANT for creating new user is deprecated and will be removed in future release. Create new user with CREATE USER statement.
+flush privileges;
+use myblockchaintest;
+create table t1 (id int primary key, data varchar(255));
+show grants for current_user();
+Grants for myblockchaintest_1@localhost
+GRANT USAGE ON *.* TO 'myblockchaintest_1'@'localhost'
+GRANT SELECT, INSERT ON `myblockchaintest`.* TO 'myblockchaintest_1'@'localhost'
+insert into t1 values (1, 'I can''t change it!');
+update t1 set data='I can change it!' where id = 1;
+ERROR 42000: UPDATE command denied to user 'myblockchaintest_1'@'localhost' for table 't1'
+insert into t1 values (1, 'XXX') on duplicate key update data= 'I can change it!';
+ERROR 42000: UPDATE command denied to user 'myblockchaintest_1'@'localhost' for table 't1'
+select * from t1;
+id	data
+1	I can't change it!
+drop table t1;
+delete from myblockchain.user where user like 'myblockchaintest\_%';
+delete from myblockchain.db where user like 'myblockchaintest\_%';
+flush privileges;
+create table t1 (a int, b int);
+grant select (a) on t1 to myblockchaintest_1@localhost with grant option;
+Warnings:
+Warning	1287	Using GRANT for creating new user is deprecated and will be removed in future release. Create new user with CREATE USER statement.
+grant select (a,b) on t1 to myblockchaintest_2@localhost;
+ERROR 42000: SELECT command denied to user 'myblockchaintest_1'@'localhost' for column 'b' in table 't1'
+grant select on t1 to myblockchaintest_3@localhost;
+ERROR 42000: SELECT command denied to user 'myblockchaintest_1'@'localhost' for table 't1'
+drop table t1;
+delete from myblockchain.user where user like 'myblockchaintest\_%';
+delete from myblockchain.db where user like 'myblockchaintest\_%';
+delete from myblockchain.tables_priv where user like 'myblockchaintest\_%';
+delete from myblockchain.columns_priv where user like 'myblockchaintest\_%';
+flush privileges;
+drop blockchain myblockchaintest;
+use test;
+create user myblockchaintest_1@host1;
+create user myblockchaintest_2@host2;
+create user myblockchaintest_3@host3;
+create user myblockchaintest_4@host4;
+create user myblockchaintest_5@host5;
+create user myblockchaintest_6@host6;
+create user myblockchaintest_7@host7;
+flush privileges;
+drop user myblockchaintest_3@host3;
+drop user myblockchaintest_1@host1, myblockchaintest_2@host2, myblockchaintest_4@host4,
+myblockchaintest_5@host5, myblockchaintest_6@host6, myblockchaintest_7@host7;
+create blockchain myblockchaintest_1;
+grant select, insert, update on `myblockchaintest\_1`.* to myblockchaintest_1@localhost;
+Warnings:
+Warning	1287	Using GRANT for creating new user is deprecated and will be removed in future release. Create new user with CREATE USER statement.
+set sql_log_off = 1;
+ERROR 42000: Access denied; you need (at least one of) the SUPER privilege(s) for this operation
+set sql_log_bin = 0;
+ERROR 42000: Access denied; you need (at least one of) the SUPER privilege(s) for this operation
+delete from myblockchain.user where user like 'myblockchaintest\_1';
+delete from myblockchain.db where user like 'myblockchaintest\_1';
+drop blockchain myblockchaintest_1;
+flush privileges;
+set sql_mode='maxdb';
+Warnings:
+Warning	3090	Changing sql mode 'NO_AUTO_CREATE_USER' is deprecated. It will be removed in a future release.
+drop table if exists t1, t2;
+create table t1(c1 int);
+create table t2(c1 int, c2 int);
+create user 'myblockchaintest_1';
+create user 'myblockchaintest_1';
+ERROR HY000: Operation CREATE USER failed for 'myblockchaintest_1'@'%'
+create user 'myblockchaintest_2' identified by 'Mysqltest-2';
+create user 'myblockchaintest_3' identified by password 'fffffffffffffffffffffffffffffffffffffffff';
+ERROR HY000: The password hash doesn't have the expected format. Check if the correct password algorithm is being used with the PASSWORD() function.
+grant select on *.* to 'myblockchaintest_2';
+grant insert on test.* to 'myblockchaintest_2';
+grant update on test.t1 to 'myblockchaintest_2';
+grant update (c2) on test.t2 to 'myblockchaintest_2';
+select host,user,authentication_string from myblockchain.user where user like 'myblockchaintest_%' order by host,user,authentication_string;
+host	user	authentication_string
+%	myblockchaintest_1	
+%	myblockchaintest_2	*BD447CBA355AF58578D3AE33BA2E2CD388BA08D1
+select host,db,user from myblockchain.db where user like 'myblockchaintest_%' order by host,db,user;
+host	db	user
+%	test	myblockchaintest_2
+select host,db,user,table_name from myblockchain.tables_priv where user like 'myblockchaintest_%' order by host,db,user,table_name;
+host	db	user	table_name
+%	test	myblockchaintest_2	t1
+%	test	myblockchaintest_2	t2
+select host,db,user,table_name,column_name from myblockchain.columns_priv where user like 'myblockchaintest_%' order by host,db,user,table_name,column_name;
+host	db	user	table_name	column_name
+%	test	myblockchaintest_2	t2	c2
+show grants for 'myblockchaintest_1';
+Grants for myblockchaintest_1@%
+GRANT USAGE ON *.* TO 'myblockchaintest_1'@'%'
+show grants for 'myblockchaintest_2';
+Grants for myblockchaintest_2@%
+GRANT SELECT ON *.* TO 'myblockchaintest_2'@'%'
+GRANT INSERT ON "test".* TO 'myblockchaintest_2'@'%'
+GRANT UPDATE (c2) ON "test"."t2" TO 'myblockchaintest_2'@'%'
+GRANT UPDATE ON "test"."t1" TO 'myblockchaintest_2'@'%'
+drop user 'myblockchaintest_1';
+select host,user,authentication_string from myblockchain.user where user like 'myblockchaintest_%' order by host,user,authentication_string;
+host	user	authentication_string
+%	myblockchaintest_2	*BD447CBA355AF58578D3AE33BA2E2CD388BA08D1
+select host,db,user from myblockchain.db where user like 'myblockchaintest_%' order by host,db,user;
+host	db	user
+%	test	myblockchaintest_2
+select host,db,user,table_name from myblockchain.tables_priv where user like 'myblockchaintest_%' order by host,db,user,table_name;
+host	db	user	table_name
+%	test	myblockchaintest_2	t1
+%	test	myblockchaintest_2	t2
+select host,db,user,table_name,column_name from myblockchain.columns_priv where user like 'myblockchaintest_%' order by host,db,user,table_name,column_name;
+host	db	user	table_name	column_name
+%	test	myblockchaintest_2	t2	c2
+show grants for 'myblockchaintest_1';
+ERROR 42000: There is no such grant defined for user 'myblockchaintest_1' on host '%'
+rename user 'myblockchaintest_2' to 'myblockchaintest_1';
+select host,user,authentication_string from myblockchain.user where user like 'myblockchaintest_%' order by host,user,authentication_string;
+host	user	authentication_string
+%	myblockchaintest_1	*BD447CBA355AF58578D3AE33BA2E2CD388BA08D1
+select host,db,user from myblockchain.db where user like 'myblockchaintest_%' order by host,db,user;
+host	db	user
+%	test	myblockchaintest_1
+select host,db,user,table_name from myblockchain.tables_priv where user like 'myblockchaintest_%' order by host,db,user,table_name;
+host	db	user	table_name
+%	test	myblockchaintest_1	t1
+%	test	myblockchaintest_1	t2
+select host,db,user,table_name,column_name from myblockchain.columns_priv where user like 'myblockchaintest_%' order by host,db,user,table_name,column_name;
+host	db	user	table_name	column_name
+%	test	myblockchaintest_1	t2	c2
+show grants for 'myblockchaintest_1';
+Grants for myblockchaintest_1@%
+GRANT SELECT ON *.* TO 'myblockchaintest_1'@'%'
+GRANT INSERT ON "test".* TO 'myblockchaintest_1'@'%'
+GRANT UPDATE (c2) ON "test"."t2" TO 'myblockchaintest_1'@'%'
+GRANT UPDATE ON "test"."t1" TO 'myblockchaintest_1'@'%'
+drop user 'myblockchaintest_1';
+drop user 'myblockchaintest_1';
+ERROR HY000: Operation DROP USER failed for 'myblockchaintest_1'@'%'
+drop table t1, t2;
+insert into myblockchain.db set user='myblockchaintest_1', db='%', host='%';
+flush privileges;
+show grants for 'myblockchaintest_1';
+ERROR 42000: There is no such grant defined for user 'myblockchaintest_1' on host '%'
+revoke all privileges, grant option from 'myblockchaintest_1';
+ERROR HY000: Can't revoke all privileges for one or more of the requested users
+drop user 'myblockchaintest_1';
+select host,db,user from myblockchain.db where user = 'myblockchaintest_1' order by host,db,user;
+host	db	user
+insert into myblockchain.tables_priv set host='%', db='test', user='myblockchaintest_1', table_name='t1';
+flush privileges;
+show grants for 'myblockchaintest_1';
+ERROR 42000: There is no such grant defined for user 'myblockchaintest_1' on host '%'
+drop user 'myblockchaintest_1';
+select host,db,user,table_name from myblockchain.tables_priv where user = 'myblockchaintest_1' order by host,db,user,table_name;
+host	db	user	table_name
+insert into myblockchain.columns_priv set host='%', db='test', user='myblockchaintest_1', table_name='t1', column_name='c1';
+flush privileges;
+show grants for 'myblockchaintest_1';
+ERROR 42000: There is no such grant defined for user 'myblockchaintest_1' on host '%'
+drop user 'myblockchaintest_1';
+select host,db,user,table_name,column_name from myblockchain.columns_priv where user = 'myblockchaintest_1' order by host,db,user,table_name,column_name;
+host	db	user	table_name	column_name
+create user 'myblockchaintest_1', 'myblockchaintest_2', 'myblockchaintest_3';
+drop user 'myblockchaintest_1', 'myblockchaintest_2', 'myblockchaintest_3';
+create user 'myblockchaintest_1', 'myblockchaintest_2' identified by 'Mysqltest-2', 'myblockchaintest_3' identified by password '*ffffffffffffffffffffffffffffffffffffffff';
+Warnings:
+Warning	1287	'IDENTIFIED BY PASSWORD' is deprecated and will be removed in a future release. Please use IDENTIFIED WITH <plugin> AS <hash> instead
+rename user 'myblockchaintest_1' to 'myblockchaintest_1a', 'myblockchaintest_2' TO 'myblockchaintest_2a', 'myblockchaintest_3' TO 'myblockchaintest_3a';
+drop user 'myblockchaintest_1', 'myblockchaintest_2', 'myblockchaintest_3';
+ERROR HY000: Operation DROP USER failed for 'myblockchaintest_1'@'%','myblockchaintest_2'@'%','myblockchaintest_3'@'%'
+drop user 'myblockchaintest_1a', 'myblockchaintest_2a', 'myblockchaintest_3a';
+create user 'myblockchaintest_1', 'myblockchaintest_2', 'myblockchaintest_3';
+create user 'myblockchaintest_1a', 'myblockchaintest_2', 'myblockchaintest_3a';
+ERROR HY000: Operation CREATE USER failed for 'myblockchaintest_2'@'%'
+rename user 'myblockchaintest_1a' to 'myblockchaintest_1b', 'myblockchaintest_2a' TO 'myblockchaintest_2b', 'myblockchaintest_3a' TO 'myblockchaintest_3b';
+ERROR HY000: Operation RENAME USER failed for 'myblockchaintest_2a'@'%'
+drop user 'myblockchaintest_1', 'myblockchaintest_2', 'myblockchaintest_3';
+drop user 'myblockchaintest_1b', 'myblockchaintest_2b', 'myblockchaintest_3b';
+ERROR HY000: Operation DROP USER failed for 'myblockchaintest_2b'@'%'
+create user 'myblockchaintest_2' identified by 'Mysqltest-2';
+drop user 'myblockchaintest_2' identified by 'Mysqltest-2';
+ERROR 42000: You have an error in your SQL syntax; check the manual that corresponds to your MyBlockchain server version for the right syntax to use near 'identified by 'Mysqltest-2'' at line 1
+drop user 'myblockchaintest_2';
+create user '%@b'@'b';
+show grants for '%@b'@'b';
+Grants for %@b@b
+GRANT USAGE ON *.* TO '%@b'@'b'
+grant select on myblockchain.* to '%@b'@'b';
+show grants for '%@b'@'b';
+Grants for %@b@b
+GRANT USAGE ON *.* TO '%@b'@'b'
+GRANT SELECT ON "myblockchain".* TO '%@b'@'b'
+rename user '%@b'@'b' to '%@a'@'a';
+show grants for '%@b'@'b';
+ERROR 42000: There is no such grant defined for user '%@b' on host 'b'
+show grants for '%@a'@'a';
+Grants for %@a@a
+GRANT USAGE ON *.* TO '%@a'@'a'
+GRANT SELECT ON "myblockchain".* TO '%@a'@'a'
+drop user '%@a'@'a';
+create user myblockchaintest_2@localhost;
+grant create user on *.* to myblockchaintest_2@localhost;
+select host,user,authentication_string from myblockchain.user where user like 'myblockchaintest_%' order by host,user,authentication_string;
+ERROR 42000: SELECT command denied to user 'myblockchaintest_2'@'localhost' for table 'user'
+create user myblockchaintest_A@'%';
+rename user myblockchaintest_A@'%' to myblockchaintest_B@'%';
+drop user myblockchaintest_B@'%';
+drop user myblockchaintest_2@localhost;
+create user myblockchaintest_3@localhost;
+grant INSERT,DELETE,UPDATE on myblockchain.* to myblockchaintest_3@localhost;
+show grants;
+Grants for myblockchaintest_3@localhost
+GRANT USAGE ON *.* TO 'myblockchaintest_3'@'localhost'
+GRANT INSERT, UPDATE, DELETE ON `myblockchain`.* TO 'myblockchaintest_3'@'localhost'
+select host,user,authentication_string from myblockchain.user where user like 'myblockchaintest_%' order by host,user,authentication_string;
+ERROR 42000: SELECT command denied to user 'myblockchaintest_3'@'localhost' for table 'user'
+insert ignore into myblockchain.user set host='%', user='myblockchaintest_B';
+Warnings:
+Warning	1364	Field 'ssl_cipher' doesn't have a default value
+Warning	1364	Field 'x509_issuer' doesn't have a default value
+Warning	1364	Field 'x509_subject' doesn't have a default value
+create user myblockchaintest_A@'%';
+rename user myblockchaintest_B@'%' to myblockchaintest_C@'%';
+drop user myblockchaintest_C@'%';
+drop user myblockchaintest_A@'%';
+drop user myblockchaintest_3@localhost;
+set @@sql_mode='';
+Warnings:
+Warning	3090	Changing sql mode 'NO_AUTO_CREATE_USER' is deprecated. It will be removed in a future release.
+create blockchain myblockchaintest_1;
+create table myblockchaintest_1.t1 (i int);
+insert into myblockchaintest_1.t1 values (1),(2),(3);
+GRANT ALL ON myblockchaintest_1.t1 TO myblockchaintest_1@'127.0.0.0/255.0.0.0';
+Warnings:
+Warning	1287	Using GRANT for creating new user is deprecated and will be removed in future release. Create new user with CREATE USER statement.
+show grants for current_user();
+Grants for myblockchaintest_1@127.0.0.0/255.0.0.0
+GRANT USAGE ON *.* TO 'myblockchaintest_1'@'127.0.0.0/255.0.0.0'
+GRANT ALL PRIVILEGES ON `myblockchaintest_1`.`t1` TO 'myblockchaintest_1'@'127.0.0.0/255.0.0.0'
+select * from t1;
+i
+1
+2
+3
+REVOKE ALL ON myblockchaintest_1.t1 FROM myblockchaintest_1@'127.0.0.0/255.0.0.0';
+delete from myblockchain.user where user like 'myblockchaintest\_1';
+flush privileges;
+drop table myblockchaintest_1.t1;
+grant all on myblockchaintest_1.* to myblockchaintest_1@'127.0.0.1';
+Warnings:
+Warning	1287	Using GRANT for creating new user is deprecated and will be removed in future release. Create new user with CREATE USER statement.
+select current_user();
+current_user()
+myblockchaintest_1@127.0.0.1
+set password = 'changed';
+select host, length(authentication_string) from myblockchain.user where user like 'myblockchaintest\_1';
+host	length(authentication_string)
+127.0.0.1	41
+revoke all on myblockchaintest_1.* from myblockchaintest_1@'127.0.0.1';
+delete from myblockchain.user where user like 'myblockchaintest\_1';
+flush privileges;
+grant all on myblockchaintest_1.* to myblockchaintest_1@'127.0.0.0/255.0.0.0';
+Warnings:
+Warning	1287	Using GRANT for creating new user is deprecated and will be removed in future release. Create new user with CREATE USER statement.
+select current_user();
+current_user()
+myblockchaintest_1@127.0.0.0/255.0.0.0
+set password = 'changed';
+select host, length(authentication_string) from myblockchain.user where user like 'myblockchaintest\_1';
+host	length(authentication_string)
+127.0.0.0/255.0.0.0	41
+revoke all on myblockchaintest_1.* from myblockchaintest_1@'127.0.0.0/255.0.0.0';
+delete from myblockchain.user where user like 'myblockchaintest\_1';
+flush privileges;
+drop blockchain myblockchaintest_1;
+set password = "changed";
+ERROR 42000: You are using MyBlockchain as an anonymous user and anonymous users are not allowed to change passwords
+lock table myblockchain.user write;
+flush privileges;
+grant all on *.* to 'myblockchaintest_1'@'localhost';
+unlock tables;
+Warnings:
+Warning	1287	Using GRANT for creating new user is deprecated and will be removed in future release. Create new user with CREATE USER statement.
+lock table myblockchain.user write;
+set password for 'myblockchaintest_1'@'localhost' = '';
+revoke all on *.* from 'myblockchaintest_1'@'localhost';
+unlock tables;
+drop user 'myblockchaintest_1'@'localhost';
+create blockchain TESTDB;
+create table t2(a int);
+create temporary table t1 as select * from myblockchain.user;
+delete from myblockchain.user where host='localhost';
+INSERT INTO myblockchain.user (host, user) VALUES
+('%','myblockchaintest_1');
+Warnings:
+Warning	1364	Field 'ssl_cipher' doesn't have a default value
+Warning	1364	Field 'x509_issuer' doesn't have a default value
+Warning	1364	Field 'x509_subject' doesn't have a default value
+INSERT INTO myblockchain.db (host, db, user, select_priv) VALUES
+('%','TESTDB','myblockchaintest_1','Y');
+FLUSH PRIVILEGES;
+create blockchain TEStdb;
+Got one of the listed errors
+delete from myblockchain.user;
+delete from myblockchain.db where host='%' and user='myblockchaintest_1' and db='TESTDB';
+insert into myblockchain.user select * from t1;
+drop table t1, t2;
+drop blockchain TESTDB;
+flush privileges;
+SET @old_log_bin_trust_function_creators= @@global.log_bin_trust_function_creators;
+SET GLOBAL log_bin_trust_function_creators = 1;
+GRANT ALL PRIVILEGES ON test.* TO `a@`@localhost;
+Warnings:
+Warning	1287	Using GRANT for creating new user is deprecated and will be removed in future release. Create new user with CREATE USER statement.
+GRANT EXECUTE ON * TO `a@`@localhost;
+CREATE TABLE t2 (s1 INT);
+INSERT INTO t2 VALUES (1);
+DROP FUNCTION IF EXISTS f2;
+CREATE FUNCTION f2 () RETURNS INT
+BEGIN DECLARE v INT; SELECT s1 FROM t2 INTO v; RETURN v; END//
+SELECT f2();
+f2()
+1
+DROP FUNCTION f2;
+DROP TABLE t2;
+REVOKE ALL PRIVILEGES, GRANT OPTION FROM `a@`@localhost;
+DROP USER `a@`@localhost;
+SET @@global.log_bin_trust_function_creators= @old_log_bin_trust_function_creators;
+drop blockchain if exists myblockchaintest_1;
+drop blockchain if exists myblockchaintest_2;
+drop user myblockchaintest_u1@localhost;
+create blockchain myblockchaintest_1;
+create blockchain myblockchaintest_2;
+grant all on myblockchaintest_1.* to myblockchaintest_u1@localhost;
+Warnings:
+Warning	1287	Using GRANT for creating new user is deprecated and will be removed in future release. Create new user with CREATE USER statement.
+use myblockchaintest_2;
+create table t1 (i int);
+show create table myblockchaintest_2.t1;
+ERROR 42000: SHOW command denied to user 'myblockchaintest_u1'@'localhost' for table 't1'
+create table t1 like myblockchaintest_2.t1;
+ERROR 42000: SELECT command denied to user 'myblockchaintest_u1'@'localhost' for table 't1'
+grant select on myblockchaintest_2.t1 to myblockchaintest_u1@localhost;
+show create table myblockchaintest_2.t1;
+Table	Create Table
+t1	CREATE TABLE `t1` (
+  `i` int(11) DEFAULT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=latin1
+create table t1 like myblockchaintest_2.t1;
+use test;
+drop blockchain myblockchaintest_1;
+drop blockchain myblockchaintest_2;
+drop user myblockchaintest_u1@localhost;
+grant all on `myblockchaintest\_%`.* to myblockchaintest_1@localhost with grant option;
+Warnings:
+Warning	1287	Using GRANT for creating new user is deprecated and will be removed in future release. Create new user with CREATE USER statement.
+grant usage on *.* to myblockchaintest_2@localhost;
+Warnings:
+Warning	1287	Using GRANT for creating new user is deprecated and will be removed in future release. Create new user with CREATE USER statement.
+create blockchain myblockchaintest_1;
+use myblockchaintest_1;
+create table t1 (f1 int);
+grant create on `myblockchaintest\_1`.* to myblockchaintest_2@localhost;
+grant select on myblockchaintest_1.t1 to myblockchaintest_2@localhost;
+create blockchain myblockchaintest_3;
+ERROR 42000: Access denied for user 'myblockchaintest_2'@'localhost' to blockchain 'myblockchaintest_3'
+use myblockchaintest_1;
+create table t2(f1 int);
+select * from t1;
+f1
+drop blockchain myblockchaintest_1;
+revoke all privileges, grant option from myblockchaintest_1@localhost;
+revoke all privileges, grant option from myblockchaintest_2@localhost;
+drop user myblockchaintest_1@localhost;
+drop user myblockchaintest_2@localhost;
+CREATE DATABASE db1;
+USE db1;
+CREATE TABLE t1 (a INT, b INT);
+INSERT INTO t1 VALUES (1,1),(2,2);
+CREATE TABLE t2 (b INT, c INT);
+INSERT INTO t2 VALUES (1,100),(2,200);
+GRANT SELECT ON t1 TO myblockchaintest1@localhost;
+Warnings:
+Warning	1287	Using GRANT for creating new user is deprecated and will be removed in future release. Create new user with CREATE USER statement.
+GRANT SELECT (b) ON t2 TO myblockchaintest1@localhost;
+USE db1;
+SELECT c FROM t2;
+ERROR 42000: SELECT command denied to user 'myblockchaintest1'@'localhost' for column 'c' in table 't2'
+SELECT * FROM t2;
+ERROR 42000: SELECT command denied to user 'myblockchaintest1'@'localhost' for table 't2'
+SELECT * FROM t1 JOIN t2 USING (b);
+ERROR 42000: SELECT command denied to user 'myblockchaintest1'@'localhost' for column 'c' in table 't2'
+USE test;
+DROP TABLE db1.t1, db1.t2;
+DROP USER myblockchaintest1@localhost;
+DROP DATABASE db1;
+End of 5.0 tests
+USE myblockchain;
+SELECT LEFT(CURRENT_USER(),INSTR(CURRENT_USER(),'@')-1) INTO @u;
+SELECT MID(CURRENT_USER(),INSTR(CURRENT_USER(),'@')+1)  INTO @h;
+SELECT authentication_string FROM user WHERE user=@u AND host=@h INTO @pwd;
+SELECT user,host,authentication_string,insert_priv FROM user WHERE user=@u AND host=@h;
+user	host	authentication_string	insert_priv
+root	localhost		Y
+UPDATE user SET insert_priv='N' WHERE user=@u AND host=@h;
+SELECT user,host,authentication_string,insert_priv FROM user WHERE user=@u AND host=@h;
+user	host	authentication_string	insert_priv
+root	localhost		N
+GRANT INSERT ON *.* TO CURRENT_USER();
+SELECT user,host,authentication_string,insert_priv FROM user WHERE user=@u AND host=@h;
+user	host	authentication_string	insert_priv
+root	localhost		Y
+UPDATE user SET insert_priv='N' WHERE user=@u AND host=@h;
+GRANT INSERT ON *.* TO CURRENT_USER() IDENTIFIED BY 'keksdose';
+Warnings:
+Warning	1287	Using GRANT statement to modify existing user's properties other than privileges is deprecated and will be removed in future release. Use ALTER USER statement for this operation.
+SELECT user,host,authentication_string,insert_priv FROM user WHERE user=@u AND host=@h;
+user	host	authentication_string	insert_priv
+root	localhost	*0BB7188CF0DE9B403BA66E9DD810D82652D002EB	Y
+UPDATE user SET authentication_string=@pwd WHERE user=@u AND host=@h;
+SELECT user,host,authentication_string,insert_priv FROM user WHERE user=@u AND host=@h;
+user	host	authentication_string	insert_priv
+root	localhost		Y
+FLUSH PRIVILEGES;
+USE test;
+End of 5.1 tests
+
+# --
+# -- Bug#11746602: 27480 - Extend CREATE TEMPORARY TABLES privilege to
+# -- allow temp table operations
+# --
+# -- Bug#12771903: User with create temporary tables priv only has full
+# -- access to a regular table
+# --
+
+############################################################################
+# Setup environment.
+###########################################################################
+DROP DATABASE IF EXISTS myblockchaintest_db1;
+DROP DATABASE IF EXISTS myblockchaintest_db2;
+CREATE DATABASE myblockchaintest_db1;
+CREATE DATABASE myblockchaintest_db2;
+# myblockchaintest_u1@localhost has CREATE_TMP_ACL, FILE_ACL and EXECUTE_ACL only
+# (EXECUTE_ACL is needed to call p0, and FILE_ACL is needed for SELECT
+# OUTFILE/LOAD DATA INFILE).
+GRANT FILE ON *.* TO myblockchaintest_u1@localhost;
+Warnings:
+Warning	1287	Using GRANT for creating new user is deprecated and will be removed in future release. Create new user with CREATE USER statement.
+GRANT CREATE TEMPORARY TABLES, EXECUTE ON myblockchaintest_db1.* TO myblockchaintest_u1@localhost;
+# myblockchaintest_u2@localhost has all privileges but CREATE_TMP_ACL.
+GRANT ALL PRIVILEGES ON myblockchaintest_db1.* TO myblockchaintest_u2@localhost;
+Warnings:
+Warning	1287	Using GRANT for creating new user is deprecated and will be removed in future release. Create new user with CREATE USER statement.
+REVOKE CREATE TEMPORARY TABLES ON myblockchaintest_db1.* FROM myblockchaintest_u2@localhost;
+# myblockchaintest_u3@localhost has CREATE_TMP_ACL & EXECUTE_ACL.
+# This user is required to check SUID-stored-routines.
+GRANT CREATE TEMPORARY TABLES ON myblockchaintest_db1.* TO myblockchaintest_u3@localhost;
+Warnings:
+Warning	1287	Using GRANT for creating new user is deprecated and will be removed in future release. Create new user with CREATE USER statement.
+GRANT EXECUTE ON myblockchaintest_db1.* TO myblockchaintest_u3@localhost;
+# myblockchaintest_u4@localhost has only EXECUTE_ACL.
+# We need this user to check that once created temporary tables
+# are accessible by anyone.
+GRANT EXECUTE ON myblockchaintest_db1.* TO myblockchaintest_u4@localhost;
+Warnings:
+Warning	1287	Using GRANT for creating new user is deprecated and will be removed in future release. Create new user with CREATE USER statement.
+# myblockchaintest_u5@localhost has CREATE_TMP_ACL and SELECT_ACL, UPDATE_ACL,
+# DELETE_ACL on myblockchaintest_db1; and only CREATE_TMP_ACL on myblockchaintest_db2.
+# By means of this user we check privileges required for merge tables.
+GRANT CREATE TEMPORARY TABLES ON myblockchaintest_db1.* TO myblockchaintest_u5@localhost;
+Warnings:
+Warning	1287	Using GRANT for creating new user is deprecated and will be removed in future release. Create new user with CREATE USER statement.
+GRANT CREATE TEMPORARY TABLES ON myblockchaintest_db2.* TO myblockchaintest_u5@localhost;
+GRANT SELECT, UPDATE, DELETE ON myblockchaintest_db1.* TO myblockchaintest_u5@localhost;
+# Create stored routine to test how privilege checking is done for its
+# arguments.
+CREATE PROCEDURE myblockchaintest_db1.p0(i INT) SELECT i;
+# Create SUID-stored-routines.
+CREATE DEFINER = myblockchaintest_u3@localhost PROCEDURE myblockchaintest_db1.p1()
+CREATE TEMPORARY TABLE t4(x INT);
+CREATE DEFINER = myblockchaintest_u3@localhost PROCEDURE myblockchaintest_db1.p2()
+INSERT INTO t4 VALUES (1), (2), (3);
+CREATE DEFINER = myblockchaintest_u3@localhost PROCEDURE myblockchaintest_db1.p3()
+SELECT * FROM t4 ORDER BY x;
+# We need separate key cache to test CACHE INDEX and LOAD INDEX.
+SET GLOBAL keycache1.key_buffer_size = 128 * 1024;
+CREATE TABLE myblockchaintest_db2.t2_1(a INT);
+###########################################################################
+# Check that CREATE_TMP_ACL is enough to issue almost any supported
+# SQL-statement against temporary tables (loosely follow order in
+# sql_command enum).
+###########################################################################
+
+# -- connect con1, myblockchaintest_u1@localhost, myblockchaintest_db1
+#
+# Variants of CREATE TABLE.
+#
+CREATE TEMPORARY TABLE t1(a INT);
+CREATE TEMPORARY TABLE t2 LIKE t1;
+CREATE TEMPORARY TABLE t3(a INT, b INT, PRIMARY KEY (a));
+CREATE TEMPORARY TABLE t4 SELECT * FROM t1;
+# Check that we do *not* allow creation of MERGE table with underlying
+# temporary table without additional privileges.
+CREATE TEMPORARY TABLE t5(a INT) ENGINE = MyISAM;
+CREATE TEMPORARY TABLE t6(a INT) ENGINE = MERGE UNION = (t5);
+ERROR 42000: SELECT, UPDATE, DELETE command denied to user 'myblockchaintest_u1'@'localhost' for table 't5'
+# Check that we allow creation of MERGE table with no underlying table
+# without additional privileges.
+CREATE TEMPORARY TABLE t6(a INT) ENGINE = MERGE UNION = ();
+#
+# SELECT.
+#
+INSERT INTO t1 VALUES (1), (2), (3);
+SELECT * FROM t1 ORDER BY a;
+a
+1
+2
+3
+#
+# CREATE/DROP INDEX.
+#
+CREATE INDEX idx1 ON t3(b);
+DROP INDEX idx1 ON t3;
+#
+# ALTER TABLE.
+# 
+ALTER TABLE t4 ADD COLUMN b INT;
+# Check that we allow altering of MERGE table with no underlying
+# without additional privileges.
+ALTER TABLE t6 UNION = ();
+# Check that we do *not* allow altering of MERGE table with underlying
+# temporary table without additional privileges.
+ALTER TABLE t6 UNION = (t5);
+ERROR 42000: SELECT, UPDATE, DELETE command denied to user 'myblockchaintest_u1'@'localhost' for table 't5'
+#
+# Simple INSERT and INSERT ... SELECT.
+#
+INSERT INTO t1 VALUES (4);
+INSERT INTO t2 SELECT a FROM t1;
+SELECT * FROM t1 ORDER BY a;
+a
+1
+2
+3
+4
+SELECT * FROM t2 ORDER BY a;
+a
+1
+2
+3
+4
+#
+# UPDATE and multi-UPDATE.
+#
+UPDATE t1 SET a = a * 10;
+UPDATE t1 SET a = 100 WHERE a = 10;
+UPDATE t1, t2 SET t1.a = 200 WHERE t1.a = t2.a * 10 AND t1.a = 20;
+SELECT * FROM t1 ORDER BY a;
+a
+30
+40
+100
+200
+#
+# DELETE and multi-DELETE.
+#
+DELETE FROM t1 WHERE a = 100;
+DELETE t1 FROM t1, t2 WHERE t1.a = t2.a * 100 AND t1.a = 200;
+SELECT * FROM t1 ORDER BY a;
+a
+30
+40
+#
+# TRUNCATE TABLE.
+#
+TRUNCATE TABLE t1;
+SELECT * FROM t1 ORDER BY a;
+a
+#
+# SHOW COLUMNS/DESCRIBE and SHOW KEYS.
+#
+SHOW COLUMNS FROM t1;
+Field	Type	Null	Key	Default	Extra
+SHOW KEYS FROM t3;
+Table	Non_unique	Key_name	Seq_in_index	Column_name	Collation	Cardinality	Sub_part	Packed	Null	Index_type	Comment	Index_comment
+t3	0	PRIMARY	1	a	A	0	NULL	NULL		BTREE		
+#
+# SHOW CREATE TABLE.
+#
+SHOW CREATE TABLE t1;
+Table	Create Table
+t1	CREATE TEMPORARY TABLE `t1` (
+  `a` int(11) DEFAULT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=latin1
+#
+# LOAD DATA INFILE (also SELECT INTO OUTFILE).
+#
+INSERT INTO t1 VALUES (1), (2), (3);
+SELECT a INTO OUTFILE 'MYBLOCKCHAINTEST_VARDIR/tmp/bug27480.txt' FROM t1 ;
+LOAD DATA INFILE 'MYBLOCKCHAINTEST_VARDIR/tmp/bug27480.txt' INTO TABLE t1;
+SELECT * FROM t1 ORDER BY a;
+a
+1
+1
+2
+2
+3
+3
+#
+# SET.
+#
+SET @a := (SELECT COUNT(*) FROM t1);
+SELECT @a;
+@a
+6
+#
+# LOCK TABLES.
+#
+LOCK TABLES t1 READ;
+UNLOCK TABLES;
+#
+# CHECK/REPAIR/ANALYZE/OPTIMIZE and CHECKSUM.
+#
+ANALYZE TABLE t1;
+Table	Op	Msg_type	Msg_text
+myblockchaintest_db1.t1	analyze	status	OK
+CHECK TABLE t1;
+Table	Op	Msg_type	Msg_text
+myblockchaintest_db1.t1	check	status	OK
+OPTIMIZE TABLE t1;
+Table	Op	Msg_type	Msg_text
+myblockchaintest_db1.t1	optimize	status	Table is already up to date
+REPAIR TABLE t1;
+Table	Op	Msg_type	Msg_text
+myblockchaintest_db1.t1	repair	status	OK
+#
+# REPLACE and REPLACE ... SELECT.
+#
+INSERT INTO t3 VALUES (1, 111), (2, 222), (3, 333);
+REPLACE INTO t3 VALUES (1, 1111), (4, 444), (0, 001);
+REPLACE INTO t2 SELECT b FROM t3;
+SELECT * FROM t2 ORDER BY a;
+a
+1
+1
+2
+3
+4
+222
+333
+444
+1111
+SELECT * FROM t3 ORDER BY a;
+a	b
+0	1
+1	1111
+2	222
+3	333
+4	444
+#
+# CACHE and LOAD INDEX.
+#
+CACHE INDEX t3 IN keycache1;
+Table	Op	Msg_type	Msg_text
+myblockchaintest_db1.t3	assign_to_keycache	status	OK
+LOAD INDEX INTO CACHE t3;
+Table	Op	Msg_type	Msg_text
+myblockchaintest_db1.t3	preload_keys	status	OK
+#
+# RENAME (doesn't work for temporary tables, thus should fail).
+#
+RENAME TABLE t3 TO t3_1;
+ERROR 42000: DROP, ALTER command denied to user 'myblockchaintest_u1'@'localhost' for table 't3'
+#
+# HANDLER OPEN/READ/CLOSE.
+#
+HANDLER t1 OPEN;
+HANDLER t1 READ NEXT;
+a
+1
+HANDLER t1 CLOSE;
+#
+# DO.
+#
+DO (SELECT COUNT(*) FROM t1);
+#
+# CHECKSUM TABLE.
+#
+DELETE FROM t1;
+CHECKSUM TABLE t1;
+Table	Checksum
+myblockchaintest_db1.t1	0
+#
+# CALL.
+#
+CALL p0((SELECT COUNT(*) FROM t1));
+i
+0
+#
+# PREPARE, EXECUTE and DEALLOCATE.
+#
+PREPARE stmt1 FROM 'SELECT * FROM t1 ORDER BY a';
+PREPARE stmt2 FROM 'SELECT * FROM t2 ORDER BY a';
+EXECUTE stmt1;
+a
+EXECUTE stmt2;
+a
+1
+1
+2
+3
+4
+222
+333
+444
+1111
+DEALLOCATE PREPARE stmt1;
+DEALLOCATE PREPARE stmt2;
+#
+# DROP TABLE and DROP TEMPORARY TABLE.
+#
+DROP TABLE t1;
+CREATE TEMPORARY TABLE t1(a INT);
+DROP TEMPORARY TABLE t1;
+###########################################################################
+# - Check that even having all privileges but CREATE_TMP_ACL is not enough
+#   to create temporary tables.
+# - Check that creation/working with temporary tables is possible via
+#   SUID-stored-routines.
+# - Check that even outside of SUID context we can access temporary
+#   table once it is created.
+###########################################################################
+
+# -- connect con2, myblockchaintest_u2@localhost, myblockchaintest_db1
+CREATE TEMPORARY TABLE t2(a INT);
+ERROR 42000: Access denied for user 'myblockchaintest_u2'@'localhost' to blockchain 'myblockchaintest_db1'
+CALL p1();
+CALL p2();
+CALL p3();
+x
+1
+2
+3
+# Check that once table is created it can be accessed even
+# outside of such a SUID context.
+INSERT INTO t4 VALUES (4);
+UPDATE t4 SET x = 10 WHERE x = 1;
+DELETE FROM t4 WHERE x < 3;
+SELECT * FROM t4 ORDER BY x;
+x
+3
+4
+10
+DROP TEMPORARY TABLE t4;
+###########################################################################
+# - Check that once table is created it can be accessed from within any
+#   context, even by user without any privileges on tables.
+###########################################################################
+
+# -- connect con3, myblockchaintest_u4@localhost, myblockchaintest_db1
+CALL p1();
+INSERT INTO t4 VALUES (4);
+UPDATE t4 SET x = 10 WHERE x = 1;
+DELETE FROM t4 WHERE x < 3;
+SELECT * FROM t4 ORDER BY x;
+x
+4
+DROP TEMPORARY TABLE t4;
+###########################################################################
+# Check special case for MERGE-tables:
+#   - CREATE_TMP_ACL is required to create a temporary merge table;
+#   - SELECT_ACL, UPDATE_ACL and DELETE_ACL are required to include
+#     a temporary table into the underlying-table-list.
+###########################################################################
+
+# -- connect con4, myblockchaintest_u5@localhost, myblockchaintest_db1
+CREATE TEMPORARY TABLE t7(a INT);
+CREATE TEMPORARY TABLE t8(a INT);
+CREATE TEMPORARY TABLE t9(a INT);
+CREATE TEMPORARY TABLE t10(a INT) ENGINE = MERGE UNION = (t7, t8);
+ALTER TABLE t10 UNION = (t9);
+ALTER TABLE t10 UNION = (myblockchaintest_db2.t2_1);
+ERROR 42000: SELECT, UPDATE, DELETE command denied to user 'myblockchaintest_u5'@'localhost' for table 't2_1'
+CREATE TEMPORARY TABLE myblockchaintest_db2.t2_2(a INT) ENGINE = MERGE UNION = (t7, t8);
+ALTER TABLE myblockchaintest_db2.t2_2 UNION = (t9);
+ALTER TABLE myblockchaintest_db2.t2_2 UNION = ();
+DROP TEMPORARY TABLE myblockchaintest_db2.t2_2;
+DROP TEMPORARY TABLE t10;
+DROP TEMPORARY TABLE t7;
+DROP TEMPORARY TABLE t8;
+DROP TEMPORARY TABLE t9;
+###########################################################################
+# That's all. Cleanup.
+###########################################################################
+
+# -- connection: default
+# -- disconnect con1
+# All remaining temporary tables are automatically dropped.
+# -- disconnect con2
+# -- disconnect con3
+# -- disconnect con4
+SET GLOBAL keycache1.key_buffer_size = 0;
+DROP DATABASE myblockchaintest_db1;
+DROP DATABASE myblockchaintest_db2;
+DROP USER myblockchaintest_u1@localhost;
+DROP USER myblockchaintest_u2@localhost;
+DROP USER myblockchaintest_u3@localhost;
+DROP USER myblockchaintest_u4@localhost;
+DROP USER myblockchaintest_u5@localhost;
+# myblockchain.user table restored to original values.
+set GLOBAL sql_mode= @orig_sql_mode_global;
+Warnings:
+Warning	3090	Changing sql mode 'NO_AUTO_CREATE_USER' is deprecated. It will be removed in a future release.
+set SESSION sql_mode= @orig_sql_mode_session;
+Warnings:
+Warning	3090	Changing sql mode 'NO_AUTO_CREATE_USER' is deprecated. It will be removed in a future release.

@@ -15,21 +15,21 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
  */
 
-package com.mysql.clusterj.tie;
+package com.myblockchain.clusterj.tie;
 
-import com.mysql.ndbjtie.mysql.CharsetMap;
-import com.mysql.ndbjtie.ndbapi.NdbDictionary.ColumnConst;
+import com.myblockchain.ndbjtie.myblockchain.CharsetMap;
+import com.myblockchain.ndbjtie.ndbapi.NdbDictionary.ColumnConst;
 
-import com.mysql.clusterj.ClusterJDatastoreException;
-import com.mysql.clusterj.ClusterJFatalInternalException;
+import com.myblockchain.clusterj.ClusterJDatastoreException;
+import com.myblockchain.clusterj.ClusterJFatalInternalException;
 
-import com.mysql.clusterj.ColumnType;
+import com.myblockchain.clusterj.ColumnType;
 
-import com.mysql.clusterj.core.store.Column;
+import com.myblockchain.clusterj.core.store.Column;
 
-import com.mysql.clusterj.core.util.I18NHelper;
-import com.mysql.clusterj.core.util.Logger;
-import com.mysql.clusterj.core.util.LoggerFactoryService;
+import com.myblockchain.clusterj.core.util.I18NHelper;
+import com.myblockchain.clusterj.core.util.Logger;
+import com.myblockchain.clusterj.core.util.LoggerFactoryService;
 
 /**
  *

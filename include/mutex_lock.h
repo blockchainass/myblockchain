@@ -17,7 +17,7 @@
 #define MUTEX_LOCK_INCLUDED
 
 #include <my_global.h>
-#include <mysql/psi/mysql_thread.h>
+#include <myblockchain/psi/myblockchain_thread.h>
 
 /**
   A simple wrapper around a mutex:
@@ -27,18 +27,18 @@
 class Mutex_lock
 {
 public:
-  explicit Mutex_lock(mysql_mutex_t *mutex) : m_mutex(mutex)
+  explicit Mutex_lock(myblockchain_mutex_t *mutex) : m_mutex(mutex)
   {
     if (m_mutex)
-      mysql_mutex_lock(m_mutex);
+      myblockchain_mutex_lock(m_mutex);
   }
   ~Mutex_lock()
   {
     if (m_mutex)
-      mysql_mutex_unlock(m_mutex);
+      myblockchain_mutex_unlock(m_mutex);
   }
 private:
-  mysql_mutex_t *m_mutex;
+  myblockchain_mutex_t *m_mutex;
 
   Mutex_lock(const Mutex_lock&);                /* Not copyable. */
   void operator=(const Mutex_lock&);            /* Not assignable. */

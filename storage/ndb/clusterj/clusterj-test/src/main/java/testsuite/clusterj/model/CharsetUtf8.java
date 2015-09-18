@@ -18,8 +18,8 @@
 
 package testsuite.clusterj.model;
 
-import com.mysql.clusterj.annotation.PersistenceCapable;
-import com.mysql.clusterj.annotation.PrimaryKey;
+import com.myblockchain.clusterj.annotation.PersistenceCapable;
+import com.myblockchain.clusterj.annotation.PrimaryKey;
 
 @PersistenceCapable(table="charsetutf8")
 public interface CharsetUtf8 extends CharsetModel {

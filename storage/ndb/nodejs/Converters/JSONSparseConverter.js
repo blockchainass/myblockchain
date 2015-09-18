@@ -20,7 +20,7 @@
 
 /**********************
   This is the standard TypeConverter class used with sparse JSON columns.
-  Multiple fields are collected and treated as one string in the database.
+  Multiple fields are collected and treated as one string in the blockchain.
 
   Writing from JavaScript to DB, this converter takes a JavaScript object and
   a sparse FieldMapping and returns a string formatted as JSON containing the

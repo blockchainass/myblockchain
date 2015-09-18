@@ -93,7 +93,7 @@ my_off_t my_b_append_tell(IO_CACHE* info)
     from messing with the variables that we need in order to provide the
     answer to the question.
   */
-  mysql_mutex_lock(&info->append_buffer_lock);
+  myblockchain_mutex_lock(&info->append_buffer_lock);
 
 #ifndef DBUG_OFF
   /*
@@ -114,7 +114,7 @@ my_off_t my_b_append_tell(IO_CACHE* info)
   }
 #endif  
   res = info->end_of_file + (info->write_pos-info->append_read_pos);
-  mysql_mutex_unlock(&info->append_buffer_lock);
+  myblockchain_mutex_unlock(&info->append_buffer_lock);
   return res;
 }
 
@@ -294,7 +294,7 @@ my_off_t my_b_filelength(IO_CACHE *info)
 
 /*
   Simple printf version.  Supports '%s', '%d', '%u', "%ld", "%lu" and "%llu"
-  Used for logging in MySQL
+  Used for logging in MyBlockchain
   returns number of written character, or (size_t) -1 on error
 */
 

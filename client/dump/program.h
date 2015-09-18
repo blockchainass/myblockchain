@@ -19,8 +19,8 @@
 #define PROGRAM_INCLUDED
 
 #include "base/abstract_connection_program.h"
-#include "mysql_chain_element_options.h"
-#include "mysqldump_tool_chain_maker_options.h"
+#include "myblockchain_chain_element_options.h"
+#include "myblockchaindump_tool_chain_maker_options.h"
 
 namespace Mysql{
 namespace Tools{
@@ -50,8 +50,8 @@ private:
   void error_log_file_callback(char*);
   void close_redirected_stderr();
 
-  Mysql_chain_element_options* m_mysql_chain_element_options;
-  Mysqldump_tool_chain_maker_options* m_mysqldump_tool_chain_maker_options;
+  Mysql_chain_element_options* m_myblockchain_chain_element_options;
+  Mysqldump_tool_chain_maker_options* m_myblockchaindump_tool_chain_maker_options;
   bool m_single_transaction;
   bool m_watch_progress;
   Mysql::Nullable<std::string> m_error_log_file;

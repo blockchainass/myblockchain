@@ -136,7 +136,7 @@ int table_replication_applier_status_by_worker::rnd_next(void)
   Slave_worker *worker;
   Master_info *mi;
 
-  mysql_mutex_lock(&LOCK_msr_map);
+  myblockchain_mutex_lock(&LOCK_msr_map);
 
   for (m_pos.set_at(&m_next_pos);
        m_pos.has_more_channels(msr_map.get_max_channels());
@@ -151,13 +151,13 @@ int table_replication_applier_status_by_worker::rnd_next(void)
       {
         make_row(worker);
         m_next_pos.set_after(&m_pos);
-        mysql_mutex_unlock(&LOCK_msr_map);
+        myblockchain_mutex_unlock(&LOCK_msr_map);
         return 0;
       }
     }
   }
 
-  mysql_mutex_unlock(&LOCK_msr_map);
+  myblockchain_mutex_unlock(&LOCK_msr_map);
   return HA_ERR_END_OF_FILE;
 }
 
@@ -168,13 +168,13 @@ int table_replication_applier_status_by_worker::rnd_pos(const void *pos)
 
   set_position(pos);
 
-  mysql_mutex_lock(&LOCK_msr_map);
+  myblockchain_mutex_lock(&LOCK_msr_map);
 
   mi= msr_map.get_mi_at_pos(m_pos.m_index_1);
 
   if (!mi || !mi->rli || !mi->host[0])
   {
-    mysql_mutex_unlock(&LOCK_msr_map);
+    myblockchain_mutex_unlock(&LOCK_msr_map);
     return HA_ERR_RECORD_DELETED;
   }
 
@@ -185,11 +185,11 @@ int table_replication_applier_status_by_worker::rnd_pos(const void *pos)
   if(worker != NULL)
   {
     make_row(worker);
-    mysql_mutex_unlock(&LOCK_msr_map);
+    myblockchain_mutex_unlock(&LOCK_msr_map);
     return 0;
   }
 
-  mysql_mutex_unlock(&LOCK_msr_map);
+  myblockchain_mutex_unlock(&LOCK_msr_map);
 
   return HA_ERR_RECORD_DELETED;
 }
@@ -205,7 +205,7 @@ void table_replication_applier_status_by_worker::make_row(Slave_worker *w)
   m_row.channel_name_length= strlen(w->get_channel());
   memcpy(m_row.channel_name, (char*)w->get_channel(), m_row.channel_name_length);
 
-  mysql_mutex_lock(&w->jobs_lock);
+  myblockchain_mutex_lock(&w->jobs_lock);
   if (w->running_status == Slave_worker::RUNNING)
   {
     PSI_thread *psi= thd_get_psi(w->info_thd);
@@ -269,7 +269,7 @@ void table_replication_applier_status_by_worker::make_row(Slave_worker *w)
     /** time in millisecond since epoch */
     m_row.last_error_timestamp= (ulonglong)w->last_error().skr*1000000;
   }
-  mysql_mutex_unlock(&w->jobs_lock);
+  myblockchain_mutex_unlock(&w->jobs_lock);
 
   m_row_exists= true;
 }

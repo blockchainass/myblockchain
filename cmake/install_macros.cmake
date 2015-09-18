@@ -13,8 +13,8 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA 
 
-GET_FILENAME_COMPONENT(MYSQL_CMAKE_SCRIPT_DIR ${CMAKE_CURRENT_LIST_FILE} PATH)
-INCLUDE(${MYSQL_CMAKE_SCRIPT_DIR}/cmake_parse_arguments.cmake)
+GET_FILENAME_COMPONENT(MYBLOCKCHAIN_CMAKE_SCRIPT_DIR ${CMAKE_CURRENT_LIST_FILE} PATH)
+INCLUDE(${MYBLOCKCHAIN_CMAKE_SCRIPT_DIR}/cmake_parse_arguments.cmake)
 MACRO (INSTALL_DEBUG_SYMBOLS targets)
   IF(MSVC)
   FOREACH(target ${targets})
@@ -40,7 +40,7 @@ MACRO (INSTALL_DEBUG_SYMBOLS targets)
         "${CMAKE_CFG_INTDIR}" "\${CMAKE_INSTALL_CONFIG_NAME}"
         pdb_location ${pdb_location})
     ENDIF()
-    IF(target STREQUAL "mysqld")
+    IF(target STREQUAL "myblockchaind")
 	  SET(comp Server)
     ELSE()
       SET(comp Debuginfo)
@@ -67,12 +67,12 @@ FUNCTION(INSTALL_MANPAGE file)
     ${CMAKE_BINARY_DIR}/man/*${file}man.1*
     ${CMAKE_BINARY_DIR}/man/*${file}man.8*
    )
-  IF(MYSQL_DOC_DIR)
+  IF(MYBLOCKCHAIN_DOC_DIR)
     SET(GLOB_EXPR 
-      ${MYSQL_DOC_DIR}/man/*${file}man.1*
-      ${MYSQL_DOC_DIR}/man/*${file}man.8*
-      ${MYSQL_DOC_DIR}/man/*${file}.1*
-      ${MYSQL_DOC_DIR}/man/*${file}.8*
+      ${MYBLOCKCHAIN_DOC_DIR}/man/*${file}man.1*
+      ${MYBLOCKCHAIN_DOC_DIR}/man/*${file}man.8*
+      ${MYBLOCKCHAIN_DOC_DIR}/man/*${file}.1*
+      ${MYBLOCKCHAIN_DOC_DIR}/man/*${file}.8*
       ${GLOB_EXPR}
       )
    ENDIF()
@@ -93,7 +93,7 @@ FUNCTION(INSTALL_MANPAGE file)
 ENDFUNCTION()
 
 FUNCTION(INSTALL_SCRIPT)
- MYSQL_PARSE_ARGUMENTS(ARG
+ MYBLOCKCHAIN_PARSE_ARGUMENTS(ARG
   "DESTINATION;COMPONENT"
   ""
   ${ARGN}
@@ -209,18 +209,18 @@ ENDMACRO()
 #
 #
 
-FUNCTION(MYSQL_INSTALL_TARGETS)
-  MYSQL_PARSE_ARGUMENTS(ARG
+FUNCTION(MYBLOCKCHAIN_INSTALL_TARGETS)
+  MYBLOCKCHAIN_PARSE_ARGUMENTS(ARG
     "DESTINATION;COMPONENT"
   ""
   ${ARGN}
   )
   SET(TARGETS ${ARG_DEFAULT_ARGS})
   IF(NOT TARGETS)
-    MESSAGE(FATAL_ERROR "Need target list for MYSQL_INSTALL_TARGETS")
+    MESSAGE(FATAL_ERROR "Need target list for MYBLOCKCHAIN_INSTALL_TARGETS")
   ENDIF()
   IF(NOT ARG_DESTINATION)
-     MESSAGE(FATAL_ERROR "Need DESTINATION parameter for MYSQL_INSTALL_TARGETS")
+     MESSAGE(FATAL_ERROR "Need DESTINATION parameter for MYBLOCKCHAIN_INSTALL_TARGETS")
   ENDIF()
 
  
@@ -244,7 +244,7 @@ FUNCTION(MYSQL_INSTALL_TARGETS)
   SET(INSTALL_LOCATION)
 ENDFUNCTION()
 
-# Optionally install mysqld/client/embedded from debug build run. outside of the current build dir 
+# Optionally install myblockchaind/client/embedded from debug build run. outside of the current build dir 
 # (unless multi-config generator is used like Visual Studio or Xcode). 
 # For Makefile generators we default Debug build directory to ${buildroot}/../debug.
 GET_FILENAME_COMPONENT(BINARY_PARENTDIR ${CMAKE_BINARY_DIR} PATH)
@@ -252,7 +252,7 @@ SET(DEBUGBUILDDIR "${BINARY_PARENTDIR}/debug" CACHE INTERNAL "Directory of debug
 
 
 FUNCTION(INSTALL_DEBUG_TARGET target)
- MYSQL_PARSE_ARGUMENTS(ARG
+ MYBLOCKCHAIN_PARSE_ARGUMENTS(ARG
   "DESTINATION;RENAME;PDB_DESTINATION;COMPONENT;SUFFIX"
   ""
   ${ARGN}

@@ -15,19 +15,19 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
  */
 
-package com.mysql.clusterj.tie;
+package com.myblockchain.clusterj.tie;
 
-import com.mysql.ndbjtie.ndbapi.NdbErrorConst;
-import com.mysql.ndbjtie.ndbapi.NdbOperation;
-import com.mysql.ndbjtie.ndbapi.NdbScanFilter;
-import com.mysql.ndbjtie.ndbapi.NdbScanOperation;
+import com.myblockchain.ndbjtie.ndbapi.NdbErrorConst;
+import com.myblockchain.ndbjtie.ndbapi.NdbOperation;
+import com.myblockchain.ndbjtie.ndbapi.NdbScanFilter;
+import com.myblockchain.ndbjtie.ndbapi.NdbScanOperation;
 
-import com.mysql.clusterj.Query.Ordering;
-import com.mysql.clusterj.core.spi.QueryExecutionContext;
-import com.mysql.clusterj.core.store.ResultData;
-import com.mysql.clusterj.core.store.ScanFilter;
-import com.mysql.clusterj.core.store.ScanOperation;
-import com.mysql.clusterj.core.store.Table;
+import com.myblockchain.clusterj.Query.Ordering;
+import com.myblockchain.clusterj.core.spi.QueryExecutionContext;
+import com.myblockchain.clusterj.core.store.ResultData;
+import com.myblockchain.clusterj.core.store.ScanFilter;
+import com.myblockchain.clusterj.core.store.ScanOperation;
+import com.myblockchain.clusterj.core.store.Table;
 
 /**
  *

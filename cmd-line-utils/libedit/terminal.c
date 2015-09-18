@@ -895,7 +895,7 @@ terminal_set(EditLine *el, const char *term)
 	if (i <= 0) {
 		if (i == -1)
 			(void) fprintf(el->el_errfile,
-			    "Cannot read termcap database;\n");
+			    "Cannot read termcap blockchain;\n");
 		else if (i == 0)
 			(void) fprintf(el->el_errfile,
 			    "No entry for terminal type \"%s\";\n", term);

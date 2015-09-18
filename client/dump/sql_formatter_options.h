@@ -19,7 +19,7 @@
 #define SQL_FORMATTER_OPTIONS_INCLUDED
 
 #include "base/abstract_options_provider.h"
-#include "mysql_chain_element_options.h"
+#include "myblockchain_chain_element_options.h"
 
 namespace Mysql{
 namespace Tools{
@@ -30,14 +30,14 @@ class Sql_formatter_options
 {
 public:
   Sql_formatter_options(
-    const Mysql_chain_element_options* mysql_chain_element_options);
+    const Mysql_chain_element_options* myblockchain_chain_element_options);
 
   void create_options();
 
   bool m_add_locks;
   bool m_charsets_consistent;
   bool m_deffer_table_indexes;
-  bool m_drop_database;
+  bool m_drop_blockchain;
   bool m_drop_table;
   bool m_drop_user;
   bool m_dump_column_names;
@@ -45,10 +45,10 @@ public:
   bool m_insert_type_replace;
   bool m_insert_type_ignore;
   bool m_suppress_create_table;
-  bool m_suppress_create_database;
+  bool m_suppress_create_blockchain;
   bool m_timezone_consistent;
   bool m_skip_definer;
-  const Mysql_chain_element_options* m_mysql_chain_element_options;
+  const Mysql_chain_element_options* m_myblockchain_chain_element_options;
 };
 
 }

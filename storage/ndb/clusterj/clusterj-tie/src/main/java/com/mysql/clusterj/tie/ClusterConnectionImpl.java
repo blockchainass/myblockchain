@@ -15,7 +15,7 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
  */
 
-package com.mysql.clusterj.tie;
+package com.myblockchain.clusterj.tie;
 
 import java.util.IdentityHashMap;
 import java.util.Iterator;
@@ -24,28 +24,28 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import com.mysql.ndbjtie.ndbapi.Ndb;
-import com.mysql.ndbjtie.ndbapi.Ndb_cluster_connection;
-import com.mysql.ndbjtie.ndbapi.NdbDictionary.Dictionary;
+import com.myblockchain.ndbjtie.ndbapi.Ndb;
+import com.myblockchain.ndbjtie.ndbapi.Ndb_cluster_connection;
+import com.myblockchain.ndbjtie.ndbapi.NdbDictionary.Dictionary;
 
-import com.mysql.clusterj.ClusterJDatastoreException;
-import com.mysql.clusterj.ClusterJFatalInternalException;
-import com.mysql.clusterj.ClusterJHelper;
+import com.myblockchain.clusterj.ClusterJDatastoreException;
+import com.myblockchain.clusterj.ClusterJFatalInternalException;
+import com.myblockchain.clusterj.ClusterJHelper;
 
-import com.mysql.clusterj.core.spi.ValueHandlerFactory;
-import com.mysql.clusterj.core.store.Db;
-import com.mysql.clusterj.core.store.Index;
-import com.mysql.clusterj.core.store.Table;
+import com.myblockchain.clusterj.core.spi.ValueHandlerFactory;
+import com.myblockchain.clusterj.core.store.Db;
+import com.myblockchain.clusterj.core.store.Index;
+import com.myblockchain.clusterj.core.store.Table;
 
-import com.mysql.clusterj.core.util.I18NHelper;
-import com.mysql.clusterj.core.util.Logger;
-import com.mysql.clusterj.core.util.LoggerFactoryService;
+import com.myblockchain.clusterj.core.util.I18NHelper;
+import com.myblockchain.clusterj.core.util.Logger;
+import com.myblockchain.clusterj.core.util.LoggerFactoryService;
 
 /**
  *
  */
 public class ClusterConnectionImpl
-        implements com.mysql.clusterj.core.store.ClusterConnection {
+        implements com.myblockchain.clusterj.core.store.ClusterConnection {
 
     /** My message translator */
     static final I18NHelper local = I18NHelper.getInstance(ClusterConnectionImpl.class);
@@ -80,12 +80,12 @@ public class ClusterConnectionImpl
 
     private long[] autoIncrement;
 
-    private static final String USE_SMART_VALUE_HANDLER_NAME = "com.mysql.clusterj.UseSmartValueHandler";
+    private static final String USE_SMART_VALUE_HANDLER_NAME = "com.myblockchain.clusterj.UseSmartValueHandler";
 
     private static final boolean USE_SMART_VALUE_HANDLER =
             ClusterJHelper.getBooleanProperty(USE_SMART_VALUE_HANDLER_NAME, "true");
 
-    /** Connect to the MySQL Cluster
+    /** Connect to the MyBlockchain Cluster
      * 
      * @param connectString the connect string
      * @param nodeId the node id; node id of zero means "any node"
@@ -107,16 +107,16 @@ public class ClusterConnectionImpl
         handleError(returnCode, clusterConnection, connectString, nodeId);
     }
 
-    public Db createDb(String database, int maxTransactions) {
+    public Db createDb(String blockchain, int maxTransactions) {
         checkConnection();
         Ndb ndb = null;
         // synchronize because create is not guaranteed thread-safe
         synchronized(this) {
-            ndb = Ndb.create(clusterConnection, database, "def");
+            ndb = Ndb.create(clusterConnection, blockchain, "def");
             handleError(ndb, clusterConnection, connectString, nodeId);
             if (dictionaryForNdbRecord == null) {
                 // create a dictionary for NdbRecord
-                Ndb ndbForNdbRecord = Ndb.create(clusterConnection, database, "def");
+                Ndb ndbForNdbRecord = Ndb.create(clusterConnection, blockchain, "def");
                 handleError(ndbForNdbRecord, clusterConnection, connectString, nodeId);
                 dbForNdbRecord = new DbImplForNdbRecord(this, ndbForNdbRecord);
                 dictionaryForNdbRecord = dbForNdbRecord.getNdbDictionary();

@@ -1,4 +1,4 @@
-#ifndef MYSQL_PLUGIN_AUTH_INCLUDED
+#ifndef MYBLOCKCHAIN_PLUGIN_AUTH_INCLUDED
 /* Copyright (c) 2010, 2015 Oracle and/or its affiliates. All rights reserved.
 
    This program is free software; you can redistribute it and/or modify
@@ -22,15 +22,15 @@
   This file defines the API for server authentication plugins.
 */
 
-#define MYSQL_PLUGIN_AUTH_INCLUDED
+#define MYBLOCKCHAIN_PLUGIN_AUTH_INCLUDED
 
-#include <mysql/plugin.h>
+#include <myblockchain/plugin.h>
 
-#define MYSQL_AUTHENTICATION_INTERFACE_VERSION 0x0101
+#define MYBLOCKCHAIN_AUTHENTICATION_INTERFACE_VERSION 0x0101
 
-#include <mysql/plugin_auth_common.h>
+#include <myblockchain/plugin_auth_common.h>
 
-/* defines for MYSQL_SERVER_AUTH_INFO.password_used */
+/* defines for MYBLOCKCHAIN_SERVER_AUTH_INFO.password_used */
 
 #define PASSWORD_USED_NO         0
 #define PASSWORD_USED_YES        1
@@ -44,7 +44,7 @@
 /**
   Provides server plugin access to authentication information
 */
-typedef struct st_mysql_server_auth_info
+typedef struct st_myblockchain_server_auth_info
 {
   /**
     User name as sent by the client and shown in USER().
@@ -58,7 +58,7 @@ typedef struct st_mysql_server_auth_info
   unsigned int user_name_length;
 
   /**
-    A corresponding column value from the mysql.user table for the
+    A corresponding column value from the myblockchain.user table for the
     matching account name
   */
   const char *auth_string;
@@ -69,11 +69,11 @@ typedef struct st_mysql_server_auth_info
   unsigned long auth_string_length;
 
   /**
-    Matching account name as found in the mysql.user table.
+    Matching account name as found in the myblockchain.user table.
     A plugin can override it with another name that will be
-    used by MySQL for authorization, and shown in CURRENT_USER()
+    used by MyBlockchain for authorization, and shown in CURRENT_USER()
   */
-  char authenticated_as[MYSQL_USERNAME_LENGTH+1]; 
+  char authenticated_as[MYBLOCKCHAIN_USERNAME_LENGTH+1]; 
 
 
   /**
@@ -104,12 +104,12 @@ typedef struct st_mysql_server_auth_info
   */
   unsigned int host_or_ip_length;
 
-} MYSQL_SERVER_AUTH_INFO;
+} MYBLOCKCHAIN_SERVER_AUTH_INFO;
 
 /**
   Server authentication plugin descriptor
 */
-struct st_mysql_auth
+struct st_myblockchain_auth
 {
   int interface_version;                        /** version plugin uses */
   /**
@@ -123,7 +123,7 @@ struct st_mysql_auth
     also fill the info.authenticated_as field if a different username should be
     used for authorization.
   */
-  int (*authenticate_user)(MYSQL_PLUGIN_VIO *vio, MYSQL_SERVER_AUTH_INFO *info);
+  int (*authenticate_user)(MYBLOCKCHAIN_PLUGIN_VIO *vio, MYBLOCKCHAIN_SERVER_AUTH_INFO *info);
   /**
     New plugin API to generate password digest out of authentication string.
     This function will first invoke a service to check for validity of the

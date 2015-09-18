@@ -37,7 +37,7 @@
   failure, 0 should be returned on success.
 */
 
-provider mysql {
+provider myblockchain {
   
   /* The following ones fire when creating or closing a client connection */
   probe connection__start(unsigned long conn_id, char *user, char *host);
@@ -58,7 +58,7 @@ provider mysql {
     query_start() has a lot of parameters that can be used to pick up
     parameters for a lot of other probes here.  For simplicity reasons we also
     add the query string to most other DTrace probes as well. Hostname is
-    either the hostname or the IP address of the MySQL Client.
+    either the hostname or the IP address of the MyBlockchain Client.
   */
   probe query__start(char *query,
                      unsigned long conn_id,
@@ -170,8 +170,8 @@ provider mysql {
   probe keycache__write__done(unsigned long mem_used, unsigned long mem_free);
 };
 
-#pragma D attributes Evolving/Evolving/Common provider mysql provider
-#pragma D attributes Evolving/Evolving/Common provider mysql module
-#pragma D attributes Evolving/Evolving/Common provider mysql function
-#pragma D attributes Evolving/Evolving/Common provider mysql name
-#pragma D attributes Evolving/Evolving/Common provider mysql args
+#pragma D attributes Evolving/Evolving/Common provider myblockchain provider
+#pragma D attributes Evolving/Evolving/Common provider myblockchain module
+#pragma D attributes Evolving/Evolving/Common provider myblockchain function
+#pragma D attributes Evolving/Evolving/Common provider myblockchain name
+#pragma D attributes Evolving/Evolving/Common provider myblockchain args

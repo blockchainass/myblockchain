@@ -33,7 +33,7 @@ this program; if not, write to the Free Software Foundation, Inc.,
 
 /**************************************************//**
 @file srv/srv0srv.cc
-The database server main program
+The blockchain server main program
 
 Created 10/8/1995 Heikki Tuuri
 *******************************************************/
@@ -41,8 +41,8 @@ Created 10/8/1995 Heikki Tuuri
 #include "my_global.h"
 #include "my_thread.h"
 
-#include "mysql/psi/mysql_stage.h"
-#include "mysql/psi/psi.h"
+#include "myblockchain/psi/myblockchain_stage.h"
+#include "myblockchain/psi/psi.h"
 #include "sql_thd_internal_api.h"
 
 #include "ha_prototypes.h"
@@ -61,7 +61,7 @@ Created 10/8/1995 Heikki Tuuri
 #include "os0proc.h"
 #include "pars0pars.h"
 #include "que0que.h"
-#include "row0mysql.h"
+#include "row0myblockchain.h"
 #include "row0trunc.h"
 #include "srv0mon.h"
 #include "srv0srv.h"
@@ -91,8 +91,8 @@ ibool	srv_dict_stats_thread_active = FALSE;
 
 const char*	srv_main_thread_op_info = "";
 
-/** Prefix used by MySQL to indicate pre-5.1 table name encoding */
-const char		srv_mysql50_table_name_prefix[10] = "#mysql50#";
+/** Prefix used by MyBlockchain to indicate pre-5.1 table name encoding */
+const char		srv_myblockchain50_table_name_prefix[10] = "#myblockchain50#";
 
 /* Server parameters which are read from the initfile */
 
@@ -180,10 +180,10 @@ ulong	srv_debug_compress;
 char*	srv_log_group_home_dir	= NULL;
 
 ulong	srv_n_log_files		= SRV_N_LOG_FILES_MAX;
-/* size in database pages */
+/* size in blockchain pages */
 ib_uint64_t	srv_log_file_size	= IB_UINT64_MAX;
 ib_uint64_t	srv_log_file_size_requested;
-/* size in database pages */
+/* size in blockchain pages */
 ulint		srv_log_buffer_size = ULINT_MAX;
 ulong		srv_flush_log_at_trx_commit = 1;
 uint		srv_flush_log_at_timeout = 1;
@@ -283,7 +283,7 @@ ulong	srv_max_io_capacity     = 400;
 ulong	srv_n_page_cleaners = 4;
 
 /* The InnoDB main thread tries to keep the ratio of modified pages
-in the buffer pool to all database pages in the buffer pool smaller than
+in the buffer pool to all blockchain pages in the buffer pool smaller than
 the following number. But it is not guaranteed that the value stays below
 that during a time of heavy update/insert activity. */
 
@@ -310,12 +310,12 @@ ulong srv_innodb_stats_method = SRV_STATS_NULLS_EQUAL;
 
 srv_stats_t	srv_stats;
 
-/* structure to pass status variables to MySQL */
+/* structure to pass status variables to MyBlockchain */
 export_var_t export_vars;
 
 /** Normally 0. When nonzero, skip some phases of crash recovery,
 starting from SRV_FORCE_IGNORE_CORRUPT, so that data can be recovered
-by SELECT or mysqldump. When this is nonzero, we do not allow any user
+by SELECT or myblockchaindump. When this is nonzero, we do not allow any user
 modifications to the data. */
 ulong	srv_force_recovery;
 #ifndef DBUG_OFF
@@ -324,7 +324,7 @@ This is for testing and debugging only. */
 ulong	srv_force_recovery_crash;
 #endif /* !DBUG_OFF */
 
-/** Print all user-level transactions deadlocks to mysqld stderr */
+/** Print all user-level transactions deadlocks to myblockchaind stderr */
 
 my_bool	srv_print_all_deadlocks = FALSE;
 
@@ -343,9 +343,9 @@ ibool	srv_innodb_status	= FALSE;
 /* When estimating number of different key values in an index, sample
 this many index pages, there are 2 ways to calculate statistics:
 * persistent stats that are calculated by ANALYZE TABLE and saved
-  in the innodb database.
+  in the innodb blockchain.
 * quick transient stats, that are used if persistent stats for the given
-  table/index are not found in the innodb database */
+  table/index are not found in the innodb blockchain */
 unsigned long long	srv_stats_transient_sample_pages = 8;
 my_bool		srv_stats_persistent = TRUE;
 unsigned long long	srv_stats_persistent_sample_pages = 20;
@@ -461,14 +461,14 @@ current_time % 5 != 0. */
 
 #define fetch_lock_wait_timeout(trx)			\
 	((trx)->lock.allowed_to_wait			\
-	 ? thd_lock_wait_timeout((trx)->mysql_thd)	\
+	 ? thd_lock_wait_timeout((trx)->myblockchain_thd)	\
 	 : 0)
 
 /*
 	IMPLEMENTATION OF THE SERVER MAIN PROGRAM
 	=========================================
 
-There is the following analogue between this database
+There is the following analogue between this blockchain
 server and an operating system kernel:
 
 DB concept			equivalent OS concept
@@ -491,12 +491,12 @@ The server has several backgroind threads all running at the same
 priority as user threads. It periodically checks if here is anything
 happening in the server which requires intervention of the master
 thread. Such situations may be, for example, when flushing of dirty
-blocks is needed in the buffer pool or old version of database rows
+blocks is needed in the buffer pool or old version of blockchain rows
 have to be cleaned away (purged). The user can configure a separate
 dedicated purge thread(s) too, in which case the master thread does not
 do any purging.
 
-The threads which we call user threads serve the queries of the MySQL
+The threads which we call user threads serve the queries of the MyBlockchain
 server. They run at normal priority.
 
 When there is no activity in the system, also the master thread
@@ -1046,7 +1046,7 @@ srv_general_init(void)
 	os_thread_init();
 	trx_pool_init();
 	que_init();
-	row_mysql_init();
+	row_myblockchain_init();
 }
 
 /*********************************************************************//**
@@ -1073,7 +1073,7 @@ void
 srv_boot(void)
 /*==========*/
 {
-	/* Transform the init parameter values given by MySQL to
+	/* Transform the init parameter values given by MyBlockchain to
 	use units we use inside InnoDB: */
 
 	srv_normalize_init_values();
@@ -1318,7 +1318,7 @@ srv_printf_innodb_monitor(
 }
 
 /******************************************************************//**
-Function to pass InnoDB status variables to MySQL */
+Function to pass InnoDB status variables to MyBlockchain */
 void
 srv_export_innodb_status(void)
 /*==========================*/
@@ -1656,7 +1656,7 @@ loop:
 		ib::error() << "Old log sequence number " << old_lsn << " was"
 			<< " greater than the new log sequence number "
 			<< new_lsn << ". Please submit a bug report to"
-			" http://bugs.mysql.com";
+			" http://bugs.myblockchain.com";
 		ut_ad(0);
 	}
 
@@ -1694,8 +1694,8 @@ loop:
 		old_sema = sema;
 	}
 
-	/* Flush stderr so that a database user gets the output
-	to possible MySQL error file */
+	/* Flush stderr so that a blockchain user gets the output
+	to possible MyBlockchain error file */
 
 	fflush(stderr);
 
@@ -1806,9 +1806,9 @@ srv_any_background_threads_are_active(void)
 }
 
 /*******************************************************************//**
-Tells the InnoDB server that there has been activity in the database
+Tells the InnoDB server that there has been activity in the blockchain
 and wakes up the master thread if it is suspended (not sleeping). Used
-in the MySQL interface. Note that there is a small chance that the master
+in the MyBlockchain interface. Note that there is a small chance that the master
 thread stays suspended (we do not protect our operation with the
 srv_sys_t->mutex, for performance reasons). */
 void
@@ -1847,7 +1847,7 @@ srv_active_wake_master_thread_low()
 }
 
 /*******************************************************************//**
-Tells the purge thread that there has been activity in the database
+Tells the purge thread that there has been activity in the blockchain
 and wakes up the purge thread if it is suspended (not sleeping).  Note
 that there is a small chance that the purge thread stays suspended
 (we do not protect our check with the srv_sys_t:mutex and the
@@ -1934,12 +1934,12 @@ srv_master_evict_from_table_cache(
 
 	rw_lock_x_lock(dict_operation_lock);
 
-	dict_mutex_enter_for_mysql();
+	dict_mutex_enter_for_myblockchain();
 
 	n_tables_evicted = dict_make_room_in_cache(
 		innobase_get_table_cache_size(), pct_check);
 
-	dict_mutex_exit_for_mysql();
+	dict_mutex_exit_for_myblockchain();
 
 	rw_lock_x_unlock(dict_operation_lock);
 
@@ -2006,11 +2006,11 @@ srv_master_do_active_tasks(void)
 
 	MONITOR_INC(MONITOR_MASTER_ACTIVE_LOOPS);
 
-	/* ALTER TABLE in MySQL requires on Unix that the table handler
+	/* ALTER TABLE in MyBlockchain requires on Unix that the table handler
 	can drop tables lazily after there no longer are SELECT
 	queries to them. */
 	srv_main_thread_op_info = "doing background drop tables";
-	row_drop_tables_for_mysql_in_background();
+	row_drop_tables_for_myblockchain_in_background();
 	MONITOR_INC_TIME_IN_MICRO_SECS(
 		MONITOR_SRV_BACKGROUND_DROP_TABLE_MICROSECOND, counter_time);
 
@@ -2087,12 +2087,12 @@ srv_master_do_idle_tasks(void)
 	MONITOR_INC(MONITOR_MASTER_IDLE_LOOPS);
 
 
-	/* ALTER TABLE in MySQL requires on Unix that the table handler
+	/* ALTER TABLE in MyBlockchain requires on Unix that the table handler
 	can drop tables lazily after there no longer are SELECT
 	queries to them. */
 	counter_time = ut_time_us(NULL);
 	srv_main_thread_op_info = "doing background drop tables";
-	row_drop_tables_for_mysql_in_background();
+	row_drop_tables_for_myblockchain_in_background();
 	MONITOR_INC_TIME_IN_MICRO_SECS(
 		MONITOR_SRV_BACKGROUND_DROP_TABLE_MICROSECOND,
 			 counter_time);
@@ -2167,11 +2167,11 @@ srv_master_do_shutdown_tasks(
 		return(FALSE);
 	}
 
-	/* ALTER TABLE in MySQL requires on Unix that the table handler
+	/* ALTER TABLE in MyBlockchain requires on Unix that the table handler
 	can drop tables lazily after there no longer are SELECT
 	queries to them. */
 	srv_main_thread_op_info = "doing background drop tables";
-	n_tables_to_drop = row_drop_tables_for_mysql_in_background();
+	n_tables_to_drop = row_drop_tables_for_myblockchain_in_background();
 
 	/* make sure that there is enough reusable space in the redo
 	log files */
@@ -2285,9 +2285,9 @@ suspend_thread:
 
 	srv_suspend_thread(slot);
 
-	/* DO NOT CHANGE THIS STRING. innobase_start_or_create_for_mysql()
-	waits for database activity to die down when converting < 4.1.x
-	databases, and relies on this string being exactly as it is. InnoDB
+	/* DO NOT CHANGE THIS STRING. innobase_start_or_create_for_myblockchain()
+	waits for blockchain activity to die down when converting < 4.1.x
+	blockchains, and relies on this string being exactly as it is. InnoDB
 	manual also mentions this string in several places. */
 	srv_main_thread_op_info = "waiting for server activity";
 

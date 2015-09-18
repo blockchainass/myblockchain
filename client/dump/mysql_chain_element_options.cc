@@ -15,7 +15,7 @@
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#include "mysql_chain_element_options.h"
+#include "myblockchain_chain_element_options.h"
 #include <boost/algorithm/string.hpp>
 
 using namespace Mysql::Tools::Dump;

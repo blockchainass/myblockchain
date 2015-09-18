@@ -55,7 +55,7 @@ class ReadView;
 // Forward declaration
 class FlushObserver;
 
-/** Dummy session used currently in MySQL interface */
+/** Dummy session used currently in MyBlockchain interface */
 extern sess_t*	trx_dummy_sess;
 
 /**
@@ -97,10 +97,10 @@ trx_get_error_info(
 /*===============*/
 	const trx_t*	trx);	/*!< in: trx object */
 /********************************************************************//**
-Creates a transaction object for MySQL.
+Creates a transaction object for MyBlockchain.
 @return own: transaction object */
 trx_t*
-trx_allocate_for_mysql(void);
+trx_allocate_for_myblockchain(void);
 /*========================*/
 /********************************************************************//**
 Creates a transaction object for background operations by the master thread.
@@ -126,24 +126,24 @@ trx_free_prepared(
 /*==============*/
 	trx_t*	trx);	/*!< in, own: trx object */
 
-/** Free a transaction object for MySQL.
+/** Free a transaction object for MyBlockchain.
 @param[in,out]	trx	transaction */
 void
-trx_free_for_mysql(trx_t*	trx);
+trx_free_for_myblockchain(trx_t*	trx);
 
-/** Disconnect a transaction from MySQL.
+/** Disconnect a transaction from MyBlockchain.
 @param[in,out]	trx	transaction */
 void
 trx_disconnect_plain(trx_t*	trx);
 
-/** Disconnect a prepared transaction from MySQL.
+/** Disconnect a prepared transaction from MyBlockchain.
 @param[in,out]	trx	transaction */
 void
 trx_disconnect_prepared(trx_t*	trx);
 
 /****************************************************************//**
 Creates trx objects for transactions and initializes the trx list of
-trx_sys at database start. Rollback segment and undo log lists must
+trx_sys at blockchain start. Rollback segment and undo log lists must
 already exist when this function is called, because the lists of
 transactions to be rolled back or cleaned up are built based on the
 undo log lists. */
@@ -258,34 +258,34 @@ trx_commit_low(
 	mtr_t*	mtr);	/*!< in/out: mini-transaction (will be committed),
 			or NULL if trx made no modifications */
 /****************************************************************//**
-Cleans up a transaction at database startup. The cleanup is needed if
-the transaction already got to the middle of a commit when the database
+Cleans up a transaction at blockchain startup. The cleanup is needed if
+the transaction already got to the middle of a commit when the blockchain
 crashed, and we cannot roll it back. */
 void
 trx_cleanup_at_db_startup(
 /*======================*/
 	trx_t*	trx);	/*!< in: transaction */
 /**********************************************************************//**
-Does the transaction commit for MySQL.
+Does the transaction commit for MyBlockchain.
 @return DB_SUCCESS or error number */
 dberr_t
-trx_commit_for_mysql(
+trx_commit_for_myblockchain(
 /*=================*/
 	trx_t*	trx);	/*!< in/out: transaction */
 
 /**
-Does the transaction prepare for MySQL.
+Does the transaction prepare for MyBlockchain.
 @param[in, out] trx		Transaction instance to prepare */
 
 dberr_t
-trx_prepare_for_mysql(trx_t* trx);
+trx_prepare_for_myblockchain(trx_t* trx);
 
 /**********************************************************************//**
 This function is used to find number of prepared transactions and
 their transaction objects for a recovery.
 @return number of prepared transactions */
 int
-trx_recover_for_mysql(
+trx_recover_for_myblockchain(
 /*==================*/
 	XID*	xid_list,	/*!< in/out: prepared transactions */
 	ulint	len);		/*!< in: number of slots in xid_list */
@@ -300,10 +300,10 @@ trx_get_trx_by_xid(
 /*===============*/
 	const XID*	xid);	/*!< in: X/Open XA transaction identifier */
 /**********************************************************************//**
-If required, flushes the log to disk if we called trx_commit_for_mysql()
+If required, flushes the log to disk if we called trx_commit_for_myblockchain()
 with trx->flush_log_later == TRUE. */
 void
-trx_commit_complete_for_mysql(
+trx_commit_complete_for_myblockchain(
 /*==========================*/
 	trx_t*	trx);	/*!< in/out: transaction */
 /**********************************************************************//**
@@ -588,15 +588,15 @@ bool
 trx_is_rseg_updated(const trx_t* trx);
 
 /**
-Transactions that aren't started by the MySQL server don't set
-the trx_t::mysql_thd field. For such transactions we set the lock
+Transactions that aren't started by the MyBlockchain server don't set
+the trx_t::myblockchain_thd field. For such transactions we set the lock
 wait timeout to 0 instead of the user configured value that comes
-from innodb_lock_wait_timeout via trx_t::mysql_thd.
+from innodb_lock_wait_timeout via trx_t::myblockchain_thd.
 @param trx transaction
 @return lock wait timeout in seconds */
 #define trx_lock_wait_timeout_get(t)					\
-	((t)->mysql_thd != NULL						\
-	 ? thd_lock_wait_timeout((t)->mysql_thd)			\
+	((t)->myblockchain_thd != NULL						\
+	 ? thd_lock_wait_timeout((t)->myblockchain_thd)			\
 	 : 0)
 
 /**
@@ -665,7 +665,7 @@ transaction pool.
 /*******************************************************************//**
 Assert that an autocommit non-locking select cannot be in the
 rw_trx_list and that it is a read-only transaction.
-The tranasction must be in the mysql_trx_list. */
+The tranasction must be in the myblockchain_trx_list. */
 # define assert_trx_nonlocking_or_in_list(t)				\
 	do {								\
 		if (trx_is_autocommit_non_locking(t)) {			\
@@ -673,7 +673,7 @@ The tranasction must be in the mysql_trx_list. */
 			ut_ad((t)->read_only);				\
 			ut_ad(!(t)->is_recovered);			\
 			ut_ad(!(t)->in_rw_trx_list);			\
-			ut_ad((t)->in_mysql_trx_list);			\
+			ut_ad((t)->in_myblockchain_trx_list);			\
 			ut_ad(t_state == TRX_STATE_NOT_STARTED		\
 			      || t_state == TRX_STATE_FORCED_ROLLBACK	\
 			      || t_state == TRX_STATE_ACTIVE);		\
@@ -685,7 +685,7 @@ The tranasction must be in the mysql_trx_list. */
 /*******************************************************************//**
 Assert that an autocommit non-locking slect cannot be in the
 rw_trx_list and that it is a read-only transaction.
-The tranasction must be in the mysql_trx_list. */
+The tranasction must be in the myblockchain_trx_list. */
 # define assert_trx_nonlocking_or_in_list(trx) ((void)0)
 #endif /* UNIV_DEBUG */
 
@@ -816,7 +816,7 @@ transactions in the ACTIVE or PREPARED state, these transactions would
 no longer be associated with a session when the server is restarted.
 
 A session may be served by at most one thread at a time. The serving
-thread of a session might change in some MySQL implementations.
+thread of a session might change in some MyBlockchain implementations.
 Therefore we do not have os_thread_get_curr_id() assertions in the code.
 
 Normally, only the thread that is currently associated with a running
@@ -831,7 +831,7 @@ and lock_trx_release_locks() [invoked by trx_commit()].
 * trx_print_low() may access transactions not associated with the current
 thread. The caller must be holding trx_sys->mutex and lock_sys->mutex.
 
-* When a transaction handle is in the trx_sys->mysql_trx_list or
+* When a transaction handle is in the trx_sys->myblockchain_trx_list or
 trx_sys->trx_list, some of its fields must not be modified without
 holding trx_sys->mutex exclusively.
 
@@ -952,7 +952,7 @@ struct trx_t {
 
 	Disconnected XA can become recovered:
 	* ... -> ACTIVE -> PREPARED (connected) -> PREPARED (disconnected)
-	Disconnected means from mysql e.g due to the mysql client disconnection.
+	Disconnected means from myblockchain e.g due to the myblockchain client disconnection.
 	Latching and various transaction lists membership rules:
 
 	XA (2PC) transactions are always treated as non-autocommit.
@@ -970,7 +970,7 @@ struct trx_t {
 	do we remove it from the read-only list and put it on the read-write
 	list. During this switch we assign it a rollback segment.
 
-	When a transaction is NOT_STARTED, it can be in_mysql_trx_list if
+	When a transaction is NOT_STARTED, it can be in_myblockchain_trx_list if
 	it is a user transaction. It cannot be in rw_trx_list.
 
 	ACTIVE->PREPARED->COMMITTED is only possible when trx->in_rw_trx_list.
@@ -1035,7 +1035,7 @@ struct trx_t {
 					(in table imports, for example) we
 					set this FALSE */
 	/*------------------------------*/
-	/* MySQL has a transaction coordinator to coordinate two phase
+	/* MyBlockchain has a transaction coordinator to coordinate two phase
 	commit between multiple storage engines and the binary log. When
 	an engine participates in a transaction, it's responsible for
 	registering itself using the trans_register_ha() API. */
@@ -1068,7 +1068,7 @@ struct trx_t {
 					TRUE, and there were modifications by
 					the transaction; in that case we must
 					flush the log in
-					trx_commit_complete_for_mysql() */
+					trx_commit_complete_for_myblockchain() */
 	ulint		duplicates;	/*!< TRX_DUP_IGNORE | TRX_DUP_REPLACE */
 	bool		has_search_latch;
 					/*!< TRUE if this trx has latched the
@@ -1080,7 +1080,7 @@ struct trx_t {
 					row0sel.cc for BTR_SEA_TIMEOUT new
 					searches until we try to keep
 					the search latch again over
-					calls from MySQL; this is intended
+					calls from MyBlockchain; this is intended
 					to reduce contention on the search
 					latch */
 	trx_dict_op_t	dict_operation;	/**< @see enum trx_dict_op_t */
@@ -1108,22 +1108,22 @@ struct trx_t {
 	table_id_t	table_id;	/*!< Table to drop iff dict_operation
 					== TRX_DICT_OP_TABLE, or 0. */
 	/*------------------------------*/
-	THD*		mysql_thd;	/*!< MySQL thread handle corresponding
+	THD*		myblockchain_thd;	/*!< MyBlockchain thread handle corresponding
 					to this trx, or NULL */
-	const char*	mysql_log_file_name;
-					/*!< if MySQL binlog is used, this field
+	const char*	myblockchain_log_file_name;
+					/*!< if MyBlockchain binlog is used, this field
 					contains a pointer to the latest file
 					name; this is NULL if binlog is not
 					used */
-	int64_t		mysql_log_offset;
-					/*!< if MySQL binlog is used, this
+	int64_t		myblockchain_log_offset;
+					/*!< if MyBlockchain binlog is used, this
 					field contains the end offset of the
 					binlog entry */
 	/*------------------------------*/
-	ib_uint32_t	n_mysql_tables_in_use; /*!< number of Innobase tables
+	ib_uint32_t	n_myblockchain_tables_in_use; /*!< number of Innobase tables
 					used in the processing of the current
-					SQL statement in MySQL */
-	ib_uint32_t	mysql_n_tables_locked;
+					SQL statement in MyBlockchain */
+	ib_uint32_t	myblockchain_n_tables_locked;
 					/*!< how many tables the current SQL
 					statement uses, except those
 					in consistent read */
@@ -1136,12 +1136,12 @@ struct trx_t {
 	/* @} */
 #endif /* UNIV_DEBUG */
 	UT_LIST_NODE_T(trx_t)
-			mysql_trx_list;	/*!< list of transactions created for
-					MySQL; protected by trx_sys->mutex */
+			myblockchain_trx_list;	/*!< list of transactions created for
+					MyBlockchain; protected by trx_sys->mutex */
 #ifdef UNIV_DEBUG
-	bool		in_mysql_trx_list;
+	bool		in_myblockchain_trx_list;
 					/*!< true if in
-					trx_sys->mysql_trx_list */
+					trx_sys->myblockchain_trx_list */
 #endif /* UNIV_DEBUG */
 	/*------------------------------*/
 	dberr_t		error_state;	/*!< 0 if no error, otherwise error
@@ -1153,7 +1153,7 @@ struct trx_t {
 					duplicate key error, a pointer to
 					the problematic index is stored here */
 	ulint		error_key_num;	/*!< if the index creation fails to a
-					duplicate key error, a mysql key
+					duplicate key error, a myblockchain key
 					number of that index is stored here */
 	sess_t*		sess;		/*!< session of the trx, NULL if none */
 	que_t*		graph;		/*!< query currently run in the session,
@@ -1219,7 +1219,7 @@ struct trx_t {
 	bool		auto_commit;	/*!< true if it is an autocommit */
 	ib_uint32_t	will_lock;	/*!< Will acquire some locks. Increment
 					each time we determine that a lock will
-					be acquired by the MySQL layer. */
+					be acquired by the MyBlockchain layer. */
 	/*------------------------------*/
 	fts_trx_t*	fts_trx;	/*!< FTS information, or NULL if
 					transaction hasn't modified tables

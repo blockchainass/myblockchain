@@ -1,0 +1,10 @@
+# Tests for PERFORMANCE_SCHEMA
+# Check server start options, read from a .cnf file
+
+# Use default setting for myblockchaind processes
+!include include/default_myblockchaind.cnf
+
+[myblockchaind.1]
+loose-performance-schema-max-thread_instances=318
+loose-performance-schema-max-thread_classes=12
+

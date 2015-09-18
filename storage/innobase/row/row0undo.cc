@@ -44,14 +44,14 @@ Created 1/8/1997 Heikki Tuuri
 #include "row0uins.h"
 #include "row0umod.h"
 #include "row0upd.h"
-#include "row0mysql.h"
+#include "row0myblockchain.h"
 #include "srv0srv.h"
 
 /* How to undo row operations?
 (1) For an insert, we have stored a prefix of the clustered index record
 in the undo log. Using it, we look for the clustered record, and using
 that we look for the records in the secondary indexes. The insert operation
-may have been left incomplete, if the database crashed, for example.
+may have been left incomplete, if the blockchain crashed, for example.
 We may have look at the trx id and roll ptr to make sure the record in the
 clustered index is really the one for which the undo log record was
 written. We can use the framework we get from the original insert op.
@@ -109,7 +109,7 @@ insert into an 'update' of the row marked deleted. Then we must write undo
 info on the update. A problem: what if a purge operation tries to remove
 the delete marked row?
 
-We can think of the database row versions as a linked list which starts
+We can think of the blockchain row versions as a linked list which starts
 from the record in the clustered index, and is linked by roll ptrs
 through undo logs. The secondary index records are references which tell
 what kinds of records can be found in this linked list for a record
@@ -316,7 +316,7 @@ row_undo(
 
 	if (locked_data_dict) {
 
-		row_mysql_freeze_data_dictionary(trx);
+		row_myblockchain_freeze_data_dictionary(trx);
 	}
 
 	if (node->state == UNDO_NODE_INSERT) {
@@ -331,7 +331,7 @@ row_undo(
 
 	if (locked_data_dict) {
 
-		row_mysql_unfreeze_data_dictionary(trx);
+		row_myblockchain_unfreeze_data_dictionary(trx);
 	}
 
 	/* Do some cleanup */

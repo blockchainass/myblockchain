@@ -104,7 +104,7 @@ int table_replication_applier_configuration::rnd_next(void)
 {
   Master_info *mi;
 
-  mysql_mutex_lock(&LOCK_msr_map);
+  myblockchain_mutex_lock(&LOCK_msr_map);
 
   for (m_pos.set_at(&m_next_pos); m_pos.m_index < msr_map.get_max_channels();
       m_pos.next())
@@ -116,12 +116,12 @@ int table_replication_applier_configuration::rnd_next(void)
       make_row(mi);
       m_next_pos.set_after(&m_pos);
 
-      mysql_mutex_unlock(&LOCK_msr_map);
+      myblockchain_mutex_unlock(&LOCK_msr_map);
       return 0;
     }
   }
 
-  mysql_mutex_unlock(&LOCK_msr_map);
+  myblockchain_mutex_unlock(&LOCK_msr_map);
 
   return HA_ERR_END_OF_FILE;
 }
@@ -149,15 +149,15 @@ void table_replication_applier_configuration::make_row(Master_info *mi)
   DBUG_ASSERT(mi != NULL);
   DBUG_ASSERT(mi->rli != NULL);
 
-  mysql_mutex_lock(&mi->data_lock);
-  mysql_mutex_lock(&mi->rli->data_lock);
+  myblockchain_mutex_lock(&mi->data_lock);
+  myblockchain_mutex_lock(&mi->rli->data_lock);
 
   m_row.channel_name_length= mi->get_channel() ? strlen(mi->get_channel()):0;
   memcpy(m_row.channel_name, mi->get_channel(), m_row.channel_name_length);
   m_row.desired_delay= mi->rli->get_sql_delay();
 
-  mysql_mutex_unlock(&mi->rli->data_lock);
-  mysql_mutex_unlock(&mi->data_lock);
+  myblockchain_mutex_unlock(&mi->rli->data_lock);
+  myblockchain_mutex_unlock(&mi->data_lock);
 
   m_row_exists= true;
 }

@@ -45,13 +45,13 @@ var runSQL = function(sqlPath, source, properties, callback) {
   }
 
   // runSQL starts here
-  var cmd = 'mysql';
+  var cmd = 'myblockchain';
   if(properties) {
-    if(properties.mysql_socket)     { cmd += " --socket=" + properties.mysql_socket; }
-    else if(properties.mysql_port)  { cmd += " --port=" + properties.mysql_port; }
-    if(properties.mysql_host)     { cmd += " -h " + properties.mysql_host; }
-    if(properties.mysql_user)     { cmd += " -u " + properties.mysql_user; }
-    if(properties.mysql_password) { cmd += " --password=" + properties.mysql_password; }
+    if(properties.myblockchain_socket)     { cmd += " --socket=" + properties.myblockchain_socket; }
+    else if(properties.myblockchain_port)  { cmd += " --port=" + properties.myblockchain_port; }
+    if(properties.myblockchain_host)     { cmd += " -h " + properties.myblockchain_host; }
+    if(properties.myblockchain_user)     { cmd += " -u " + properties.myblockchain_user; }
+    if(properties.myblockchain_password) { cmd += " --password=" + properties.myblockchain_password; }
   }
   cmd += ' <' + sqlPath; 
   udebug.log('harness runSQL forking process...' + cmd);

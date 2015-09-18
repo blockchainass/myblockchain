@@ -206,8 +206,8 @@ private:
      by a client thread executing base64 encoded BINLOG'... statement.
 
      In theory, performance schema tables are not supposed to be replicated.
-     This is true and enforced starting with MySQL 5.6.10.
-     In practice, in previous versions such as MySQL 5.5 (GA) or earlier 5.6
+     This is true and enforced starting with MyBlockchain 5.6.10.
+     In practice, in previous versions such as MyBlockchain 5.5 (GA) or earlier 5.6
      (non GA) DML on performance schema tables could end up written in the binlog,
      both in STATEMENT and ROW format.
      While these records are not supposed to be there, they are found when:
@@ -234,7 +234,7 @@ private:
 
   }
 
-  /** MySQL lock */
+  /** MyBlockchain lock */
   THR_LOCK_DATA m_thr_lock;
   /** Performance schema table share for this table handler. */
   const PFS_engine_table_share *m_table_share;

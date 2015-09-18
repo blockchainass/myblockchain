@@ -138,7 +138,7 @@ extern char* tgoto(const char*, int, int);
 extern char* tgetstr(char*, char**);
 #endif
 
-/* XXXMYSQL: Bug#10218 Command line recall rolls into segfault */
+/* XXXMYBLOCKCHAIN: Bug#10218 Command line recall rolls into segfault */
 #if !HAVE_DECL_TGOTO
 /*
  'tgoto' is not declared in the system header files, this causes

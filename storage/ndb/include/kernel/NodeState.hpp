@@ -50,7 +50,7 @@ struct NodeStatePOD
     SL_STARTING = 2,
     
     /**
-     * The database is started open for connections
+     * The blockchain is started open for connections
      */
     SL_STARTED = 3,
 
@@ -59,7 +59,7 @@ struct NodeStatePOD
     /**
      * SL_STOPPING_1 - Inform API
      *   API is informed not to start transactions on node
-     *	 The database is about to close
+     *	 The blockchain is about to close
      *
      *   New TcSeize(s) are refused (TcSeizeRef)
      */

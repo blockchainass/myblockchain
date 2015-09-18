@@ -13,20 +13,20 @@
    along with this program; if not, write to the Free Software
    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA */
 
-/* close a heap-database */
+/* close a heap-blockchain */
 
 #include "heapdef.h"
 
-	/* Close a database open by hp_open() */
+	/* Close a blockchain open by hp_open() */
 	/* Data is normally not deallocated */
 
 int heap_close(HP_INFO *info)
 {
   int tmp;
   DBUG_ENTER("heap_close");
-  mysql_mutex_lock(&THR_LOCK_heap);
+  myblockchain_mutex_lock(&THR_LOCK_heap);
   tmp= hp_close(info);
-  mysql_mutex_unlock(&THR_LOCK_heap);
+  myblockchain_mutex_unlock(&THR_LOCK_heap);
   DBUG_RETURN(tmp);
 }
 

@@ -15,11 +15,11 @@
    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-package com.mysql.clusterj.jpatest;
+package com.myblockchain.clusterj.jpatest;
 
-import com.mysql.clusterj.jpatest.model.Embedded;
-import com.mysql.clusterj.jpatest.model.Embedding;
-import com.mysql.clusterj.jpatest.model.IdBase;
+import com.myblockchain.clusterj.jpatest.model.Embedded;
+import com.myblockchain.clusterj.jpatest.model.Embedding;
+import com.myblockchain.clusterj.jpatest.model.IdBase;
 
 
 /** Test Embedded class support. Currently only remove and insert are tested.

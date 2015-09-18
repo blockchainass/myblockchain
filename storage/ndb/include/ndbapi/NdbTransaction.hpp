@@ -488,8 +488,8 @@ public:
   /**
    * Refresh
    * Update timeout counter of this transaction 
-   * in the database. If you want to keep the transaction 
-   * active in the database longer than the
+   * in the blockchain. If you want to keep the transaction 
+   * active in the blockchain longer than the
    * transaction abort timeout.
    * @note It's not advised to take a lock on a record and keep it
    *       for a extended time since this can impact other transactions.
@@ -890,7 +890,7 @@ public:
    * Notes
    * - As with other operation types, Unlock operations can be batched.
    * - Each LockHandle object refers to a lock placed on a row by a single 
-   *   primary key read operation.  A single row in the database may have 
+   *   primary key read operation.  A single row in the blockchain may have 
    *   concurrent multiple lock holders (of mode LM_Read) and may have 
    *   multiple lock holders pending (LM_Exclusive), so releasing the
    *   claim of one lock holder may not result in a change to the 
@@ -1151,7 +1151,7 @@ private:
     InCompletedList 
   } theListState;
 
-  Uint32 theDBnode;       // The database node we are connected to  
+  Uint32 theDBnode;       // The blockchain node we are connected to  
   Uint32 theNodeSequence; // The sequence no of the db node
   bool theReleaseOnClose;
 

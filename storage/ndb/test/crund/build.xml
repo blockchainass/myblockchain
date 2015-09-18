@@ -145,7 +145,7 @@
     <echo message="  build              builds all benchmarks"/>
     <echo message="  clean              deletes most generated files"/>
     <echo message="  mostlyclean        deletes also log files"/>
-    <echo message="  distclean          deletes also database files"/>
+    <echo message="  distclean          deletes also blockchain files"/>
     <echo message=""/>
     <echo message="benchmark compile targets:"/>
     <echo message="  compile.ndbjtie"/>
@@ -159,9 +159,9 @@
     <echo message="  run.ndbjtie[.opt]"/>
     <echo message="  run.clusterj[.opt]"/>
     <echo message="  run.clusterjdbc[.opt]"/>
-    <echo message="  run.mysql[.opt]"/>
+    <echo message="  run.myblockchain[.opt]"/>
     <echo message="  run.openjpa.clusterj[.opt]"/>
-    <echo message="  run.openjpa.mysql[.opt]"/>
+    <echo message="  run.openjpa.myblockchain[.opt]"/>
   </target>
 
   <!-- creates the build directories -->
@@ -192,7 +192,7 @@
     </delete>
   </target>
 
-  <!-- deletes also database files -->
+  <!-- deletes also blockchain files -->
   <target name="distclean" depends="mostlyclean">
     <delete verbose="true">
       <fileset dir="${src.java}" includes="**/*~" defaultexcludes="no"/>
@@ -224,7 +224,7 @@
     <javac srcdir="${src.java}" destdir="${build}"
 	   debug="${debug}" debuglevel="${debuglevel}"
 	   classpathref="classpath.all.compile"
-	   includes="com/mysql/cluster/crund/*.java">
+	   includes="com/myblockchain/cluster/crund/*.java">
       <!-- does not accept empty strings: <compilerarg value=""/> -->
       <compilerarg value="${javacarg}"/>
     </javac>
@@ -237,9 +237,9 @@
 
   <!-- generates the Java documentation -->
   <target name="javadoc" depends="set.compile.all">
-    <javadoc packagenames="com.mysql.cluster.crund"
+    <javadoc packagenames="com.myblockchain.cluster.crund"
      sourcepath="${src.java}" destdir="${doc}"
-     windowtitle="MySQL NDB/Cluster Performance Benchmark"
+     windowtitle="MyBlockchain NDB/Cluster Performance Benchmark"
      author="true"
      version="true"
      use="true"
@@ -289,9 +289,9 @@
 	  if="compile.driver.set">
     <javac srcdir="${src.java}" destdir="${build}"
 	   debug="${debug}" debuglevel="${debuglevel}"
-	   includes="com/mysql/cluster/crund/*Driver.java">
-      <include name="com/mysql/cluster/crund/*Load.java"/>
-      <include name="com/mysql/cluster/crund/*Processor.java"/>
+	   includes="com/myblockchain/cluster/crund/*Driver.java">
+      <include name="com/myblockchain/cluster/crund/*Load.java"/>
+      <include name="com/myblockchain/cluster/crund/*Processor.java"/>
       <compilerarg value="${javacarg}"/>
     </javac>
   </target>
@@ -336,8 +336,8 @@
     <javac srcdir="${src.java}" destdir="${build}"
 	   debug="${debug}" debuglevel="${debuglevel}"
 	   classpathref="classpath.ndbjtie.compile"
-	   includes="com/mysql/cluster/crund/NdbjtieAB.java">
-      <include name="com/mysql/cluster/crund/NdbjtieS.java"/>
+	   includes="com/myblockchain/cluster/crund/NdbjtieAB.java">
+      <include name="com/myblockchain/cluster/crund/NdbjtieS.java"/>
       <compilerarg value="${javacarg}"/>
     </javac>
   </target>
@@ -389,7 +389,7 @@
     <echo message="  classpath.ndbjtie.run: ${toString:classpath.ndbjtie.run}"/>
     <echo message=""/>
 
-    <java classname="com.mysql.cluster.crund.NdbjtieAB"
+    <java classname="com.myblockchain.cluster.crund.NdbjtieAB"
      fork="true" failonerror="true" classpathref="classpath.ndbjtie.run">
       <jvmarg line="${jvmflags}"/>
       <jvmarg line="-Djava.library.path='${ndb.libdir}'"/>
@@ -439,8 +439,8 @@
     <javac srcdir="${src.java}" destdir="${build}"
 	   debug="${debug}" debuglevel="${debuglevel}"
 	   classpathref="classpath.clusterj.compile"
-	   includes="com/mysql/cluster/crund/ClusterjAB.java">
-      <include name="com/mysql/cluster/crund/ClusterjS.java"/>
+	   includes="com/myblockchain/cluster/crund/ClusterjAB.java">
+      <include name="com/myblockchain/cluster/crund/ClusterjS.java"/>
       <compilerarg value="${javacarg}"/>
     </javac>
   </target>
@@ -487,7 +487,7 @@
     <echo message="  classpath.clusterj.run: ${toString:classpath.clusterj.run}"/>
     <echo message=""/>
 
-    <java classname="com.mysql.cluster.crund.ClusterjAB"
+    <java classname="com.myblockchain.cluster.crund.ClusterjAB"
      fork="true" failonerror="true" classpathref="classpath.clusterj.run">
       <jvmarg line="${jvmflags}"/>
       <jvmarg line="-Djava.library.path='${ndb.libdir}'"/>
@@ -519,8 +519,8 @@
     <javac srcdir="${src.java}" destdir="${build}"
 	   debug="${debug}" debuglevel="${debuglevel}"
 	   classpathref="classpath.jdbc.compile"
-	   includes="com/mysql/cluster/crund/JdbcAB.java">
-      <include name="com/mysql/cluster/crund/JdbcS.java"/>
+	   includes="com/myblockchain/cluster/crund/JdbcAB.java">
+      <include name="com/myblockchain/cluster/crund/JdbcS.java"/>
       <compilerarg value="${javacarg}"/>
     </javac>
   </target>
@@ -584,84 +584,84 @@
     <javac srcdir="${src.java}" destdir="${build}"
 	   debug="${debug}" debuglevel="${debuglevel}"
 	   classpathref="classpath.jpa.compile"
-	   includes="com/mysql/cluster/crund/JpaAB.java">
+	   includes="com/myblockchain/cluster/crund/JpaAB.java">
       <compilerarg value="${javacarg}"/>
     </javac>
   </target>
 
   <!-- #################################################################
-       # MySQL JDBC
+       # MyBlockchain JDBC
        ################################################################# -->
 
-  <!-- checks the path to MYSQL JDBC driver -->
-  <target name="check.MYSQL_JDBC_JAR" unless="MYSQL_JDBC_JAR">
-    <echo message="property not set: MYSQL_JDBC_JAR"/>
+  <!-- checks the path to MYBLOCKCHAIN JDBC driver -->
+  <target name="check.MYBLOCKCHAIN_JDBC_JAR" unless="MYBLOCKCHAIN_JDBC_JAR">
+    <echo message="property not set: MYBLOCKCHAIN_JDBC_JAR"/>
   </target>
-  <target name="set.mysql.jdbc.jar" depends="check.MYSQL_JDBC_JAR"
-	  if="MYSQL_JDBC_JAR">
-    <available property="mysql.jdbc.jar" file="${MYSQL_JDBC_JAR}"
-	       value="${MYSQL_JDBC_JAR}"/>
+  <target name="set.myblockchain.jdbc.jar" depends="check.MYBLOCKCHAIN_JDBC_JAR"
+	  if="MYBLOCKCHAIN_JDBC_JAR">
+    <available property="myblockchain.jdbc.jar" file="${MYBLOCKCHAIN_JDBC_JAR}"
+	       value="${MYBLOCKCHAIN_JDBC_JAR}"/>
   </target>
-  <target name="check.mysql.jdbc.jar" depends="set.mysql.jdbc.jar"
-	  unless="mysql.jdbc.jar">
-    <echo message="file not found: ${MYSQL_JDBC_JAR}"/>
+  <target name="check.myblockchain.jdbc.jar" depends="set.myblockchain.jdbc.jar"
+	  unless="myblockchain.jdbc.jar">
+    <echo message="file not found: ${MYBLOCKCHAIN_JDBC_JAR}"/>
   </target>
 
-  <!-- sets the paths for running on MySQL JDBC -->
-  <target name="set.run.mysql"
-	  depends="check.compile.jdbc,check.mysql.jdbc.jar">
-    <path id="classpath.mysql.run">
+  <!-- sets the paths for running on MyBlockchain JDBC -->
+  <target name="set.run.myblockchain"
+	  depends="check.compile.jdbc,check.myblockchain.jdbc.jar">
+    <path id="classpath.myblockchain.run">
       <path refid="classpath.jdbc.compile"/>
-      <pathelement location="${mysql.jdbc.jar}"/>
+      <pathelement location="${myblockchain.jdbc.jar}"/>
     </path>
-    <condition property="run.mysql.set">
+    <condition property="run.myblockchain.set">
       <and>
 	<isset property="compile.jdbc.set"/>
-	<isset property="mysql.jdbc.jar"/>
+	<isset property="myblockchain.jdbc.jar"/>
       </and>
     </condition>
   </target>
-  <target name="check.run.mysql" depends="set.run.mysql"
-	  unless="run.mysql.set">
-    <echo message="will skip target run.mysql due to missing prerequisites"/>
+  <target name="check.run.myblockchain" depends="set.run.myblockchain"
+	  unless="run.myblockchain.set">
+    <echo message="will skip target run.myblockchain due to missing prerequisites"/>
   </target>
 
-  <!-- tests loading the MySQL JDBC driver -->
-  <target name="test.driver.mysql" depends="build,check.run.mysql"
-	  if="run.mysql.set">
+  <!-- tests loading the MyBlockchain JDBC driver -->
+  <target name="test.driver.myblockchain" depends="build,check.run.myblockchain"
+	  if="run.myblockchain.set">
     <echo message="using:"/>
-    <echo message="  classpath.mysql.run: ${toString:classpath.mysql.run}"/>
+    <echo message="  classpath.myblockchain.run: ${toString:classpath.myblockchain.run}"/>
     <echo message=""/>
 
-    <property name="mysql.dbdriver" value="com.mysql.jdbc.Driver"/>
-    <property name="mysql.dburl" value="jdbc:mysql://localhost/crunddb"/>
-    <property name="mysql.dbuser" value="md"/>
-    <property name="mysql.dbpassword" value=""/>
-    <java classname="com.mysql.cluster.crund.JdbcDriverTest"
-     fork="true" failonerror="true" classpathref="classpath.mysql.run">
+    <property name="myblockchain.dbdriver" value="com.myblockchain.jdbc.Driver"/>
+    <property name="myblockchain.dburl" value="jdbc:myblockchain://localhost/crunddb"/>
+    <property name="myblockchain.dbuser" value="md"/>
+    <property name="myblockchain.dbpassword" value=""/>
+    <java classname="com.myblockchain.cluster.crund.JdbcDriverTest"
+     fork="true" failonerror="true" classpathref="classpath.myblockchain.run">
       <jvmarg value="-ea"/>
-      <sysproperty key="jdbc.driver" value="${mysql.dbdriver}"/>
-      <sysproperty key="jdbc.url" value="${mysql.dburl}"/>
-      <sysproperty key="jdbc.user" value="${mysql.dbuser}"/>
-      <sysproperty key="jdbc.password" value="${mysql.dbpassword}"/>
+      <sysproperty key="jdbc.driver" value="${myblockchain.dbdriver}"/>
+      <sysproperty key="jdbc.url" value="${myblockchain.dburl}"/>
+      <sysproperty key="jdbc.user" value="${myblockchain.dbuser}"/>
+      <sysproperty key="jdbc.password" value="${myblockchain.dbpassword}"/>
     </java>
   </target>
 
-  <!-- runs the benchmark on MySQL JDBC -->
-  <target name="run.mysql" depends="set.run,check.run.mysql"
-	  if="run.mysql.set">
+  <!-- runs the benchmark on MyBlockchain JDBC -->
+  <target name="run.myblockchain" depends="set.run,check.run.myblockchain"
+	  if="run.myblockchain.set">
     <echo message="using:"/>
-    <echo message="  classpath.mysql.run: ${toString:classpath.mysql.run}"/>
+    <echo message="  classpath.myblockchain.run: ${toString:classpath.myblockchain.run}"/>
     <echo message=""/>
 
-    <java classname="com.mysql.cluster.crund.JdbcAB"
-     fork="true" failonerror="true" classpathref="classpath.mysql.run">
+    <java classname="com.myblockchain.cluster.crund.JdbcAB"
+     fork="true" failonerror="true" classpathref="classpath.myblockchain.run">
       <jvmarg line="${jvmflags}"/>
       <arg line="-p crundRun.properties"/>
       <arg line="-p crundMysql.properties"/>
     </java>
   </target>
-  <target name="run.mysql.opt" depends="set.run.opt,run.mysql"/>
+  <target name="run.myblockchain.opt" depends="set.run.opt,run.myblockchain"/>
 
   <!-- #################################################################
        # CLUSTERJDBC
@@ -711,10 +711,10 @@
 
   <!-- sets the paths for running on CLUSTERJDBC -->
   <target name="set.run.clusterjdbc"
-	  depends="check.run.mysql,check.run.clusterj,check.clusterjdbc.jar,check.antlr32.jar,check.antlrruntime.jar">
+	  depends="check.run.myblockchain,check.run.clusterj,check.clusterjdbc.jar,check.antlr32.jar,check.antlrruntime.jar">
     <path id="classpath.clusterjdbc.run">
       <path refid="classpath.jdbc.compile"/>
-      <pathelement location="${mysql.jdbc.jar}"/>
+      <pathelement location="${myblockchain.jdbc.jar}"/>
       <pathelement location="${clusterj.jar}"/>
       <pathelement location="${clusterjdbc.jar}"/>
       <pathelement location="${antlr32.jar}"/>
@@ -722,7 +722,7 @@
     </path>
     <condition property="run.clusterjdbc.set">
       <and>
-	<isset property="run.mysql.set"/>
+	<isset property="run.myblockchain.set"/>
 	<isset property="run.clusterj.set"/>
 	<isset property="clusterjdbc.jar"/>
 	<isset property="antlr32.jar"/>
@@ -735,7 +735,7 @@
     <echo message="will skip target run.clusterjdbc due to missing prerequisites"/>
   </target>
 
-  <!-- runs the benchmark on MySQL CLUSTERJDBC -->
+  <!-- runs the benchmark on MyBlockchain CLUSTERJDBC -->
   <target name="run.clusterjdbc" depends="set.run,check.run.clusterjdbc"
 	  if="run.clusterjdbc.set">
     <echo message="using:"/>
@@ -743,7 +743,7 @@
     <echo message="  classpath.clusterjdbc.run: ${toString:classpath.clusterjdbc.run}"/>
     <echo message=""/>
 
-    <java classname="com.mysql.cluster.crund.JdbcAB"
+    <java classname="com.myblockchain.cluster.crund.JdbcAB"
      fork="true" failonerror="true" classpathref="classpath.clusterjdbc.run">
       <jvmarg line="${jvmflags}"/>
       <arg line="-p crundRun.properties"/>
@@ -1004,7 +1004,7 @@ Note that the enhancement process for subclasses introduces dependencies on -
 
     <openjpac>
       <classpath refid="classpath.openjpa.enhance"/>
-      <fileset dir="build/com/mysql/cluster/crund">
+      <fileset dir="build/com/myblockchain/cluster/crund">
         <include name="A.class"/>
         <include name="B0.class"/>
       </fileset>
@@ -1013,39 +1013,39 @@ Note that the enhancement process for subclasses introduces dependencies on -
   </target>
 
   <!-- #################################################################
-       # OpenJPA over MySQL JDBC
+       # OpenJPA over MyBlockchain JDBC
        ################################################################# -->
 
-  <!-- sets the paths for running on OpenJPA over MySQL JDBC -->
-  <target name="set.run.openjpa.mysql"
-	  depends="check.run.openjpa,check.run.mysql">
-    <path id="classpath.openjpa.mysql.run">
+  <!-- sets the paths for running on OpenJPA over MyBlockchain JDBC -->
+  <target name="set.run.openjpa.myblockchain"
+	  depends="check.run.openjpa,check.run.myblockchain">
+    <path id="classpath.openjpa.myblockchain.run">
       <path refid="classpath.openjpa.run"/>
-      <path refid="classpath.mysql.run"/>
+      <path refid="classpath.myblockchain.run"/>
     </path>
-    <condition property="run.openjpa.mysql.set">
+    <condition property="run.openjpa.myblockchain.set">
       <and>
 	<isset property="run.openjpa.set"/>
-	<isset property="run.mysql.set"/>
+	<isset property="run.myblockchain.set"/>
       </and>
     </condition>
   </target>
-  <target name="check.run.openjpa.mysql" depends="set.run.openjpa.mysql"
-	  unless="run.openjpa.mysql.set">
-    <echo message="will skip target run.openjpa.mysql due to missing prerequisites"/>
+  <target name="check.run.openjpa.myblockchain" depends="set.run.openjpa.myblockchain"
+	  unless="run.openjpa.myblockchain.set">
+    <echo message="will skip target run.openjpa.myblockchain due to missing prerequisites"/>
   </target>
 
-  <!-- runs the benchmark on OpenJPA over MySQL JDBC -->
-  <target name="run.openjpa.mysql"
-	  depends="set.run,check.run.openjpa.mysql"
-	  if="run.openjpa.mysql.set">
+  <!-- runs the benchmark on OpenJPA over MyBlockchain JDBC -->
+  <target name="run.openjpa.myblockchain"
+	  depends="set.run,check.run.openjpa.myblockchain"
+	  if="run.openjpa.myblockchain.set">
     <echo message="using:"/>
     <echo message="  javaagent.openjpa: ${javaagent.openjpa}"/>
-    <echo message="  classpath.openjpa.mysql.run: ${toString:classpath.openjpa.mysql.run}"/>
+    <echo message="  classpath.openjpa.myblockchain.run: ${toString:classpath.openjpa.myblockchain.run}"/>
     <echo message=""/>
 
-    <java classname="com.mysql.cluster.crund.JpaAB"
-     fork="true" failonerror="true" classpathref="classpath.openjpa.mysql.run">
+    <java classname="com.myblockchain.cluster.crund.JpaAB"
+     fork="true" failonerror="true" classpathref="classpath.openjpa.myblockchain.run">
       <jvmarg line="${jvmflags}"/>
       <!-- javaagent argument for automatic class-enhancement -->
       <jvmarg value="-javaagent:${javaagent.openjpa}"/>
@@ -1054,11 +1054,11 @@ Note that the enhancement process for subclasses introduces dependencies on -
       <arg line="-p crundMysql.properties"/>
     </java>
   </target>
-  <target name="run.openjpa.mysql.opt"
-	  depends="set.run.opt,run.openjpa.mysql"/>
+  <target name="run.openjpa.myblockchain.opt"
+	  depends="set.run.opt,run.openjpa.myblockchain"/>
 
   <!-- #################################################################
-       # Cluster/JPA: OpenJPA over ClusterJ + MySQL JDBC
+       # Cluster/JPA: OpenJPA over ClusterJ + MyBlockchain JDBC
        ################################################################# -->
 
   <!-- checks the path to the Cluster/JPA jar -->
@@ -1077,20 +1077,20 @@ Note that the enhancement process for subclasses introduces dependencies on -
 
   <!-- sets the paths for running on ClusterJPA -->
   <target name="set.run.openjpa.clusterj"
-	  depends="check.clusterjpa.jar,check.run.openjpa,check.run.clusterj,check.run.mysql">
+	  depends="check.clusterjpa.jar,check.run.openjpa,check.run.clusterj,check.run.myblockchain">
     <path id="classpath.openjpa.clusterj.run">
       <pathelement location="${build}"/>
       <pathelement location="${clusterjpa.jar}"/>
       <path refid="classpath.openjpa.run"/>
       <path refid="classpath.clusterj.run"/>
-      <path refid="classpath.mysql.run"/>
+      <path refid="classpath.myblockchain.run"/>
     </path>
     <condition property="run.openjpa.clusterj.set">
       <and>
 	<isset property="clusterjpa.jar"/>
 	<isset property="run.openjpa.set"/>
 	<isset property="run.clusterj.set"/>
-	<isset property="run.mysql.set"/>
+	<isset property="run.myblockchain.set"/>
       </and>
     </condition>
   </target>
@@ -1109,7 +1109,7 @@ Note that the enhancement process for subclasses introduces dependencies on -
     <echo message="  classpath.openjpa.clusterj.run: ${toString:classpath.openjpa.clusterj.run}"/>
     <echo message=""/>
 
-    <java classname="com.mysql.cluster.crund.JpaAB"
+    <java classname="com.myblockchain.cluster.crund.JpaAB"
      fork="true" failonerror="true" classpathref="classpath.openjpa.clusterj.run">
       <jvmarg line="${jvmflags}"/>
       <!-- javaagent argument for automatic class-enhancement -->
@@ -1128,22 +1128,22 @@ Note that the enhancement process for subclasses introduces dependencies on -
        # CRUND
        ################################################################# -->
 
-  <!-- sets the paths for running CRUND on NDBJTIE, Cluster/J, MySQL JDBC, OpenJPA  -->
+  <!-- sets the paths for running CRUND on NDBJTIE, Cluster/J, MyBlockchain JDBC, OpenJPA  -->
   <target name="set.run.crund"
-	  depends="check.run.ndbjtie,check.run.clusterj,check.run.mysql,check.run.openjpa.mysql">
+	  depends="check.run.ndbjtie,check.run.clusterj,check.run.myblockchain,check.run.openjpa.myblockchain">
     <path id="classpath.crund.run">
       <pathelement location="${build}"/>
       <path refid="classpath.ndbjtie.run"/>
       <path refid="classpath.clusterj.run"/>
-      <path refid="classpath.mysql.run"/>
-      <path refid="classpath.openjpa.mysql.run"/>
+      <path refid="classpath.myblockchain.run"/>
+      <path refid="classpath.openjpa.myblockchain.run"/>
     </path>
     <condition property="run.crund.set">
       <and>
 	<isset property="run.ndbjtie.set"/>
 	<isset property="run.clusterj.set"/>
-	<isset property="run.mysql.set"/>
-	<isset property="run.openjpa.mysql.set"/>
+	<isset property="run.myblockchain.set"/>
+	<isset property="run.openjpa.myblockchain.set"/>
       </and>
     </condition>
   </target>
@@ -1152,7 +1152,7 @@ Note that the enhancement process for subclasses introduces dependencies on -
     <echo message="will skip target run.crund due to missing prerequisites"/>
   </target>
 
-  <!-- runs CRUND on NDBJTIE, Cluster/J, MySQL JDBC, OpenJPA -->
+  <!-- runs CRUND on NDBJTIE, Cluster/J, MyBlockchain JDBC, OpenJPA -->
   <target name="run.crund" depends="set.run,check.run.crund"
 	  if="run.crund.set">
     <echo message="using:"/>
@@ -1160,7 +1160,7 @@ Note that the enhancement process for subclasses introduces dependencies on -
     <echo message="  classpath.crund.run: ${toString:classpath.crund.run}"/>
     <echo message=""/>
 
-    <java classname="com.mysql.cluster.crund.CrundDriver"
+    <java classname="com.myblockchain.cluster.crund.CrundDriver"
      fork="true" failonerror="true" classpathref="classpath.crund.run">
       <jvmarg line="${jvmflags}"/>
       <jvmarg line="-Djava.library.path='${ndb.libdir}'"/>

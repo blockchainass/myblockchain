@@ -31,7 +31,7 @@
   following during your build process:<br> ./configure
   --with-example-storage-engine
 
-  Once this is done, MySQL will let you create tables with:<br>
+  Once this is done, MyBlockchain will let you create tables with:<br>
   CREATE TABLE <table name> (...) ENGINE=EXAMPLE;
 
   The example storage engine is set up to use table locks. It
@@ -44,9 +44,9 @@
   of this file.
 
   @note
-  When you create an EXAMPLE table, the MySQL Server creates a table .frm
-  (format) file in the database directory, using the table name as the file
-  name as is customary with MySQL. No other files are created. To get an idea
+  When you create an EXAMPLE table, the MyBlockchain Server creates a table .frm
+  (format) file in the blockchain directory, using the table name as the file
+  name as is customary with MyBlockchain. No other files are created. To get an idea
   of what occurs, here is an example select that would do a scan of an entire
   table:
 
@@ -70,7 +70,7 @@
   ENUM HA_EXTRA_NO_CACHE     End caching of records (def)
   ha_example::external_lock
   ha_example::extra
-  ENUM HA_EXTRA_RESET        Reset database to after open
+  ENUM HA_EXTRA_RESET        Reset blockchain to after open
   @endcode
 
   Here you see that the example storage engine has 9 rows called before
@@ -87,9 +87,9 @@
     -Brian
 */
 
-#include "sql_class.h"           // MYSQL_HANDLERTON_INTERFACE_VERSION
+#include "sql_class.h"           // MYBLOCKCHAIN_HANDLERTON_INTERFACE_VERSION
 #include "ha_example.h"
-#include "probes_mysql.h"
+#include "probes_myblockchain.h"
 #include "sql_plugin.h"
 
 static handler *example_create_handler(handlerton *hton,
@@ -98,8 +98,8 @@ static handler *example_create_handler(handlerton *hton,
 
 handlerton *example_hton;
 
-/* Interface to mysqld, to check system tables supported by SE */
-static const char* example_system_database();
+/* Interface to myblockchaind, to check system tables supported by SE */
+static const char* example_system_blockchain();
 static bool example_is_supported_system_table(const char *db,
                                       const char *table_name,
                                       bool is_sql_layer_system_table);
@@ -118,7 +118,7 @@ static int example_init_func(void *p)
   example_hton->state=                     SHOW_OPTION_YES;
   example_hton->create=                    example_create_handler;
   example_hton->flags=                     HTON_CAN_RECREATE;
-  example_hton->system_database=   example_system_database;
+  example_hton->system_blockchain=   example_system_blockchain;
   example_hton->is_supported_system_table= example_is_supported_system_table;
 
   DBUG_RETURN(0);
@@ -195,19 +195,19 @@ const char **ha_example::bas_ext() const
 
 /*
   Following handler function provides access to
-  system database specific to SE. This interface
+  system blockchain specific to SE. This interface
   is optional, so every SE need not implement it.
 */
-const char* ha_example_system_database= NULL;
-const char* example_system_database()
+const char* ha_example_system_blockchain= NULL;
+const char* example_system_blockchain()
 {
-  return ha_example_system_database;
+  return ha_example_system_blockchain;
 }
 
 /*
   List of all system tables specific to the SE.
   Array element would look like below,
-     { "<database_name>", "<system table name>" },
+     { "<blockchain_name>", "<system table name>" },
   The last element MUST be,
      { (const char*)NULL, (const char*)NULL }
 
@@ -418,9 +418,9 @@ int ha_example::index_read_map(uchar *buf, const uchar *key,
 {
   int rc;
   DBUG_ENTER("ha_example::index_read");
-  MYSQL_INDEX_READ_ROW_START(table_share->db.str, table_share->table_name.str);
+  MYBLOCKCHAIN_INDEX_READ_ROW_START(table_share->db.str, table_share->table_name.str);
   rc= HA_ERR_WRONG_COMMAND;
-  MYSQL_INDEX_READ_ROW_DONE(rc);
+  MYBLOCKCHAIN_INDEX_READ_ROW_DONE(rc);
   DBUG_RETURN(rc);
 }
 
@@ -434,9 +434,9 @@ int ha_example::index_next(uchar *buf)
 {
   int rc;
   DBUG_ENTER("ha_example::index_next");
-  MYSQL_INDEX_READ_ROW_START(table_share->db.str, table_share->table_name.str);
+  MYBLOCKCHAIN_INDEX_READ_ROW_START(table_share->db.str, table_share->table_name.str);
   rc= HA_ERR_WRONG_COMMAND;
-  MYSQL_INDEX_READ_ROW_DONE(rc);
+  MYBLOCKCHAIN_INDEX_READ_ROW_DONE(rc);
   DBUG_RETURN(rc);
 }
 
@@ -450,9 +450,9 @@ int ha_example::index_prev(uchar *buf)
 {
   int rc;
   DBUG_ENTER("ha_example::index_prev");
-  MYSQL_INDEX_READ_ROW_START(table_share->db.str, table_share->table_name.str);
+  MYBLOCKCHAIN_INDEX_READ_ROW_START(table_share->db.str, table_share->table_name.str);
   rc= HA_ERR_WRONG_COMMAND;
-  MYSQL_INDEX_READ_ROW_DONE(rc);
+  MYBLOCKCHAIN_INDEX_READ_ROW_DONE(rc);
   DBUG_RETURN(rc);
 }
 
@@ -471,9 +471,9 @@ int ha_example::index_first(uchar *buf)
 {
   int rc;
   DBUG_ENTER("ha_example::index_first");
-  MYSQL_INDEX_READ_ROW_START(table_share->db.str, table_share->table_name.str);
+  MYBLOCKCHAIN_INDEX_READ_ROW_START(table_share->db.str, table_share->table_name.str);
   rc= HA_ERR_WRONG_COMMAND;
-  MYSQL_INDEX_READ_ROW_DONE(rc);
+  MYBLOCKCHAIN_INDEX_READ_ROW_DONE(rc);
   DBUG_RETURN(rc);
 }
 
@@ -492,9 +492,9 @@ int ha_example::index_last(uchar *buf)
 {
   int rc;
   DBUG_ENTER("ha_example::index_last");
-  MYSQL_INDEX_READ_ROW_START(table_share->db.str, table_share->table_name.str);
+  MYBLOCKCHAIN_INDEX_READ_ROW_START(table_share->db.str, table_share->table_name.str);
   rc= HA_ERR_WRONG_COMMAND;
-  MYSQL_INDEX_READ_ROW_DONE(rc);
+  MYBLOCKCHAIN_INDEX_READ_ROW_DONE(rc);
   DBUG_RETURN(rc);
 }
 
@@ -543,10 +543,10 @@ int ha_example::rnd_next(uchar *buf)
 {
   int rc;
   DBUG_ENTER("ha_example::rnd_next");
-  MYSQL_READ_ROW_START(table_share->db.str, table_share->table_name.str,
+  MYBLOCKCHAIN_READ_ROW_START(table_share->db.str, table_share->table_name.str,
                        TRUE);
   rc= HA_ERR_END_OF_FILE;
-  MYSQL_READ_ROW_DONE(rc);
+  MYBLOCKCHAIN_READ_ROW_DONE(rc);
   DBUG_RETURN(rc);
 }
 
@@ -596,10 +596,10 @@ int ha_example::rnd_pos(uchar *buf, uchar *pos)
 {
   int rc;
   DBUG_ENTER("ha_example::rnd_pos");
-  MYSQL_READ_ROW_START(table_share->db.str, table_share->table_name.str,
+  MYBLOCKCHAIN_READ_ROW_START(table_share->db.str, table_share->table_name.str,
                        TRUE);
   rc= HA_ERR_WRONG_COMMAND;
-  MYSQL_READ_ROW_DONE(rc);
+  MYBLOCKCHAIN_READ_ROW_DONE(rc);
   DBUG_RETURN(rc);
 }
 
@@ -673,14 +673,14 @@ int ha_example::extra(enum ha_extra_function operation)
   @details
   Called from item_sum.cc by Item_func_group_concat::clear(),
   Item_sum_count_distinct::clear(), and Item_func_group_concat::clear().
-  Called from sql_delete.cc by mysql_delete().
+  Called from sql_delete.cc by myblockchain_delete().
   Called from sql_select.cc by JOIN::reinit().
   Called from sql_union.cc by st_select_lex_unit::exec().
 
   @see
   Item_func_group_concat::clear(), Item_sum_count_distinct::clear() and
   Item_func_group_concat::clear() in item_sum.cc;
-  mysql_delete() in sql_delete.cc;
+  myblockchain_delete() in sql_delete.cc;
   JOIN::reinit() in sql_select.cc and
   st_select_lex_unit::exec() in sql_union.cc.
 */
@@ -719,7 +719,7 @@ int ha_example::truncate()
   This create a lock on the table. If you are implementing a storage engine
   that can handle transacations look at ha_berkely.cc to see how you will
   want to go about doing this. Otherwise you should consider calling flock()
-  here. Hint: Read the section "locking functions for mysql" in lock.cc to understand
+  here. Hint: Read the section "locking functions for myblockchain" in lock.cc to understand
   this.
 
   @details
@@ -728,7 +728,7 @@ int ha_example::truncate()
 
   @see
   lock.cc by lock_external() and unlock_external() in lock.cc;
-  the section "locking functions for mysql" in lock.cc;
+  the section "locking functions for myblockchain" in lock.cc;
   copy_data_between_tables() in sql_table.cc.
 */
 int ha_example::external_lock(THD *thd, int lock_type)
@@ -746,9 +746,9 @@ int ha_example::external_lock(THD *thd, int lock_type)
 
   @details
   Before adding the lock into the table lock handler (see thr_lock.c),
-  mysqld calls store lock with the requested locks. Store lock can now
+  myblockchaind calls store lock with the requested locks. Store lock can now
   modify a write lock to a read lock (or some other lock), ignore the
-  lock (if we don't want to use MySQL table locks at all), or add locks
+  lock (if we don't want to use MyBlockchain table locks at all), or add locks
   for many tables (like we do when we are using a MERGE handler).
 
   Berkeley DB, for example, changes all WRITE locks to TL_WRITE_ALLOW_WRITE
@@ -758,10 +758,10 @@ int ha_example::external_lock(THD *thd, int lock_type)
   When releasing locks, store_lock() is also called. In this case one
   usually doesn't have to do anything.
 
-  In some exceptional cases MySQL may send a request for a TL_IGNORE;
+  In some exceptional cases MyBlockchain may send a request for a TL_IGNORE;
   This means that we are requesting the same lock as last time and this
   should also be ignored. (This may happen when someone does a flush
-  table when we have opened a part of the tables, in which case mysqld
+  table when we have opened a part of the tables, in which case myblockchaind
   closes and reopens the tables and tries to get the same locks at last
   time). In the future we will probably try to remove this.
 
@@ -770,7 +770,7 @@ int ha_example::external_lock(THD *thd, int lock_type)
   @note
   In this method one should NEVER rely on table->in_use, it may, in fact,
   refer to a different thread! (this happens if get_lock_data() is called
-  from mysql_lock_abort_for_thread() function)
+  from myblockchain_lock_abort_for_thread() function)
 
   @see
   get_lock_data() in lock.cc
@@ -822,10 +822,10 @@ int ha_example::delete_table(const char *name)
   handler.cc and it will delete all files with the file extensions returned
   by bas_ext().
 
-  Called from sql_table.cc by mysql_rename_table().
+  Called from sql_table.cc by myblockchain_rename_table().
 
   @see
-  mysql_rename_table() in sql_table.cc
+  myblockchain_rename_table() in sql_table.cc
 */
 int ha_example::rename_table(const char * from, const char * to)
 {
@@ -857,7 +857,7 @@ ha_rows ha_example::records_in_range(uint inx, key_range *min_key,
 
 /**
   @brief
-  create() is called to create a database. The variable name will have the name
+  create() is called to create a blockchain. The variable name will have the name
   of the table.
 
   @details
@@ -886,8 +886,8 @@ int ha_example::create(const char *name, TABLE *table_arg,
 }
 
 
-struct st_mysql_storage_engine example_storage_engine=
-{ MYSQL_HANDLERTON_INTERFACE_VERSION };
+struct st_myblockchain_storage_engine example_storage_engine=
+{ MYBLOCKCHAIN_HANDLERTON_INTERFACE_VERSION };
 
 static ulong srv_enum_var= 0;
 static ulong srv_ulong_var= 0;
@@ -904,7 +904,7 @@ TYPELIB enum_var_typelib=
   enum_var_names, NULL
 };
 
-static MYSQL_SYSVAR_ENUM(
+static MYBLOCKCHAIN_SYSVAR_ENUM(
   enum_var,                       // name
   srv_enum_var,                   // varname
   PLUGIN_VAR_RQCMDARG,            // opt
@@ -914,7 +914,7 @@ static MYSQL_SYSVAR_ENUM(
   0,                              // def
   &enum_var_typelib);             // typelib
 
-static MYSQL_SYSVAR_ULONG(
+static MYBLOCKCHAIN_SYSVAR_ULONG(
   ulong_var,
   srv_ulong_var,
   PLUGIN_VAR_RQCMDARG,
@@ -926,7 +926,7 @@ static MYSQL_SYSVAR_ULONG(
   1000,
   0);
 
-static MYSQL_SYSVAR_DOUBLE(
+static MYBLOCKCHAIN_SYSVAR_DOUBLE(
   double_var,
   srv_double_var,
   PLUGIN_VAR_RQCMDARG,
@@ -938,7 +938,7 @@ static MYSQL_SYSVAR_DOUBLE(
   1000.5,
   0);                             // reserved always 0
 
-static MYSQL_THDVAR_DOUBLE(
+static MYBLOCKCHAIN_THDVAR_DOUBLE(
   double_thdvar,
   PLUGIN_VAR_RQCMDARG,
   "0.500000..1000.500000",
@@ -949,23 +949,23 @@ static MYSQL_THDVAR_DOUBLE(
   1000.5,
   0);
 
-static struct st_mysql_sys_var* example_system_variables[]= {
-  MYSQL_SYSVAR(enum_var),
-  MYSQL_SYSVAR(ulong_var),
-  MYSQL_SYSVAR(double_var),
-  MYSQL_SYSVAR(double_thdvar),
+static struct st_myblockchain_sys_var* example_system_variables[]= {
+  MYBLOCKCHAIN_SYSVAR(enum_var),
+  MYBLOCKCHAIN_SYSVAR(ulong_var),
+  MYBLOCKCHAIN_SYSVAR(double_var),
+  MYBLOCKCHAIN_SYSVAR(double_thdvar),
   NULL
 };
 
 // this is an example of SHOW_FUNC and of my_snprintf() service
-static int show_func_example(MYSQL_THD thd, struct st_mysql_show_var *var,
+static int show_func_example(MYBLOCKCHAIN_THD thd, struct st_myblockchain_show_var *var,
                              char *buf)
 {
   var->type= SHOW_CHAR;
   var->value= buf; // it's of SHOW_VAR_FUNC_BUFF_SIZE bytes
   my_snprintf(buf, SHOW_VAR_FUNC_BUFF_SIZE,
               "enum_var is %lu, ulong_var is %lu, "
-              "double_var is %f, %.6b", // %b is a MySQL extension
+              "double_var is %f, %.6b", // %b is a MyBlockchain extension
               srv_enum_var, srv_ulong_var, srv_double_var, "really");
   return 0;
 }
@@ -982,14 +982,14 @@ struct example_vars_t
 
 example_vars_t example_vars= {100, 20.01, "three hundred", true, 0, 8250};
 
-static st_mysql_show_var show_status_example[]=
+static st_myblockchain_show_var show_status_example[]=
 {
   {"var1", (char *)&example_vars.var1, SHOW_LONG, SHOW_SCOPE_GLOBAL},
   {"var2", (char *)&example_vars.var2, SHOW_DOUBLE, SHOW_SCOPE_GLOBAL},
   {0,0,SHOW_UNDEF, SHOW_SCOPE_UNDEF} // null terminator required
 };
 
-static struct st_mysql_show_var show_array_example[]=
+static struct st_myblockchain_show_var show_array_example[]=
 {
   {"array", (char *)show_status_example, SHOW_ARRAY, SHOW_SCOPE_GLOBAL},
   {"var3", (char *)&example_vars.var3, SHOW_CHAR, SHOW_SCOPE_GLOBAL},
@@ -997,7 +997,7 @@ static struct st_mysql_show_var show_array_example[]=
   {0,0,SHOW_UNDEF, SHOW_SCOPE_UNDEF}
 };
 
-static struct st_mysql_show_var func_status[]=
+static struct st_myblockchain_show_var func_status[]=
 {
   {"example_func_example", (char *)show_func_example, SHOW_FUNC, SHOW_SCOPE_GLOBAL},
   {"example_status_var5", (char *)&example_vars.var5, SHOW_BOOL, SHOW_SCOPE_GLOBAL},
@@ -1006,12 +1006,12 @@ static struct st_mysql_show_var func_status[]=
   {0,0,SHOW_UNDEF, SHOW_SCOPE_UNDEF}
 };
 
-mysql_declare_plugin(example)
+myblockchain_declare_plugin(example)
 {
-  MYSQL_STORAGE_ENGINE_PLUGIN,
+  MYBLOCKCHAIN_STORAGE_ENGINE_PLUGIN,
   &example_storage_engine,
   "EXAMPLE",
-  "Brian Aker, MySQL AB",
+  "Brian Aker, MyBlockchain AB",
   "Example storage engine",
   PLUGIN_LICENSE_GPL,
   example_init_func,                            /* Plugin Init */
@@ -1022,4 +1022,4 @@ mysql_declare_plugin(example)
   NULL,                                         /* config options */
   0,                                            /* flags */
 }
-mysql_declare_plugin_end;
+myblockchain_declare_plugin_end;

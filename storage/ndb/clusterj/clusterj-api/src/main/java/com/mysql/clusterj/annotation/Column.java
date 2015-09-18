@@ -16,7 +16,7 @@
    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-package com.mysql.clusterj.annotation;
+package com.myblockchain.clusterj.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -24,7 +24,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation for a column in the database.
+ * Annotation for a column in the blockchain.
  */
 @Target({ElementType.FIELD, ElementType.METHOD}) 
 @Retention(RetentionPolicy.RUNTIME)
@@ -38,8 +38,8 @@ public @interface Column
 
     /**
      * Whether the column allows null values to be inserted. This overrides the
-     * database definition and requires that the application provide non-null values
-     * for the database column.
+     * blockchain definition and requires that the application provide non-null values
+     * for the blockchain column.
      * @return whether the column allows null values to be inserted
      */
     String allowsNull() default "";

@@ -21,13 +21,13 @@ use DBI;
 use POSIX;
 use Getopt::Long;
 
-# MySQL Cluster size estimator
+# MyBlockchain Cluster size estimator
 # ----------------------------
 #
 # The purpose of this tool is to work out storage requirements
-# from an existing MySQL database.
+# from an existing MyBlockchain blockchain.
 #
-# This involves connecting to a mysql server and throwing a bunch
+# This involves connecting to a myblockchain server and throwing a bunch
 # of queries at it.
 #
 # We currently estimate sizes for: 4.1, 5.0 and 5.1 to various amounts
@@ -43,7 +43,7 @@ use Getopt::Long;
 # - computes the storage requirements of views (and probably MERGE)
 # - ignores character sets?
 
-package MySQL::NDB::Size::Parameter;
+package MyBlockchain::NDB::Size::Parameter;
 
 use Class::MethodMaker [
 			scalar => 'name',
@@ -58,10 +58,10 @@ use Class::MethodMaker [
 
 1;
 
-package MySQL::NDB::Size::Report;
+package MyBlockchain::NDB::Size::Report;
 
 use Class::MethodMaker [
-			scalar => [ qw( database
+			scalar => [ qw( blockchain
 					dsn ) ],
 			array  => 'versions',
 			hash   => [qw( tables
@@ -71,7 +71,7 @@ use Class::MethodMaker [
 			];
 1;
 
-package MySQL::NDB::Size::Column;
+package MyBlockchain::NDB::Size::Column;
 
 use Class::MethodMaker [
 			new    => [ -hash => 'new' ],
@@ -126,7 +126,7 @@ sub dm
     return $self->{dm};
 }
 
-package MySQL::NDB::Size::Index;
+package MyBlockchain::NDB::Size::Index;
 
 use Class::MethodMaker [
 			new    => [ -hash => 'new' ],
@@ -143,7 +143,7 @@ use Class::MethodMaker [
 			scalar => [ { -default=> 0 },'is_supporting_table' ],
 			];
 
-package MySQL::NDB::Size::Table;
+package MyBlockchain::NDB::Size::Table;
 
 # The following are computed by compute_row_size:
 #  row_dm_size    DataMemory Size per row
@@ -404,7 +404,7 @@ sub compute_estimate
 package main;
 
 my ($dbh,
-    $database,
+    $blockchain,
     $socket,
     $hostname,
     $user,
@@ -418,7 +418,7 @@ my ($help,
     $excludetables,
     $excludedbs);
 
-GetOptions('database|d=s'=>\$database,
+GetOptions('blockchain|d=s'=>\$blockchain,
 	   'hostname=s'=>\$hostname,
 	   'socket=s'=>\$socket,
 	   'user|u=s'=>\$user,
@@ -432,23 +432,23 @@ GetOptions('database|d=s'=>\$database,
 	   'format|f=s'=>\$format,
 	   );
 
-my $report= new MySQL::NDB::Size::Report;
+my $report= new MyBlockchain::NDB::Size::Report;
 
 if($help)
 {
     print STDERR "Usage:\n";
-    print STDERR "\tndb_size.pl --database=<db name>|ALL [--hostname=<host>] "
+    print STDERR "\tndb_size.pl --blockchain=<db name>|ALL [--hostname=<host>] "
 	."[--socket=<socket>] "
 	."[--user=<user>] [--password=<password>] [--help|-h] [--format=(html|text)] [--loadqueries=<file>] [--savequeries=<file>]\n\n";
-    print STDERR "\t--database=<db name> ALL may be specified to examine all "
-	."databases\n";
+    print STDERR "\t--blockchain=<db name> ALL may be specified to examine all "
+	."blockchains\n";
     print STDERR "\t--hostname=<host>:<port> can be used to designate a "
 	."specific port\n";
     print STDERR "\t--hostname defaults to localhost\n";
     print STDERR "\t--user and --password default to empty string\n";
     print STDERR "\t--format=(html|text) Output format\n";
     print STDERR "\t--excludetables Comma separated list of table names to skip\n";
-    print STDERR "\t--excludedbs Comma separated list of database names to skip\n";
+    print STDERR "\t--excludedbs Comma separated list of blockchain names to skip\n";
     print STDERR "\t--savequeries=<file> saves all queries to the DB into <file>\n";
     print STDERR "\t--loadqueries=<file> loads query results from <file>. Doesn't connect to DB.\n";
     exit(1);
@@ -462,22 +462,22 @@ my %queries; # used for loadqueries/savequeries
 if(!$loadqueries)
 {
     my ($host,$port) = split(/:/, $hostname);
-    my $dsn = "DBI:mysql:host=$host";
+    my $dsn = "DBI:myblockchain:host=$host";
     $dsn.= ";port=$port" if ($port);
-    $dsn.= ";mysql_socket=$socket" if ($socket);
+    $dsn.= ";myblockchain_socket=$socket" if ($socket);
     $dbh= DBI->connect($dsn, $user, $password) or exit(1);
     $report->dsn($dsn);
 }
 
 my @dbs;
-if ($database && !($database =~  /^ALL$/i))
+if ($blockchain && !($blockchain =~  /^ALL$/i))
 {
-    @dbs = split(',', $database);
+    @dbs = split(',', $blockchain);
 }
 else
 {
-    # Do all databases
-    @dbs = map { $_->[0] } @{ $dbh->selectall_arrayref("show databases") };
+    # Do all blockchains
+    @dbs = map { $_->[0] } @{ $dbh->selectall_arrayref("show blockchains") };
 }
 
 my %withdb = map {$_ => 1} @dbs;
@@ -485,7 +485,7 @@ foreach (split ",", $excludedbs || '')
 {
     delete $withdb{$_};
 }
-delete $withdb{'mysql'};
+delete $withdb{'myblockchain'};
 delete $withdb{'INFORMATION_SCHEMA'};
 delete $withdb{'information_schema'};
 
@@ -498,11 +498,11 @@ if(!$loadqueries)
 {
   if (scalar(keys %withdb)>1)
   {
-    $report->database("databases: $dblist");
+    $report->blockchain("blockchains: $dblist");
   }
   else
   {
-    $report->database("database: $dblist");
+    $report->blockchain("blockchain: $dblist");
   }
 }
 else
@@ -513,7 +513,7 @@ else
     my $e= eval join("",@q) or die $@;
     %queries= %$e;
     close Q;
-    $report->database("file:$loadqueries");
+    $report->blockchain("file:$loadqueries");
 }
 
 $report->versions('4.1','5.0','5.1');
@@ -539,10 +539,10 @@ else
     if (!$tables) {
 	print "WARNING: problem selecing from INFORMATION SCHEMA ($sql)\n";
 	if ($#dbs>0) {
-	    print "\t attempting to fallback to show tables from $database";
-	    $tables= $dbh->selectall_arrayref("show tables from $database\n");
+	    print "\t attempting to fallback to show tables from $blockchain";
+	    $tables= $dbh->selectall_arrayref("show tables from $blockchain\n");
 	} else {
-	    print "All Databases not supported in 4.1. Please specify --database=\n";
+	    print "All Databases not supported in 4.1. Please specify --blockchain=\n";
 	}
     }
     $queries{"show tables"}= $tables;
@@ -560,7 +560,7 @@ sub do_table {
 
     foreach my $colname (keys %$info)
     {
-	my $col= new MySQL::NDB::Size::Column(name => $colname);
+	my $col= new MyBlockchain::NDB::Size::Column(name => $colname);
 	my ($type, $size);
 
 	$col->Key($$info{$colname}{Key})
@@ -687,7 +687,7 @@ sub do_table {
 	    $report->supporting_tables_set($t->schema().".".$t->name()."\$BLOB_$colname" => 1);
 	    $t->supporting_tables_push($t->schema().".".$t->name()."\$BLOB_$colname");
 
-	    my $st= new MySQL::NDB::Size::Table(name =>
+	    my $st= new MyBlockchain::NDB::Size::Table(name =>
 						$t->name()."\$BLOB_$colname",
 						schema => $t->schema(),
 						rows => $blobsize[0],
@@ -736,10 +736,10 @@ sub do_table {
     #
     # Firstly, we assemble some information about the indexes.
     # We use SHOW INDEX instead of using INFORMATION_SCHEMA so
-    # we can still connect to pre-5.0 mysqlds.
+    # we can still connect to pre-5.0 myblockchainds.
 
     if(!defined($indexes{PRIMARY})) {
-	my $i= new MySQL::NDB::Size::Index(
+	my $i= new MyBlockchain::NDB::Size::Index(
 				    name    => 'PRIMARY',
 				    unique  => 1,
 				    comment =>'Hidden pkey created by NDB',
@@ -755,7 +755,7 @@ sub do_table {
 	$t->indexed_columns_set('HIDDEN_NDB_PKEY' => 1);
 
 	$t->columns_set('HIDDEN_NDB_PKEY' =>
-			new MySQL::NDB::Size::Column(
+			new MyBlockchain::NDB::Size::Column(
 						     name => 'HIDDEN_NDB_PKEY',
 						     type => 'bigint',
 						     dm   => 8,
@@ -768,7 +768,7 @@ sub do_table {
     if(defined($indexes{'PRIMARY'}))
     {
 	my $index= 'PRIMARY';
-	my $i= new MySQL::NDB::Size::Index(
+	my $i= new MyBlockchain::NDB::Size::Index(
 				name    => $index,
 				unique  => $indexes{$index}{unique},
 				comment => $indexes{$index}{comment},
@@ -791,7 +791,7 @@ sub do_table {
 
 	if(!$indexes{$index}{unique})
 	{
-	    my $i= new MySQL::NDB::Size::Index(
+	    my $i= new MyBlockchain::NDB::Size::Index(
 				name    => $index,
 				unique  => $indexes{$index}{unique},
 				comment => $indexes{$index}{comment},
@@ -805,7 +805,7 @@ sub do_table {
 	}
 	else
 	{
-	    my $i= new MySQL::NDB::Size::Index(
+	    my $i= new MyBlockchain::NDB::Size::Index(
 				name    => $index,
 				unique  => $indexes{$index}{unique},
 				comment => $indexes{$index}{comment},
@@ -831,7 +831,7 @@ sub do_table {
 	    $t->indexed_columns_set($_ => 1)
 		foreach @{$indexes{$index}{columns}};
 
-	    my $st= new MySQL::NDB::Size::Table(name => $idxname,
+	    my $st= new MyBlockchain::NDB::Size::Table(name => $idxname,
 						real_table_name => $t->table_name(),
 						rows => $count[0],
 						schema => $t->schema(),
@@ -865,7 +865,7 @@ sub do_table {
 foreach(@{$tables})
 {
     my $table= @{$_}[0];
-    my $schema = @{$_}[1] || $database;
+    my $schema = @{$_}[1] || $blockchain;
     my $info;
     {
 	my $sql= 'describe `'.$schema.'`.`'.$table.'`';
@@ -925,7 +925,7 @@ foreach(@{$tables})
 		$i->{Column_name};
 	}
     }
-    my $t= new MySQL::NDB::Size::Table(name => $table,
+    my $t= new MyBlockchain::NDB::Size::Table(name => $table,
 				       schema => $schema,
 				       rows => $count[0],
 				       row_dm_overhead =>
@@ -950,7 +950,7 @@ while(my ($tname,$t)= $report->tables_each())
 # Now parameters....
 
 $report->parameters_set('NoOfTables' =>
-			new MySQL::NDB::Size::Parameter(name=>'NoOfTables',
+			new MyBlockchain::NDB::Size::Parameter(name=>'NoOfTables',
 							mem_per_item=>20,
 							default=>128)
 			);
@@ -959,7 +959,7 @@ $report->parameters->{'NoOfTables'}->value_set($_ => scalar @{$report->tables_ke
     foreach $report->versions;
 
 $report->parameters_set('NoOfAttributes' =>
-			new MySQL::NDB::Size::Parameter(name=>'NoOfAttributes',
+			new MyBlockchain::NDB::Size::Parameter(name=>'NoOfAttributes',
 							mem_per_item=>0.2,
 							default=>1000)
 			);
@@ -976,7 +976,7 @@ $report->parameters_set('NoOfAttributes' =>
 
 
 $report->parameters_set('NoOfOrderedIndexes' =>
-			new MySQL::NDB::Size::Parameter(name=>'NoOfOrderedIndexes',
+			new MyBlockchain::NDB::Size::Parameter(name=>'NoOfOrderedIndexes',
 							mem_per_item=>10,
 							default=>128)
 			);
@@ -992,7 +992,7 @@ $report->parameters_set('NoOfOrderedIndexes' =>
 }
 
 $report->parameters_set('NoOfUniqueHashIndexes' =>
-			new MySQL::NDB::Size::Parameter(name=>'NoOfUniqueHashIndexes',
+			new MyBlockchain::NDB::Size::Parameter(name=>'NoOfUniqueHashIndexes',
 							mem_per_item=>15,
 							default=>64)
 			);
@@ -1009,7 +1009,7 @@ $report->parameters_set('NoOfUniqueHashIndexes' =>
 
 # Size of trigger is not documented
 $report->parameters_set('NoOfTriggers' =>
-			new MySQL::NDB::Size::Parameter(name=>'NoOfTriggers',
+			new MyBlockchain::NDB::Size::Parameter(name=>'NoOfTriggers',
 							mem_per_item=>0,
 							default=>768)
 			);
@@ -1032,13 +1032,13 @@ $report->parameters_set('NoOfTriggers' =>
 
 # DataMemory is in bytes...
 $report->parameters_set('DataMemory' =>
-			new MySQL::NDB::Size::Parameter(name=>'DataMemory',
+			new MyBlockchain::NDB::Size::Parameter(name=>'DataMemory',
 							mem_per_item=>1024,
 							unit=>'KB',
 							default=>80*1024)
 			);
 $report->parameters_set('IndexMemory' =>
-			new MySQL::NDB::Size::Parameter(name=>'IndexMemory',
+			new MyBlockchain::NDB::Size::Parameter(name=>'IndexMemory',
 							mem_per_item=>1024,
 							unit=>'KB',
 							default=>18*1024)
@@ -1079,16 +1079,16 @@ $format= "text" unless $format;
 
 if($format eq 'text')
 {
-    my $text_out= new MySQL::NDB::Size::Output::Text($report);
+    my $text_out= new MyBlockchain::NDB::Size::Output::Text($report);
     $text_out->output();
 }
 elsif($format eq 'html')
 {
-    my $html_out= new MySQL::NDB::Size::Output::HTML($report);
+    my $html_out= new MyBlockchain::NDB::Size::Output::HTML($report);
     $html_out->output();
 }
 
-package MySQL::NDB::Size::Output::Text;
+package MyBlockchain::NDB::Size::Output::Text;
 use Data::Dumper;
 
 sub new { bless { report=> $_[1] }, $_[0]}
@@ -1105,7 +1105,7 @@ sub output
     my $self= shift;
     my $r= $self->{report};
 
-    print $self->ul("ndb_size.pl report for ". $r->database().
+    print $self->ul("ndb_size.pl report for ". $r->blockchain().
 		    " (".(($r->tables_count()||0)-($r->supporting_tables_count()||0)).
 		    " tables)");
 
@@ -1382,7 +1382,7 @@ sub table
     my $t= shift;
 }
 
-package MySQL::NDB::Size::Output::HTML;
+package MyBlockchain::NDB::Size::Output::HTML;
 
 sub new { bless { report=> $_[1] }, $_[0]}
 
@@ -1452,9 +1452,9 @@ sub output
 	<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 	<head>
 	<meta http-equiv="Content-Type" content="application/xhtml+xml; charset=utf-8"/>
-	<meta name="keywords" content="MySQL Cluster" />
+	<meta name="keywords" content="MyBlockchain Cluster" />
 ENDHTML
-print "<title>MySQL Cluster size estimate for ".$r->database()."</title>";
+print "<title>MyBlockchain Cluster size estimate for ".$r->blockchain()."</title>";
 print <<ENDHTML;
 	<style type="text/css">
 	table   { border-collapse: collapse }
@@ -1464,7 +1464,7 @@ print <<ENDHTML;
 <body>
 ENDHTML
 
-    print $self->h1("ndb_size.pl report for ". $r->database().
+    print $self->h1("ndb_size.pl report for ". $r->blockchain().
 		    " (".(($r->tables_count()||0)-($r->supporting_tables_count()||0)).
 		    " tables)");
 

@@ -15,7 +15,7 @@
    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#include "mysql_query_runner.h"
+#include "myblockchain_query_runner.h"
 #include "instance_callback.h"
 #include "sql_string.h"
 #include "m_ctype.h"
@@ -26,7 +26,7 @@ using Mysql::Instance_callback;
 using std::vector;
 using std::string;
 
-Mysql_query_runner::Mysql_query_runner(MYSQL* connection)
+Mysql_query_runner::Mysql_query_runner(MYBLOCKCHAIN* connection)
   : m_is_processing(new my_boost::atomic<bool>(false)),
   m_connection(connection)
 {}
@@ -53,7 +53,7 @@ Mysql_query_runner& Mysql_query_runner::add_message_callback(
   return *this;
 }
 
-MYSQL* Mysql_query_runner::get_low_level_connection() const
+MYBLOCKCHAIN* Mysql_query_runner::get_low_level_connection() const
 {
   return m_connection;
 }
@@ -87,7 +87,7 @@ int64 Mysql_query_runner::run_query(string query)
    */
   if (!m_is_processing->compare_exchange_strong(expected_value, true))
     return this->report_message(Message_data(1, "Cannot execute more than one "
-      "MySQL query in parallel on single MySQL connection.",
+      "MyBlockchain query in parallel on single MyBlockchain connection.",
       Message_type_error));
 
   uint64 result= this->run_query_unguarded(query);
@@ -98,33 +98,33 @@ int64 Mysql_query_runner::run_query(string query)
 
 int64 Mysql_query_runner::run_query_unguarded(string query)
 {
-  int ret= mysql_query(m_connection, query.c_str());
+  int ret= myblockchain_query(m_connection, query.c_str());
 
   if (ret != 0)
-    return this->report_mysql_error();
+    return this->report_myblockchain_error();
 
-  MYSQL_RES* results= mysql_use_result(m_connection);
+  MYBLOCKCHAIN_RES* results= myblockchain_use_result(m_connection);
 
   if (results != NULL)
   {
     for (;;)
     {
       // Feed result callbacks with results.
-      MYSQL_ROW row= mysql_fetch_row(results);
+      MYBLOCKCHAIN_ROW row= myblockchain_fetch_row(results);
 
       if (row == NULL)
       {
         // NULL row indicates end of rows or error
-        if (mysql_errno(m_connection) == 0)
+        if (myblockchain_errno(m_connection) == 0)
           break;
         else
         {
-          mysql_free_result(results);
-          return this->report_mysql_error();
+          myblockchain_free_result(results);
+          return this->report_myblockchain_error();
         }
       }
 
-      unsigned int columns= mysql_field_count(m_connection);
+      unsigned int columns= myblockchain_field_count(m_connection);
       Row* processed_row= new Row(results, columns, row);
 
       vector<I_callable<int64, const Row& >*>::reverse_iterator it;
@@ -135,30 +135,30 @@ int64 Mysql_query_runner::run_query_unguarded(string query)
         int64 callback_result= (**it)(*processed_row);
         if (callback_result != 0)
         {
-          mysql_free_result(results);
+          myblockchain_free_result(results);
           return callback_result;
         }
       }
     }
-    mysql_free_result(results);
+    myblockchain_free_result(results);
   }
   else
   {
-    if (mysql_errno(m_connection) != 0)
-      return this->report_mysql_error();
+    if (myblockchain_errno(m_connection) != 0)
+      return this->report_myblockchain_error();
   }
 
   // Get all notes, warnings and errors of last query.
-  ret= mysql_query(m_connection, "SHOW WARNINGS");
+  ret= myblockchain_query(m_connection, "SHOW WARNINGS");
 
   // Connection error occurred.
   if (ret != 0)
-    return this->report_mysql_error();
+    return this->report_myblockchain_error();
 
-  results= mysql_use_result(m_connection);
+  results= myblockchain_use_result(m_connection);
 
   if (results == NULL)
-    return this->report_mysql_error();
+    return this->report_myblockchain_error();
 
   uint64 result_code= 0;
 
@@ -166,20 +166,20 @@ int64 Mysql_query_runner::run_query_unguarded(string query)
   for (;result_code == 0;)
   {
     // Feed message callbacks with results.
-    MYSQL_ROW row= mysql_fetch_row(results);
+    MYBLOCKCHAIN_ROW row= myblockchain_fetch_row(results);
 
     if (row == NULL)
     {
       // NULL row indicates end of rows or error
-      if (mysql_errno(m_connection) == 0)
+      if (myblockchain_errno(m_connection) == 0)
         break;
       else
       {
-        result_code= this->report_mysql_error();
+        result_code= this->report_myblockchain_error();
         break;
       }
     }
-    unsigned int columns = mysql_field_count(m_connection);
+    unsigned int columns = myblockchain_field_count(m_connection);
     Row* processed_row= new Row(results, columns, row);
 
     result_code= this->report_message(Message_data(
@@ -187,15 +187,15 @@ int64 Mysql_query_runner::run_query_unguarded(string query)
       (*processed_row)[2],
       this->get_message_type_from_severity((*processed_row)[0])));
   }
-  mysql_free_result(results);
+  myblockchain_free_result(results);
 
   return result_code;
 }
 
-int64 Mysql_query_runner::report_mysql_error()
+int64 Mysql_query_runner::report_myblockchain_error()
 {
-  return this->report_message(Message_data(mysql_errno(m_connection),
-    mysql_error(m_connection), Message_type_error));
+  return this->report_message(Message_data(myblockchain_errno(m_connection),
+    myblockchain_error(m_connection), Message_type_error));
 }
 
 int64 Mysql_query_runner::report_message(Message_data message)
@@ -285,7 +285,7 @@ void Mysql_query_runner::append_escape_string(
   size_t required_capacity= start_lenght + original_length * 2 + 1;
   destination_string->resize(required_capacity);
 
-  int length = mysql_real_escape_string_quote(
+  int length = myblockchain_real_escape_string_quote(
     m_connection, &((*destination_string)[0]) + start_lenght, original,
     original_length, '"');
   destination_string->resize(start_lenght + length);
@@ -298,7 +298,7 @@ void Mysql_query_runner::append_hex_string(
   size_t required_capacity= start_lenght + original_length * 2 + 1;
   destination_string->resize(required_capacity);
 
-  int length = mysql_hex_string(
+  int length = myblockchain_hex_string(
     &((*destination_string)[0]) + start_lenght, original,
     original_length);
   destination_string->resize(start_lenght + length);
@@ -315,15 +315,15 @@ void Mysql_query_runner::cleanup_result(
   result->clear();
 }
 
-Mysql_query_runner::Row::Row(MYSQL_RES* mysql_result_info, unsigned int column_count,
-                             MYSQL_ROW row)
+Mysql_query_runner::Row::Row(MYBLOCKCHAIN_RES* myblockchain_result_info, unsigned int column_count,
+                             MYBLOCKCHAIN_ROW row)
   : m_buffer(NULL),
   m_buffer_capacity(0),
   m_buffer_size(0),
-  m_mysql_result_info(mysql_result_info)
+  m_myblockchain_result_info(myblockchain_result_info)
 {
   size_t total_length= 0;
-  unsigned long* column_lengths= mysql_fetch_lengths(mysql_result_info);
+  unsigned long* column_lengths= myblockchain_fetch_lengths(myblockchain_result_info);
   for (unsigned int column = 0; column < column_count; column++)
     total_length+= column_lengths[column] + 1;
 
@@ -430,9 +430,9 @@ Mysql_query_runner::Row::Iterator Mysql_query_runner::Row::end() const
   return Mysql_query_runner::Row::Iterator(*this, m_buffer_starts.size() - 1);
 }
 
-MYSQL_RES* Mysql_query_runner::Row::get_mysql_result_info() const
+MYBLOCKCHAIN_RES* Mysql_query_runner::Row::get_myblockchain_result_info() const
 {
-  return m_mysql_result_info;
+  return m_myblockchain_result_info;
 }
 
 Mysql_query_runner::Row::Iterator::Iterator(const Row& row, std::size_t index)

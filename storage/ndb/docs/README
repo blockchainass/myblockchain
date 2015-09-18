@@ -1,4 +1,4 @@
-Create MySQL Cluster user documentation from source code
+Create MyBlockchain Cluster user documentation from source code
 --------------------------------------------------------
 (All these require Doxygen.) 
 
@@ -27,4 +27,4 @@ or at (for Red Hat 9.0 RPMs):
   http://dentrassi.de/download/doxygen/
 
 --
-lars@mysql.com
+lars@myblockchain.com

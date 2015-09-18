@@ -20,8 +20,8 @@
 #include "rewriter.h"
 #include "rule.h"
 #include "nullable.h"
-#include <mysql/service_parser.h>
-#include <mysql/service_rules_table.h>
+#include <myblockchain/service_parser.h>
+#include <myblockchain/service_rules_table.h>
 #include <hash.h>
 
 #include "template_utils.h"
@@ -72,7 +72,7 @@ Rewriter::Rewriter()
 Rewriter::~Rewriter() { my_hash_free(&m_digests); }
 
 
-bool Rewriter::load_rule(MYSQL_THD thd, Persisted_rule *diskrule)
+bool Rewriter::load_rule(MYBLOCKCHAIN_THD thd, Persisted_rule *diskrule)
 {
   std::auto_ptr<Rule> memrule_ptr(new Rule);
   Rule *memrule= memrule_ptr.get();
@@ -118,7 +118,7 @@ bool Rewriter::load_rule(MYSQL_THD thd, Persisted_rule *diskrule)
   Normal debug sync points will not work in the THD that the plugin creates,
   so we have to call the debug sync functions ourselves.
 */
-static void do_debug_sync(MYSQL_THD thd)
+static void do_debug_sync(MYBLOCKCHAIN_THD thd)
 {
   DBUG_ASSERT(opt_debug_sync_timeout > 0);
   const char act[]= "now signal parked wait_for go";
@@ -126,7 +126,7 @@ static void do_debug_sync(MYSQL_THD thd)
 }
 #endif
 
-void Rewriter::do_refresh(MYSQL_THD session_thd)
+void Rewriter::do_refresh(MYBLOCKCHAIN_THD session_thd)
 {
   bool saw_rule_error= false;
 
@@ -178,7 +178,7 @@ namespace {
 struct Refresh_callback_args
 {
   Rewriter *me;
-  MYSQL_THD session_thd;
+  MYBLOCKCHAIN_THD session_thd;
 };
 
 extern "C"
@@ -192,7 +192,7 @@ void *refresh_callback(void *p_args)
 } // namespace
 
 
-Rewriter::Load_status Rewriter::refresh(MYSQL_THD thd)
+Rewriter::Load_status Rewriter::refresh(MYBLOCKCHAIN_THD thd)
 {
   services::Session session(thd);
 
@@ -201,15 +201,15 @@ Rewriter::Load_status Rewriter::refresh(MYSQL_THD thd)
   m_refresh_status= REWRITER_OK;
 
   my_thread_handle handle;
-  mysql_parser_start_thread(session.thd(), refresh_callback, &args, &handle);
+  myblockchain_parser_start_thread(session.thd(), refresh_callback, &args, &handle);
 
-  mysql_parser_join_thread(&handle);
+  myblockchain_parser_join_thread(&handle);
 
   return m_refresh_status;
 }
 
 
-Rewrite_result Rewriter::rewrite_query(MYSQL_THD thd, const uchar *key)
+Rewrite_result Rewriter::rewrite_query(MYBLOCKCHAIN_THD thd, const uchar *key)
 {
   HASH_SEARCH_STATE state;
   Rewrite_result result;

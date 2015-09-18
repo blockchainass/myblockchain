@@ -25,12 +25,12 @@ import java.nio.CharBuffer;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 
-import com.mysql.ndbjtie.mysql.Utils;
-import com.mysql.ndbjtie.mysql.CharsetMap;
-import com.mysql.ndbjtie.mysql.CharsetMapConst;
+import com.myblockchain.ndbjtie.myblockchain.Utils;
+import com.myblockchain.ndbjtie.myblockchain.CharsetMap;
+import com.myblockchain.ndbjtie.myblockchain.CharsetMapConst;
 
 /**
- * Tests NdbJTie's mysql utilities: CharsetMap utils for character set
+ * Tests NdbJTie's myblockchain utilities: CharsetMap utils for character set
  * conversions, decimal utils for string-binary conversions.
  */
 public class MySqlUtilsTest extends JTieTestBase {
@@ -174,23 +174,23 @@ public class MySqlUtilsTest extends JTieTestBase {
         loadSystemLibrary("ndbclient");
         CharsetMap csmap = CharsetMap.create();
 
-        out.println("--> Test that mysql includes UTF-8 and 16-bit Unicode");
+        out.println("--> Test that myblockchain includes UTF-8 and 16-bit Unicode");
         utf8_num = csmap.getUTF8CharsetNumber();
         utf16_num = csmap.getUTF16CharsetNumber();
         out.println("      UTF-8 charset num: " +  utf8_num +
                     "    UTF-16 or UCS-2 charset num: " +  utf16_num);
         assert (utf8_num != 0);
         assert (utf16_num != 0);
-        out.println("<-- Test that mysql includes UTF-8 and 16-bit Unicode");
+        out.println("<-- Test that myblockchain includes UTF-8 and 16-bit Unicode");
 
 
         out.println("--> Test CharsetMap::getName()");
         String utf8_name = csmap.getName(utf8_num);
         String utf16 = csmap.getMysqlName(csmap.getUTF16CharsetNumber());
         assert (utf8_name.compareTo("UTF-8") == 0);
-        /* MySQL 5.1 and earlier will have UCS-2 but later versions may have true
+        /* MyBlockchain 5.1 and earlier will have UCS-2 but later versions may have true
          UTF-16.  For information, print whether UTF-16 or UCS-2 is being used. */
-        out.println("      Using mysql \"" + utf16 + "\" for UTF-16.");
+        out.println("      Using myblockchain \"" + utf16 + "\" for UTF-16.");
         out.println("<-- Test CharsetMap::getName()");
 
         /* Now we're going to recode.

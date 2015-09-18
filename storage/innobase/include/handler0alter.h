@@ -24,9 +24,9 @@ Smart ALTER TABLE
 /*************************************************************//**
 Copies an InnoDB record to table->record[0]. */
 void
-innobase_rec_to_mysql(
+innobase_rec_to_myblockchain(
 /*==================*/
-	struct TABLE*		table,	/*!< in/out: MySQL table */
+	struct TABLE*		table,	/*!< in/out: MyBlockchain table */
 	const rec_t*		rec,	/*!< in: record */
 	const dict_index_t*	index,	/*!< in: index */
 	const ulint*		offsets)/*!< in: rec_get_offsets(
@@ -36,9 +36,9 @@ innobase_rec_to_mysql(
 /*************************************************************//**
 Copies an InnoDB index entry to table->record[0]. */
 void
-innobase_fields_to_mysql(
+innobase_fields_to_myblockchain(
 /*=====================*/
-	struct TABLE*		table,	/*!< in/out: MySQL table */
+	struct TABLE*		table,	/*!< in/out: MyBlockchain table */
 	const dict_index_t*	index,	/*!< in: InnoDB index */
 	const dfield_t*		fields)	/*!< in: InnoDB index fields */
 	__attribute__((nonnull));
@@ -46,9 +46,9 @@ innobase_fields_to_mysql(
 /*************************************************************//**
 Copies an InnoDB row to table->record[0]. */
 void
-innobase_row_to_mysql(
+innobase_row_to_myblockchain(
 /*==================*/
-	struct TABLE*		table,	/*!< in/out: MySQL table */
+	struct TABLE*		table,	/*!< in/out: MyBlockchain table */
 	const dict_table_t*	itab,	/*!< in: InnoDB table */
 	const dtuple_t*		row)	/*!< in: InnoDB row */
 	__attribute__((nonnull));
@@ -58,7 +58,7 @@ Resets table->record[0]. */
 void
 innobase_rec_reset(
 /*===============*/
-	struct TABLE*		table)		/*!< in/out: MySQL table */
+	struct TABLE*		table)		/*!< in/out: MyBlockchain table */
 	__attribute__((nonnull));
 
 /** Generate the next autoinc based on a snapshot of the session

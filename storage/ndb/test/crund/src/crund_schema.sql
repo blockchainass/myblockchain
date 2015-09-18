@@ -19,7 +19,7 @@ DROP DATABASE IF EXISTS crunddb;
 CREATE DATABASE crunddb;
 USE crunddb;
 
--- schema details: $ ndb_desc -c localhost <table lower case> -d <database>
+-- schema details: $ ndb_desc -c localhost <table lower case> -d <blockchain>
 
 CREATE TABLE a (
         id              INT     PRIMARY KEY,
@@ -85,7 +85,7 @@ CREATE TABLE s (
 
 -- aggregated results from crund runs
 -- example queries:
--- load data infile '/Users/mz/mysql/crundcharting/log_results.csv' ignore into table results fields terminated by ',' ignore 1 lines;
+-- load data infile '/Users/mz/myblockchain/crundcharting/log_results.csv' ignore into table results fields terminated by ',' ignore 1 lines;
 CREATE TABLE results (
         metric          VARCHAR(16)     NOT NULL,
         cload           VARCHAR(16)     NOT NULL,

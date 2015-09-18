@@ -148,7 +148,7 @@ row_upd_index_is_referenced(
 	}
 
 	if (trx->dict_operation_lock_mode == 0) {
-		row_mysql_freeze_data_dictionary(trx);
+		row_myblockchain_freeze_data_dictionary(trx);
 		froze_data_dict = TRUE;
 	}
 
@@ -160,7 +160,7 @@ row_upd_index_is_referenced(
 	is_referenced = (it != table->referenced_set.end());
 
 	if (froze_data_dict) {
-		row_mysql_unfreeze_data_dictionary(trx);
+		row_myblockchain_unfreeze_data_dictionary(trx);
 	}
 
 	return(is_referenced);
@@ -220,7 +220,7 @@ row_upd_check_references_constraints(
 	if (trx->dict_operation_lock_mode == 0) {
 		got_s_lock = TRUE;
 
-		row_mysql_freeze_data_dictionary(trx);
+		row_myblockchain_freeze_data_dictionary(trx);
 	}
 
 	for (dict_foreign_set::iterator it = table->referenced_set.begin();
@@ -275,7 +275,7 @@ row_upd_check_references_constraints(
 
 func_exit:
 	if (got_s_lock) {
-		row_mysql_unfreeze_data_dictionary(trx);
+		row_myblockchain_unfreeze_data_dictionary(trx);
 	}
 
 	mem_heap_free(heap);
@@ -312,7 +312,7 @@ upd_node_create(
 #endif /* !UNIV_HOTBACKUP */
 
 /*********************************************************************//**
-Updates the trx id and roll ptr field in a clustered index record in database
+Updates the trx id and roll ptr field in a clustered index record in blockchain
 recovery. */
 void
 row_upd_rec_sys_fields_in_recovery(
@@ -2040,7 +2040,7 @@ row_upd_sec_index_entry(
 		log_free_check();
 	}
 
-	DEBUG_SYNC_C_IF_THD(trx->mysql_thd,
+	DEBUG_SYNC_C_IF_THD(trx->myblockchain_thd,
 			    "before_row_upd_sec_index_entry");
 
 	mtr_start(&mtr);
@@ -2146,7 +2146,7 @@ row_upd_sec_index_entry(
 			and completed the secondary index creation
 			before we got here, the old secondary index
 			record would not exist. The CREATE INDEX
-			should be waiting for a MySQL meta-data lock
+			should be waiting for a MyBlockchain meta-data lock
 			upgrade at least until this UPDATE returns.
 			After that point, set_committed(true) would be
 			invoked by commit_inplace_alter_table(). */
@@ -2349,7 +2349,7 @@ row_upd_clust_rec_by_insert_inherit_func(
 Marks the clustered index record deleted and inserts the updated version
 of the record to the index. This function should be used when the ordering
 fields of the clustered index record change. This should be quite rare in
-database applications.
+blockchain applications.
 @return DB_SUCCESS if operation successfully completed, else error
 code or DB_LOCK_WAIT */
 static __attribute__((nonnull, warn_unused_result))
@@ -2736,7 +2736,7 @@ row_upd_clust_step(
 	ulint	mode;
 
 	DEBUG_SYNC_C_IF_THD(
-		thr_get_trx(thr)->mysql_thd,
+		thr_get_trx(thr)->myblockchain_thd,
 		"innodb_row_upd_clust_step_enter");
 
 	if (dict_index_is_online_ddl(index)) {
@@ -2816,10 +2816,10 @@ row_upd_clust_step(
 		goto exit_func;
 	}
 
-	/* If the update is made for MySQL, we already have the update vector
+	/* If the update is made for MyBlockchain, we already have the update vector
 	ready, else we have to do some evaluation: */
 
-	if (UNIV_UNLIKELY(!node->in_mysql_interface)) {
+	if (UNIV_UNLIKELY(!node->in_myblockchain_interface)) {
 		/* Copy the necessary columns from clust_rec and calculate the
 		new values to set */
 		row_upd_copy_columns(rec, offsets,
@@ -2847,7 +2847,7 @@ row_upd_clust_step(
 		moves the record forward in index so that it is again
 		updated when the cursor arrives there? Solution: the
 		read operation must check the undo record undo number when
-		choosing records to update. MySQL solves now the problem
+		choosing records to update. MyBlockchain solves now the problem
 		externally! */
 
 		err = row_upd_clust_rec_by_insert(
@@ -2905,9 +2905,9 @@ row_upd(
 	DBUG_PRINT("row_upd", ("foreign_id: %s",
 			       node->foreign ? node->foreign->id: "NULL"));
 
-	if (UNIV_LIKELY(node->in_mysql_interface)) {
+	if (UNIV_LIKELY(node->in_myblockchain_interface)) {
 
-		/* We do not get the cmpl_info value from the MySQL
+		/* We do not get the cmpl_info value from the MyBlockchain
 		interpreter: we must calculate it on the fly: */
 
 		if (node->is_delete
@@ -2940,7 +2940,7 @@ row_upd(
 		DBUG_RETURN(DB_SUCCESS);
 	}
 
-	DEBUG_SYNC_C_IF_THD(thr_get_trx(thr)->mysql_thd,
+	DEBUG_SYNC_C_IF_THD(thr_get_trx(thr)->myblockchain_thd,
 			    "after_row_upd_clust");
 
 	DBUG_EXECUTE_IF("row_upd_skip_sec", node->index = NULL;);
@@ -3044,7 +3044,7 @@ row_upd_step(
 		}
 	}
 
-	/* sel_node is NULL if we are in the MySQL interface */
+	/* sel_node is NULL if we are in the MyBlockchain interface */
 
 	if (sel_node && (sel_node->state != SEL_NODE_FETCH)) {
 

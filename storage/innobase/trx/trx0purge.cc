@@ -467,7 +467,7 @@ trx_purge_free_segment(
 
 	/* We may free the undo log segment header page; it must be freed
 	within the same mtr as the undo log header is removed from the
-	history list: otherwise, in case of a database crash, the segment
+	history list: otherwise, in case of a blockchain crash, the segment
 	could become inaccessible garbage in the file space. */
 
 	flst_cut_end(rseg_hdr + TRX_RSEG_HISTORY,
@@ -1274,7 +1274,7 @@ trx_purge_rseg_get_next_history_log(
 		trx_sys_mutex_enter();
 
 		/* Add debug code to track history list corruption reported
-		on the MySQL mailing list on Nov 9, 2004. The fut0lst.cc
+		on the MyBlockchain mailing list on Nov 9, 2004. The fut0lst.cc
 		file-based list was corrupt. The prev node pointer was
 		FIL_NULL, even though the list length was over 8 million nodes!
 		We assume that purge truncates the history list in large
@@ -1286,7 +1286,7 @@ trx_purge_rseg_get_next_history_log(
 				" list, but its length is still reported as "
 				<< trx_sys->rseg_history_len << "! Make"
 				" a detailed bug report, and submit it to"
-				" http://bugs.mysql.com";
+				" http://bugs.myblockchain.com";
 			ut_ad(0);
 		}
 

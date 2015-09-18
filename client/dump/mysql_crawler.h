@@ -15,21 +15,21 @@
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifndef MYSQL_CRAWLER_INCLUDED
-#define MYSQL_CRAWLER_INCLUDED
+#ifndef MYBLOCKCHAIN_CRAWLER_INCLUDED
+#define MYBLOCKCHAIN_CRAWLER_INCLUDED
 
 #include "abstract_crawler.h"
-#include "abstract_mysql_chain_element_extension.h"
+#include "abstract_myblockchain_chain_element_extension.h"
 #include "i_connection_provider.h"
 #include "i_callable.h"
 #include "dump_start_dump_task.h"
 #include "abstract_dump_task.h"
-#include "database.h"
+#include "blockchain.h"
 #include "table.h"
 #include "dump_end_dump_task.h"
-#include "mysql_chain_element_options.h"
-#include "database_start_dump_task.h"
-#include "database_end_dump_task.h"
+#include "myblockchain_chain_element_options.h"
+#include "blockchain_start_dump_task.h"
+#include "blockchain_end_dump_task.h"
 #include "tables_definition_ready_dump_task.h"
 #include "simple_id_generator.h"
 #include "base/message_data.h"
@@ -39,10 +39,10 @@ namespace Tools{
 namespace Dump{
 
 /**
-  Searches DB objects using connection to MYSQL server.
+  Searches DB objects using connection to MYBLOCKCHAIN server.
  */
 class Mysql_crawler
-  : public Abstract_crawler, public Abstract_mysql_chain_element_extension
+  : public Abstract_crawler, public Abstract_myblockchain_chain_element_extension
 {
 public:
   Mysql_crawler(
@@ -57,7 +57,7 @@ public:
   virtual void enumerate_objects();
 
 private:
-  void enumerate_database_objects(const Database& db);
+  void enumerate_blockchain_objects(const Database& db);
 
   void enumerate_tables(const Database& db);
 
@@ -89,8 +89,8 @@ private:
 
   Dump_start_dump_task* m_dump_start_task;
   Dump_end_dump_task* m_dump_end_task;
-  Database_start_dump_task* m_current_database_start_dump_task;
-  Database_end_dump_task* m_current_database_end_dump_task;
+  Database_start_dump_task* m_current_blockchain_start_dump_task;
+  Database_end_dump_task* m_current_blockchain_end_dump_task;
   Tables_definition_ready_dump_task* m_tables_definition_ready_dump_task;
 };
 

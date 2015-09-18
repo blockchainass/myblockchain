@@ -90,7 +90,7 @@ static int win_lock(File fd, int locktype, my_off_t start, my_off_t length,
     lock could step in here. For reasons described in Bug#38133 and
     Bug#41124 (Server hangs on Windows with --external-locking after
     INSERT...SELECT) and in the review thread at
-    http://lists.mysql.com/commits/60721 it seems to be the better
+    http://lists.myblockchain.com/commits/60721 it seems to be the better
     option than not to unlock here.
     If one day someone notices a way how to do file lock type changes
     on Windows without unlocking before taking the new lock, please

@@ -1,4 +1,4 @@
-#ifndef MYSQL_SERVICE_THD_ALLOC_INCLUDED
+#ifndef MYBLOCKCHAIN_SERVICE_THD_ALLOC_INCLUDED
 /* Copyright (c) 2009, 2015, Oracle and/or its affiliates. All rights reserved.
 
    This program is free software; you can redistribute it and/or modify
@@ -27,34 +27,34 @@
   allocations - they are better served with my_malloc.
 */
 
-#ifndef MYSQL_ABI_CHECK
+#ifndef MYBLOCKCHAIN_ABI_CHECK
 #include <stdlib.h>
 #endif
 
 #ifdef __cplusplus
 class THD;
-#define MYSQL_THD THD*
+#define MYBLOCKCHAIN_THD THD*
 #else
-#define MYSQL_THD void*
+#define MYBLOCKCHAIN_THD void*
 #endif
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#include <mysql/mysql_lex_string.h>
+#include <myblockchain/myblockchain_lex_string.h>
 
 extern struct thd_alloc_service_st {
-  void *(*thd_alloc_func)(MYSQL_THD, size_t);
-  void *(*thd_calloc_func)(MYSQL_THD, size_t);
-  char *(*thd_strdup_func)(MYSQL_THD, const char *);
-  char *(*thd_strmake_func)(MYSQL_THD, const char *, size_t);
-  void *(*thd_memdup_func)(MYSQL_THD, const void*, size_t);
-  MYSQL_LEX_STRING *(*thd_make_lex_string_func)(MYSQL_THD, MYSQL_LEX_STRING *,
+  void *(*thd_alloc_func)(MYBLOCKCHAIN_THD, size_t);
+  void *(*thd_calloc_func)(MYBLOCKCHAIN_THD, size_t);
+  char *(*thd_strdup_func)(MYBLOCKCHAIN_THD, const char *);
+  char *(*thd_strmake_func)(MYBLOCKCHAIN_THD, const char *, size_t);
+  void *(*thd_memdup_func)(MYBLOCKCHAIN_THD, const void*, size_t);
+  MYBLOCKCHAIN_LEX_STRING *(*thd_make_lex_string_func)(MYBLOCKCHAIN_THD, MYBLOCKCHAIN_LEX_STRING *,
                                         const char *, size_t, int);
 } *thd_alloc_service;
 
-#ifdef MYSQL_DYNAMIC_PLUGIN
+#ifdef MYBLOCKCHAIN_DYNAMIC_PLUGIN
 
 #define thd_alloc(thd,size) (thd_alloc_service->thd_alloc_func((thd), (size)))
 
@@ -86,23 +86,23 @@ extern struct thd_alloc_service_st {
 
   @see alloc_root()
 */
-void *thd_alloc(MYSQL_THD thd, size_t size);
+void *thd_alloc(MYBLOCKCHAIN_THD thd, size_t size);
 /**
   @see thd_alloc()
 */
-void *thd_calloc(MYSQL_THD thd, size_t size);
+void *thd_calloc(MYBLOCKCHAIN_THD thd, size_t size);
 /**
   @see thd_alloc()
 */
-char *thd_strdup(MYSQL_THD thd, const char *str);
+char *thd_strdup(MYBLOCKCHAIN_THD thd, const char *str);
 /**
   @see thd_alloc()
 */
-char *thd_strmake(MYSQL_THD thd, const char *str, size_t size);
+char *thd_strmake(MYBLOCKCHAIN_THD thd, const char *str, size_t size);
 /**
   @see thd_alloc()
 */
-void *thd_memdup(MYSQL_THD thd, const void* str, size_t size);
+void *thd_memdup(MYBLOCKCHAIN_THD thd, const void* str, size_t size);
 
 /**
   Create a LEX_STRING in this connection's local memory pool
@@ -117,7 +117,7 @@ void *thd_memdup(MYSQL_THD thd, const void* str, size_t size);
 
   @see thd_alloc()
 */
-MYSQL_LEX_STRING *thd_make_lex_string(MYSQL_THD thd, MYSQL_LEX_STRING *lex_str,
+MYBLOCKCHAIN_LEX_STRING *thd_make_lex_string(MYBLOCKCHAIN_THD thd, MYBLOCKCHAIN_LEX_STRING *lex_str,
                                       const char *str, size_t size,
                                       int allocate_lex_string);
 
@@ -127,6 +127,6 @@ MYSQL_LEX_STRING *thd_make_lex_string(MYSQL_THD thd, MYSQL_LEX_STRING *lex_str,
 }
 #endif
 
-#define MYSQL_SERVICE_THD_ALLOC_INCLUDED
+#define MYBLOCKCHAIN_SERVICE_THD_ALLOC_INCLUDED
 #endif
 

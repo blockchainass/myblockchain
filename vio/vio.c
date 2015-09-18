@@ -15,7 +15,7 @@
 
 /*
   Note that we can't have assertion on file descriptors;  The reason for
-  this is that during mysql shutdown, another thread can close a file
+  this is that during myblockchain shutdown, another thread can close a file
   we are working on.  In this case we should just return read errors from
   the file descriptior.
 */
@@ -46,7 +46,7 @@ void init_vio_psi_keys()
   int count;
 
   count= array_elements(all_vio_memory);
-  mysql_memory_register(category, all_vio_memory, count);
+  myblockchain_memory_register(category, all_vio_memory, count);
 }
 #endif
 
@@ -91,8 +91,8 @@ static void vio_init(Vio *vio, enum enum_vio_type type,
 
   memset(vio, 0, sizeof(*vio));
   vio->type= type;
-  vio->mysql_socket= MYSQL_INVALID_SOCKET;
-  mysql_socket_setfd(&vio->mysql_socket, sd);
+  vio->myblockchain_socket= MYBLOCKCHAIN_INVALID_SOCKET;
+  myblockchain_socket_setfd(&vio->myblockchain_socket, sd);
   vio->localhost= flags & VIO_LOCALHOST;
   vio->read_timeout= vio->write_timeout= -1;
   if ((flags & VIO_BUFFERED_READ) &&
@@ -215,7 +215,7 @@ my_bool vio_reset(Vio* vio, enum enum_vio_type type,
   vio_init(&new_vio, type, sd, flags);
 
   /* Preserve perfschema info for this connection */
-  new_vio.mysql_socket.m_psi= vio->mysql_socket.m_psi;
+  new_vio.myblockchain_socket.m_psi= vio->myblockchain_socket.m_psi;
 
 #ifdef HAVE_OPENSSL
   new_vio.ssl_arg= ssl;
@@ -250,7 +250,7 @@ my_bool vio_reset(Vio* vio, enum enum_vio_type type,
     /*
       Close socket only when it is not equal to the new one.
     */
-    if (sd != mysql_socket_getfd(vio->mysql_socket))
+    if (sd != myblockchain_socket_getfd(vio->myblockchain_socket))
       if (vio->inactive == FALSE)
         vio->vioshutdown(vio);
 
@@ -265,17 +265,17 @@ my_bool vio_reset(Vio* vio, enum enum_vio_type type,
 
 /* Create a new VIO for socket or TCP/IP connection. */
 
-Vio *mysql_socket_vio_new(MYSQL_SOCKET mysql_socket, enum enum_vio_type type, uint flags)
+Vio *myblockchain_socket_vio_new(MYBLOCKCHAIN_SOCKET myblockchain_socket, enum enum_vio_type type, uint flags)
 {
   Vio *vio;
-  my_socket sd= mysql_socket_getfd(mysql_socket);
-  DBUG_ENTER("mysql_socket_vio_new");
+  my_socket sd= myblockchain_socket_getfd(myblockchain_socket);
+  DBUG_ENTER("myblockchain_socket_vio_new");
   DBUG_PRINT("enter", ("sd: %d", sd));
   if ((vio = (Vio*) my_malloc(key_memory_vio,
                               sizeof(*vio),MYF(MY_WME))))
   {
     vio_init(vio, type, sd, flags);
-    vio->mysql_socket= mysql_socket;
+    vio->myblockchain_socket= myblockchain_socket;
   }
   DBUG_RETURN(vio);
 }
@@ -285,12 +285,12 @@ Vio *mysql_socket_vio_new(MYSQL_SOCKET mysql_socket, enum enum_vio_type type, ui
 Vio *vio_new(my_socket sd, enum enum_vio_type type, uint flags)
 {
   Vio *vio;
-  MYSQL_SOCKET mysql_socket= MYSQL_INVALID_SOCKET;
+  MYBLOCKCHAIN_SOCKET myblockchain_socket= MYBLOCKCHAIN_INVALID_SOCKET;
   DBUG_ENTER("vio_new");
   DBUG_PRINT("enter", ("sd: %d", sd));
 
-  mysql_socket_setfd(&mysql_socket, sd);
-  vio = mysql_socket_vio_new(mysql_socket, type, flags);
+  myblockchain_socket_setfd(&myblockchain_socket, sd);
+  vio = myblockchain_socket_vio_new(myblockchain_socket, type, flags);
 
   DBUG_RETURN(vio);
 }

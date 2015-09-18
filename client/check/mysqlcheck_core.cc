@@ -17,10 +17,10 @@
 
 #include "client_priv.h"
 #include "my_default.h"
-#include "mysqlcheck.h"
+#include "myblockchaincheck.h"
 #include <m_ctype.h>
-#include <mysql_version.h>
-#include <mysqld_error.h>
+#include <myblockchain_version.h>
+#include <myblockchaind_error.h>
 
 #include <string>
 #include <vector>
@@ -35,59 +35,59 @@ using std::vector;
 #define MAX_ALTER_STR_SIZE 128 * 1024
 #define KEY_PARTITIONING_CHANGED_STR "KEY () partitioning changed"
 
-static MYSQL *sock= 0;
+static MYBLOCKCHAIN *sock= 0;
 static my_bool opt_alldbs= 0, opt_check_only_changed= 0, opt_extended= 0,
-               opt_databases= 0, opt_fast= 0,
+               opt_blockchains= 0, opt_fast= 0,
                opt_medium_check = 0, opt_quick= 0, opt_all_in_1= 0,
                opt_silent= 0, opt_auto_repair= 0, ignore_errors= 0,
                opt_frm= 0, opt_fix_table_names= 0, opt_fix_db_names= 0, opt_upgrade= 0,
                opt_write_binlog= 1;
 static uint verbose = 0;
-static string opt_skip_database;
+static string opt_skip_blockchain;
 int what_to_do = 0;
 
-void (*DBError)(MYSQL *mysql, string when);
+void (*DBError)(MYBLOCKCHAIN *myblockchain, string when);
 
 static int first_error = 0;
 vector<string> tables4repair, tables4rebuild, alter_table_cmds;
 
 
-static int process_all_databases();
-static int process_databases(vector<string> db_names);
+static int process_all_blockchains();
+static int process_blockchains(vector<string> db_names);
 static int process_selected_tables(string db, vector<string> table_names);
-static int process_all_tables_in_db(string database);
-static int process_one_db(string database);
-static int use_db(string database);
+static int process_all_tables_in_db(string blockchain);
+static int process_one_db(string blockchain);
+static int use_db(string blockchain);
 static int handle_request_for_tables(string tables);
 static void print_result();
 static string fix_table_name(string src);
 
 
-static int process_all_databases()
+static int process_all_blockchains()
 {
-  MYSQL_ROW row;
-  MYSQL_RES *tableres;
+  MYBLOCKCHAIN_ROW row;
+  MYBLOCKCHAIN_RES *tableres;
   int result = 0;
 
-  if (mysql_query(sock, "SHOW DATABASES") ||
-      !(tableres = mysql_store_result(sock)))
+  if (myblockchain_query(sock, "SHOW DATABASES") ||
+      !(tableres = myblockchain_store_result(sock)))
   {
     my_printf_error(0, "Error: Couldn't execute 'SHOW DATABASES': %s",
-                    MYF(0), mysql_error(sock));
+                    MYF(0), myblockchain_error(sock));
     return 1;
   }
-  while ((row = mysql_fetch_row(tableres)))
+  while ((row = myblockchain_fetch_row(tableres)))
   {
     if (process_one_db(row[0]))
       result = 1;
   }
-  mysql_free_result(tableres);
+  myblockchain_free_result(tableres);
   return result;
 }
-/* process_all_databases */
+/* process_all_blockchains */
 
 
-static int process_databases(vector<string> db_names)
+static int process_blockchains(vector<string> db_names)
 {
   int result = 0;
   vector<string>::iterator it;
@@ -97,7 +97,7 @@ static int process_databases(vector<string> db_names)
       result = 1;
   }
   return result;
-} /* process_databases */
+} /* process_blockchains */
 
 
 static int process_selected_tables(string db, vector<string> table_names)
@@ -136,28 +136,28 @@ static string fix_table_name(string src)
   return res;
 }
 
-static int process_all_tables_in_db(string database)
+static int process_all_tables_in_db(string blockchain)
 {
-  MYSQL_RES *res= NULL;
-  MYSQL_ROW row;
+  MYBLOCKCHAIN_RES *res= NULL;
+  MYBLOCKCHAIN_ROW row;
   uint num_columns;
 
-  if (use_db(database))
+  if (use_db(blockchain))
     return 1;
-  if ((mysql_query(sock, "SHOW /*!50002 FULL*/ TABLES") &&
-       mysql_query(sock, "SHOW TABLES")) ||
-      !(res= mysql_store_result(sock)))
+  if ((myblockchain_query(sock, "SHOW /*!50002 FULL*/ TABLES") &&
+       myblockchain_query(sock, "SHOW TABLES")) ||
+      !(res= myblockchain_store_result(sock)))
   {
-    my_printf_error(0, "Error: Couldn't get table list for database %s: %s",
-                    MYF(0), database.c_str(), mysql_error(sock));
+    my_printf_error(0, "Error: Couldn't get table list for blockchain %s: %s",
+                    MYF(0), blockchain.c_str(), myblockchain_error(sock));
     return 1;
   }
 
-  num_columns= mysql_num_fields(res);
+  num_columns= myblockchain_num_fields(res);
 
   vector<string> table_names;
 
-  while ((row = mysql_fetch_row(res)))
+  while ((row = myblockchain_fetch_row(res)))
   {
     /* Skip views if we don't perform renaming. */
     if ((what_to_do != DO_UPGRADE) && (num_columns == 2) && (strcmp(row[1], "VIEW") == 0))
@@ -165,19 +165,19 @@ static int process_all_tables_in_db(string database)
 
     table_names.push_back(row[0]);
   }
-  mysql_free_result(res);
+  myblockchain_free_result(res);
 
-  process_selected_tables(database, table_names);
+  process_selected_tables(blockchain, table_names);
   return 0;
 } /* process_all_tables_in_db */
 
 
 static int run_query(string query)
 {
-  if (mysql_query(sock, query.c_str()))
+  if (myblockchain_query(sock, query.c_str()))
   {
     fprintf(stderr, "Failed to run query \"%s\"\n", query.c_str());
-    fprintf(stderr, "Error: %s\n", mysql_error(sock));
+    fprintf(stderr, "Error: %s\n", myblockchain_error(sock));
     return 1;
   }
   return 0;
@@ -186,7 +186,7 @@ static int run_query(string query)
 
 static int fix_table_storage_name(string name)
 {
-  if (strncmp(name.c_str(), "#mysql50#", 9))
+  if (strncmp(name.c_str(), "#myblockchain50#", 9))
     return 1;
   int rc= run_query("RENAME TABLE `" + name + "` TO `" + name.substr(9) + "`");
   if (verbose)
@@ -194,9 +194,9 @@ static int fix_table_storage_name(string name)
   return rc;
 }
 
-static int fix_database_storage_name(string name)
+static int fix_blockchain_storage_name(string name)
 {
-  if (strncmp(name.c_str(), "#mysql50#", 9))
+  if (strncmp(name.c_str(), "#myblockchain50#", 9))
     return 1;
   int rc= run_query("ALTER DATABASE `" + name + "` UPGRADE DATA DIRECTORY NAME");
   if (verbose)
@@ -208,10 +208,10 @@ static int rebuild_table(string name)
 {
   int rc= 0;
   string query= "ALTER TABLE " + fix_table_name(name) + " FORCE";
-  if (mysql_real_query(sock, query.c_str(), (uint)query.length()))
+  if (myblockchain_real_query(sock, query.c_str(), (uint)query.length()))
   {
     fprintf(stderr, "Failed to %s\n", query.c_str());
-    fprintf(stderr, "Error: %s\n", mysql_error(sock));
+    fprintf(stderr, "Error: %s\n", myblockchain_error(sock));
     rc= 1;
   }
   else
@@ -219,40 +219,40 @@ static int rebuild_table(string name)
   return rc;
 }
 
-static int process_one_db(string database)
+static int process_one_db(string blockchain)
 {
-  if (opt_skip_database.length() > 0 && opt_alldbs
-    && database == opt_skip_database)
+  if (opt_skip_blockchain.length() > 0 && opt_alldbs
+    && blockchain == opt_skip_blockchain)
     return 0;
 
   if (what_to_do == DO_UPGRADE)
   {
     int rc= 0;
-    if (opt_fix_db_names && !strncmp(database.c_str(),"#mysql50#", 9))
+    if (opt_fix_db_names && !strncmp(blockchain.c_str(),"#myblockchain50#", 9))
     {
-      rc= fix_database_storage_name(database);
-      database= database.substr(9);
+      rc= fix_blockchain_storage_name(blockchain);
+      blockchain= blockchain.substr(9);
     }
     if (rc || !opt_fix_table_names)
       return rc;
   }
-  return process_all_tables_in_db(database);
+  return process_all_tables_in_db(blockchain);
 }
 
 
-static int use_db(string database)
+static int use_db(string blockchain)
 {
-  if (mysql_get_server_version(sock) >= FIRST_INFORMATION_SCHEMA_VERSION &&
+  if (myblockchain_get_server_version(sock) >= FIRST_INFORMATION_SCHEMA_VERSION &&
       !my_strcasecmp(
-        &my_charset_latin1, database.c_str(), INFORMATION_SCHEMA_DB_NAME))
+        &my_charset_latin1, blockchain.c_str(), INFORMATION_SCHEMA_DB_NAME))
     return 1;
-  if (mysql_get_server_version(sock) >= FIRST_PERFORMANCE_SCHEMA_VERSION &&
+  if (myblockchain_get_server_version(sock) >= FIRST_PERFORMANCE_SCHEMA_VERSION &&
       !my_strcasecmp(
-        &my_charset_latin1, database.c_str(), PERFORMANCE_SCHEMA_DB_NAME))
+        &my_charset_latin1, blockchain.c_str(), PERFORMANCE_SCHEMA_DB_NAME))
     return 1;
-  if (mysql_select_db(sock, database.c_str()))
+  if (myblockchain_select_db(sock, blockchain.c_str()))
   {
-    DBError(sock, "when selecting the database");
+    DBError(sock, "when selecting the blockchain");
     return 1;
   }
   return 0;
@@ -300,7 +300,7 @@ static int handle_request_for_tables(string tables)
 
   string query= operation + " TABLE " + tables + " " + options;
 
-  if (mysql_real_query(sock, query.c_str(), query.length()))
+  if (myblockchain_real_query(sock, query.c_str(), query.length()))
   {
     DBError(sock,
       "when executing '" + operation + " TABLE ... " + options + "'");
@@ -313,8 +313,8 @@ static int handle_request_for_tables(string tables)
 
 static void print_result()
 {
-  MYSQL_RES *res;
-  MYSQL_ROW row;
+  MYBLOCKCHAIN_RES *res;
+  MYBLOCKCHAIN_ROW row;
   char prev[NAME_LEN*3+2];
   char prev_alter[MAX_ALTER_STR_SIZE];
   uint i;
@@ -322,13 +322,13 @@ static void print_result()
   size_t length_of_db;
   my_bool found_error=0, table_rebuild=0;
 
-  res = mysql_use_result(sock);
+  res = myblockchain_use_result(sock);
   db_name= sock->db;
   length_of_db= strlen(db_name);
 
   prev[0] = '\0';
   prev_alter[0]= 0;
-  for (i = 0; (row = mysql_fetch_row(res)); i++)
+  for (i = 0; (row = myblockchain_fetch_row(res)); i++)
   {
     int changed = strcmp(prev, row[0]);
     my_bool status = !strcmp(row[2], "status");
@@ -421,28 +421,28 @@ static void print_result()
       tables4repair.push_back(table_name);
     }
   }
-  mysql_free_result(res);
+  myblockchain_free_result(res);
 }
 
-void Mysql::Tools::Check::mysql_check(MYSQL* connection, int what_to_do,
+void Mysql::Tools::Check::myblockchain_check(MYBLOCKCHAIN* connection, int what_to_do,
                 my_bool opt_alldbs,
                 my_bool opt_check_only_changed, my_bool opt_extended,
-                my_bool opt_databases, my_bool opt_fast,
+                my_bool opt_blockchains, my_bool opt_fast,
                 my_bool opt_medium_check, my_bool opt_quick,
                 my_bool opt_all_in_1, my_bool opt_silent,
                 my_bool opt_auto_repair, my_bool ignore_errors,
                 my_bool opt_frm, my_bool opt_fix_table_names,
                 my_bool opt_fix_db_names, my_bool opt_upgrade,
                 my_bool opt_write_binlog, uint verbose,
-                string opt_skip_database, vector<string> arguments,
-                void (*dberror)(MYSQL *mysql, string when))
+                string opt_skip_blockchain, vector<string> arguments,
+                void (*dberror)(MYBLOCKCHAIN *myblockchain, string when))
 {
   ::sock= connection;
   ::what_to_do= what_to_do;
   ::opt_alldbs= opt_alldbs;
   ::opt_check_only_changed= opt_check_only_changed;
   ::opt_extended= opt_extended;
-  ::opt_databases= opt_databases;
+  ::opt_blockchains= opt_blockchains;
   ::opt_fast= opt_fast;
   ::opt_medium_check= opt_medium_check;
   ::opt_quick= opt_quick;
@@ -456,7 +456,7 @@ void Mysql::Tools::Check::mysql_check(MYSQL* connection, int what_to_do,
   ::opt_upgrade= opt_upgrade;
   ::opt_write_binlog= opt_write_binlog;
   ::verbose= verbose;
-  ::opt_skip_database= opt_skip_database;
+  ::opt_skip_blockchain= opt_skip_blockchain;
   ::DBError= dberror;
 
   if (!::opt_write_binlog)
@@ -468,17 +468,17 @@ void Mysql::Tools::Check::mysql_check(MYSQL* connection, int what_to_do,
   }
 
   if (::opt_alldbs)
-    process_all_databases();
-  /* Only one database and selected table(s) */
-  else if (arguments.size() > 1 && !::opt_databases)
+    process_all_blockchains();
+  /* Only one blockchain and selected table(s) */
+  else if (arguments.size() > 1 && !::opt_blockchains)
   {
     string db_name= arguments[0];
     arguments.erase(arguments.begin());
     process_selected_tables(db_name, arguments);
   }
-  /* One or more databases, all tables */
+  /* One or more blockchains, all tables */
   else
-    process_databases(arguments);
+    process_blockchains(arguments);
   if (::opt_auto_repair)
   {
     if (!::opt_silent && !(tables4repair.empty() && tables4rebuild.empty()))
@@ -516,15 +516,15 @@ Program::Program()
 {
 }
 
-int Program::check_databases(MYSQL* connection, vector<string> databases)
+int Program::check_blockchains(MYBLOCKCHAIN* connection, vector<string> blockchains)
 {
   this->m_connection= connection;
   this->m_process_all_dbs= false;
   return this->set_what_to_do(DO_CHECK)
-    ->execute(databases);
+    ->execute(blockchains);
 }
 
-int Program::check_all_databases(MYSQL* connection)
+int Program::check_all_blockchains(MYBLOCKCHAIN* connection)
 {
   this->m_connection= connection;
   this->m_process_all_dbs= true;
@@ -532,15 +532,15 @@ int Program::check_all_databases(MYSQL* connection)
     ->execute(vector<string>());
 }
 
-int Program::upgrade_databases(MYSQL* connection, vector<string> databases)
+int Program::upgrade_blockchains(MYBLOCKCHAIN* connection, vector<string> blockchains)
 {
   this->m_connection= connection;
   this->m_process_all_dbs= false;
   return this->set_what_to_do(DO_UPGRADE)
-    ->execute(databases);
+    ->execute(blockchains);
 }
 
-int Program::upgrade_all_databases(MYSQL* connection)
+int Program::upgrade_all_blockchains(MYBLOCKCHAIN* connection)
 {
   this->m_connection= connection;
   this->m_process_all_dbs= true;
@@ -590,14 +590,14 @@ Program* Program::set_ignore_errors(bool ignore)
   return this;
 }
 
-Program* Program::set_skip_database(string database)
+Program* Program::set_skip_blockchain(string blockchain)
 {
-  this->m_database_to_skip= database;
+  this->m_blockchain_to_skip= blockchain;
   return this;
 }
 
 Program* Program::set_error_callback(void (
-  *error_callback)(MYSQL *mysql, string when))
+  *error_callback)(MYBLOCKCHAIN *myblockchain, string when))
 {
   this->m_error_callback= error_callback;
   return this;
@@ -611,13 +611,13 @@ Program* Program::set_what_to_do(int functionality)
 
 int Program::execute(vector<string> positional_options)
 {
-  Mysql::Tools::Check::mysql_check(
+  Mysql::Tools::Check::myblockchain_check(
     this->m_connection, // connection
     this->m_what_to_do, // what_to_do
     this->m_process_all_dbs, // opt_alldbs
     false, // opt_check_only_changed
     false, // opt_extended
-    !this->m_process_all_dbs, // opt_databases
+    !this->m_process_all_dbs, // opt_blockchains
     false, // opt_fast
     false, // opt_medium_check
     false, // opt_quick
@@ -631,7 +631,7 @@ int Program::execute(vector<string> positional_options)
     this->m_upgrade, // opt_upgrade
     this->m_write_binlog, // opt_write_binlog
     this->m_verbose, // verbose
-    this->m_database_to_skip,
+    this->m_blockchain_to_skip,
     positional_options,
     this->m_error_callback);
   return 0;

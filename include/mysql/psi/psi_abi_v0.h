@@ -14,11 +14,11 @@
   51 Franklin Street, Suite 500, Boston, MA 02110-1335 USA */
 
 /**
-  @file mysql/psi/psi_abi_v0.h
-  ABI check for mysql/psi/psi.h, when compiling without instrumentation.
+  @file myblockchain/psi/psi_abi_v0.h
+  ABI check for myblockchain/psi/psi.h, when compiling without instrumentation.
   This file is only used to automate detection of changes between versions.
-  Do not include this file, include mysql/psi/psi.h instead.
+  Do not include this file, include myblockchain/psi/psi.h instead.
 */
 #define MY_GLOBAL_INCLUDED
-#include "mysql/psi/psi.h"
+#include "myblockchain/psi/psi.h"
 

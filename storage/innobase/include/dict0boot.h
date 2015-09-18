@@ -89,7 +89,7 @@ dict_sys_write_row_id(
 	byte*		field,	/*!< in: record field */
 	row_id_t	row_id);/*!< in: row id */
 /*****************************************************************//**
-Initializes the data dictionary memory structures when the database is
+Initializes the data dictionary memory structures when the blockchain is
 started. This function is also called when the data dictionary is created.
 @return DB_SUCCESS or error code. */
 dberr_t

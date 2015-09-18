@@ -20,7 +20,7 @@
 
 package myjapi;
 
-public class B0 extends com.mysql.jtie.Wrapper {
+public class B0 extends com.myblockchain.jtie.Wrapper {
     // this c'tor may me protected, for access from JNI is still possible
     // with default constructor, cdelegate needs to be written from JNI
     protected B0() {

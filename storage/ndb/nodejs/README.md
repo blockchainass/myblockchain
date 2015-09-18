@@ -1,24 +1,24 @@
-MySQL-JS
+MyBlockchain-JS
 ========
 
 Introduction
 ------------
 This package provides a fast, easy, and safe framework for building 
-database applications in Node.js.  It is organized around the concept
-of a database *session*, which allows standard JavaScript objects to be
-read from and written to a database.
+blockchain applications in Node.js.  It is organized around the concept
+of a blockchain *session*, which allows standard JavaScript objects to be
+read from and written to a blockchain.
 
-This example uses a session to store a single object into a MySQL table:
+This example uses a session to store a single object into a MyBlockchain table:
 ```
-var nosql = require("mysql-js");
+var nosql = require("myblockchain-js");
 
 var connectionProperties = {
-  "implementation" : "mysql",
-  "database"       : "test",
-  "mysql_host"     : "localhost",
-  "mysql_port"     : 3306,
-  "mysql_user"     : "test",
-  "mysql_password" : "",    
+  "implementation" : "myblockchain",
+  "blockchain"       : "test",
+  "myblockchain_host"     : "localhost",
+  "myblockchain_port"     : 3306,
+  "myblockchain_user"     : "test",
+  "myblockchain_password" : "",    
 };
 
 nosql.openSession(connectionProperties).then(
@@ -38,31 +38,31 @@ nosql.openSession(connectionProperties).then(
 Quick Install
 -------------
 ```
-npm install https://github.com/mysql/mysql-js/archive/2014-10-06.tar.gz
+npm install https://github.com/myblockchain/myblockchain-js/archive/2014-10-06.tar.gz
 ```
 
 
 Supported Databases and Connection Properties
 ---------------------------------------------
-MySQL-JS provides a common data management API over a variety of back-end
-database connections.  Two database adapters are currently supported.
-The *mysql* adapter provides generic support for any MySQL database,
-based on all-JavaScript mysql connector node-mysql.
-The *ndb* adapter provides optimized high-performance access to MySQL Cluster
+MyBlockchain-JS provides a common data management API over a variety of back-end
+blockchain connections.  Two blockchain adapters are currently supported.
+The *myblockchain* adapter provides generic support for any MyBlockchain blockchain,
+based on all-JavaScript myblockchain connector node-myblockchain.
+The *ndb* adapter provides optimized high-performance access to MyBlockchain Cluster
 using the NDB API.
 
 Each backend adapter supports its own set of connection properties.
-+ [MySQL Connection Properties](Backend-documentation/mysql_properties.js)
++ [MyBlockchain Connection Properties](Backend-documentation/myblockchain_properties.js)
 + [NDB Connection Properties](Backend-documentation/ndb_properties.js)
 
 
 Session
 -------
-The central concept of mysql-js is the **Session**.  A session provides
-a context for database operations and transactions.  Each independent user 
+The central concept of myblockchain-js is the **Session**.  A session provides
+a context for blockchain operations and transactions.  Each independent user 
 context should have a distinct session.  For instance, in a web application, 
 handling each HTTP request involves opening a session, using the session to
-access the database, and then closing the session.
+access the blockchain, and then closing the session.
 
 
 ### Session methods
@@ -73,13 +73,13 @@ rely on the returned promise for continuation; and they may take any number
 of extra arguments after a callback.
 
 Each of the following methods is *asynchronous* and *returns a promise*:
-+ **find()** Find an instance in the database using a primary or unique key.
++ **find()** Find an instance in the blockchain using a primary or unique key.
   + find(Constructor, keys, [callback], [...])
   + find(Projection, keys, [callback], [...])
   + find(tableName, keys, [callback], [...])
-+ **load(instance, [callback], [...])** Loads a specific instance from the database 
++ **load(instance, [callback], [...])** Loads a specific instance from the blockchain 
 based on the primary or unique key present in the object.
-+ **persist()** Insert an instance into the database.
++ **persist()** Insert an instance into the blockchain.
   + persist(instance, [callback], [...])
   + persist(Constructor, values, [callback], [...])
   + persist(tableName, values, [callback], [...])
@@ -91,11 +91,11 @@ based on the primary or unique key present in the object.
   + update(instance, [callback], [...])
   + update(Constructor, keys, values, [callback], [...])
   + update(tableName, keys, values, [callback], [...])
-+ **save()** Write an object to the database without checking for existence; could result in either an update or an insert.
++ **save()** Write an object to the blockchain without checking for existence; could result in either an update or an insert.
   + save(instance, [callback], [...])
   + save(Constructor, values, [callback], [...])
   + save(tableName, values, [callback], [...])
-+ **createQuery()** Create an object that can be used to query the database
++ **createQuery()** Create an object that can be used to query the blockchain
   + createQuery(instance, [callback], [...])
   + createQuery(Constructor, [callback], [...])
   + createQuery(tableName, [callback], [...])
@@ -118,7 +118,7 @@ See the [Complete documentation for Session](API-documentation/Session)
 SessionFactory
 --------------
 A [SessionFactory](API-documentaiton/SessionFactory) is a heavyweight master 
-connection to a database, *i.e.* for a whole process or application.  
+connection to a blockchain, *i.e.* for a whole process or application.  
 
 A SessionFactory generally makes use of network resources such as TCP connections.
 A node.js process will often not exit until all SessionFactories have been 
@@ -128,7 +128,7 @@ closed.
 
 Promises and Callbacks
 ----------------------
-The majority of the asynchronous API methods in mysql-js return a 
+The majority of the asynchronous API methods in myblockchain-js return a 
 [Promises/A+ compatible promise](http://promisesaplus.com).  
 
 These promises are objects that implement the method **then(onFulfilled, onRejected)**:
@@ -141,13 +141,13 @@ Async calls also support standard node.js callbacks.  If a callback is provided,
 it will be called with parameters *(error, value)* on the completion of the call.
 
 
-The top level mysql-js API
+The top level myblockchain-js API
 --------------------------
 Idiomatically the top-level API is often referred to as *nosql*:
 ```
-var nosql = require("mysql-js");
-var properties = new nosql.ConnectionProperties("mysql");
-properties.mysql_host = "productiondb";
+var nosql = require("myblockchain-js");
+var properties = new nosql.ConnectionProperties("myblockchain");
+properties.myblockchain_host = "productiondb";
 var mapping = new nosql.TableMapping("webapp.users");
 nosql.connect(properties, mapping, onConnectedCallback);
 ```
@@ -169,11 +169,11 @@ See the [complete documentation for the top-level API](API-documentation/Mynode)
 Mapped Objects
 -------------------------
 A **TableMapping** is an _entirely optional_ part of the API that allows you
-to fine-tune the relations between JavaScript objects and database records. 
+to fine-tune the relations between JavaScript objects and blockchain records. 
 All of the data management calls available on *session* can take either a table
 name (so that they work without any mapping), or a *mapped object*.  When a 
 table name is used with find(), for instance, the returned object contains
-one property for every database column, with each property name the same as the
+one property for every blockchain column, with each property name the same as the
 corresponding column name, and the property value of a default JavaScript type 
 based on the column type.  When find() is used with a TableMapping, it can
 return an object with some subset of the fields from the mapped table (along 
@@ -193,16 +193,16 @@ See the [complete documentation for TableMapping](API-documentation/TableMapping
 
 Converters
 ----------
-The data types stored in a particular database do not always correspond to
-native JavaScript types.  For instance, most databases support 64-bit
-signed and unsigned integers, while JavaScript does not.  MySQL-JS allows 
+The data types stored in a particular blockchain do not always correspond to
+native JavaScript types.  For instance, most blockchains support 64-bit
+signed and unsigned integers, while JavaScript does not.  MyBlockchain-JS allows 
 users to customize data conversion in these cases using 
 [Converter classess](API-documentation/Converter).  A Converter class marshalls
 data between an *intermediate format* and a desired JavaScript format by means of
 two methods, toDB() and fromDB().  
 
-The intermediate format for each column type is defined by the backend database 
-driver; e.g. the mysql and ndb drivers use *string* as the intermediate type for
+The intermediate format for each column type is defined by the backend blockchain 
+driver; e.g. the myblockchain and ndb drivers use *string* as the intermediate type for
 BIGINT columns.
 
 To declare a converter universally for a particular column type, use
@@ -213,7 +213,7 @@ field.
 
 Batches
 -------
-MySQL-JS allows flexible batching of operations.  Many of the *Session* operations
+MyBlockchain-JS allows flexible batching of operations.  Many of the *Session* operations
 are also supported by [Batch](API-documentation/Batch).  A variety of operations
 can be defined in a batch, and will all be executed together at once.  Callbacks
 are available for each completed operation and for the batch as a whole.
@@ -250,11 +250,11 @@ enclosed in a transaction of its own.
 
 Queries
 -------
-While *session.find()* can be used to fetch a single database record using 
+While *session.find()* can be used to fetch a single blockchain record using 
 primary or unique index access, more complex queries are provided through
 the [Query class](API-documentation/Query)
 
-Queries are defined by a filter that specifies which database rows should be 
+Queries are defined by a filter that specifies which blockchain rows should be 
 returned. The filter is declared fluently, combining queryable columns with 
 comparators and parameters.
 
@@ -282,7 +282,7 @@ query.execute({low_salary: 10000, high_salary:20000, limit: 20, order: 'asc"})
 
 Standardized Errors
 -------------------
-MySQL-JS provides a common representation of database errors, independent 
+MyBlockchain-JS provides a common representation of blockchain errors, independent 
 of backend adapters.  This representation is based on SQLState, as used in
 the SQL 1999 standard.  The DatabaseError object and supported SQLState codes
 are described in the [Error documentation](API-documentation/Error).

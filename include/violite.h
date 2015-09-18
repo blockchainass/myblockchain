@@ -22,9 +22,9 @@
 #define	vio_violite_h_
 
 #include <my_thread.h> /* my_thread_handle */
-#include <mysql/psi/psi.h>
+#include <myblockchain/psi/psi.h>
 #include <pfs_socket_provider.h>
-#include <mysql/psi/mysql_socket.h>
+#include <myblockchain/psi/myblockchain_socket.h>
 
 /* Simple vio interface in C;  The functions are implemented in violite.c */
 
@@ -77,7 +77,7 @@ enum enum_vio_io_event
 #define VIO_DESCRIPTION_SIZE 30                 /* size of description */
 
 Vio* vio_new(my_socket sd, enum enum_vio_type type, uint flags);
-Vio*  mysql_socket_vio_new(MYSQL_SOCKET mysql_socket, enum enum_vio_type type, uint flags);
+Vio*  myblockchain_socket_vio_new(MYBLOCKCHAIN_SOCKET myblockchain_socket, enum enum_vio_type type, uint flags);
 #ifdef _WIN32
 Vio* vio_new_win32pipe(HANDLE hPipe);
 Vio* vio_new_win32shared_memory(HANDLE handle_file_map,
@@ -152,11 +152,11 @@ int vio_getnameinfo(const struct sockaddr *sa,
 #endif
 
 #define HEADER_DES_LOCL_H dummy_something
-#define YASSL_MYSQL_COMPATIBLE
+#define YASSL_MYBLOCKCHAIN_COMPATIBLE
 #ifndef YASSL_PREFIX
 #define YASSL_PREFIX
 #endif
-/* Set yaSSL to use same type as MySQL do for socket handles */
+/* Set yaSSL to use same type as MyBlockchain do for socket handles */
 typedef my_socket YASSL_SOCKET_T;
 #define YASSL_SOCKET_T_DEFINED
 #include <openssl/ssl.h>
@@ -234,7 +234,7 @@ enum SSL_type
 /* This structure is for every connection on both sides */
 struct st_vio
 {
-  MYSQL_SOCKET  mysql_socket;           /* Instrumented socket */
+  MYBLOCKCHAIN_SOCKET  myblockchain_socket;           /* Instrumented socket */
   my_bool       localhost;              /* Are we from localhost? */
   struct sockaddr_storage   local;      /* Local internet address */
   struct sockaddr_storage   remote;     /* Remote internet address */

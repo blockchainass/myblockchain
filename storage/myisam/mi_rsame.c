@@ -1,4 +1,4 @@
-/* Copyright (c) 2000, 2001, 2005-2007 MySQL AB, 2009 Sun Microsystems, Inc.
+/* Copyright (c) 2000, 2001, 2005-2007 MyBlockchain AB, 2009 Sun Microsystems, Inc.
    Use is subject to license terms.
 
    This program is free software; you can redistribute it and/or modify
@@ -50,12 +50,12 @@ int mi_rsame(MI_INFO *info, uchar *record, int inx)
     info->lastkey_length=_mi_make_key(info,(uint) inx,info->lastkey,record,
 				      info->lastpos);
     if (info->s->concurrent_insert)
-      mysql_rwlock_rdlock(&info->s->key_root_lock[inx]);
+      myblockchain_rwlock_rdlock(&info->s->key_root_lock[inx]);
     (void) _mi_search(info,info->s->keyinfo+inx,info->lastkey, USE_WHOLE_KEY,
 		    SEARCH_SAME,
 		    info->s->state.key_root[inx]);
     if (info->s->concurrent_insert)
-      mysql_rwlock_unlock(&info->s->key_root_lock[inx]);
+      myblockchain_rwlock_unlock(&info->s->key_root_lock[inx]);
   }
 
   if (!(*info->read_record)(info,info->lastpos,record))

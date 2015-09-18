@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Copyright (C) 2005, 2006 MySQL AB
+# Copyright (C) 2005, 2006 MyBlockchain AB
 # Use is subject to license terms
 #
 # This program is free software; you can redistribute it and/or modify
@@ -156,7 +156,7 @@ fi
 # You can add more to this path#
 ################################
 
-dst_place=${build_dir}/clone-mysql-$clone-$DATE
+dst_place=${build_dir}/clone-myblockchain-$clone-$DATE
 
 #########################################
 # Delete source and pull down the latest#
@@ -170,7 +170,7 @@ fi
 
 ##########################################
 # Build the source, make installs, and   #
-# create the database to be rsynced	 #
+# create the blockchain to be rsynced	 #
 ##########################################
 
 if [ "$build" ]
@@ -192,7 +192,7 @@ then
 	eval $configure --prefix=$install_dir
 	make
 	make install
-	(cd $install_dir; ./bin/mysql_install_db) # This will be rsynced to all
+	(cd $install_dir; ./bin/myblockchain_install_db) # This will be rsynced to all
 fi
 
 ################################
@@ -201,7 +201,7 @@ fi
 # and restart		       #
 ################################
 
-script=$install_dir/mysql-test/ndb/ndb-autotest.sh
+script=$install_dir/myblockchain-test/ndb/ndb-autotest.sh
 if [ -x $script ]
 then
 	$script --version > /tmp/version.$$
@@ -213,7 +213,7 @@ rm -f /tmp/version.$$
 if [ $match -eq 0 ]
 then
 	echo "Incorrect script version...restarting"
-	cp $install_dir/mysql-test/ndb/ndb-autotest.sh /tmp/at.$$.sh
+	cp $install_dir/myblockchain-test/ndb/ndb-autotest.sh /tmp/at.$$.sh
 	rm -rf $install_dir $dst_place
 	sh /tmp/at.$$.sh $save_args
 	exit
@@ -223,10 +223,10 @@ fi
 # Check that all interesting files are present#
 ###############################################
 
-test_dir=$install_dir/mysql-test/ndb
+test_dir=$install_dir/myblockchain-test/ndb
 atrt=$test_dir/atrt
 html=$test_dir/make-html-reports.sh
-mkconfig=$install_dir/mysql-test/ndb/make-config.sh
+mkconfig=$install_dir/myblockchain-test/ndb/make-config.sh
 
 ##########################
 #Setup bin and test paths#
@@ -378,8 +378,8 @@ for dir in $RUN
 do
 	echo "Fixing hosts for $dir"
 
-	run_dir=$base_dir/run-$dir-mysql-$clone-$target
-	res_dir=$base_dir/result-$dir-mysql-$clone-$target/$DATE
+	run_dir=$base_dir/run-$dir-myblockchain-$clone-$target
+	res_dir=$base_dir/result-$dir-myblockchain-$clone-$target/$DATE
 
 	mkdir -p $run_dir $res_dir
 	rm -rf $res_dir/*
@@ -411,7 +411,7 @@ do
 	
 	if [ "$run_test" ]
 	then
-	    start $dir-mysql-$clone-$target $dir $res_dir &
+	    start $dir-myblockchain-$clone-$target $dir $res_dir &
 	fi
 done
 cd $p

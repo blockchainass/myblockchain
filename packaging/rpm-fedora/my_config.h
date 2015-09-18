@@ -1,5 +1,5 @@
 /*
- *  Fedora supports multi arch: having 32 and 64 versions of MySQL
+ *  Fedora supports multi arch: having 32 and 64 versions of MyBlockchain
  *  installed at the same time. my_config.h will differ due arch
  *  dependent defs creating a file conflict. We move arch specific
  *  headers to arch specific file names and include the correct arch
@@ -26,5 +26,5 @@
 #elif defined(__x86_64__)
 #include "my_config_x86_64.h"
 #else
-#error "This MySQL devel package does not work your architecture?"
+#error "This MyBlockchain devel package does not work your architecture?"
 #endif

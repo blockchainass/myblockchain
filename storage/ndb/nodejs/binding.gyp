@@ -16,12 +16,12 @@
 
       'include_dirs':
       [
-        '<(mysql_path)/include',
-        '<(mysql_path)/include/mysql',
-        '<(mysql_path)/include/mysql/storage/ndb',
-        '<(mysql_path)/include/mysql/storage/ndb/ndbapi',
-        '<(mysql_path)/include/storage/ndb',
-        '<(mysql_path)/include/storage/ndb/ndbapi',
+        '<(myblockchain_path)/include',
+        '<(myblockchain_path)/include/myblockchain',
+        '<(myblockchain_path)/include/myblockchain/storage/ndb',
+        '<(myblockchain_path)/include/myblockchain/storage/ndb/ndbapi',
+        '<(myblockchain_path)/include/storage/ndb',
+        '<(myblockchain_path)/include/storage/ndb/ndbapi',
         'Adapter/impl/common/include',
         'Adapter/impl/ndb/include'
       ],
@@ -72,8 +72,8 @@
           {
             'libraries':
             [
-              '-l<(mysql_path)/lib/ndbclient_static.lib',
-              '-l<(mysql_path)/lib/mysqlclient.lib',
+              '-l<(myblockchain_path)/lib/ndbclient_static.lib',
+              '-l<(myblockchain_path)/lib/myblockchainclient.lib',
             ],
             'msvs_settings':
             {
@@ -91,14 +91,14 @@
           {
             'sources' : 
             [
-               "Adapter/impl/ndb/src/mysqlclient_wrapper.cpp"
+               "Adapter/impl/ndb/src/myblockchainclient_wrapper.cpp"
             ],
             'libraries':
             [
-              "-L<(mysql_path)/lib",
-              "-L<(mysql_path)/lib/mysql",
+              "-L<(myblockchain_path)/lib",
+              "-L<(myblockchain_path)/lib/myblockchain",
               "-lndbclient",
-              "-lmysqlclient"
+              "-lmyblockchainclient"
             ]
           }
         ]

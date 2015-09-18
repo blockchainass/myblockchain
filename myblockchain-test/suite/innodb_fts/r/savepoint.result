@@ -1,0 +1,318 @@
+CREATE TABLE articles (
+id INT UNSIGNED NOT NULL PRIMARY KEY,
+title VARCHAR(200),
+FULLTEXT (title)
+) ENGINE= InnoDB;
+TRUNCATE TABLE articles;
+INSERT INTO articles(id, title) VALUES(1, 'myblockchain');
+BEGIN;
+INSERT INTO articles(id, title) VALUES(2, 'myblockchain');
+SAVEPOINT sp1;
+INSERT INTO articles(id, title) VALUES(3, 'myblockchain');
+ROLLBACK TO SAVEPOINT sp1;
+INSERT INTO articles(id, title) VALUES(4, 'myblockchain');
+COMMIT;
+INSERT INTO articles(id, title) VALUES(5, 'myblockchain');
+SELECT * FROM articles WHERE MATCH(title) AGAINST('myblockchain');
+id	title
+1	myblockchain
+2	myblockchain
+4	myblockchain
+5	myblockchain
+TRUNCATE TABLE articles;
+INSERT INTO articles(id, title) VALUES(1, 'myblockchain');
+BEGIN;
+INSERT INTO articles(id, title) VALUES(2, 'myblockchain');
+SAVEPOINT sp1;
+INSERT INTO articles(id, title) VALUES(3, 'myblockchain');
+ROLLBACK TO SAVEPOINT sp1;
+INSERT INTO articles(id, title) VALUES(4, 'myblockchain');
+SAVEPOINT sp2;
+INSERT INTO articles(id, title) VALUES(5, 'myblockchain');
+ROLLBACK TO SAVEPOINT sp2;
+INSERT INTO articles(id, title) VALUES(6, 'myblockchain');
+COMMIT;
+INSERT INTO articles(id, title) VALUES(7, 'myblockchain');
+SELECT * FROM articles WHERE MATCH(title) AGAINST('myblockchain');
+id	title
+1	myblockchain
+2	myblockchain
+4	myblockchain
+6	myblockchain
+7	myblockchain
+TRUNCATE TABLE articles;
+INSERT INTO articles(id, title) VALUES(1, 'myblockchain');
+BEGIN;
+INSERT INTO articles(id, title) VALUES(2, 'myblockchain');
+SAVEPOINT sp1;
+INSERT INTO articles(id, title) VALUES(3, 'myblockchain');
+SAVEPOINT sp2;
+INSERT INTO articles(id, title) VALUES(4, 'myblockchain');
+ROLLBACK TO SAVEPOINT sp1;
+INSERT INTO articles(id, title) VALUES(5, 'myblockchain');
+COMMIT;
+INSERT INTO articles(id, title) VALUES(6, 'myblockchain');
+SELECT * FROM articles WHERE MATCH(title) AGAINST('myblockchain');
+id	title
+1	myblockchain
+2	myblockchain
+5	myblockchain
+6	myblockchain
+TRUNCATE TABLE articles;
+INSERT INTO articles(id, title) VALUES(1, 'myblockchain');
+BEGIN;
+INSERT INTO articles(id, title) VALUES(2, 'myblockchain');
+SAVEPOINT sp1;
+INSERT INTO articles(id, title) VALUES(3, 'myblockchain');
+SAVEPOINT sp2;
+INSERT INTO articles(id, title) VALUES(4, 'myblockchain');
+ROLLBACK TO SAVEPOINT sp2;
+INSERT INTO articles(id, title) VALUES(5, 'myblockchain');
+ROLLBACK TO SAVEPOINT sp1;
+INSERT INTO articles(id, title) VALUES(6, 'myblockchain');
+COMMIT;
+INSERT INTO articles(id, title) VALUES(7, 'myblockchain');
+SELECT * FROM articles WHERE MATCH(title) AGAINST('myblockchain');
+id	title
+1	myblockchain
+2	myblockchain
+6	myblockchain
+7	myblockchain
+TRUNCATE TABLE articles;
+INSERT INTO articles(id, title) VALUES(1, 'myblockchain');
+BEGIN;
+INSERT INTO articles(id, title) VALUES(2, 'myblockchain');
+SAVEPOINT sp1;
+INSERT INTO articles(id, title) VALUES(3, 'myblockchain');
+RELEASE SAVEPOINT sp1;
+INSERT INTO articles(id, title) VALUES(4, 'myblockchain');
+COMMIT;
+INSERT INTO articles(id, title) VALUES(5, 'myblockchain');
+SELECT * FROM articles WHERE MATCH(title) AGAINST('myblockchain');
+id	title
+1	myblockchain
+2	myblockchain
+3	myblockchain
+4	myblockchain
+5	myblockchain
+TRUNCATE TABLE articles;
+INSERT INTO articles(id, title) VALUES(1, 'myblockchain');
+BEGIN;
+INSERT INTO articles(id, title) VALUES(2, 'myblockchain');
+SAVEPOINT sp1;
+INSERT INTO articles(id, title) VALUES(3, 'myblockchain');
+RELEASE SAVEPOINT sp1;
+INSERT INTO articles(id, title) VALUES(4, 'myblockchain');
+SAVEPOINT sp2;
+INSERT INTO articles(id, title) VALUES(5, 'myblockchain');
+RELEASE SAVEPOINT sp2;
+INSERT INTO articles(id, title) VALUES(6, 'myblockchain');
+COMMIT;
+INSERT INTO articles(id, title) VALUES(7, 'myblockchain');
+SELECT * FROM articles WHERE MATCH(title) AGAINST('myblockchain');
+id	title
+1	myblockchain
+2	myblockchain
+3	myblockchain
+4	myblockchain
+5	myblockchain
+6	myblockchain
+7	myblockchain
+TRUNCATE TABLE articles;
+INSERT INTO articles(id, title) VALUES(1, 'myblockchain');
+BEGIN;
+INSERT INTO articles(id, title) VALUES(2, 'myblockchain');
+SAVEPOINT sp1;
+INSERT INTO articles(id, title) VALUES(3, 'myblockchain');
+SAVEPOINT sp2;
+INSERT INTO articles(id, title) VALUES(4, 'myblockchain');
+RELEASE SAVEPOINT sp1;
+INSERT INTO articles(id, title) VALUES(5, 'myblockchain');
+COMMIT;
+INSERT INTO articles(id, title) VALUES(6, 'myblockchain');
+SELECT * FROM articles WHERE MATCH(title) AGAINST('myblockchain');
+id	title
+1	myblockchain
+2	myblockchain
+3	myblockchain
+4	myblockchain
+5	myblockchain
+6	myblockchain
+TRUNCATE TABLE articles;
+INSERT INTO articles(id, title) VALUES(1, 'myblockchain');
+BEGIN;
+INSERT INTO articles(id, title) VALUES(2, 'myblockchain');
+SAVEPOINT sp1;
+INSERT INTO articles(id, title) VALUES(3, 'myblockchain');
+SAVEPOINT sp2;
+INSERT INTO articles(id, title) VALUES(4, 'myblockchain');
+RELEASE SAVEPOINT sp2;
+INSERT INTO articles(id, title) VALUES(5, 'myblockchain');
+RELEASE SAVEPOINT sp1;
+INSERT INTO articles(id, title) VALUES(6, 'myblockchain');
+COMMIT;
+INSERT INTO articles(id, title) VALUES(7, 'myblockchain');
+SELECT * FROM articles WHERE MATCH(title) AGAINST('myblockchain');
+id	title
+1	myblockchain
+2	myblockchain
+3	myblockchain
+4	myblockchain
+5	myblockchain
+6	myblockchain
+7	myblockchain
+TRUNCATE TABLE articles;
+INSERT INTO articles(id, title) VALUES(1, 'myblockchain');
+BEGIN;
+INSERT INTO articles(id, title) VALUES(2, 'myblockchain');
+SAVEPOINT sp1;
+INSERT INTO articles(id, title) VALUES(3, 'myblockchain');
+ROLLBACK TO SAVEPOINT sp1;
+INSERT INTO articles(id, title) VALUES(4, 'myblockchain');
+SAVEPOINT sp2;
+INSERT INTO articles(id, title) VALUES(5, 'myblockchain');
+RELEASE SAVEPOINT sp2;
+INSERT INTO articles(id, title) VALUES(6, 'myblockchain');
+COMMIT;
+INSERT INTO articles(id, title) VALUES(7, 'myblockchain');
+SELECT * FROM articles WHERE MATCH(title) AGAINST('myblockchain');
+id	title
+1	myblockchain
+2	myblockchain
+4	myblockchain
+5	myblockchain
+6	myblockchain
+7	myblockchain
+TRUNCATE TABLE articles;
+INSERT INTO articles(id, title) VALUES(1, 'myblockchain');
+BEGIN;
+INSERT INTO articles(id, title) VALUES(2, 'myblockchain');
+SAVEPOINT sp1;
+INSERT INTO articles(id, title) VALUES(3, 'myblockchain');
+RELEASE SAVEPOINT sp1;
+INSERT INTO articles(id, title) VALUES(4, 'myblockchain');
+SAVEPOINT sp2;
+INSERT INTO articles(id, title) VALUES(5, 'myblockchain');
+ROLLBACK TO SAVEPOINT sp2;
+INSERT INTO articles(id, title) VALUES(6, 'myblockchain');
+COMMIT;
+INSERT INTO articles(id, title) VALUES(7, 'myblockchain');
+SELECT * FROM articles WHERE MATCH(title) AGAINST('myblockchain');
+id	title
+1	myblockchain
+2	myblockchain
+3	myblockchain
+4	myblockchain
+6	myblockchain
+7	myblockchain
+TRUNCATE TABLE articles;
+INSERT INTO articles(id, title) VALUES(1, 'myblockchain');
+BEGIN;
+INSERT INTO articles(id, title) VALUES(2, 'myblockchain');
+SAVEPOINT sp1;
+INSERT INTO articles(id, title) VALUES(3, 'myblockchain');
+SAVEPOINT sp2;
+INSERT INTO articles(id, title) VALUES(4, 'myblockchain');
+RELEASE SAVEPOINT sp2;
+INSERT INTO articles(id, title) VALUES(5, 'myblockchain');
+ROLLBACK TO SAVEPOINT sp1;
+INSERT INTO articles(id, title) VALUES(6, 'myblockchain');
+COMMIT;
+INSERT INTO articles(id, title) VALUES(7, 'myblockchain');
+SELECT * FROM articles WHERE MATCH(title) AGAINST('myblockchain');
+id	title
+1	myblockchain
+2	myblockchain
+6	myblockchain
+7	myblockchain
+TRUNCATE TABLE articles;
+INSERT INTO articles(id, title) VALUES(1, 'myblockchain');
+BEGIN;
+INSERT INTO articles(id, title) VALUES(2, 'myblockchain');
+SAVEPOINT sp1;
+INSERT INTO articles(id, title) VALUES(3, 'myblockchain');
+SAVEPOINT sp2;
+INSERT INTO articles(id, title) VALUES(4, 'myblockchain');
+ROLLBACK TO SAVEPOINT sp2;
+INSERT INTO articles(id, title) VALUES(5, 'myblockchain');
+RELEASE SAVEPOINT sp1;
+INSERT INTO articles(id, title) VALUES(6, 'myblockchain');
+COMMIT;
+INSERT INTO articles(id, title) VALUES(7, 'myblockchain');
+SELECT * FROM articles WHERE MATCH(title) AGAINST('myblockchain');
+id	title
+1	myblockchain
+2	myblockchain
+3	myblockchain
+5	myblockchain
+6	myblockchain
+7	myblockchain
+TRUNCATE TABLE articles;
+INSERT INTO articles(id, title) VALUES(1, 'myblockchain');
+BEGIN;
+INSERT INTO articles(id, title) VALUES(2, 'myblockchain');
+ROLLBACK;
+INSERT INTO articles(id, title) VALUES(3, 'myblockchain');
+SELECT * FROM articles WHERE MATCH(title) AGAINST('myblockchain');
+id	title
+1	myblockchain
+3	myblockchain
+TRUNCATE TABLE articles;
+INSERT INTO articles(id, title) VALUES(1, 'myblockchain');
+BEGIN;
+INSERT INTO articles(id, title) VALUES(2, 'myblockchain');
+SAVEPOINT sp1;
+INSERT INTO articles(id, title) VALUES(3, 'myblockchain');
+ROLLBACK;
+INSERT INTO articles(id, title) VALUES(4, 'myblockchain');
+SELECT * FROM articles WHERE MATCH(title) AGAINST('myblockchain');
+id	title
+1	myblockchain
+4	myblockchain
+TRUNCATE TABLE articles;
+INSERT INTO articles(id, title) VALUES(1, 'myblockchain');
+BEGIN;
+INSERT INTO articles(id, title) VALUES(2, 'myblockchain');
+SAVEPOINT sp1;
+INSERT INTO articles(id, title) VALUES(3, 'myblockchain');
+RELEASE SAVEPOINT sp1;
+INSERT INTO articles(id, title) VALUES(4, 'myblockchain');
+ROLLBACK;
+INSERT INTO articles(id, title) VALUES(5, 'myblockchain');
+SELECT * FROM articles WHERE MATCH(title) AGAINST('myblockchain');
+id	title
+1	myblockchain
+5	myblockchain
+TRUNCATE TABLE articles;
+INSERT INTO articles(id, title) VALUES(1, 'myblockchain');
+BEGIN;
+INSERT INTO articles(id, title) VALUES(2, 'myblockchain');
+SAVEPOINT sp1;
+INSERT INTO articles(id, title) VALUES(3, 'myblockchain');
+ROLLBACK TO SAVEPOINT sp1;
+INSERT INTO articles(id, title) VALUES(4, 'myblockchain');
+ROLLBACK;
+INSERT INTO articles(id, title) VALUES(5, 'myblockchain');
+SELECT * FROM articles WHERE MATCH(title) AGAINST('myblockchain');
+id	title
+1	myblockchain
+5	myblockchain
+TRUNCATE TABLE articles;
+INSERT INTO articles(id, title) VALUES(1, 'myblockchain');
+BEGIN;
+INSERT INTO articles(id, title) VALUES(2, 'myblockchain');
+SAVEPOINT sp1;
+INSERT INTO articles(id, title) VALUES(3, 'myblockchain');
+SAVEPOINT sp2;
+INSERT INTO articles(id, title) VALUES(4, 'myblockchain');
+ROLLBACK TO SAVEPOINT sp2;
+INSERT INTO articles(id, title) VALUES(5, 'myblockchain');
+RELEASE SAVEPOINT sp1;
+INSERT INTO articles(id, title) VALUES(6, 'myblockchain');
+ROLLBACK;
+INSERT INTO articles(id, title) VALUES(7, 'myblockchain');
+SELECT * FROM articles WHERE MATCH(title) AGAINST('myblockchain');
+id	title
+1	myblockchain
+7	myblockchain
+DROP TABLE articles;

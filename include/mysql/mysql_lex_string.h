@@ -13,14 +13,14 @@
    along with this program; if not, write to the Free Software
    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA */
 
-#ifndef MYSQL_LEX_STRING_INCLUDED
-#define MYSQL_LEX_STRING_INCLUDED
+#ifndef MYBLOCKCHAIN_LEX_STRING_INCLUDED
+#define MYBLOCKCHAIN_LEX_STRING_INCLUDED
 
-struct st_mysql_lex_string
+struct st_myblockchain_lex_string
 {
   char *str;
   size_t length;
 };
-typedef struct st_mysql_lex_string MYSQL_LEX_STRING;
+typedef struct st_myblockchain_lex_string MYBLOCKCHAIN_LEX_STRING;
 
-#endif  // MYSQL_LEX_STRING_INCLUDED
+#endif  // MYBLOCKCHAIN_LEX_STRING_INCLUDED

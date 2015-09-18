@@ -15,7 +15,7 @@
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#include "mysql_field.h"
+#include "myblockchain_field.h"
 
 using namespace Mysql::Tools::Dump;
 
@@ -39,5 +39,5 @@ std::string Mysql_field::get_name() const
   return m_field.name;
 }
 
-Mysql_field::Mysql_field(MYSQL_FIELD* field) : m_field(*field)
+Mysql_field::Mysql_field(MYBLOCKCHAIN_FIELD* field) : m_field(*field)
 {}

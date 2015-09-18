@@ -25,12 +25,12 @@
 
 // Pre-7.0 
 #if NDB_VERSION_MAJOR < 7
-#error "Node.JS Adapter requires MySQL Cluster 7.1" 
+#error "Node.JS Adapter requires MyBlockchain Cluster 7.1" 
 #endif 
 
 // 7.0 
 #if (NDB_VERSION_MAJOR == 7 && NDB_VERSION_MINOR == 0)
-#error "Node.JS Adapter requires MySQL Cluster 7.1" 
+#error "Node.JS Adapter requires MyBlockchain Cluster 7.1" 
 #endif 
 
 // 7.1

@@ -16,27 +16,27 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
  */
 
-package com.mysql.clusterj.bindings;
+package com.myblockchain.clusterj.bindings;
 
-import com.mysql.cluster.ndbj.Ndb;
-import com.mysql.cluster.ndbj.NdbApiException;
-import com.mysql.clusterj.ClusterJDatastoreException;
-import com.mysql.clusterj.core.store.ClusterTransaction;
-import com.mysql.clusterj.core.util.I18NHelper;
-import com.mysql.clusterj.core.util.Logger;
-import com.mysql.clusterj.core.util.LoggerFactoryService;
+import com.myblockchain.cluster.ndbj.Ndb;
+import com.myblockchain.cluster.ndbj.NdbApiException;
+import com.myblockchain.clusterj.ClusterJDatastoreException;
+import com.myblockchain.clusterj.core.store.ClusterTransaction;
+import com.myblockchain.clusterj.core.util.I18NHelper;
+import com.myblockchain.clusterj.core.util.Logger;
+import com.myblockchain.clusterj.core.util.LoggerFactoryService;
 
 /**
  *
  */
-class DbImpl implements com.mysql.clusterj.core.store.Db {
+class DbImpl implements com.myblockchain.clusterj.core.store.Db {
 
     /** My message translator */
     static final I18NHelper local = I18NHelper.getInstance(DbImpl.class);
 
     /** My logger */
     static final Logger logger = LoggerFactoryService.getFactory()
-            .getInstance(com.mysql.clusterj.core.store.ClusterConnection.class);
+            .getInstance(com.myblockchain.clusterj.core.store.ClusterConnection.class);
 
     protected Ndb ndb;
 
@@ -48,7 +48,7 @@ class DbImpl implements com.mysql.clusterj.core.store.Db {
         ndb.close();
     }
 
-    public com.mysql.clusterj.core.store.Dictionary getDictionary() {
+    public com.myblockchain.clusterj.core.store.Dictionary getDictionary() {
         try {
             return new DictionaryImpl(ndb.getDictionary());
         } catch (NdbApiException ndbApiException) {

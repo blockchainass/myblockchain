@@ -59,13 +59,13 @@
   time only.
 
   Before starting to wait on its condition variable with
-  mysql_cond_wait(), the thread enters itself to a specific wait queue
+  myblockchain_cond_wait(), the thread enters itself to a specific wait queue
   with link_into_queue() (double linked with '*next' + '**prev') or
   wait_on_queue() (single linked with '*next').
 
   Another thread, when releasing a resource, looks up the waiting thread
   in the related wait queue. It sends a signal with
-  mysql_cond_signal() to the waiting thread.
+  myblockchain_cond_signal() to the waiting thread.
 
   NOTE: Depending on the particular wait situation, either the sending
   thread removes the waiting thread from the wait queue with
@@ -112,7 +112,7 @@
 #include <my_bit.h>
 #include <errno.h>
 #include <stdarg.h>
-#include "probes_mysql.h"
+#include "probes_myblockchain.h"
 #include "my_thread_local.h"
 
 /*
@@ -129,8 +129,8 @@
     accessing it;
     to set this number equal to <N> add
       #define MAX_THREADS <N>
-  - to substitute calls of mysql_cond_wait for calls of
-    mysql_cond_timedwait (wait with timeout set up);
+  - to substitute calls of myblockchain_cond_wait for calls of
+    myblockchain_cond_timedwait (wait with timeout set up);
     this setting should be used only when you want to trap a deadlock
     situation, which theoretically should not happen;
     to set timeout equal to <T> seconds add
@@ -161,7 +161,7 @@
 #define  COND_FOR_SAVED     1
 #define  COND_FOR_READERS   2
 
-typedef mysql_cond_t KEYCACHE_CONDVAR;
+typedef myblockchain_cond_t KEYCACHE_CONDVAR;
 
 /* descriptor of the page in the key cache block buffer */
 struct st_keycache_page
@@ -228,7 +228,7 @@ KEY_CACHE *dflt_key_cache= &dflt_key_cache_var;
 static int flush_all_key_blocks(KEY_CACHE *keycache);
 
 static void wait_on_queue(KEYCACHE_WQUEUE *wqueue,
-                          mysql_mutex_t *mutex);
+                          myblockchain_mutex_t *mutex);
 static void release_whole_queue(KEYCACHE_WQUEUE *wqueue);
 
 static void free_block(KEY_CACHE *keycache, BLOCK_LINK *block);
@@ -307,20 +307,20 @@ static long keycache_thread_id;
   ((uint) (((char*)(h)-(char *) keycache->hash_link_root)/sizeof(HASH_LINK)))
 
 #if (defined(KEYCACHE_TIMEOUT) && !defined(_WIN32)) || defined(KEYCACHE_DEBUG)
-static int keycache_pthread_cond_wait(mysql_cond_t *cond,
-                                      mysql_mutex_t *mutex);
+static int keycache_pthread_cond_wait(myblockchain_cond_t *cond,
+                                      myblockchain_mutex_t *mutex);
 #else
-#define keycache_pthread_cond_wait(C, M) mysql_cond_wait(C, M)
+#define keycache_pthread_cond_wait(C, M) myblockchain_cond_wait(C, M)
 #endif
 
 #if defined(KEYCACHE_DEBUG)
-static int keycache_pthread_mutex_lock(mysql_mutex_t *mutex);
-static void keycache_pthread_mutex_unlock(mysql_mutex_t *mutex);
-static int keycache_pthread_cond_signal(mysql_cond_t *cond);
+static int keycache_pthread_mutex_lock(myblockchain_mutex_t *mutex);
+static void keycache_pthread_mutex_unlock(myblockchain_mutex_t *mutex);
+static int keycache_pthread_cond_signal(myblockchain_cond_t *cond);
 #else
-#define keycache_pthread_mutex_lock(M) mysql_mutex_lock(M)
-#define keycache_pthread_mutex_unlock(M) mysql_mutex_unlock(M)
-#define keycache_pthread_cond_signal(C) mysql_cond_signal(C)
+#define keycache_pthread_mutex_lock(M) myblockchain_mutex_lock(M)
+#define keycache_pthread_mutex_unlock(M) myblockchain_mutex_unlock(M)
+#define keycache_pthread_cond_signal(C) myblockchain_cond_signal(C)
 #endif /* defined(KEYCACHE_DEBUG) */
 
 #if !defined(DBUG_OFF)
@@ -392,7 +392,7 @@ int init_key_cache(KEY_CACHE *keycache, ulonglong key_cache_block_size,
     keycache->cnt_for_resize_op= 0;
     keycache->waiting_for_resize_cnt.last_thread= NULL;
     keycache->in_init= 0;
-    mysql_mutex_init(key_KEY_CACHE_cache_lock,
+    myblockchain_mutex_init(key_KEY_CACHE_cache_lock,
                      &keycache->cache_lock, MY_MUTEX_INIT_FAST);
     keycache->resize_queue.last_thread= NULL;
   }
@@ -577,7 +577,7 @@ int resize_key_cache(KEY_CACHE *keycache, ulonglong key_cache_block_size,
 
   /*
     We may need to wait for another thread which is doing a resize
-    already. This cannot happen in the MySQL server though. It allows
+    already. This cannot happen in the MyBlockchain server though. It allows
     one resizer only. In set_var.cc keycache->in_init is used to block
     multiple attempts.
   */
@@ -760,7 +760,7 @@ void end_key_cache(KEY_CACHE *keycache, my_bool cleanup)
 
   if (cleanup)
   {
-    mysql_mutex_destroy(&keycache->cache_lock);
+    myblockchain_mutex_destroy(&keycache->cache_lock);
     keycache->key_cache_inited= keycache->can_be_used= 0;
     KEYCACHE_DEBUG_CLOSE;
   }
@@ -873,7 +873,7 @@ static void unlink_from_queue(KEYCACHE_WQUEUE *wqueue,
 */
 
 static void wait_on_queue(KEYCACHE_WQUEUE *wqueue,
-                          mysql_mutex_t *mutex)
+                          myblockchain_mutex_t *mutex)
 {
   struct st_my_thread_var *last;
   struct st_my_thread_var *thread= mysys_thread_var();
@@ -2515,9 +2515,9 @@ uchar *key_cache_read(KEY_CACHE *keycache,
     uint offset;
     int page_st;
 
-    if (MYSQL_KEYCACHE_READ_START_ENABLED())
+    if (MYBLOCKCHAIN_KEYCACHE_READ_START_ENABLED())
     {
-      MYSQL_KEYCACHE_READ_START(my_filename(file), length,
+      MYBLOCKCHAIN_KEYCACHE_READ_START(my_filename(file), length,
                                 (ulong) (keycache->blocks_used *
                                          keycache->key_cache_block_size),
                                 (ulong) (keycache->blocks_unused *
@@ -2574,7 +2574,7 @@ uchar *key_cache_read(KEY_CACHE *keycache,
       /* Request the cache block that matches file/pos. */
       keycache->global_cache_r_requests++;
 
-      MYSQL_KEYCACHE_READ_BLOCK(keycache->key_cache_block_size);
+      MYBLOCKCHAIN_KEYCACHE_READ_BLOCK(keycache->key_cache_block_size);
 
       block=find_key_block(keycache, file, filepos, level, 0, &page_st);
       if (!block)
@@ -2595,7 +2595,7 @@ uchar *key_cache_read(KEY_CACHE *keycache,
       {
         if (page_st != PAGE_READ)
         {
-          MYSQL_KEYCACHE_READ_MISS();
+          MYBLOCKCHAIN_KEYCACHE_READ_MISS();
           /* The requested page is to be read into the block buffer */
           read_block(keycache, block,
                      keycache->key_cache_block_size, read_length+offset,
@@ -2622,7 +2622,7 @@ uchar *key_cache_read(KEY_CACHE *keycache,
         }
         else
         {
-          MYSQL_KEYCACHE_READ_HIT();
+          MYBLOCKCHAIN_KEYCACHE_READ_HIT();
         }
       }
 
@@ -2673,9 +2673,9 @@ uchar *key_cache_read(KEY_CACHE *keycache,
       offset= 0;
 
     } while ((length-= read_length));
-    if (MYSQL_KEYCACHE_READ_DONE_ENABLED())
+    if (MYBLOCKCHAIN_KEYCACHE_READ_DONE_ENABLED())
     {
-      MYSQL_KEYCACHE_READ_DONE((ulong) (keycache->blocks_used *
+      MYBLOCKCHAIN_KEYCACHE_READ_DONE((ulong) (keycache->blocks_used *
                                         keycache->key_cache_block_size),
                                (ulong) (keycache->blocks_unused *
                                         keycache->key_cache_block_size));
@@ -3015,9 +3015,9 @@ int key_cache_write(KEY_CACHE *keycache,
     uint offset;
     int page_st;
 
-    if (MYSQL_KEYCACHE_WRITE_START_ENABLED())
+    if (MYBLOCKCHAIN_KEYCACHE_WRITE_START_ENABLED())
     {
-      MYSQL_KEYCACHE_WRITE_START(my_filename(file), length,
+      MYBLOCKCHAIN_KEYCACHE_WRITE_START(my_filename(file), length,
                                  (ulong) (keycache->blocks_used *
                                           keycache->key_cache_block_size),
                                  (ulong) (keycache->blocks_unused *
@@ -3060,7 +3060,7 @@ int key_cache_write(KEY_CACHE *keycache,
       if (!keycache->can_be_used)
 	goto no_key_cache;
 
-      MYSQL_KEYCACHE_WRITE_BLOCK(keycache->key_cache_block_size);
+      MYBLOCKCHAIN_KEYCACHE_WRITE_BLOCK(keycache->key_cache_block_size);
       /* Start writing at the beginning of the cache block. */
       filepos-= offset;
       /* Do not write beyond the end of the cache block. */
@@ -3272,9 +3272,9 @@ end:
     keycache_pthread_mutex_unlock(&keycache->cache_lock);
   }
   
-  if (MYSQL_KEYCACHE_WRITE_DONE_ENABLED())
+  if (MYBLOCKCHAIN_KEYCACHE_WRITE_DONE_ENABLED())
   {
-    MYSQL_KEYCACHE_WRITE_DONE((ulong) (keycache->blocks_used *
+    MYBLOCKCHAIN_KEYCACHE_WRITE_DONE((ulong) (keycache->blocks_used *
                                        keycache->key_cache_block_size),
                               (ulong) (keycache->blocks_unused *
                                        keycache->key_cache_block_size));
@@ -4097,7 +4097,7 @@ static int flush_all_key_blocks(KEY_CACHE *keycache)
 
   do
   {
-    mysql_mutex_assert_owner(&keycache->cache_lock);
+    myblockchain_mutex_assert_owner(&keycache->cache_lock);
     total_found= 0;
 
     /*
@@ -4338,8 +4338,8 @@ static void keycache_dump(KEY_CACHE *keycache)
 #if defined(KEYCACHE_TIMEOUT) && !defined(_WIN32)
 
 
-static int keycache_pthread_cond_wait(mysql_cond_t *cond,
-                                      mysql_mutex_t *mutex)
+static int keycache_pthread_cond_wait(myblockchain_cond_t *cond,
+                                      myblockchain_mutex_t *mutex)
 {
   int rc;
   struct timeval  now;            /* time when we started waiting        */
@@ -4366,7 +4366,7 @@ static int keycache_pthread_cond_wait(mysql_cond_t *cond,
     fprintf(keycache_debug_log, "waiting...\n");
     fflush(keycache_debug_log);
 #endif
-  rc= mysql_cond_timedwait(cond, mutex, &timeout);
+  rc= myblockchain_cond_timedwait(cond, mutex, &timeout);
   KEYCACHE_THREAD_TRACE_BEGIN("finished waiting");
   if (rc == ETIMEDOUT || rc == ETIME)
   {
@@ -4387,12 +4387,12 @@ static int keycache_pthread_cond_wait(mysql_cond_t *cond,
 }
 #else
 #if defined(KEYCACHE_DEBUG)
-static int keycache_pthread_cond_wait(mysql_cond_t *cond,
-                                      mysql_mutex_t *mutex)
+static int keycache_pthread_cond_wait(myblockchain_cond_t *cond,
+                                      myblockchain_mutex_t *mutex)
 {
   int rc;
   KEYCACHE_THREAD_TRACE_END("started waiting");
-  rc= mysql_cond_wait(cond, mutex);
+  rc= myblockchain_cond_wait(cond, mutex);
   KEYCACHE_THREAD_TRACE_BEGIN("finished waiting");
   return rc;
 }
@@ -4402,27 +4402,27 @@ static int keycache_pthread_cond_wait(mysql_cond_t *cond,
 #if defined(KEYCACHE_DEBUG)
 
 
-static int keycache_pthread_mutex_lock(mysql_mutex_t *mutex)
+static int keycache_pthread_mutex_lock(myblockchain_mutex_t *mutex)
 {
   int rc;
-  rc= mysql_mutex_lock(mutex);
+  rc= myblockchain_mutex_lock(mutex);
   KEYCACHE_THREAD_TRACE_BEGIN("");
   return rc;
 }
 
 
-static void keycache_pthread_mutex_unlock(mysql_mutex_t *mutex)
+static void keycache_pthread_mutex_unlock(myblockchain_mutex_t *mutex)
 {
   KEYCACHE_THREAD_TRACE_END("");
-  mysql_mutex_unlock(mutex);
+  myblockchain_mutex_unlock(mutex);
 }
 
 
-static int keycache_pthread_cond_signal(mysql_cond_t *cond)
+static int keycache_pthread_cond_signal(myblockchain_cond_t *cond)
 {
   int rc;
   KEYCACHE_THREAD_TRACE("signal");
-  rc= mysql_cond_signal(cond);
+  rc= myblockchain_cond_signal(cond);
   return rc;
 }
 

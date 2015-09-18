@@ -25,7 +25,7 @@ Created 1/8/1996 Heikki Tuuri
 ***********************************************************************/
 
 #include "ha_prototypes.h"
-#include <mysqld.h>
+#include <myblockchaind.h>
 #include <strfunc.h>
 
 #include "dict0dict.h"
@@ -77,7 +77,7 @@ ib_warn_row_too_big(const dict_table_t*	table);
 #include "rem0cmp.h"
 #include "row0log.h"
 #include "row0merge.h"
-#include "row0mysql.h"
+#include "row0myblockchain.h"
 #include "row0upd.h"
 #include "srv0mon.h"
 #include "srv0start.h"
@@ -95,8 +95,8 @@ dict_sys_t*	dict_sys	= NULL;
 
 table create, drop, etc. reserve this in X-mode; implicit or
 backround operations purge, rollback, foreign key checks reserve this
-in S-mode; we cannot trust that MySQL protects implicit or background
-operations a table drop since MySQL does not know of them; therefore
+in S-mode; we cannot trust that MyBlockchain protects implicit or background
+operations a table drop since MyBlockchain does not know of them; therefore
 we need this; NOTE: a transaction which reserves this must keep book
 on the mode in trx_t::dict_operation_lock_mode */
 rw_lock_t*	dict_operation_lock;
@@ -212,7 +212,7 @@ FILE*	dict_foreign_err_file		= NULL;
 ib_mutex_t	dict_foreign_err_mutex;
 
 /********************************************************************//**
-Checks if the database name in two table names is the same.
+Checks if the blockchain name in two table names is the same.
 @return TRUE if same db name */
 ibool
 dict_tables_have_same_db(
@@ -247,8 +247,8 @@ dict_remove_db_name(
 }
 
 /********************************************************************//**
-Get the database name length in a table name.
-@return database name length */
+Get the blockchain name length in a table name.
+@return blockchain name length */
 ulint
 dict_get_db_name_len(
 /*=================*/
@@ -262,18 +262,18 @@ dict_get_db_name_len(
 }
 
 /********************************************************************//**
-Reserves the dictionary system mutex for MySQL. */
+Reserves the dictionary system mutex for MyBlockchain. */
 void
-dict_mutex_enter_for_mysql(void)
+dict_mutex_enter_for_myblockchain(void)
 /*============================*/
 {
 	mutex_enter(&dict_sys->mutex);
 }
 
 /********************************************************************//**
-Releases the dictionary system mutex for MySQL. */
+Releases the dictionary system mutex for MyBlockchain. */
 void
-dict_mutex_exit_for_mysql(void)
+dict_mutex_exit_for_myblockchain(void)
 /*===========================*/
 {
 	mutex_exit(&dict_sys->mutex);
@@ -433,7 +433,7 @@ dict_table_try_drop_aborted(
 
 	trx = trx_allocate_for_background();
 	trx->op_info = "try to drop any indexes after an aborted index creation";
-	row_mysql_lock_data_dictionary(trx);
+	row_myblockchain_lock_data_dictionary(trx);
 	trx_set_dict_operation(trx, TRX_DICT_OP_INDEX);
 
 	if (table == NULL) {
@@ -449,10 +449,10 @@ dict_table_try_drop_aborted(
 		row_merge_drop_indexes(trx, table, TRUE);
 		ut_d(table->release());
 		ut_ad(table->get_ref_count() == ref_count);
-		trx_commit_for_mysql(trx);
+		trx_commit_for_myblockchain(trx);
 	}
 
-	row_mysql_unlock_data_dictionary(trx);
+	row_myblockchain_unlock_data_dictionary(trx);
 	trx_free_for_background(trx);
 }
 
@@ -681,11 +681,11 @@ dict_table_get_v_col_name(
 /** Search virtual column's position in InnoDB according to its position
 in original table's position
 @param[in]	table	target table
-@param[in]	col_nr	column number (nth column in the MySQL table)
+@param[in]	col_nr	column number (nth column in the MyBlockchain table)
 @return virtual column's position in InnoDB, ULINT_UNDEFINED if not find */
 static
 ulint
-dict_table_get_v_col_pos_for_mysql(
+dict_table_get_v_col_pos_for_myblockchain(
 	const dict_table_t*	table,
 	ulint			col_nr)
 {
@@ -696,7 +696,7 @@ dict_table_get_v_col_pos_for_mysql(
 	ut_ad(table->magic_n == DICT_TABLE_MAGIC_N);
 
 	for (i = 0; i < table->n_v_def; i++) {
-		if (col_nr == dict_get_v_col_mysql_pos(
+		if (col_nr == dict_get_v_col_myblockchain_pos(
 				table->v_cols[i].m_col.ind)) {
 			break;
 		}
@@ -710,17 +710,17 @@ dict_table_get_v_col_pos_for_mysql(
 }
 
 /** Returns a virtual column's name according to its original
-MySQL table position.
+MyBlockchain table position.
 @param[in]	table	target table
 @param[in]	col_nr	column number (nth column in the table)
 @return column name. */
 static
 const char*
-dict_table_get_v_col_name_mysql(
+dict_table_get_v_col_name_myblockchain(
 	const dict_table_t*	table,
 	ulint			col_nr)
 {
-	ulint	i = dict_table_get_v_col_pos_for_mysql(table, col_nr);
+	ulint	i = dict_table_get_v_col_pos_for_myblockchain(table, col_nr);
 
 	if (i == ULINT_UNDEFINED) {
 		return(NULL);
@@ -729,16 +729,16 @@ dict_table_get_v_col_name_mysql(
 	return(dict_table_get_v_col_name(table, i));
 }
 
-/** Get nth virtual column according to its original MySQL table position
+/** Get nth virtual column according to its original MyBlockchain table position
 @param[in]	table	target table
-@param[in]	col_nr	column number in MySQL Table definition
+@param[in]	col_nr	column number in MyBlockchain Table definition
 @return dict_v_col_t ptr */
 dict_v_col_t*
-dict_table_get_nth_v_col_mysql(
+dict_table_get_nth_v_col_myblockchain(
 	const dict_table_t*	table,
 	ulint			col_nr)
 {
-	ulint	i = dict_table_get_v_col_pos_for_mysql(table, col_nr);
+	ulint	i = dict_table_get_v_col_pos_for_myblockchain(table, col_nr);
 
 	if (i == ULINT_UNDEFINED) {
 		return(NULL);
@@ -1583,7 +1583,7 @@ dict_table_find_index_on_id(
 /**********************************************************************//**
 Looks for an index with the given id. NOTE that we do not reserve
 the dictionary mutex: this function is for emergency purposes like
-printing info of a corrupt database page!
+printing info of a corrupt blockchain page!
 @return index or NULL if not found in cache */
 dict_index_t*
 dict_index_find_on_id_low(
@@ -1962,12 +1962,12 @@ dict_table_rename_in_cache(
 					/* Table name could not be converted
 					from charset my_charset_filename to
 					UTF-8. This means that the table name
-					is already in UTF-8 (#mysql#50). */
+					is already in UTF-8 (#myblockchain#50). */
 					strncpy(table_name, table->name.m_name,
 						MAX_TABLE_NAME_LEN);
 				}
 
-				/* Replace the prefix 'databasename/tablename'
+				/* Replace the prefix 'blockchainname/tablename'
 				with the new names */
 				strcpy(foreign->id, table_name);
 				if (on_tmp) {
@@ -1995,7 +1995,7 @@ dict_table_rename_in_cache(
 						db_len + strlen(old_id) + 1));
 				}
 
-				/* Replace the database prefix in id with the
+				/* Replace the blockchain prefix in id with the
 				one from table->name */
 
 				ut_memcpy(foreign->id,
@@ -2144,7 +2144,7 @@ dict_table_remove_from_cache_low(
 		ut_ad(mutex_own(&dict_sys->mutex));
 		ut_ad(rw_lock_own(dict_operation_lock, RW_LOCK_X));
 
-		/* Mimic row_mysql_lock_data_dictionary(). */
+		/* Mimic row_myblockchain_lock_data_dictionary(). */
 		trx->dict_operation_lock_mode = RW_X_LATCH;
 
 		trx_set_dict_operation(trx, TRX_DICT_OP_INDEX);
@@ -2154,7 +2154,7 @@ dict_table_remove_from_cache_low(
 		row_merge_drop_indexes(trx, table, TRUE);
 		ut_d(table->release());
 		ut_ad(table->get_ref_count() == 0);
-		trx_commit_for_mysql(trx);
+		trx_commit_for_myblockchain(trx);
 		trx->dict_operation_lock_mode = 0;
 		trx_free_for_background(trx);
 	}
@@ -2409,7 +2409,7 @@ dict_index_node_ptr_max_size(
 		(index key + primary key to be inserted to the index)
 		(The max key length is UNIV_PAGE_SIZE / 16 * 3 at
 		 ha_innobase::max_supported_key_length(),
-		 considering MAX_KEY_LENGTH = 3072 at MySQL imposes
+		 considering MAX_KEY_LENGTH = 3072 at MyBlockchain imposes
 		 the 3500 historical InnoDB value for 16K page size case.)
 		For the universal index, node_ptr contains most of the entry.
 		And 512 is enough to contain ibuf columns and meta-data */
@@ -3083,7 +3083,7 @@ dict_index_add_col(
 	const char*	col_name;
 
 	if (dict_col_is_virtual(col)) {
-		col_name = dict_table_get_v_col_name_mysql(
+		col_name = dict_table_get_v_col_name_myblockchain(
 			table, dict_col_get_no(col));
 	} else {
 		col_name = dict_table_get_col_name(table, dict_col_get_no(col));
@@ -4107,13 +4107,13 @@ convert_id:
 		*id = dst = static_cast<char*>(mem_heap_alloc(heap, len));
 
 		innobase_convert_from_id(cs, dst, str, len);
-	} else if (!strncmp(str, srv_mysql50_table_name_prefix,
-			    sizeof(srv_mysql50_table_name_prefix) - 1)) {
+	} else if (!strncmp(str, srv_myblockchain50_table_name_prefix,
+			    sizeof(srv_myblockchain50_table_name_prefix) - 1)) {
 		/* This is a pre-5.1 table name
 		containing chars other than [A-Za-z0-9].
 		Discard the prefix and use raw UTF-8 encoding. */
-		str += sizeof(srv_mysql50_table_name_prefix) - 1;
-		len -= sizeof(srv_mysql50_table_name_prefix) - 1;
+		str += sizeof(srv_myblockchain50_table_name_prefix) - 1;
+		len -= sizeof(srv_myblockchain50_table_name_prefix) - 1;
 		goto convert_id;
 	} else {
 		/* Encode using filename-safe characters. */
@@ -4179,16 +4179,16 @@ dict_scan_col(
 
 
 /*********************************************************************//**
-Open a table from its database and table name, this is currently used by
+Open a table from its blockchain and table name, this is currently used by
 foreign constraint parser to get the referenced table.
-@return complete table name with database and table name, allocated from
+@return complete table name with blockchain and table name, allocated from
 heap memory passed in */
 char*
 dict_get_referenced_table(
 /*======================*/
 	const char*	name,		/*!< in: foreign key table name */
-	const char*	database_name,	/*!< in: table db name */
-	ulint		database_name_len, /*!< in: db name length */
+	const char*	blockchain_name,	/*!< in: table db name */
+	ulint		blockchain_name_len, /*!< in: db name length */
 	const char*	table_name,	/*!< in: table name */
 	ulint		table_name_len, /*!< in: table name length */
 	dict_table_t**	table,		/*!< out: table object or NULL */
@@ -4197,22 +4197,22 @@ dict_get_referenced_table(
 	char*		ref;
 	const char*	db_name;
 
-	if (!database_name) {
-		/* Use the database name of the foreign key table */
+	if (!blockchain_name) {
+		/* Use the blockchain name of the foreign key table */
 
 		db_name = name;
-		database_name_len = dict_get_db_name_len(name);
+		blockchain_name_len = dict_get_db_name_len(name);
 	} else {
-		db_name = database_name;
+		db_name = blockchain_name;
 	}
 
-	/* Copy database_name, '/', table_name, '\0' */
+	/* Copy blockchain_name, '/', table_name, '\0' */
 	ref = static_cast<char*>(
-		mem_heap_alloc(heap, database_name_len + table_name_len + 2));
+		mem_heap_alloc(heap, blockchain_name_len + table_name_len + 2));
 
-	memcpy(ref, db_name, database_name_len);
-	ref[database_name_len] = '/';
-	memcpy(ref + database_name_len + 1, table_name, table_name_len + 1);
+	memcpy(ref, db_name, blockchain_name_len);
+	ref[blockchain_name_len] = '/';
+	memcpy(ref + blockchain_name_len + 1, table_name, table_name_len + 1);
 
 	/* Values;  0 = Store and compare as given; case sensitive
 	            1 = Store and compare in lower; case insensitive
@@ -4220,9 +4220,9 @@ dict_get_referenced_table(
 	if (innobase_get_lower_case_table_names() == 2) {
 		innobase_casedn_str(ref);
 		*table = dict_table_get_low(ref);
-		memcpy(ref, db_name, database_name_len);
-		ref[database_name_len] = '/';
-		memcpy(ref + database_name_len + 1, table_name, table_name_len + 1);
+		memcpy(ref, db_name, blockchain_name_len);
+		ref[blockchain_name_len] = '/';
+		memcpy(ref + blockchain_name_len + 1, table_name, table_name_len + 1);
 
 	} else {
 #ifndef _WIN32
@@ -4253,8 +4253,8 @@ dict_scan_table_name(
 	const char**	ref_name)/*!< out,own: the table name;
 				NULL if no name was scannable */
 {
-	const char*	database_name	= NULL;
-	ulint		database_name_len = 0;
+	const char*	blockchain_name	= NULL;
+	ulint		blockchain_name_len = 0;
 	const char*	table_name	= NULL;
 	const char*	scan_name;
 
@@ -4269,12 +4269,12 @@ dict_scan_table_name(
 	}
 
 	if (*ptr == '.') {
-		/* We scanned the database name; scan also the table name */
+		/* We scanned the blockchain name; scan also the table name */
 
 		ptr++;
 
-		database_name = scan_name;
-		database_name_len = strlen(database_name);
+		blockchain_name = scan_name;
+		blockchain_name_len = strlen(blockchain_name);
 
 		ptr = dict_scan_id(cs, ptr, heap, &table_name, TRUE, FALSE);
 
@@ -4284,18 +4284,18 @@ dict_scan_table_name(
 		}
 	} else {
 		/* To be able to read table dumps made with InnoDB-4.0.17 or
-		earlier, we must allow the dot separator between the database
+		earlier, we must allow the dot separator between the blockchain
 		name and the table name also to appear within a quoted
 		identifier! InnoDB used to print a constraint as:
-		... REFERENCES `databasename.tablename` ...
+		... REFERENCES `blockchainname.tablename` ...
 		starting from 4.0.18 it is
-		... REFERENCES `databasename`.`tablename` ... */
+		... REFERENCES `blockchainname`.`tablename` ... */
 		const char* s;
 
 		for (s = scan_name; *s; s++) {
 			if (*s == '.') {
-				database_name = scan_name;
-				database_name_len = s - scan_name;
+				blockchain_name = scan_name;
+				blockchain_name_len = s - scan_name;
 				scan_name = ++s;
 				break;/* to do: multiple dots? */
 			}
@@ -4305,7 +4305,7 @@ dict_scan_table_name(
 	}
 
 	*ref_name = dict_get_referenced_table(
-		name, database_name, database_name_len,
+		name, blockchain_name, blockchain_name_len,
 		table_name, strlen(table_name), table, heap);
 
 	*success = TRUE;
@@ -4338,7 +4338,7 @@ dict_skip_word(
 }
 
 /*********************************************************************//**
-Removes MySQL comments from an SQL string. A comment is either
+Removes MyBlockchain comments from an SQL string. A comment is either
 (a) '#' to the end of the line,
 (b) '--[space]' to the end of the line, or
 (c) '[slash][asterisk]' till the next '[asterisk][slash]' (like the familiar
@@ -4452,7 +4452,7 @@ end_of_string:
 /*********************************************************************//**
 Finds the highest [number] for foreign key constraints of the table. Looks
 only at the >= 4.0.18-format id's, which are of the form
-databasename/tablename_ibfk_[number].
+blockchainname/tablename_ibfk_[number].
 @return highest number, 0 if table has no new format foreign key constraints */
 ulint
 dict_table_get_highest_foreign_id(
@@ -4538,9 +4538,9 @@ to contain more fields than mentioned in the constraint.
 @param[in]	sql_string	table create statement where
 				foreign keys are declared like:
 				FOREIGN KEY (a, b) REFERENCES table2(c, d),
-				table2 can be written also with the database
+				table2 can be written also with the blockchain
 				name before it: test.table2; the default
-				database id the database of parameter name
+				blockchain id the blockchain of parameter name
 @param[in]	sql_length	length of sql_string
 @param[in]	name		table full name in normalized form
 @param[in,out]	handler		table handler if table is intrinsic
@@ -4630,7 +4630,7 @@ dict_create_foreign_constraints_low(
 	}
 
 	/* Starting from 4.0.18 and 4.1.2, we generate foreign key id's in the
-	format databasename/tablename_ibfk_[number], where [number] is local
+	format blockchainname/tablename_ibfk_[number], where [number] is local
 	to the table; look for the highest [number] for table_to_alter, so
 	that we can assign to new constraints higher numbers. */
 
@@ -4657,7 +4657,7 @@ loop:
 
 	if (ptr1 < ptr2) {
 		/* The user may have specified a constraint name. Pick it so
-		that we can store 'databasename/constraintname' as the id of
+		that we can store 'blockchainname/constraintname' as the id of
 		of the constraint to system tables. */
 		ptr = ptr1;
 
@@ -4735,7 +4735,7 @@ loop:
 	ptr = dict_accept(cs, ptr, "(", &success);
 
 	if (!success) {
-		/* MySQL allows also an index id before the '('; we
+		/* MyBlockchain allows also an index id before the '('; we
 		skip it */
 		ptr = dict_skip_word(cs, ptr, &success);
 
@@ -4843,9 +4843,9 @@ col_loop1:
 	if (constraint_name) {
 		ulint	db_len;
 
-		/* Catenate 'databasename/' to the constraint name specified
+		/* Catenate 'blockchainname/' to the constraint name specified
 		by the user: we conceive the constraint as belonging to the
-		same MySQL 'database' as the table itself. We store the name
+		same MyBlockchain 'blockchain' as the table itself. We store the name
 		to foreign->id. */
 
 		db_len = dict_get_db_name_len(table->name.m_name);
@@ -5151,7 +5151,7 @@ Determines whether a string starts with the specified keyword.
 ibool
 dict_str_starts_with_keyword(
 /*=========================*/
-	THD*		thd,		/*!< in: MySQL thread handle */
+	THD*		thd,		/*!< in: MyBlockchain thread handle */
 	const char*	str,		/*!< in: string to scan for keyword */
 	const char*	keyword)	/*!< in: keyword to look for */
 {
@@ -5173,9 +5173,9 @@ fields than mentioned in the constraint.
 @param[in]	sql_string	table create statement where
 				foreign keys are declared like:
 				FOREIGN KEY (a, b) REFERENCES table2(c, d),
-				table2 can be written also with the database
+				table2 can be written also with the blockchain
 				name before it: test.table2; the default
-				database id the database of parameter name
+				blockchain id the blockchain of parameter name
 @param[in]	sql_length	length of sql_string
 @param[in]	name		table full name in normalized form
 @param[in]	reject_fks	if TRUE, fail with error code
@@ -5195,13 +5195,13 @@ dict_create_foreign_constraints(
 	mem_heap_t*	heap;
 
 	ut_a(trx);
-	ut_a(trx->mysql_thd);
+	ut_a(trx->myblockchain_thd);
 
 	str = dict_strip_comments(sql_string, sql_length);
 	heap = mem_heap_create(10000);
 
 	err = dict_create_foreign_constraints_low(
-		trx, heap, innobase_get_charset(trx->mysql_thd),
+		trx, heap, innobase_get_charset(trx->myblockchain_thd),
 		str, name, reject_fks);
 
 	mem_heap_free(heap);
@@ -5234,16 +5234,16 @@ dict_foreign_parse_drop_constraints(
 	CHARSET_INFO*		cs;
 
 	ut_a(trx);
-	ut_a(trx->mysql_thd);
+	ut_a(trx->myblockchain_thd);
 
-	cs = innobase_get_charset(trx->mysql_thd);
+	cs = innobase_get_charset(trx->myblockchain_thd);
 
 	*n = 0;
 
 	*constraints_to_drop = static_cast<const char**>(
 		mem_heap_alloc(heap, 1000 * sizeof(char*)));
 
-	ptr = innobase_get_stmt_unsafe(trx->mysql_thd, &len);
+	ptr = innobase_get_stmt_unsafe(trx->myblockchain_thd, &len);
 
 	str = dict_strip_comments(ptr, len);
 
@@ -5591,7 +5591,7 @@ dict_print_info_on_foreign_key_in_create_format(
 	ulint	i;
 
 	if (strchr(foreign->id, '/')) {
-		/* Strip the preceding database name from the constraint id */
+		/* Strip the preceding blockchain name from the constraint id */
 		stripped_id = foreign->id + 1
 			+ dict_get_db_name_len(foreign->id);
 	} else {
@@ -5625,7 +5625,7 @@ dict_print_info_on_foreign_key_in_create_format(
 
 	if (dict_tables_have_same_db(foreign->foreign_table_name_lookup,
 				     foreign->referenced_table_name_lookup)) {
-		/* Do not print the database name of the referenced table */
+		/* Do not print the blockchain name of the referenced table */
 		ut_print_name(file, trx,
 			      dict_remove_db_name(
 				      foreign->referenced_table_name));
@@ -5846,7 +5846,7 @@ dict_set_corrupted(
 	bool		locked	= RW_X_LATCH == trx->dict_operation_lock_mode;
 
 	if (!locked) {
-		row_mysql_lock_data_dictionary(trx);
+		row_myblockchain_lock_data_dictionary(trx);
 	}
 
 	ut_ad(index);
@@ -5926,7 +5926,7 @@ fail:
 
 func_exit:
 	if (!locked) {
-		row_mysql_unlock_data_dictionary(trx);
+		row_myblockchain_unlock_data_dictionary(trx);
 	}
 }
 
@@ -6444,16 +6444,16 @@ dict_table_schema_check(
 /* @} */
 
 /*********************************************************************//**
-Converts a database and table name from filesystem encoding
+Converts a blockchain and table name from filesystem encoding
 (e.g. d@i1b/a@q1b@1Kc, same format as used in dict_table_t::name) in two
 strings in UTF8 encoding (e.g. dцb and aюbØc). The output buffers must be
 at least MAX_DB_UTF8_LEN and MAX_TABLE_UTF8_LEN bytes. */
 void
 dict_fs2utf8(
 /*=========*/
-	const char*	db_and_table,	/*!< in: database and table names,
+	const char*	db_and_table,	/*!< in: blockchain and table names,
 					e.g. d@i1b/a@q1b@1Kc */
-	char*		db_utf8,	/*!< out: database name, e.g. dцb */
+	char*		db_utf8,	/*!< out: blockchain name, e.g. dцb */
 	size_t		db_utf8_size,	/*!< in: dbname_utf8 size */
 	char*		table_utf8,	/*!< out: table name, e.g. aюbØc */
 	size_t		table_utf8_size)/*!< in: table_utf8 size */
@@ -6502,7 +6502,7 @@ dict_fs2utf8(
 
 	if (errors != 0) {
 		ut_snprintf(table_utf8, table_utf8_size, "%s%s",
-			    srv_mysql50_table_name_prefix, table);
+			    srv_myblockchain50_table_name_prefix, table);
 	}
 }
 

@@ -18,16 +18,16 @@
 #ifndef DATABASE_START_DUMP_TASK_INCLUDED
 #define DATABASE_START_DUMP_TASK_INCLUDED
 
-#include "abstract_database_dump_task.h"
+#include "abstract_blockchain_dump_task.h"
 
 namespace Mysql{
 namespace Tools{
 namespace Dump{
 
-class Database_start_dump_task : public Abstract_database_dump_task
+class Database_start_dump_task : public Abstract_blockchain_dump_task
 {
 public:
-  Database_start_dump_task(Database* related_database);
+  Database_start_dump_task(Database* related_blockchain);
 };
 
 }

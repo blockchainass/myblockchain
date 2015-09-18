@@ -34,7 +34,7 @@ static void default_ndb_opt_usage(void)
     {
       NDB_STD_OPTS("ndbapi_program")
     };
-  const char *load_default_groups[]= { "mysql_cluster", 0 };
+  const char *load_default_groups[]= { "myblockchain_cluster", 0 };
 
   ndb_usage(default_ndb_opt_short, load_default_groups, my_long_options);
 }
@@ -78,7 +78,7 @@ void ndb_usage(void (*usagefunc)(void), const char *load_default_groups[],
   (*usagefunc)();
 
   ndb_std_print_version();
-  print_defaults(MYSQL_CONFIG_NAME,load_default_groups);
+  print_defaults(MYBLOCKCHAIN_CONFIG_NAME,load_default_groups);
   puts("");
   my_print_help(my_long_options);
   my_print_variables(my_long_options);
@@ -117,25 +117,25 @@ void ndb_std_print_version()
 #else
   const char *suffix= "";
 #endif
-  printf("MySQL distrib %s%s, for %s (%s)\n",
+  printf("MyBlockchain distrib %s%s, for %s (%s)\n",
          NDB_VERSION_STRING,suffix,SYSTEM_TYPE,MACHINE_TYPE);
 }
 
 extern "C"
 my_bool ndb_is_load_default_arg_separator(const char* arg)
 {
-#ifndef MYSQL_VERSION_ID
-#error "Need MYSQL_VERSION_ID defined"
+#ifndef MYBLOCKCHAIN_VERSION_ID
+#error "Need MYBLOCKCHAIN_VERSION_ID defined"
 #endif
 
-#if MYSQL_VERSION_ID >= 50510
+#if MYBLOCKCHAIN_VERSION_ID >= 50510
   /*
     load_default() in 5.5+ returns an extra arg which has to
     be skipped when processing the argv array
    */
   if (my_getopt_is_args_separator(arg))
     return TRUE;
-#elif MYSQL_VERSION_ID >= 50501
+#elif MYBLOCKCHAIN_VERSION_ID >= 50501
   if (arg == args_separator)
     return TRUE;
 #else
@@ -149,7 +149,7 @@ int
 ndb_load_defaults(const char* conf_file, const char** groups,
                   int *argc, char*** argv)
 {
-  return my_load_defaults(conf_file ? conf_file : MYSQL_CONFIG_NAME,
+  return my_load_defaults(conf_file ? conf_file : MYBLOCKCHAIN_CONFIG_NAME,
                           groups, argc, argv, NULL);
 }
 

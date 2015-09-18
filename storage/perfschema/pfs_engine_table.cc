@@ -125,7 +125,7 @@
 #include "pfs_digest.h"
 
 #include "sql_base.h"                           // close_thread_tables
-#include "lock.h"                               // MYSQL_LOCK_IGNORE_TIMEOUT
+#include "lock.h"                               // MYBLOCKCHAIN_LOCK_IGNORE_TIMEOUT
 #include "log.h"
 
 /**
@@ -364,7 +364,7 @@ public:
 void PFS_check_intact::report_error(uint code, const char *fmt, ...)
 {
   va_list args;
-  char buff[MYSQL_ERRMSG_SIZE];
+  char buff[MYBLOCKCHAIN_ERRMSG_SIZE];
 
   va_start(args, fmt);
   my_vsnprintf(buff, sizeof(buff), fmt, args);
@@ -398,7 +398,7 @@ void PFS_engine_table_share::check_one_table(THD *thd)
   thd->lex= &dummy_lex;
   lex_start(thd);
 
-  if (! open_and_lock_tables(thd, &tables, MYSQL_LOCK_IGNORE_TIMEOUT))
+  if (! open_and_lock_tables(thd, &tables, MYBLOCKCHAIN_LOCK_IGNORE_TIMEOUT))
   {
     PFS_check_intact checker;
 
@@ -539,7 +539,7 @@ int PFS_engine_table::read_row(TABLE *table,
   /*
     Some callers of the storage engine interface do not honor the
     f->is_null() flag, and will attempt to read the data itself.
-    A known offender is mysql_checksum_table().
+    A known offender is myblockchain_checksum_table().
     For robustness, reset every field.
   */
   for (fields_reset= fields; (f= *fields_reset) ; fields_reset++)
@@ -646,28 +646,28 @@ void PFS_engine_table::get_normalizer(PFS_instr_class *instr_class)
 
 void PFS_engine_table::set_field_long(Field *f, long value)
 {
-  DBUG_ASSERT(f->real_type() == MYSQL_TYPE_LONG);
+  DBUG_ASSERT(f->real_type() == MYBLOCKCHAIN_TYPE_LONG);
   Field_long *f2= (Field_long*) f;
   f2->store(value, false);
 }
 
 void PFS_engine_table::set_field_ulong(Field *f, ulong value)
 {
-  DBUG_ASSERT(f->real_type() == MYSQL_TYPE_LONG);
+  DBUG_ASSERT(f->real_type() == MYBLOCKCHAIN_TYPE_LONG);
   Field_long *f2= (Field_long*) f;
   f2->store(value, true);
 }
 
 void PFS_engine_table::set_field_longlong(Field *f, longlong value)
 {
-  DBUG_ASSERT(f->real_type() == MYSQL_TYPE_LONGLONG);
+  DBUG_ASSERT(f->real_type() == MYBLOCKCHAIN_TYPE_LONGLONG);
   Field_longlong *f2= (Field_longlong*) f;
   f2->store(value, false);
 }
 
 void PFS_engine_table::set_field_ulonglong(Field *f, ulonglong value)
 {
-  DBUG_ASSERT(f->real_type() == MYSQL_TYPE_LONGLONG);
+  DBUG_ASSERT(f->real_type() == MYBLOCKCHAIN_TYPE_LONGLONG);
   Field_longlong *f2= (Field_longlong*) f;
   f2->store(value, true);
 }
@@ -675,7 +675,7 @@ void PFS_engine_table::set_field_ulonglong(Field *f, ulonglong value)
 void PFS_engine_table::set_field_char_utf8(Field *f, const char* str,
                                            uint len)
 {
-  DBUG_ASSERT(f->real_type() == MYSQL_TYPE_STRING);
+  DBUG_ASSERT(f->real_type() == MYBLOCKCHAIN_TYPE_STRING);
   Field_string *f2= (Field_string*) f;
   f2->store(str, len, &my_charset_utf8_bin);
 }
@@ -683,7 +683,7 @@ void PFS_engine_table::set_field_char_utf8(Field *f, const char* str,
 void PFS_engine_table::set_field_varchar_utf8(Field *f, const char* str,
                                               uint len)
 {
-  DBUG_ASSERT(f->real_type() == MYSQL_TYPE_VARCHAR);
+  DBUG_ASSERT(f->real_type() == MYBLOCKCHAIN_TYPE_VARCHAR);
   Field_varstring *f2= (Field_varstring*) f;
   f2->store(str, len, &my_charset_utf8_bin);
 }
@@ -691,7 +691,7 @@ void PFS_engine_table::set_field_varchar_utf8(Field *f, const char* str,
 void PFS_engine_table::set_field_longtext_utf8(Field *f, const char* str,
                                                uint len)
 {
-  DBUG_ASSERT(f->real_type() == MYSQL_TYPE_BLOB);
+  DBUG_ASSERT(f->real_type() == MYBLOCKCHAIN_TYPE_BLOB);
   Field_blob *f2= (Field_blob*) f;
   f2->store(str, len, &my_charset_utf8_bin);
 }
@@ -699,14 +699,14 @@ void PFS_engine_table::set_field_longtext_utf8(Field *f, const char* str,
 void PFS_engine_table::set_field_blob(Field *f, const char* val,
                                       uint len)
 {
-  DBUG_ASSERT(f->real_type() == MYSQL_TYPE_BLOB);
+  DBUG_ASSERT(f->real_type() == MYBLOCKCHAIN_TYPE_BLOB);
   Field_blob *f2= (Field_blob*) f;
   f2->store(val, len, &my_charset_utf8_bin);
 }
 
 void PFS_engine_table::set_field_enum(Field *f, ulonglong value)
 {
-  DBUG_ASSERT(f->real_type() == MYSQL_TYPE_ENUM);
+  DBUG_ASSERT(f->real_type() == MYBLOCKCHAIN_TYPE_ENUM);
   Field_enum *f2= (Field_enum*) f;
   f2->store_type(value);
 }
@@ -716,21 +716,21 @@ void PFS_engine_table::set_field_timestamp(Field *f, ulonglong value)
   struct timeval tm;
   tm.tv_sec= (long)(value / 1000000);
   tm.tv_usec= (long)(value % 1000000);
-  DBUG_ASSERT(f->real_type() == MYSQL_TYPE_TIMESTAMP2);
+  DBUG_ASSERT(f->real_type() == MYBLOCKCHAIN_TYPE_TIMESTAMP2);
   Field_timestampf *f2= (Field_timestampf*) f;
   f2->store_timestamp(& tm);
 }
 
 void PFS_engine_table::set_field_double(Field *f, double value)
 {
-  DBUG_ASSERT(f->real_type() == MYSQL_TYPE_DOUBLE);
+  DBUG_ASSERT(f->real_type() == MYBLOCKCHAIN_TYPE_DOUBLE);
   Field_double *f2= (Field_double*) f;
   f2->store(value);
 }
 
 ulonglong PFS_engine_table::get_field_enum(Field *f)
 {
-  DBUG_ASSERT(f->real_type() == MYSQL_TYPE_ENUM);
+  DBUG_ASSERT(f->real_type() == MYBLOCKCHAIN_TYPE_ENUM);
   Field_enum *f2= (Field_enum*) f;
   return f2->val_int();
 }
@@ -738,7 +738,7 @@ ulonglong PFS_engine_table::get_field_enum(Field *f)
 String*
 PFS_engine_table::get_field_char_utf8(Field *f, String *val)
 {
-  DBUG_ASSERT(f->real_type() == MYSQL_TYPE_STRING);
+  DBUG_ASSERT(f->real_type() == MYBLOCKCHAIN_TYPE_STRING);
   Field_string *f2= (Field_string*) f;
   val= f2->val_str(NULL, val);
   return val;
@@ -747,7 +747,7 @@ PFS_engine_table::get_field_char_utf8(Field *f, String *val)
 String*
 PFS_engine_table::get_field_varchar_utf8(Field *f, String *val)
 {
-  DBUG_ASSERT(f->real_type() == MYSQL_TYPE_VARCHAR);
+  DBUG_ASSERT(f->real_type() == MYBLOCKCHAIN_TYPE_VARCHAR);
   Field_varstring *f2= (Field_varstring*) f;
   val= f2->val_str(NULL, val);
   return val;
@@ -808,7 +808,7 @@ PFS_internal_schema_access::lookup(const char *name) const
     in privilege checks for unknown tables.
     Instead, return an object that denies every actions,
     to prevent users for creating their own tables in the
-    performance_schema database schema.
+    performance_schema blockchain schema.
   */
   return &pfs_unknown_acl;
 }

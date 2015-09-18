@@ -13,8 +13,8 @@
   along with this program; if not, write to the Free Software Foundation,
   51 Franklin Street, Suite 500, Boston, MA 02110-1335 USA */
 
-#ifndef MYSQL_FILE_H
-#define MYSQL_FILE_H
+#ifndef MYBLOCKCHAIN_FILE_H
+#define MYBLOCKCHAIN_FILE_H
 
 #include <my_global.h>
 
@@ -26,7 +26,7 @@
 #include <my_sys.h>
 
 /**
-  @file mysql/psi/mysql_file.h
+  @file myblockchain/psi/myblockchain_file.h
   Instrumentation helpers for mysys file io.
   This header file provides the necessary declarations
   to use the mysys file API with the performance schema instrumentation.
@@ -37,11 +37,11 @@
   Other compilers, like gcc, optimize these dependencies by default.
 
   Since the instrumented APIs declared here are wrapper on top
-  of mysys file io APIs, including mysql/psi/mysql_file.h assumes that
+  of mysys file io APIs, including myblockchain/psi/myblockchain_file.h assumes that
   the dependency on my_sys already exists.
 */
 
-#include "mysql/psi/psi.h"
+#include "myblockchain/psi/psi.h"
 
 #ifndef PSI_FILE_CALL
 #define PSI_FILE_CALL(M) PSI_DYNAMIC_CALL(M)
@@ -54,462 +54,462 @@
 */
 
 /**
-  @def mysql_file_register(P1, P2, P3)
+  @def myblockchain_file_register(P1, P2, P3)
   File registration.
 */
-#define mysql_file_register(P1, P2, P3) \
-  inline_mysql_file_register(P1, P2, P3)
+#define myblockchain_file_register(P1, P2, P3) \
+  inline_myblockchain_file_register(P1, P2, P3)
 
 /**
-  @def mysql_file_fgets(P1, P2, F)
+  @def myblockchain_file_fgets(P1, P2, F)
   Instrumented fgets.
-  @c mysql_file_fgets is a replacement for @c fgets.
+  @c myblockchain_file_fgets is a replacement for @c fgets.
 */
 #ifdef HAVE_PSI_FILE_INTERFACE
-  #define mysql_file_fgets(P1, P2, F) \
-    inline_mysql_file_fgets(__FILE__, __LINE__, P1, P2, F)
+  #define myblockchain_file_fgets(P1, P2, F) \
+    inline_myblockchain_file_fgets(__FILE__, __LINE__, P1, P2, F)
 #else
-  #define mysql_file_fgets(P1, P2, F) \
-    inline_mysql_file_fgets(P1, P2, F)
+  #define myblockchain_file_fgets(P1, P2, F) \
+    inline_myblockchain_file_fgets(P1, P2, F)
 #endif
 
 /**
-  @def mysql_file_fgetc(F)
+  @def myblockchain_file_fgetc(F)
   Instrumented fgetc.
-  @c mysql_file_fgetc is a replacement for @c fgetc.
+  @c myblockchain_file_fgetc is a replacement for @c fgetc.
 */
 #ifdef HAVE_PSI_FILE_INTERFACE
-  #define mysql_file_fgetc(F) inline_mysql_file_fgetc(__FILE__, __LINE__, F)
+  #define myblockchain_file_fgetc(F) inline_myblockchain_file_fgetc(__FILE__, __LINE__, F)
 #else
-  #define mysql_file_fgetc(F) inline_mysql_file_fgetc(F)
+  #define myblockchain_file_fgetc(F) inline_myblockchain_file_fgetc(F)
 #endif
 
 /**
-  @def mysql_file_fputs(P1, F)
+  @def myblockchain_file_fputs(P1, F)
   Instrumented fputs.
-  @c mysql_file_fputs is a replacement for @c fputs.
+  @c myblockchain_file_fputs is a replacement for @c fputs.
 */
 #ifdef HAVE_PSI_FILE_INTERFACE
-  #define mysql_file_fputs(P1, F) \
-    inline_mysql_file_fputs(__FILE__, __LINE__, P1, F)
+  #define myblockchain_file_fputs(P1, F) \
+    inline_myblockchain_file_fputs(__FILE__, __LINE__, P1, F)
 #else
-  #define mysql_file_fputs(P1, F)\
-    inline_mysql_file_fputs(P1, F)
+  #define myblockchain_file_fputs(P1, F)\
+    inline_myblockchain_file_fputs(P1, F)
 #endif
 
 /**
-  @def mysql_file_fputc(P1, F)
+  @def myblockchain_file_fputc(P1, F)
   Instrumented fputc.
-  @c mysql_file_fputc is a replacement for @c fputc.
+  @c myblockchain_file_fputc is a replacement for @c fputc.
 */
 #ifdef HAVE_PSI_FILE_INTERFACE
-  #define mysql_file_fputc(P1, F) \
-    inline_mysql_file_fputc(__FILE__, __LINE__, P1, F)
+  #define myblockchain_file_fputc(P1, F) \
+    inline_myblockchain_file_fputc(__FILE__, __LINE__, P1, F)
 #else
-  #define mysql_file_fputc(P1, F) \
-    inline_mysql_file_fputc(P1, F)
+  #define myblockchain_file_fputc(P1, F) \
+    inline_myblockchain_file_fputc(P1, F)
 #endif
 
 /**
-  @def mysql_file_fprintf
+  @def myblockchain_file_fprintf
   Instrumented fprintf.
-  @c mysql_file_fprintf is a replacement for @c fprintf.
+  @c myblockchain_file_fprintf is a replacement for @c fprintf.
 */
-#define mysql_file_fprintf inline_mysql_file_fprintf
+#define myblockchain_file_fprintf inline_myblockchain_file_fprintf
 
 /**
-  @def mysql_file_vfprintf(F, P1, P2)
+  @def myblockchain_file_vfprintf(F, P1, P2)
   Instrumented vfprintf.
-  @c mysql_file_vfprintf is a replacement for @c vfprintf.
+  @c myblockchain_file_vfprintf is a replacement for @c vfprintf.
 */
 #ifdef HAVE_PSI_FILE_INTERFACE
-  #define mysql_file_vfprintf(F, P1, P2) \
-    inline_mysql_file_vfprintf(__FILE__, __LINE__, F, P1, P2)
+  #define myblockchain_file_vfprintf(F, P1, P2) \
+    inline_myblockchain_file_vfprintf(__FILE__, __LINE__, F, P1, P2)
 #else
-  #define mysql_file_vfprintf(F, P1, P2) \
-    inline_mysql_file_vfprintf(F, P1, P2)
+  #define myblockchain_file_vfprintf(F, P1, P2) \
+    inline_myblockchain_file_vfprintf(F, P1, P2)
 #endif
 
 /**
-  @def mysql_file_fflush(F, P1, P2)
+  @def myblockchain_file_fflush(F, P1, P2)
   Instrumented fflush.
-  @c mysql_file_fflush is a replacement for @c fflush.
+  @c myblockchain_file_fflush is a replacement for @c fflush.
 */
 #ifdef HAVE_PSI_FILE_INTERFACE
-  #define mysql_file_fflush(F) \
-    inline_mysql_file_fflush(__FILE__, __LINE__, F)
+  #define myblockchain_file_fflush(F) \
+    inline_myblockchain_file_fflush(__FILE__, __LINE__, F)
 #else
-  #define mysql_file_fflush(F) \
-    inline_mysql_file_fflush(F)
+  #define myblockchain_file_fflush(F) \
+    inline_myblockchain_file_fflush(F)
 #endif
 
 /**
-  @def mysql_file_feof(F)
+  @def myblockchain_file_feof(F)
   Instrumented feof.
-  @c mysql_file_feof is a replacement for @c feof.
+  @c myblockchain_file_feof is a replacement for @c feof.
 */
-#define mysql_file_feof(F) inline_mysql_file_feof(F)
+#define myblockchain_file_feof(F) inline_myblockchain_file_feof(F)
 
 /**
-  @def mysql_file_fstat(FN, S, FL)
+  @def myblockchain_file_fstat(FN, S, FL)
   Instrumented fstat.
-  @c mysql_file_fstat is a replacement for @c my_fstat.
+  @c myblockchain_file_fstat is a replacement for @c my_fstat.
 */
 #ifdef HAVE_PSI_FILE_INTERFACE
-  #define mysql_file_fstat(FN, S, FL) \
-    inline_mysql_file_fstat(__FILE__, __LINE__, FN, S, FL)
+  #define myblockchain_file_fstat(FN, S, FL) \
+    inline_myblockchain_file_fstat(__FILE__, __LINE__, FN, S, FL)
 #else
-  #define mysql_file_fstat(FN, S, FL) \
-    inline_mysql_file_fstat(FN, S, FL)
+  #define myblockchain_file_fstat(FN, S, FL) \
+    inline_myblockchain_file_fstat(FN, S, FL)
 #endif
 
 /**
-  @def mysql_file_stat(K, FN, S, FL)
+  @def myblockchain_file_stat(K, FN, S, FL)
   Instrumented stat.
-  @c mysql_file_stat is a replacement for @c my_stat.
+  @c myblockchain_file_stat is a replacement for @c my_stat.
 */
 #ifdef HAVE_PSI_FILE_INTERFACE
-  #define mysql_file_stat(K, FN, S, FL) \
-    inline_mysql_file_stat(K, __FILE__, __LINE__, FN, S, FL)
+  #define myblockchain_file_stat(K, FN, S, FL) \
+    inline_myblockchain_file_stat(K, __FILE__, __LINE__, FN, S, FL)
 #else
-  #define mysql_file_stat(K, FN, S, FL) \
-    inline_mysql_file_stat(FN, S, FL)
+  #define myblockchain_file_stat(K, FN, S, FL) \
+    inline_myblockchain_file_stat(FN, S, FL)
 #endif
 
 /**
-  @def mysql_file_chsize(F, P1, P2, P3)
+  @def myblockchain_file_chsize(F, P1, P2, P3)
   Instrumented chsize.
-  @c mysql_file_chsize is a replacement for @c my_chsize.
+  @c myblockchain_file_chsize is a replacement for @c my_chsize.
 */
 #ifdef HAVE_PSI_FILE_INTERFACE
-  #define mysql_file_chsize(F, P1, P2, P3) \
-    inline_mysql_file_chsize(__FILE__, __LINE__, F, P1, P2, P3)
+  #define myblockchain_file_chsize(F, P1, P2, P3) \
+    inline_myblockchain_file_chsize(__FILE__, __LINE__, F, P1, P2, P3)
 #else
-  #define mysql_file_chsize(F, P1, P2, P3) \
-    inline_mysql_file_chsize(F, P1, P2, P3)
+  #define myblockchain_file_chsize(F, P1, P2, P3) \
+    inline_myblockchain_file_chsize(F, P1, P2, P3)
 #endif
 
 /**
-  @def mysql_file_fopen(K, N, F1, F2)
+  @def myblockchain_file_fopen(K, N, F1, F2)
   Instrumented fopen.
-  @c mysql_file_fopen is a replacement for @c my_fopen.
+  @c myblockchain_file_fopen is a replacement for @c my_fopen.
 */
 #ifdef HAVE_PSI_FILE_INTERFACE
-  #define mysql_file_fopen(K, N, F1, F2) \
-    inline_mysql_file_fopen(K, __FILE__, __LINE__, N, F1, F2)
+  #define myblockchain_file_fopen(K, N, F1, F2) \
+    inline_myblockchain_file_fopen(K, __FILE__, __LINE__, N, F1, F2)
 #else
-  #define mysql_file_fopen(K, N, F1, F2) \
-    inline_mysql_file_fopen(N, F1, F2)
+  #define myblockchain_file_fopen(K, N, F1, F2) \
+    inline_myblockchain_file_fopen(N, F1, F2)
 #endif
 
 /**
-  @def mysql_file_fclose(FD, FL)
+  @def myblockchain_file_fclose(FD, FL)
   Instrumented fclose.
-  @c mysql_file_fclose is a replacement for @c my_fclose.
+  @c myblockchain_file_fclose is a replacement for @c my_fclose.
   Without the instrumentation, this call will have the same behavior as the
   undocumented and possibly platform specific my_fclose(NULL, ...) behavior.
-  With the instrumentation, mysql_fclose(NULL, ...) will safely return 0,
+  With the instrumentation, myblockchain_fclose(NULL, ...) will safely return 0,
   which is an extension compared to my_fclose and is therefore compliant.
-  mysql_fclose is on purpose *not* implementing
+  myblockchain_fclose is on purpose *not* implementing
   @code DBUG_ASSERT(file != NULL) @endcode,
   since doing so could introduce regressions.
 */
 #ifdef HAVE_PSI_FILE_INTERFACE
-  #define mysql_file_fclose(FD, FL) \
-    inline_mysql_file_fclose(__FILE__, __LINE__, FD, FL)
+  #define myblockchain_file_fclose(FD, FL) \
+    inline_myblockchain_file_fclose(__FILE__, __LINE__, FD, FL)
 #else
-  #define mysql_file_fclose(FD, FL) \
-    inline_mysql_file_fclose(FD, FL)
+  #define myblockchain_file_fclose(FD, FL) \
+    inline_myblockchain_file_fclose(FD, FL)
 #endif
 
 /**
-  @def mysql_file_fread(FD, P1, P2, P3)
+  @def myblockchain_file_fread(FD, P1, P2, P3)
   Instrumented fread.
-  @c mysql_file_fread is a replacement for @c my_fread.
+  @c myblockchain_file_fread is a replacement for @c my_fread.
 */
 #ifdef HAVE_PSI_FILE_INTERFACE
-  #define mysql_file_fread(FD, P1, P2, P3) \
-    inline_mysql_file_fread(__FILE__, __LINE__, FD, P1, P2, P3)
+  #define myblockchain_file_fread(FD, P1, P2, P3) \
+    inline_myblockchain_file_fread(__FILE__, __LINE__, FD, P1, P2, P3)
 #else
-  #define mysql_file_fread(FD, P1, P2, P3) \
-    inline_mysql_file_fread(FD, P1, P2, P3)
+  #define myblockchain_file_fread(FD, P1, P2, P3) \
+    inline_myblockchain_file_fread(FD, P1, P2, P3)
 #endif
 
 /**
-  @def mysql_file_fwrite(FD, P1, P2, P3)
+  @def myblockchain_file_fwrite(FD, P1, P2, P3)
   Instrumented fwrite.
-  @c mysql_file_fwrite is a replacement for @c my_fwrite.
+  @c myblockchain_file_fwrite is a replacement for @c my_fwrite.
 */
 #ifdef HAVE_PSI_FILE_INTERFACE
-  #define mysql_file_fwrite(FD, P1, P2, P3) \
-    inline_mysql_file_fwrite(__FILE__, __LINE__, FD, P1, P2, P3)
+  #define myblockchain_file_fwrite(FD, P1, P2, P3) \
+    inline_myblockchain_file_fwrite(__FILE__, __LINE__, FD, P1, P2, P3)
 #else
-  #define mysql_file_fwrite(FD, P1, P2, P3) \
-    inline_mysql_file_fwrite(FD, P1, P2, P3)
+  #define myblockchain_file_fwrite(FD, P1, P2, P3) \
+    inline_myblockchain_file_fwrite(FD, P1, P2, P3)
 #endif
 
 /**
-  @def mysql_file_fseek(FD, P, W, F)
+  @def myblockchain_file_fseek(FD, P, W, F)
   Instrumented fseek.
-  @c mysql_file_fseek is a replacement for @c my_fseek.
+  @c myblockchain_file_fseek is a replacement for @c my_fseek.
 */
 #ifdef HAVE_PSI_FILE_INTERFACE
-  #define mysql_file_fseek(FD, P, W, F) \
-    inline_mysql_file_fseek(__FILE__, __LINE__, FD, P, W, F)
+  #define myblockchain_file_fseek(FD, P, W, F) \
+    inline_myblockchain_file_fseek(__FILE__, __LINE__, FD, P, W, F)
 #else
-  #define mysql_file_fseek(FD, P, W, F) \
-    inline_mysql_file_fseek(FD, P, W, F)
+  #define myblockchain_file_fseek(FD, P, W, F) \
+    inline_myblockchain_file_fseek(FD, P, W, F)
 #endif
 
 /**
-  @def mysql_file_ftell(FD, F)
+  @def myblockchain_file_ftell(FD, F)
   Instrumented ftell.
-  @c mysql_file_ftell is a replacement for @c my_ftell.
+  @c myblockchain_file_ftell is a replacement for @c my_ftell.
 */
 #ifdef HAVE_PSI_FILE_INTERFACE
-  #define mysql_file_ftell(FD, F) \
-    inline_mysql_file_ftell(__FILE__, __LINE__, FD, F)
+  #define myblockchain_file_ftell(FD, F) \
+    inline_myblockchain_file_ftell(__FILE__, __LINE__, FD, F)
 #else
-  #define mysql_file_ftell(FD, F) \
-    inline_mysql_file_ftell(FD, F)
+  #define myblockchain_file_ftell(FD, F) \
+    inline_myblockchain_file_ftell(FD, F)
 #endif
 
 /**
-  @def mysql_file_create(K, N, F1, F2, F3)
+  @def myblockchain_file_create(K, N, F1, F2, F3)
   Instrumented create.
-  @c mysql_file_create is a replacement for @c my_create.
+  @c myblockchain_file_create is a replacement for @c my_create.
 */
 #ifdef HAVE_PSI_FILE_INTERFACE
-  #define mysql_file_create(K, N, F1, F2, F3) \
-  inline_mysql_file_create(K, __FILE__, __LINE__, N, F1, F2, F3)
+  #define myblockchain_file_create(K, N, F1, F2, F3) \
+  inline_myblockchain_file_create(K, __FILE__, __LINE__, N, F1, F2, F3)
 #else
-  #define mysql_file_create(K, N, F1, F2, F3) \
-    inline_mysql_file_create(N, F1, F2, F3)
+  #define myblockchain_file_create(K, N, F1, F2, F3) \
+    inline_myblockchain_file_create(N, F1, F2, F3)
 #endif
 
 /**
-  @def mysql_file_create_temp(K, T, D, P, M, F)
+  @def myblockchain_file_create_temp(K, T, D, P, M, F)
   Instrumented create_temp_file.
-  @c mysql_file_create_temp is a replacement for @c create_temp_file.
+  @c myblockchain_file_create_temp is a replacement for @c create_temp_file.
 */
 #ifdef HAVE_PSI_FILE_INTERFACE
-  #define mysql_file_create_temp(K, T, D, P, M, F) \
-    inline_mysql_file_create_temp(K, T, D, P, M, F)
+  #define myblockchain_file_create_temp(K, T, D, P, M, F) \
+    inline_myblockchain_file_create_temp(K, T, D, P, M, F)
 #else
-  #define mysql_file_create_temp(K, T, D, P, M, F) \
-    inline_mysql_file_create_temp(T, D, P, M, F)
+  #define myblockchain_file_create_temp(K, T, D, P, M, F) \
+    inline_myblockchain_file_create_temp(T, D, P, M, F)
 #endif
 
 /**
-  @def mysql_file_open(K, N, F1, F2)
+  @def myblockchain_file_open(K, N, F1, F2)
   Instrumented open.
-  @c mysql_file_open is a replacement for @c my_open.
+  @c myblockchain_file_open is a replacement for @c my_open.
 */
 #ifdef HAVE_PSI_FILE_INTERFACE
-  #define mysql_file_open(K, N, F1, F2) \
-    inline_mysql_file_open(K, __FILE__, __LINE__, N, F1, F2)
+  #define myblockchain_file_open(K, N, F1, F2) \
+    inline_myblockchain_file_open(K, __FILE__, __LINE__, N, F1, F2)
 #else
-  #define mysql_file_open(K, N, F1, F2) \
-    inline_mysql_file_open(N, F1, F2)
+  #define myblockchain_file_open(K, N, F1, F2) \
+    inline_myblockchain_file_open(N, F1, F2)
 #endif
 
 /**
-  @def mysql_file_close(FD, F)
+  @def myblockchain_file_close(FD, F)
   Instrumented close.
-  @c mysql_file_close is a replacement for @c my_close.
+  @c myblockchain_file_close is a replacement for @c my_close.
 */
 #ifdef HAVE_PSI_FILE_INTERFACE
-  #define mysql_file_close(FD, F) \
-    inline_mysql_file_close(__FILE__, __LINE__, FD, F)
+  #define myblockchain_file_close(FD, F) \
+    inline_myblockchain_file_close(__FILE__, __LINE__, FD, F)
 #else
-  #define mysql_file_close(FD, F) \
-    inline_mysql_file_close(FD, F)
+  #define myblockchain_file_close(FD, F) \
+    inline_myblockchain_file_close(FD, F)
 #endif
 
 /**
-  @def mysql_file_read(FD, B, S, F)
+  @def myblockchain_file_read(FD, B, S, F)
   Instrumented read.
-  @c mysql_read is a replacement for @c my_read.
+  @c myblockchain_read is a replacement for @c my_read.
 */
 #ifdef HAVE_PSI_FILE_INTERFACE
-  #define mysql_file_read(FD, B, S, F) \
-    inline_mysql_file_read(__FILE__, __LINE__, FD, B, S, F)
+  #define myblockchain_file_read(FD, B, S, F) \
+    inline_myblockchain_file_read(__FILE__, __LINE__, FD, B, S, F)
 #else
-  #define mysql_file_read(FD, B, S, F) \
-    inline_mysql_file_read(FD, B, S, F)
+  #define myblockchain_file_read(FD, B, S, F) \
+    inline_myblockchain_file_read(FD, B, S, F)
 #endif
 
 /**
-  @def mysql_file_write(FD, B, S, F)
+  @def myblockchain_file_write(FD, B, S, F)
   Instrumented write.
-  @c mysql_file_write is a replacement for @c my_write.
+  @c myblockchain_file_write is a replacement for @c my_write.
 */
 #ifdef HAVE_PSI_FILE_INTERFACE
-  #define mysql_file_write(FD, B, S, F) \
-    inline_mysql_file_write(__FILE__, __LINE__, FD, B, S, F)
+  #define myblockchain_file_write(FD, B, S, F) \
+    inline_myblockchain_file_write(__FILE__, __LINE__, FD, B, S, F)
 #else
-  #define mysql_file_write(FD, B, S, F) \
-    inline_mysql_file_write(FD, B, S, F)
+  #define myblockchain_file_write(FD, B, S, F) \
+    inline_myblockchain_file_write(FD, B, S, F)
 #endif
 
 /**
-  @def mysql_file_pread(FD, B, S, O, F)
+  @def myblockchain_file_pread(FD, B, S, O, F)
   Instrumented pread.
-  @c mysql_pread is a replacement for @c my_pread.
+  @c myblockchain_pread is a replacement for @c my_pread.
 */
 #ifdef HAVE_PSI_FILE_INTERFACE
-  #define mysql_file_pread(FD, B, S, O, F) \
-    inline_mysql_file_pread(__FILE__, __LINE__, FD, B, S, O, F)
+  #define myblockchain_file_pread(FD, B, S, O, F) \
+    inline_myblockchain_file_pread(__FILE__, __LINE__, FD, B, S, O, F)
 #else
-  #define mysql_file_pread(FD, B, S, O, F) \
-    inline_mysql_file_pread(FD, B, S, O, F)
+  #define myblockchain_file_pread(FD, B, S, O, F) \
+    inline_myblockchain_file_pread(FD, B, S, O, F)
 #endif
 
 /**
-  @def mysql_file_pwrite(FD, B, S, O, F)
+  @def myblockchain_file_pwrite(FD, B, S, O, F)
   Instrumented pwrite.
-  @c mysql_file_pwrite is a replacement for @c my_pwrite.
+  @c myblockchain_file_pwrite is a replacement for @c my_pwrite.
 */
 #ifdef HAVE_PSI_FILE_INTERFACE
-  #define mysql_file_pwrite(FD, B, S, O, F) \
-    inline_mysql_file_pwrite(__FILE__, __LINE__, FD, B, S, O, F)
+  #define myblockchain_file_pwrite(FD, B, S, O, F) \
+    inline_myblockchain_file_pwrite(__FILE__, __LINE__, FD, B, S, O, F)
 #else
-  #define mysql_file_pwrite(FD, B, S, O, F) \
-    inline_mysql_file_pwrite(FD, B, S, O, F)
+  #define myblockchain_file_pwrite(FD, B, S, O, F) \
+    inline_myblockchain_file_pwrite(FD, B, S, O, F)
 #endif
 
 /**
-  @def mysql_file_seek(FD, P, W, F)
+  @def myblockchain_file_seek(FD, P, W, F)
   Instrumented seek.
-  @c mysql_file_seek is a replacement for @c my_seek.
+  @c myblockchain_file_seek is a replacement for @c my_seek.
 */
 #ifdef HAVE_PSI_FILE_INTERFACE
-  #define mysql_file_seek(FD, P, W, F) \
-    inline_mysql_file_seek(__FILE__, __LINE__, FD, P, W, F)
+  #define myblockchain_file_seek(FD, P, W, F) \
+    inline_myblockchain_file_seek(__FILE__, __LINE__, FD, P, W, F)
 #else
-  #define mysql_file_seek(FD, P, W, F) \
-    inline_mysql_file_seek(FD, P, W, F)
+  #define myblockchain_file_seek(FD, P, W, F) \
+    inline_myblockchain_file_seek(FD, P, W, F)
 #endif
 
 /**
-  @def mysql_file_tell(FD, F)
+  @def myblockchain_file_tell(FD, F)
   Instrumented tell.
-  @c mysql_file_tell is a replacement for @c my_tell.
+  @c myblockchain_file_tell is a replacement for @c my_tell.
 */
 #ifdef HAVE_PSI_FILE_INTERFACE
-  #define mysql_file_tell(FD, F) \
-    inline_mysql_file_tell(__FILE__, __LINE__, FD, F)
+  #define myblockchain_file_tell(FD, F) \
+    inline_myblockchain_file_tell(__FILE__, __LINE__, FD, F)
 #else
-  #define mysql_file_tell(FD, F) \
-    inline_mysql_file_tell(FD, F)
+  #define myblockchain_file_tell(FD, F) \
+    inline_myblockchain_file_tell(FD, F)
 #endif
 
 /**
-  @def mysql_file_delete(K, P1, P2)
+  @def myblockchain_file_delete(K, P1, P2)
   Instrumented delete.
-  @c mysql_file_delete is a replacement for @c my_delete.
+  @c myblockchain_file_delete is a replacement for @c my_delete.
 */
 #ifdef HAVE_PSI_FILE_INTERFACE
-  #define mysql_file_delete(K, P1, P2) \
-    inline_mysql_file_delete(K, __FILE__, __LINE__, P1, P2)
+  #define myblockchain_file_delete(K, P1, P2) \
+    inline_myblockchain_file_delete(K, __FILE__, __LINE__, P1, P2)
 #else
-  #define mysql_file_delete(K, P1, P2) \
-    inline_mysql_file_delete(P1, P2)
+  #define myblockchain_file_delete(K, P1, P2) \
+    inline_myblockchain_file_delete(P1, P2)
 #endif
 
 /**
-  @def mysql_file_rename(K, P1, P2, P3)
+  @def myblockchain_file_rename(K, P1, P2, P3)
   Instrumented rename.
-  @c mysql_file_rename is a replacement for @c my_rename.
+  @c myblockchain_file_rename is a replacement for @c my_rename.
 */
 #ifdef HAVE_PSI_FILE_INTERFACE
-  #define mysql_file_rename(K, P1, P2, P3) \
-    inline_mysql_file_rename(K, __FILE__, __LINE__, P1, P2, P3)
+  #define myblockchain_file_rename(K, P1, P2, P3) \
+    inline_myblockchain_file_rename(K, __FILE__, __LINE__, P1, P2, P3)
 #else
-  #define mysql_file_rename(K, P1, P2, P3) \
-    inline_mysql_file_rename(P1, P2, P3)
+  #define myblockchain_file_rename(K, P1, P2, P3) \
+    inline_myblockchain_file_rename(P1, P2, P3)
 #endif
 
 /**
-  @def mysql_file_create_with_symlink(K, P1, P2, P3, P4, P5)
+  @def myblockchain_file_create_with_symlink(K, P1, P2, P3, P4, P5)
   Instrumented create with symbolic link.
-  @c mysql_file_create_with_symlink is a replacement
+  @c myblockchain_file_create_with_symlink is a replacement
   for @c my_create_with_symlink.
 */
 #ifdef HAVE_PSI_FILE_INTERFACE
-  #define mysql_file_create_with_symlink(K, P1, P2, P3, P4, P5) \
-  inline_mysql_file_create_with_symlink(K, __FILE__, __LINE__, \
+  #define myblockchain_file_create_with_symlink(K, P1, P2, P3, P4, P5) \
+  inline_myblockchain_file_create_with_symlink(K, __FILE__, __LINE__, \
                                         P1, P2, P3, P4, P5)
 #else
-  #define mysql_file_create_with_symlink(K, P1, P2, P3, P4, P5) \
-  inline_mysql_file_create_with_symlink(P1, P2, P3, P4, P5)
+  #define myblockchain_file_create_with_symlink(K, P1, P2, P3, P4, P5) \
+  inline_myblockchain_file_create_with_symlink(P1, P2, P3, P4, P5)
 #endif
 
 /**
-  @def mysql_file_delete_with_symlink(K, P1, P2)
+  @def myblockchain_file_delete_with_symlink(K, P1, P2)
   Instrumented delete with symbolic link.
-  @c mysql_file_delete_with_symlink is a replacement
+  @c myblockchain_file_delete_with_symlink is a replacement
   for @c my_delete_with_symlink.
 */
 #ifdef HAVE_PSI_FILE_INTERFACE
-  #define mysql_file_delete_with_symlink(K, P1, P2) \
-  inline_mysql_file_delete_with_symlink(K, __FILE__, __LINE__, P1, P2)
+  #define myblockchain_file_delete_with_symlink(K, P1, P2) \
+  inline_myblockchain_file_delete_with_symlink(K, __FILE__, __LINE__, P1, P2)
 #else
-  #define mysql_file_delete_with_symlink(K, P1, P2) \
-  inline_mysql_file_delete_with_symlink(P1, P2)
+  #define myblockchain_file_delete_with_symlink(K, P1, P2) \
+  inline_myblockchain_file_delete_with_symlink(P1, P2)
 #endif
 
 /**
-  @def mysql_file_rename_with_symlink(K, P1, P2, P3)
+  @def myblockchain_file_rename_with_symlink(K, P1, P2, P3)
   Instrumented rename with symbolic link.
-  @c mysql_file_rename_with_symlink is a replacement
+  @c myblockchain_file_rename_with_symlink is a replacement
   for @c my_rename_with_symlink.
 */
 #ifdef HAVE_PSI_FILE_INTERFACE
-  #define mysql_file_rename_with_symlink(K, P1, P2, P3) \
-  inline_mysql_file_rename_with_symlink(K, __FILE__, __LINE__, P1, P2, P3)
+  #define myblockchain_file_rename_with_symlink(K, P1, P2, P3) \
+  inline_myblockchain_file_rename_with_symlink(K, __FILE__, __LINE__, P1, P2, P3)
 #else
-  #define mysql_file_rename_with_symlink(K, P1, P2, P3) \
-  inline_mysql_file_rename_with_symlink(P1, P2, P3)
+  #define myblockchain_file_rename_with_symlink(K, P1, P2, P3) \
+  inline_myblockchain_file_rename_with_symlink(P1, P2, P3)
 #endif
 
 /**
-  @def mysql_file_sync(P1, P2)
+  @def myblockchain_file_sync(P1, P2)
   Instrumented file sync.
-  @c mysql_file_sync is a replacement for @c my_sync.
+  @c myblockchain_file_sync is a replacement for @c my_sync.
 */
 #ifdef HAVE_PSI_FILE_INTERFACE
-  #define mysql_file_sync(P1, P2) \
-    inline_mysql_file_sync(__FILE__, __LINE__, P1, P2)
+  #define myblockchain_file_sync(P1, P2) \
+    inline_myblockchain_file_sync(__FILE__, __LINE__, P1, P2)
 #else
-  #define mysql_file_sync(P1, P2) \
-    inline_mysql_file_sync(P1, P2)
+  #define myblockchain_file_sync(P1, P2) \
+    inline_myblockchain_file_sync(P1, P2)
 #endif
 
 /**
   An instrumented FILE structure.
-  @sa MYSQL_FILE
+  @sa MYBLOCKCHAIN_FILE
 */
-struct st_mysql_file
+struct st_myblockchain_file
 {
   /** The real file. */
   FILE *m_file;
   /**
     The instrumentation hook.
     Note that this hook is not conditionally defined,
-    for binary compatibility of the @c MYSQL_FILE interface.
+    for binary compatibility of the @c MYBLOCKCHAIN_FILE interface.
   */
   struct PSI_file *m_psi;
 };
 
 /**
   Type of an instrumented file.
-  @c MYSQL_FILE is a drop-in replacement for @c FILE.
-  @sa mysql_file_open
+  @c MYBLOCKCHAIN_FILE is a drop-in replacement for @c FILE.
+  @sa myblockchain_file_open
 */
-typedef struct st_mysql_file MYSQL_FILE;
+typedef struct st_myblockchain_file MYBLOCKCHAIN_FILE;
 
-static inline void inline_mysql_file_register(
+static inline void inline_myblockchain_file_register(
 #ifdef HAVE_PSI_FILE_INTERFACE
   const char *category,
   PSI_file_info *info,
@@ -527,11 +527,11 @@ static inline void inline_mysql_file_register(
 }
 
 static inline char *
-inline_mysql_file_fgets(
+inline_myblockchain_file_fgets(
 #ifdef HAVE_PSI_FILE_INTERFACE
   const char *src_file, uint src_line,
 #endif
-  char *str, int size, MYSQL_FILE *file)
+  char *str, int size, MYBLOCKCHAIN_FILE *file)
 {
   char *result;
 #ifdef HAVE_PSI_FILE_INTERFACE
@@ -553,11 +553,11 @@ inline_mysql_file_fgets(
 }
 
 static inline int
-inline_mysql_file_fgetc(
+inline_myblockchain_file_fgetc(
 #ifdef HAVE_PSI_FILE_INTERFACE
   const char *src_file, uint src_line,
 #endif
-  MYSQL_FILE *file)
+  MYBLOCKCHAIN_FILE *file)
 {
   int result;
 #ifdef HAVE_PSI_FILE_INTERFACE
@@ -579,11 +579,11 @@ inline_mysql_file_fgetc(
 }
 
 static inline int
-inline_mysql_file_fputs(
+inline_myblockchain_file_fputs(
 #ifdef HAVE_PSI_FILE_INTERFACE
   const char *src_file, uint src_line,
 #endif
-  const char *str, MYSQL_FILE *file)
+  const char *str, MYBLOCKCHAIN_FILE *file)
 {
   int result;
 #ifdef HAVE_PSI_FILE_INTERFACE
@@ -607,11 +607,11 @@ inline_mysql_file_fputs(
 }
 
 static inline int
-inline_mysql_file_fputc(
+inline_myblockchain_file_fputc(
 #ifdef HAVE_PSI_FILE_INTERFACE
   const char *src_file, uint src_line,
 #endif
-  char c, MYSQL_FILE *file)
+  char c, MYBLOCKCHAIN_FILE *file)
 {
   int result;
 #ifdef HAVE_PSI_FILE_INTERFACE
@@ -633,7 +633,7 @@ inline_mysql_file_fputc(
 }
 
 static inline int
-inline_mysql_file_fprintf(MYSQL_FILE *file, const char *format, ...)
+inline_myblockchain_file_fprintf(MYBLOCKCHAIN_FILE *file, const char *format, ...)
 {
   /*
     TODO: figure out how to pass src_file and src_line from the caller.
@@ -663,11 +663,11 @@ inline_mysql_file_fprintf(MYSQL_FILE *file, const char *format, ...)
 }
 
 static inline int
-inline_mysql_file_vfprintf(
+inline_myblockchain_file_vfprintf(
 #ifdef HAVE_PSI_FILE_INTERFACE
   const char *src_file, uint src_line,
 #endif
-  MYSQL_FILE *file, const char *format, va_list args)
+  MYBLOCKCHAIN_FILE *file, const char *format, va_list args)
 {
   int result;
 #ifdef HAVE_PSI_FILE_INTERFACE
@@ -689,11 +689,11 @@ inline_mysql_file_vfprintf(
 }
 
 static inline int
-inline_mysql_file_fflush(
+inline_myblockchain_file_fflush(
 #ifdef HAVE_PSI_FILE_INTERFACE
   const char *src_file, uint src_line,
 #endif
-  MYSQL_FILE *file)
+  MYBLOCKCHAIN_FILE *file)
 {
   int result;
 #ifdef HAVE_PSI_FILE_INTERFACE
@@ -714,14 +714,14 @@ inline_mysql_file_fflush(
   return result;
 }
 
-static inline int inline_mysql_file_feof(MYSQL_FILE *file)
+static inline int inline_myblockchain_file_feof(MYBLOCKCHAIN_FILE *file)
 {
   /* Not instrumented, there is no wait involved */
   return feof(file->m_file);
 }
 
 static inline int
-inline_mysql_file_fstat(
+inline_myblockchain_file_fstat(
 #ifdef HAVE_PSI_FILE_INTERFACE
   const char *src_file, uint src_line,
 #endif
@@ -747,7 +747,7 @@ inline_mysql_file_fstat(
 }
 
 static inline MY_STAT *
-inline_mysql_file_stat(
+inline_myblockchain_file_stat(
 #ifdef HAVE_PSI_FILE_INTERFACE
   PSI_file_key key, const char *src_file, uint src_line,
 #endif
@@ -773,7 +773,7 @@ inline_mysql_file_stat(
 }
 
 static inline int
-inline_mysql_file_chsize(
+inline_myblockchain_file_chsize(
 #ifdef HAVE_PSI_FILE_INTERFACE
   const char *src_file, uint src_line,
 #endif
@@ -799,16 +799,16 @@ inline_mysql_file_chsize(
   return result;
 }
 
-static inline MYSQL_FILE*
-inline_mysql_file_fopen(
+static inline MYBLOCKCHAIN_FILE*
+inline_myblockchain_file_fopen(
 #ifdef HAVE_PSI_FILE_INTERFACE
   PSI_file_key key, const char *src_file, uint src_line,
 #endif
   const char *filename, int flags, myf myFlags)
 {
-  MYSQL_FILE *that;
-  that= (MYSQL_FILE*) my_malloc(PSI_NOT_INSTRUMENTED,
-                                sizeof(MYSQL_FILE), MYF(MY_WME));
+  MYBLOCKCHAIN_FILE *that;
+  that= (MYBLOCKCHAIN_FILE*) my_malloc(PSI_NOT_INSTRUMENTED,
+                                sizeof(MYBLOCKCHAIN_FILE), MYF(MY_WME));
   if (likely(that != NULL))
   {
 #ifdef HAVE_PSI_FILE_INTERFACE
@@ -843,11 +843,11 @@ inline_mysql_file_fopen(
 }
 
 static inline int
-inline_mysql_file_fclose(
+inline_myblockchain_file_fclose(
 #ifdef HAVE_PSI_FILE_INTERFACE
   const char *src_file, uint src_line,
 #endif
-  MYSQL_FILE *file, myf flags)
+  MYBLOCKCHAIN_FILE *file, myf flags)
 {
   int result= 0;
   if (likely(file != NULL))
@@ -874,11 +874,11 @@ inline_mysql_file_fclose(
 }
 
 static inline size_t
-inline_mysql_file_fread(
+inline_myblockchain_file_fread(
 #ifdef HAVE_PSI_FILE_INTERFACE
   const char *src_file, uint src_line,
 #endif
-  MYSQL_FILE *file, uchar *buffer, size_t count, myf flags)
+  MYBLOCKCHAIN_FILE *file, uchar *buffer, size_t count, myf flags)
 {
   size_t result;
 #ifdef HAVE_PSI_FILE_INTERFACE
@@ -905,11 +905,11 @@ inline_mysql_file_fread(
 }
 
 static inline size_t
-inline_mysql_file_fwrite(
+inline_myblockchain_file_fwrite(
 #ifdef HAVE_PSI_FILE_INTERFACE
   const char *src_file, uint src_line,
 #endif
-  MYSQL_FILE *file, const uchar *buffer, size_t count, myf flags)
+  MYBLOCKCHAIN_FILE *file, const uchar *buffer, size_t count, myf flags)
 {
   size_t result;
 #ifdef HAVE_PSI_FILE_INTERFACE
@@ -936,11 +936,11 @@ inline_mysql_file_fwrite(
 }
 
 static inline my_off_t
-inline_mysql_file_fseek(
+inline_myblockchain_file_fseek(
 #ifdef HAVE_PSI_FILE_INTERFACE
   const char *src_file, uint src_line,
 #endif
-  MYSQL_FILE *file, my_off_t pos, int whence, myf flags)
+  MYBLOCKCHAIN_FILE *file, my_off_t pos, int whence, myf flags)
 {
   my_off_t result;
 #ifdef HAVE_PSI_FILE_INTERFACE
@@ -962,11 +962,11 @@ inline_mysql_file_fseek(
 }
 
 static inline my_off_t
-inline_mysql_file_ftell(
+inline_myblockchain_file_ftell(
 #ifdef HAVE_PSI_FILE_INTERFACE
   const char *src_file, uint src_line,
 #endif
-  MYSQL_FILE *file, myf flags)
+  MYBLOCKCHAIN_FILE *file, myf flags)
 {
   my_off_t result;
 #ifdef HAVE_PSI_FILE_INTERFACE
@@ -988,7 +988,7 @@ inline_mysql_file_ftell(
 }
 
 static inline File
-inline_mysql_file_create(
+inline_myblockchain_file_create(
 #ifdef HAVE_PSI_FILE_INTERFACE
   PSI_file_key key, const char *src_file, uint src_line,
 #endif
@@ -1014,7 +1014,7 @@ inline_mysql_file_create(
 }
 
 static inline File
-inline_mysql_file_create_temp(
+inline_myblockchain_file_create_temp(
 #ifdef HAVE_PSI_FILE_INTERFACE
   PSI_file_key key,
 #endif
@@ -1034,7 +1034,7 @@ inline_mysql_file_create_temp(
 }
 
 static inline File
-inline_mysql_file_open(
+inline_myblockchain_file_open(
 #ifdef HAVE_PSI_FILE_INTERFACE
   PSI_file_key key, const char *src_file, uint src_line,
 #endif
@@ -1060,7 +1060,7 @@ inline_mysql_file_open(
 }
 
 static inline int
-inline_mysql_file_close(
+inline_myblockchain_file_close(
 #ifdef HAVE_PSI_FILE_INTERFACE
   const char *src_file, uint src_line,
 #endif
@@ -1086,7 +1086,7 @@ inline_mysql_file_close(
 }
 
 static inline size_t
-inline_mysql_file_read(
+inline_myblockchain_file_read(
 #ifdef HAVE_PSI_FILE_INTERFACE
   const char *src_file, uint src_line,
 #endif
@@ -1117,7 +1117,7 @@ inline_mysql_file_read(
 }
 
 static inline size_t
-inline_mysql_file_write(
+inline_myblockchain_file_write(
 #ifdef HAVE_PSI_FILE_INTERFACE
   const char *src_file, uint src_line,
 #endif
@@ -1148,7 +1148,7 @@ inline_mysql_file_write(
 }
 
 static inline size_t
-inline_mysql_file_pread(
+inline_myblockchain_file_pread(
 #ifdef HAVE_PSI_FILE_INTERFACE
   const char *src_file, uint src_line,
 #endif
@@ -1179,7 +1179,7 @@ inline_mysql_file_pread(
 }
 
 static inline size_t
-inline_mysql_file_pwrite(
+inline_myblockchain_file_pwrite(
 #ifdef HAVE_PSI_FILE_INTERFACE
   const char *src_file, uint src_line,
 #endif
@@ -1210,7 +1210,7 @@ inline_mysql_file_pwrite(
 }
 
 static inline my_off_t
-inline_mysql_file_seek(
+inline_myblockchain_file_seek(
 #ifdef HAVE_PSI_FILE_INTERFACE
   const char *src_file, uint src_line,
 #endif
@@ -1236,7 +1236,7 @@ inline_mysql_file_seek(
 }
 
 static inline my_off_t
-inline_mysql_file_tell(
+inline_myblockchain_file_tell(
 #ifdef HAVE_PSI_FILE_INTERFACE
   const char *src_file, uint src_line,
 #endif
@@ -1262,7 +1262,7 @@ inline_mysql_file_tell(
 }
 
 static inline int
-inline_mysql_file_delete(
+inline_myblockchain_file_delete(
 #ifdef HAVE_PSI_FILE_INTERFACE
   PSI_file_key key, const char *src_file, uint src_line,
 #endif
@@ -1288,7 +1288,7 @@ inline_mysql_file_delete(
 }
 
 static inline int
-inline_mysql_file_rename(
+inline_myblockchain_file_rename(
 #ifdef HAVE_PSI_FILE_INTERFACE
   PSI_file_key key, const char *src_file, uint src_line,
 #endif
@@ -1314,7 +1314,7 @@ inline_mysql_file_rename(
 }
 
 static inline File
-inline_mysql_file_create_with_symlink(
+inline_myblockchain_file_create_with_symlink(
 #ifdef HAVE_PSI_FILE_INTERFACE
   PSI_file_key key, const char *src_file, uint src_line,
 #endif
@@ -1343,7 +1343,7 @@ inline_mysql_file_create_with_symlink(
 }
 
 static inline int
-inline_mysql_file_delete_with_symlink(
+inline_myblockchain_file_delete_with_symlink(
 #ifdef HAVE_PSI_FILE_INTERFACE
   PSI_file_key key, const char *src_file, uint src_line,
 #endif
@@ -1369,7 +1369,7 @@ inline_mysql_file_delete_with_symlink(
 }
 
 static inline int
-inline_mysql_file_rename_with_symlink(
+inline_myblockchain_file_rename_with_symlink(
 #ifdef HAVE_PSI_FILE_INTERFACE
   PSI_file_key key, const char *src_file, uint src_line,
 #endif
@@ -1395,7 +1395,7 @@ inline_mysql_file_rename_with_symlink(
 }
 
 static inline int
-inline_mysql_file_sync(
+inline_myblockchain_file_sync(
 #ifdef HAVE_PSI_FILE_INTERFACE
   const char *src_file, uint src_line,
 #endif

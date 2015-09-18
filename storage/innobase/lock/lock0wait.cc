@@ -26,12 +26,12 @@ Created 25/5/2010 Sunny Bains
 #define LOCK_MODULE_IMPLEMENTATION
 
 #include "ha_prototypes.h"
-#include <mysql/service_thd_wait.h>
+#include <myblockchain/service_thd_wait.h>
 
 #include "srv0mon.h"
 #include "que0que.h"
 #include "lock0lock.h"
-#include "row0mysql.h"
+#include "row0myblockchain.h"
 #include "srv0start.h"
 #include "lock0priv.h"
 
@@ -201,14 +201,14 @@ lock_wait_suspend_thread(
 
 	trx = thr_get_trx(thr);
 
-	if (trx->mysql_thd != 0) {
+	if (trx->myblockchain_thd != 0) {
 		DEBUG_SYNC_C("lock_wait_suspend_thread_enter");
 	}
 
 	/* InnoDB system transactions (such as the purge, and
 	incomplete transactions that are being rolled back after crash
 	recovery) will use the global value of
-	innodb_lock_wait_timeout, because trx->mysql_thd == NULL. */
+	innodb_lock_wait_timeout, because trx->myblockchain_thd == NULL. */
 	lock_wait_timeout = trx_lock_wait_timeout_get(trx);
 
 	lock_wait_mutex_enter();
@@ -274,7 +274,7 @@ lock_wait_suspend_thread(
 		break;
 	case RW_S_LATCH:
 		/* Release foreign key check latch */
-		row_mysql_unfreeze_data_dictionary(trx);
+		row_myblockchain_unfreeze_data_dictionary(trx);
 
 		DEBUG_SYNC_C("lock_wait_release_s_latch_before_sleep");
 		break;
@@ -304,15 +304,15 @@ lock_wait_suspend_thread(
 
 	/* Unknown is also treated like a record lock */
 	if (lock_type == ULINT_UNDEFINED || lock_type == LOCK_REC) {
-		thd_wait_begin(trx->mysql_thd, THD_WAIT_ROW_LOCK);
+		thd_wait_begin(trx->myblockchain_thd, THD_WAIT_ROW_LOCK);
 	} else {
 		ut_ad(lock_type == LOCK_TABLE);
-		thd_wait_begin(trx->mysql_thd, THD_WAIT_TABLE_LOCK);
+		thd_wait_begin(trx->myblockchain_thd, THD_WAIT_TABLE_LOCK);
 	}
 
 	os_event_wait(slot->event);
 
-	thd_wait_end(trx->mysql_thd);
+	thd_wait_end(trx->myblockchain_thd);
 
 	/* After resuming, reacquire the data dictionary latch if
 	necessary. */
@@ -326,7 +326,7 @@ lock_wait_suspend_thread(
 
 	if (had_dict_lock) {
 
-		row_mysql_freeze_data_dictionary(trx);
+		row_myblockchain_freeze_data_dictionary(trx);
 	}
 
 	wait_time = ut_difftime(ut_time(), slot->suspend_time);
@@ -360,7 +360,7 @@ lock_wait_suspend_thread(
 		}
 
 		/* Record the lock wait time for this thread */
-		thd_set_lock_wait_time(trx->mysql_thd, diff_time);
+		thd_set_lock_wait_time(trx->myblockchain_thd, diff_time);
 
 		DBUG_EXECUTE_IF("lock_instrument_slow_query_log",
 			os_thread_sleep(1000););

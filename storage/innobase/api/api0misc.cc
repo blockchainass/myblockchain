@@ -63,7 +63,7 @@ ib_trx_lock_table_with_retry(
 
 	thr = que_fork_get_first_thr(static_cast<que_fork_t*>(
 		que_node_get_parent(thr)));
-	que_thr_move_to_run_state_for_mysql(thr, trx);
+	que_thr_move_to_run_state_for_myblockchain(thr, trx);
 
 run_again:
 	thr->run_node = thr;
@@ -74,9 +74,9 @@ run_again:
 	trx->error_state = err;
 
 	if (UNIV_LIKELY(err == DB_SUCCESS)) {
-		que_thr_stop_for_mysql_no_error(thr, trx);
+		que_thr_stop_for_myblockchain_no_error(thr, trx);
 	} else {
-		que_thr_stop_for_mysql(thr);
+		que_thr_stop_for_myblockchain(thr);
 
 		if (err != DB_QUE_THR_SUSPENDED) {
 			ibool	was_lock_wait;
@@ -110,7 +110,7 @@ run_again:
 	return(err);
 }
 /****************************************************************//**
-Handles user errors and lock waits detected by the database engine.
+Handles user errors and lock waits detected by the blockchain engine.
 @return TRUE if it was a lock wait and we should continue running
 the query thread */
 ibool
@@ -134,7 +134,7 @@ handle_new_error:
 
 	switch (err) {
 	case DB_LOCK_WAIT_TIMEOUT:
-		trx_rollback_for_mysql(trx);
+		trx_rollback_for_myblockchain(trx);
 		break;
 		/* fall through */
 	case DB_DUPLICATE_KEY:
@@ -156,7 +156,7 @@ handle_new_error:
 		lock_wait_suspend_thread(thr);
 
 		if (trx->error_state != DB_SUCCESS) {
-			que_thr_stop_for_mysql(thr);
+			que_thr_stop_for_myblockchain(thr);
 
 			goto handle_new_error;
 		}
@@ -170,7 +170,7 @@ handle_new_error:
 		/* Roll back the whole transaction; this resolution was added
 		to version 3.23.43 */
 
-		trx_rollback_for_mysql(trx);
+		trx_rollback_for_myblockchain(trx);
 		break;
 
 	case DB_MUST_GET_MORE_FILE_SPACE:

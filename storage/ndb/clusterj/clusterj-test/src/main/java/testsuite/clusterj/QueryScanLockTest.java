@@ -24,11 +24,11 @@ import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import com.mysql.clusterj.LockMode;
-import com.mysql.clusterj.Query;
-import com.mysql.clusterj.Session;
-import com.mysql.clusterj.query.QueryBuilder;
-import com.mysql.clusterj.query.QueryDomainType;
+import com.myblockchain.clusterj.LockMode;
+import com.myblockchain.clusterj.Query;
+import com.myblockchain.clusterj.Session;
+import com.myblockchain.clusterj.query.QueryBuilder;
+import com.myblockchain.clusterj.query.QueryDomainType;
 
 import testsuite.clusterj.model.Employee;
 

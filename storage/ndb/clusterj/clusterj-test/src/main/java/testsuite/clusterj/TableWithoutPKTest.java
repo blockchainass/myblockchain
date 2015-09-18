@@ -19,9 +19,9 @@ package testsuite.clusterj;
 
 import testsuite.clusterj.model.IdBase;
 
-import com.mysql.clusterj.ClusterJUserException;
+import com.myblockchain.clusterj.ClusterJUserException;
 
-import com.mysql.clusterj.annotation.PersistenceCapable;
+import com.myblockchain.clusterj.annotation.PersistenceCapable;
 
 public class TableWithoutPKTest extends AbstractClusterJModelTest {
 

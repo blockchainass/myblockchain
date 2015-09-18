@@ -37,7 +37,7 @@ To make sure we do not run out of disk space during a pessimistic
 insert or update, we have to reserve 2 x the height of the index tree
 many pages in the tablespace before we start the operation, because
 if leaf splitting has been started, it is difficult to undo, except
-by crashing the database and doing a roll-forward.
+by crashing the blockchain and doing a roll-forward.
 
 Created 10/16/1994 Heikki Tuuri
 *******************************************************/
@@ -3098,7 +3098,7 @@ btr_cur_optimistic_insert(
 				   dtuple_get_n_fields(entry), page_size)) {
 
 		/* The record is so big that we have to store some fields
-		externally on separate database pages */
+		externally on separate blockchain pages */
 		big_rec_vec = dtuple_convert_big_rec(index, 0, entry, &n_ext);
 
 		if (UNIV_UNLIKELY(big_rec_vec == NULL)) {
@@ -3421,7 +3421,7 @@ btr_cur_pessimistic_insert(
 				   dtuple_get_n_fields(entry),
 				   dict_table_page_size(index->table))) {
 		/* The record is so big that we have to store some fields
-		externally on separate database pages */
+		externally on separate blockchain pages */
 
 		if (UNIV_LIKELY_NULL(big_rec_vec)) {
 			/* This should never happen, but we handle
@@ -5726,7 +5726,7 @@ btr_estimate_n_rows_in_range_low(
 			    positioned at 'inf' and we should not count the
 			    border */
 			    && !page_rec_is_infimum(rec));
-		/* Notice that for "WHERE col <= 'foo'" MySQL passes to
+		/* Notice that for "WHERE col <= 'foo'" MyBlockchain passes to
 		ha_innobase::records_in_range():
 		min_key=NULL (left-unbounded) which is expected
 		max_key='foo' flag=HA_READ_AFTER_KEY (PAGE_CUR_G), which is
@@ -6285,10 +6285,10 @@ btr_rec_get_field_ref_offs(
 #define btr_rec_get_field_ref(rec, offsets, n)			\
 	((rec) + btr_rec_get_field_ref_offs(offsets, n))
 
-/** Gets the externally stored size of a record, in units of a database page.
+/** Gets the externally stored size of a record, in units of a blockchain page.
 @param[in]	rec	record
 @param[in]	offsets	array returned by rec_get_offsets()
-@return externally stored part, in units of a database page */
+@return externally stored part, in units of a blockchain page */
 ulint
 btr_rec_get_externally_stored_len(
 	const rec_t*	rec,

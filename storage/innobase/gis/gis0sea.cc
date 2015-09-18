@@ -753,7 +753,7 @@ rtr_page_get_father_node_ptr_func(
 
 		error << ". You should dump + drop + reimport the table to"
 			" fix the corruption. If the crash happens at"
-			" database startup, see " REFMAN
+			" blockchain startup, see " REFMAN
 			"forcing-innodb-recovery.html about forcing"
 			" recovery. Then dump + drop + reimport.";
 	}

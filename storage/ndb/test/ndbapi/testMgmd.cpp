@@ -1110,8 +1110,8 @@ int runTestBug12352191(NDBT_Context* ctx, NDBT_Step* step)
 {
   BaseString version;
   version.assfmt("%u", NDB_VERSION_D);
-  BaseString mysql_version;
-  mysql_version.assfmt("%u", NDB_MYSQL_VERSION_D);
+  BaseString myblockchain_version;
+  myblockchain_version.assfmt("%u", NDB_MYBLOCKCHAIN_VERSION_D);
   BaseString address("127.0.0.1");
 
   NDBT_Workingdir wd("test_mgmd"); // temporary working directory
@@ -1143,7 +1143,7 @@ int runTestBug12352191(NDBT_Context* ctx, NDBT_Step* step)
   CHECK(value_equal(status1, nodeid1, "type", "MGM"));
   CHECK(value_equal(status1, nodeid1, "status", "CONNECTED"));
   CHECK(value_equal(status1, nodeid1, "version", version.c_str()));
-  CHECK(value_equal(status1, nodeid1, "mysql_version", mysql_version.c_str()));
+  CHECK(value_equal(status1, nodeid1, "myblockchain_version", myblockchain_version.c_str()));
   CHECK(value_equal(status1, nodeid1, "address", address.c_str()));
   CHECK(value_equal(status1, nodeid1, "startphase", "0"));
   CHECK(value_equal(status1, nodeid1, "dynamic_id", "0"));
@@ -1155,7 +1155,7 @@ int runTestBug12352191(NDBT_Context* ctx, NDBT_Step* step)
   CHECK(value_equal(status1, nodeid2, "type", "MGM"));
   CHECK(value_equal(status1, nodeid2, "status", "NO_CONTACT"));
   CHECK(value_equal(status1, nodeid2, "version", "0"));
-  CHECK(value_equal(status1, nodeid2, "mysql_version", "0"));
+  CHECK(value_equal(status1, nodeid2, "myblockchain_version", "0"));
   CHECK(value_equal(status1, nodeid2, "address", ""));
   CHECK(value_equal(status1, nodeid2, "startphase", "0"));
   CHECK(value_equal(status1, nodeid2, "dynamic_id", "0"));
@@ -1177,7 +1177,7 @@ int runTestBug12352191(NDBT_Context* ctx, NDBT_Step* step)
   CHECK(value_equal(status2, nodeid2, "type", "MGM"));
   CHECK(value_equal(status2, nodeid2, "status", "CONNECTED"));
   CHECK(value_equal(status2, nodeid2, "version", version.c_str()));
-  CHECK(value_equal(status2, nodeid2, "mysql_version", mysql_version.c_str()));
+  CHECK(value_equal(status2, nodeid2, "myblockchain_version", myblockchain_version.c_str()));
   CHECK(value_equal(status2, nodeid2, "address", address.c_str()));
   CHECK(value_equal(status2, nodeid2, "startphase", "0"));
   CHECK(value_equal(status2, nodeid2, "dynamic_id", "0"));
@@ -1189,7 +1189,7 @@ int runTestBug12352191(NDBT_Context* ctx, NDBT_Step* step)
   CHECK(value_equal(status2, nodeid1, "type", "MGM"));
   CHECK(value_equal(status2, nodeid1, "status", "CONNECTED"));
   CHECK(value_equal(status2, nodeid1, "version", version.c_str()));
-  CHECK(value_equal(status2, nodeid1, "mysql_version", mysql_version.c_str()));
+  CHECK(value_equal(status2, nodeid1, "myblockchain_version", myblockchain_version.c_str()));
   CHECK(value_equal(status2, nodeid1, "address", address.c_str()));
   CHECK(value_equal(status2, nodeid1, "startphase", "0"));
   CHECK(value_equal(status2, nodeid1, "dynamic_id", "0"));
@@ -1203,7 +1203,7 @@ int runTestBug12352191(NDBT_Context* ctx, NDBT_Step* step)
   CHECK(value_equal(status3, nodeid1, "type", "MGM"));
   CHECK(value_equal(status3, nodeid1, "status", "CONNECTED"));
   CHECK(value_equal(status3, nodeid1, "version", version.c_str()));
-  CHECK(value_equal(status3, nodeid1, "mysql_version", mysql_version.c_str()));
+  CHECK(value_equal(status3, nodeid1, "myblockchain_version", myblockchain_version.c_str()));
   CHECK(value_equal(status3, nodeid1, "address", address.c_str()));
   CHECK(value_equal(status3, nodeid1, "startphase", "0"));
   CHECK(value_equal(status3, nodeid1, "dynamic_id", "0"));
@@ -1215,7 +1215,7 @@ int runTestBug12352191(NDBT_Context* ctx, NDBT_Step* step)
   CHECK(value_equal(status3, nodeid2, "type", "MGM"));
   CHECK(value_equal(status3, nodeid2, "status", "CONNECTED"));
   CHECK(value_equal(status3, nodeid2, "version", version.c_str()));
-  CHECK(value_equal(status3, nodeid2, "mysql_version", mysql_version.c_str()));
+  CHECK(value_equal(status3, nodeid2, "myblockchain_version", myblockchain_version.c_str()));
   CHECK(value_equal(status3, nodeid2, "address", address.c_str()));
   CHECK(value_equal(status3, nodeid2, "startphase", "0"));
   CHECK(value_equal(status3, nodeid2, "dynamic_id", "0"));

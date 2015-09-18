@@ -19,7 +19,7 @@ package jdbctest;
 
 import java.sql.SQLException;
 
-import com.mysql.clusterj.ClusterJUserException;
+import com.myblockchain.clusterj.ClusterJUserException;
 
 import testsuite.clusterj.AbstractClusterJTest;
 

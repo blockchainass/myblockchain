@@ -18,7 +18,7 @@
 #endif
 #include <stdio.h>
 #include <stdlib.h>
-#include "mysql.h"
+#include "myblockchain.h"
 
 #define SELECT_QUERY "select name from test where num = %d"
 
@@ -26,8 +26,8 @@
 int main(int argc, char **argv)
 {
   int	count, num;
-  MYSQL mysql,*sock;
-  MYSQL_RES *res;
+  MYBLOCKCHAIN myblockchain,*sock;
+  MYBLOCKCHAIN_RES *res;
   char	qbuf[160];
 
   if (argc != 3)
@@ -36,38 +36,38 @@ int main(int argc, char **argv)
     exit(1);
   }
 
-  mysql_init(&mysql);
-  if (!(sock = mysql_real_connect(&mysql,NULL,0,0,argv[1],0,NULL,0)))
+  myblockchain_init(&myblockchain);
+  if (!(sock = myblockchain_real_connect(&myblockchain,NULL,0,0,argv[1],0,NULL,0)))
   {
-    fprintf(stderr,"Couldn't connect to engine!\n%s\n\n",mysql_error(&mysql));
+    fprintf(stderr,"Couldn't connect to engine!\n%s\n\n",myblockchain_error(&myblockchain));
     perror("");
     exit(1);
   }
-  mysql.reconnect= 1;
+  myblockchain.reconnect= 1;
 
   count = 0;
   num = atoi(argv[2]);
   while (count < num)
   {
     sprintf(qbuf,SELECT_QUERY,count);
-    if(mysql_query(sock,qbuf))
+    if(myblockchain_query(sock,qbuf))
     {
-      fprintf(stderr,"Query failed (%s)\n",mysql_error(sock));
+      fprintf(stderr,"Query failed (%s)\n",myblockchain_error(sock));
       exit(1);
     }
-    if (!(res=mysql_store_result(sock)))
+    if (!(res=myblockchain_store_result(sock)))
     {
       fprintf(stderr,"Couldn't get result from %s\n",
-	      mysql_error(sock));
+	      myblockchain_error(sock));
       exit(1);
     }
 #ifdef TEST
-    printf("number of fields: %d\n",mysql_num_fields(res));
+    printf("number of fields: %d\n",myblockchain_num_fields(res));
 #endif
-    mysql_free_result(res);
+    myblockchain_free_result(res);
     count++;
   }
-  mysql_close(sock);
+  myblockchain_close(sock);
   exit(0);
   return 0;					/* Keep some compilers happy */
 }

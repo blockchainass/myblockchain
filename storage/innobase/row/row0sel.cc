@@ -54,17 +54,17 @@ Created 12/19/1997 Heikki Tuuri
 #include "eval0eval.h"
 #include "pars0sym.h"
 #include "pars0pars.h"
-#include "row0mysql.h"
+#include "row0myblockchain.h"
 #include "read0read.h"
 #include "buf0lru.h"
 #include "ha_prototypes.h"
 #include "srv0mon.h"
 #include "ut0new.h"
 
-/* Maximum number of rows to prefetch; MySQL interface has another parameter */
+/* Maximum number of rows to prefetch; MyBlockchain interface has another parameter */
 #define SEL_MAX_N_PREFETCH	16
 
-/* Number of rows fetched, after which to start prefetching; MySQL interface
+/* Number of rows fetched, after which to start prefetching; MyBlockchain interface
 has another parameter */
 #define SEL_PREFETCH_LIMIT	1
 
@@ -700,7 +700,7 @@ sel_enqueue_prefetched_row(
 	     column = UT_LIST_GET_NEXT(col_var_list, column)) {
 
 		if (!column->copy_val) {
-			/* There is no sense to push pointers to database
+			/* There is no sense to push pointers to blockchain
 			page fields when we do not keep latch on the page! */
 			continue;
 		}
@@ -772,7 +772,7 @@ Builds the last committed version of a clustered index record for a
 semi-consistent read. */
 static
 void
-row_sel_build_committed_vers_for_mysql(
+row_sel_build_committed_vers_for_myblockchain(
 /*===================================*/
 	dict_index_t*	clust_index,	/*!< in: clustered index */
 	row_prebuilt_t*	prebuilt,	/*!< in: prebuilt struct */
@@ -1093,9 +1093,9 @@ retry:
 re_scan:
 		mtr_commit(mtr);
 		trx->error_state = err;
-		que_thr_stop_for_mysql(thr);
+		que_thr_stop_for_myblockchain(thr);
 		thr->lock_state = QUE_THR_LOCK_ROW;
-		if (row_mysql_handle_errors(
+		if (row_myblockchain_handle_errors(
 			&err, trx, thr, NULL)) {
 			thr->lock_state = QUE_THR_LOCK_NOLOCK;
 			mtr_start(mtr);
@@ -2575,14 +2575,14 @@ row_printf_step(
 }
 
 /****************************************************************//**
-Converts a key value stored in MySQL format to an Innobase dtuple. The last
+Converts a key value stored in MyBlockchain format to an Innobase dtuple. The last
 field of the key value may be just a prefix of a fixed length field: hence
 the parameter key_len. But currently we do not allow search keys where the
 last field is only a prefix of the full key field len and print a warning if
 such appears. A counterpart of this function is
 ha_innobase::store_key_val_for_row() in ha_innodb.cc. */
 void
-row_sel_convert_mysql_key_to_innobase(
+row_sel_convert_myblockchain_key_to_innobase(
 /*==================================*/
 	dtuple_t*	tuple,		/*!< in/out: tuple where to build;
 					NOTE: we assume that the type info
@@ -2593,12 +2593,12 @@ row_sel_convert_mysql_key_to_innobase(
 					may end up pointing inside buf so
 					do not discard that buffer while
 					the tuple is being used. See
-					row_mysql_store_col_in_innobase_format()
+					row_myblockchain_store_col_in_innobase_format()
 					in the case of DATA_INT */
 	ulint		buf_len,	/*!< in: buffer length */
 	dict_index_t*	index,		/*!< in: index of the key value */
-	const byte*	key_ptr,	/*!< in: MySQL key value */
-	ulint		key_len,	/*!< in: MySQL key value length */
+	const byte*	key_ptr,	/*!< in: MyBlockchain key value */
+	ulint		key_len,	/*!< in: MyBlockchain key value length */
 	trx_t*		trx)		/*!< in: transaction */
 {
 	byte*		original_buf	= buf;
@@ -2612,7 +2612,7 @@ row_sel_convert_mysql_key_to_innobase(
 	const byte*	key_end;
 	ulint		n_fields = 0;
 
-	/* For documentation of the key value storage format in MySQL, see
+	/* For documentation of the key value storage format in MyBlockchain, see
 	ha_innobase::store_key_val_for_row() in ha_innodb.cc. */
 
 	key_end = key_ptr + key_len;
@@ -2677,11 +2677,11 @@ row_sel_convert_mysql_key_to_innobase(
 				ut_a(field->prefix_len > 0
 				     || DATA_POINT_MTYPE(type));
 
-				/* MySQL stores the actual data length to the
+				/* MyBlockchain stores the actual data length to the
 				first 2 bytes after the optional SQL NULL
 				marker byte. The storage format is
 				little-endian, that is, the most significant
-				byte at a higher address. In UTF-8, MySQL
+				byte at a higher address. In UTF-8, MyBlockchain
 				seems to reserve field->prefix_len bytes for
 				storing this field in the key value buffer,
 				even though the actual value only takes data
@@ -2707,13 +2707,13 @@ row_sel_convert_mysql_key_to_innobase(
 
 
 		} else if (field->prefix_len > 0) {
-			/* Looks like MySQL pads unused end bytes in the
+			/* Looks like MyBlockchain pads unused end bytes in the
 			prefix with space. Therefore, also in UTF-8, it is ok
 			to compare with a prefix containing full prefix_len
 			bytes, and no need to take at most prefix_len / 3
 			UTF-8 characters from the start.
 			If the prefix is used as the upper end of a LIKE
-			'abc%' query, then MySQL pads the end with chars
+			'abc%' query, then MyBlockchain pads the end with chars
 			0xff. TODO: in that case does it any harm to compare
 			with the full prefix_len bytes. How do characters
 			0xff in UTF-8 behave? */
@@ -2725,17 +2725,17 @@ row_sel_convert_mysql_key_to_innobase(
 			data_field_len = data_offset + data_len;
 		}
 
-		if ((dtype_get_mysql_type(dfield_get_type(dfield))
-		     == DATA_MYSQL_TRUE_VARCHAR)
+		if ((dtype_get_myblockchain_type(dfield_get_type(dfield))
+		     == DATA_MYBLOCKCHAIN_TRUE_VARCHAR)
 		    && (type != DATA_INT)) {
-			/* In a MySQL key value format, a true VARCHAR is
+			/* In a MyBlockchain key value format, a true VARCHAR is
 			always preceded by 2 bytes of a length field.
 			dfield_get_type(dfield)->len returns the maximum
 			'payload' len in bytes. That does not include the
 			2 bytes that tell the actual data length.
 
 			We added the check != DATA_INT to make sure we do
-			not treat MySQL ENUM or SET as a true VARCHAR! */
+			not treat MyBlockchain ENUM or SET as a true VARCHAR! */
 
 			data_len += 2;
 			data_field_len += 2;
@@ -2744,9 +2744,9 @@ row_sel_convert_mysql_key_to_innobase(
 		/* Storing may use at most data_len bytes of buf */
 
 		if (UNIV_LIKELY(!is_null)) {
-			buf = row_mysql_store_col_in_innobase_format(
+			buf = row_myblockchain_store_col_in_innobase_format(
 					dfield, buf,
-					FALSE, /* MySQL key value format col */
+					FALSE, /* MyBlockchain key value format col */
 					key_ptr + data_offset, data_len,
 					dict_table_is_comp(index->table));
 			ut_a(buf <= original_buf + buf_len);
@@ -2760,7 +2760,7 @@ row_sel_convert_mysql_key_to_innobase(
 
 			Print a warning about this! HA_READ_PREFIX_LAST does
 			not currently work in InnoDB with partial-field key
-			value prefixes. Since MySQL currently uses a padding
+			value prefixes. Since MyBlockchain currently uses a padding
 			trick to calculate LIKE 'abc%' type queries there
 			should never be partial-field prefixes in searches. */
 
@@ -2770,7 +2770,7 @@ row_sel_convert_mysql_key_to_innobase(
 				<< ". Last data field length "
 				<< data_field_len << " bytes, key ptr now"
 				" exceeds key end by " << (key_ptr - key_end)
-				<< " bytes. Key value in the MySQL format:";
+				<< " bytes. Key value in the MyBlockchain format:";
 
 			ut_print_buf(stderr, original_key_ptr, key_len);
 			putc('\n', stderr);
@@ -2835,10 +2835,10 @@ row_sel_store_row_id_to_prebuilt(
 }
 
 /**************************************************************//**
-Stores a non-SQL-NULL field in the MySQL format. The counterpart of this
-function is row_mysql_store_col_in_innobase_format() in row0mysql.cc. */
+Stores a non-SQL-NULL field in the MyBlockchain format. The counterpart of this
+function is row_myblockchain_store_col_in_innobase_format() in row0myblockchain.cc. */
 void
-row_sel_field_store_in_mysql_format_func(
+row_sel_field_store_in_myblockchain_format_func(
 /*=====================================*/
 	byte*		dest,	/*!< in/out: buffer where to store; NOTE
 				that BLOBs are not in themselves
@@ -2846,10 +2846,10 @@ row_sel_field_store_in_mysql_format_func(
 				and copy the BLOB into buffer before,
 				and pass the pointer to the BLOB in
 				'data' */
-	const mysql_row_templ_t* templ,
-				/*!< in: MySQL column template.
+	const myblockchain_row_templ_t* templ,
+				/*!< in: MyBlockchain column template.
 				Its following fields are referenced:
-				type, is_unsigned, mysql_col_len,
+				type, is_unsigned, myblockchain_col_len,
 				mbminlen, mbmaxlen */
 #ifdef UNIV_DEBUG
 	const dict_index_t* index,
@@ -2871,8 +2871,8 @@ row_sel_field_store_in_mysql_format_func(
 
 	ut_ad(len != UNIV_SQL_NULL);
 	UNIV_MEM_ASSERT_RW(data, len);
-	UNIV_MEM_ASSERT_W(dest, templ->mysql_col_len);
-	UNIV_MEM_INVALID(dest, templ->mysql_col_len);
+	UNIV_MEM_ASSERT_W(dest, templ->myblockchain_col_len);
+	UNIV_MEM_INVALID(dest, templ->myblockchain_col_len);
 
 	switch (templ->type) {
 		const byte*	field_end;
@@ -2896,21 +2896,21 @@ row_sel_field_store_in_mysql_format_func(
 			dest[len - 1] = (byte) (dest[len - 1] ^ 128);
 		}
 
-		ut_ad(templ->mysql_col_len == len);
+		ut_ad(templ->myblockchain_col_len == len);
 		break;
 
 	case DATA_VARCHAR:
-	case DATA_VARMYSQL:
+	case DATA_VARMYBLOCKCHAIN:
 	case DATA_BINARY:
-		field_end = dest + templ->mysql_col_len;
+		field_end = dest + templ->myblockchain_col_len;
 
-		if (templ->mysql_type == DATA_MYSQL_TRUE_VARCHAR) {
+		if (templ->myblockchain_type == DATA_MYBLOCKCHAIN_TRUE_VARCHAR) {
 			/* This is a >= 5.0.3 type true VARCHAR. Store the
 			length of the data to the first byte or the first
 			two bytes of dest. */
 
-			dest = row_mysql_store_true_var_len(
-				dest, len, templ->mysql_length_bytes);
+			dest = row_myblockchain_store_true_var_len(
+				dest, len, templ->myblockchain_length_bytes);
 			/* Copy the actual data. Leave the rest of the
 			buffer uninitialized. */
 			memcpy(dest, data, len);
@@ -2947,14 +2947,14 @@ row_sel_field_store_in_mysql_format_func(
 			}
 		}
 
-		row_mysql_pad_col(templ->mbminlen, pad, field_end - pad);
+		row_myblockchain_pad_col(templ->mbminlen, pad, field_end - pad);
 		break;
 
 	case DATA_BLOB:
 		/* Store a pointer to the BLOB buffer to dest: the BLOB was
-		already copied to the buffer in row_sel_store_mysql_rec */
+		already copied to the buffer in row_sel_store_myblockchain_rec */
 
-		row_mysql_store_blob_ref(dest, templ->mysql_col_len, data,
+		row_myblockchain_store_blob_ref(dest, templ->myblockchain_col_len, data,
 					 len);
 		break;
 
@@ -2962,13 +2962,13 @@ row_sel_field_store_in_mysql_format_func(
 	case DATA_VAR_POINT:
 	case DATA_GEOMETRY:
 		/* We store all geometry data as BLOB data at server layer. */
-		row_mysql_store_geometry(dest, templ->mysql_col_len, data, len);
+		row_myblockchain_store_geometry(dest, templ->myblockchain_col_len, data, len);
 		break;
 
-	case DATA_MYSQL:
+	case DATA_MYBLOCKCHAIN:
 		memcpy(dest, data, len);
 
-		ut_ad(templ->mysql_col_len >= len);
+		ut_ad(templ->myblockchain_col_len >= len);
 		ut_ad(templ->mbmaxlen >= templ->mbminlen);
 
 		/* If field_no equals to templ->icp_rec_field_no,
@@ -2979,15 +2979,15 @@ row_sel_field_store_in_mysql_format_func(
 		should still be equal, unless the field pointed
 		by icp_rec_field_no has a prefix */
 		ut_ad(templ->mbmaxlen > templ->mbminlen
-		      || templ->mysql_col_len == len
+		      || templ->myblockchain_col_len == len
 		      || (field_no == templ->icp_rec_field_no
 			  && field->prefix_len > 0));
 
 		/* The following assertion would fail for old tables
 		containing UTF-8 ENUM columns due to Bug #9526. */
 		ut_ad(!templ->mbmaxlen
-		      || !(templ->mysql_col_len % templ->mbmaxlen));
-		ut_ad(len * templ->mbmaxlen >= templ->mysql_col_len
+		      || !(templ->myblockchain_col_len % templ->mbmaxlen));
+		ut_ad(len * templ->mbmaxlen >= templ->myblockchain_col_len
 		      || (field_no == templ->icp_rec_field_no
 			  && field->prefix_len > 0));
 		ut_ad(templ->is_virtual
@@ -2995,10 +2995,10 @@ row_sel_field_store_in_mysql_format_func(
 
 		if (templ->mbminlen == 1 && templ->mbmaxlen != 1) {
 			/* Pad with spaces. This undoes the stripping
-			done in row0mysql.cc, function
-			row_mysql_store_col_in_innobase_format(). */
+			done in row0myblockchain.cc, function
+			row_myblockchain_store_col_in_innobase_format(). */
 
-			memset(dest + len, 0x20, templ->mysql_col_len - len);
+			memset(dest + len, 0x20, templ->myblockchain_col_len - len);
 		}
 		break;
 
@@ -3006,7 +3006,7 @@ row_sel_field_store_in_mysql_format_func(
 #ifdef UNIV_DEBUG
 	case DATA_SYS_CHILD:
 	case DATA_SYS:
-		/* These column types should never be shipped to MySQL. */
+		/* These column types should never be shipped to MyBlockchain. */
 		ut_ad(0);
 
 	case DATA_CHAR:
@@ -3014,33 +3014,33 @@ row_sel_field_store_in_mysql_format_func(
 	case DATA_FLOAT:
 	case DATA_DOUBLE:
 	case DATA_DECIMAL:
-		/* Above are the valid column types for MySQL data. */
+		/* Above are the valid column types for MyBlockchain data. */
 #endif /* UNIV_DEBUG */
 		ut_ad((templ->is_virtual && !field)
 		      || (field && field->prefix_len
 				? field->prefix_len == len
-				: templ->mysql_col_len == len));
+				: templ->myblockchain_col_len == len));
 		memcpy(dest, data, len);
 	}
 }
 
 #ifdef UNIV_DEBUG
-/** Convert a field from Innobase format to MySQL format. */
-# define row_sel_store_mysql_field(m,p,r,i,o,f,t) \
-	row_sel_store_mysql_field_func(m,p,r,i,o,f,t)
+/** Convert a field from Innobase format to MyBlockchain format. */
+# define row_sel_store_myblockchain_field(m,p,r,i,o,f,t) \
+	row_sel_store_myblockchain_field_func(m,p,r,i,o,f,t)
 #else /* UNIV_DEBUG */
-/** Convert a field from Innobase format to MySQL format. */
-# define row_sel_store_mysql_field(m,p,r,i,o,f,t) \
-	row_sel_store_mysql_field_func(m,p,r,o,f,t)
+/** Convert a field from Innobase format to MyBlockchain format. */
+# define row_sel_store_myblockchain_field(m,p,r,i,o,f,t) \
+	row_sel_store_myblockchain_field_func(m,p,r,o,f,t)
 #endif /* UNIV_DEBUG */
 /**************************************************************//**
-Convert a field in the Innobase format to a field in the MySQL format. */
+Convert a field in the Innobase format to a field in the MyBlockchain format. */
 static __attribute__((warn_unused_result))
 ibool
-row_sel_store_mysql_field_func(
+row_sel_store_myblockchain_field_func(
 /*===========================*/
-	byte*			mysql_rec,	/*!< out: record in the
-						MySQL format */
+	byte*			myblockchain_rec,	/*!< out: record in the
+						MyBlockchain format */
 	row_prebuilt_t*		prebuilt,	/*!< in/out: prebuilt struct */
 	const rec_t*		rec,		/*!< in: InnoDB record;
 						must be protected by
@@ -3053,17 +3053,17 @@ row_sel_store_mysql_field_func(
 	ulint			field_no,	/*!< in: templ->rec_field_no or
 						templ->clust_rec_field_no or
 						templ->icp_rec_field_no */
-	const mysql_row_templ_t*templ)		/*!< in: row template */
+	const myblockchain_row_templ_t*templ)		/*!< in: row template */
 {
-	DBUG_ENTER("row_sel_store_mysql_field_func");
+	DBUG_ENTER("row_sel_store_myblockchain_field_func");
 
 	const byte*	data;
 	ulint		len;
 
 	ut_ad(prebuilt->default_rec);
 	ut_ad(templ);
-	ut_ad(templ >= prebuilt->mysql_template);
-	ut_ad(templ < &prebuilt->mysql_template[prebuilt->n_template]);
+	ut_ad(templ >= prebuilt->myblockchain_template);
+	ut_ad(templ < &prebuilt->myblockchain_template[prebuilt->n_template]);
 	ut_ad(field_no == templ->clust_rec_field_no
 	      || field_no == templ->rec_field_no
 	      || field_no == templ->icp_rec_field_no);
@@ -3115,8 +3115,8 @@ row_sel_store_mysql_field_func(
 
 		ut_a(len != UNIV_SQL_NULL);
 
-		row_sel_field_store_in_mysql_format(
-			mysql_rec + templ->mysql_col_offset,
+		row_sel_field_store_in_myblockchain_format(
+			myblockchain_rec + templ->myblockchain_col_offset,
 			templ, index, field_no, data, len);
 
 		if (heap != prebuilt->blob_heap) {
@@ -3128,19 +3128,19 @@ row_sel_store_mysql_field_func(
 		data = rec_get_nth_field(rec, offsets, field_no, &len);
 
 		if (len == UNIV_SQL_NULL) {
-			/* MySQL assumes that the field for an SQL
+			/* MyBlockchain assumes that the field for an SQL
 			NULL value is set to the default value. */
-			ut_ad(templ->mysql_null_bit_mask);
+			ut_ad(templ->myblockchain_null_bit_mask);
 
 			UNIV_MEM_ASSERT_RW(prebuilt->default_rec
-					   + templ->mysql_col_offset,
-					   templ->mysql_col_len);
-			mysql_rec[templ->mysql_null_byte_offset]
-				|= (byte) templ->mysql_null_bit_mask;
-			memcpy(mysql_rec + templ->mysql_col_offset,
+					   + templ->myblockchain_col_offset,
+					   templ->myblockchain_col_len);
+			myblockchain_rec[templ->myblockchain_null_byte_offset]
+				|= (byte) templ->myblockchain_null_bit_mask;
+			memcpy(myblockchain_rec + templ->myblockchain_col_offset,
 			       (const byte*) prebuilt->default_rec
-			       + templ->mysql_col_offset,
-			       templ->mysql_col_len);
+			       + templ->myblockchain_col_offset,
+			       templ->myblockchain_col_len);
 			DBUG_RETURN(TRUE);
 		}
 
@@ -3150,14 +3150,14 @@ row_sel_store_mysql_field_func(
 			/* It is a BLOB field locally stored in the
 			InnoDB record: we MUST copy its contents to
 			prebuilt->blob_heap here because
-			row_sel_field_store_in_mysql_format() stores a
+			row_sel_field_store_in_myblockchain_format() stores a
 			pointer to the data, and the data passed to us
 			will be invalid as soon as the
 			mini-transaction is committed and the page
 			latch on the clustered index page is
 			released.
 			For DATA_POINT, it's stored like CHAR in InnoDB,
-			but it should be a BLOB field in MySQL layer. So we
+			but it should be a BLOB field in MyBlockchain layer. So we
 			still treated it as BLOB here. */
 
 			if (prebuilt->blob_heap == NULL) {
@@ -3171,34 +3171,34 @@ row_sel_store_mysql_field_func(
 				mem_heap_dup(prebuilt->blob_heap, data, len));
 		}
 
-		row_sel_field_store_in_mysql_format(
-			mysql_rec + templ->mysql_col_offset,
+		row_sel_field_store_in_myblockchain_format(
+			myblockchain_rec + templ->myblockchain_col_offset,
 			templ, index, field_no, data, len);
 	}
 
 	ut_ad(len != UNIV_SQL_NULL);
 
-	if (templ->mysql_null_bit_mask) {
+	if (templ->myblockchain_null_bit_mask) {
 		/* It is a nullable column with a non-NULL
 		value */
-		mysql_rec[templ->mysql_null_byte_offset]
-			&= ~(byte) templ->mysql_null_bit_mask;
+		myblockchain_rec[templ->myblockchain_null_byte_offset]
+			&= ~(byte) templ->myblockchain_null_bit_mask;
 	}
 
 	DBUG_RETURN(TRUE);
 }
 
 /**************************************************************//**
-Convert a row in the Innobase format to a row in the MySQL format.
+Convert a row in the Innobase format to a row in the MyBlockchain format.
 Note that the template in prebuilt may advise us to copy only a few
-columns to mysql_rec, other columns are left blank. All columns may not
+columns to myblockchain_rec, other columns are left blank. All columns may not
 be needed in the query.
 @return TRUE on success, FALSE if not all columns could be retrieved */
 static __attribute__((warn_unused_result))
 ibool
-row_sel_store_mysql_rec(
+row_sel_store_myblockchain_rec(
 /*====================*/
-	byte*		mysql_rec,	/*!< out: row in the MySQL format */
+	byte*		myblockchain_rec,	/*!< out: row in the MyBlockchain format */
 	row_prebuilt_t*	prebuilt,	/*!< in: prebuilt struct */
 	const rec_t*	rec,		/*!< in: Innobase record in the index
 					which was described in prebuilt's
@@ -3213,17 +3213,17 @@ row_sel_store_mysql_rec(
 					rec_get_offsets(rec) */
 {
 	ulint		i;
-	DBUG_ENTER("row_sel_store_mysql_rec");
+	DBUG_ENTER("row_sel_store_myblockchain_rec");
 
 	ut_ad(rec_clust || index == prebuilt->index);
 	ut_ad(!rec_clust || dict_index_is_clust(index));
 
 	if (UNIV_LIKELY_NULL(prebuilt->blob_heap)) {
-		row_mysql_prebuilt_free_blob_heap(prebuilt);
+		row_myblockchain_prebuilt_free_blob_heap(prebuilt);
 	}
 
 	for (i = 0; i < prebuilt->n_template; i++) {
-		const mysql_row_templ_t*templ = &prebuilt->mysql_template[i];
+		const myblockchain_row_templ_t*templ = &prebuilt->myblockchain_template[i];
 
 		if (templ->is_virtual && dict_index_is_clust(index)) {
 
@@ -3245,22 +3245,22 @@ row_sel_store_mysql_rec(
 				vrow, col->v_pos);
 
 			if (dfield->len == UNIV_SQL_NULL) {
-				mysql_rec[templ->mysql_null_byte_offset]
-				|= (byte) templ->mysql_null_bit_mask;
-				memcpy(mysql_rec
-				+ templ->mysql_col_offset,
+				myblockchain_rec[templ->myblockchain_null_byte_offset]
+				|= (byte) templ->myblockchain_null_bit_mask;
+				memcpy(myblockchain_rec
+				+ templ->myblockchain_col_offset,
 				(const byte*) prebuilt->default_rec
-				+ templ->mysql_col_offset,
-				templ->mysql_col_len);
+				+ templ->myblockchain_col_offset,
+				templ->myblockchain_col_len);
 			} else {
-				row_sel_field_store_in_mysql_format(
-				mysql_rec + templ->mysql_col_offset,
+				row_sel_field_store_in_myblockchain_format(
+				myblockchain_rec + templ->myblockchain_col_offset,
 				templ, index, templ->clust_rec_field_no,
 				(const byte*)dfield->data, dfield->len);
-				if (templ->mysql_null_bit_mask) {
-					mysql_rec[
-					templ->mysql_null_byte_offset]
-					&= ~(byte) templ->mysql_null_bit_mask;
+				if (templ->myblockchain_null_bit_mask) {
+					myblockchain_rec[
+					templ->myblockchain_null_byte_offset]
+					&= ~(byte) templ->myblockchain_null_bit_mask;
 				}
 			}
 
@@ -3271,12 +3271,12 @@ row_sel_store_mysql_rec(
 			= rec_clust
 			? templ->clust_rec_field_no
 			: templ->rec_field_no;
-		/* We should never deliver column prefixes to MySQL,
+		/* We should never deliver column prefixes to MyBlockchain,
 		except for evaluating innobase_index_cond(). */
 		ut_ad(dict_index_get_nth_field(index, field_no)->prefix_len
 		      == 0);
 
-		if (!row_sel_store_mysql_field(mysql_rec, prebuilt,
+		if (!row_sel_store_myblockchain_field(myblockchain_rec, prebuilt,
 					       rec, index, offsets,
 					       field_no, templ)) {
 			DBUG_RETURN(FALSE);
@@ -3304,7 +3304,7 @@ Builds a previous version of a clustered index record for a consistent read
 @return DB_SUCCESS or error code */
 static __attribute__((warn_unused_result))
 dberr_t
-row_sel_build_prev_vers_for_mysql(
+row_sel_build_prev_vers_for_myblockchain(
 /*==============================*/
 	ReadView*	read_view,	/*!< in: read view */
 	dict_index_t*	clust_index,	/*!< in: clustered index */
@@ -3338,12 +3338,12 @@ row_sel_build_prev_vers_for_mysql(
 
 /*********************************************************************//**
 Retrieves the clustered index record corresponding to a record in a
-non-clustered index. Does the necessary locking. Used in the MySQL
+non-clustered index. Does the necessary locking. Used in the MyBlockchain
 interface.
 @return DB_SUCCESS, DB_SUCCESS_LOCKED_REC, or error code */
 static __attribute__((warn_unused_result))
 dberr_t
-row_sel_get_clust_rec_for_mysql(
+row_sel_get_clust_rec_for_myblockchain(
 /*============================*/
 	row_prebuilt_t*	prebuilt,/*!< in: prebuilt struct in the handle */
 	dict_index_t*	sec_index,/*!< in: secondary index where rec resides */
@@ -3491,7 +3491,7 @@ row_sel_get_clust_rec_for_mysql(
 			trx_print(stderr, trx, 600);
 			fputs("\n"
 			      "InnoDB: Submit a detailed bug report"
-			      " to http://bugs.mysql.com\n", stderr);
+			      " to http://bugs.myblockchain.com\n", stderr);
 			ut_ad(0);
 		}
 
@@ -3539,7 +3539,7 @@ row_sel_get_clust_rec_for_mysql(
 
 			/* The following call returns 'offsets' associated with
 			'old_vers' */
-			err = row_sel_build_prev_vers_for_mysql(
+			err = row_sel_build_prev_vers_for_myblockchain(
 				trx->read_view, clust_index, prebuilt,
 				clust_rec, offsets, offset_heap, &old_vers,
 				vrow, mtr);
@@ -3606,7 +3606,7 @@ Then we may have to move the cursor one step up or down.
 positioned on (i.e. we should not go to the next record yet) */
 static
 ibool
-sel_restore_position_for_mysql(
+sel_restore_position_for_myblockchain(
 /*===========================*/
 	ibool*		same_user_rec,	/*!< out: TRUE if we were able to restore
 					the cursor on a user record with the
@@ -3697,33 +3697,33 @@ prev:
 }
 
 /********************************************************************//**
-Copies a cached field for MySQL from the fetch cache. */
+Copies a cached field for MyBlockchain from the fetch cache. */
 static
 void
-row_sel_copy_cached_field_for_mysql(
+row_sel_copy_cached_field_for_myblockchain(
 /*================================*/
 	byte*			buf,	/*!< in/out: row buffer */
 	const byte*		cache,	/*!< in: cached row */
-	const mysql_row_templ_t*templ)	/*!< in: column template */
+	const myblockchain_row_templ_t*templ)	/*!< in: column template */
 {
 	ulint	len;
 
-	buf += templ->mysql_col_offset;
-	cache += templ->mysql_col_offset;
+	buf += templ->myblockchain_col_offset;
+	cache += templ->myblockchain_col_offset;
 
-	UNIV_MEM_ASSERT_W(buf, templ->mysql_col_len);
+	UNIV_MEM_ASSERT_W(buf, templ->myblockchain_col_len);
 
-	if (templ->mysql_type == DATA_MYSQL_TRUE_VARCHAR
+	if (templ->myblockchain_type == DATA_MYBLOCKCHAIN_TRUE_VARCHAR
 	    && (templ->type != DATA_INT)) {
 		/* Check for != DATA_INT to make sure we do
-		not treat MySQL ENUM or SET as a true VARCHAR!
+		not treat MyBlockchain ENUM or SET as a true VARCHAR!
 		Find the actual length of the true VARCHAR field. */
-		row_mysql_read_true_varchar(
-			&len, cache, templ->mysql_length_bytes);
-		len += templ->mysql_length_bytes;
-		UNIV_MEM_INVALID(buf, templ->mysql_col_len);
+		row_myblockchain_read_true_varchar(
+			&len, cache, templ->myblockchain_length_bytes);
+		len += templ->myblockchain_length_bytes;
+		UNIV_MEM_INVALID(buf, templ->myblockchain_col_len);
 	} else {
-		len = templ->mysql_col_len;
+		len = templ->myblockchain_col_len;
 	}
 
 	ut_memcpy(buf, cache, len);
@@ -3732,72 +3732,72 @@ row_sel_copy_cached_field_for_mysql(
 /** Copy used fields from cached row.
 Copy cache record field by field, don't touch fields that
 are not covered by current key.
-@param[out]	buf		Where to copy the MySQL row.
-@param[in]	cached_rec	What to copy (in MySQL row format).
+@param[out]	buf		Where to copy the MyBlockchain row.
+@param[in]	cached_rec	What to copy (in MyBlockchain row format).
 @param[in]	prebuilt	prebuilt struct. */
 void
-row_sel_copy_cached_fields_for_mysql(
+row_sel_copy_cached_fields_for_myblockchain(
 	byte*		buf,
 	const byte*	cached_rec,
 	row_prebuilt_t*	prebuilt)
 {
-	const mysql_row_templ_t*templ;
+	const myblockchain_row_templ_t*templ;
 	ulint			i;
 	for (i = 0; i < prebuilt->n_template; i++) {
-		templ = prebuilt->mysql_template + i;
+		templ = prebuilt->myblockchain_template + i;
 
 		/* Skip virtual columns */
 		if (templ->is_virtual) {
 			continue;
 		}
 
-		row_sel_copy_cached_field_for_mysql(
+		row_sel_copy_cached_field_for_myblockchain(
 			buf, cached_rec, templ);
 		/* Copy NULL bit of the current field from cached_rec
 		to buf */
-		if (templ->mysql_null_bit_mask) {
-			buf[templ->mysql_null_byte_offset]
-				^= (buf[templ->mysql_null_byte_offset]
-				    ^ cached_rec[templ->mysql_null_byte_offset])
-				& (byte) templ->mysql_null_bit_mask;
+		if (templ->myblockchain_null_bit_mask) {
+			buf[templ->myblockchain_null_byte_offset]
+				^= (buf[templ->myblockchain_null_byte_offset]
+				    ^ cached_rec[templ->myblockchain_null_byte_offset])
+				& (byte) templ->myblockchain_null_bit_mask;
 		}
 	}
 }
 
 /********************************************************************//**
-Pops a cached row for MySQL from the fetch cache. */
+Pops a cached row for MyBlockchain from the fetch cache. */
 UNIV_INLINE
 void
-row_sel_dequeue_cached_row_for_mysql(
+row_sel_dequeue_cached_row_for_myblockchain(
 /*=================================*/
 	byte*		buf,		/*!< in/out: buffer where to copy the
 					row */
 	row_prebuilt_t*	prebuilt)	/*!< in: prebuilt struct */
 {
 	ulint			i;
-	const mysql_row_templ_t*templ;
+	const myblockchain_row_templ_t*templ;
 	const byte*		cached_rec;
 	ut_ad(prebuilt->n_fetch_cached > 0);
-	ut_ad(prebuilt->mysql_prefix_len <= prebuilt->mysql_row_len);
+	ut_ad(prebuilt->myblockchain_prefix_len <= prebuilt->myblockchain_row_len);
 
-	UNIV_MEM_ASSERT_W(buf, prebuilt->mysql_row_len);
+	UNIV_MEM_ASSERT_W(buf, prebuilt->myblockchain_row_len);
 
 	cached_rec = prebuilt->fetch_cache[prebuilt->fetch_cache_first];
 
 	if (UNIV_UNLIKELY(prebuilt->keep_other_fields_on_keyread)) {
-		row_sel_copy_cached_fields_for_mysql(buf, cached_rec, prebuilt);
-	} else if (prebuilt->mysql_prefix_len > 63) {
+		row_sel_copy_cached_fields_for_myblockchain(buf, cached_rec, prebuilt);
+	} else if (prebuilt->myblockchain_prefix_len > 63) {
 		/* The record is long. Copy it field by field, in case
 		there are some long VARCHAR column of which only a
 		small length is being used. */
-		UNIV_MEM_INVALID(buf, prebuilt->mysql_prefix_len);
+		UNIV_MEM_INVALID(buf, prebuilt->myblockchain_prefix_len);
 
 		/* First copy the NULL bits. */
 		ut_memcpy(buf, cached_rec, prebuilt->null_bitmap_len);
 		/* Then copy the requested fields. */
 
 		for (i = 0; i < prebuilt->n_template; i++) {
-			templ = prebuilt->mysql_template + i;
+			templ = prebuilt->myblockchain_template + i;
 
 			/* Skip virtual columns */
 			if (templ->is_virtual
@@ -3806,11 +3806,11 @@ row_sel_dequeue_cached_row_for_mysql(
 				continue;
 			}
 
-			row_sel_copy_cached_field_for_mysql(
+			row_sel_copy_cached_field_for_myblockchain(
 				buf, cached_rec, templ);
 		}
 	} else {
-		ut_memcpy(buf, cached_rec, prebuilt->mysql_prefix_len);
+		ut_memcpy(buf, cached_rec, prebuilt->myblockchain_prefix_len);
 	}
 
 	prebuilt->n_fetch_cached--;
@@ -3834,7 +3834,7 @@ row_sel_prefetch_cache_init(
 	byte*	ptr;
 
 	/* Reserve space for the magic number. */
-	sz = UT_ARR_SIZE(prebuilt->fetch_cache) * (prebuilt->mysql_row_len + 8);
+	sz = UT_ARR_SIZE(prebuilt->fetch_cache) * (prebuilt->myblockchain_row_len + 8);
 	ptr = static_cast<byte*>(ut_malloc_nokey(sz));
 
 	for (i = 0; i < UT_ARR_SIZE(prebuilt->fetch_cache); i++) {
@@ -3847,7 +3847,7 @@ row_sel_prefetch_cache_init(
 		ptr += 4;
 
 		prebuilt->fetch_cache[i] = ptr;
-		ptr += prebuilt->mysql_row_len;
+		ptr += prebuilt->myblockchain_row_len;
 
 		mach_write_to_4(ptr, ROW_PREBUILT_FETCH_MAGIC_N);
 		ptr += 4;
@@ -3864,7 +3864,7 @@ row_sel_fetch_last_buf(
 	row_prebuilt_t*	prebuilt)	/*!< in/out: prebuilt struct */
 {
 	ut_ad(!prebuilt->templ_contains_blob);
-	ut_ad(prebuilt->n_fetch_cached < MYSQL_FETCH_CACHE_SIZE);
+	ut_ad(prebuilt->n_fetch_cached < MYBLOCKCHAIN_FETCH_CACHE_SIZE);
 
 	if (prebuilt->fetch_cache[0] == NULL) {
 		/* Allocate memory for the fetch cache */
@@ -3875,18 +3875,18 @@ row_sel_fetch_last_buf(
 
 	ut_ad(prebuilt->fetch_cache_first == 0);
 	UNIV_MEM_INVALID(prebuilt->fetch_cache[prebuilt->n_fetch_cached],
-			 prebuilt->mysql_row_len);
+			 prebuilt->myblockchain_row_len);
 
 	return(prebuilt->fetch_cache[prebuilt->n_fetch_cached]);
 }
 
 /********************************************************************//**
-Pushes a row for MySQL to the fetch cache. */
+Pushes a row for MyBlockchain to the fetch cache. */
 UNIV_INLINE
 void
-row_sel_enqueue_cache_row_for_mysql(
+row_sel_enqueue_cache_row_for_myblockchain(
 /*================================*/
-	byte*		mysql_rec,	/*!< in/out: MySQL record */
+	byte*		myblockchain_rec,	/*!< in/out: MyBlockchain record */
 	row_prebuilt_t*	prebuilt)	/*!< in/out: prebuilt struct */
 {
 	/* For non ICP code path the row should already exist in the
@@ -3895,7 +3895,7 @@ row_sel_enqueue_cache_row_for_mysql(
 	if (prebuilt->idx_cond != NULL) {
 		byte*	dest = row_sel_fetch_last_buf(prebuilt);
 
-		ut_memcpy(dest, mysql_rec, prebuilt->mysql_row_len);
+		ut_memcpy(dest, myblockchain_rec, prebuilt->myblockchain_row_len);
 	}
 
 	++prebuilt->n_fetch_cached;
@@ -3909,7 +3909,7 @@ btr search latch has been locked in S-mode if AHI is enabled.
 @return SEL_FOUND, SEL_EXHAUSTED, SEL_RETRY */
 static
 ulint
-row_sel_try_search_shortcut_for_mysql(
+row_sel_try_search_shortcut_for_myblockchain(
 /*==================================*/
 	const rec_t**	out_rec,/*!< out: record if found */
 	row_prebuilt_t*	prebuilt,/*!< in: prebuilt struct */
@@ -3977,8 +3977,8 @@ static
 ICP_RESULT
 row_search_idx_cond_check(
 /*======================*/
-	byte*			mysql_rec,	/*!< out: record
-						in MySQL format (invalid unless
+	byte*			myblockchain_rec,	/*!< out: record
+						in MyBlockchain format (invalid unless
 						prebuilt->idx_cond!=NULL and
 						we return ICP_MATCH) */
 	row_prebuilt_t*		prebuilt,	/*!< in/out: prebuilt struct
@@ -3997,7 +3997,7 @@ row_search_idx_cond_check(
 
 	MONITOR_INC(MONITOR_ICP_ATTEMPTS);
 
-	/* Convert to MySQL format those fields that are needed for
+	/* Convert to MyBlockchain format those fields that are needed for
 	evaluating the index condition. */
 
 	if (UNIV_LIKELY_NULL(prebuilt->blob_heap)) {
@@ -4005,14 +4005,14 @@ row_search_idx_cond_check(
 	}
 
 	for (i = 0; i < prebuilt->idx_cond_n_cols; i++) {
-		const mysql_row_templ_t*templ = &prebuilt->mysql_template[i];
+		const myblockchain_row_templ_t*templ = &prebuilt->myblockchain_template[i];
 
 		/* Skip virtual columns */
 		if (templ->is_virtual) {
 			continue;
 		}
 
-		if (!row_sel_store_mysql_field(mysql_rec, prebuilt,
+		if (!row_sel_store_myblockchain_field(myblockchain_rec, prebuilt,
 					       rec, prebuilt->index, offsets,
 					       templ->icp_rec_field_no,
 					       templ)) {
@@ -4029,13 +4029,13 @@ row_search_idx_cond_check(
 	result = innobase_index_cond(prebuilt->idx_cond);
 	switch (result) {
 	case ICP_MATCH:
-		/* Convert the remaining fields to MySQL format.
+		/* Convert the remaining fields to MyBlockchain format.
 		If this is a secondary index record, we must defer
 		this until we have fetched the clustered index record. */
 		if (!prebuilt->need_to_access_clustered
 		    || dict_index_is_clust(prebuilt->index)) {
-			if (!row_sel_store_mysql_rec(
-				    mysql_rec, prebuilt, rec, NULL, FALSE,
+			if (!row_sel_store_myblockchain_rec(
+				    myblockchain_rec, prebuilt, rec, NULL, FALSE,
 				    prebuilt->index, offsets)) {
 				ut_ad(dict_index_is_clust(prebuilt->index));
 				return(ICP_NO_MATCH);
@@ -4089,12 +4089,12 @@ row_search_traverse(
 	return(err);
 }
 
-/** Searches for rows in the database using cursor.
+/** Searches for rows in the blockchain using cursor.
 Function is for temporary tables that are not shared accross connections
 and so lot of complexity is reduced especially locking and transaction related.
 The cursor is an iterator over the table/index.
 
-@param[out]	buf		buffer for the fetched row in MySQL format
+@param[out]	buf		buffer for the fetched row in MyBlockchain format
 @param[in]	mode		search mode PAGE_CUR_L
 @param[in,out]	prebuilt	prebuilt struct for the table handler;
 				this contains the info to search_tuple,
@@ -4272,7 +4272,7 @@ row_search_no_mvcc(
 		record for snapshort verification. */
 		if (index != clust_index) {
 
-			err = row_sel_get_clust_rec_for_mysql(
+			err = row_sel_get_clust_rec_for_myblockchain(
 				prebuilt, index, rec, thr, &clust_rec,
 				&offsets, &heap, NULL, mtr);
 
@@ -4319,9 +4319,9 @@ row_search_no_mvcc(
 				prebuilt, result_rec, clust_index, offsets);
 		}
 
-		/* Step-6: Convert selected record to MySQL format and
+		/* Step-6: Convert selected record to MyBlockchain format and
 		store it. */
-		if (prebuilt->template_type == ROW_MYSQL_DUMMY_TEMPLATE) {
+		if (prebuilt->template_type == ROW_MYBLOCKCHAIN_DUMMY_TEMPLATE) {
 
 			const rec_t*	ret_rec =
 				(index != clust_index
@@ -4336,7 +4336,7 @@ row_search_no_mvcc(
 
 			mach_write_to_4(buf, rec_offs_extra_size(offsets) + 4);
 
-		} else if (!row_sel_store_mysql_rec(
+		} else if (!row_sel_store_myblockchain_rec(
 				buf, prebuilt, result_rec, NULL, TRUE,
 				clust_index, offsets)) {
 			err = DB_ERROR;
@@ -4344,7 +4344,7 @@ row_search_no_mvcc(
 		}
 
 		/* Step-7: Store cursor position to fetch next record.
-		MySQL calls this function iteratively get_next(), get_next()
+		MyBlockchain calls this function iteratively get_next(), get_next()
 		fashion. */
 		ut_ad(err == DB_SUCCESS);
 		index->last_sel_cur->rec = btr_pcur_get_rec(pcur);
@@ -4418,13 +4418,13 @@ row_sel_fill_vrow(
 	}
 }
 
-/** Searches for rows in the database using cursor.
+/** Searches for rows in the blockchain using cursor.
 Function is mainly used for tables that are shared accorss connection and
 so it employs technique that can help re-construct the rows that
 transaction is suppose to see.
 It also has optimization such as pre-caching the rows, using AHI, etc.
 
-@param[out]	buf		buffer for the fetched row in MySQL format
+@param[out]	buf		buffer for the fetched row in MyBlockchain format
 @param[in]	mode		search mode PAGE_CUR_L
 @param[in,out]	prebuilt	prebuilt struct for the table handler;
 				this contains the info to search_tuple,
@@ -4536,7 +4536,7 @@ row_search_mvcc(
 		/* There is an x-latch request on the adaptive hash index:
 		release the s-latch to reduce starvation and wait for
 		BTR_SEA_TIMEOUT rounds before trying to keep it again over
-		calls from MySQL */
+		calls from MyBlockchain */
 
 		trx_search_latch_release_if_reserved(trx);
 
@@ -4584,7 +4584,7 @@ row_search_mvcc(
 			prebuilt->fetch_cache_first = 0;
 
 		} else if (UNIV_LIKELY(prebuilt->n_fetch_cached > 0)) {
-			row_sel_dequeue_cached_row_for_mysql(buf, prebuilt);
+			row_sel_dequeue_cached_row_for_myblockchain(buf, prebuilt);
 
 			prebuilt->n_rows_fetched++;
 
@@ -4593,7 +4593,7 @@ row_search_mvcc(
 		}
 
 		if (prebuilt->fetch_cache_first > 0
-		    && prebuilt->fetch_cache_first < MYSQL_FETCH_CACHE_SIZE) {
+		    && prebuilt->fetch_cache_first < MYBLOCKCHAIN_FETCH_CACHE_SIZE) {
 
 			/* The previous returned row was popped from the fetch
 			cache, but the cache was not full at the time of the
@@ -4631,13 +4631,13 @@ row_search_mvcc(
 
 		/* Note above that a UNIQUE secondary index can contain many
 		rows with the same key value if one of the columns is the SQL
-		null. A clustered index under MySQL can never contain null
+		null. A clustered index under MyBlockchain can never contain null
 		columns because we demand that all the columns in primary key
 		are non-null. */
 
 		unique_search = TRUE;
 
-		/* Even if the condition is unique, MySQL seems to try to
+		/* Even if the condition is unique, MyBlockchain seems to try to
 		retrieve also a second row if a primary key contains more than
 		1 column. Return immediately if this is not a HANDLER
 		command. */
@@ -4674,12 +4674,12 @@ row_search_mvcc(
 	    && dict_index_is_clust(index)
 	    && !prebuilt->templ_contains_blob
 	    && !prebuilt->used_in_HANDLER
-	    && (prebuilt->mysql_row_len < UNIV_PAGE_SIZE / 8)
+	    && (prebuilt->myblockchain_row_len < UNIV_PAGE_SIZE / 8)
 	    && !prebuilt->innodb_api) {
 
 		mode = PAGE_CUR_GE;
 
-		if (trx->mysql_n_tables_locked == 0
+		if (trx->myblockchain_n_tables_locked == 0
 		    && !prebuilt->ins_sel_stmt
 		    && prebuilt->select_lock_type == LOCK_NONE
 		    && trx->isolation_level > TRX_ISO_READ_UNCOMMITTED
@@ -4690,7 +4690,7 @@ row_search_mvcc(
 			let us try a search shortcut through the hash
 			index.
 			NOTE that we must also test that
-			mysql_n_tables_locked == 0, because this might
+			myblockchain_n_tables_locked == 0, because this might
 			also be INSERT INTO ... SELECT ... or
 			CREATE TABLE ... SELECT ... . Our algorithm is
 			NOT prepared to inserts interleaved with the SELECT,
@@ -4701,13 +4701,13 @@ row_search_mvcc(
 			rw_lock_s_lock(btr_get_search_latch(index));
 			trx->has_search_latch = true;
 
-			switch (row_sel_try_search_shortcut_for_mysql(
+			switch (row_sel_try_search_shortcut_for_myblockchain(
 					&rec, prebuilt, &offsets, &heap,
 					&mtr)) {
 			case SEL_FOUND:
 				/* At this point, rec is protected by
 				a page latch that was acquired by
-				row_sel_try_search_shortcut_for_mysql().
+				row_sel_try_search_shortcut_for_myblockchain().
 				The latch will not be released until
 				mtr_commit(&mtr). */
 				ut_ad(!rec_get_deleted_flag(rec, comp));
@@ -4724,7 +4724,7 @@ row_search_mvcc(
 					}
 				}
 
-				if (!row_sel_store_mysql_rec(
+				if (!row_sel_store_myblockchain_rec(
 					    buf, prebuilt,
 					    rec, NULL, FALSE, index, offsets)) {
 					/* Only fresh inserts may contain
@@ -4809,8 +4809,8 @@ row_search_mvcc(
 
 	if (trx->isolation_level <= TRX_ISO_READ_COMMITTED
 	    && prebuilt->select_lock_type != LOCK_NONE
-	    && trx->mysql_thd != NULL
-	    && thd_is_select(trx->mysql_thd)) {
+	    && trx->myblockchain_thd != NULL
+	    && thd_is_select(trx->myblockchain_thd)) {
 		/* It is a plain locking SELECT and the isolation
 		level is low: do not lock gaps */
 
@@ -4837,7 +4837,7 @@ row_search_mvcc(
 
 	thr = que_fork_get_first_thr(prebuilt->sel_graph);
 
-	que_thr_move_to_run_state_for_mysql(thr, trx);
+	que_thr_move_to_run_state_for_myblockchain(thr, trx);
 
 	clust_index = dict_table_get_first_index(index->table);
 
@@ -4850,7 +4850,7 @@ row_search_mvcc(
 		    && !srv_read_only_mode
 		    && prebuilt->select_lock_type == LOCK_NONE) {
 
-			ib::error() << "MySQL is trying to perform a"
+			ib::error() << "MyBlockchain is trying to perform a"
 				" consistent read but the read view is not"
 				" assigned!";
 			trx_print(stderr, trx, 600);
@@ -4889,7 +4889,7 @@ wait_table_again:
 			goto next_rec;
 		}
 
-		ibool	need_to_process = sel_restore_position_for_mysql(
+		ibool	need_to_process = sel_restore_position_for_myblockchain(
 			&same_user_rec, BTR_SEARCH_LEAF,
 			pcur, moves_up, &mtr);
 
@@ -5317,7 +5317,7 @@ no_gap_lock:
 
 			/* The following call returns 'offsets'
 			associated with 'old_vers' */
-			row_sel_build_committed_vers_for_mysql(
+			row_sel_build_committed_vers_for_myblockchain(
 				clust_index, prebuilt, rec,
 				&offsets, &heap, &old_vers, need_vrow ? &vrow : NULL,
 			        &mtr);
@@ -5392,7 +5392,7 @@ no_gap_lock:
 				rec_t*	old_vers;
 				/* The following call returns 'offsets'
 				associated with 'old_vers' */
-				err = row_sel_build_prev_vers_for_mysql(
+				err = row_sel_build_prev_vers_for_myblockchain(
 					trx->read_view, clust_index,
 					prebuilt, rec, &offsets, &heap,
 					&old_vers, need_vrow ? &vrow : NULL,
@@ -5463,7 +5463,7 @@ locks_ok:
 			/* No need to keep a lock on a delete-marked record
 			if we do not want to use next-key locking. */
 
-			row_unlock_for_mysql(prebuilt, TRUE);
+			row_unlock_for_myblockchain(prebuilt, TRUE);
 		}
 
 		/* This is an optimization to skip setting the next key lock
@@ -5494,7 +5494,7 @@ locks_ok:
 	switch (row_search_idx_cond_check(buf, prebuilt, rec, offsets)) {
 	case ICP_NO_MATCH:
 		if (did_semi_consistent_read) {
-			row_unlock_for_mysql(prebuilt, TRUE);
+			row_unlock_for_myblockchain(prebuilt, TRUE);
 		}
 		goto next_rec;
 	case ICP_OUT_OF_RANGE:
@@ -5527,7 +5527,7 @@ requires_clust_rec:
 		'clust_rec'. Note that 'clust_rec' can be an old version
 		built for a consistent read. */
 
-		err = row_sel_get_clust_rec_for_mysql(prebuilt, index, rec,
+		err = row_sel_get_clust_rec_for_myblockchain(prebuilt, index, rec,
 						      thr, &clust_rec,
 						      &offsets, &heap,
 						      need_vrow ? &vrow : NULL,
@@ -5570,7 +5570,7 @@ requires_clust_rec:
 				record if we do not want to use next-key
 				locking. */
 
-				row_unlock_for_mysql(prebuilt, TRUE);
+				row_unlock_for_myblockchain(prebuilt, TRUE);
 			}
 
 			goto next_rec;
@@ -5587,7 +5587,7 @@ requires_clust_rec:
 		ut_ad(rec_offs_validate(result_rec, clust_index, offsets));
 
 		if (prebuilt->idx_cond) {
-			/* Convert the record to MySQL format. We were
+			/* Convert the record to MyBlockchain format. We were
 			unable to do this in row_search_idx_cond_check(),
 			because the condition is on the secondary index
 			and the requested column is in the clustered index.
@@ -5599,7 +5599,7 @@ requires_clust_rec:
 			index may be in the wrong case, and the
 			authoritative case is in result_rec, the
 			appropriate version of the clustered index record. */
-			if (!row_sel_store_mysql_rec(
+			if (!row_sel_store_myblockchain_rec(
 				    buf, prebuilt, result_rec, vrow,
 				    TRUE, clust_index, offsets)) {
 				goto next_rec;
@@ -5623,7 +5623,7 @@ requires_clust_rec:
 	The latch will not be released until mtr_commit(&mtr). */
 
 	if ((match_mode == ROW_SEL_EXACT
-	     || prebuilt->n_rows_fetched >= MYSQL_FETCH_CACHE_THRESHOLD)
+	     || prebuilt->n_rows_fetched >= MYBLOCKCHAIN_FETCH_CACHE_THRESHOLD)
 	    && prebuilt->select_lock_type == LOCK_NONE
 	    && !prebuilt->m_no_prefetch
 	    && !prebuilt->templ_contains_blob
@@ -5631,7 +5631,7 @@ requires_clust_rec:
 	    && !prebuilt->clust_index_was_generated
 	    && !prebuilt->used_in_HANDLER
 	    && !prebuilt->innodb_api
-	    && prebuilt->template_type != ROW_MYSQL_DUMMY_TEMPLATE
+	    && prebuilt->template_type != ROW_MYBLOCKCHAIN_DUMMY_TEMPLATE
 	    && !prebuilt->in_fts_query) {
 
 		/* Inside an update, for example, we do not cache rows,
@@ -5643,9 +5643,9 @@ requires_clust_rec:
 		not cache rows because there the cursor is a scrollable
 		cursor. */
 
-		ut_a(prebuilt->n_fetch_cached < MYSQL_FETCH_CACHE_SIZE);
+		ut_a(prebuilt->n_fetch_cached < MYBLOCKCHAIN_FETCH_CACHE_SIZE);
 
-		/* We only convert from InnoDB row format to MySQL row
+		/* We only convert from InnoDB row format to MyBlockchain row
 		format when ICP is disabled. */
 
 		if (!prebuilt->idx_cond) {
@@ -5655,19 +5655,19 @@ requires_clust_rec:
 			pre-fetch optimisation.
 
 			If next_buf == 0 then we store the converted record
-			directly into the MySQL record buffer (buf). If it is
+			directly into the MyBlockchain record buffer (buf). If it is
 			!= 0 then we allocate a pre-fetch buffer and store the
 			converted record there.
 
-			If the conversion fails and the MySQL record buffer
+			If the conversion fails and the MyBlockchain record buffer
 			was not written to then we reset next_buf so that
-			we can re-use the MySQL record buffer in the next
+			we can re-use the MyBlockchain record buffer in the next
 			iteration. */
 
 			next_buf = next_buf
 				 ? row_sel_fetch_last_buf(prebuilt) : buf;
 
-			if (!row_sel_store_mysql_rec(
+			if (!row_sel_store_myblockchain_rec(
 				next_buf, prebuilt, result_rec, vrow,
 				result_rec != rec,
 				result_rec != rec ? clust_index : index,
@@ -5689,20 +5689,20 @@ requires_clust_rec:
 			}
 
 			if (next_buf != buf) {
-				row_sel_enqueue_cache_row_for_mysql(
+				row_sel_enqueue_cache_row_for_myblockchain(
 					next_buf, prebuilt);
 			}
 		} else {
-			row_sel_enqueue_cache_row_for_mysql(buf, prebuilt);
+			row_sel_enqueue_cache_row_for_myblockchain(buf, prebuilt);
 		}
 
-		if (prebuilt->n_fetch_cached < MYSQL_FETCH_CACHE_SIZE) {
+		if (prebuilt->n_fetch_cached < MYBLOCKCHAIN_FETCH_CACHE_SIZE) {
 			goto next_rec;
 		}
 
 	} else {
 		if (UNIV_UNLIKELY
-		    (prebuilt->template_type == ROW_MYSQL_DUMMY_TEMPLATE)) {
+		    (prebuilt->template_type == ROW_MYBLOCKCHAIN_DUMMY_TEMPLATE)) {
 			/* CHECK TABLE: fetch the row */
 
 			if (result_rec != rec
@@ -5721,8 +5721,8 @@ requires_clust_rec:
 			mach_write_to_4(buf,
 					rec_offs_extra_size(offsets) + 4);
 		} else if (!prebuilt->idx_cond && !prebuilt->innodb_api) {
-			/* The record was not yet converted to MySQL format. */
-			if (!row_sel_store_mysql_rec(
+			/* The record was not yet converted to MyBlockchain format. */
+			if (!row_sel_store_myblockchain_rec(
 				    buf, prebuilt, result_rec, vrow,
 				    result_rec != rec,
 				    result_rec != rec ? clust_index : index,
@@ -5752,7 +5752,7 @@ requires_clust_rec:
 	/* We have an optimization to save CPU time: if this is a consistent
 	read on a unique condition on the clustered index, then we do not
 	store the pcur position, because any fetch next or prev will anyway
-	return 'end of file'. Exceptions are locking reads and the MySQL
+	return 'end of file'. Exceptions are locking reads and the MyBlockchain
 	HANDLER command where the user can move the cursor with PREV or NEXT
 	even after a unique search. */
 
@@ -5798,7 +5798,7 @@ next_rec:
 	scan an entire secondary index tree within a single
 	mini-transaction. As long as the prebuilt->idx_cond does not
 	match, we do not need to consult the clustered index or
-	return records to MySQL, and thus we can avoid repositioning
+	return records to MyBlockchain, and thus we can avoid repositioning
 	the cursor. What prevents us from buffer-fixing all leaf pages
 	within the mini-transaction is the btr_leaf_page_release()
 	call in btr_pcur_move_to_next_page(). Only the leaf page where
@@ -5824,7 +5824,7 @@ next_rec:
 		mtr_start(&mtr);
 
 		if (!spatial_search
-		    && sel_restore_position_for_mysql(&same_user_rec,
+		    && sel_restore_position_for_myblockchain(&same_user_rec,
 						   BTR_SEARCH_LEAF,
 						   pcur, moves_up, &mtr)) {
 			goto rec_loop;
@@ -5882,15 +5882,15 @@ lock_table_wait:
 
 	trx->error_state = err;
 
-	/* The following is a patch for MySQL */
+	/* The following is a patch for MyBlockchain */
 
 	if (thr->is_active) {
-		que_thr_stop_for_mysql(thr);
+		que_thr_stop_for_myblockchain(thr);
 	}
 
 	thr->lock_state = QUE_THR_LOCK_ROW;
 
-	if (row_mysql_handle_errors(&err, trx, thr, NULL)) {
+	if (row_myblockchain_handle_errors(&err, trx, thr, NULL)) {
 		/* It was a lock wait, and it ended */
 
 		thr->lock_state = QUE_THR_LOCK_NOLOCK;
@@ -5905,7 +5905,7 @@ lock_table_wait:
 		}
 
 		if (!dict_index_is_spatial(index)) {
-			sel_restore_position_for_mysql(
+			sel_restore_position_for_myblockchain(
 				&same_user_rec, BTR_SEARCH_LEAF, pcur,
 				moves_up, &mtr);
 		}
@@ -5916,7 +5916,7 @@ lock_table_wait:
 
 			/* Since we were not able to restore the cursor
 			on the same user record, we cannot use
-			row_unlock_for_mysql() to unlock any records, and
+			row_unlock_for_myblockchain() to unlock any records, and
 			we must thus reset the new rec lock info. Since
 			in lock0lock.cc we have blocked the inheriting of gap
 			X-locks, we actually do not have any new record locks
@@ -5944,7 +5944,7 @@ lock_table_wait:
 
 normal_return:
 	/*-------------------------------------------------------------*/
-	que_thr_stop_for_mysql_no_error(thr, trx);
+	que_thr_stop_for_myblockchain_no_error(thr, trx);
 
 	mtr_commit(&mtr);
 
@@ -5957,17 +5957,17 @@ normal_return:
 		trx_kill_blocking(trx);
 	}
 
-	DEBUG_SYNC_C("row_search_for_mysql_before_return");
+	DEBUG_SYNC_C("row_search_for_myblockchain_before_return");
 
 	if (prebuilt->idx_cond != 0) {
 
-		/* When ICP is active we don't write to the MySQL buffer
+		/* When ICP is active we don't write to the MyBlockchain buffer
 		directly, only to buffers that are enqueued in the pre-fetch
 		queue. We need to dequeue the first buffer and copy the contents
-		to the record buffer that was passed in by MySQL. */
+		to the record buffer that was passed in by MyBlockchain. */
 
 		if (prebuilt->n_fetch_cached > 0) {
-			row_sel_dequeue_cached_row_for_mysql(buf, prebuilt);
+			row_sel_dequeue_cached_row_for_myblockchain(buf, prebuilt);
 			err = DB_SUCCESS;
 		}
 
@@ -5975,7 +5975,7 @@ normal_return:
 
 		/* We may or may not have enqueued some buffers to the
 		pre-fetch queue, but we definitely wrote to the record
-		buffer passed to use by MySQL. */
+		buffer passed to use by MyBlockchain. */
 
 		DEBUG_SYNC_C("row_search_cached_row");
 		err = DB_SUCCESS;
@@ -6018,7 +6018,7 @@ func_exit:
 	}
 #endif /* UNIV_DEBUG */
 
-	DEBUG_SYNC_C("innodb_row_search_for_mysql_exit");
+	DEBUG_SYNC_C("innodb_row_search_for_myblockchain_exit");
 
 	DBUG_RETURN(err);
 }
@@ -6096,12 +6096,12 @@ row_count_rtree_recs(
 
 	prebuilt->search_tuple = entry;
 
-	ulint bufsize = ut_max(UNIV_PAGE_SIZE, prebuilt->mysql_row_len);
+	ulint bufsize = ut_max(UNIV_PAGE_SIZE, prebuilt->myblockchain_row_len);
 	buf = static_cast<byte*>(ut_malloc_nokey(bufsize));
 
 	ulint cnt = 1000;
 
-	ret = row_search_for_mysql(buf, PAGE_CUR_WITHIN, prebuilt, 0, 0);
+	ret = row_search_for_myblockchain(buf, PAGE_CUR_WITHIN, prebuilt, 0, 0);
 loop:
 	/* Check thd->killed every 1,000 scanned rows */
 	if (--cnt == 0) {
@@ -6134,21 +6134,21 @@ func_exit:
 
 	*n_rows = *n_rows + 1;
 
-	ret = row_search_for_mysql(
+	ret = row_search_for_myblockchain(
 		buf, PAGE_CUR_WITHIN, prebuilt, 0, ROW_SEL_NEXT);
 
 	goto loop;
 }
 
 /*******************************************************************//**
-Checks if MySQL at the moment is allowed for this table to retrieve a
+Checks if MyBlockchain at the moment is allowed for this table to retrieve a
 consistent read result, or store it to the query cache.
 @return TRUE if storing or retrieving from the query cache is permitted */
 ibool
 row_search_check_if_query_cache_permitted(
 /*======================================*/
 	trx_t*		trx,		/*!< in: transaction object */
-	const char*	norm_name)	/*!< in: concatenation of database name,
+	const char*	norm_name)	/*!< in: concatenation of blockchain name,
 					'/' char, table name */
 {
 	dict_table_t*	table;

@@ -96,8 +96,8 @@ private:
     Protect m_status, m_slaves_changed and m_slaves. ack thread and other
     session may access the variables at the same time.
   */
-  mysql_mutex_t m_mutex;
-  mysql_cond_t m_cond;
+  myblockchain_mutex_t m_mutex;
+  myblockchain_cond_t m_cond;
   /* If slave list is updated(add or remove). */
   bool m_slaves_changed;
 
@@ -106,7 +106,7 @@ private:
     THD *thd;
     Vio vio;
 
-    my_socket sock_fd() { return vio.mysql_socket.fd; }
+    my_socket sock_fd() { return vio.myblockchain_socket.fd; }
     uint server_id() { return thd->server_id; }
   };
 

@@ -19,11 +19,11 @@
  * MGMAPI.java
  */
 
-package com.mysql.ndbjtie.mgmapi;
+package com.myblockchain.ndbjtie.mgmapi;
 
 import java.nio.ByteBuffer;
 
-import com.mysql.jtie.Wrapper;
+import com.myblockchain.jtie.Wrapper;
 
 // MMM! move as static decl into MGMAPI?
 /*!public!*/ interface NdbMgmHandleConst
@@ -262,7 +262,7 @@ import com.mysql.jtie.Wrapper;
         int version;
         int connect_count;
         String/*_char[sizeof("000.000.000.000")+1]_*/ connect_address;
-        int mysql_version;
+        int myblockchain_version;
     }
     static public class /*_struct_*/ ndb_mgm_cluster_state {
         int no_of_nodes;

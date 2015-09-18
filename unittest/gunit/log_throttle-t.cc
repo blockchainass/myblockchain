@@ -14,7 +14,7 @@
    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA */
 
 // First include (the generated) my_config.h, to get correct platform defines,
-// then gtest.h (before any other MySQL headers), to avoid min() macros etc ...
+// then gtest.h (before any other MyBlockchain headers), to avoid min() macros etc ...
 #include "my_config.h"
 #include <gtest/gtest.h>
 #include "test_utils.h"
@@ -54,20 +54,20 @@ protected:
   virtual void SetUp()
   {
     initializer.SetUp();
-    mysql_mutex_init(0, &m_mutex, MY_MUTEX_INIT_FAST);
+    myblockchain_mutex_init(0, &m_mutex, MY_MUTEX_INIT_FAST);
     summary_count= 0;
   }
 
   virtual void TearDown()
   {
     initializer.TearDown();
-    mysql_mutex_destroy(&m_mutex);
+    myblockchain_mutex_destroy(&m_mutex);
   }
 
   THD *thd() { return initializer.thd(); }
 
   Server_initializer initializer;
-  mysql_mutex_t m_mutex;
+  myblockchain_mutex_t m_mutex;
 };
 
 

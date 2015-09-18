@@ -20,7 +20,7 @@ INCLUDE_DIRECTORIES(
   ${ZLIB_INCLUDE_DIR}
   ${LZ4_INCLUDE_DIR}
   ${SSL_INCLUDE_DIRS}
-  ${CMAKE_SOURCE_DIR}/libmysql
+  ${CMAKE_SOURCE_DIR}/libmyblockchain
   ${CMAKE_SOURCE_DIR}/libbinlogevents/include
   ${CMAKE_SOURCE_DIR}/regex
   ${CMAKE_SOURCE_DIR}/strings
@@ -28,7 +28,7 @@ INCLUDE_DIRECTORIES(
   ${CMAKE_CURRENT_BINARY_DIR}
 )
 
-INCLUDE(${MYSQL_CMAKE_SCRIPT_DIR}/compile_flags.cmake)
+INCLUDE(${MYBLOCKCHAIN_CMAKE_SCRIPT_DIR}/compile_flags.cmake)
 
 # Prevent Boost from including external precompiled Boost libraries, use
 # threading (not implemented for Solaris) and turn off unused functionality.
@@ -38,13 +38,13 @@ ADD_DEFINITIONS(
 
 ## Subdirectory with common client code.
 ADD_SUBDIRECTORY(base)
-## Subdirectory for mysqlpump code.
+## Subdirectory for myblockchainpump code.
 ADD_SUBDIRECTORY(dump)
 
 ## We will need libeay32.dll and ssleay32.dll when running client executables.
 COPY_OPENSSL_DLLS(copy_openssl_client)
 
-INCLUDE(${MYSQL_CMAKE_SCRIPT_DIR}/compile_flags.cmake)
+INCLUDE(${MYBLOCKCHAIN_CMAKE_SCRIPT_DIR}/compile_flags.cmake)
 
 SET(BOOST_SOURCES_DIR ${BOOST_PATCHES_DIR})
 
@@ -111,93 +111,93 @@ IF(CMAKE_USE_PTHREADS_INIT AND CMAKE_C_FLAGS MATCHES "-fsanitize=")
 ENDIF()
 
 ADD_DEFINITIONS(${SSL_DEFINES})
-MYSQL_ADD_EXECUTABLE(mysql completion_hash.cc mysql.cc readline.cc ../sql-common/sql_string.cc)
-TARGET_LINK_LIBRARIES(mysql mysqlclient)
+MYBLOCKCHAIN_ADD_EXECUTABLE(myblockchain completion_hash.cc myblockchain.cc readline.cc ../sql-common/sql_string.cc)
+TARGET_LINK_LIBRARIES(myblockchain myblockchainclient)
 IF(UNIX)
-  TARGET_LINK_LIBRARIES(mysql ${EDITLINE_LIBRARY})
+  TARGET_LINK_LIBRARIES(myblockchain ${EDITLINE_LIBRARY})
 ENDIF(UNIX)
 
 IF(NOT WITHOUT_SERVER)
-  MYSQL_ADD_EXECUTABLE(mysql_upgrade
+  MYBLOCKCHAIN_ADD_EXECUTABLE(myblockchain_upgrade
     upgrade/program.cc
   )
 ADD_COMPILE_FLAGS(
   upgrade/program.cc COMPILE_FLAGS -I${BOOST_PATCHES_DIR} -I${BOOST_INCLUDE_DIR}
 )
-TARGET_LINK_LIBRARIES(mysql_upgrade mysqlclient client_base mysqlcheck_core)
-ADD_DEPENDENCIES(mysql_upgrade GenFixPrivs GenSysSchema)
+TARGET_LINK_LIBRARIES(myblockchain_upgrade myblockchainclient client_base myblockchaincheck_core)
+ADD_DEPENDENCIES(myblockchain_upgrade GenFixPrivs GenSysSchema)
 ENDIF()
 
-MYSQL_ADD_EXECUTABLE(mysqltest mysqltest.cc COMPONENT Test)
-SET_SOURCE_FILES_PROPERTIES(mysqltest.cc PROPERTIES COMPILE_FLAGS "-DTHREADS")
-TARGET_LINK_LIBRARIES(mysqltest mysqlclient regex)
+MYBLOCKCHAIN_ADD_EXECUTABLE(myblockchaintest myblockchaintest.cc COMPONENT Test)
+SET_SOURCE_FILES_PROPERTIES(myblockchaintest.cc PROPERTIES COMPILE_FLAGS "-DTHREADS")
+TARGET_LINK_LIBRARIES(myblockchaintest myblockchainclient regex)
 
-ADD_CONVENIENCE_LIBRARY(mysqlcheck_core check/mysqlcheck_core.cc)
-TARGET_LINK_LIBRARIES(mysqlcheck_core mysqlclient)
+ADD_CONVENIENCE_LIBRARY(myblockchaincheck_core check/myblockchaincheck_core.cc)
+TARGET_LINK_LIBRARIES(myblockchaincheck_core myblockchainclient)
 
-MYSQL_ADD_EXECUTABLE(mysqlcheck check/mysqlcheck.cc)
-TARGET_LINK_LIBRARIES(mysqlcheck mysqlcheck_core)
+MYBLOCKCHAIN_ADD_EXECUTABLE(myblockchaincheck check/myblockchaincheck.cc)
+TARGET_LINK_LIBRARIES(myblockchaincheck myblockchaincheck_core)
 
-MYSQL_ADD_EXECUTABLE(mysqldump mysqldump.c ../sql-common/my_user.c)
-TARGET_LINK_LIBRARIES(mysqldump mysqlclient)
+MYBLOCKCHAIN_ADD_EXECUTABLE(myblockchaindump myblockchaindump.c ../sql-common/my_user.c)
+TARGET_LINK_LIBRARIES(myblockchaindump myblockchainclient)
 
-MYSQL_ADD_EXECUTABLE(mysqlimport mysqlimport.c)
-SET_SOURCE_FILES_PROPERTIES(mysqlimport.c PROPERTIES COMPILE_FLAGS "-DTHREADS")
-TARGET_LINK_LIBRARIES(mysqlimport mysqlclient)
+MYBLOCKCHAIN_ADD_EXECUTABLE(myblockchainimport myblockchainimport.c)
+SET_SOURCE_FILES_PROPERTIES(myblockchainimport.c PROPERTIES COMPILE_FLAGS "-DTHREADS")
+TARGET_LINK_LIBRARIES(myblockchainimport myblockchainclient)
 
-MYSQL_ADD_EXECUTABLE(mysqlshow mysqlshow.c)
-TARGET_LINK_LIBRARIES(mysqlshow mysqlclient)
+MYBLOCKCHAIN_ADD_EXECUTABLE(myblockchainshow myblockchainshow.c)
+TARGET_LINK_LIBRARIES(myblockchainshow myblockchainclient)
 
-MYSQL_ADD_EXECUTABLE(mysql_plugin mysql_plugin.c)
-TARGET_LINK_LIBRARIES(mysql_plugin mysqlclient)
+MYBLOCKCHAIN_ADD_EXECUTABLE(myblockchain_plugin myblockchain_plugin.c)
+TARGET_LINK_LIBRARIES(myblockchain_plugin myblockchainclient)
 
-MYSQL_ADD_EXECUTABLE(mysqlbinlog mysqlbinlog.cc)
+MYBLOCKCHAIN_ADD_EXECUTABLE(myblockchainbinlog myblockchainbinlog.cc)
 ADD_COMPILE_FLAGS(
-  mysqlbinlog.cc
+  myblockchainbinlog.cc
   COMPILE_FLAGS "-I${CMAKE_SOURCE_DIR}/sql" "-DHAVE_REPLICATION"
 )
-TARGET_LINK_LIBRARIES(mysqlbinlog mysqlclient binlogevents_static)
+TARGET_LINK_LIBRARIES(myblockchainbinlog myblockchainclient binlogevents_static)
 
-MYSQL_ADD_EXECUTABLE(mysqladmin mysqladmin.cc)
-TARGET_LINK_LIBRARIES(mysqladmin mysqlclient)
+MYBLOCKCHAIN_ADD_EXECUTABLE(myblockchainadmin myblockchainadmin.cc)
+TARGET_LINK_LIBRARIES(myblockchainadmin myblockchainclient)
 
-MYSQL_ADD_EXECUTABLE(mysqlslap mysqlslap.cc)
-SET_SOURCE_FILES_PROPERTIES(mysqlslap.cc PROPERTIES COMPILE_FLAGS "-DTHREADS")
-TARGET_LINK_LIBRARIES(mysqlslap mysqlclient)
+MYBLOCKCHAIN_ADD_EXECUTABLE(myblockchainslap myblockchainslap.cc)
+SET_SOURCE_FILES_PROPERTIES(myblockchainslap.cc PROPERTIES COMPILE_FLAGS "-DTHREADS")
+TARGET_LINK_LIBRARIES(myblockchainslap myblockchainclient)
 
-MYSQL_ADD_EXECUTABLE(mysql_config_editor mysql_config_editor.cc)
-TARGET_LINK_LIBRARIES(mysql_config_editor mysqlclient)
+MYBLOCKCHAIN_ADD_EXECUTABLE(myblockchain_config_editor myblockchain_config_editor.cc)
+TARGET_LINK_LIBRARIES(myblockchain_config_editor myblockchainclient)
 
-MYSQL_ADD_EXECUTABLE(mysql_secure_installation mysql_secure_installation.cc)
-TARGET_LINK_LIBRARIES(mysql_secure_installation mysqlclient)
+MYBLOCKCHAIN_ADD_EXECUTABLE(myblockchain_secure_installation myblockchain_secure_installation.cc)
+TARGET_LINK_LIBRARIES(myblockchain_secure_installation myblockchainclient)
 
 IF(UNIX AND NOT WITHOUT_SERVER)
-  MYSQL_ADD_EXECUTABLE(mysql_install_db
-    mysql_install_db.cc auth_utils.cc path.cc logger.cc)
-  TARGET_LINK_LIBRARIES(mysql_install_db mysqlclient)
+  MYBLOCKCHAIN_ADD_EXECUTABLE(myblockchain_install_db
+    myblockchain_install_db.cc auth_utils.cc path.cc logger.cc)
+  TARGET_LINK_LIBRARIES(myblockchain_install_db myblockchainclient)
   ADD_COMPILE_FLAGS(
-    auth_utils.cc mysql_install_db.cc
+    auth_utils.cc myblockchain_install_db.cc
     COMPILE_FLAGS "-I${CMAKE_SOURCE_DIR}/sql/auth"
     )
-  ADD_DEPENDENCIES(mysql_install_db GenBootstrapPriv GenSysSchema)
+  ADD_DEPENDENCIES(myblockchain_install_db GenBootstrapPriv GenSysSchema)
 ENDIF()
 
-MYSQL_ADD_EXECUTABLE(mysql_ssl_rsa_setup mysql_ssl_rsa_setup.cc path.cc logger.cc)
-TARGET_LINK_LIBRARIES(mysql_ssl_rsa_setup mysys mysys_ssl)
-SET_TARGET_PROPERTIES(mysql_ssl_rsa_setup PROPERTIES LINKER_LANGUAGE CXX)
+MYBLOCKCHAIN_ADD_EXECUTABLE(myblockchain_ssl_rsa_setup myblockchain_ssl_rsa_setup.cc path.cc logger.cc)
+TARGET_LINK_LIBRARIES(myblockchain_ssl_rsa_setup mysys mysys_ssl)
+SET_TARGET_PROPERTIES(myblockchain_ssl_rsa_setup PROPERTIES LINKER_LANGUAGE CXX)
 
-# "WIN32" also covers 64 bit. "echo" is used in some files below "mysql-test/".
+# "WIN32" also covers 64 bit. "echo" is used in some files below "myblockchain-test/".
 IF(WIN32)
-  MYSQL_ADD_EXECUTABLE(echo echo.c)
+  MYBLOCKCHAIN_ADD_EXECUTABLE(echo echo.c)
 ENDIF(WIN32)
 
 SET_TARGET_PROPERTIES (
-  mysql_plugin
-  mysqlcheck
-  mysqldump
-  mysqlimport
-  mysqlshow
-  mysqlslap
+  myblockchain_plugin
+  myblockchaincheck
+  myblockchaindump
+  myblockchainimport
+  myblockchainshow
+  myblockchainslap
 PROPERTIES HAS_CXX TRUE)
 
 ADD_DEFINITIONS(-DHAVE_DLOPEN)

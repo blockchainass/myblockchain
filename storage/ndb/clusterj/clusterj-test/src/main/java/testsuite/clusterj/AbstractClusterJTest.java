@@ -17,14 +17,14 @@
 
 package testsuite.clusterj;
 
-import com.mysql.clusterj.ClusterJException;
-import com.mysql.clusterj.ClusterJHelper;
-import com.mysql.clusterj.Constants;
-import com.mysql.clusterj.Session;
-import com.mysql.clusterj.SessionFactory;
-import com.mysql.clusterj.Transaction;
-import com.mysql.clusterj.core.util.Logger;
-import com.mysql.clusterj.core.util.LoggerFactoryService;
+import com.myblockchain.clusterj.ClusterJException;
+import com.myblockchain.clusterj.ClusterJHelper;
+import com.myblockchain.clusterj.Constants;
+import com.myblockchain.clusterj.Session;
+import com.myblockchain.clusterj.SessionFactory;
+import com.myblockchain.clusterj.Transaction;
+import com.myblockchain.clusterj.core.util.Logger;
+import com.myblockchain.clusterj.core.util.LoggerFactoryService;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -61,7 +61,7 @@ import junit.framework.TestCase;
 public abstract class AbstractClusterJTest extends TestCase {
     /** My logger */
     static final Logger logger = LoggerFactoryService.getFactory()
-            .getInstance("com.mysql.clusterj.test");
+            .getInstance("com.myblockchain.clusterj.test");
 
     protected static final String JDBC_DRIVER_NAME = "jdbc.driverName";
     protected static final String JDBC_URL = "jdbc.url";

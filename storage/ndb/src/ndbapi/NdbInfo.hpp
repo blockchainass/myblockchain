@@ -119,7 +119,7 @@ private:
   bool check_tables();
   void flush_tables();
 
-  BaseString mysql_table_name(const char* table_name) const;
+  BaseString myblockchain_table_name(const char* table_name) const;
 
 };
 

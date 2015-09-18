@@ -1,0 +1,4 @@
+!include ndb_rpl_conflict_epoch.cnf
+
+[myblockchaind]
+ndb-log-apply-status

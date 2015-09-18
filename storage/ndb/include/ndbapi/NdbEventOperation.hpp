@@ -23,7 +23,7 @@ class NdbEventOperationImpl;
 
 /**
  * @class NdbEventOperation
- * @brief Class of operations for getting change events from database.  
+ * @brief Class of operations for getting change events from blockchain.  
  *
  * Brief description on how to work with events:
  *
@@ -128,7 +128,7 @@ public:
    *       previous value repectively.
    *
    * @note This method does not fetch the attribute value from 
-   *       the database!  The NdbRecAttr object returned by this method 
+   *       the blockchain!  The NdbRecAttr object returned by this method 
    *       is <em>not</em> readable/printable before the 
    *       execute() has been made and
    *       Ndb::nextEvent() has returned not NULL.

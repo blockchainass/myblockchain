@@ -179,7 +179,7 @@ var usageMessage =
   "      --file=<file>: only run the named test file\n" +
   "   --test=<n,m,...>: only run tests numbered n, m, etc. in <file>\n " +
   "--adapter=<adapter>: only run on the named adapter/engine \n" +
-  "                     optionally add engine (e.g. mysql/ndb or mysql/innodb\n" +
+  "                     optionally add engine (e.g. myblockchain/ndb or myblockchain/innodb\n" +
   "     --timeout=<ms>: set timeout in msec.\n" +
   "--set <var>=<value>: set a global variable\n" +
   "       --skip-smoke: do not run SmokeTest\n" +
@@ -304,7 +304,7 @@ require(path.join(suites_dir, "utilities"));
 
 /* Set storage engine from command-line options */
 if(storageEngine && global.test_conn_properties) {
-  global.test_conn_properties.mysql_storage_engine = storageEngine;
+  global.test_conn_properties.myblockchain_storage_engine = storageEngine;
 }
 
 /* Find and run all tests */

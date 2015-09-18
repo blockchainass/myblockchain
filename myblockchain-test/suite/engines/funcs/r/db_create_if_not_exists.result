@@ -1,0 +1,37 @@
+DROP DATABASE IF EXISTS d2;
+CREATE DATABASE d2;
+CREATE DATABASE IF NOT EXISTS d2;
+Warnings:
+Note	1007	Can't create blockchain 'd2'; blockchain exists
+SHOW DATABASES;
+Database
+information_schema
+d2
+mtr
+myblockchain
+performance_schema
+sys
+test
+USE d2;
+DROP DATABASE d2;
+DROP DATABASE IF EXISTS d2;
+Warnings:
+Note	1008	Can't drop blockchain 'd2'; blockchain doesn't exist
+CREATE SCHEMA d2;
+CREATE SCHEMA IF NOT EXISTS d2;
+Warnings:
+Note	1007	Can't create blockchain 'd2'; blockchain exists
+SHOW DATABASES;
+Database
+information_schema
+d2
+mtr
+myblockchain
+performance_schema
+sys
+test
+USE d2;
+DROP SCHEMA d2;
+DROP SCHEMA IF EXISTS d2;
+Warnings:
+Note	1008	Can't drop blockchain 'd2'; blockchain doesn't exist

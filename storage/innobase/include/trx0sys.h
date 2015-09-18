@@ -61,7 +61,7 @@ trx_sys_hdr_page(
 
 /*****************************************************************//**
 Creates and initializes the central memory structures for the transaction
-system. This is called when the database is started.
+system. This is called when the blockchain is started.
 @return min binary heap of rsegs to purge */
 purge_pq_t*
 trx_sys_init_at_db_start(void);
@@ -72,7 +72,7 @@ void
 trx_sys_create(void);
 /*================*/
 /*****************************************************************//**
-Creates and initializes the transaction system at the database creation. */
+Creates and initializes the transaction system at the blockchain creation. */
 void
 trx_sys_create_sys_pages(void);
 /*==========================*/
@@ -263,23 +263,23 @@ trx_assert_recovered(
 	__attribute__((warn_unused_result));
 #endif /* UNIV_DEBUG || UNIV_BLOB_LIGHT_DEBUG */
 /*****************************************************************//**
-Updates the offset information about the end of the MySQL binlog entry
-which corresponds to the transaction just being committed. In a MySQL
+Updates the offset information about the end of the MyBlockchain binlog entry
+which corresponds to the transaction just being committed. In a MyBlockchain
 replication slave updates the latest master binlog position up to which
 replication has proceeded. */
 void
-trx_sys_update_mysql_binlog_offset(
+trx_sys_update_myblockchain_binlog_offset(
 /*===============================*/
-	const char*	file_name,/*!< in: MySQL log file name */
+	const char*	file_name,/*!< in: MyBlockchain log file name */
 	int64_t		offset,	/*!< in: position in that log file */
-	ulint		field,	/*!< in: offset of the MySQL log info field in
+	ulint		field,	/*!< in: offset of the MyBlockchain log info field in
 				the trx sys header */
 	mtr_t*		mtr);	/*!< in: mtr */
 /*****************************************************************//**
-Prints to stderr the MySQL binlog offset info in the trx system header if
+Prints to stderr the MyBlockchain binlog offset info in the trx system header if
 the magic number shows it valid. */
 void
-trx_sys_print_mysql_binlog_offset(void);
+trx_sys_print_myblockchain_binlog_offset(void);
 /*===================================*/
 /*****************************************************************//**
 Initializes the tablespace tag system. */
@@ -347,10 +347,10 @@ trx_sys_any_active_transactions(void);
 /*=================================*/
 #else /* !UNIV_HOTBACKUP */
 /*****************************************************************//**
-Prints to stderr the MySQL binlog info in the system header if the
+Prints to stderr the MyBlockchain binlog info in the system header if the
 magic number shows it valid. */
 void
-trx_sys_print_mysql_binlog_offset_from_page(
+trx_sys_print_myblockchain_binlog_offset_from_page(
 /*========================================*/
 	const byte*	page);	/*!< in: buffer containing the trx
 				system header page, i.e., page number
@@ -443,7 +443,7 @@ trx_sys_validate_trx_list();
 					TRX_SYS_TRX_ID_UPDATE_MARGIN
 					plus
 					TRX_SYS_TRX_ID_UPDATE_MARGIN
-					when the database is
+					when the blockchain is
 					started */
 #define TRX_SYS_FSEG_HEADER	8	/*!< segment header for the
 					tablespace segment the trx
@@ -465,25 +465,25 @@ rollback segment.  It initialized some arrays with this number of entries.
 We must remember this limit in order to keep file compatibility. */
 #define TRX_SYS_OLD_N_RSEGS		256
 
-/** Maximum length of MySQL binlog file name, in bytes. */
-#define TRX_SYS_MYSQL_LOG_NAME_LEN	512
-/** Contents of TRX_SYS_MYSQL_LOG_MAGIC_N_FLD */
-#define TRX_SYS_MYSQL_LOG_MAGIC_N	873422344
+/** Maximum length of MyBlockchain binlog file name, in bytes. */
+#define TRX_SYS_MYBLOCKCHAIN_LOG_NAME_LEN	512
+/** Contents of TRX_SYS_MYBLOCKCHAIN_LOG_MAGIC_N_FLD */
+#define TRX_SYS_MYBLOCKCHAIN_LOG_MAGIC_N	873422344
 
 #if UNIV_PAGE_SIZE_MIN < 4096
 # error "UNIV_PAGE_SIZE_MIN < 4096"
 #endif
-/** The offset of the MySQL binlog offset info in the trx system header */
-#define TRX_SYS_MYSQL_LOG_INFO		(UNIV_PAGE_SIZE - 1000)
-#define	TRX_SYS_MYSQL_LOG_MAGIC_N_FLD	0	/*!< magic number which is
-						TRX_SYS_MYSQL_LOG_MAGIC_N
+/** The offset of the MyBlockchain binlog offset info in the trx system header */
+#define TRX_SYS_MYBLOCKCHAIN_LOG_INFO		(UNIV_PAGE_SIZE - 1000)
+#define	TRX_SYS_MYBLOCKCHAIN_LOG_MAGIC_N_FLD	0	/*!< magic number which is
+						TRX_SYS_MYBLOCKCHAIN_LOG_MAGIC_N
 						if we have valid data in the
-						MySQL binlog info */
-#define TRX_SYS_MYSQL_LOG_OFFSET_HIGH	4	/*!< high 4 bytes of the offset
+						MyBlockchain binlog info */
+#define TRX_SYS_MYBLOCKCHAIN_LOG_OFFSET_HIGH	4	/*!< high 4 bytes of the offset
 						within that file */
-#define TRX_SYS_MYSQL_LOG_OFFSET_LOW	8	/*!< low 4 bytes of the offset
+#define TRX_SYS_MYBLOCKCHAIN_LOG_OFFSET_LOW	8	/*!< low 4 bytes of the offset
 						within that file */
-#define TRX_SYS_MYSQL_LOG_NAME		12	/*!< MySQL log file name */
+#define TRX_SYS_MYBLOCKCHAIN_LOG_NAME		12	/*!< MyBlockchain log file name */
 
 /** Doublewrite buffer */
 /* @{ */
@@ -586,13 +586,13 @@ struct trx_sys_t {
 					transactions are always on this list. */
 
 	char		pad2[64];	/*!< To avoid false sharing */
-	trx_ut_list_t	mysql_trx_list;	/*!< List of transactions created
-					for MySQL. All user transactions are
-					on mysql_trx_list. The rw_trx_list
+	trx_ut_list_t	myblockchain_trx_list;	/*!< List of transactions created
+					for MyBlockchain. All user transactions are
+					on myblockchain_trx_list. The rw_trx_list
 					can contain system transactions and
 					recovered transactions that will not
-					be in the mysql_trx_list.
-					mysql_trx_list may additionally contain
+					be in the myblockchain_trx_list.
+					myblockchain_trx_list may additionally contain
 					transactions that have not yet been
 					started in InnoDB. */
 
@@ -630,7 +630,7 @@ struct trx_sys_t {
 					currently in XA PREPARED state that are
 					also recovered. Such transactions cannot
 					be added during runtime. They can only
-					occur after recovery if mysqld crashed
+					occur after recovery if myblockchaind crashed
 					while there were XA PREPARED
 					transactions. We disable query cache
 					if such transactions exist. */

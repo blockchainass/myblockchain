@@ -16,22 +16,22 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
  */
 
-package com.mysql.clusterj.bindings;
+package com.myblockchain.clusterj.bindings;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import com.mysql.cluster.ndbj.NdbColumn;
-import com.mysql.cluster.ndbj.NdbTable;
+import com.myblockchain.cluster.ndbj.NdbColumn;
+import com.myblockchain.cluster.ndbj.NdbTable;
 
-import com.mysql.clusterj.ClusterJDatastoreException;
-import com.mysql.clusterj.ClusterJFatalInternalException;
+import com.myblockchain.clusterj.ClusterJDatastoreException;
+import com.myblockchain.clusterj.ClusterJFatalInternalException;
 
-import com.mysql.clusterj.core.store.Column;
+import com.myblockchain.clusterj.core.store.Column;
 
-import com.mysql.clusterj.core.util.I18NHelper;
-import com.mysql.clusterj.core.util.Logger;
-import com.mysql.clusterj.core.util.LoggerFactoryService;
+import com.myblockchain.clusterj.core.util.I18NHelper;
+import com.myblockchain.clusterj.core.util.Logger;
+import com.myblockchain.clusterj.core.util.LoggerFactoryService;
 
 /**
  *
@@ -46,7 +46,7 @@ class ColumnImpl implements Column {
     static final Logger logger = LoggerFactoryService.getFactory()
             .getInstance(ColumnImpl.class);
 
-    /** The charset map. This map converts between the database charset name
+    /** The charset map. This map converts between the blockchain charset name
      * and the charset name used in Java Charset.
      */
     static private Map<String, String> charsetMap = new HashMap<String, String>();
@@ -122,7 +122,7 @@ class ColumnImpl implements Column {
         return columnType;
     }
 
-    private Type convertType(com.mysql.cluster.ndbj.NdbColumn.Type type) {
+    private Type convertType(com.myblockchain.cluster.ndbj.NdbColumn.Type type) {
         switch (type) {
             case Bigint: return Column.Type.Bigint;
             case Bigunsigned: return Column.Type.Bigunsigned;

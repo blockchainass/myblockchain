@@ -17,18 +17,18 @@
 IF(UNIX)
   SET(prefix ${CMAKE_INSTALL_PREFIX})
 
-  SET(SPECFILENAME "mysql.spec")
+  SET(SPECFILENAME "myblockchain.spec")
   IF("${VERSION}" MATCHES "-ndb-")
     STRING(REGEX REPLACE "^.*-ndb-" "" NDBVERSION "${VERSION}")
-    SET(SPECFILENAME "mysql-cluster-${NDBVERSION}.spec")
+    SET(SPECFILENAME "myblockchain-cluster-${NDBVERSION}.spec")
   ENDIF()
 
   # Left in current directory, to be taken during build
-  CONFIGURE_FILE(mysql.spec.in ${CMAKE_CURRENT_BINARY_DIR}/${SPECFILENAME} @ONLY)
+  CONFIGURE_FILE(myblockchain.spec.in ${CMAKE_CURRENT_BINARY_DIR}/${SPECFILENAME} @ONLY)
 
-  FOREACH(fedfile my.cnf my_config.h mysql_config.sh
-          mysql.init filter-requires.sh filter-provides.sh
-          mysql-5.7-libmysqlclient-symbols.patch)
+  FOREACH(fedfile my.cnf my_config.h myblockchain_config.sh
+          myblockchain.init filter-requires.sh filter-provides.sh
+          myblockchain-5.7-libmyblockchainclient-symbols.patch)
     CONFIGURE_FILE(${fedfile} ${CMAKE_CURRENT_BINARY_DIR}/${fedfile} COPYONLY)
   ENDFOREACH()
 ENDIF()

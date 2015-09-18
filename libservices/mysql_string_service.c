@@ -15,4 +15,4 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA */    
 
 #include <service_versions.h>
-SERVICE_VERSION *mysql_string_service= (void*)VERSION_mysql_string;
+SERVICE_VERSION *myblockchain_string_service= (void*)VERSION_myblockchain_string;

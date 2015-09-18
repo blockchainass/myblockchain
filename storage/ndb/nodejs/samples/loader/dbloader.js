@@ -115,8 +115,8 @@ function parse_command_line() {
       return 1;
     }));
   handler.addOption(new Option(
-   "-m", "--mysql", "Use MySQL adapter", function(nextArg) {
-      options.adapter = "mysql";
+   "-m", "--myblockchain", "Use MyBlockchain adapter", function(nextArg) {
+      options.adapter = "myblockchain";
       return 1;
     }));
   handler.addOption(new Option(
@@ -211,9 +211,9 @@ function main() {
   if(cmdOptions.connect_string) {
     connectionProperties.ndb_connectstring = cmdOptions.connect_string;
   }
-  connectionProperties.database = job.destination.database;
+  connectionProperties.blockchain = job.destination.blockchain;
 
-  // Connect to the database and start the controller
+  // Connect to the blockchain and start the controller
   mynode.openSession(connectionProperties, mappedConstructors, function(err, session) {
     if(err) throw err; /*JSON.stringify(err); process.exit(1);*/
     job.run(session, function onComplete(error, stats) {

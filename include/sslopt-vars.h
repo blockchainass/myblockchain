@@ -28,30 +28,30 @@ static char *opt_ssl_cipher  = 0;
 static char *opt_ssl_key     = 0;
 static char *opt_ssl_crl     = 0;
 static char *opt_ssl_crlpath = 0;
-#ifndef MYSQL_CLIENT
+#ifndef MYBLOCKCHAIN_CLIENT
 #error This header is supposed to be used only in the client
 #endif
-#define SSL_SET_OPTIONS(mysql) \
+#define SSL_SET_OPTIONS(myblockchain) \
   if (opt_use_ssl) \
   { \
-    mysql_ssl_set(mysql, opt_ssl_key, opt_ssl_cert, opt_ssl_ca, \
+    myblockchain_ssl_set(myblockchain, opt_ssl_key, opt_ssl_cert, opt_ssl_ca, \
       opt_ssl_capath, opt_ssl_cipher); \
-    mysql_options(mysql, MYSQL_OPT_SSL_CRL, opt_ssl_crl); \
-    mysql_options(mysql, MYSQL_OPT_SSL_CRLPATH, opt_ssl_crlpath); \
+    myblockchain_options(myblockchain, MYBLOCKCHAIN_OPT_SSL_CRL, opt_ssl_crl); \
+    myblockchain_options(myblockchain, MYBLOCKCHAIN_OPT_SSL_CRLPATH, opt_ssl_crlpath); \
     if (opt_ssl_enforce) \
     { \
-      mysql_options(mysql, MYSQL_OPT_SSL_ENFORCE, &opt_ssl_enforce);\
+      myblockchain_options(myblockchain, MYBLOCKCHAIN_OPT_SSL_ENFORCE, &opt_ssl_enforce);\
     } \
   } \
   else \
   { \
-    mysql_options(mysql, MYSQL_OPT_SSL_ENFORCE, &opt_ssl_enforce); \
+    myblockchain_options(myblockchain, MYBLOCKCHAIN_OPT_SSL_ENFORCE, &opt_ssl_enforce); \
   } \
-  mysql_options(mysql, MYSQL_OPT_SSL_VERIFY_SERVER_CERT, \
+  myblockchain_options(myblockchain, MYBLOCKCHAIN_OPT_SSL_VERIFY_SERVER_CERT, \
     (char*)&opt_ssl_verify_server_cert)
 
 static my_bool opt_ssl_verify_server_cert= 0;
 #else
-#define SSL_SET_OPTIONS(mysql) do { } while(0)
+#define SSL_SET_OPTIONS(myblockchain) do { } while(0)
 #endif
 #endif /* SSLOPT_VARS_INCLUDED */

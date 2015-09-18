@@ -77,7 +77,7 @@ ADD_CONVENIENCE_LIBRARY(ndbblocks
     thrman.cpp
     trpman.cpp)
 
-MYSQL_ADD_EXECUTABLE(ndb_print_file
+MYBLOCKCHAIN_ADD_EXECUTABLE(ndb_print_file
   print_file.cpp
   diskpage.cpp
   dbtup/tuppage.cpp

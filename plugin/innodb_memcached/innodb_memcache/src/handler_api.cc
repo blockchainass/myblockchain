@@ -27,8 +27,8 @@ Created 3/14/2011 Jimmy Yang
 #include <my_global.h>
 #include <stdlib.h>
 #include <ctype.h>
-#include <mysql_version.h>
-#include <mysql/plugin.h>
+#include <myblockchain_version.h>
+#include <myblockchain/plugin.h>
 #include <my_dir.h>
 #include "my_thread.h"
 #include "my_sys.h"
@@ -42,7 +42,7 @@ Created 3/14/2011 Jimmy Yang
 #include "transaction.h"
 #include "sql_handler.h"
 #include "handler.h"
-#include "mysqld_thd_manager.h"
+#include "myblockchaind_thd_manager.h"
 
 #include "log_event.h"
 #include "innodb_config.h"
@@ -74,7 +74,7 @@ handler_create_thd(
 	THD*	thd;
 
 	if (enable_binlog && !binlog_enabled()) {
-		fprintf(stderr, "  InnoDB_Memcached: MySQL server"
+		fprintf(stderr, "  InnoDB_Memcached: MyBlockchain server"
 			 	" binlog not enabled\n");
 		return(NULL);
 	}
@@ -123,13 +123,13 @@ handler_thd_attach(
 }
 
 /**********************************************************************//**
-Returns a MySQL "TABLE" object with specified database name and table name.
+Returns a MyBlockchain "TABLE" object with specified blockchain name and table name.
 @return a pointer to the TABLE object, NULL if does not exist */
 void*
 handler_open_table(
 /*===============*/
 	void*		my_thd,		/*!< in: THD* */
-	const char*	db_name,	/*!< in: NUL terminated database name */
+	const char*	db_name,	/*!< in: NUL terminated blockchain name */
 	const char*	table_name,	/*!< in: NUL terminated table name */
 	int		lock_type)	/*!< in: lock mode */
 {
@@ -411,17 +411,17 @@ handler_unlock_table(
 	result = trans_commit_stmt(thd);
 
 	if (thd->lock) {
-		mysql_unlock_tables(thd, thd->lock);
+		myblockchain_unlock_tables(thd, thd->lock);
 	}
 
-	close_mysql_tables(thd);
+	close_myblockchain_tables(thd);
 	thd->lock = 0;
 
 	return(result);
 }
 
 /**********************************************************************
-Following APIs can perform DMLs through MySQL handler interface. They
+Following APIs can perform DMLs through MyBlockchain handler interface. They
 are currently disabled and under HANDLER_API_MEMCACHED define
 **********************************************************************/
 
@@ -575,7 +575,7 @@ handler_delete_rec(
 /**********************************************************************//**
 Lock a table
 return a lock structure pointer on success, NULL on error */
-MYSQL_LOCK *
+MYBLOCKCHAIN_LOCK *
 handler_lock_table(
 /*===============*/
 	THD*		my_thd,		/*!< in: thread */
@@ -584,7 +584,7 @@ handler_lock_table(
 {
 
 	my_table->reginfo.lock_type = lock_mode;
-	my_thd->lock = mysql_lock_tables(my_thd, &my_table, 1, 0);
+	my_thd->lock = myblockchain_lock_tables(my_thd, &my_table, 1, 0);
 
 	return(my_thd->lock);
 }

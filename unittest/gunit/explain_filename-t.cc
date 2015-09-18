@@ -19,7 +19,7 @@
 #include "my_config.h"
 #include <gtest/gtest.h>
 
-#include <mysqld_error.h>
+#include <myblockchaind_error.h>
 #include <sql_class.h>
 #include <sql_table.h>
 
@@ -159,12 +159,12 @@ TEST_F(PartitionTest, ExplainFilename)
          "`test`.`#sqlx-33`",
          EXPLAIN_PARTITIONS_AS_COMMENT);
 
-  test_1("test/#mysql50#t",
-         "`test`.`#mysql50#t`",
+  test_1("test/#myblockchain50#t",
+         "`test`.`#myblockchain50#t`",
          EXPLAIN_PARTITIONS_AS_COMMENT);
 
-  test_1("#mysql50#t",
-         "`#mysql50#t`",
+  test_1("#myblockchain50#t",
+         "`#myblockchain50#t`",
          EXPLAIN_PARTITIONS_AS_COMMENT);
 
   test_1("@0023t",

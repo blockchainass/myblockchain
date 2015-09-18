@@ -16,10 +16,10 @@
    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-package com.mysql.clusterj.jpatest;
+package com.myblockchain.clusterj.jpatest;
 
-import com.mysql.clusterj.jpatest.model.A;
-import com.mysql.clusterj.jpatest.model.B0;
+import com.myblockchain.clusterj.jpatest.model.A;
+import com.myblockchain.clusterj.jpatest.model.B0;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.ArrayList;
@@ -30,11 +30,11 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
 /**
- * A benchmark implementation against a JPA-mapped database.
+ * A benchmark implementation against a JPA-mapped blockchain.
  */
 public class JpaLoad extends Driver {
 
-    // JPA database connection
+    // JPA blockchain connection
     protected String driver;
     protected String url;
     protected EntityManagerFactory emf;

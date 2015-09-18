@@ -20,7 +20,7 @@
   that you can implement.
 */
 
-#include <mysql.h>
+#include <myblockchain.h>
 #include "prealloced_array.h"
 
 /* 
@@ -59,7 +59,7 @@ typedef struct st_federated_share {
   char *hostname;
   char *username;
   char *password;
-  char *database;
+  char *blockchain;
   char *table_name;
   char *table;
   char *socket;
@@ -68,7 +68,7 @@ typedef struct st_federated_share {
   ushort port;
 
   size_t table_name_length, server_name_length, connect_string_length, use_count;
-  mysql_mutex_t mutex;
+  myblockchain_mutex_t mutex;
   THR_LOCK lock;
 } FEDERATED_SHARE;
 
@@ -77,16 +77,16 @@ typedef struct st_federated_share {
 */
 class ha_federated: public handler
 {
-  THR_LOCK_DATA lock;      /* MySQL lock */
+  THR_LOCK_DATA lock;      /* MyBlockchain lock */
   FEDERATED_SHARE *share;    /* Shared lock info */
-  MYSQL *mysql; /* MySQL connection */
-  MYSQL_RES *stored_result;
+  MYBLOCKCHAIN *myblockchain; /* MyBlockchain connection */
+  MYBLOCKCHAIN_RES *stored_result;
   /**
     Array of all stored results we get during a query execution.
   */
-  Prealloced_array<MYSQL_RES*, 4, true> results;
+  Prealloced_array<MYBLOCKCHAIN_RES*, 4, true> results;
   bool position_called;
-  MYSQL_ROW_OFFSET current_position;  // Current position used by ::position()
+  MYBLOCKCHAIN_ROW_OFFSET current_position;  // Current position used by ::position()
   int remote_error_number;
   char remote_error_buf[FEDERATED_QUERY_BUFFER_SIZE];
   bool ignore_duplicates, replace_duplicates;
@@ -98,8 +98,8 @@ private:
       return 0 on success
       return errorcode otherwise
   */
-  uint convert_row_to_internal_format(uchar *buf, MYSQL_ROW row,
-                                      MYSQL_RES *result);
+  uint convert_row_to_internal_format(uchar *buf, MYBLOCKCHAIN_ROW row,
+                                      MYBLOCKCHAIN_RES *result);
   bool create_where_from_key(String *to, KEY *key_info, 
                              const key_range *start_key,
                              const key_range *end_key,
@@ -108,12 +108,12 @@ private:
 
   bool append_stmt_insert(String *query);
 
-  int read_next(uchar *buf, MYSQL_RES *result);
+  int read_next(uchar *buf, MYBLOCKCHAIN_RES *result);
   int index_read_idx_with_result_set(uchar *buf, uint index,
                                      const uchar *key,
                                      uint key_len,
                                      ha_rkey_function find_flag,
-                                     MYSQL_RES **result);
+                                     MYBLOCKCHAIN_RES **result);
   int real_query(const char *query, size_t length);
   int real_connect();
 public:
@@ -156,7 +156,7 @@ public:
     here.
 
     part is the key part to check. First key part is 0
-    If all_parts it's set, MySQL want to know the flags for the combined
+    If all_parts it's set, MyBlockchain want to know the flags for the combined
     index up to and including 'part'.
   */
     /* fix server to be able to get remote server index flags */
@@ -202,7 +202,7 @@ public:
     Everything below are methods that we implment in ha_federated.cc.
 
     Most of these methods are not obligatory, skip them and
-    MySQL will treat them as not implemented
+    MyBlockchain will treat them as not implemented
   */
   int open(const char *name, int mode, uint test_if_locked);    // required
   int close(void);                                              // required
@@ -260,7 +260,7 @@ public:
                              enum thr_lock_type lock_type);     //required
   bool get_error_message(int error, String *buf);
   
-  MYSQL_RES *store_result(MYSQL *mysql);
+  MYBLOCKCHAIN_RES *store_result(MYBLOCKCHAIN *myblockchain);
   void free_result();
   
   int external_lock(THD *thd, int lock_type);

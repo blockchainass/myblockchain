@@ -39,7 +39,7 @@ int mi_rprev(MI_INFO *info, uchar *buf, int inx)
     DBUG_RETURN(my_errno);
   changed=_mi_test_if_changed(info);
   if (share->concurrent_insert)
-    mysql_rwlock_rdlock(&share->key_root_lock[inx]);
+    myblockchain_rwlock_rdlock(&share->key_root_lock[inx]);
   if (!flag)
     error=_mi_search_last(info, share->keyinfo+inx,
 			  share->state.key_root[inx]);
@@ -72,7 +72,7 @@ int mi_rprev(MI_INFO *info, uchar *buf, int inx)
     if (!error && res == 2) 
     {
       if (share->concurrent_insert)
-        mysql_rwlock_unlock(&share->key_root_lock[inx]);
+        myblockchain_rwlock_unlock(&share->key_root_lock[inx]);
       info->lastpos= HA_OFFSET_ERROR;
       DBUG_RETURN(my_errno= HA_ERR_END_OF_FILE);
     }
@@ -92,7 +92,7 @@ int mi_rprev(MI_INFO *info, uchar *buf, int inx)
 	  break;
       }
     }
-    mysql_rwlock_unlock(&share->key_root_lock[inx]);
+    myblockchain_rwlock_unlock(&share->key_root_lock[inx]);
   }
 
   info->update&= (HA_STATE_CHANGED | HA_STATE_ROW_CHANGED);

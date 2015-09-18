@@ -30,7 +30,7 @@ import java.util.ArrayList;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
 
-import com.mysql.ndbjtie.ndbapi.NDBAPI;
+import com.myblockchain.ndbjtie.ndbapi.NDBAPI;
 
 /**
  * Verifies the constants in NdbJTie against their values in NDB API.
@@ -164,7 +164,7 @@ public class NdbJTieConstantsTest extends JTieTestBase {
 
         // test classes in package
         out.println();
-        validatePackage("com.mysql.ndbjtie.ndbapi.");
+        validatePackage("com.myblockchain.ndbjtie.ndbapi.");
 
         // report status
         out.println();

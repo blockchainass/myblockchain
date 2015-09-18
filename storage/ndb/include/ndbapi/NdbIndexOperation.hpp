@@ -84,8 +84,8 @@ public:
    *        transaction which updates the value between the
    *        simple reads).
    *
-   * Note that simpleRead can read the value from any database node while
-   * standard read always read the value on the database node which is
+   * Note that simpleRead can read the value from any blockchain node while
+   * standard read always read the value on the blockchain node which is
    * primary for the record.
    *
    * @return 0 if successful otherwise -1.

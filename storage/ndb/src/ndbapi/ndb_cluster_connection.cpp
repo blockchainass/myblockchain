@@ -422,7 +422,7 @@ Ndb_cluster_connection_impl(const char * connect_string,
     g_eventLogger->enable(Logger::LL_ON, Logger::LL_ERROR);
     /*
       Disable repeated message handling as it interfers
-      with mysqld logging, in which case messages come out
+      with myblockchaind logging, in which case messages come out
       of order.  Same applies for regular ndbapi user.
     */
     g_eventLogger->setRepeatFrequency(0);

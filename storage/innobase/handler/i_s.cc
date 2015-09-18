@@ -18,7 +18,7 @@ this program; if not, write to the Free Software Foundation, Inc.,
 
 /**************************************************//**
 @file handler/i_s.cc
-InnoDB INFORMATION SCHEMA tables interface to MySQL.
+InnoDB INFORMATION SCHEMA tables interface to MyBlockchain.
 
 Created July 18, 2007 Vasil Dimov
 *******************************************************/
@@ -172,7 +172,7 @@ HPUX aCC: HP ANSI C++ B3910B A.03.65) can't handle it. */
 #define END_OF_ST_FIELD_INFO \
 	{STRUCT_FLD(field_name,		NULL), \
 	 STRUCT_FLD(field_length,	0), \
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_NULL), \
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_NULL), \
 	 STRUCT_FLD(value,		0), \
 	 STRUCT_FLD(field_flags,	0), \
 	 STRUCT_FLD(old_name,		""), \
@@ -183,25 +183,25 @@ Use the following types mapping:
 
 C type	ST_FIELD_INFO::field_type
 ---------------------------------
-long			MYSQL_TYPE_LONGLONG
+long			MYBLOCKCHAIN_TYPE_LONGLONG
 (field_length=MY_INT64_NUM_DECIMAL_DIGITS)
 
-long unsigned		MYSQL_TYPE_LONGLONG
+long unsigned		MYBLOCKCHAIN_TYPE_LONGLONG
 (field_length=MY_INT64_NUM_DECIMAL_DIGITS, field_flags=MY_I_S_UNSIGNED)
 
-char*			MYSQL_TYPE_STRING
+char*			MYBLOCKCHAIN_TYPE_STRING
 (field_length=n)
 
-float			MYSQL_TYPE_FLOAT
+float			MYBLOCKCHAIN_TYPE_FLOAT
 (field_length=0 is ignored)
 
-void*			MYSQL_TYPE_LONGLONG
+void*			MYBLOCKCHAIN_TYPE_LONGLONG
 (field_length=MY_INT64_NUM_DECIMAL_DIGITS, field_flags=MY_I_S_UNSIGNED)
 
-boolean (if else)	MYSQL_TYPE_LONG
+boolean (if else)	MYBLOCKCHAIN_TYPE_LONG
 (field_length=1)
 
-time_t			MYSQL_TYPE_DATETIME
+time_t			MYBLOCKCHAIN_TYPE_DATETIME
 (field_length=0 ignored)
 ---------------------------------
 */
@@ -229,7 +229,7 @@ i_s_common_deinit(
 /*==============*/
 	void*	p);	/*!< in/out: table schema object */
 /*******************************************************************//**
-Auxiliary function to store time_t value in MYSQL_TYPE_DATETIME
+Auxiliary function to store time_t value in MYBLOCKCHAIN_TYPE_DATETIME
 field.
 @return 0 on success */
 static
@@ -239,7 +239,7 @@ field_store_time_t(
 	Field*	field,	/*!< in/out: target field for storage */
 	time_t	time)	/*!< in: value to store */
 {
-	MYSQL_TIME	my_time;
+	MYBLOCKCHAIN_TIME	my_time;
 	struct tm	tm_time;
 
 	if (time) {
@@ -251,17 +251,17 @@ field_store_time_t(
 #else
 		localtime_r(&time, &tm_time);
 		localtime_to_TIME(&my_time, &tm_time);
-		my_time.time_type = MYSQL_TIMESTAMP_DATETIME;
+		my_time.time_type = MYBLOCKCHAIN_TIMESTAMP_DATETIME;
 #endif
 	} else {
 		memset(&my_time, 0, sizeof(my_time));
 	}
 
-	return(field->store_time(&my_time, MYSQL_TIMESTAMP_DATETIME));
+	return(field->store_time(&my_time, MYBLOCKCHAIN_TIMESTAMP_DATETIME));
 }
 
 /*******************************************************************//**
-Auxiliary function to store char* value in MYSQL_TYPE_STRING field.
+Auxiliary function to store char* value in MYBLOCKCHAIN_TYPE_STRING field.
 @return 0 on success */
 static
 int
@@ -288,7 +288,7 @@ field_store_string(
 }
 
 /*******************************************************************//**
-Store the name of an index in a MYSQL_TYPE_VARCHAR field.
+Store the name of an index in a MYBLOCKCHAIN_TYPE_VARCHAR field.
 Handles the names of incomplete secondary indexes.
 @return 0 on success */
 static
@@ -304,7 +304,7 @@ field_store_index_name(
 	int	ret;
 
 	ut_ad(index_name != NULL);
-	ut_ad(field->real_type() == MYSQL_TYPE_VARCHAR);
+	ut_ad(field->real_type() == MYBLOCKCHAIN_TYPE_VARCHAR);
 
 	/* Since TEMP_INDEX_PREFIX is not a valid UTF8, we need to convert
 	it to something else. */
@@ -327,7 +327,7 @@ field_store_index_name(
 }
 
 /*******************************************************************//**
-Auxiliary function to store ulint value in MYSQL_TYPE_LONGLONG field.
+Auxiliary function to store ulint value in MYBLOCKCHAIN_TYPE_LONGLONG field.
 If the value is ULINT_UNDEFINED then the field it set to NULL.
 @return 0 on success */
 static
@@ -358,7 +358,7 @@ static ST_FIELD_INFO	innodb_trx_fields_info[] =
 #define IDX_TRX_ID		0
 	{STRUCT_FLD(field_name,		"trx_id"),
 	 STRUCT_FLD(field_length,	TRX_ID_MAX_LEN + 1),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_STRING),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_STRING),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	0),
 	 STRUCT_FLD(old_name,		""),
@@ -367,7 +367,7 @@ static ST_FIELD_INFO	innodb_trx_fields_info[] =
 #define IDX_TRX_STATE		1
 	{STRUCT_FLD(field_name,		"trx_state"),
 	 STRUCT_FLD(field_length,	TRX_QUE_STATE_STR_MAX_LEN + 1),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_STRING),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_STRING),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	0),
 	 STRUCT_FLD(old_name,		""),
@@ -376,7 +376,7 @@ static ST_FIELD_INFO	innodb_trx_fields_info[] =
 #define IDX_TRX_STARTED		2
 	{STRUCT_FLD(field_name,		"trx_started"),
 	 STRUCT_FLD(field_length,	0),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_DATETIME),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_DATETIME),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	0),
 	 STRUCT_FLD(old_name,		""),
@@ -385,7 +385,7 @@ static ST_FIELD_INFO	innodb_trx_fields_info[] =
 #define IDX_TRX_REQUESTED_LOCK_ID	3
 	{STRUCT_FLD(field_name,		"trx_requested_lock_id"),
 	 STRUCT_FLD(field_length,	TRX_I_S_LOCK_ID_MAX_LEN + 1),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_STRING),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_STRING),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_MAYBE_NULL),
 	 STRUCT_FLD(old_name,		""),
@@ -394,7 +394,7 @@ static ST_FIELD_INFO	innodb_trx_fields_info[] =
 #define IDX_TRX_WAIT_STARTED	4
 	{STRUCT_FLD(field_name,		"trx_wait_started"),
 	 STRUCT_FLD(field_length,	0),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_DATETIME),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_DATETIME),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_MAYBE_NULL),
 	 STRUCT_FLD(old_name,		""),
@@ -403,16 +403,16 @@ static ST_FIELD_INFO	innodb_trx_fields_info[] =
 #define IDX_TRX_WEIGHT		5
 	{STRUCT_FLD(field_name,		"trx_weight"),
 	 STRUCT_FLD(field_length,	MY_INT64_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONGLONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONGLONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_UNSIGNED),
 	 STRUCT_FLD(old_name,		""),
 	 STRUCT_FLD(open_method,	SKIP_OPEN_TABLE)},
 
-#define IDX_TRX_MYSQL_THREAD_ID	6
-	{STRUCT_FLD(field_name,		"trx_mysql_thread_id"),
+#define IDX_TRX_MYBLOCKCHAIN_THREAD_ID	6
+	{STRUCT_FLD(field_name,		"trx_myblockchain_thread_id"),
 	 STRUCT_FLD(field_length,	MY_INT64_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONGLONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONGLONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_UNSIGNED),
 	 STRUCT_FLD(old_name,		""),
@@ -421,7 +421,7 @@ static ST_FIELD_INFO	innodb_trx_fields_info[] =
 #define IDX_TRX_QUERY		7
 	{STRUCT_FLD(field_name,		"trx_query"),
 	 STRUCT_FLD(field_length,	TRX_I_S_TRX_QUERY_MAX_LEN),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_STRING),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_STRING),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_MAYBE_NULL),
 	 STRUCT_FLD(old_name,		""),
@@ -430,7 +430,7 @@ static ST_FIELD_INFO	innodb_trx_fields_info[] =
 #define IDX_TRX_OPERATION_STATE	8
 	{STRUCT_FLD(field_name,		"trx_operation_state"),
 	 STRUCT_FLD(field_length,	TRX_I_S_TRX_OP_STATE_MAX_LEN),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_STRING),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_STRING),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_MAYBE_NULL),
 	 STRUCT_FLD(old_name,		""),
@@ -439,7 +439,7 @@ static ST_FIELD_INFO	innodb_trx_fields_info[] =
 #define IDX_TRX_TABLES_IN_USE	9
 	{STRUCT_FLD(field_name,		"trx_tables_in_use"),
 	 STRUCT_FLD(field_length,	MY_INT64_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONGLONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONGLONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_UNSIGNED),
 	 STRUCT_FLD(old_name,		""),
@@ -448,7 +448,7 @@ static ST_FIELD_INFO	innodb_trx_fields_info[] =
 #define IDX_TRX_TABLES_LOCKED	10
 	{STRUCT_FLD(field_name,		"trx_tables_locked"),
 	 STRUCT_FLD(field_length,	MY_INT64_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONGLONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONGLONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_UNSIGNED),
 	 STRUCT_FLD(old_name,		""),
@@ -457,7 +457,7 @@ static ST_FIELD_INFO	innodb_trx_fields_info[] =
 #define IDX_TRX_LOCK_STRUCTS	11
 	{STRUCT_FLD(field_name,		"trx_lock_structs"),
 	 STRUCT_FLD(field_length,	MY_INT64_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONGLONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONGLONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_UNSIGNED),
 	 STRUCT_FLD(old_name,		""),
@@ -466,7 +466,7 @@ static ST_FIELD_INFO	innodb_trx_fields_info[] =
 #define IDX_TRX_LOCK_MEMORY_BYTES	12
 	{STRUCT_FLD(field_name,		"trx_lock_memory_bytes"),
 	 STRUCT_FLD(field_length,	MY_INT64_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONGLONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONGLONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_UNSIGNED),
 	 STRUCT_FLD(old_name,		""),
@@ -475,7 +475,7 @@ static ST_FIELD_INFO	innodb_trx_fields_info[] =
 #define IDX_TRX_ROWS_LOCKED	13
 	{STRUCT_FLD(field_name,		"trx_rows_locked"),
 	 STRUCT_FLD(field_length,	MY_INT64_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONGLONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONGLONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_UNSIGNED),
 	 STRUCT_FLD(old_name,		""),
@@ -484,7 +484,7 @@ static ST_FIELD_INFO	innodb_trx_fields_info[] =
 #define IDX_TRX_ROWS_MODIFIED		14
 	{STRUCT_FLD(field_name,		"trx_rows_modified"),
 	 STRUCT_FLD(field_length,	MY_INT64_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONGLONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONGLONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_UNSIGNED),
 	 STRUCT_FLD(old_name,		""),
@@ -493,7 +493,7 @@ static ST_FIELD_INFO	innodb_trx_fields_info[] =
 #define IDX_TRX_CONNCURRENCY_TICKETS	15
 	{STRUCT_FLD(field_name,		"trx_concurrency_tickets"),
 	 STRUCT_FLD(field_length,	MY_INT64_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONGLONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONGLONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_UNSIGNED),
 	 STRUCT_FLD(old_name,		""),
@@ -502,7 +502,7 @@ static ST_FIELD_INFO	innodb_trx_fields_info[] =
 #define IDX_TRX_ISOLATION_LEVEL	16
 	{STRUCT_FLD(field_name,		"trx_isolation_level"),
 	 STRUCT_FLD(field_length,	TRX_I_S_TRX_ISOLATION_LEVEL_MAX_LEN),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_STRING),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_STRING),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	0),
 	 STRUCT_FLD(old_name,		""),
@@ -511,7 +511,7 @@ static ST_FIELD_INFO	innodb_trx_fields_info[] =
 #define IDX_TRX_UNIQUE_CHECKS	17
 	{STRUCT_FLD(field_name,		"trx_unique_checks"),
 	 STRUCT_FLD(field_length,	1),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONG),
 	 STRUCT_FLD(value,		1),
 	 STRUCT_FLD(field_flags,	0),
 	 STRUCT_FLD(old_name,		""),
@@ -520,7 +520,7 @@ static ST_FIELD_INFO	innodb_trx_fields_info[] =
 #define IDX_TRX_FOREIGN_KEY_CHECKS	18
 	{STRUCT_FLD(field_name,		"trx_foreign_key_checks"),
 	 STRUCT_FLD(field_length,	1),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONG),
 	 STRUCT_FLD(value,		1),
 	 STRUCT_FLD(field_flags,	0),
 	 STRUCT_FLD(old_name,		""),
@@ -529,7 +529,7 @@ static ST_FIELD_INFO	innodb_trx_fields_info[] =
 #define IDX_TRX_LAST_FOREIGN_KEY_ERROR	19
 	{STRUCT_FLD(field_name,		"trx_last_foreign_key_error"),
 	 STRUCT_FLD(field_length,	TRX_I_S_TRX_FK_ERROR_MAX_LEN),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_STRING),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_STRING),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_MAYBE_NULL),
 	 STRUCT_FLD(old_name,		""),
@@ -538,7 +538,7 @@ static ST_FIELD_INFO	innodb_trx_fields_info[] =
 #define IDX_TRX_ADAPTIVE_HASH_LATCHED	20
 	{STRUCT_FLD(field_name,		"trx_adaptive_hash_latched"),
 	 STRUCT_FLD(field_length,	1),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	0),
 	 STRUCT_FLD(old_name,		""),
@@ -547,7 +547,7 @@ static ST_FIELD_INFO	innodb_trx_fields_info[] =
 #define IDX_TRX_ADAPTIVE_HASH_TIMEOUT	21
 	{STRUCT_FLD(field_name,		"trx_adaptive_hash_timeout"),
 	 STRUCT_FLD(field_length,	MY_INT64_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONGLONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONGLONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_UNSIGNED),
 	 STRUCT_FLD(old_name,		""),
@@ -556,7 +556,7 @@ static ST_FIELD_INFO	innodb_trx_fields_info[] =
 #define IDX_TRX_READ_ONLY		22
 	{STRUCT_FLD(field_name,		"trx_is_read_only"),
 	 STRUCT_FLD(field_length,	1),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	0),
 	 STRUCT_FLD(old_name,		""),
@@ -565,7 +565,7 @@ static ST_FIELD_INFO	innodb_trx_fields_info[] =
 #define IDX_TRX_AUTOCOMMIT_NON_LOCKING	23
 	{STRUCT_FLD(field_name,		"trx_autocommit_non_locking"),
 	 STRUCT_FLD(field_length,	1),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	0),
 	 STRUCT_FLD(old_name,		""),
@@ -645,9 +645,9 @@ fill_innodb_trx_from_cache(
 		OK(fields[IDX_TRX_WEIGHT]->store((longlong) row->trx_weight,
 						 true));
 
-		/* trx_mysql_thread_id */
-		OK(fields[IDX_TRX_MYSQL_THREAD_ID]->store(
-			   static_cast<double>(row->trx_mysql_thread_id)));
+		/* trx_myblockchain_thread_id */
+		OK(fields[IDX_TRX_MYBLOCKCHAIN_THREAD_ID]->store(
+			   static_cast<double>(row->trx_myblockchain_thread_id)));
 
 		/* trx_query */
 		if (row->trx_query) {
@@ -754,16 +754,16 @@ innodb_trx_init(
 	DBUG_RETURN(0);
 }
 
-static struct st_mysql_information_schema	i_s_info =
+static struct st_myblockchain_information_schema	i_s_info =
 {
-	MYSQL_INFORMATION_SCHEMA_INTERFACE_VERSION
+	MYBLOCKCHAIN_INFORMATION_SCHEMA_INTERFACE_VERSION
 };
 
-struct st_mysql_plugin	i_s_innodb_trx =
+struct st_myblockchain_plugin	i_s_innodb_trx =
 {
-	/* the plugin type (a MYSQL_XXX_PLUGIN value) */
+	/* the plugin type (a MYBLOCKCHAIN_XXX_PLUGIN value) */
 	/* int */
-	STRUCT_FLD(type, MYSQL_INFORMATION_SCHEMA_PLUGIN),
+	STRUCT_FLD(type, MYBLOCKCHAIN_INFORMATION_SCHEMA_PLUGIN),
 
 	/* pointer to type-specific plugin descriptor */
 	/* void* */
@@ -797,10 +797,10 @@ struct st_mysql_plugin	i_s_innodb_trx =
 	/* unsigned int */
 	STRUCT_FLD(version, INNODB_VERSION_SHORT),
 
-	/* struct st_mysql_show_var* */
+	/* struct st_myblockchain_show_var* */
 	STRUCT_FLD(status_vars, NULL),
 
-	/* struct st_mysql_sys_var** */
+	/* struct st_myblockchain_sys_var** */
 	STRUCT_FLD(system_vars, NULL),
 
 	/* reserved for dependency checking */
@@ -818,7 +818,7 @@ static ST_FIELD_INFO	innodb_locks_fields_info[] =
 #define IDX_LOCK_ID		0
 	{STRUCT_FLD(field_name,		"lock_id"),
 	 STRUCT_FLD(field_length,	TRX_I_S_LOCK_ID_MAX_LEN + 1),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_STRING),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_STRING),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	0),
 	 STRUCT_FLD(old_name,		""),
@@ -827,7 +827,7 @@ static ST_FIELD_INFO	innodb_locks_fields_info[] =
 #define IDX_LOCK_TRX_ID		1
 	{STRUCT_FLD(field_name,		"lock_trx_id"),
 	 STRUCT_FLD(field_length,	TRX_ID_MAX_LEN + 1),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_STRING),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_STRING),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	0),
 	 STRUCT_FLD(old_name,		""),
@@ -837,7 +837,7 @@ static ST_FIELD_INFO	innodb_locks_fields_info[] =
 	{STRUCT_FLD(field_name,		"lock_mode"),
 	 /* S[,GAP] X[,GAP] IS[,GAP] IX[,GAP] AUTO_INC UNKNOWN */
 	 STRUCT_FLD(field_length,	32),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_STRING),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_STRING),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	0),
 	 STRUCT_FLD(old_name,		""),
@@ -846,7 +846,7 @@ static ST_FIELD_INFO	innodb_locks_fields_info[] =
 #define IDX_LOCK_TYPE		3
 	{STRUCT_FLD(field_name,		"lock_type"),
 	 STRUCT_FLD(field_length,	32 /* RECORD|TABLE|UNKNOWN */),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_STRING),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_STRING),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	0),
 	 STRUCT_FLD(old_name,		""),
@@ -855,7 +855,7 @@ static ST_FIELD_INFO	innodb_locks_fields_info[] =
 #define IDX_LOCK_TABLE		4
 	{STRUCT_FLD(field_name,		"lock_table"),
 	 STRUCT_FLD(field_length,	1024),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_STRING),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_STRING),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	0),
 	 STRUCT_FLD(old_name,		""),
@@ -864,7 +864,7 @@ static ST_FIELD_INFO	innodb_locks_fields_info[] =
 #define IDX_LOCK_INDEX		5
 	{STRUCT_FLD(field_name,		"lock_index"),
 	 STRUCT_FLD(field_length,	1024),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_STRING),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_STRING),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_MAYBE_NULL),
 	 STRUCT_FLD(old_name,		""),
@@ -873,7 +873,7 @@ static ST_FIELD_INFO	innodb_locks_fields_info[] =
 #define IDX_LOCK_SPACE		6
 	{STRUCT_FLD(field_name,		"lock_space"),
 	 STRUCT_FLD(field_length,	MY_INT64_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONGLONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONGLONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_UNSIGNED | MY_I_S_MAYBE_NULL),
 	 STRUCT_FLD(old_name,		""),
@@ -882,7 +882,7 @@ static ST_FIELD_INFO	innodb_locks_fields_info[] =
 #define IDX_LOCK_PAGE		7
 	{STRUCT_FLD(field_name,		"lock_page"),
 	 STRUCT_FLD(field_length,	MY_INT64_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONGLONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONGLONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_UNSIGNED | MY_I_S_MAYBE_NULL),
 	 STRUCT_FLD(old_name,		""),
@@ -891,7 +891,7 @@ static ST_FIELD_INFO	innodb_locks_fields_info[] =
 #define IDX_LOCK_REC		8
 	{STRUCT_FLD(field_name,		"lock_rec"),
 	 STRUCT_FLD(field_length,	MY_INT64_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONGLONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONGLONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_UNSIGNED | MY_I_S_MAYBE_NULL),
 	 STRUCT_FLD(old_name,		""),
@@ -900,7 +900,7 @@ static ST_FIELD_INFO	innodb_locks_fields_info[] =
 #define IDX_LOCK_DATA		9
 	{STRUCT_FLD(field_name,		"lock_data"),
 	 STRUCT_FLD(field_length,	TRX_I_S_LOCK_DATA_MAX_LEN),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_STRING),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_STRING),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_MAYBE_NULL),
 	 STRUCT_FLD(old_name,		""),
@@ -918,7 +918,7 @@ int
 fill_innodb_locks_from_cache(
 /*=========================*/
 	trx_i_s_cache_t*	cache,	/*!< in: cache to read from */
-	THD*			thd,	/*!< in: MySQL client connection */
+	THD*			thd,	/*!< in: MyBlockchain client connection */
 	TABLE*			table)	/*!< in/out: fill this table */
 {
 	Field**	fields;
@@ -1023,11 +1023,11 @@ innodb_locks_init(
 	DBUG_RETURN(0);
 }
 
-struct st_mysql_plugin	i_s_innodb_locks =
+struct st_myblockchain_plugin	i_s_innodb_locks =
 {
-	/* the plugin type (a MYSQL_XXX_PLUGIN value) */
+	/* the plugin type (a MYBLOCKCHAIN_XXX_PLUGIN value) */
 	/* int */
-	STRUCT_FLD(type, MYSQL_INFORMATION_SCHEMA_PLUGIN),
+	STRUCT_FLD(type, MYBLOCKCHAIN_INFORMATION_SCHEMA_PLUGIN),
 
 	/* pointer to type-specific plugin descriptor */
 	/* void* */
@@ -1061,10 +1061,10 @@ struct st_mysql_plugin	i_s_innodb_locks =
 	/* unsigned int */
 	STRUCT_FLD(version, INNODB_VERSION_SHORT),
 
-	/* struct st_mysql_show_var* */
+	/* struct st_myblockchain_show_var* */
 	STRUCT_FLD(status_vars, NULL),
 
-	/* struct st_mysql_sys_var** */
+	/* struct st_myblockchain_sys_var** */
 	STRUCT_FLD(system_vars, NULL),
 
 	/* reserved for dependency checking */
@@ -1082,7 +1082,7 @@ static ST_FIELD_INFO	innodb_lock_waits_fields_info[] =
 #define IDX_REQUESTING_TRX_ID	0
 	{STRUCT_FLD(field_name,		"requesting_trx_id"),
 	 STRUCT_FLD(field_length,	TRX_ID_MAX_LEN + 1),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_STRING),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_STRING),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	0),
 	 STRUCT_FLD(old_name,		""),
@@ -1091,7 +1091,7 @@ static ST_FIELD_INFO	innodb_lock_waits_fields_info[] =
 #define IDX_REQUESTED_LOCK_ID	1
 	{STRUCT_FLD(field_name,		"requested_lock_id"),
 	 STRUCT_FLD(field_length,	TRX_I_S_LOCK_ID_MAX_LEN + 1),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_STRING),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_STRING),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	0),
 	 STRUCT_FLD(old_name,		""),
@@ -1100,7 +1100,7 @@ static ST_FIELD_INFO	innodb_lock_waits_fields_info[] =
 #define IDX_BLOCKING_TRX_ID	2
 	{STRUCT_FLD(field_name,		"blocking_trx_id"),
 	 STRUCT_FLD(field_length,	TRX_ID_MAX_LEN + 1),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_STRING),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_STRING),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	0),
 	 STRUCT_FLD(old_name,		""),
@@ -1109,7 +1109,7 @@ static ST_FIELD_INFO	innodb_lock_waits_fields_info[] =
 #define IDX_BLOCKING_LOCK_ID	3
 	{STRUCT_FLD(field_name,		"blocking_lock_id"),
 	 STRUCT_FLD(field_length,	TRX_I_S_LOCK_ID_MAX_LEN + 1),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_STRING),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_STRING),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	0),
 	 STRUCT_FLD(old_name,		""),
@@ -1210,11 +1210,11 @@ innodb_lock_waits_init(
 	DBUG_RETURN(0);
 }
 
-struct st_mysql_plugin	i_s_innodb_lock_waits =
+struct st_myblockchain_plugin	i_s_innodb_lock_waits =
 {
-	/* the plugin type (a MYSQL_XXX_PLUGIN value) */
+	/* the plugin type (a MYBLOCKCHAIN_XXX_PLUGIN value) */
 	/* int */
-	STRUCT_FLD(type, MYSQL_INFORMATION_SCHEMA_PLUGIN),
+	STRUCT_FLD(type, MYBLOCKCHAIN_INFORMATION_SCHEMA_PLUGIN),
 
 	/* pointer to type-specific plugin descriptor */
 	/* void* */
@@ -1248,10 +1248,10 @@ struct st_mysql_plugin	i_s_innodb_lock_waits =
 	/* unsigned int */
 	STRUCT_FLD(version, INNODB_VERSION_SHORT),
 
-	/* struct st_mysql_show_var* */
+	/* struct st_myblockchain_show_var* */
 	STRUCT_FLD(status_vars, NULL),
 
-	/* struct st_mysql_sys_var** */
+	/* struct st_myblockchain_sys_var** */
 	STRUCT_FLD(system_vars, NULL),
 
 	/* reserved for dependency checking */
@@ -1354,8 +1354,8 @@ trx_i_s_common_fill_table(
 	DBUG_RETURN(ret);
 #else
 	/* if this function returns something else than 0 then a
-	deadlock occurs between the mysqld server and mysql client,
-	see http://bugs.mysql.com/29900 ; when that bug is resolved
+	deadlock occurs between the myblockchaind server and myblockchain client,
+	see http://bugs.myblockchain.com/29900 ; when that bug is resolved
 	we can enable the DBUG_RETURN(ret) above */
 	ret++;  // silence a gcc46 warning
 	DBUG_RETURN(0);
@@ -1367,7 +1367,7 @@ static ST_FIELD_INFO	i_s_cmp_fields_info[] =
 {
 	{STRUCT_FLD(field_name,		"page_size"),
 	 STRUCT_FLD(field_length,	5),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	0),
 	 STRUCT_FLD(old_name,		"Compressed Page Size"),
@@ -1375,7 +1375,7 @@ static ST_FIELD_INFO	i_s_cmp_fields_info[] =
 
 	{STRUCT_FLD(field_name,		"compress_ops"),
 	 STRUCT_FLD(field_length,	MY_INT32_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	0),
 	 STRUCT_FLD(old_name,		"Total Number of Compressions"),
@@ -1383,7 +1383,7 @@ static ST_FIELD_INFO	i_s_cmp_fields_info[] =
 
 	{STRUCT_FLD(field_name,		"compress_ops_ok"),
 	 STRUCT_FLD(field_length,	MY_INT32_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	0),
 	 STRUCT_FLD(old_name,		"Total Number of"
@@ -1392,7 +1392,7 @@ static ST_FIELD_INFO	i_s_cmp_fields_info[] =
 
 	{STRUCT_FLD(field_name,		"compress_time"),
 	 STRUCT_FLD(field_length,	MY_INT32_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	0),
 	 STRUCT_FLD(old_name,		"Total Duration of Compressions,"
@@ -1401,7 +1401,7 @@ static ST_FIELD_INFO	i_s_cmp_fields_info[] =
 
 	{STRUCT_FLD(field_name,		"uncompress_ops"),
 	 STRUCT_FLD(field_length,	MY_INT32_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	0),
 	 STRUCT_FLD(old_name,		"Total Number of Decompressions"),
@@ -1409,7 +1409,7 @@ static ST_FIELD_INFO	i_s_cmp_fields_info[] =
 
 	{STRUCT_FLD(field_name,		"uncompress_time"),
 	 STRUCT_FLD(field_length,	MY_INT32_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	0),
 	 STRUCT_FLD(old_name,		"Total Duration of Decompressions,"
@@ -1545,11 +1545,11 @@ i_s_cmp_reset_init(
 	DBUG_RETURN(0);
 }
 
-struct st_mysql_plugin	i_s_innodb_cmp =
+struct st_myblockchain_plugin	i_s_innodb_cmp =
 {
-	/* the plugin type (a MYSQL_XXX_PLUGIN value) */
+	/* the plugin type (a MYBLOCKCHAIN_XXX_PLUGIN value) */
 	/* int */
-	STRUCT_FLD(type, MYSQL_INFORMATION_SCHEMA_PLUGIN),
+	STRUCT_FLD(type, MYBLOCKCHAIN_INFORMATION_SCHEMA_PLUGIN),
 
 	/* pointer to type-specific plugin descriptor */
 	/* void* */
@@ -1583,10 +1583,10 @@ struct st_mysql_plugin	i_s_innodb_cmp =
 	/* unsigned int */
 	STRUCT_FLD(version, INNODB_VERSION_SHORT),
 
-	/* struct st_mysql_show_var* */
+	/* struct st_myblockchain_show_var* */
 	STRUCT_FLD(status_vars, NULL),
 
-	/* struct st_mysql_sys_var** */
+	/* struct st_myblockchain_sys_var** */
 	STRUCT_FLD(system_vars, NULL),
 
 	/* reserved for dependency checking */
@@ -1598,11 +1598,11 @@ struct st_mysql_plugin	i_s_innodb_cmp =
 	STRUCT_FLD(flags, 0UL),
 };
 
-struct st_mysql_plugin	i_s_innodb_cmp_reset =
+struct st_myblockchain_plugin	i_s_innodb_cmp_reset =
 {
-	/* the plugin type (a MYSQL_XXX_PLUGIN value) */
+	/* the plugin type (a MYBLOCKCHAIN_XXX_PLUGIN value) */
 	/* int */
-	STRUCT_FLD(type, MYSQL_INFORMATION_SCHEMA_PLUGIN),
+	STRUCT_FLD(type, MYBLOCKCHAIN_INFORMATION_SCHEMA_PLUGIN),
 
 	/* pointer to type-specific plugin descriptor */
 	/* void* */
@@ -1637,10 +1637,10 @@ struct st_mysql_plugin	i_s_innodb_cmp_reset =
 	/* unsigned int */
 	STRUCT_FLD(version, INNODB_VERSION_SHORT),
 
-	/* struct st_mysql_show_var* */
+	/* struct st_myblockchain_show_var* */
 	STRUCT_FLD(status_vars, NULL),
 
-	/* struct st_mysql_sys_var** */
+	/* struct st_myblockchain_sys_var** */
 	STRUCT_FLD(system_vars, NULL),
 
 	/* reserved for dependency checking */
@@ -1658,9 +1658,9 @@ information_schema.innodb_cmp_per_index_reset. */
 static ST_FIELD_INFO	i_s_cmp_per_index_fields_info[] =
 {
 #define IDX_DATABASE_NAME	0
-	{STRUCT_FLD(field_name,		"database_name"),
+	{STRUCT_FLD(field_name,		"blockchain_name"),
 	 STRUCT_FLD(field_length,	192),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_STRING),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_STRING),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	0),
 	 STRUCT_FLD(old_name,		""),
@@ -1669,7 +1669,7 @@ static ST_FIELD_INFO	i_s_cmp_per_index_fields_info[] =
 #define IDX_TABLE_NAME		1
 	{STRUCT_FLD(field_name,		"table_name"),
 	 STRUCT_FLD(field_length,	192),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_STRING),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_STRING),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	0),
 	 STRUCT_FLD(old_name,		""),
@@ -1678,7 +1678,7 @@ static ST_FIELD_INFO	i_s_cmp_per_index_fields_info[] =
 #define IDX_INDEX_NAME		2
 	{STRUCT_FLD(field_name,		"index_name"),
 	 STRUCT_FLD(field_length,	192),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_STRING),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_STRING),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	0),
 	 STRUCT_FLD(old_name,		""),
@@ -1687,7 +1687,7 @@ static ST_FIELD_INFO	i_s_cmp_per_index_fields_info[] =
 #define IDX_COMPRESS_OPS	3
 	{STRUCT_FLD(field_name,		"compress_ops"),
 	 STRUCT_FLD(field_length,	MY_INT32_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	0),
 	 STRUCT_FLD(old_name,		""),
@@ -1696,7 +1696,7 @@ static ST_FIELD_INFO	i_s_cmp_per_index_fields_info[] =
 #define IDX_COMPRESS_OPS_OK	4
 	{STRUCT_FLD(field_name,		"compress_ops_ok"),
 	 STRUCT_FLD(field_length,	MY_INT32_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	0),
 	 STRUCT_FLD(old_name,		""),
@@ -1705,7 +1705,7 @@ static ST_FIELD_INFO	i_s_cmp_per_index_fields_info[] =
 #define IDX_COMPRESS_TIME	5
 	{STRUCT_FLD(field_name,		"compress_time"),
 	 STRUCT_FLD(field_length,	MY_INT32_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	0),
 	 STRUCT_FLD(old_name,		""),
@@ -1714,7 +1714,7 @@ static ST_FIELD_INFO	i_s_cmp_per_index_fields_info[] =
 #define IDX_UNCOMPRESS_OPS	6
 	{STRUCT_FLD(field_name,		"uncompress_ops"),
 	 STRUCT_FLD(field_length,	MY_INT32_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	0),
 	 STRUCT_FLD(old_name,		""),
@@ -1723,7 +1723,7 @@ static ST_FIELD_INFO	i_s_cmp_per_index_fields_info[] =
 #define IDX_UNCOMPRESS_TIME	7
 	{STRUCT_FLD(field_name,		"uncompress_time"),
 	 STRUCT_FLD(field_length,	MY_INT32_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	0),
 	 STRUCT_FLD(old_name,		""),
@@ -1903,11 +1903,11 @@ i_s_cmp_per_index_reset_init(
 	DBUG_RETURN(0);
 }
 
-struct st_mysql_plugin	i_s_innodb_cmp_per_index =
+struct st_myblockchain_plugin	i_s_innodb_cmp_per_index =
 {
-	/* the plugin type (a MYSQL_XXX_PLUGIN value) */
+	/* the plugin type (a MYBLOCKCHAIN_XXX_PLUGIN value) */
 	/* int */
-	STRUCT_FLD(type, MYSQL_INFORMATION_SCHEMA_PLUGIN),
+	STRUCT_FLD(type, MYBLOCKCHAIN_INFORMATION_SCHEMA_PLUGIN),
 
 	/* pointer to type-specific plugin descriptor */
 	/* void* */
@@ -1941,10 +1941,10 @@ struct st_mysql_plugin	i_s_innodb_cmp_per_index =
 	/* unsigned int */
 	STRUCT_FLD(version, INNODB_VERSION_SHORT),
 
-	/* struct st_mysql_show_var* */
+	/* struct st_myblockchain_show_var* */
 	STRUCT_FLD(status_vars, NULL),
 
-	/* struct st_mysql_sys_var** */
+	/* struct st_myblockchain_sys_var** */
 	STRUCT_FLD(system_vars, NULL),
 
 	/* reserved for dependency checking */
@@ -1956,11 +1956,11 @@ struct st_mysql_plugin	i_s_innodb_cmp_per_index =
 	STRUCT_FLD(flags, 0UL),
 };
 
-struct st_mysql_plugin	i_s_innodb_cmp_per_index_reset =
+struct st_myblockchain_plugin	i_s_innodb_cmp_per_index_reset =
 {
-	/* the plugin type (a MYSQL_XXX_PLUGIN value) */
+	/* the plugin type (a MYBLOCKCHAIN_XXX_PLUGIN value) */
 	/* int */
-	STRUCT_FLD(type, MYSQL_INFORMATION_SCHEMA_PLUGIN),
+	STRUCT_FLD(type, MYBLOCKCHAIN_INFORMATION_SCHEMA_PLUGIN),
 
 	/* pointer to type-specific plugin descriptor */
 	/* void* */
@@ -1995,10 +1995,10 @@ struct st_mysql_plugin	i_s_innodb_cmp_per_index_reset =
 	/* unsigned int */
 	STRUCT_FLD(version, INNODB_VERSION_SHORT),
 
-	/* struct st_mysql_show_var* */
+	/* struct st_myblockchain_show_var* */
 	STRUCT_FLD(status_vars, NULL),
 
-	/* struct st_mysql_sys_var** */
+	/* struct st_myblockchain_sys_var** */
 	STRUCT_FLD(system_vars, NULL),
 
 	/* reserved for dependency checking */
@@ -2015,7 +2015,7 @@ static ST_FIELD_INFO	i_s_cmpmem_fields_info[] =
 {
 	{STRUCT_FLD(field_name,		"page_size"),
 	 STRUCT_FLD(field_length,	5),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	0),
 	 STRUCT_FLD(old_name,		"Buddy Block Size"),
@@ -2023,7 +2023,7 @@ static ST_FIELD_INFO	i_s_cmpmem_fields_info[] =
 
 	{STRUCT_FLD(field_name,		"buffer_pool_instance"),
 	STRUCT_FLD(field_length,	MY_INT32_NUM_DECIMAL_DIGITS),
-	STRUCT_FLD(field_type,		MYSQL_TYPE_LONG),
+	STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONG),
 	STRUCT_FLD(value,		0),
 	STRUCT_FLD(field_flags,		0),
 	STRUCT_FLD(old_name,		"Buffer Pool Id"),
@@ -2031,7 +2031,7 @@ static ST_FIELD_INFO	i_s_cmpmem_fields_info[] =
 
 	{STRUCT_FLD(field_name,		"pages_used"),
 	 STRUCT_FLD(field_length,	MY_INT32_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	0),
 	 STRUCT_FLD(old_name,		"Currently in Use"),
@@ -2039,7 +2039,7 @@ static ST_FIELD_INFO	i_s_cmpmem_fields_info[] =
 
 	{STRUCT_FLD(field_name,		"pages_free"),
 	 STRUCT_FLD(field_length,	MY_INT32_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	0),
 	 STRUCT_FLD(old_name,		"Currently Available"),
@@ -2047,7 +2047,7 @@ static ST_FIELD_INFO	i_s_cmpmem_fields_info[] =
 
 	{STRUCT_FLD(field_name,		"relocation_ops"),
 	 STRUCT_FLD(field_length,	MY_INT64_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONGLONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONGLONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	0),
 	 STRUCT_FLD(old_name,		"Total Number of Relocations"),
@@ -2055,7 +2055,7 @@ static ST_FIELD_INFO	i_s_cmpmem_fields_info[] =
 
 	{STRUCT_FLD(field_name,		"relocation_time"),
 	 STRUCT_FLD(field_length,	MY_INT32_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	0),
 	 STRUCT_FLD(old_name,		"Total Duration of Relocations,"
@@ -2204,11 +2204,11 @@ i_s_cmpmem_reset_init(
 	DBUG_RETURN(0);
 }
 
-struct st_mysql_plugin	i_s_innodb_cmpmem =
+struct st_myblockchain_plugin	i_s_innodb_cmpmem =
 {
-	/* the plugin type (a MYSQL_XXX_PLUGIN value) */
+	/* the plugin type (a MYBLOCKCHAIN_XXX_PLUGIN value) */
 	/* int */
-	STRUCT_FLD(type, MYSQL_INFORMATION_SCHEMA_PLUGIN),
+	STRUCT_FLD(type, MYBLOCKCHAIN_INFORMATION_SCHEMA_PLUGIN),
 
 	/* pointer to type-specific plugin descriptor */
 	/* void* */
@@ -2242,10 +2242,10 @@ struct st_mysql_plugin	i_s_innodb_cmpmem =
 	/* unsigned int */
 	STRUCT_FLD(version, INNODB_VERSION_SHORT),
 
-	/* struct st_mysql_show_var* */
+	/* struct st_myblockchain_show_var* */
 	STRUCT_FLD(status_vars, NULL),
 
-	/* struct st_mysql_sys_var** */
+	/* struct st_myblockchain_sys_var** */
 	STRUCT_FLD(system_vars, NULL),
 
 	/* reserved for dependency checking */
@@ -2257,11 +2257,11 @@ struct st_mysql_plugin	i_s_innodb_cmpmem =
 	STRUCT_FLD(flags, 0UL),
 };
 
-struct st_mysql_plugin	i_s_innodb_cmpmem_reset =
+struct st_myblockchain_plugin	i_s_innodb_cmpmem_reset =
 {
-	/* the plugin type (a MYSQL_XXX_PLUGIN value) */
+	/* the plugin type (a MYBLOCKCHAIN_XXX_PLUGIN value) */
 	/* int */
-	STRUCT_FLD(type, MYSQL_INFORMATION_SCHEMA_PLUGIN),
+	STRUCT_FLD(type, MYBLOCKCHAIN_INFORMATION_SCHEMA_PLUGIN),
 
 	/* pointer to type-specific plugin descriptor */
 	/* void* */
@@ -2296,10 +2296,10 @@ struct st_mysql_plugin	i_s_innodb_cmpmem_reset =
 	/* unsigned int */
 	STRUCT_FLD(version, INNODB_VERSION_SHORT),
 
-	/* struct st_mysql_show_var* */
+	/* struct st_myblockchain_show_var* */
 	STRUCT_FLD(status_vars, NULL),
 
-	/* struct st_mysql_sys_var** */
+	/* struct st_myblockchain_sys_var** */
 	STRUCT_FLD(system_vars, NULL),
 
 	/* reserved for dependency checking */
@@ -2317,7 +2317,7 @@ static ST_FIELD_INFO	innodb_metrics_fields_info[] =
 #define	METRIC_NAME		0
 	{STRUCT_FLD(field_name,		"NAME"),
 	 STRUCT_FLD(field_length,	NAME_LEN + 1),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_STRING),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_STRING),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	0),
 	 STRUCT_FLD(old_name,		""),
@@ -2326,7 +2326,7 @@ static ST_FIELD_INFO	innodb_metrics_fields_info[] =
 #define	METRIC_SUBSYS		1
 	{STRUCT_FLD(field_name,		"SUBSYSTEM"),
 	 STRUCT_FLD(field_length,	NAME_LEN + 1),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_STRING),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_STRING),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	0),
 	 STRUCT_FLD(old_name,		""),
@@ -2335,7 +2335,7 @@ static ST_FIELD_INFO	innodb_metrics_fields_info[] =
 #define	METRIC_VALUE_START	2
 	{STRUCT_FLD(field_name,		"COUNT"),
 	 STRUCT_FLD(field_length,	MY_INT64_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONGLONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONGLONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	0),
 	 STRUCT_FLD(old_name,		""),
@@ -2344,7 +2344,7 @@ static ST_FIELD_INFO	innodb_metrics_fields_info[] =
 #define	METRIC_MAX_VALUE_START	3
 	{STRUCT_FLD(field_name,		"MAX_COUNT"),
 	 STRUCT_FLD(field_length,	MY_INT64_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONGLONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONGLONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_MAYBE_NULL),
 	 STRUCT_FLD(old_name,		""),
@@ -2353,7 +2353,7 @@ static ST_FIELD_INFO	innodb_metrics_fields_info[] =
 #define	METRIC_MIN_VALUE_START	4
 	{STRUCT_FLD(field_name,		"MIN_COUNT"),
 	 STRUCT_FLD(field_length,	MY_INT64_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONGLONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONGLONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_MAYBE_NULL),
 	 STRUCT_FLD(old_name,		""),
@@ -2362,7 +2362,7 @@ static ST_FIELD_INFO	innodb_metrics_fields_info[] =
 #define	METRIC_AVG_VALUE_START	5
 	{STRUCT_FLD(field_name,		"AVG_COUNT"),
 	 STRUCT_FLD(field_length,	MAX_FLOAT_STR_LENGTH),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_FLOAT),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_FLOAT),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_MAYBE_NULL),
 	 STRUCT_FLD(old_name,		""),
@@ -2371,7 +2371,7 @@ static ST_FIELD_INFO	innodb_metrics_fields_info[] =
 #define	METRIC_VALUE_RESET	6
 	{STRUCT_FLD(field_name,		"COUNT_RESET"),
 	 STRUCT_FLD(field_length,	MY_INT64_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONGLONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONGLONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	0),
 	 STRUCT_FLD(old_name,		""),
@@ -2380,7 +2380,7 @@ static ST_FIELD_INFO	innodb_metrics_fields_info[] =
 #define	METRIC_MAX_VALUE_RESET	7
 	{STRUCT_FLD(field_name,		"MAX_COUNT_RESET"),
 	 STRUCT_FLD(field_length,	MY_INT64_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONGLONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONGLONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_MAYBE_NULL),
 	 STRUCT_FLD(old_name,		""),
@@ -2389,7 +2389,7 @@ static ST_FIELD_INFO	innodb_metrics_fields_info[] =
 #define	METRIC_MIN_VALUE_RESET	8
 	{STRUCT_FLD(field_name,		"MIN_COUNT_RESET"),
 	 STRUCT_FLD(field_length,	MY_INT64_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONGLONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONGLONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_MAYBE_NULL),
 	 STRUCT_FLD(old_name,		""),
@@ -2398,7 +2398,7 @@ static ST_FIELD_INFO	innodb_metrics_fields_info[] =
 #define	METRIC_AVG_VALUE_RESET	9
 	{STRUCT_FLD(field_name,		"AVG_COUNT_RESET"),
 	 STRUCT_FLD(field_length,	MAX_FLOAT_STR_LENGTH),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_FLOAT),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_FLOAT),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_MAYBE_NULL),
 	 STRUCT_FLD(old_name,		""),
@@ -2407,7 +2407,7 @@ static ST_FIELD_INFO	innodb_metrics_fields_info[] =
 #define	METRIC_START_TIME	10
 	{STRUCT_FLD(field_name,		"TIME_ENABLED"),
 	 STRUCT_FLD(field_length,	0),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_DATETIME),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_DATETIME),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_MAYBE_NULL),
 	 STRUCT_FLD(old_name,		""),
@@ -2416,7 +2416,7 @@ static ST_FIELD_INFO	innodb_metrics_fields_info[] =
 #define	METRIC_STOP_TIME	11
 	{STRUCT_FLD(field_name,		"TIME_DISABLED"),
 	 STRUCT_FLD(field_length,	0),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_DATETIME),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_DATETIME),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_MAYBE_NULL),
 	 STRUCT_FLD(old_name,		""),
@@ -2425,7 +2425,7 @@ static ST_FIELD_INFO	innodb_metrics_fields_info[] =
 #define	METRIC_TIME_ELAPSED	12
 	{STRUCT_FLD(field_name,		"TIME_ELAPSED"),
 	 STRUCT_FLD(field_length,	MY_INT64_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONGLONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONGLONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_MAYBE_NULL),
 	 STRUCT_FLD(old_name,		""),
@@ -2434,7 +2434,7 @@ static ST_FIELD_INFO	innodb_metrics_fields_info[] =
 #define	METRIC_RESET_TIME	13
 	{STRUCT_FLD(field_name,		"TIME_RESET"),
 	 STRUCT_FLD(field_length,	0),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_DATETIME),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_DATETIME),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_MAYBE_NULL),
 	 STRUCT_FLD(old_name,		""),
@@ -2443,7 +2443,7 @@ static ST_FIELD_INFO	innodb_metrics_fields_info[] =
 #define	METRIC_STATUS		14
 	{STRUCT_FLD(field_name,		"STATUS"),
 	 STRUCT_FLD(field_length,	NAME_LEN + 1),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_STRING),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_STRING),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	0),
 	 STRUCT_FLD(old_name,		""),
@@ -2452,7 +2452,7 @@ static ST_FIELD_INFO	innodb_metrics_fields_info[] =
 #define	METRIC_TYPE		15
 	{STRUCT_FLD(field_name,		"TYPE"),
 	 STRUCT_FLD(field_length,	NAME_LEN + 1),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_STRING),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_STRING),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	0),
 	 STRUCT_FLD(old_name,		""),
@@ -2461,7 +2461,7 @@ static ST_FIELD_INFO	innodb_metrics_fields_info[] =
 #define	METRIC_DESC		16
 	{STRUCT_FLD(field_name,		"COMMENT"),
 	 STRUCT_FLD(field_length,	NAME_LEN + 1),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_STRING),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_STRING),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	0),
 	 STRUCT_FLD(old_name,		""),
@@ -2786,11 +2786,11 @@ innodb_metrics_init(
 	DBUG_RETURN(0);
 }
 
-struct st_mysql_plugin	i_s_innodb_metrics =
+struct st_myblockchain_plugin	i_s_innodb_metrics =
 {
-	/* the plugin type (a MYSQL_XXX_PLUGIN value) */
+	/* the plugin type (a MYBLOCKCHAIN_XXX_PLUGIN value) */
 	/* int */
-	STRUCT_FLD(type, MYSQL_INFORMATION_SCHEMA_PLUGIN),
+	STRUCT_FLD(type, MYBLOCKCHAIN_INFORMATION_SCHEMA_PLUGIN),
 
 	/* pointer to type-specific plugin descriptor */
 	/* void* */
@@ -2824,10 +2824,10 @@ struct st_mysql_plugin	i_s_innodb_metrics =
 	/* unsigned int */
 	STRUCT_FLD(version, INNODB_VERSION_SHORT),
 
-	/* struct st_mysql_show_var* */
+	/* struct st_myblockchain_show_var* */
 	STRUCT_FLD(status_vars, NULL),
 
-	/* struct st_mysql_sys_var** */
+	/* struct st_myblockchain_sys_var** */
 	STRUCT_FLD(system_vars, NULL),
 
 	/* reserved for dependency checking */
@@ -2844,7 +2844,7 @@ static ST_FIELD_INFO	i_s_stopword_fields_info[] =
 #define STOPWORD_VALUE	0
 	{STRUCT_FLD(field_name,		"value"),
 	 STRUCT_FLD(field_length,	TRX_ID_MAX_LEN + 1),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_STRING),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_STRING),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	0),
 	 STRUCT_FLD(old_name,		""),
@@ -2903,11 +2903,11 @@ i_s_stopword_init(
 	DBUG_RETURN(0);
 }
 
-struct st_mysql_plugin	i_s_innodb_ft_default_stopword =
+struct st_myblockchain_plugin	i_s_innodb_ft_default_stopword =
 {
-	/* the plugin type (a MYSQL_XXX_PLUGIN value) */
+	/* the plugin type (a MYBLOCKCHAIN_XXX_PLUGIN value) */
 	/* int */
-	STRUCT_FLD(type, MYSQL_INFORMATION_SCHEMA_PLUGIN),
+	STRUCT_FLD(type, MYBLOCKCHAIN_INFORMATION_SCHEMA_PLUGIN),
 
 	/* pointer to type-specific plugin descriptor */
 	/* void* */
@@ -2941,10 +2941,10 @@ struct st_mysql_plugin	i_s_innodb_ft_default_stopword =
 	/* unsigned int */
 	STRUCT_FLD(version, INNODB_VERSION_SHORT),
 
-	/* struct st_mysql_show_var* */
+	/* struct st_myblockchain_show_var* */
 	STRUCT_FLD(status_vars, NULL),
 
-	/* struct st_mysql_sys_var** */
+	/* struct st_myblockchain_sys_var** */
 	STRUCT_FLD(system_vars, NULL),
 
 	/* reserved for dependency checking */
@@ -2963,7 +2963,7 @@ static ST_FIELD_INFO	i_s_fts_doc_fields_info[] =
 #define	I_S_FTS_DOC_ID			0
 	{STRUCT_FLD(field_name,		"DOC_ID"),
 	 STRUCT_FLD(field_length,	MY_INT64_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONGLONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONGLONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_UNSIGNED),
 	 STRUCT_FLD(old_name,		""),
@@ -3075,11 +3075,11 @@ i_s_fts_deleted_init(
 	DBUG_RETURN(0);
 }
 
-struct st_mysql_plugin	i_s_innodb_ft_deleted =
+struct st_myblockchain_plugin	i_s_innodb_ft_deleted =
 {
-	/* the plugin type (a MYSQL_XXX_PLUGIN value) */
+	/* the plugin type (a MYBLOCKCHAIN_XXX_PLUGIN value) */
 	/* int */
-	STRUCT_FLD(type, MYSQL_INFORMATION_SCHEMA_PLUGIN),
+	STRUCT_FLD(type, MYBLOCKCHAIN_INFORMATION_SCHEMA_PLUGIN),
 
 	/* pointer to type-specific plugin descriptor */
 	/* void* */
@@ -3113,10 +3113,10 @@ struct st_mysql_plugin	i_s_innodb_ft_deleted =
 	/* unsigned int */
 	STRUCT_FLD(version, INNODB_VERSION_SHORT),
 
-	/* struct st_mysql_show_var* */
+	/* struct st_myblockchain_show_var* */
 	STRUCT_FLD(status_vars, NULL),
 
-	/* struct st_mysql_sys_var** */
+	/* struct st_myblockchain_sys_var** */
 	STRUCT_FLD(system_vars, NULL),
 
 	/* reserved for dependency checking */
@@ -3162,11 +3162,11 @@ i_s_fts_being_deleted_init(
 	DBUG_RETURN(0);
 }
 
-struct st_mysql_plugin	i_s_innodb_ft_being_deleted =
+struct st_myblockchain_plugin	i_s_innodb_ft_being_deleted =
 {
-	/* the plugin type (a MYSQL_XXX_PLUGIN value) */
+	/* the plugin type (a MYBLOCKCHAIN_XXX_PLUGIN value) */
 	/* int */
-	STRUCT_FLD(type, MYSQL_INFORMATION_SCHEMA_PLUGIN),
+	STRUCT_FLD(type, MYBLOCKCHAIN_INFORMATION_SCHEMA_PLUGIN),
 
 	/* pointer to type-specific plugin descriptor */
 	/* void* */
@@ -3200,10 +3200,10 @@ struct st_mysql_plugin	i_s_innodb_ft_being_deleted =
 	/* unsigned int */
 	STRUCT_FLD(version, INNODB_VERSION_SHORT),
 
-	/* struct st_mysql_show_var* */
+	/* struct st_myblockchain_show_var* */
 	STRUCT_FLD(status_vars, NULL),
 
-	/* struct st_mysql_sys_var** */
+	/* struct st_myblockchain_sys_var** */
 	STRUCT_FLD(system_vars, NULL),
 
 	/* reserved for dependency checking */
@@ -3222,7 +3222,7 @@ static ST_FIELD_INFO	i_s_fts_index_fields_info[] =
 #define	I_S_FTS_WORD			0
 	{STRUCT_FLD(field_name,		"WORD"),
 	 STRUCT_FLD(field_length,	FTS_MAX_WORD_LEN + 1),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_STRING),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_STRING),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	0),
 	 STRUCT_FLD(old_name,		""),
@@ -3231,7 +3231,7 @@ static ST_FIELD_INFO	i_s_fts_index_fields_info[] =
 #define	I_S_FTS_FIRST_DOC_ID		1
 	{STRUCT_FLD(field_name,		"FIRST_DOC_ID"),
 	 STRUCT_FLD(field_length,	MY_INT64_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONGLONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONGLONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_UNSIGNED),
 	 STRUCT_FLD(old_name,		""),
@@ -3240,7 +3240,7 @@ static ST_FIELD_INFO	i_s_fts_index_fields_info[] =
 #define	I_S_FTS_LAST_DOC_ID		2
 	{STRUCT_FLD(field_name,		"LAST_DOC_ID"),
 	 STRUCT_FLD(field_length,	MY_INT64_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONGLONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONGLONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_UNSIGNED),
 	 STRUCT_FLD(old_name,		""),
@@ -3249,7 +3249,7 @@ static ST_FIELD_INFO	i_s_fts_index_fields_info[] =
 #define	I_S_FTS_DOC_COUNT		3
 	{STRUCT_FLD(field_name,		"DOC_COUNT"),
 	 STRUCT_FLD(field_length,	MY_INT64_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONGLONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONGLONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_UNSIGNED),
 	 STRUCT_FLD(old_name,		""),
@@ -3258,7 +3258,7 @@ static ST_FIELD_INFO	i_s_fts_index_fields_info[] =
 #define	I_S_FTS_ILIST_DOC_ID		4
 	{STRUCT_FLD(field_name,		"DOC_ID"),
 	 STRUCT_FLD(field_length,	MY_INT64_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONGLONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONGLONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_UNSIGNED),
 	 STRUCT_FLD(old_name,		""),
@@ -3267,7 +3267,7 @@ static ST_FIELD_INFO	i_s_fts_index_fields_info[] =
 #define	I_S_FTS_ILIST_DOC_POS		5
 	{STRUCT_FLD(field_name,		"POSITION"),
 	 STRUCT_FLD(field_length,	MY_INT64_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONGLONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONGLONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_UNSIGNED),
 	 STRUCT_FLD(old_name,		""),
@@ -3455,11 +3455,11 @@ i_s_fts_index_cache_init(
 	DBUG_RETURN(0);
 }
 
-struct st_mysql_plugin	i_s_innodb_ft_index_cache =
+struct st_myblockchain_plugin	i_s_innodb_ft_index_cache =
 {
-	/* the plugin type (a MYSQL_XXX_PLUGIN value) */
+	/* the plugin type (a MYBLOCKCHAIN_XXX_PLUGIN value) */
 	/* int */
-	STRUCT_FLD(type, MYSQL_INFORMATION_SCHEMA_PLUGIN),
+	STRUCT_FLD(type, MYBLOCKCHAIN_INFORMATION_SCHEMA_PLUGIN),
 
 	/* pointer to type-specific plugin descriptor */
 	/* void* */
@@ -3493,10 +3493,10 @@ struct st_mysql_plugin	i_s_innodb_ft_index_cache =
 	/* unsigned int */
 	STRUCT_FLD(version, INNODB_VERSION_SHORT),
 
-	/* struct st_mysql_show_var* */
+	/* struct st_myblockchain_show_var* */
 	STRUCT_FLD(status_vars, NULL),
 
-	/* struct st_mysql_sys_var** */
+	/* struct st_myblockchain_sys_var** */
 	STRUCT_FLD(system_vars, NULL),
 
 	/* reserved for dependency checking */
@@ -3891,11 +3891,11 @@ i_s_fts_index_table_init(
 	DBUG_RETURN(0);
 }
 
-struct st_mysql_plugin	i_s_innodb_ft_index_table =
+struct st_myblockchain_plugin	i_s_innodb_ft_index_table =
 {
-	/* the plugin type (a MYSQL_XXX_PLUGIN value) */
+	/* the plugin type (a MYBLOCKCHAIN_XXX_PLUGIN value) */
 	/* int */
-	STRUCT_FLD(type, MYSQL_INFORMATION_SCHEMA_PLUGIN),
+	STRUCT_FLD(type, MYBLOCKCHAIN_INFORMATION_SCHEMA_PLUGIN),
 
 	/* pointer to type-specific plugin descriptor */
 	/* void* */
@@ -3929,10 +3929,10 @@ struct st_mysql_plugin	i_s_innodb_ft_index_table =
 	/* unsigned int */
 	STRUCT_FLD(version, INNODB_VERSION_SHORT),
 
-	/* struct st_mysql_show_var* */
+	/* struct st_myblockchain_show_var* */
 	STRUCT_FLD(status_vars, NULL),
 
-	/* struct st_mysql_sys_var** */
+	/* struct st_myblockchain_sys_var** */
 	STRUCT_FLD(system_vars, NULL),
 
 	/* reserved for dependency checking */
@@ -3950,7 +3950,7 @@ static ST_FIELD_INFO	i_s_fts_config_fields_info[] =
 #define	FTS_CONFIG_KEY			0
 	{STRUCT_FLD(field_name,		"KEY"),
 	 STRUCT_FLD(field_length,	NAME_LEN + 1),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_STRING),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_STRING),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	0),
 	 STRUCT_FLD(old_name,		""),
@@ -3959,7 +3959,7 @@ static ST_FIELD_INFO	i_s_fts_config_fields_info[] =
 #define	FTS_CONFIG_VALUE		1
 	{STRUCT_FLD(field_name,		"VALUE"),
 	 STRUCT_FLD(field_length,	NAME_LEN + 1),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_STRING),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_STRING),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	0),
 	 STRUCT_FLD(old_name,		""),
@@ -4093,11 +4093,11 @@ i_s_fts_config_init(
 	DBUG_RETURN(0);
 }
 
-struct st_mysql_plugin	i_s_innodb_ft_config =
+struct st_myblockchain_plugin	i_s_innodb_ft_config =
 {
-	/* the plugin type (a MYSQL_XXX_PLUGIN value) */
+	/* the plugin type (a MYBLOCKCHAIN_XXX_PLUGIN value) */
 	/* int */
-	STRUCT_FLD(type, MYSQL_INFORMATION_SCHEMA_PLUGIN),
+	STRUCT_FLD(type, MYBLOCKCHAIN_INFORMATION_SCHEMA_PLUGIN),
 
 	/* pointer to type-specific plugin descriptor */
 	/* void* */
@@ -4131,10 +4131,10 @@ struct st_mysql_plugin	i_s_innodb_ft_config =
 	/* unsigned int */
 	STRUCT_FLD(version, INNODB_VERSION_SHORT),
 
-	/* struct st_mysql_show_var* */
+	/* struct st_myblockchain_show_var* */
 	STRUCT_FLD(status_vars, NULL),
 
-	/* struct st_mysql_sys_var** */
+	/* struct st_myblockchain_sys_var** */
 	STRUCT_FLD(system_vars, NULL),
 
 	/* reserved for dependency checking */
@@ -4152,7 +4152,7 @@ static ST_FIELD_INFO	i_s_innodb_temp_table_info_fields_info[] =
 #define IDX_TEMP_TABLE_ID		0
 	{STRUCT_FLD(field_name,		"TABLE_ID"),
 	 STRUCT_FLD(field_length,	MY_INT64_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONGLONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONGLONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_UNSIGNED),
 	 STRUCT_FLD(old_name,		""),
@@ -4161,7 +4161,7 @@ static ST_FIELD_INFO	i_s_innodb_temp_table_info_fields_info[] =
 #define IDX_TEMP_TABLE_NAME		1
 	{STRUCT_FLD(field_name,		"NAME"),
 	 STRUCT_FLD(field_length,	MAX_TABLE_UTF8_LEN),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_STRING),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_STRING),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_MAYBE_NULL),
 	 STRUCT_FLD(old_name,		""),
@@ -4170,7 +4170,7 @@ static ST_FIELD_INFO	i_s_innodb_temp_table_info_fields_info[] =
 #define IDX_TEMP_TABLE_N_COLS		2
 	{STRUCT_FLD(field_name,		"N_COLS"),
 	 STRUCT_FLD(field_length,	MY_INT32_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_UNSIGNED),
 	 STRUCT_FLD(old_name,		""),
@@ -4179,7 +4179,7 @@ static ST_FIELD_INFO	i_s_innodb_temp_table_info_fields_info[] =
 #define IDX_TEMP_TABLE_SPACE_ID		3
 	{STRUCT_FLD(field_name,		"SPACE"),
 	 STRUCT_FLD(field_length,	MY_INT32_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_UNSIGNED),
 	 STRUCT_FLD(old_name,		""),
@@ -4188,7 +4188,7 @@ static ST_FIELD_INFO	i_s_innodb_temp_table_info_fields_info[] =
 #define IDX_TEMP_TABLE_PTT		4
 	{STRUCT_FLD(field_name,		"PER_TABLE_TABLESPACE"),
 	 STRUCT_FLD(field_length,	64),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_STRING),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_STRING),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_MAYBE_NULL),
 	 STRUCT_FLD(old_name,		""),
@@ -4197,7 +4197,7 @@ static ST_FIELD_INFO	i_s_innodb_temp_table_info_fields_info[] =
 #define IDX_TEMP_TABLE_IS_COMPRESSED	5
 	{STRUCT_FLD(field_name,		"IS_COMPRESSED"),
 	 STRUCT_FLD(field_length,	64),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_STRING),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_STRING),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_MAYBE_NULL),
 	 STRUCT_FLD(old_name,		""),
@@ -4342,7 +4342,7 @@ i_s_innodb_temp_table_info_fill_table(
 	}
 	mutex_exit(&dict_sys->mutex);
 
-	/* Now populate the info to MySQL table */
+	/* Now populate the info to MyBlockchain table */
 	temp_table_info_cache_t::const_iterator end = all_temp_info_cache.end();
 	for (temp_table_info_cache_t::const_iterator it
 		= all_temp_info_cache.begin();
@@ -4378,11 +4378,11 @@ i_s_innodb_temp_table_info_init(
 	DBUG_RETURN(0);
 }
 
-struct st_mysql_plugin	i_s_innodb_temp_table_info =
+struct st_myblockchain_plugin	i_s_innodb_temp_table_info =
 {
-	/* the plugin type (a MYSQL_XXX_PLUGIN value) */
+	/* the plugin type (a MYBLOCKCHAIN_XXX_PLUGIN value) */
 	/* int */
-	STRUCT_FLD(type, MYSQL_INFORMATION_SCHEMA_PLUGIN),
+	STRUCT_FLD(type, MYBLOCKCHAIN_INFORMATION_SCHEMA_PLUGIN),
 
 	/* pointer to type-specific plugin descriptor */
 	/* void* */
@@ -4416,10 +4416,10 @@ struct st_mysql_plugin	i_s_innodb_temp_table_info =
 	/* unsigned int */
 	STRUCT_FLD(version, INNODB_VERSION_SHORT),
 
-	/* struct st_mysql_show_var* */
+	/* struct st_myblockchain_show_var* */
 	STRUCT_FLD(status_vars, NULL),
 
-	/* struct st_mysql_sys_var** */
+	/* struct st_myblockchain_sys_var** */
 	STRUCT_FLD(system_vars, NULL),
 
 	/* reserved for dependency checking */
@@ -4437,7 +4437,7 @@ static ST_FIELD_INFO	i_s_innodb_buffer_stats_fields_info[] =
 #define IDX_BUF_STATS_POOL_ID		0
 	{STRUCT_FLD(field_name,		"POOL_ID"),
 	 STRUCT_FLD(field_length,	MY_INT64_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONGLONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONGLONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_UNSIGNED),
 	 STRUCT_FLD(old_name,		""),
@@ -4446,7 +4446,7 @@ static ST_FIELD_INFO	i_s_innodb_buffer_stats_fields_info[] =
 #define IDX_BUF_STATS_POOL_SIZE		1
 	{STRUCT_FLD(field_name,		"POOL_SIZE"),
 	 STRUCT_FLD(field_length,	MY_INT64_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONGLONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONGLONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_UNSIGNED),
 	 STRUCT_FLD(old_name,		""),
@@ -4455,7 +4455,7 @@ static ST_FIELD_INFO	i_s_innodb_buffer_stats_fields_info[] =
 #define IDX_BUF_STATS_FREE_BUFFERS	2
 	{STRUCT_FLD(field_name,		"FREE_BUFFERS"),
 	 STRUCT_FLD(field_length,	MY_INT64_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONGLONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONGLONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_UNSIGNED),
 	 STRUCT_FLD(old_name,		""),
@@ -4464,7 +4464,7 @@ static ST_FIELD_INFO	i_s_innodb_buffer_stats_fields_info[] =
 #define IDX_BUF_STATS_LRU_LEN		3
 	{STRUCT_FLD(field_name,		"DATABASE_PAGES"),
 	 STRUCT_FLD(field_length,	MY_INT64_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONGLONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONGLONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_UNSIGNED),
 	 STRUCT_FLD(old_name,		""),
@@ -4473,7 +4473,7 @@ static ST_FIELD_INFO	i_s_innodb_buffer_stats_fields_info[] =
 #define IDX_BUF_STATS_OLD_LRU_LEN	4
 	{STRUCT_FLD(field_name,		"OLD_DATABASE_PAGES"),
 	 STRUCT_FLD(field_length,	MY_INT64_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONGLONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONGLONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_UNSIGNED),
 	 STRUCT_FLD(old_name,		""),
@@ -4482,7 +4482,7 @@ static ST_FIELD_INFO	i_s_innodb_buffer_stats_fields_info[] =
 #define IDX_BUF_STATS_FLUSH_LIST_LEN	5
 	{STRUCT_FLD(field_name,		"MODIFIED_DATABASE_PAGES"),
 	 STRUCT_FLD(field_length,	MY_INT64_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONGLONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONGLONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_UNSIGNED),
 	 STRUCT_FLD(old_name,		""),
@@ -4491,7 +4491,7 @@ static ST_FIELD_INFO	i_s_innodb_buffer_stats_fields_info[] =
 #define IDX_BUF_STATS_PENDING_ZIP	6
 	{STRUCT_FLD(field_name,		"PENDING_DECOMPRESS"),
 	 STRUCT_FLD(field_length,	MY_INT64_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONGLONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONGLONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_UNSIGNED),
 	 STRUCT_FLD(old_name,		""),
@@ -4500,7 +4500,7 @@ static ST_FIELD_INFO	i_s_innodb_buffer_stats_fields_info[] =
 #define IDX_BUF_STATS_PENDING_READ	7
 	{STRUCT_FLD(field_name,		"PENDING_READS"),
 	 STRUCT_FLD(field_length,	MY_INT64_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONGLONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONGLONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_UNSIGNED),
 	 STRUCT_FLD(old_name,		""),
@@ -4509,7 +4509,7 @@ static ST_FIELD_INFO	i_s_innodb_buffer_stats_fields_info[] =
 #define IDX_BUF_STATS_FLUSH_LRU		8
 	{STRUCT_FLD(field_name,		"PENDING_FLUSH_LRU"),
 	 STRUCT_FLD(field_length,	MY_INT64_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONGLONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONGLONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_UNSIGNED),
 	 STRUCT_FLD(old_name,		""),
@@ -4518,7 +4518,7 @@ static ST_FIELD_INFO	i_s_innodb_buffer_stats_fields_info[] =
 #define IDX_BUF_STATS_FLUSH_LIST	9
 	{STRUCT_FLD(field_name,		"PENDING_FLUSH_LIST"),
 	 STRUCT_FLD(field_length,	MY_INT64_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONGLONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONGLONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_UNSIGNED),
 	 STRUCT_FLD(old_name,		""),
@@ -4527,7 +4527,7 @@ static ST_FIELD_INFO	i_s_innodb_buffer_stats_fields_info[] =
 #define IDX_BUF_STATS_PAGE_YOUNG	10
 	{STRUCT_FLD(field_name,		"PAGES_MADE_YOUNG"),
 	 STRUCT_FLD(field_length,	MY_INT64_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONGLONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONGLONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_UNSIGNED),
 	 STRUCT_FLD(old_name,		""),
@@ -4536,7 +4536,7 @@ static ST_FIELD_INFO	i_s_innodb_buffer_stats_fields_info[] =
 #define IDX_BUF_STATS_PAGE_NOT_YOUNG	11
 	{STRUCT_FLD(field_name,		"PAGES_NOT_MADE_YOUNG"),
 	 STRUCT_FLD(field_length,	MY_INT64_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONGLONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONGLONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_UNSIGNED),
 	 STRUCT_FLD(old_name,		""),
@@ -4545,7 +4545,7 @@ static ST_FIELD_INFO	i_s_innodb_buffer_stats_fields_info[] =
 #define	IDX_BUF_STATS_PAGE_YOUNG_RATE	12
 	{STRUCT_FLD(field_name,		"PAGES_MADE_YOUNG_RATE"),
 	 STRUCT_FLD(field_length,	MAX_FLOAT_STR_LENGTH),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_FLOAT),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_FLOAT),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	0),
 	 STRUCT_FLD(old_name,		""),
@@ -4554,7 +4554,7 @@ static ST_FIELD_INFO	i_s_innodb_buffer_stats_fields_info[] =
 #define	IDX_BUF_STATS_PAGE_NOT_YOUNG_RATE 13
 	{STRUCT_FLD(field_name,		"PAGES_MADE_NOT_YOUNG_RATE"),
 	 STRUCT_FLD(field_length,	MAX_FLOAT_STR_LENGTH),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_FLOAT),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_FLOAT),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	0),
 	 STRUCT_FLD(old_name,		""),
@@ -4563,7 +4563,7 @@ static ST_FIELD_INFO	i_s_innodb_buffer_stats_fields_info[] =
 #define IDX_BUF_STATS_PAGE_READ		14
 	{STRUCT_FLD(field_name,		"NUMBER_PAGES_READ"),
 	 STRUCT_FLD(field_length,	MY_INT64_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONGLONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONGLONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_UNSIGNED),
 	 STRUCT_FLD(old_name,		""),
@@ -4572,7 +4572,7 @@ static ST_FIELD_INFO	i_s_innodb_buffer_stats_fields_info[] =
 #define IDX_BUF_STATS_PAGE_CREATED	15
 	{STRUCT_FLD(field_name,		"NUMBER_PAGES_CREATED"),
 	 STRUCT_FLD(field_length,	MY_INT64_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONGLONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONGLONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_UNSIGNED),
 	 STRUCT_FLD(old_name,		""),
@@ -4581,7 +4581,7 @@ static ST_FIELD_INFO	i_s_innodb_buffer_stats_fields_info[] =
 #define IDX_BUF_STATS_PAGE_WRITTEN	16
 	{STRUCT_FLD(field_name,		"NUMBER_PAGES_WRITTEN"),
 	 STRUCT_FLD(field_length,	MY_INT64_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONGLONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONGLONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_UNSIGNED),
 	 STRUCT_FLD(old_name,		""),
@@ -4590,7 +4590,7 @@ static ST_FIELD_INFO	i_s_innodb_buffer_stats_fields_info[] =
 #define	IDX_BUF_STATS_PAGE_READ_RATE	17
 	{STRUCT_FLD(field_name,		"PAGES_READ_RATE"),
 	 STRUCT_FLD(field_length,	MAX_FLOAT_STR_LENGTH),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_FLOAT),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_FLOAT),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	0),
 	 STRUCT_FLD(old_name,		""),
@@ -4599,7 +4599,7 @@ static ST_FIELD_INFO	i_s_innodb_buffer_stats_fields_info[] =
 #define	IDX_BUF_STATS_PAGE_CREATE_RATE	18
 	{STRUCT_FLD(field_name,		"PAGES_CREATE_RATE"),
 	 STRUCT_FLD(field_length,	MAX_FLOAT_STR_LENGTH),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_FLOAT),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_FLOAT),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	0),
 	 STRUCT_FLD(old_name,		""),
@@ -4608,7 +4608,7 @@ static ST_FIELD_INFO	i_s_innodb_buffer_stats_fields_info[] =
 #define	IDX_BUF_STATS_PAGE_WRITTEN_RATE	19
 	{STRUCT_FLD(field_name,		"PAGES_WRITTEN_RATE"),
 	 STRUCT_FLD(field_length,	MAX_FLOAT_STR_LENGTH),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_FLOAT),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_FLOAT),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	0),
 	 STRUCT_FLD(old_name,		""),
@@ -4617,7 +4617,7 @@ static ST_FIELD_INFO	i_s_innodb_buffer_stats_fields_info[] =
 #define IDX_BUF_STATS_GET		20
 	{STRUCT_FLD(field_name,		"NUMBER_PAGES_GET"),
 	 STRUCT_FLD(field_length,	MY_INT64_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONGLONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONGLONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_UNSIGNED),
 	 STRUCT_FLD(old_name,		""),
@@ -4626,7 +4626,7 @@ static ST_FIELD_INFO	i_s_innodb_buffer_stats_fields_info[] =
 #define IDX_BUF_STATS_HIT_RATE		21
 	{STRUCT_FLD(field_name,		"HIT_RATE"),
 	 STRUCT_FLD(field_length,	MY_INT64_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONGLONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONGLONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_UNSIGNED),
 	 STRUCT_FLD(old_name,		""),
@@ -4635,7 +4635,7 @@ static ST_FIELD_INFO	i_s_innodb_buffer_stats_fields_info[] =
 #define IDX_BUF_STATS_MADE_YOUNG_PCT	22
 	{STRUCT_FLD(field_name,		"YOUNG_MAKE_PER_THOUSAND_GETS"),
 	 STRUCT_FLD(field_length,	MY_INT64_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONGLONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONGLONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_UNSIGNED),
 	 STRUCT_FLD(old_name,		""),
@@ -4644,7 +4644,7 @@ static ST_FIELD_INFO	i_s_innodb_buffer_stats_fields_info[] =
 #define IDX_BUF_STATS_NOT_MADE_YOUNG_PCT 23
 	{STRUCT_FLD(field_name,		"NOT_YOUNG_MAKE_PER_THOUSAND_GETS"),
 	 STRUCT_FLD(field_length,	MY_INT64_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONGLONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONGLONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_UNSIGNED),
 	 STRUCT_FLD(old_name,		""),
@@ -4653,7 +4653,7 @@ static ST_FIELD_INFO	i_s_innodb_buffer_stats_fields_info[] =
 #define IDX_BUF_STATS_READ_AHREAD	24
 	{STRUCT_FLD(field_name,		"NUMBER_PAGES_READ_AHEAD"),
 	 STRUCT_FLD(field_length,	MY_INT64_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONGLONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONGLONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_UNSIGNED),
 	 STRUCT_FLD(old_name,		""),
@@ -4662,7 +4662,7 @@ static ST_FIELD_INFO	i_s_innodb_buffer_stats_fields_info[] =
 #define IDX_BUF_STATS_READ_AHEAD_EVICTED 25
 	{STRUCT_FLD(field_name,		"NUMBER_READ_AHEAD_EVICTED"),
 	 STRUCT_FLD(field_length,	MY_INT64_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONGLONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONGLONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_UNSIGNED),
 	 STRUCT_FLD(old_name,		""),
@@ -4671,7 +4671,7 @@ static ST_FIELD_INFO	i_s_innodb_buffer_stats_fields_info[] =
 #define	IDX_BUF_STATS_READ_AHEAD_RATE	26
 	{STRUCT_FLD(field_name,		"READ_AHEAD_RATE"),
 	 STRUCT_FLD(field_length,	MAX_FLOAT_STR_LENGTH),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_FLOAT),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_FLOAT),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	0),
 	 STRUCT_FLD(old_name,		""),
@@ -4680,7 +4680,7 @@ static ST_FIELD_INFO	i_s_innodb_buffer_stats_fields_info[] =
 #define	IDX_BUF_STATS_READ_AHEAD_EVICT_RATE 27
 	{STRUCT_FLD(field_name,		"READ_AHEAD_EVICTED_RATE"),
 	 STRUCT_FLD(field_length,	MAX_FLOAT_STR_LENGTH),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_FLOAT),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_FLOAT),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	0),
 	 STRUCT_FLD(old_name,		""),
@@ -4689,7 +4689,7 @@ static ST_FIELD_INFO	i_s_innodb_buffer_stats_fields_info[] =
 #define IDX_BUF_STATS_LRU_IO_SUM	28
 	{STRUCT_FLD(field_name,		"LRU_IO_TOTAL"),
 	 STRUCT_FLD(field_length,	MY_INT64_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONGLONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONGLONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_UNSIGNED),
 	 STRUCT_FLD(old_name,		""),
@@ -4698,7 +4698,7 @@ static ST_FIELD_INFO	i_s_innodb_buffer_stats_fields_info[] =
 #define IDX_BUF_STATS_LRU_IO_CUR	29
 	{STRUCT_FLD(field_name,		"LRU_IO_CURRENT"),
 	 STRUCT_FLD(field_length,	MY_INT64_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONGLONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONGLONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_UNSIGNED),
 	 STRUCT_FLD(old_name,		""),
@@ -4707,7 +4707,7 @@ static ST_FIELD_INFO	i_s_innodb_buffer_stats_fields_info[] =
 #define IDX_BUF_STATS_UNZIP_SUM		30
 	{STRUCT_FLD(field_name,		"UNCOMPRESS_TOTAL"),
 	 STRUCT_FLD(field_length,	MY_INT64_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONGLONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONGLONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_UNSIGNED),
 	 STRUCT_FLD(old_name,		""),
@@ -4716,7 +4716,7 @@ static ST_FIELD_INFO	i_s_innodb_buffer_stats_fields_info[] =
 #define IDX_BUF_STATS_UNZIP_CUR		31
 	{STRUCT_FLD(field_name,		"UNCOMPRESS_CURRENT"),
 	 STRUCT_FLD(field_length,	MY_INT64_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONGLONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONGLONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_UNSIGNED),
 	 STRUCT_FLD(old_name,		""),
@@ -4927,11 +4927,11 @@ i_s_innodb_buffer_pool_stats_init(
 	DBUG_RETURN(0);
 }
 
-struct st_mysql_plugin	i_s_innodb_buffer_stats =
+struct st_myblockchain_plugin	i_s_innodb_buffer_stats =
 {
-	/* the plugin type (a MYSQL_XXX_PLUGIN value) */
+	/* the plugin type (a MYBLOCKCHAIN_XXX_PLUGIN value) */
 	/* int */
-	STRUCT_FLD(type, MYSQL_INFORMATION_SCHEMA_PLUGIN),
+	STRUCT_FLD(type, MYBLOCKCHAIN_INFORMATION_SCHEMA_PLUGIN),
 
 	/* pointer to type-specific plugin descriptor */
 	/* void* */
@@ -4965,10 +4965,10 @@ struct st_mysql_plugin	i_s_innodb_buffer_stats =
 	/* unsigned int */
 	STRUCT_FLD(version, INNODB_VERSION_SHORT),
 
-	/* struct st_mysql_show_var* */
+	/* struct st_myblockchain_show_var* */
 	STRUCT_FLD(status_vars, NULL),
 
-	/* struct st_mysql_sys_var** */
+	/* struct st_myblockchain_sys_var** */
 	STRUCT_FLD(system_vars, NULL),
 
 	/* reserved for dependency checking */
@@ -4986,7 +4986,7 @@ static ST_FIELD_INFO	i_s_innodb_buffer_page_fields_info[] =
 #define IDX_BUFFER_POOL_ID		0
 	{STRUCT_FLD(field_name,		"POOL_ID"),
 	 STRUCT_FLD(field_length,	MY_INT64_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONGLONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONGLONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_UNSIGNED),
 	 STRUCT_FLD(old_name,		""),
@@ -4995,7 +4995,7 @@ static ST_FIELD_INFO	i_s_innodb_buffer_page_fields_info[] =
 #define IDX_BUFFER_BLOCK_ID		1
 	{STRUCT_FLD(field_name,		"BLOCK_ID"),
 	 STRUCT_FLD(field_length,	MY_INT64_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONGLONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONGLONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_UNSIGNED),
 	 STRUCT_FLD(old_name,		""),
@@ -5004,7 +5004,7 @@ static ST_FIELD_INFO	i_s_innodb_buffer_page_fields_info[] =
 #define IDX_BUFFER_PAGE_SPACE		2
 	{STRUCT_FLD(field_name,		"SPACE"),
 	 STRUCT_FLD(field_length,	MY_INT64_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONGLONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONGLONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_UNSIGNED),
 	 STRUCT_FLD(old_name,		""),
@@ -5013,7 +5013,7 @@ static ST_FIELD_INFO	i_s_innodb_buffer_page_fields_info[] =
 #define IDX_BUFFER_PAGE_NUM		3
 	{STRUCT_FLD(field_name,		"PAGE_NUMBER"),
 	 STRUCT_FLD(field_length,	MY_INT64_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONGLONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONGLONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_UNSIGNED),
 	 STRUCT_FLD(old_name,		""),
@@ -5022,7 +5022,7 @@ static ST_FIELD_INFO	i_s_innodb_buffer_page_fields_info[] =
 #define IDX_BUFFER_PAGE_TYPE		4
 	{STRUCT_FLD(field_name,		"PAGE_TYPE"),
 	 STRUCT_FLD(field_length,	64),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_STRING),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_STRING),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_MAYBE_NULL),
 	 STRUCT_FLD(old_name,		""),
@@ -5031,7 +5031,7 @@ static ST_FIELD_INFO	i_s_innodb_buffer_page_fields_info[] =
 #define IDX_BUFFER_PAGE_FLUSH_TYPE	5
 	{STRUCT_FLD(field_name,		"FLUSH_TYPE"),
 	 STRUCT_FLD(field_length,	MY_INT64_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONGLONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONGLONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_UNSIGNED),
 	 STRUCT_FLD(old_name,		""),
@@ -5040,7 +5040,7 @@ static ST_FIELD_INFO	i_s_innodb_buffer_page_fields_info[] =
 #define IDX_BUFFER_PAGE_FIX_COUNT	6
 	{STRUCT_FLD(field_name,		"FIX_COUNT"),
 	 STRUCT_FLD(field_length,	MY_INT64_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONGLONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONGLONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_UNSIGNED),
 	 STRUCT_FLD(old_name,		""),
@@ -5049,7 +5049,7 @@ static ST_FIELD_INFO	i_s_innodb_buffer_page_fields_info[] =
 #define IDX_BUFFER_PAGE_HASHED		7
 	{STRUCT_FLD(field_name,		"IS_HASHED"),
 	 STRUCT_FLD(field_length,	3),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_STRING),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_STRING),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_MAYBE_NULL),
 	 STRUCT_FLD(old_name,		""),
@@ -5058,7 +5058,7 @@ static ST_FIELD_INFO	i_s_innodb_buffer_page_fields_info[] =
 #define IDX_BUFFER_PAGE_NEWEST_MOD	8
 	{STRUCT_FLD(field_name,		"NEWEST_MODIFICATION"),
 	 STRUCT_FLD(field_length,	MY_INT64_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONGLONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONGLONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_UNSIGNED),
 	 STRUCT_FLD(old_name,		""),
@@ -5067,7 +5067,7 @@ static ST_FIELD_INFO	i_s_innodb_buffer_page_fields_info[] =
 #define IDX_BUFFER_PAGE_OLDEST_MOD	9
 	{STRUCT_FLD(field_name,		"OLDEST_MODIFICATION"),
 	 STRUCT_FLD(field_length,	MY_INT64_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONGLONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONGLONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_UNSIGNED),
 	 STRUCT_FLD(old_name,		""),
@@ -5076,7 +5076,7 @@ static ST_FIELD_INFO	i_s_innodb_buffer_page_fields_info[] =
 #define IDX_BUFFER_PAGE_ACCESS_TIME	10
 	{STRUCT_FLD(field_name,		"ACCESS_TIME"),
 	 STRUCT_FLD(field_length,	MY_INT64_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONGLONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONGLONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_UNSIGNED),
 	 STRUCT_FLD(old_name,		""),
@@ -5085,7 +5085,7 @@ static ST_FIELD_INFO	i_s_innodb_buffer_page_fields_info[] =
 #define IDX_BUFFER_PAGE_TABLE_NAME	11
 	{STRUCT_FLD(field_name,		"TABLE_NAME"),
 	 STRUCT_FLD(field_length,	1024),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_STRING),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_STRING),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_MAYBE_NULL),
 	 STRUCT_FLD(old_name,		""),
@@ -5094,7 +5094,7 @@ static ST_FIELD_INFO	i_s_innodb_buffer_page_fields_info[] =
 #define IDX_BUFFER_PAGE_INDEX_NAME	12
 	{STRUCT_FLD(field_name,		"INDEX_NAME"),
 	 STRUCT_FLD(field_length,	1024),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_STRING),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_STRING),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_MAYBE_NULL),
 	 STRUCT_FLD(old_name,		""),
@@ -5103,7 +5103,7 @@ static ST_FIELD_INFO	i_s_innodb_buffer_page_fields_info[] =
 #define IDX_BUFFER_PAGE_NUM_RECS	13
 	{STRUCT_FLD(field_name,		"NUMBER_RECORDS"),
 	 STRUCT_FLD(field_length,	MY_INT64_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONGLONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONGLONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_UNSIGNED),
 	 STRUCT_FLD(old_name,		""),
@@ -5112,7 +5112,7 @@ static ST_FIELD_INFO	i_s_innodb_buffer_page_fields_info[] =
 #define IDX_BUFFER_PAGE_DATA_SIZE	14
 	{STRUCT_FLD(field_name,		"DATA_SIZE"),
 	 STRUCT_FLD(field_length,	MY_INT64_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONGLONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONGLONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_UNSIGNED),
 	 STRUCT_FLD(old_name,		""),
@@ -5121,7 +5121,7 @@ static ST_FIELD_INFO	i_s_innodb_buffer_page_fields_info[] =
 #define IDX_BUFFER_PAGE_ZIP_SIZE	15
 	{STRUCT_FLD(field_name,		"COMPRESSED_SIZE"),
 	 STRUCT_FLD(field_length,	MY_INT64_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONGLONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONGLONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_UNSIGNED),
 	 STRUCT_FLD(old_name,		""),
@@ -5130,7 +5130,7 @@ static ST_FIELD_INFO	i_s_innodb_buffer_page_fields_info[] =
 #define IDX_BUFFER_PAGE_STATE		16
 	{STRUCT_FLD(field_name,		"PAGE_STATE"),
 	 STRUCT_FLD(field_length,	64),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_STRING),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_STRING),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_MAYBE_NULL),
 	 STRUCT_FLD(old_name,		""),
@@ -5139,7 +5139,7 @@ static ST_FIELD_INFO	i_s_innodb_buffer_page_fields_info[] =
 #define IDX_BUFFER_PAGE_IO_FIX		17
 	{STRUCT_FLD(field_name,		"IO_FIX"),
 	 STRUCT_FLD(field_length,	64),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_STRING),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_STRING),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_MAYBE_NULL),
 	 STRUCT_FLD(old_name,		""),
@@ -5148,7 +5148,7 @@ static ST_FIELD_INFO	i_s_innodb_buffer_page_fields_info[] =
 #define IDX_BUFFER_PAGE_IS_OLD		18
 	{STRUCT_FLD(field_name,		"IS_OLD"),
 	 STRUCT_FLD(field_length,	3),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_STRING),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_STRING),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_MAYBE_NULL),
 	 STRUCT_FLD(old_name,		""),
@@ -5157,7 +5157,7 @@ static ST_FIELD_INFO	i_s_innodb_buffer_page_fields_info[] =
 #define IDX_BUFFER_PAGE_FREE_CLOCK	19
 	{STRUCT_FLD(field_name,		"FREE_PAGE_CLOCK"),
 	 STRUCT_FLD(field_length,	MY_INT64_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONGLONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONGLONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_UNSIGNED),
 	 STRUCT_FLD(old_name,		""),
@@ -5647,11 +5647,11 @@ i_s_innodb_buffer_page_init(
 	DBUG_RETURN(0);
 }
 
-struct st_mysql_plugin	i_s_innodb_buffer_page =
+struct st_myblockchain_plugin	i_s_innodb_buffer_page =
 {
-	/* the plugin type (a MYSQL_XXX_PLUGIN value) */
+	/* the plugin type (a MYBLOCKCHAIN_XXX_PLUGIN value) */
 	/* int */
-	STRUCT_FLD(type, MYSQL_INFORMATION_SCHEMA_PLUGIN),
+	STRUCT_FLD(type, MYBLOCKCHAIN_INFORMATION_SCHEMA_PLUGIN),
 
 	/* pointer to type-specific plugin descriptor */
 	/* void* */
@@ -5685,10 +5685,10 @@ struct st_mysql_plugin	i_s_innodb_buffer_page =
 	/* unsigned int */
 	STRUCT_FLD(version, INNODB_VERSION_SHORT),
 
-	/* struct st_mysql_show_var* */
+	/* struct st_myblockchain_show_var* */
 	STRUCT_FLD(status_vars, NULL),
 
-	/* struct st_mysql_sys_var** */
+	/* struct st_myblockchain_sys_var** */
 	STRUCT_FLD(system_vars, NULL),
 
 	/* reserved for dependency checking */
@@ -5705,7 +5705,7 @@ static ST_FIELD_INFO	i_s_innodb_buf_page_lru_fields_info[] =
 #define IDX_BUF_LRU_POOL_ID		0
 	{STRUCT_FLD(field_name,		"POOL_ID"),
 	 STRUCT_FLD(field_length,	MY_INT64_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONGLONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONGLONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_UNSIGNED),
 	 STRUCT_FLD(old_name,		""),
@@ -5714,7 +5714,7 @@ static ST_FIELD_INFO	i_s_innodb_buf_page_lru_fields_info[] =
 #define IDX_BUF_LRU_POS			1
 	{STRUCT_FLD(field_name,		"LRU_POSITION"),
 	 STRUCT_FLD(field_length,	MY_INT64_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONGLONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONGLONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_UNSIGNED),
 	 STRUCT_FLD(old_name,		""),
@@ -5723,7 +5723,7 @@ static ST_FIELD_INFO	i_s_innodb_buf_page_lru_fields_info[] =
 #define IDX_BUF_LRU_PAGE_SPACE		2
 	{STRUCT_FLD(field_name,		"SPACE"),
 	 STRUCT_FLD(field_length,	MY_INT64_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONGLONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONGLONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_UNSIGNED),
 	 STRUCT_FLD(old_name,		""),
@@ -5732,7 +5732,7 @@ static ST_FIELD_INFO	i_s_innodb_buf_page_lru_fields_info[] =
 #define IDX_BUF_LRU_PAGE_NUM		3
 	{STRUCT_FLD(field_name,		"PAGE_NUMBER"),
 	 STRUCT_FLD(field_length,	MY_INT64_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONGLONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONGLONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_UNSIGNED),
 	 STRUCT_FLD(old_name,		""),
@@ -5741,7 +5741,7 @@ static ST_FIELD_INFO	i_s_innodb_buf_page_lru_fields_info[] =
 #define IDX_BUF_LRU_PAGE_TYPE		4
 	{STRUCT_FLD(field_name,		"PAGE_TYPE"),
 	 STRUCT_FLD(field_length,	64),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_STRING),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_STRING),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_MAYBE_NULL),
 	 STRUCT_FLD(old_name,		""),
@@ -5750,7 +5750,7 @@ static ST_FIELD_INFO	i_s_innodb_buf_page_lru_fields_info[] =
 #define IDX_BUF_LRU_PAGE_FLUSH_TYPE	5
 	{STRUCT_FLD(field_name,		"FLUSH_TYPE"),
 	 STRUCT_FLD(field_length,	MY_INT64_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONGLONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONGLONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_UNSIGNED),
 	 STRUCT_FLD(old_name,		""),
@@ -5759,7 +5759,7 @@ static ST_FIELD_INFO	i_s_innodb_buf_page_lru_fields_info[] =
 #define IDX_BUF_LRU_PAGE_FIX_COUNT	6
 	{STRUCT_FLD(field_name,		"FIX_COUNT"),
 	 STRUCT_FLD(field_length,	MY_INT64_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONGLONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONGLONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_UNSIGNED),
 	 STRUCT_FLD(old_name,		""),
@@ -5768,7 +5768,7 @@ static ST_FIELD_INFO	i_s_innodb_buf_page_lru_fields_info[] =
 #define IDX_BUF_LRU_PAGE_HASHED		7
 	{STRUCT_FLD(field_name,		"IS_HASHED"),
 	 STRUCT_FLD(field_length,	3),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_STRING),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_STRING),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_MAYBE_NULL),
 	 STRUCT_FLD(old_name,		""),
@@ -5777,7 +5777,7 @@ static ST_FIELD_INFO	i_s_innodb_buf_page_lru_fields_info[] =
 #define IDX_BUF_LRU_PAGE_NEWEST_MOD	8
 	{STRUCT_FLD(field_name,		"NEWEST_MODIFICATION"),
 	 STRUCT_FLD(field_length,	MY_INT64_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONGLONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONGLONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_UNSIGNED),
 	 STRUCT_FLD(old_name,		""),
@@ -5786,7 +5786,7 @@ static ST_FIELD_INFO	i_s_innodb_buf_page_lru_fields_info[] =
 #define IDX_BUF_LRU_PAGE_OLDEST_MOD	9
 	{STRUCT_FLD(field_name,		"OLDEST_MODIFICATION"),
 	 STRUCT_FLD(field_length,	MY_INT64_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONGLONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONGLONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_UNSIGNED),
 	 STRUCT_FLD(old_name,		""),
@@ -5795,7 +5795,7 @@ static ST_FIELD_INFO	i_s_innodb_buf_page_lru_fields_info[] =
 #define IDX_BUF_LRU_PAGE_ACCESS_TIME	10
 	{STRUCT_FLD(field_name,		"ACCESS_TIME"),
 	 STRUCT_FLD(field_length,	MY_INT64_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONGLONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONGLONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_UNSIGNED),
 	 STRUCT_FLD(old_name,		""),
@@ -5804,7 +5804,7 @@ static ST_FIELD_INFO	i_s_innodb_buf_page_lru_fields_info[] =
 #define IDX_BUF_LRU_PAGE_TABLE_NAME	11
 	{STRUCT_FLD(field_name,		"TABLE_NAME"),
 	 STRUCT_FLD(field_length,	1024),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_STRING),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_STRING),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_MAYBE_NULL),
 	 STRUCT_FLD(old_name,		""),
@@ -5813,7 +5813,7 @@ static ST_FIELD_INFO	i_s_innodb_buf_page_lru_fields_info[] =
 #define IDX_BUF_LRU_PAGE_INDEX_NAME	12
 	{STRUCT_FLD(field_name,		"INDEX_NAME"),
 	 STRUCT_FLD(field_length,	1024),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_STRING),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_STRING),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_MAYBE_NULL),
 	 STRUCT_FLD(old_name,		""),
@@ -5822,7 +5822,7 @@ static ST_FIELD_INFO	i_s_innodb_buf_page_lru_fields_info[] =
 #define IDX_BUF_LRU_PAGE_NUM_RECS	13
 	{STRUCT_FLD(field_name,		"NUMBER_RECORDS"),
 	 STRUCT_FLD(field_length,	MY_INT64_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONGLONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONGLONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_UNSIGNED),
 	 STRUCT_FLD(old_name,		""),
@@ -5831,7 +5831,7 @@ static ST_FIELD_INFO	i_s_innodb_buf_page_lru_fields_info[] =
 #define IDX_BUF_LRU_PAGE_DATA_SIZE	14
 	{STRUCT_FLD(field_name,		"DATA_SIZE"),
 	 STRUCT_FLD(field_length,	MY_INT64_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONGLONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONGLONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_UNSIGNED),
 	 STRUCT_FLD(old_name,		""),
@@ -5840,7 +5840,7 @@ static ST_FIELD_INFO	i_s_innodb_buf_page_lru_fields_info[] =
 #define IDX_BUF_LRU_PAGE_ZIP_SIZE	15
 	{STRUCT_FLD(field_name,		"COMPRESSED_SIZE"),
 	 STRUCT_FLD(field_length,	MY_INT64_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONGLONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONGLONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_UNSIGNED),
 	 STRUCT_FLD(old_name,		""),
@@ -5849,7 +5849,7 @@ static ST_FIELD_INFO	i_s_innodb_buf_page_lru_fields_info[] =
 #define IDX_BUF_LRU_PAGE_STATE		16
 	{STRUCT_FLD(field_name,		"COMPRESSED"),
 	 STRUCT_FLD(field_length,	3),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_STRING),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_STRING),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_MAYBE_NULL),
 	 STRUCT_FLD(old_name,		""),
@@ -5858,7 +5858,7 @@ static ST_FIELD_INFO	i_s_innodb_buf_page_lru_fields_info[] =
 #define IDX_BUF_LRU_PAGE_IO_FIX		17
 	{STRUCT_FLD(field_name,		"IO_FIX"),
 	 STRUCT_FLD(field_length,	64),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_STRING),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_STRING),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_MAYBE_NULL),
 	 STRUCT_FLD(old_name,		""),
@@ -5867,7 +5867,7 @@ static ST_FIELD_INFO	i_s_innodb_buf_page_lru_fields_info[] =
 #define IDX_BUF_LRU_PAGE_IS_OLD		18
 	{STRUCT_FLD(field_name,		"IS_OLD"),
 	 STRUCT_FLD(field_length,	3),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_STRING),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_STRING),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_MAYBE_NULL),
 	 STRUCT_FLD(old_name,		""),
@@ -5876,7 +5876,7 @@ static ST_FIELD_INFO	i_s_innodb_buf_page_lru_fields_info[] =
 #define IDX_BUF_LRU_PAGE_FREE_CLOCK	19
 	{STRUCT_FLD(field_name,		"FREE_PAGE_CLOCK"),
 	 STRUCT_FLD(field_length,	MY_INT64_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONGLONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONGLONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_UNSIGNED),
 	 STRUCT_FLD(old_name,		""),
@@ -6199,11 +6199,11 @@ i_s_innodb_buffer_page_lru_init(
 	DBUG_RETURN(0);
 }
 
-struct st_mysql_plugin	i_s_innodb_buffer_page_lru =
+struct st_myblockchain_plugin	i_s_innodb_buffer_page_lru =
 {
-	/* the plugin type (a MYSQL_XXX_PLUGIN value) */
+	/* the plugin type (a MYBLOCKCHAIN_XXX_PLUGIN value) */
 	/* int */
-	STRUCT_FLD(type, MYSQL_INFORMATION_SCHEMA_PLUGIN),
+	STRUCT_FLD(type, MYBLOCKCHAIN_INFORMATION_SCHEMA_PLUGIN),
 
 	/* pointer to type-specific plugin descriptor */
 	/* void* */
@@ -6237,10 +6237,10 @@ struct st_mysql_plugin	i_s_innodb_buffer_page_lru =
 	/* unsigned int */
 	STRUCT_FLD(version, INNODB_VERSION_SHORT),
 
-	/* struct st_mysql_show_var* */
+	/* struct st_myblockchain_show_var* */
 	STRUCT_FLD(status_vars, NULL),
 
-	/* struct st_mysql_sys_var** */
+	/* struct st_myblockchain_sys_var** */
 	STRUCT_FLD(system_vars, NULL),
 
 	/* reserved for dependency checking */
@@ -6275,7 +6275,7 @@ static ST_FIELD_INFO	innodb_sys_tables_fields_info[] =
 #define SYS_TABLES_ID			0
 	{STRUCT_FLD(field_name,		"TABLE_ID"),
 	 STRUCT_FLD(field_length,	MY_INT64_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONGLONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONGLONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_UNSIGNED),
 	 STRUCT_FLD(old_name,		""),
@@ -6284,7 +6284,7 @@ static ST_FIELD_INFO	innodb_sys_tables_fields_info[] =
 #define SYS_TABLES_NAME			1
 	{STRUCT_FLD(field_name,		"NAME"),
 	 STRUCT_FLD(field_length,	MAX_FULL_NAME_LEN + 1),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_STRING),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_STRING),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	0),
 	 STRUCT_FLD(old_name,		""),
@@ -6293,7 +6293,7 @@ static ST_FIELD_INFO	innodb_sys_tables_fields_info[] =
 #define SYS_TABLES_FLAG			2
 	{STRUCT_FLD(field_name,		"FLAG"),
 	 STRUCT_FLD(field_length,	MY_INT32_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	0),
 	 STRUCT_FLD(old_name,		""),
@@ -6302,7 +6302,7 @@ static ST_FIELD_INFO	innodb_sys_tables_fields_info[] =
 #define SYS_TABLES_NUM_COLUMN		3
 	{STRUCT_FLD(field_name,		"N_COLS"),
 	 STRUCT_FLD(field_length,	MY_INT32_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	0),
 	 STRUCT_FLD(old_name,		""),
@@ -6311,7 +6311,7 @@ static ST_FIELD_INFO	innodb_sys_tables_fields_info[] =
 #define SYS_TABLES_SPACE		4
 	{STRUCT_FLD(field_name,		"SPACE"),
 	 STRUCT_FLD(field_length,	MY_INT32_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	0),
 	 STRUCT_FLD(old_name,		""),
@@ -6320,7 +6320,7 @@ static ST_FIELD_INFO	innodb_sys_tables_fields_info[] =
 #define SYS_TABLES_FILE_FORMAT		5
 	{STRUCT_FLD(field_name,		"FILE_FORMAT"),
 	 STRUCT_FLD(field_length,	10),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_STRING),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_STRING),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_MAYBE_NULL),
 	 STRUCT_FLD(old_name,		""),
@@ -6329,7 +6329,7 @@ static ST_FIELD_INFO	innodb_sys_tables_fields_info[] =
 #define SYS_TABLES_ROW_FORMAT		6
 	{STRUCT_FLD(field_name,		"ROW_FORMAT"),
 	 STRUCT_FLD(field_length,	12),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_STRING),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_STRING),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_MAYBE_NULL),
 	 STRUCT_FLD(old_name,		""),
@@ -6338,7 +6338,7 @@ static ST_FIELD_INFO	innodb_sys_tables_fields_info[] =
 #define SYS_TABLES_ZIP_PAGE_SIZE	7
 	{STRUCT_FLD(field_name,		"ZIP_PAGE_SIZE"),
 	 STRUCT_FLD(field_length,	MY_INT32_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_UNSIGNED),
 	 STRUCT_FLD(old_name,		""),
@@ -6347,7 +6347,7 @@ static ST_FIELD_INFO	innodb_sys_tables_fields_info[] =
 #define SYS_TABLES_SPACE_TYPE	8
 	{STRUCT_FLD(field_name,		"SPACE_TYPE"),
 	 STRUCT_FLD(field_length,	10),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_STRING),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_STRING),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_MAYBE_NULL),
 	 STRUCT_FLD(old_name,		""),
@@ -6520,11 +6520,11 @@ innodb_sys_tables_init(
 	DBUG_RETURN(0);
 }
 
-struct st_mysql_plugin	i_s_innodb_sys_tables =
+struct st_myblockchain_plugin	i_s_innodb_sys_tables =
 {
-	/* the plugin type (a MYSQL_XXX_PLUGIN value) */
+	/* the plugin type (a MYBLOCKCHAIN_XXX_PLUGIN value) */
 	/* int */
-	STRUCT_FLD(type, MYSQL_INFORMATION_SCHEMA_PLUGIN),
+	STRUCT_FLD(type, MYBLOCKCHAIN_INFORMATION_SCHEMA_PLUGIN),
 
 	/* pointer to type-specific plugin descriptor */
 	/* void* */
@@ -6558,10 +6558,10 @@ struct st_mysql_plugin	i_s_innodb_sys_tables =
 	/* unsigned int */
 	STRUCT_FLD(version, INNODB_VERSION_SHORT),
 
-	/* struct st_mysql_show_var* */
+	/* struct st_myblockchain_show_var* */
 	STRUCT_FLD(status_vars, NULL),
 
-	/* struct st_mysql_sys_var** */
+	/* struct st_myblockchain_sys_var** */
 	STRUCT_FLD(system_vars, NULL),
 
 	/* reserved for dependency checking */
@@ -6580,7 +6580,7 @@ static ST_FIELD_INFO	innodb_sys_tablestats_fields_info[] =
 #define SYS_TABLESTATS_ID		0
 	{STRUCT_FLD(field_name,		"TABLE_ID"),
 	 STRUCT_FLD(field_length,	MY_INT64_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONGLONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONGLONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_UNSIGNED),
 	 STRUCT_FLD(old_name,		""),
@@ -6589,7 +6589,7 @@ static ST_FIELD_INFO	innodb_sys_tablestats_fields_info[] =
 #define SYS_TABLESTATS_NAME		1
 	{STRUCT_FLD(field_name,		"NAME"),
 	 STRUCT_FLD(field_length,	NAME_LEN + 1),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_STRING),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_STRING),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	0),
 	 STRUCT_FLD(old_name,		""),
@@ -6598,7 +6598,7 @@ static ST_FIELD_INFO	innodb_sys_tablestats_fields_info[] =
 #define SYS_TABLESTATS_INIT		2
 	{STRUCT_FLD(field_name,		"STATS_INITIALIZED"),
 	 STRUCT_FLD(field_length,	NAME_LEN + 1),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_STRING),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_STRING),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	0),
 	 STRUCT_FLD(old_name,		""),
@@ -6607,7 +6607,7 @@ static ST_FIELD_INFO	innodb_sys_tablestats_fields_info[] =
 #define SYS_TABLESTATS_NROW		3
 	{STRUCT_FLD(field_name,		"NUM_ROWS"),
 	 STRUCT_FLD(field_length,	MY_INT64_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONGLONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONGLONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_UNSIGNED),
 	 STRUCT_FLD(old_name,		""),
@@ -6616,7 +6616,7 @@ static ST_FIELD_INFO	innodb_sys_tablestats_fields_info[] =
 #define SYS_TABLESTATS_CLUST_SIZE	4
 	{STRUCT_FLD(field_name,		"CLUST_INDEX_SIZE"),
 	 STRUCT_FLD(field_length,	MY_INT64_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONGLONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONGLONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_UNSIGNED),
 	 STRUCT_FLD(old_name,		""),
@@ -6625,7 +6625,7 @@ static ST_FIELD_INFO	innodb_sys_tablestats_fields_info[] =
 #define SYS_TABLESTATS_INDEX_SIZE	5
 	{STRUCT_FLD(field_name,		"OTHER_INDEX_SIZE"),
 	 STRUCT_FLD(field_length,	MY_INT64_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONGLONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONGLONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_UNSIGNED),
 	 STRUCT_FLD(old_name,		""),
@@ -6634,7 +6634,7 @@ static ST_FIELD_INFO	innodb_sys_tablestats_fields_info[] =
 #define SYS_TABLESTATS_MODIFIED		6
 	{STRUCT_FLD(field_name,		"MODIFIED_COUNTER"),
 	 STRUCT_FLD(field_length,	MY_INT64_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONGLONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONGLONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_UNSIGNED),
 	 STRUCT_FLD(old_name,		""),
@@ -6643,7 +6643,7 @@ static ST_FIELD_INFO	innodb_sys_tablestats_fields_info[] =
 #define SYS_TABLESTATS_AUTONINC		7
 	{STRUCT_FLD(field_name,		"AUTOINC"),
 	 STRUCT_FLD(field_length,	MY_INT64_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONGLONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONGLONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_UNSIGNED),
 	 STRUCT_FLD(old_name,		""),
@@ -6652,7 +6652,7 @@ static ST_FIELD_INFO	innodb_sys_tablestats_fields_info[] =
 #define SYS_TABLESTATS_TABLE_REF_COUNT	8
 	{STRUCT_FLD(field_name,		"REF_COUNT"),
 	 STRUCT_FLD(field_length,	MY_INT32_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	0),
 	 STRUCT_FLD(old_name,		""),
@@ -6820,11 +6820,11 @@ innodb_sys_tablestats_init(
 	DBUG_RETURN(0);
 }
 
-struct st_mysql_plugin	i_s_innodb_sys_tablestats =
+struct st_myblockchain_plugin	i_s_innodb_sys_tablestats =
 {
-	/* the plugin type (a MYSQL_XXX_PLUGIN value) */
+	/* the plugin type (a MYBLOCKCHAIN_XXX_PLUGIN value) */
 	/* int */
-	STRUCT_FLD(type, MYSQL_INFORMATION_SCHEMA_PLUGIN),
+	STRUCT_FLD(type, MYBLOCKCHAIN_INFORMATION_SCHEMA_PLUGIN),
 
 	/* pointer to type-specific plugin descriptor */
 	/* void* */
@@ -6858,10 +6858,10 @@ struct st_mysql_plugin	i_s_innodb_sys_tablestats =
 	/* unsigned int */
 	STRUCT_FLD(version, INNODB_VERSION_SHORT),
 
-	/* struct st_mysql_show_var* */
+	/* struct st_myblockchain_show_var* */
 	STRUCT_FLD(status_vars, NULL),
 
-	/* struct st_mysql_sys_var** */
+	/* struct st_myblockchain_sys_var** */
 	STRUCT_FLD(system_vars, NULL),
 
 	/* reserved for dependency checking */
@@ -6880,7 +6880,7 @@ static ST_FIELD_INFO	innodb_sysindex_fields_info[] =
 #define SYS_INDEX_ID		0
 	{STRUCT_FLD(field_name,		"INDEX_ID"),
 	 STRUCT_FLD(field_length,	MY_INT64_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONGLONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONGLONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_UNSIGNED),
 	 STRUCT_FLD(old_name,		""),
@@ -6889,7 +6889,7 @@ static ST_FIELD_INFO	innodb_sysindex_fields_info[] =
 #define SYS_INDEX_NAME		1
 	{STRUCT_FLD(field_name,		"NAME"),
 	 STRUCT_FLD(field_length,	NAME_LEN + 1),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_STRING),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_STRING),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	0),
 	 STRUCT_FLD(old_name,		""),
@@ -6898,7 +6898,7 @@ static ST_FIELD_INFO	innodb_sysindex_fields_info[] =
 #define SYS_INDEX_TABLE_ID	2
 	{STRUCT_FLD(field_name,		"TABLE_ID"),
 	 STRUCT_FLD(field_length,	MY_INT64_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONGLONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONGLONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_UNSIGNED),
 	 STRUCT_FLD(old_name,		""),
@@ -6907,7 +6907,7 @@ static ST_FIELD_INFO	innodb_sysindex_fields_info[] =
 #define SYS_INDEX_TYPE		3
 	{STRUCT_FLD(field_name,		"TYPE"),
 	 STRUCT_FLD(field_length,	MY_INT32_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	0),
 	 STRUCT_FLD(old_name,		""),
@@ -6916,7 +6916,7 @@ static ST_FIELD_INFO	innodb_sysindex_fields_info[] =
 #define SYS_INDEX_NUM_FIELDS	4
 	{STRUCT_FLD(field_name,		"N_FIELDS"),
 	 STRUCT_FLD(field_length,	MY_INT32_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	0),
 	 STRUCT_FLD(old_name,		""),
@@ -6925,7 +6925,7 @@ static ST_FIELD_INFO	innodb_sysindex_fields_info[] =
 #define SYS_INDEX_PAGE_NO	5
 	{STRUCT_FLD(field_name,		"PAGE_NO"),
 	 STRUCT_FLD(field_length,	MY_INT32_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	0),
 	 STRUCT_FLD(old_name,		""),
@@ -6934,7 +6934,7 @@ static ST_FIELD_INFO	innodb_sysindex_fields_info[] =
 #define SYS_INDEX_SPACE		6
 	{STRUCT_FLD(field_name,		"SPACE"),
 	 STRUCT_FLD(field_length,	MY_INT32_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	0),
 	 STRUCT_FLD(old_name,		""),
@@ -6943,7 +6943,7 @@ static ST_FIELD_INFO	innodb_sysindex_fields_info[] =
 #define SYS_INDEX_MERGE_THRESHOLD 7
 	{STRUCT_FLD(field_name,		"MERGE_THRESHOLD"),
 	 STRUCT_FLD(field_length,	MY_INT32_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	0),
 	 STRUCT_FLD(old_name,		""),
@@ -7087,11 +7087,11 @@ innodb_sys_indexes_init(
 	DBUG_RETURN(0);
 }
 
-struct st_mysql_plugin	i_s_innodb_sys_indexes =
+struct st_myblockchain_plugin	i_s_innodb_sys_indexes =
 {
-	/* the plugin type (a MYSQL_XXX_PLUGIN value) */
+	/* the plugin type (a MYBLOCKCHAIN_XXX_PLUGIN value) */
 	/* int */
-	STRUCT_FLD(type, MYSQL_INFORMATION_SCHEMA_PLUGIN),
+	STRUCT_FLD(type, MYBLOCKCHAIN_INFORMATION_SCHEMA_PLUGIN),
 
 	/* pointer to type-specific plugin descriptor */
 	/* void* */
@@ -7125,10 +7125,10 @@ struct st_mysql_plugin	i_s_innodb_sys_indexes =
 	/* unsigned int */
 	STRUCT_FLD(version, INNODB_VERSION_SHORT),
 
-	/* struct st_mysql_show_var* */
+	/* struct st_myblockchain_show_var* */
 	STRUCT_FLD(status_vars, NULL),
 
-	/* struct st_mysql_sys_var** */
+	/* struct st_myblockchain_sys_var** */
 	STRUCT_FLD(system_vars, NULL),
 
 	/* reserved for dependency checking */
@@ -7147,7 +7147,7 @@ static ST_FIELD_INFO	innodb_sys_columns_fields_info[] =
 #define SYS_COLUMN_TABLE_ID		0
 	{STRUCT_FLD(field_name,		"TABLE_ID"),
 	 STRUCT_FLD(field_length,	MY_INT64_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONGLONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONGLONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_UNSIGNED),
 	 STRUCT_FLD(old_name,		""),
@@ -7156,7 +7156,7 @@ static ST_FIELD_INFO	innodb_sys_columns_fields_info[] =
 #define SYS_COLUMN_NAME		1
 	{STRUCT_FLD(field_name,		"NAME"),
 	 STRUCT_FLD(field_length,	NAME_LEN + 1),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_STRING),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_STRING),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	0),
 	 STRUCT_FLD(old_name,		""),
@@ -7165,7 +7165,7 @@ static ST_FIELD_INFO	innodb_sys_columns_fields_info[] =
 #define SYS_COLUMN_POSITION	2
 	{STRUCT_FLD(field_name,		"POS"),
 	 STRUCT_FLD(field_length,	MY_INT64_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONGLONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONGLONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_UNSIGNED),
 	 STRUCT_FLD(old_name,		""),
@@ -7174,7 +7174,7 @@ static ST_FIELD_INFO	innodb_sys_columns_fields_info[] =
 #define SYS_COLUMN_MTYPE		3
 	{STRUCT_FLD(field_name,		"MTYPE"),
 	 STRUCT_FLD(field_length,	MY_INT32_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	0),
 	 STRUCT_FLD(old_name,		""),
@@ -7183,7 +7183,7 @@ static ST_FIELD_INFO	innodb_sys_columns_fields_info[] =
 #define SYS_COLUMN__PRTYPE	4
 	{STRUCT_FLD(field_name,		"PRTYPE"),
 	 STRUCT_FLD(field_length,	MY_INT32_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	0),
 	 STRUCT_FLD(old_name,		""),
@@ -7192,7 +7192,7 @@ static ST_FIELD_INFO	innodb_sys_columns_fields_info[] =
 #define SYS_COLUMN_COLUMN_LEN	5
 	{STRUCT_FLD(field_name,		"LEN"),
 	 STRUCT_FLD(field_length,	MY_INT32_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	0),
 	 STRUCT_FLD(old_name,		""),
@@ -7337,11 +7337,11 @@ innodb_sys_columns_init(
 	DBUG_RETURN(0);
 }
 
-struct st_mysql_plugin	i_s_innodb_sys_columns =
+struct st_myblockchain_plugin	i_s_innodb_sys_columns =
 {
-	/* the plugin type (a MYSQL_XXX_PLUGIN value) */
+	/* the plugin type (a MYBLOCKCHAIN_XXX_PLUGIN value) */
 	/* int */
-	STRUCT_FLD(type, MYSQL_INFORMATION_SCHEMA_PLUGIN),
+	STRUCT_FLD(type, MYBLOCKCHAIN_INFORMATION_SCHEMA_PLUGIN),
 
 	/* pointer to type-specific plugin descriptor */
 	/* void* */
@@ -7375,10 +7375,10 @@ struct st_mysql_plugin	i_s_innodb_sys_columns =
 	/* unsigned int */
 	STRUCT_FLD(version, INNODB_VERSION_SHORT),
 
-	/* struct st_mysql_show_var* */
+	/* struct st_myblockchain_show_var* */
 	STRUCT_FLD(status_vars, NULL),
 
-	/* struct st_mysql_sys_var** */
+	/* struct st_myblockchain_sys_var** */
 	STRUCT_FLD(system_vars, NULL),
 
 	/* reserved for dependency checking */
@@ -7397,7 +7397,7 @@ static ST_FIELD_INFO	innodb_sys_virtual_fields_info[] =
 #define SYS_VIRTUAL_TABLE_ID		0
 	{STRUCT_FLD(field_name,		"TABLE_ID"),
 	 STRUCT_FLD(field_length,	MY_INT64_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONGLONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONGLONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_UNSIGNED),
 	 STRUCT_FLD(old_name,		""),
@@ -7406,7 +7406,7 @@ static ST_FIELD_INFO	innodb_sys_virtual_fields_info[] =
 #define SYS_VIRTUAL_POS			1
 	{STRUCT_FLD(field_name,		"POS"),
 	 STRUCT_FLD(field_length,	MY_INT32_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_UNSIGNED),
 	 STRUCT_FLD(old_name,		""),
@@ -7415,7 +7415,7 @@ static ST_FIELD_INFO	innodb_sys_virtual_fields_info[] =
 #define SYS_VIRTUAL_BASE_POS		2
 	{STRUCT_FLD(field_name,		"BASE_POS"),
 	 STRUCT_FLD(field_length,	MY_INT32_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_UNSIGNED),
 	 STRUCT_FLD(old_name,		""),
@@ -7549,11 +7549,11 @@ innodb_sys_virtual_init(
 	DBUG_RETURN(0);
 }
 
-struct st_mysql_plugin	i_s_innodb_sys_virtual =
+struct st_myblockchain_plugin	i_s_innodb_sys_virtual =
 {
-	/* the plugin type (a MYSQL_XXX_PLUGIN value) */
+	/* the plugin type (a MYBLOCKCHAIN_XXX_PLUGIN value) */
 	/* int */
-	STRUCT_FLD(type, MYSQL_INFORMATION_SCHEMA_PLUGIN),
+	STRUCT_FLD(type, MYBLOCKCHAIN_INFORMATION_SCHEMA_PLUGIN),
 
 	/* pointer to type-specific plugin descriptor */
 	/* void* */
@@ -7587,10 +7587,10 @@ struct st_mysql_plugin	i_s_innodb_sys_virtual =
 	/* unsigned int */
 	STRUCT_FLD(version, INNODB_VERSION_SHORT),
 
-	/* struct st_mysql_show_var* */
+	/* struct st_myblockchain_show_var* */
 	STRUCT_FLD(status_vars, NULL),
 
-	/* struct st_mysql_sys_var** */
+	/* struct st_myblockchain_sys_var** */
 	STRUCT_FLD(system_vars, NULL),
 
 	/* reserved for dependency checking */
@@ -7608,7 +7608,7 @@ static ST_FIELD_INFO	innodb_sys_fields_fields_info[] =
 #define SYS_FIELD_INDEX_ID	0
 	{STRUCT_FLD(field_name,		"INDEX_ID"),
 	 STRUCT_FLD(field_length,	MY_INT64_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONGLONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONGLONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_UNSIGNED),
 	 STRUCT_FLD(old_name,		""),
@@ -7617,7 +7617,7 @@ static ST_FIELD_INFO	innodb_sys_fields_fields_info[] =
 #define SYS_FIELD_NAME		1
 	{STRUCT_FLD(field_name,		"NAME"),
 	 STRUCT_FLD(field_length,	NAME_LEN + 1),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_STRING),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_STRING),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	0),
 	 STRUCT_FLD(old_name,		""),
@@ -7626,7 +7626,7 @@ static ST_FIELD_INFO	innodb_sys_fields_fields_info[] =
 #define SYS_FIELD_POS		2
 	{STRUCT_FLD(field_name,		"POS"),
 	 STRUCT_FLD(field_length,	MY_INT32_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_UNSIGNED),
 	 STRUCT_FLD(old_name,		""),
@@ -7762,11 +7762,11 @@ innodb_sys_fields_init(
 	DBUG_RETURN(0);
 }
 
-struct st_mysql_plugin	i_s_innodb_sys_fields =
+struct st_myblockchain_plugin	i_s_innodb_sys_fields =
 {
-	/* the plugin type (a MYSQL_XXX_PLUGIN value) */
+	/* the plugin type (a MYBLOCKCHAIN_XXX_PLUGIN value) */
 	/* int */
-	STRUCT_FLD(type, MYSQL_INFORMATION_SCHEMA_PLUGIN),
+	STRUCT_FLD(type, MYBLOCKCHAIN_INFORMATION_SCHEMA_PLUGIN),
 
 	/* pointer to type-specific plugin descriptor */
 	/* void* */
@@ -7800,10 +7800,10 @@ struct st_mysql_plugin	i_s_innodb_sys_fields =
 	/* unsigned int */
 	STRUCT_FLD(version, INNODB_VERSION_SHORT),
 
-	/* struct st_mysql_show_var* */
+	/* struct st_myblockchain_show_var* */
 	STRUCT_FLD(status_vars, NULL),
 
-	/* struct st_mysql_sys_var** */
+	/* struct st_myblockchain_sys_var** */
 	STRUCT_FLD(system_vars, NULL),
 
 	/* reserved for dependency checking */
@@ -7822,7 +7822,7 @@ static ST_FIELD_INFO	innodb_sys_foreign_fields_info[] =
 #define SYS_FOREIGN_ID		0
 	{STRUCT_FLD(field_name,		"ID"),
 	 STRUCT_FLD(field_length,	NAME_LEN + 1),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_STRING),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_STRING),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	0),
 	 STRUCT_FLD(old_name,		""),
@@ -7831,7 +7831,7 @@ static ST_FIELD_INFO	innodb_sys_foreign_fields_info[] =
 #define SYS_FOREIGN_FOR_NAME	1
 	{STRUCT_FLD(field_name,		"FOR_NAME"),
 	 STRUCT_FLD(field_length,	NAME_LEN + 1),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_STRING),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_STRING),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	0),
 	 STRUCT_FLD(old_name,		""),
@@ -7840,7 +7840,7 @@ static ST_FIELD_INFO	innodb_sys_foreign_fields_info[] =
 #define SYS_FOREIGN_REF_NAME	2
 	{STRUCT_FLD(field_name,		"REF_NAME"),
 	 STRUCT_FLD(field_length,	NAME_LEN + 1),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_STRING),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_STRING),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	0),
 	 STRUCT_FLD(old_name,		""),
@@ -7849,7 +7849,7 @@ static ST_FIELD_INFO	innodb_sys_foreign_fields_info[] =
 #define SYS_FOREIGN_NUM_COL	3
 	{STRUCT_FLD(field_name,		"N_COLS"),
 	 STRUCT_FLD(field_length,	MY_INT32_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_UNSIGNED),
 	 STRUCT_FLD(old_name,		""),
@@ -7858,7 +7858,7 @@ static ST_FIELD_INFO	innodb_sys_foreign_fields_info[] =
 #define SYS_FOREIGN_TYPE	4
 	{STRUCT_FLD(field_name,		"TYPE"),
 	 STRUCT_FLD(field_length,	MY_INT32_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_UNSIGNED),
 	 STRUCT_FLD(old_name,		""),
@@ -7991,11 +7991,11 @@ innodb_sys_foreign_init(
 	DBUG_RETURN(0);
 }
 
-struct st_mysql_plugin	i_s_innodb_sys_foreign =
+struct st_myblockchain_plugin	i_s_innodb_sys_foreign =
 {
-	/* the plugin type (a MYSQL_XXX_PLUGIN value) */
+	/* the plugin type (a MYBLOCKCHAIN_XXX_PLUGIN value) */
 	/* int */
-	STRUCT_FLD(type, MYSQL_INFORMATION_SCHEMA_PLUGIN),
+	STRUCT_FLD(type, MYBLOCKCHAIN_INFORMATION_SCHEMA_PLUGIN),
 
 	/* pointer to type-specific plugin descriptor */
 	/* void* */
@@ -8029,10 +8029,10 @@ struct st_mysql_plugin	i_s_innodb_sys_foreign =
 	/* unsigned int */
 	STRUCT_FLD(version, INNODB_VERSION_SHORT),
 
-	/* struct st_mysql_show_var* */
+	/* struct st_myblockchain_show_var* */
 	STRUCT_FLD(status_vars, NULL),
 
-	/* struct st_mysql_sys_var** */
+	/* struct st_myblockchain_sys_var** */
 	STRUCT_FLD(system_vars, NULL),
 
 	/* reserved for dependency checking */
@@ -8051,7 +8051,7 @@ static ST_FIELD_INFO	innodb_sys_foreign_cols_fields_info[] =
 #define SYS_FOREIGN_COL_ID		0
 	{STRUCT_FLD(field_name,		"ID"),
 	 STRUCT_FLD(field_length,	NAME_LEN + 1),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_STRING),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_STRING),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	0),
 	 STRUCT_FLD(old_name,		""),
@@ -8060,7 +8060,7 @@ static ST_FIELD_INFO	innodb_sys_foreign_cols_fields_info[] =
 #define SYS_FOREIGN_COL_FOR_NAME	1
 	{STRUCT_FLD(field_name,		"FOR_COL_NAME"),
 	 STRUCT_FLD(field_length,	NAME_LEN + 1),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_STRING),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_STRING),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	0),
 	 STRUCT_FLD(old_name,		""),
@@ -8069,7 +8069,7 @@ static ST_FIELD_INFO	innodb_sys_foreign_cols_fields_info[] =
 #define SYS_FOREIGN_COL_REF_NAME	2
 	{STRUCT_FLD(field_name,		"REF_COL_NAME"),
 	 STRUCT_FLD(field_length,	NAME_LEN + 1),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_STRING),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_STRING),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	0),
 	 STRUCT_FLD(old_name,		""),
@@ -8078,7 +8078,7 @@ static ST_FIELD_INFO	innodb_sys_foreign_cols_fields_info[] =
 #define SYS_FOREIGN_COL_POS		3
 	{STRUCT_FLD(field_name,		"POS"),
 	 STRUCT_FLD(field_length,	MY_INT32_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_UNSIGNED),
 	 STRUCT_FLD(old_name,		""),
@@ -8212,11 +8212,11 @@ innodb_sys_foreign_cols_init(
 	DBUG_RETURN(0);
 }
 
-struct st_mysql_plugin	i_s_innodb_sys_foreign_cols =
+struct st_myblockchain_plugin	i_s_innodb_sys_foreign_cols =
 {
-	/* the plugin type (a MYSQL_XXX_PLUGIN value) */
+	/* the plugin type (a MYBLOCKCHAIN_XXX_PLUGIN value) */
 	/* int */
-	STRUCT_FLD(type, MYSQL_INFORMATION_SCHEMA_PLUGIN),
+	STRUCT_FLD(type, MYBLOCKCHAIN_INFORMATION_SCHEMA_PLUGIN),
 
 	/* pointer to type-specific plugin descriptor */
 	/* void* */
@@ -8250,10 +8250,10 @@ struct st_mysql_plugin	i_s_innodb_sys_foreign_cols =
 	/* unsigned int */
 	STRUCT_FLD(version, INNODB_VERSION_SHORT),
 
-	/* struct st_mysql_show_var* */
+	/* struct st_myblockchain_show_var* */
 	STRUCT_FLD(status_vars, NULL),
 
-	/* struct st_mysql_sys_var** */
+	/* struct st_myblockchain_sys_var** */
 	STRUCT_FLD(system_vars, NULL),
 
 	/* reserved for dependency checking */
@@ -8272,7 +8272,7 @@ static ST_FIELD_INFO	innodb_sys_tablespaces_fields_info[] =
 #define SYS_TABLESPACES_SPACE		0
 	{STRUCT_FLD(field_name,		"SPACE"),
 	 STRUCT_FLD(field_length,	MY_INT32_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_UNSIGNED),
 	 STRUCT_FLD(old_name,		""),
@@ -8281,7 +8281,7 @@ static ST_FIELD_INFO	innodb_sys_tablespaces_fields_info[] =
 #define SYS_TABLESPACES_NAME		1
 	{STRUCT_FLD(field_name,		"NAME"),
 	 STRUCT_FLD(field_length,	MAX_FULL_NAME_LEN + 1),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_STRING),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_STRING),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	0),
 	 STRUCT_FLD(old_name,		""),
@@ -8290,7 +8290,7 @@ static ST_FIELD_INFO	innodb_sys_tablespaces_fields_info[] =
 #define SYS_TABLESPACES_FLAGS		2
 	{STRUCT_FLD(field_name,		"FLAG"),
 	 STRUCT_FLD(field_length,	MY_INT32_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_UNSIGNED),
 	 STRUCT_FLD(old_name,		""),
@@ -8299,7 +8299,7 @@ static ST_FIELD_INFO	innodb_sys_tablespaces_fields_info[] =
 #define SYS_TABLESPACES_FILE_FORMAT	3
 	{STRUCT_FLD(field_name,		"FILE_FORMAT"),
 	 STRUCT_FLD(field_length,	10),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_STRING),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_STRING),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_MAYBE_NULL),
 	 STRUCT_FLD(old_name,		""),
@@ -8308,7 +8308,7 @@ static ST_FIELD_INFO	innodb_sys_tablespaces_fields_info[] =
 #define SYS_TABLESPACES_ROW_FORMAT	4
 	{STRUCT_FLD(field_name,		"ROW_FORMAT"),
 	 STRUCT_FLD(field_length,	22),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_STRING),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_STRING),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_MAYBE_NULL),
 	 STRUCT_FLD(old_name,		""),
@@ -8317,7 +8317,7 @@ static ST_FIELD_INFO	innodb_sys_tablespaces_fields_info[] =
 #define SYS_TABLESPACES_PAGE_SIZE	5
 	{STRUCT_FLD(field_name,		"PAGE_SIZE"),
 	 STRUCT_FLD(field_length,	MY_INT32_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_UNSIGNED),
 	 STRUCT_FLD(old_name,		""),
@@ -8326,7 +8326,7 @@ static ST_FIELD_INFO	innodb_sys_tablespaces_fields_info[] =
 #define SYS_TABLESPACES_ZIP_PAGE_SIZE	6
 	{STRUCT_FLD(field_name,		"ZIP_PAGE_SIZE"),
 	 STRUCT_FLD(field_length,	MY_INT32_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_UNSIGNED),
 	 STRUCT_FLD(old_name,		""),
@@ -8335,7 +8335,7 @@ static ST_FIELD_INFO	innodb_sys_tablespaces_fields_info[] =
 #define SYS_TABLESPACES_SPACE_TYPE	7
 	{STRUCT_FLD(field_name,		"SPACE_TYPE"),
 	 STRUCT_FLD(field_length,	10),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_STRING),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_STRING),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_MAYBE_NULL),
 	 STRUCT_FLD(old_name,		""),
@@ -8344,7 +8344,7 @@ static ST_FIELD_INFO	innodb_sys_tablespaces_fields_info[] =
 #define SYS_TABLESPACES_FS_BLOCK_SIZE	8
 	{STRUCT_FLD(field_name,		"FS_BLOCK_SIZE"),
 	 STRUCT_FLD(field_length,	MY_INT32_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_UNSIGNED),
 	 STRUCT_FLD(old_name,		""),
@@ -8353,7 +8353,7 @@ static ST_FIELD_INFO	innodb_sys_tablespaces_fields_info[] =
 #define SYS_TABLESPACES_FILE_SIZE	9
 	{STRUCT_FLD(field_name,		"FILE_SIZE"),
 	 STRUCT_FLD(field_length,	MY_INT64_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONGLONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONGLONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_UNSIGNED),
 	 STRUCT_FLD(old_name,		""),
@@ -8362,7 +8362,7 @@ static ST_FIELD_INFO	innodb_sys_tablespaces_fields_info[] =
 #define SYS_TABLESPACES_ALLOC_SIZE	10
 	{STRUCT_FLD(field_name,		"ALLOCATED_SIZE"),
 	 STRUCT_FLD(field_length,	MY_INT64_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONGLONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONGLONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_UNSIGNED),
 	 STRUCT_FLD(old_name,           ""),
@@ -8371,7 +8371,7 @@ static ST_FIELD_INFO	innodb_sys_tablespaces_fields_info[] =
 #define SYS_TABLESPACES_COMPRESSION	11
 	{STRUCT_FLD(field_name,		"COMPRESSION"),
 	 STRUCT_FLD(field_length,	MAX_COMPRESSION_LEN + 1),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_STRING),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_STRING),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	0),
 	 STRUCT_FLD(old_name,		""),
@@ -8594,11 +8594,11 @@ innodb_sys_tablespaces_init(
 	DBUG_RETURN(0);
 }
 
-struct st_mysql_plugin	i_s_innodb_sys_tablespaces =
+struct st_myblockchain_plugin	i_s_innodb_sys_tablespaces =
 {
-	/* the plugin type (a MYSQL_XXX_PLUGIN value) */
+	/* the plugin type (a MYBLOCKCHAIN_XXX_PLUGIN value) */
 	/* int */
-	STRUCT_FLD(type, MYSQL_INFORMATION_SCHEMA_PLUGIN),
+	STRUCT_FLD(type, MYBLOCKCHAIN_INFORMATION_SCHEMA_PLUGIN),
 
 	/* pointer to type-specific plugin descriptor */
 	/* void* */
@@ -8632,10 +8632,10 @@ struct st_mysql_plugin	i_s_innodb_sys_tablespaces =
 	/* unsigned int */
 	STRUCT_FLD(version, INNODB_VERSION_SHORT),
 
-	/* struct st_mysql_show_var* */
+	/* struct st_myblockchain_show_var* */
 	STRUCT_FLD(status_vars, NULL),
 
-	/* struct st_mysql_sys_var** */
+	/* struct st_myblockchain_sys_var** */
 	STRUCT_FLD(system_vars, NULL),
 
 	/* reserved for dependency checking */
@@ -8654,7 +8654,7 @@ static ST_FIELD_INFO	innodb_sys_datafiles_fields_info[] =
 #define SYS_DATAFILES_SPACE		0
 	{STRUCT_FLD(field_name,		"SPACE"),
 	 STRUCT_FLD(field_length,	MY_INT32_NUM_DECIMAL_DIGITS),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_LONG),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_LONG),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	MY_I_S_UNSIGNED),
 	 STRUCT_FLD(old_name,		""),
@@ -8663,7 +8663,7 @@ static ST_FIELD_INFO	innodb_sys_datafiles_fields_info[] =
 #define SYS_DATAFILES_PATH		1
 	{STRUCT_FLD(field_name,		"PATH"),
 	 STRUCT_FLD(field_length,	OS_FILE_MAX_PATH),
-	 STRUCT_FLD(field_type,		MYSQL_TYPE_STRING),
+	 STRUCT_FLD(field_type,		MYBLOCKCHAIN_TYPE_STRING),
 	 STRUCT_FLD(value,		0),
 	 STRUCT_FLD(field_flags,	0),
 	 STRUCT_FLD(old_name,		""),
@@ -8787,11 +8787,11 @@ innodb_sys_datafiles_init(
 	DBUG_RETURN(0);
 }
 
-struct st_mysql_plugin	i_s_innodb_sys_datafiles =
+struct st_myblockchain_plugin	i_s_innodb_sys_datafiles =
 {
-	/* the plugin type (a MYSQL_XXX_PLUGIN value) */
+	/* the plugin type (a MYBLOCKCHAIN_XXX_PLUGIN value) */
 	/* int */
-	STRUCT_FLD(type, MYSQL_INFORMATION_SCHEMA_PLUGIN),
+	STRUCT_FLD(type, MYBLOCKCHAIN_INFORMATION_SCHEMA_PLUGIN),
 
 	/* pointer to type-specific plugin descriptor */
 	/* void* */
@@ -8825,10 +8825,10 @@ struct st_mysql_plugin	i_s_innodb_sys_datafiles =
 	/* unsigned int */
 	STRUCT_FLD(version, INNODB_VERSION_SHORT),
 
-	/* struct st_mysql_show_var* */
+	/* struct st_myblockchain_show_var* */
 	STRUCT_FLD(status_vars, NULL),
 
-	/* struct st_mysql_sys_var** */
+	/* struct st_myblockchain_sys_var** */
 	STRUCT_FLD(system_vars, NULL),
 
 	/* reserved for dependency checking */

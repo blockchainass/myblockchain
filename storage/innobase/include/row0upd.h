@@ -404,7 +404,7 @@ row_upd_parse_sys_vals(
 	trx_id_t*	trx_id,	/*!< out: trx id */
 	roll_ptr_t*	roll_ptr);/*!< out: roll ptr */
 /*********************************************************************//**
-Updates the trx id and roll ptr field in a clustered index record in database
+Updates the trx id and roll ptr field in a clustered index record in blockchain
 recovery. */
 void
 row_upd_rec_sys_fields_in_recovery(
@@ -512,9 +512,9 @@ struct upd_node_t{
 	ibool		searched_update;
 				/* TRUE if searched update, FALSE if
 				positioned */
-	ibool		in_mysql_interface;
+	ibool		in_myblockchain_interface;
 				/* TRUE if the update node was created
-				for the MySQL interface */
+				for the MyBlockchain interface */
 	dict_foreign_t*	foreign;/* NULL or pointer to a foreign key
 				constraint if this update node is used in
 				doing an ON DELETE or ON UPDATE operation */
@@ -557,7 +557,7 @@ struct upd_node_t{
 				index record which should be updated or
 				deleted; the cursor is stored in the graph
 				of 'select' field above, except in the case
-				of the MySQL interface */
+				of the MyBlockchain interface */
 	dict_table_t*	table;	/*!< table where updated */
 	upd_t*		update;	/*!< update vector for the row */
 	ulint		update_n_fields;

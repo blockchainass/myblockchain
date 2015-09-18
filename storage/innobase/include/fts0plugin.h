@@ -28,7 +28,7 @@ Created 2013/06/04 Shaohua Wang
 
 #include "ha_prototypes.h"
 
-extern struct st_mysql_ftparser fts_default_parser;
+extern struct st_myblockchain_ftparser fts_default_parser;
 
 struct fts_ast_state_t;
 
@@ -44,7 +44,7 @@ fts_parse_by_parser(
 	ibool			mode,	/*!< in: query boolean mode */
 	uchar*			query,	/*!< in: query string */
 	ulint			len,	/*!< in: query string length */
-	st_mysql_ftparser*	parse,	/*!< in: fts plugin parser */
+	st_myblockchain_ftparser*	parse,	/*!< in: fts plugin parser */
 	fts_ast_state_t*	state);	/*!< in: query parser state */
 
 #endif	/* INNOBASE_FTS0PLUGIN_H */

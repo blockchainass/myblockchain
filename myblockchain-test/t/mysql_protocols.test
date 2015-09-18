@@ -1,0 +1,16 @@
+
+# Embedded server doesn't support external clients
+--source include/not_embedded.inc
+# Windows does not have SOCKET, but will try to create a PIPE as well as MEMORY
+--source include/not_windows.inc
+
+# test for Bug #4998 "--protocol doesn't reject bad values"
+
+--exec echo "select ' ok' as '<default>'" | $MYBLOCKCHAIN
+--exec echo "select ' ok' as 'TCP'"       | $MYBLOCKCHAIN --protocol=TCP
+--exec echo "select ' ok' as 'SOCKET'"    | $MYBLOCKCHAIN --protocol=SOCKET
+--exec echo "select ' ok' as 'PIPE'"      | $MYBLOCKCHAIN --protocol=PIPE    2>&1 || true
+--exec echo "select ' ok' as 'MEMORY'"    | $MYBLOCKCHAIN --protocol=MEMORY  2>&1 || true
+--exec echo "select ' ok' as 'NullS'"     | $MYBLOCKCHAIN --protocol=NullS   2>&1 || true
+
+# End of 4.1 tests

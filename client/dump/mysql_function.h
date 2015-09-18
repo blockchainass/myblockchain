@@ -15,8 +15,8 @@
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifndef MYSQL_FUNCTION_INCLUDED
-#define MYSQL_FUNCTION_INCLUDED
+#ifndef MYBLOCKCHAIN_FUNCTION_INCLUDED
+#define MYBLOCKCHAIN_FUNCTION_INCLUDED
 
 #include "abstract_plain_sql_object_dump_task.h"
 

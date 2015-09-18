@@ -49,8 +49,8 @@ this program; if not, write to the Free Software Foundation, Inc.,
 #include <sql_table.h>
 #include <sql_tablespace.h>
 #include <my_check_opt.h>
-#include <mysql/service_thd_alloc.h>
-#include <mysql/service_thd_wait.h>
+#include <myblockchain/service_thd_alloc.h>
+#include <myblockchain/service_thd_wait.h>
 
 /* Include necessary InnoDB headers */
 #include "api0api.h"
@@ -89,7 +89,7 @@ this program; if not, write to the Free Software Foundation, Inc.,
 #include "row0import.h"
 #include "row0ins.h"
 #include "row0merge.h"
-#include "row0mysql.h"
+#include "row0myblockchain.h"
 #include "row0quiesce.h"
 #include "row0sel.h"
 #include "row0trunc.h"
@@ -117,11 +117,11 @@ enum_tx_isolation thd_get_trx_isolation(const THD* thd);
 #include "ha_innopart.h"
 
 /** to protect innobase_open_files */
-static mysql_mutex_t innobase_share_mutex;
+static myblockchain_mutex_t innobase_share_mutex;
 /** to force correct commit order in binlog */
 static ulong commit_threads = 0;
-static mysql_cond_t commit_cond;
-static mysql_mutex_t commit_cond_m;
+static myblockchain_cond_t commit_cond;
+static myblockchain_mutex_t commit_cond_m;
 static bool innodb_inited = 0;
 
 #define INSIDE_HA_INNOBASE_CC
@@ -160,7 +160,7 @@ static char*	innobase_disable_monitor_counter	= NULL;
 static char*	innobase_reset_monitor_counter		= NULL;
 static char*	innobase_reset_all_monitor_counter	= NULL;
 
-/* The highest file format being used in the database. The value can be
+/* The highest file format being used in the blockchain. The value can be
 set by user, however, it will be adjusted to the newer file format if
 a table of such format is created/opened. */
 char*	innobase_file_format_max		= NULL;
@@ -285,7 +285,7 @@ const char reserved_system_space_name[] = "innodb_system";
 tablespace. */
 const char reserved_temporary_space_name[] = "innodb_temporary";
 
-/* Call back function array defined by MySQL and used to
+/* Call back function array defined by MyBlockchain and used to
 retrieve FTS results. */
 const struct _ft_vft ft_vft_result = {NULL,
 				      innobase_fts_find_ranking,
@@ -305,9 +305,9 @@ const struct _ft_vft_ext ft_vft_ext_result = {innobase_fts_get_version,
 
 /* Keys to register pthread mutexes/cond in the current file with
 performance schema */
-static mysql_pfs_key_t	innobase_share_mutex_key;
-static mysql_pfs_key_t	commit_cond_mutex_key;
-static mysql_pfs_key_t	commit_cond_key;
+static myblockchain_pfs_key_t	innobase_share_mutex_key;
+static myblockchain_pfs_key_t	commit_cond_mutex_key;
+static myblockchain_pfs_key_t	commit_cond_key;
 
 static PSI_mutex_info	all_pthread_mutexes[] = {
 	PSI_KEY(commit_cond_mutex),
@@ -536,31 +536,31 @@ srv_mbr_debug(const byte* data)
 #endif
 /*************************************************************//**
 Check whether valid argument given to innodb_ft_*_stopword_table.
-This function is registered as a callback with MySQL.
+This function is registered as a callback with MyBlockchain.
 @return 0 for valid stopword table */
 static
 int
 innodb_stopword_table_validate(
 /*===========================*/
 	THD*				thd,	/*!< in: thread handle */
-	struct st_mysql_sys_var*	var,	/*!< in: pointer to system
+	struct st_myblockchain_sys_var*	var,	/*!< in: pointer to system
 						variable */
 	void*				save,	/*!< out: immediate result
 						for update function */
-	struct st_mysql_value*		value);	/*!< in: incoming string */
+	struct st_myblockchain_value*		value);	/*!< in: incoming string */
 
 /******************************************************************//**
-Maps a MySQL trx isolation level code to the InnoDB isolation level code
+Maps a MyBlockchain trx isolation level code to the InnoDB isolation level code
 @return	InnoDB isolation level */
 static inline
 ulint
 innobase_map_isolation_level(
 /*=========================*/
-	enum_tx_isolation	iso);	/*!< in: MySQL isolation level code */
+	enum_tx_isolation	iso);	/*!< in: MyBlockchain isolation level code */
 
 /** Gets field offset for a field in a table.
-@param[in]	table	MySQL table object
-@param[in]	field	MySQL field object
+@param[in]	table	MyBlockchain table object
+@param[in]	field	MyBlockchain field object
 @return offset */
 static inline
 uint
@@ -570,30 +570,30 @@ get_field_offset(
 
 static const char innobase_hton_name[]= "InnoDB";
 
-static MYSQL_THDVAR_BOOL(support_xa, PLUGIN_VAR_OPCMDARG,
+static MYBLOCKCHAIN_THDVAR_BOOL(support_xa, PLUGIN_VAR_OPCMDARG,
   "Enable InnoDB support for the XA two-phase commit",
   /* check_func */ NULL, /* update_func */ NULL,
   /* default */ TRUE);
 
-static MYSQL_THDVAR_BOOL(table_locks, PLUGIN_VAR_OPCMDARG,
+static MYBLOCKCHAIN_THDVAR_BOOL(table_locks, PLUGIN_VAR_OPCMDARG,
   "Enable InnoDB locking in LOCK TABLES",
   /* check_func */ NULL, /* update_func */ NULL,
   /* default */ TRUE);
 
-static MYSQL_THDVAR_BOOL(strict_mode, PLUGIN_VAR_OPCMDARG,
+static MYBLOCKCHAIN_THDVAR_BOOL(strict_mode, PLUGIN_VAR_OPCMDARG,
   "Use strict mode when evaluating create options.",
   NULL, NULL, TRUE);
 
-static MYSQL_THDVAR_BOOL(ft_enable_stopword, PLUGIN_VAR_OPCMDARG,
+static MYBLOCKCHAIN_THDVAR_BOOL(ft_enable_stopword, PLUGIN_VAR_OPCMDARG,
   "Create FTS index with stopword.",
   NULL, NULL,
   /* default */ TRUE);
 
-static MYSQL_THDVAR_ULONG(lock_wait_timeout, PLUGIN_VAR_RQCMDARG,
+static MYBLOCKCHAIN_THDVAR_ULONG(lock_wait_timeout, PLUGIN_VAR_RQCMDARG,
   "Timeout in seconds an InnoDB transaction may wait for a lock before being rolled back. Values above 100000000 disable the timeout.",
   NULL, NULL, 50, 1, 1024 * 1024 * 1024, 0);
 
-static MYSQL_THDVAR_STR(ft_user_stopword_table,
+static MYBLOCKCHAIN_THDVAR_STR(ft_user_stopword_table,
   PLUGIN_VAR_OPCMDARG|PLUGIN_VAR_MEMALLOC,
   "User supplied stopword table name, effective in the session level.",
   innodb_stopword_table_validate, NULL, NULL);
@@ -741,7 +741,7 @@ int
 innobase_close_connection(
 /*======================*/
 	handlerton*	hton,		/*!< in/out: InnoDB handlerton */
-	THD*		thd);		/*!< in: MySQL thread handle for
+	THD*		thd);		/*!< in: MyBlockchain thread handle for
 					which to close the connection */
 
 /*****************************************************************//**
@@ -751,11 +751,11 @@ void
 innobase_kill_connection(
 /*=====================*/
 	handlerton*	hton,		/*!< in/out: InnoDB handlerton */
-	THD*		thd);		/*!< in: MySQL thread handle for
+	THD*		thd);		/*!< in: MyBlockchain thread handle for
 					which to close the connection */
 
 /*****************************************************************//**
-Commits a transaction in an InnoDB database or marks an SQL statement
+Commits a transaction in an InnoDB blockchain or marks an SQL statement
 ended.
 @return 0 */
 static
@@ -763,7 +763,7 @@ int
 innobase_commit(
 /*============*/
 	handlerton*	hton,		/*!< in/out: InnoDB handlerton */
-	THD*		thd,		/*!< in: MySQL thread handle of the
+	THD*		thd,		/*!< in: MyBlockchain thread handle of the
 					user for whom the transaction should
 					be committed */
 	bool		commit_trx);	/*!< in: true - commit transaction
@@ -779,7 +779,7 @@ int
 innobase_rollback(
 /*==============*/
 	handlerton*	hton,		/*!< in/out: InnoDB handlerton */
-	THD*		thd,		/*!< in: handle to the MySQL thread
+	THD*		thd,		/*!< in: handle to the MyBlockchain thread
 					of the user whose transaction should
 					be rolled back */
 	bool		rollback_trx);	/*!< in: TRUE - rollback entire
@@ -795,7 +795,7 @@ int
 innobase_rollback_to_savepoint(
 /*===========================*/
 	handlerton*	hton,		/*!< in/out: InnoDB handlerton */
-	THD*		thd,		/*!< in: handle to the MySQL thread of
+	THD*		thd,		/*!< in: handle to the MyBlockchain thread of
 					the user whose XA transaction should
 					be rolled back to savepoint */
 	void*		savepoint);	/*!< in: savepoint data */
@@ -809,7 +809,7 @@ bool
 innobase_rollback_to_savepoint_can_release_mdl(
 /*===========================================*/
 	handlerton*	hton,		/*!< in/out: InnoDB handlerton */
-	THD*		thd);		/*!< in: handle to the MySQL thread of
+	THD*		thd);		/*!< in: handle to the MyBlockchain thread of
 					the user whose XA transaction should
 					be rolled back to savepoint */
 
@@ -821,7 +821,7 @@ int
 innobase_savepoint(
 /*===============*/
 	handlerton*	hton,		/*!< in/out: InnoDB handlerton */
-	THD*		thd,		/*!< in: handle to the MySQL thread of
+	THD*		thd,		/*!< in: handle to the MyBlockchain thread of
 					the user's XA transaction for which
 					we need to take a savepoint */
 	void*		savepoint);	/*!< in: savepoint data */
@@ -835,7 +835,7 @@ int
 innobase_release_savepoint(
 /*=======================*/
 	handlerton*	hton,		/*!< in/out: handlerton for InnoDB */
-	THD*		thd,		/*!< in: handle to the MySQL thread
+	THD*		thd,		/*!< in: handle to the MyBlockchain thread
 					of the user whose transaction's
 					savepoint should be released */
 	void*		savepoint);	/*!< in: savepoint data */
@@ -901,7 +901,7 @@ int
 innobase_xa_prepare(
 /*================*/
 	handlerton*	hton,		/*!< in: InnoDB handlerton */
-	THD*		thd,		/*!< in: handle to the MySQL thread of
+	THD*		thd,		/*!< in: handle to the MyBlockchain thread of
 					the user whose XA transaction should
 					be prepared */
 	bool		all);		/*!< in: true - prepare transaction
@@ -944,7 +944,7 @@ innobase_rollback_by_xid(
 @param[in]	hton		Handlerton of InnoDB
 @param[in]	thd		Connection
 @param[in]	alter_info	Describies the command and how to do it.
-@return MySQL error code*/
+@return MyBlockchain error code*/
 static
 int
 innobase_alter_tablespace(
@@ -952,19 +952,19 @@ innobase_alter_tablespace(
 	THD*			thd,
 	st_alter_tablespace*	alter_info);
 
-/** Remove all tables in the named database inside InnoDB.
+/** Remove all tables in the named blockchain inside InnoDB.
 @param[in]	hton	handlerton from InnoDB
 @param[in]	path	Database path; Inside InnoDB the name of the last
-directory in the path is used as the database name.
-For example, in 'mysql/data/test' the database name is 'test'. */
+directory in the path is used as the blockchain name.
+For example, in 'myblockchain/data/test' the blockchain name is 'test'. */
 static
 void
-innobase_drop_database(
+innobase_drop_blockchain(
 	handlerton*	hton,
 	char*		path);
 
 /*******************************************************************//**
-Closes an InnoDB database. */
+Closes an InnoDB blockchain. */
 static
 int
 innobase_end(
@@ -983,7 +983,7 @@ int
 innobase_start_trx_and_assign_read_view(
 /*====================================*/
 	handlerton*	hton,		/* in: InnoDB handlerton */
-	THD*		thd);		/* in: MySQL thread handle of the
+	THD*		thd);		/* in: MyBlockchain thread handle of the
 					user for whom the transaction should
 					be committed */
 /** Flush InnoDB redo logs to the file system.
@@ -1006,7 +1006,7 @@ int
 innodb_show_status(
 /*===============*/
 	handlerton*	hton,		/*!< in: the innodb handlerton */
-	THD*		thd,		/*!< in: the MySQL query thread of
+	THD*		thd,		/*!< in: the MyBlockchain query thread of
 					the caller */
 	stat_print_fn*	stat_print);
 /************************************************************************//**
@@ -1017,7 +1017,7 @@ bool
 innobase_show_status(
 /*=================*/
 	handlerton*		hton,	/*!< in: the innodb handlerton */
-	THD*			thd,	/*!< in: the MySQL query thread of
+	THD*			thd,	/*!< in: the MyBlockchain query thread of
 					the caller */
 	stat_print_fn*		stat_print,
 	enum ha_stat_type	stat_type);
@@ -1083,11 +1083,11 @@ int
 innobase_commit_concurrency_validate(
 /*=================================*/
 	THD*				thd,	/*!< in: thread handle */
-	struct st_mysql_sys_var*	var,	/*!< in: pointer to system
+	struct st_myblockchain_sys_var*	var,	/*!< in: pointer to system
 						variable */
 	void*				save,	/*!< out: immediate result
 						for update function */
-	struct st_mysql_value*		value)	/*!< in: incoming string */
+	struct st_myblockchain_value*		value)	/*!< in: incoming string */
 {
 	long long	intbuf;
 	ulong		commit_concurrency;
@@ -1303,8 +1303,8 @@ innobase_srv_conc_enter_innodb(
 
 			--trx->n_tickets_to_enter_innodb;
 
-		} else if (trx->mysql_thd != NULL
-			   && thd_is_replication_slave_thread(trx->mysql_thd)) {
+		} else if (trx->myblockchain_thd != NULL
+			   && thd_is_replication_slave_thread(trx->myblockchain_thd)) {
 
 			UT_WAIT_FOR(
 				srv_conc_get_active_threads()
@@ -1424,7 +1424,7 @@ thd_lock_wait_timeout(
 	THD*	thd)	/*!< in: thread handle, or NULL to query
 			the global innodb_lock_wait_timeout */
 {
-	/* According to <mysql/plugin.h>, passing thd == NULL
+	/* According to <myblockchain/plugin.h>, passing thd == NULL
 	returns the global value of the session variable. */
 	return(THDVAR(thd, lock_wait_timeout));
 }
@@ -1443,7 +1443,7 @@ thd_set_lock_wait_time(
 }
 
 /** Obtain the private handler of InnoDB session specific data.
-@param[in,out]	thd	MySQL thread handler.
+@param[in,out]	thd	MyBlockchain thread handler.
 @return reference to private handler */
 __attribute__((warn_unused_result))
 static
@@ -1462,8 +1462,8 @@ thd_to_innodb_session(
 	return(innodb_session);
 }
 
-/** Obtain the InnoDB transaction of a MySQL thread.
-@param[in,out]	thd	MySQL thread handler.
+/** Obtain the InnoDB transaction of a MyBlockchain thread.
+@param[in,out]	thd	MyBlockchain thread handler.
 @return reference to transaction pointer */
 __attribute__((warn_unused_result))
 trx_t*&
@@ -1498,10 +1498,10 @@ thd_is_ins_sel_stmt(THD* user_thd)
 }
 
 /** Add the table handler to thread cache.
-Obtain the InnoDB transaction of a MySQL thread.
+Obtain the InnoDB transaction of a MyBlockchain thread.
 @param[in,out]	table		table handler
 @param[in,out]	heap		heap for allocating system columns.
-@param[in,out]	thd		MySQL thread handler */
+@param[in,out]	thd		MyBlockchain thread handler */
 static inline
 void
 add_table_to_thread_cache(
@@ -1518,7 +1518,7 @@ add_table_to_thread_cache(
 }
 
 /********************************************************************//**
-Call this function when mysqld passes control to the client. That is to
+Call this function when myblockchaind passes control to the client. That is to
 avoid deadlocks on the adaptive hash S-latch possibly held by thd. For more
 documentation, see handler.cc.
 @return 0 */
@@ -1527,7 +1527,7 @@ int
 innobase_release_temporary_latches(
 /*===============================*/
 	handlerton*	hton,	/*!< in: handlerton */
-	THD*		thd)	/*!< in: MySQL thread */
+	THD*		thd)	/*!< in: MyBlockchain thread */
 {
 	DBUG_ASSERT(hton == innodb_hton_ptr);
 
@@ -1548,7 +1548,7 @@ innobase_release_temporary_latches(
 /********************************************************************//**
 Increments innobase_active_counter and every INNOBASE_WAKE_INTERVALth
 time calls srv_active_wake_master_thread. This function should be used
-when a single database operation may introduce a small need for
+when a single blockchain operation may introduce a small need for
 server utility activity, like checkpointing. */
 inline
 void
@@ -1563,12 +1563,12 @@ innobase_active_small(void)
 }
 
 /********************************************************************//**
-Converts an InnoDB error code to a MySQL error code and also tells to MySQL
+Converts an InnoDB error code to a MyBlockchain error code and also tells to MyBlockchain
 about a possible transaction rollback inside InnoDB caused by a lock wait
 timeout or a deadlock.
-@return MySQL error code */
+@return MyBlockchain error code */
 int
-convert_error_code_to_mysql(
+convert_error_code_to_myblockchain(
 /*========================*/
 	dberr_t	error,	/*!< in: InnoDB error code */
 	ulint	flags,  /*!< in: InnoDB table flags, or 0 */
@@ -1597,7 +1597,7 @@ convert_error_code_to_mysql(
 
 	case DB_DUPLICATE_KEY:
 		/* Be cautious with returning this error, since
-		mysql could re-enter the storage layer to get
+		myblockchain could re-enter the storage layer to get
 		duplicated key info, the operation requires a
 		valid table handle and/or transaction information,
 		which might not always be available in the error
@@ -1622,7 +1622,7 @@ convert_error_code_to_mysql(
 	case DB_FORCED_ABORT:
 	case DB_DEADLOCK:
 		/* Since we rolled back the whole transaction, we must
-		tell it also to MySQL so that MySQL knows to empty the
+		tell it also to MyBlockchain so that MyBlockchain knows to empty the
 		cached binlog for this transaction */
 
 		if (thd != NULL) {
@@ -1632,7 +1632,7 @@ convert_error_code_to_mysql(
 		return(HA_ERR_LOCK_DEADLOCK);
 
 	case DB_LOCK_WAIT_TIMEOUT:
-		/* Starting from 5.0.13, we let MySQL just roll back the
+		/* Starting from 5.0.13, we let MyBlockchain just roll back the
 		latest SQL statement in a lock wait timeout. Previously, we
 		rolled back the whole transaction. */
 
@@ -1657,7 +1657,7 @@ convert_error_code_to_mysql(
 	case DB_CANNOT_DROP_CONSTRAINT:
 
 		return(HA_ERR_ROW_IS_REFERENCED); /* TODO: This is a bit
-						misleading, a new MySQL error
+						misleading, a new MyBlockchain error
 						code should be introduced */
 
 	case DB_CORRUPTION:
@@ -1715,7 +1715,7 @@ convert_error_code_to_mysql(
 
 	case DB_LOCK_TABLE_FULL:
 		/* Since we rolled back the whole transaction, we must
-		tell it also to MySQL so that MySQL knows to empty the
+		tell it also to MyBlockchain so that MyBlockchain knows to empty the
 		cached binlog for this transaction */
 
 		if (thd) {
@@ -1756,10 +1756,10 @@ convert_error_code_to_mysql(
 /*************************************************************//**
 Prints info of a THD object (== user session thread) to the given file. */
 void
-innobase_mysql_print_thd(
+innobase_myblockchain_print_thd(
 /*=====================*/
 	FILE*	f,		/*!< in: output stream */
-	THD*	thd,		/*!< in: MySQL THD object */
+	THD*	thd,		/*!< in: MyBlockchain THD object */
 	uint	max_query_len)	/*!< in: max query length to print, or 0 to
 				use the default max length */
 {
@@ -1776,7 +1776,7 @@ Get the error message format string.
 const char*
 innobase_get_err_msg(
 /*=================*/
-	int	error_code)	/*!< in: MySQL error code */
+	int	error_code)	/*!< in: MyBlockchain error code */
 {
 	return(my_get_err_msg(error_code));
 }
@@ -1786,7 +1786,7 @@ Get the variable length bounds of the given character set. */
 void
 innobase_get_cset_width(
 /*====================*/
-	ulint	cset,		/*!< in: MySQL charset-collation code */
+	ulint	cset,		/*!< in: MyBlockchain charset-collation code */
 	ulint*	mbminlen,	/*!< out: minimum length of a char (in bytes) */
 	ulint*	mbmaxlen)	/*!< out: maximum length of a char (in bytes) */
 {
@@ -1844,7 +1844,7 @@ my_bool
 innobase_check_identifier_length(
 /*=============================*/
 	const char*	id)	/* in: FK identifier to check excluding the
-				database portion. */
+				blockchain portion. */
 {
 	int		well_formed_error = 0;
 	CHARSET_INFO	*cs = system_charset_info;
@@ -1939,14 +1939,14 @@ Determines the connection character set.
 CHARSET_INFO*
 innobase_get_charset(
 /*=================*/
-	THD*	mysql_thd)	/*!< in: MySQL thread handle */
+	THD*	myblockchain_thd)	/*!< in: MyBlockchain thread handle */
 {
-	return(thd_charset(mysql_thd));
+	return(thd_charset(myblockchain_thd));
 }
 
 /** Determines the current SQL statement.
 Thread unsafe, can only be called from the thread owning the THD.
-@param[in]	thd	MySQL thread handle
+@param[in]	thd	MyBlockchain thread handle
 @param[out]	length	Length of the SQL statement
 @return			SQL statement string */
 const char*
@@ -1965,7 +1965,7 @@ innobase_get_stmt_unsafe(
 /** Determines the current SQL statement.
 Thread safe, can be called from any thread as the string is copied
 into the provided buffer.
-@param[in]	thd	MySQL thread handle
+@param[in]	thd	MyBlockchain thread handle
 @param[out]	buf	Buffer containing SQL statement
 @param[in]	buflen	Length of provided buffer
 @return			Length of the SQL statement */
@@ -1993,7 +1993,7 @@ innobase_get_table_cache_size(void)
 
 /**********************************************************************//**
 Get the current setting of the lower_case_table_names global parameter from
-mysqld.cc. We do a dirty read because for one there is no synchronization
+myblockchaind.cc. We do a dirty read because for one there is no synchronization
 object and secondly there is little harm in doing so even if we get a torn
 read.
 @return value of lower_case_table_names */
@@ -2008,7 +2008,7 @@ innobase_get_lower_case_table_names(void)
 Creates a temporary file.
 @return temporary file descriptor, or < 0 on error */
 int
-innobase_mysql_tmpfile(void)
+innobase_myblockchain_tmpfile(void)
 /*========================*/
 {
 	int	fd2 = -1;
@@ -2019,7 +2019,7 @@ innobase_mysql_tmpfile(void)
 		return(-1);
 	);
 
-	fd = mysql_tmpfile("ib");
+	fd = myblockchain_tmpfile("ib");
 
 	if (fd >= 0) {
 		/* Copy the file descriptor, so that the additional resources
@@ -2032,7 +2032,7 @@ innobase_mysql_tmpfile(void)
 		my_close(). */
 
 #ifdef _WIN32
-		/* Note that on Windows, the integer returned by mysql_tmpfile
+		/* Note that on Windows, the integer returned by myblockchain_tmpfile
 		has no relation to C runtime file descriptor. Here, we need
 		to call my_get_osfhandle to get the HANDLE and then convert it
 		to C runtime filedescriptor. */
@@ -2068,7 +2068,7 @@ innobase_mysql_tmpfile(void)
 }
 
 /*********************************************************************//**
-Wrapper around MySQL's copy_and_convert function.
+Wrapper around MyBlockchain's copy_and_convert function.
 @return number of bytes copied to 'to' */
 ulint
 innobase_convert_string(
@@ -2092,7 +2092,7 @@ innobase_convert_string(
 
 /*******************************************************************//**
 Formats the raw data in "data" (in InnoDB on-disk format) that is of
-type DATA_(CHAR|VARCHAR|MYSQL|VARMYSQL) using "charset_coll" and writes
+type DATA_(CHAR|VARCHAR|MYBLOCKCHAIN|VARMYBLOCKCHAIN) using "charset_coll" and writes
 the result to "buf". The result is converted to "system_charset_info".
 Not more than "buf_size" bytes are written to "buf".
 The result is always NUL-terminated (provided buf_size > 0) and the
@@ -2184,7 +2184,7 @@ Compression::validate(const char* algorithm)
 /*********************************************************************//**
 Compute the next autoinc value.
 
-For MySQL replication the autoincrement values can be partitioned among
+For MyBlockchain replication the autoincrement values can be partitioned among
 the nodes. The offset is the start or origin of the autoincrement value
 for a particular node. For n nodes the increment will be n and the offset
 will be in the interval [1, n]. The formula tries to allocate the next
@@ -2216,7 +2216,7 @@ innobase_next_autoinc(
 	ut_a(block > 0);
 	ut_a(max_value > 0);
 
-	/* According to MySQL documentation, if the offset is greater than
+	/* According to MyBlockchain documentation, if the offset is greater than
 	the step then the offset is ignored. */
 	if (offset > block) {
 		offset = 0;
@@ -2292,7 +2292,7 @@ innobase_trx_init(
 {
 	DBUG_ENTER("innobase_trx_init");
 	DBUG_ASSERT(EQ_CURRENT_THD(thd));
-	DBUG_ASSERT(thd == trx->mysql_thd);
+	DBUG_ASSERT(thd == trx->myblockchain_thd);
 
 	trx->check_foreigns = !thd_test_options(
 		thd, OPTION_NO_FOREIGN_KEY_CHECKS);
@@ -2304,7 +2304,7 @@ innobase_trx_init(
 }
 
 /*********************************************************************//**
-Allocates an InnoDB transaction for a MySQL handler object for DML.
+Allocates an InnoDB transaction for a MyBlockchain handler object for DML.
 @return InnoDB transaction handle */
 trx_t*
 innobase_trx_allocate(
@@ -2317,9 +2317,9 @@ innobase_trx_allocate(
 	DBUG_ASSERT(thd != NULL);
 	DBUG_ASSERT(EQ_CURRENT_THD(thd));
 
-	trx = trx_allocate_for_mysql();
+	trx = trx_allocate_for_myblockchain();
 
-	trx->mysql_thd = thd;
+	trx->myblockchain_thd = thd;
 
 	innobase_trx_init(thd, trx);
 
@@ -2327,8 +2327,8 @@ innobase_trx_allocate(
 }
 
 /*********************************************************************//**
-Gets the InnoDB transaction handle for a MySQL handler object, creates
-an InnoDB transaction struct if the corresponding MySQL thread struct still
+Gets the InnoDB transaction handle for a MyBlockchain handler object, creates
+an InnoDB transaction struct if the corresponding MyBlockchain thread struct still
 lacks one.
 @return InnoDB transaction handle */
 static inline
@@ -2362,9 +2362,9 @@ replaced with that of the 2nd argument. The previous value is
 returned through the 3rd argument's buffer, unless it's NULL.  When
 the buffer is not provided (value NULL) that should mean the caller
 restores previously saved association so the current trx has to be
-additionally freed from all association with MYSQL.
+additionally freed from all association with MYBLOCKCHAIN.
 
-@param[in,out]	thd		MySQL thread handle
+@param[in,out]	thd		MyBlockchain thread handle
 @param[in]	new_trx_arg	replacement trx_t
 @param[in,out]	ptr_trx_arg	pointer to a buffer to store old trx_t */
 static
@@ -2377,20 +2377,20 @@ innodb_replace_trx_in_thd(
 	trx_t*& trx = thd_to_trx(thd);
 
 	ut_ad(new_trx_arg == NULL
-	      || (((trx_t*) new_trx_arg)->mysql_thd == thd
+	      || (((trx_t*) new_trx_arg)->myblockchain_thd == thd
 		  && !((trx_t*) new_trx_arg)->is_recovered));
 
 	if (ptr_trx_arg) {
 		*ptr_trx_arg = trx;
 
 		ut_ad(trx == NULL
-		      || (trx->mysql_thd == thd && !trx->is_recovered));
+		      || (trx->myblockchain_thd == thd && !trx->is_recovered));
 
 	} else if (trx->state == TRX_STATE_NOT_STARTED) {
-		ut_ad(thd == trx->mysql_thd);
-		trx_free_for_mysql(trx);
+		ut_ad(thd == trx->myblockchain_thd);
+		trx_free_for_myblockchain(trx);
 	} else {
-		ut_ad(thd == trx->mysql_thd);
+		ut_ad(thd == trx->myblockchain_thd);
 		ut_ad(trx_state_eq(trx, TRX_STATE_PREPARED));
 		trx_disconnect_prepared(trx);
 	}
@@ -2398,8 +2398,8 @@ innodb_replace_trx_in_thd(
 }
 
 /*********************************************************************//**
-Note that a transaction has been registered with MySQL.
-@return true if transaction is registered with MySQL 2PC coordinator */
+Note that a transaction has been registered with MyBlockchain.
+@return true if transaction is registered with MyBlockchain 2PC coordinator */
 static inline
 bool
 trx_is_registered_for_2pc(
@@ -2410,7 +2410,7 @@ trx_is_registered_for_2pc(
 }
 
 /*********************************************************************//**
-Note that a transaction has been registered with MySQL 2PC coordinator. */
+Note that a transaction has been registered with MyBlockchain 2PC coordinator. */
 static inline
 void
 trx_register_for_2pc(
@@ -2432,8 +2432,8 @@ trx_deregister_from_2pc(
 }
 
 /*********************************************************************//**
-Copy table flags from MySQL's HA_CREATE_INFO into an InnoDB table object.
-Those flags are stored in .frm file and end up in the MySQL table object,
+Copy table flags from MyBlockchain's HA_CREATE_INFO into an InnoDB table object.
+Those flags are stored in .frm file and end up in the MyBlockchain table object,
 but are frequently used inside InnoDB so we keep their copies into the
 InnoDB table object. */
 void
@@ -2467,8 +2467,8 @@ innobase_copy_frm_flags_from_create_info(
 }
 
 /*********************************************************************//**
-Copy table flags from MySQL's TABLE_SHARE into an InnoDB table object.
-Those flags are stored in .frm file and end up in the MySQL table object,
+Copy table flags from MyBlockchain's TABLE_SHARE into an InnoDB table object.
+Those flags are stored in .frm file and end up in the MyBlockchain table object,
 but are frequently used inside InnoDB so we keep their copies into the
 InnoDB table object. */
 void
@@ -2534,7 +2534,7 @@ ha_innobase::ha_innobase(
 		  ),
 	m_start_of_scan(),
 	m_num_write_row(),
-        m_mysql_has_locked()
+        m_myblockchain_has_locked()
 {}
 
 /*********************************************************************//**
@@ -2599,8 +2599,8 @@ ha_innobase::update_thd()
 }
 
 /*********************************************************************//**
-Registers an InnoDB transaction with the MySQL 2PC coordinator, so that
-the MySQL XA code knows to call the InnoDB prepare and commit, or rollback
+Registers an InnoDB transaction with the MyBlockchain 2PC coordinator, so that
+the MyBlockchain XA code knows to call the InnoDB prepare and commit, or rollback
 for the transaction. This MUST be called for every transaction for which
 the user may call commit or rollback. Calling this several times to register
 the same transaction is allowed, too. This function also registers the
@@ -2610,7 +2610,7 @@ void
 innobase_register_trx(
 /*==================*/
 	handlerton*	hton,	/* in: Innobase handlerton */
-	THD*		thd,	/* in: MySQL thd (connection) object */
+	THD*		thd,	/* in: MyBlockchain thd (connection) object */
 	trx_t*		trx)	/* in: transaction to register */
 {
 	const ulonglong	trx_id = static_cast<const ulonglong>(
@@ -2627,7 +2627,7 @@ innobase_register_trx(
 	trx_register_for_2pc(trx);
 }
 
-/*	BACKGROUND INFO: HOW THE MYSQL QUERY CACHE WORKS WITH INNODB
+/*	BACKGROUND INFO: HOW THE MYBLOCKCHAIN QUERY CACHE WORKS WITH INNODB
 	------------------------------------------------------------
 
 1) The use of the query cache for TBL is disabled when there is an
@@ -2639,7 +2639,7 @@ in the InnoDB data dictionary, and does only allow such transactions whose
 id <= INV_TRX_ID to use the query cache.
 
 3) When InnoDB does an INSERT/DELETE/UPDATE to a table TBL, or an implicit
-modification because an ON DELETE CASCADE, we invalidate the MySQL query cache
+modification because an ON DELETE CASCADE, we invalidate the MyBlockchain query cache
 of TBL immediately.
 
 How this is implemented inside InnoDB:
@@ -2652,7 +2652,7 @@ table: just check if there are locks in the lock list of the table.
 counter and stores the value INV_TRX_ID to the tables on which it had a lock.
 
 3) If there is an implicit table change from ON DELETE CASCADE or SET NULL,
-InnoDB calls an invalidate method for the MySQL query cache for that table.
+InnoDB calls an invalidate method for the MyBlockchain query cache for that table.
 
 How this is implemented inside sql_cache.cc:
 
@@ -2673,7 +2673,7 @@ put restrictions on the use of the query cache.
 */
 
 /******************************************************************//**
-The MySQL query cache uses this to check from InnoDB if the query cache at
+The MyBlockchain query cache uses this to check from InnoDB if the query cache at
 the moment is allowed to operate on an InnoDB table. The SQL query must
 be a non-locking SELECT.
 
@@ -2688,7 +2688,7 @@ Why a deadlock of threads is not possible: the query cache calls this function
 at the start of a SELECT processing. Then the calling thread cannot be
 holding any InnoDB semaphores. The calling thread is holding the
 query cache mutex, and this function will reserve the InnoDB trx_sys->mutex.
-Thus, the 'rank' in sync0mutex.h of the MySQL query cache mutex is above
+Thus, the 'rank' in sync0mutex.h of the MyBlockchain query cache mutex is above
 the InnoDB trx_sys->mutex.
 @return TRUE if permitted, FALSE if not; note that the value FALSE
 does not mean we should invalidate the query cache: invalidation is
@@ -2737,15 +2737,15 @@ innobase_query_caching_of_table_permitted(
 
 	}
 
-	if (is_autocommit && trx->n_mysql_tables_in_use == 0) {
+	if (is_autocommit && trx->n_myblockchain_tables_in_use == 0) {
 		/* We are going to retrieve the query result from the query
 		cache. This cannot be a store operation to the query cache
-		because then MySQL would have locks on tables already.
+		because then MyBlockchain would have locks on tables already.
 
 		TODO: if the user has used LOCK TABLES to lock the table,
 		then we open a transaction in the call of row_.. below.
 		That trx can stay open until UNLOCK TABLES. The same problem
-		exists even if we do not use the query cache. MySQL should be
+		exists even if we do not use the query cache. MyBlockchain should be
 		modified so that it ALWAYS calls some cleanup function when
 		the processing of a query ends!
 
@@ -2773,14 +2773,14 @@ innobase_query_caching_of_table_permitted(
 }
 
 /*****************************************************************//**
-Invalidates the MySQL query cache for the table. */
+Invalidates the MyBlockchain query cache for the table. */
 void
 innobase_invalidate_query_cache(
 /*============================*/
 	trx_t*		trx,		/*!< in: transaction which
 					modifies the table */
 	const char*	full_name,	/*!< in: concatenation of
-					database name, path separator,
+					blockchain name, path separator,
 					table name, null char NUL;
 					NOTE that in Windows this is
 					always in LOWER CASE! */
@@ -2792,7 +2792,7 @@ innobase_invalidate_query_cache(
 	not have latches of a lower rank. */
 
 	/* Argument TRUE below means we are using transactions */
-	mysql_query_cache_invalidate4(trx->mysql_thd,
+	myblockchain_query_cache_invalidate4(trx->myblockchain_thd,
 				      full_name,
 				      (uint32) full_name_len,
 				      TRUE);
@@ -2808,8 +2808,8 @@ innobase_quote_identifier(
 	trx_t*		trx,
 	const char*	id)
 {
-	const int	q = trx != NULL && trx->mysql_thd != NULL
-		? get_quote_char_for_identifier(trx->mysql_thd, id, strlen(id))
+	const int	q = trx != NULL && trx->myblockchain_thd != NULL
+		? get_quote_char_for_identifier(trx->myblockchain_thd, id, strlen(id))
 		: '`';
 
 	if (q == EOF) {
@@ -2828,13 +2828,13 @@ innobase_quote_identifier(
 	}
 }
 
-/** Convert a table name to the MySQL system_charset_info (UTF-8)
+/** Convert a table name to the MyBlockchain system_charset_info (UTF-8)
 and quote it.
 @param[out]	buf	buffer for converted identifier
 @param[in]	buflen	length of buf, in bytes
 @param[in]	id	identifier to convert
 @param[in]	idlen	length of id, in bytes
-@param[in]	thd	MySQL connection thread, or NULL
+@param[in]	thd	MyBlockchain connection thread, or NULL
 @return pointer to the end of buf */
 char*
 innobase_convert_identifier(
@@ -2849,7 +2849,7 @@ innobase_convert_identifier(
 	char nz[MAX_TABLE_NAME_LEN + 1];
 	char nz2[MAX_TABLE_NAME_LEN + 1];
 
-	/* Decode the table name.  The MySQL function expects
+	/* Decode the table name.  The MyBlockchain function expects
 	a NUL-terminated string.  The input and output strings
 	buffers must not be shared. */
 	ut_a(idlen <= MAX_TABLE_NAME_LEN);
@@ -2867,7 +2867,7 @@ innobase_convert_identifier(
 }
 
 /*****************************************************************//**
-Convert a table name to the MySQL system_charset_info (UTF-8).
+Convert a table name to the MyBlockchain system_charset_info (UTF-8).
 @return pointer to the end of buf */
 char*
 innobase_convert_name(
@@ -2876,7 +2876,7 @@ innobase_convert_name(
 	ulint		buflen,	/*!< in: length of buf, in bytes */
 	const char*	id,	/*!< in: table name to convert */
 	ulint		idlen,	/*!< in: length of id, in bytes */
-	THD*		thd)	/*!< in: MySQL connection thread, or NULL */
+	THD*		thd)	/*!< in: MyBlockchain connection thread, or NULL */
 {
 	char*		s	= buf;
 	const char*	bufend	= buf + buflen;
@@ -2888,7 +2888,7 @@ innobase_convert_name(
 				buf, buflen, id, idlen, thd));
 	}
 
-	/* Print the database name and table name separately. */
+	/* Print the blockchain name and table name separately. */
 	s = innobase_convert_identifier(s, bufend - s, id, slash - id, thd);
 	if (s < bufend) {
 		*s++ = '.';
@@ -2903,7 +2903,7 @@ innobase_convert_name(
 
 /*****************************************************************//**
 A wrapper function of innobase_convert_name(), convert a table name
-to the MySQL system_charset_info (UTF-8) and quote it if needed.
+to the MyBlockchain system_charset_info (UTF-8) and quote it if needed.
 @return pointer to the end of buf */
 void
 innobase_format_name(
@@ -2929,7 +2929,7 @@ trx_is_interrupted(
 /*===============*/
 	const trx_t*	trx)	/*!< in: transaction */
 {
-	return(trx && trx->mysql_thd && thd_killed(trx->mysql_thd));
+	return(trx && trx->myblockchain_thd && thd_killed(trx->myblockchain_thd));
 }
 
 /**********************************************************************//**
@@ -2940,12 +2940,12 @@ trx_is_strict(
 /*==========*/
 	trx_t*	trx)	/*!< in: transaction */
 {
-	return(trx && trx->mysql_thd && THDVAR(trx->mysql_thd, strict_mode));
+	return(trx && trx->myblockchain_thd && THDVAR(trx->myblockchain_thd, strict_mode));
 }
 
 /**************************************************************//**
 Resets some fields of a m_prebuilt struct. The template is used in fast
-retrieval of just those column values MySQL needs in its processing. */
+retrieval of just those column values MyBlockchain needs in its processing. */
 void
 ha_innobase::reset_template(void)
 /*=============================*/
@@ -2960,9 +2960,9 @@ ha_innobase::reset_template(void)
 	if (m_prebuilt->idx_cond) {
 		m_prebuilt->idx_cond = NULL;
 		m_prebuilt->idx_cond_n_cols = 0;
-		/* Invalidate m_prebuilt->mysql_template
+		/* Invalidate m_prebuilt->myblockchain_template
 		in ha_innobase::write_row(). */
-		m_prebuilt->template_type = ROW_MYSQL_NO_TEMPLATE;
+		m_prebuilt->template_type = ROW_MYBLOCKCHAIN_NO_TEMPLATE;
 	}
 }
 
@@ -3004,7 +3004,7 @@ ha_innobase::init_table_handle_for_HANDLER(void)
 	innobase_register_trx(ht, m_user_thd, m_prebuilt->trx);
 
 	/* We did the necessary inits in this function, no need to repeat them
-	in row_search_for_mysql */
+	in row_search_for_myblockchain */
 
 	m_prebuilt->sql_stat_start = FALSE;
 
@@ -3066,7 +3066,7 @@ is_supported_system_table of InnoDB storage engine handlerton.
 Currently we support only plugin, servers,  help- and time_zone- related
 system tables in InnoDB. Please don't add any SE-specific system tables here.
 
-@param db				database name to check.
+@param db				blockchain name to check.
 @param table_name			table name to check.
 @param is_sql_layer_system_table	if the supplied db.table_name is a SQL
 					layer system table.
@@ -3150,7 +3150,7 @@ innodb_log_checksum_func_update(ulint	algorithm)
 }
 
 /*********************************************************************//**
-Opens an InnoDB database.
+Opens an InnoDB blockchain.
 @return 0 on success, 1 on failure */
 static
 int
@@ -3188,7 +3188,7 @@ innobase_init(
 	innobase_hton->rollback_by_xid = innobase_rollback_by_xid;
 	innobase_hton->create = innobase_create_handler;
 	innobase_hton->alter_tablespace = innobase_alter_tablespace;
-	innobase_hton->drop_database = innobase_drop_database;
+	innobase_hton->drop_blockchain = innobase_drop_blockchain;
 	innobase_hton->panic = innobase_end;
 	innobase_hton->partition_flags= innobase_partition_flags;
 
@@ -3210,21 +3210,21 @@ innobase_init(
 	innobase_hton->is_supported_system_table=
 		innobase_is_supported_system_table;
 
-	ut_a(DATA_MYSQL_TRUE_VARCHAR == (ulint)MYSQL_TYPE_VARCHAR);
+	ut_a(DATA_MYBLOCKCHAIN_TRUE_VARCHAR == (ulint)MYBLOCKCHAIN_TYPE_VARCHAR);
 
 #ifndef DBUG_OFF
 	static const char	test_filename[] = "-@";
 	char			test_tablename[sizeof test_filename
-				+ sizeof(srv_mysql50_table_name_prefix) - 1];
+				+ sizeof(srv_myblockchain50_table_name_prefix) - 1];
 	if ((sizeof(test_tablename)) - 1
 			!= filename_to_tablename(test_filename,
 						 test_tablename,
 						 sizeof(test_tablename), true)
 			|| strncmp(test_tablename,
-				   srv_mysql50_table_name_prefix,
-				   sizeof(srv_mysql50_table_name_prefix) - 1)
+				   srv_myblockchain50_table_name_prefix,
+				   sizeof(srv_myblockchain50_table_name_prefix) - 1)
 			|| strcmp(test_tablename
-				  + sizeof(srv_mysql50_table_name_prefix) - 1,
+				  + sizeof(srv_myblockchain50_table_name_prefix) - 1,
 				  test_filename)) {
 
 		sql_print_error("tablename encoding has been changed");
@@ -3255,8 +3255,8 @@ innobase_init(
 	Note that when using the embedded server, the datadirectory is not
 	necessarily the current directory of this program. */
 
-	if (mysqld_embedded) {
-		default_path = mysql_real_data_home;
+	if (myblockchaind_embedded) {
+		default_path = myblockchain_real_data_home;
 	} else {
 		/* It's better to use current lib, to keep paths short */
 		current_dir[0] = FN_CURLIB;
@@ -3267,13 +3267,13 @@ innobase_init(
 
 	ut_a(default_path);
 
-	fil_path_to_mysql_datadir = default_path;
-	folder_mysql_datadir = fil_path_to_mysql_datadir;
+	fil_path_to_myblockchain_datadir = default_path;
+	folder_myblockchain_datadir = fil_path_to_myblockchain_datadir;
 
 	/* Set InnoDB initialization parameters according to the values
-	read from MySQL .cnf file */
+	read from MyBlockchain .cnf file */
 
-	/* The default dir for data files is the datadir of MySQL */
+	/* The default dir for data files is the datadir of MyBlockchain */
 
 	srv_data_home = innobase_data_home_dir
 		? innobase_data_home_dir : default_path;
@@ -3359,7 +3359,7 @@ innobase_init(
 
 	/* -------------- All log files ---------------------------*/
 
-	/* The default dir for log files is the datadir of MySQL */
+	/* The default dir for log files is the datadir of MyBlockchain */
 
 	if (!srv_log_group_home_dir) {
 		srv_log_group_home_dir = default_path;
@@ -3402,7 +3402,7 @@ innobase_init(
 
 	/* Given the type of innobase_file_format_name we have little
 	choice but to cast away the constness from the returned name.
-	innobase_file_format_name is used in the MySQL set variable
+	innobase_file_format_name is used in the MyBlockchain set variable
 	interface and so can't be const. */
 
 	innobase_file_format_name =
@@ -3580,7 +3580,7 @@ innobase_change_buffering_inited_ok:
 	srv_max_n_open_files = (ulint) innobase_open_files;
 	srv_innodb_status = (ibool) innobase_create_status_file;
 
-	srv_print_verbose_log = mysqld_embedded ? 0 : 1;
+	srv_print_verbose_log = myblockchaind_embedded ? 0 : 1;
 
 	/* Round up fts_sort_pll_degree to nearest power of 2 number */
 	for (num_pll_degree = 1;
@@ -3592,45 +3592,45 @@ innobase_change_buffering_inited_ok:
 
 	fts_sort_pll_degree = num_pll_degree;
 
-	/* Store the default charset-collation number of this MySQL
+	/* Store the default charset-collation number of this MyBlockchain
 	installation */
 
-	data_mysql_default_charset_coll = (ulint) default_charset_info->number;
+	data_myblockchain_default_charset_coll = (ulint) default_charset_info->number;
 
 	innobase_commit_concurrency_init_default();
 
 #ifdef HAVE_PSI_INTERFACE
-	/* Register keys with MySQL performance schema */
+	/* Register keys with MyBlockchain performance schema */
 	int	count;
 
 	count = array_elements(all_pthread_mutexes);
-	mysql_mutex_register("innodb", all_pthread_mutexes, count);
+	myblockchain_mutex_register("innodb", all_pthread_mutexes, count);
 
 # ifdef UNIV_PFS_MUTEX
 	count = array_elements(all_innodb_mutexes);
-	mysql_mutex_register("innodb", all_innodb_mutexes, count);
+	myblockchain_mutex_register("innodb", all_innodb_mutexes, count);
 # endif /* UNIV_PFS_MUTEX */
 
 # ifdef UNIV_PFS_RWLOCK
 	count = array_elements(all_innodb_rwlocks);
-	mysql_rwlock_register("innodb", all_innodb_rwlocks, count);
+	myblockchain_rwlock_register("innodb", all_innodb_rwlocks, count);
 # endif /* UNIV_PFS_MUTEX */
 
 # ifdef UNIV_PFS_THREAD
 	count = array_elements(all_innodb_threads);
-	mysql_thread_register("innodb", all_innodb_threads, count);
+	myblockchain_thread_register("innodb", all_innodb_threads, count);
 # endif /* UNIV_PFS_THREAD */
 
 # ifdef UNIV_PFS_IO
 	count = array_elements(all_innodb_files);
-	mysql_file_register("innodb", all_innodb_files, count);
+	myblockchain_file_register("innodb", all_innodb_files, count);
 # endif /* UNIV_PFS_IO */
 
 	count = array_elements(all_innodb_conds);
-	mysql_cond_register("innodb", all_innodb_conds, count);
+	myblockchain_cond_register("innodb", all_innodb_conds, count);
 #endif /* HAVE_PSI_INTERFACE */
 
-	/* Set buffer pool size to default for fast startup when mysqld is
+	/* Set buffer pool size to default for fast startup when myblockchaind is
 	run with --help --verbose options. */
 	ulint	srv_buf_pool_size_org = 0;
 	if (opt_help && opt_verbose
@@ -3648,7 +3648,7 @@ innobase_change_buffering_inited_ok:
 	modules, we check at run time that the size is the same in
 	these compilation modules. */
 
-	err = innobase_start_or_create_for_mysql();
+	err = innobase_start_or_create_for_myblockchain();
 
 	if (srv_buf_pool_size_org != 0) {
 		/* Set the original value back to show in help. */
@@ -3674,19 +3674,19 @@ innobase_change_buffering_inited_ok:
 	ibuf_max_size_update(srv_change_buffer_max_size);
 
 	innobase_open_tables = hash_create(200);
-	mysql_mutex_init(innobase_share_mutex_key,
+	myblockchain_mutex_init(innobase_share_mutex_key,
 			 &innobase_share_mutex,
 			 MY_MUTEX_INIT_FAST);
-	mysql_mutex_init(commit_cond_mutex_key,
+	myblockchain_mutex_init(commit_cond_mutex_key,
 			 &commit_cond_m, MY_MUTEX_INIT_FAST);
-	mysql_cond_init(commit_cond_key, &commit_cond);
+	myblockchain_cond_init(commit_cond_key, &commit_cond);
 	innodb_inited= 1;
-#ifdef MYSQL_DYNAMIC_PLUGIN
+#ifdef MYBLOCKCHAIN_DYNAMIC_PLUGIN
 	if (innobase_hton != p) {
 		innobase_hton = reinterpret_cast<handlerton*>(p);
 		*innobase_hton = *innodb_hton_ptr;
 	}
-#endif /* MYSQL_DYNAMIC_PLUGIN */
+#endif /* MYBLOCKCHAIN_DYNAMIC_PLUGIN */
 
 	/* Get the current high water mark format. */
 	innobase_file_format_max = (char*) trx_sys_file_format_max_get();
@@ -3721,7 +3721,7 @@ innobase_change_buffering_inited_ok:
 }
 
 /*******************************************************************//**
-Closes an InnoDB database.
+Closes an InnoDB blockchain.
 @return TRUE if error */
 static
 int
@@ -3744,15 +3744,15 @@ innobase_end(
 		hash_table_free(innobase_open_tables);
 		innobase_open_tables = NULL;
 
-		if (innobase_shutdown_for_mysql() != DB_SUCCESS) {
+		if (innobase_shutdown_for_myblockchain() != DB_SUCCESS) {
 			err = 1;
 		}
 
 		innobase_space_shutdown();
 
-		mysql_mutex_destroy(&innobase_share_mutex);
-		mysql_mutex_destroy(&commit_cond_m);
-		mysql_cond_destroy(&commit_cond);
+		myblockchain_mutex_destroy(&innobase_share_mutex);
+		myblockchain_mutex_destroy(&commit_cond_m);
+		myblockchain_cond_destroy(&commit_cond);
 	}
 
 	DBUG_RETURN(err);
@@ -3797,7 +3797,7 @@ innobase_flush_logs(
 }
 
 /*****************************************************************//**
-Commits a transaction in an InnoDB database. */
+Commits a transaction in an InnoDB blockchain. */
 void
 innobase_commit_low(
 /*================*/
@@ -3805,7 +3805,7 @@ innobase_commit_low(
 {
 	if (trx_is_started(trx)) {
 
-		trx_commit_for_mysql(trx);
+		trx_commit_for_myblockchain(trx);
 	}
 	trx->will_lock = 0;
 }
@@ -3821,7 +3821,7 @@ int
 innobase_start_trx_and_assign_read_view(
 /*====================================*/
 	handlerton*	hton,	/*!< in: InnoDB handlerton */
-	THD*		thd)	/*!< in: MySQL thread handle of the user for
+	THD*		thd)	/*!< in: MyBlockchain thread handle of the user for
 				whom the transaction should be committed */
 {
 	DBUG_ENTER("innobase_start_trx_and_assign_read_view");
@@ -3858,7 +3858,7 @@ innobase_start_trx_and_assign_read_view(
 				    " REPEATABLE READ isolation level.");
 	}
 
-	/* Set the MySQL flag to mark that there is an active transaction */
+	/* Set the MyBlockchain flag to mark that there is an active transaction */
 
 	innobase_register_trx(hton, current_thd, trx);
 
@@ -3866,7 +3866,7 @@ innobase_start_trx_and_assign_read_view(
 }
 
 /*****************************************************************//**
-Commits a transaction in an InnoDB database or marks an SQL statement
+Commits a transaction in an InnoDB blockchain or marks an SQL statement
 ended.
 @return 0 or deadlock error if the transaction was aborted by another
 	higher priority transaction. */
@@ -3875,7 +3875,7 @@ int
 innobase_commit(
 /*============*/
 	handlerton*	hton,		/*!< in: InnoDB handlerton */
-	THD*		thd,		/*!< in: MySQL thread handle of the
+	THD*		thd,		/*!< in: MyBlockchain thread handle of the
 					user for whom the transaction should
 					be committed */
 	bool		commit_trx)	/*!< in: true - commit transaction
@@ -3905,7 +3905,7 @@ innobase_commit(
 
 	if (!trx_is_registered_for_2pc(trx) && trx_is_started(trx)) {
 
-		sql_print_error("Transaction not registered for MySQL 2PC,"
+		sql_print_error("Transaction not registered for MyBlockchain 2PC,"
 				" but transaction is active");
 	}
 
@@ -3917,28 +3917,28 @@ innobase_commit(
 		/* We were instructed to commit the whole transaction, or
 		this is an SQL statement end and autocommit is on */
 
-		/* We need current binlog position for mysqlbackup to work. */
+		/* We need current binlog position for myblockchainbackup to work. */
 
 		if (!read_only) {
 
 			while (innobase_commit_concurrency > 0) {
 
-				mysql_mutex_lock(&commit_cond_m);
+				myblockchain_mutex_lock(&commit_cond_m);
 
 				++commit_threads;
 
 				if (commit_threads
 				    <= innobase_commit_concurrency) {
 
-					mysql_mutex_unlock(&commit_cond_m);
+					myblockchain_mutex_unlock(&commit_cond_m);
 					break;
 				}
 
 				--commit_threads;
 
-				mysql_cond_wait(&commit_cond, &commit_cond_m);
+				myblockchain_cond_wait(&commit_cond, &commit_cond_m);
 
-				mysql_mutex_unlock(&commit_cond_m);
+				myblockchain_mutex_unlock(&commit_cond_m);
 			}
 
 			/* The following call reads the binary log position of
@@ -3947,7 +3947,7 @@ innobase_commit(
 			Binary logging of other engines is not relevant to
 			InnoDB as all InnoDB requires is that committing
 			InnoDB transactions appear in the same order in the
-			MySQL binary log as they appear in InnoDB logs, which
+			MyBlockchain binary log as they appear in InnoDB logs, which
 			is guaranteed by the server.
 
 			If the binary log is not enabled, or the transaction
@@ -3955,9 +3955,9 @@ innobase_commit(
 			be a NULL pointer. */
 			ulonglong	pos;
 
-			thd_binlog_pos(thd, &trx->mysql_log_file_name, &pos);
+			thd_binlog_pos(thd, &trx->myblockchain_log_file_name, &pos);
 
-			trx->mysql_log_offset = static_cast<int64_t>(pos);
+			trx->myblockchain_log_offset = static_cast<int64_t>(pos);
 
 			/* Don't do write + flush right now. For group commit
 			to work we want to do the flush later. */
@@ -3971,14 +3971,14 @@ innobase_commit(
 
 			if (innobase_commit_concurrency > 0) {
 
-				mysql_mutex_lock(&commit_cond_m);
+				myblockchain_mutex_lock(&commit_cond_m);
 
 				ut_ad(commit_threads > 0);
 				--commit_threads;
 
-				mysql_cond_signal(&commit_cond);
+				myblockchain_cond_signal(&commit_cond);
 
-				mysql_mutex_unlock(&commit_cond_m);
+				myblockchain_mutex_unlock(&commit_cond_m);
 			}
 		}
 
@@ -3986,7 +3986,7 @@ innobase_commit(
 
 		/* Now do a write + flush of logs. */
 		if (!read_only) {
-			trx_commit_complete_for_mysql(trx);
+			trx_commit_complete_for_myblockchain(trx);
 		}
 
 	} else {
@@ -4026,7 +4026,7 @@ int
 innobase_rollback(
 /*==============*/
 	handlerton*	hton,		/*!< in: InnoDB handlerton */
-	THD*		thd,		/*!< in: handle to the MySQL thread
+	THD*		thd,		/*!< in: handle to the MyBlockchain thread
 					of the user whose transaction should
 					be rolled back */
 	bool		rollback_trx)	/*!< in: TRUE - rollback entire
@@ -4068,7 +4068,7 @@ innobase_rollback(
 	if (rollback_trx
 	    || !thd_test_options(thd, OPTION_NOT_AUTOCOMMIT | OPTION_BEGIN)) {
 
-		error = trx_rollback_for_mysql(trx);
+		error = trx_rollback_for_myblockchain(trx);
 
 		if (trx->state == TRX_STATE_FORCED_ROLLBACK) {
 
@@ -4091,10 +4091,10 @@ innobase_rollback(
 
 	} else {
 
-		error = trx_rollback_last_sql_stat_for_mysql(trx);
+		error = trx_rollback_last_sql_stat_for_myblockchain(trx);
 	}
 
-	DBUG_RETURN(convert_error_code_to_mysql(error, 0, trx->mysql_thd));
+	DBUG_RETURN(convert_error_code_to_myblockchain(error, 0, trx->myblockchain_thd));
 }
 
 /*****************************************************************//**
@@ -4127,12 +4127,12 @@ innobase_rollback_trx(
 	}
 
 	if (trx_is_rseg_updated(trx)) {
-		error = trx_rollback_for_mysql(trx);
+		error = trx_rollback_for_myblockchain(trx);
 	} else {
 		trx->will_lock = 0;
 	}
 
-	DBUG_RETURN(convert_error_code_to_mysql(error, 0, trx->mysql_thd));
+	DBUG_RETURN(convert_error_code_to_myblockchain(error, 0, trx->myblockchain_thd));
 }
 
 /*****************************************************************//**
@@ -4144,7 +4144,7 @@ int
 innobase_rollback_to_savepoint(
 /*===========================*/
 	handlerton*	hton,		/*!< in: InnoDB handlerton */
-	THD*		thd,		/*!< in: handle to the MySQL thread
+	THD*		thd,		/*!< in: handle to the MyBlockchain thread
 					of the user whose transaction should
 					be rolled back to savepoint */
 	void*		savepoint)	/*!< in: savepoint data */
@@ -4165,16 +4165,16 @@ innobase_rollback_to_savepoint(
 
 	longlong2str((ulint) savepoint, name, 36);
 
-	int64_t	mysql_binlog_cache_pos;
+	int64_t	myblockchain_binlog_cache_pos;
 
-	dberr_t	error = trx_rollback_to_savepoint_for_mysql(
-		trx, name, &mysql_binlog_cache_pos);
+	dberr_t	error = trx_rollback_to_savepoint_for_myblockchain(
+		trx, name, &myblockchain_binlog_cache_pos);
 
 	if (error == DB_SUCCESS && trx->fts_trx != NULL) {
 		fts_savepoint_rollback(trx, name);
 	}
 
-	DBUG_RETURN(convert_error_code_to_mysql(error, 0, NULL));
+	DBUG_RETURN(convert_error_code_to_myblockchain(error, 0, NULL));
 }
 
 /*****************************************************************//**
@@ -4188,7 +4188,7 @@ bool
 innobase_rollback_to_savepoint_can_release_mdl(
 /*===========================================*/
 	handlerton*	hton,		/*!< in: InnoDB handlerton */
-	THD*		thd)		/*!< in: handle to the MySQL thread
+	THD*		thd)		/*!< in: handle to the MyBlockchain thread
 					of the user whose transaction should
 					be rolled back to savepoint */
 {
@@ -4218,7 +4218,7 @@ int
 innobase_release_savepoint(
 /*=======================*/
 	handlerton*	hton,		/*!< in: handlerton for InnoDB */
-	THD*		thd,		/*!< in: handle to the MySQL thread
+	THD*		thd,		/*!< in: handle to the MyBlockchain thread
 					of the user whose transaction's
 					savepoint should be released */
 	void*		savepoint)	/*!< in: savepoint data */
@@ -4238,13 +4238,13 @@ innobase_release_savepoint(
 
 	longlong2str((ulint) savepoint, name, 36);
 
-	error = trx_release_savepoint_for_mysql(trx, name);
+	error = trx_release_savepoint_for_myblockchain(trx, name);
 
 	if (error == DB_SUCCESS && trx->fts_trx != NULL) {
 		fts_savepoint_release(trx, name);
 	}
 
-	DBUG_RETURN(convert_error_code_to_mysql(error, 0, NULL));
+	DBUG_RETURN(convert_error_code_to_myblockchain(error, 0, NULL));
 }
 
 /*****************************************************************//**
@@ -4255,7 +4255,7 @@ int
 innobase_savepoint(
 /*===============*/
 	handlerton*	hton,	/*!< in: handle to the InnoDB handlerton */
-	THD*		thd,	/*!< in: handle to the MySQL thread */
+	THD*		thd,	/*!< in: handle to the MyBlockchain thread */
 	void*		savepoint)/*!< in: savepoint data */
 {
 	DBUG_ENTER("innobase_savepoint");
@@ -4279,13 +4279,13 @@ innobase_savepoint(
 
 	longlong2str((ulint) savepoint,name,36);
 
-	dberr_t	error = trx_savepoint_for_mysql(trx, name, 0);
+	dberr_t	error = trx_savepoint_for_myblockchain(trx, name, 0);
 
 	if (error == DB_SUCCESS && trx->fts_trx != NULL) {
 		fts_savepoint_take(trx, trx->fts_trx, name);
 	}
 
-	DBUG_RETURN(convert_error_code_to_mysql(error, 0, NULL));
+	DBUG_RETURN(convert_error_code_to_myblockchain(error, 0, NULL));
 }
 
 /*****************************************************************//**
@@ -4296,7 +4296,7 @@ int
 innobase_close_connection(
 /*======================*/
 	handlerton*	hton,	/*!< in: innobase handlerton */
-	THD*		thd)	/*!< in: handle to the MySQL thread of the user
+	THD*		thd)	/*!< in: handle to the MyBlockchain thread of the user
 				whose resources should be free'd */
 {
 
@@ -4305,9 +4305,9 @@ innobase_close_connection(
 
 	trx_t*	trx = thd_to_trx(thd);
 
-	/* During server initialization MySQL layer will try to open
+	/* During server initialization MyBlockchain layer will try to open
 	some of the master-slave tables those residing in InnoDB.
-	After MySQL layer is done with needed checks these tables
+	After MyBlockchain layer is done with needed checks these tables
 	are closed followed by invocation of close_connection on the
 	associated thd.
 
@@ -4332,7 +4332,7 @@ innobase_close_connection(
 
 		if (!trx_is_registered_for_2pc(trx) && trx_is_started(trx)) {
 
-			sql_print_error("Transaction not registered for MySQL"
+			sql_print_error("Transaction not registered for MyBlockchain"
 					" 2PC, but transaction is active");
 		}
 
@@ -4347,13 +4347,13 @@ innobase_close_connection(
 				if (trx_is_redo_rseg_updated(trx)) {
 					trx_disconnect_prepared(trx);
 				} else {
-					trx_rollback_for_mysql(trx);
+					trx_rollback_for_myblockchain(trx);
 					trx_deregister_from_2pc(trx);
-					trx_free_for_mysql(trx);
+					trx_free_for_myblockchain(trx);
 				}
 			} else {
 				sql_print_warning(
-					"MySQL is closing a connection that "
+					"MyBlockchain is closing a connection that "
 					"has an active InnoDB transaction.  "
 					TRX_ID_FMT
 					" row modifications will roll back.",
@@ -4363,11 +4363,11 @@ innobase_close_connection(
 				     << innobase_basename(trx->start_file)
 				     << ":" << trx->start_line);
 				innobase_rollback_trx(trx);
-				trx_free_for_mysql(trx);
+				trx_free_for_myblockchain(trx);
 			}
 		} else {
 			innobase_rollback_trx(trx);
-			trx_free_for_mysql(trx);
+			trx_free_for_myblockchain(trx);
 		}
 	}
 
@@ -4385,7 +4385,7 @@ void
 innobase_kill_connection(
 /*======================*/
 	handlerton*    hton,   /*!< in:  innobase handlerton */
-	THD*		thd)    /*!< in: handle to the MySQL thread being
+	THD*		thd)    /*!< in: handle to the MyBlockchain thread being
 				killed */
 {
 	DBUG_ENTER("innobase_kill_connection");
@@ -4403,7 +4403,7 @@ innobase_kill_connection(
 }
 
 /*************************************************************************//**
-** InnoDB database tables
+** InnoDB blockchain tables
 *****************************************************************************/
 
 /** Get the record format from the data dictionary.
@@ -4567,10 +4567,10 @@ ha_innobase::max_supported_key_length() const
 	it must be less than 1/4th of the free space on a page including
 	record overhead.
 
-	MySQL imposes its own limit to this number; MAX_KEY_LENGTH = 3072.
+	MyBlockchain imposes its own limit to this number; MAX_KEY_LENGTH = 3072.
 
 	For page sizes = 16k, InnoDB historically reported 3500 bytes here,
-	But the MySQL limit of 3072 was always used through the handler
+	But the MyBlockchain limit of 3072 was always used through the handler
 	interface. */
 
 	switch (UNIV_PAGE_SIZE) {
@@ -4617,9 +4617,9 @@ ha_innobase::primary_key_is_clustered() const
 }
 
 /** Normalizes a table name string.
-A normalized name consists of the database name catenated to '/'
+A normalized name consists of the blockchain name catenated to '/'
 and table name. For example: test/mytable.
-On Windows, normalization puts both the database name and the
+On Windows, normalization puts both the blockchain name and the
 table name always to lower case if "set_lower_case" is set to TRUE.
 @param[out]	norm_name	Normalized name, null-terminated.
 @param[in]	name		Name to normalize.
@@ -4692,7 +4692,7 @@ test_normalize_table_name_low()
 	char		norm_name[FN_REFLEN];
 	const char*	test_data[][2] = {
 		/* input, expected result */
-		{"./mysqltest/t1", "mysqltest/t1"},
+		{"./myblockchaintest/t1", "myblockchaintest/t1"},
 		{"./test/#sql-842b_2", "test/#sql-842b_2"},
 		{"./test/#sql-85a3_10", "test/#sql-85a3_10"},
 		{"./test/#sql2-842b-2", "test/#sql2-842b-2"},
@@ -4705,12 +4705,12 @@ test_normalize_table_name_low()
 		{"/a/b/db/table", "db/table"},
 		{"/a/b/db///////table", "db/table"},
 		{"/a/b////db///////table", "db/table"},
-		{"/var/tmp/mysqld.1/#sql842b_2_10", "mysqld.1/#sql842b_2_10"},
+		{"/var/tmp/myblockchaind.1/#sql842b_2_10", "myblockchaind.1/#sql842b_2_10"},
 		{"db/table", "db/table"},
 		{"ddd/t", "ddd/t"},
 		{"d/ttt", "d/ttt"},
 		{"d/t", "d/t"},
-		{".\\mysqltest\\t1", "mysqltest/t1"},
+		{".\\myblockchaintest\\t1", "myblockchaintest/t1"},
 		{".\\test\\#sql-842b_2", "test/#sql-842b_2"},
 		{".\\test\\#sql-85a3_10", "test/#sql-85a3_10"},
 		{".\\test\\#sql2-842b-2", "test/#sql2-842b-2"},
@@ -4723,7 +4723,7 @@ test_normalize_table_name_low()
 		{"C:\\a\\b\\db\\table", "db/table"},
 		{"C:\\a\\b\\db\\\\\\\\\\\\\\table", "db/table"},
 		{"C:\\a\\b\\\\\\\\db\\\\\\\\\\\\\\table", "db/table"},
-		{"C:\\var\\tmp\\mysqld.1\\#sql842b_2_10", "mysqld.1/#sql842b_2_10"},
+		{"C:\\var\\tmp\\myblockchaind.1\\#sql842b_2_10", "myblockchaind.1/#sql842b_2_10"},
 		{"db\\table", "db/table"},
 		{"ddd\\t", "ddd/t"},
 		{"d\\ttt", "d/ttt"},
@@ -4809,10 +4809,10 @@ test_ut_format_name()
 }
 #endif /* !DBUG_OFF */
 
-/** Match index columns between MySQL and InnoDB.
+/** Match index columns between MyBlockchain and InnoDB.
 This function checks whether the index column information
-is consistent between KEY info from mysql and that from innodb index.
-@param[in]	key_info	Index info from mysql
+is consistent between KEY info from myblockchain and that from innodb index.
+@param[in]	key_info	Index info from myblockchain
 @param[in]	index_info	Index info from InnoDB
 @return true if all column types match. */
 bool
@@ -4840,10 +4840,10 @@ innobase_match_index_columns(
 
 	/* Check each index column's datatype. We do not check
 	column name because there exists case that index
-	column name got modified in mysql but such change does not
+	column name got modified in myblockchain but such change does not
 	propagate to InnoDB.
 	One hidden assumption here is that the index column sequences
-	are matched up between those in mysql and InnoDB. */
+	are matched up between those in myblockchain and InnoDB. */
 	for (; key_part != key_end; ++key_part) {
 		ulint	col_type;
 		ibool	is_unsigned;
@@ -4851,7 +4851,7 @@ innobase_match_index_columns(
 
 		/* Need to translate to InnoDB column type before
 		comparison. */
-		col_type = get_innobase_type_from_mysql_type(
+		col_type = get_innobase_type_from_myblockchain_type(
 			&is_unsigned, key_part->field);
 
 		/* Ignore InnoDB specific system columns. */
@@ -4864,7 +4864,7 @@ innobase_match_index_columns(
 		}
 
 		if (col_type != mtype) {
-			/* If the col_type we get from mysql type is a geometry
+			/* If the col_type we get from myblockchain type is a geometry
 			data type, we should check if mtype is a legacy type
 			from 5.6, either upgraded to DATA_GEOMETRY or not.
 			This is indeed not an accurate check, but should be
@@ -4898,10 +4898,10 @@ innobase_match_index_columns(
 }
 
 /** Build a template for a base column for a virtual column
-@param[in]	table		MySQL TABLE
+@param[in]	table		MyBlockchain TABLE
 @param[in]	ib_table	InnoDB dict_table_t
 @param[in]	clust_index	InnoDB clustered index
-@param[in]	field		field in MySQL table
+@param[in]	field		field in MyBlockchain table
 @param[in]	col		InnoDB column
 @param[in,out]	templ		template to fill
 @param[in]	col_no		field index for virtual col
@@ -4914,7 +4914,7 @@ innobase_vcol_build_templ(
 	dict_index_t*		clust_index,
 	Field*			field,
 	dict_col_t*		col,
-	mysql_row_templ_t*	templ,
+	myblockchain_row_templ_t*	templ,
 	ulint			col_no)
 {
 	if (dict_col_is_virtual(col)) {
@@ -4933,22 +4933,22 @@ innobase_vcol_build_templ(
 	}
 
 	if (field->real_maybe_null()) {
-                templ->mysql_null_byte_offset =
+                templ->myblockchain_null_byte_offset =
                         field->null_offset();
 
-                templ->mysql_null_bit_mask = (ulint) field->null_bit;
+                templ->myblockchain_null_bit_mask = (ulint) field->null_bit;
         } else {
-                templ->mysql_null_bit_mask = 0;
+                templ->myblockchain_null_bit_mask = 0;
         }
 
-        templ->mysql_col_offset = static_cast<ulint>(
+        templ->myblockchain_col_offset = static_cast<ulint>(
 					get_field_offset(table, field));
-	templ->mysql_col_len = static_cast<ulint>(field->pack_length());
+	templ->myblockchain_col_len = static_cast<ulint>(field->pack_length());
         templ->type = col->mtype;
-        templ->mysql_type = static_cast<ulint>(field->type());
+        templ->myblockchain_type = static_cast<ulint>(field->type());
 
-	if (templ->mysql_type == DATA_MYSQL_TRUE_VARCHAR) {
-		templ->mysql_length_bytes = static_cast<ulint>(
+	if (templ->myblockchain_type == DATA_MYBLOCKCHAIN_TRUE_VARCHAR) {
+		templ->myblockchain_length_bytes = static_cast<ulint>(
 			((Field_varstring*) field)->length_bytes);
 	}
 
@@ -4958,9 +4958,9 @@ innobase_vcol_build_templ(
         templ->is_unsigned = col->prtype & DATA_UNSIGNED;
 }
 
-/** callback used by MySQL server layer to initialize
+/** callback used by MyBlockchain server layer to initialize
 the table virtual columns' template
-@param[in]	table		MySQL TABLE
+@param[in]	table		MyBlockchain TABLE
 @param[in,out]	ib_table	InnoDB table */
 void
 innobase_build_v_templ_callback(
@@ -4973,11 +4973,11 @@ innobase_build_v_templ_callback(
 }
 
 /** Build template for the virtual columns and their base columns
-@param[in]	table		MySQL TABLE
+@param[in]	table		MyBlockchain TABLE
 @param[in]	ib_table	InnoDB dict_table_t
 @param[in,out]	s_templ		InnoDB template structure
 @param[in]	locked		true if innobase_share_mutex is held
-@param[in]	share_tbl_name	original MySQL table name */
+@param[in]	share_tbl_name	original MyBlockchain table name */
 void
 innobase_build_v_templ(
 	const TABLE*		table,
@@ -4994,19 +4994,19 @@ innobase_build_v_templ(
 	ut_ad(ncol < REC_MAX_N_FIELDS);
 
 	if (!locked) {
-		mysql_mutex_lock(&innobase_share_mutex);
+		myblockchain_mutex_lock(&innobase_share_mutex);
 	}
 
 	if (s_templ->vtempl) {
 		if (!locked) {
-			mysql_mutex_unlock(&innobase_share_mutex);
+			myblockchain_mutex_unlock(&innobase_share_mutex);
 		}
 		return;
 	}
 
 	memset(marker, 0, sizeof(bool) * ncol);
 
-	s_templ->vtempl = static_cast<mysql_row_templ_t**>(
+	s_templ->vtempl = static_cast<myblockchain_row_templ_t**>(
 		ut_zalloc_nokey((ncol + n_v_col)
 				* sizeof *s_templ->vtempl));
 	s_templ->n_col = ncol;
@@ -5044,7 +5044,7 @@ innobase_build_v_templ(
 				ib_table, z);
 
 			s_templ->vtempl[z + s_templ->n_col]
-				= static_cast<mysql_row_templ_t*>(
+				= static_cast<myblockchain_row_templ_t*>(
 					ut_malloc_nokey(
 					sizeof *s_templ->vtempl[j]));
 
@@ -5072,7 +5072,7 @@ innobase_build_v_templ(
 #endif
 
 			s_templ->vtempl[j] = static_cast<
-				mysql_row_templ_t*>(
+				myblockchain_row_templ_t*>(
 					ut_malloc_nokey(
 					sizeof *s_templ->vtempl[j]));
 
@@ -5085,7 +5085,7 @@ innobase_build_v_templ(
 	}
 
 	if (!locked) {
-		mysql_mutex_unlock(&innobase_share_mutex);
+		myblockchain_mutex_unlock(&innobase_share_mutex);
 	}
 
 	ut_strlcpy(s_templ->db_name, table->s->db.str,
@@ -5106,9 +5106,9 @@ innobase_build_v_templ(
 
 /*******************************************************************//**
 This function builds a translation table in INNOBASE_SHARE
-structure for fast index location with mysql array number from its
+structure for fast index location with myblockchain array number from its
 table->key_info structure. This also provides the necessary translation
-between the key order in mysql key_info and InnoDB ib_table->indexes if
+between the key order in myblockchain key_info and InnoDB ib_table->indexes if
 they are not fully matched with each other.
 Note we do not have any mutex protecting the translation table
 building based on the assumption that there is no concurrent
@@ -5119,7 +5119,7 @@ static
 bool
 innobase_build_index_translation(
 /*=============================*/
-	const TABLE*		table,	/*!< in: table in MySQL data
+	const TABLE*		table,	/*!< in: table in MyBlockchain data
 					dictionary */
 	dict_table_t*		ib_table,/*!< in: table in InnoDB data
 					dictionary */
@@ -5133,15 +5133,15 @@ innobase_build_index_translation(
 
 	mutex_enter(&dict_sys->mutex);
 
-	ulint	mysql_num_index = table->s->keys;
+	ulint	myblockchain_num_index = table->s->keys;
 	ulint	ib_num_index = UT_LIST_GET_LEN(ib_table->indexes);
 	dict_index_t**	index_mapping = share->idx_trans_tbl.index_mapping;
 
-	/* If there exists inconsistency between MySQL and InnoDB dictionary
-	(metadata) information, the number of index defined in MySQL
+	/* If there exists inconsistency between MyBlockchain and InnoDB dictionary
+	(metadata) information, the number of index defined in MyBlockchain
 	could exceed that in InnoDB, do not build index translation
 	table in such case */
-	if (ib_num_index < mysql_num_index) {
+	if (ib_num_index < myblockchain_num_index) {
 		ret = false;
 		goto func_exit;
 	}
@@ -5149,39 +5149,39 @@ innobase_build_index_translation(
 	/* If index entry count is non-zero, nothing has
 	changed since last update, directly return TRUE */
 	if (share->idx_trans_tbl.index_count) {
-		/* Index entry count should still match mysql_num_index */
-		ut_a(share->idx_trans_tbl.index_count == mysql_num_index);
+		/* Index entry count should still match myblockchain_num_index */
+		ut_a(share->idx_trans_tbl.index_count == myblockchain_num_index);
 		goto func_exit;
 	}
 
 	/* The number of index increased, rebuild the mapping table */
-	if (mysql_num_index > share->idx_trans_tbl.array_size) {
+	if (myblockchain_num_index > share->idx_trans_tbl.array_size) {
 
 		index_mapping = reinterpret_cast<dict_index_t**>(
 			ut_realloc(index_mapping,
-				   mysql_num_index * sizeof(*index_mapping)));
+				   myblockchain_num_index * sizeof(*index_mapping)));
 
 		if (index_mapping == NULL) {
 			/* Report an error if index_mapping continues to be
-			NULL and mysql_num_index is a non-zero value */
+			NULL and myblockchain_num_index is a non-zero value */
 			sql_print_error("InnoDB: fail to allocate memory for"
 					" index translation table. Number of"
 					" Index:%lu, array size:%lu",
-					mysql_num_index,
+					myblockchain_num_index,
 					share->idx_trans_tbl.array_size);
 			ret = false;
 			goto func_exit;
 		}
 
-		share->idx_trans_tbl.array_size = mysql_num_index;
+		share->idx_trans_tbl.array_size = myblockchain_num_index;
 	}
 
-	/* For each index in the mysql key_info array, fetch its
+	/* For each index in the myblockchain key_info array, fetch its
 	corresponding InnoDB index pointer into index_mapping
 	array. */
-	for (ulint count = 0; count < mysql_num_index; count++) {
+	for (ulint count = 0; count < myblockchain_num_index; count++) {
 
-		/* Fetch index pointers into index_mapping according to mysql
+		/* Fetch index pointers into index_mapping according to myblockchain
 		index sequence */
 		index_mapping[count] = dict_table_get_index_on_name(
 			ib_table, table->key_info[count].name);
@@ -5195,11 +5195,11 @@ innobase_build_index_translation(
 		}
 
 		/* Double check fetched index has the same
-		column info as those in mysql key_info. */
+		column info as those in myblockchain key_info. */
 		if (!innobase_match_index_columns(&table->key_info[count],
 					          index_mapping[count])) {
 			sql_print_error("Found index %s whose column info"
-					" does not match that of MySQL.",
+					" does not match that of MyBlockchain.",
 					table->key_info[count].name);
 			ret = false;
 			goto func_exit;
@@ -5207,7 +5207,7 @@ innobase_build_index_translation(
 	}
 
 	/* Successfully built the translation table */
-	share->idx_trans_tbl.index_count = mysql_num_index;
+	share->idx_trans_tbl.index_count = myblockchain_num_index;
 
 func_exit:
 	if (!ret) {
@@ -5335,7 +5335,7 @@ ha_innobase::innobase_initialize_autoinc()
 			break;
 		}
 		case DB_RECORD_NOT_FOUND:
-			ib::error() << "MySQL and InnoDB data dictionaries are"
+			ib::error() << "MyBlockchain and InnoDB data dictionaries are"
 				" out of sync. Unable to find the AUTOINC"
 				" column " << col_name << " in the InnoDB"
 				" table " << index->table->name << ". We set"
@@ -5387,7 +5387,7 @@ free_vc_templ(
 
 /*****************************************************************//**
 Creates and opens a handle to a table which already exists in an InnoDB
-database.
+blockchain.
 @return 1 if error, 0 if success */
 
 int
@@ -5410,7 +5410,7 @@ ha_innobase::open(
 
 	thd = ha_thd();
 
-	/* Under some cases MySQL seems to call this function while
+	/* Under some cases MyBlockchain seems to call this function while
 	holding search latch(es). This breaks the latching order as
 	we acquire dict_sys->mutex below and leads to a deadlock. */
 	if (thd != NULL) {
@@ -5431,7 +5431,7 @@ ha_innobase::open(
 	m_upd_buf_size = 0;
 
 	/* We look for pattern #P# to see if the table is partitioned
-	MySQL table. */
+	MyBlockchain table. */
 #ifdef _WIN32
 	is_part = strstr(norm_name, "#p#");
 #else
@@ -5467,7 +5467,7 @@ ha_innobase::open(
 		ib::warn() << "Table " << norm_name << " contains "
 			<< dict_table_get_n_user_cols(ib_table) << " user"
 			" defined columns in InnoDB, but " << table->s->fields
-			<< " columns in MySQL. Please check"
+			<< " columns in MyBlockchain. Please check"
 			" INFORMATION_SCHEMA.INNODB_SYS_COLUMNS and " REFMAN
 			"innodb-troubleshooting.html for how to resolve the"
 			" issue.";
@@ -5488,7 +5488,7 @@ ha_innobase::open(
 			ha_partition based tables with one ha_innobase handler
 			per partition. */
 
-			/* MySQL partition engine hard codes the file name
+			/* MyBlockchain partition engine hard codes the file name
 			separator as "#P#". The text case is fixed even if
 			lower_case_table_names is set to 1 or 2. This is true
 			for sub-partition names as well. InnoDB always
@@ -5625,7 +5625,7 @@ table_opened:
 	m_prebuilt->default_rec = table->s->default_values;
 	ut_ad(m_prebuilt->default_rec);
 
-	/* Looks like MySQL-3.23 sometimes has primary key number != 0 */
+	/* Looks like MyBlockchain-3.23 sometimes has primary key number != 0 */
 	m_primary_key = table->s->primary_key;
 
 	key_used_on_scan = m_primary_key;
@@ -5636,13 +5636,13 @@ table_opened:
 				table, ib_table, &(m_share->s_templ), false,
 				m_share->table_name);
 
-			mysql_mutex_lock(&innobase_share_mutex);
+			myblockchain_mutex_lock(&innobase_share_mutex);
 			if (ib_table->vc_templ
 			    && ib_table->vc_templ_purge) {
 				free_vc_templ(ib_table->vc_templ);
 				ut_free(ib_table->vc_templ);
 			}
-			mysql_mutex_unlock(&innobase_share_mutex);
+			myblockchain_mutex_unlock(&innobase_share_mutex);
 		}
 		ib_table->vc_templ = &m_share->s_templ;
 	} else {
@@ -5656,7 +5656,7 @@ table_opened:
 
 	/* Allocate a buffer for a 'row reference'. A row reference is
 	a string of bytes of length ref_length which uniquely specifies
-	a row in our table. Note that MySQL may also compare two row
+	a row in our table. Note that MyBlockchain may also compare two row
 	references for equality by doing a simple memcmp on the strings
 	of length ref_length! */
 
@@ -5667,7 +5667,7 @@ table_opened:
 		if (m_primary_key >= MAX_KEY) {
 			sql_print_error("Table %s has a primary key in"
 					" InnoDB data dictionary, but not"
-					" in MySQL!", name);
+					" in MyBlockchain!", name);
 
 			/* This mismatch could cause further problems
 			if not attended, bring this to the user's attention
@@ -5678,13 +5678,13 @@ table_opened:
 					    "InnoDB: Table %s has a"
 					    " primary key in InnoDB data"
 					    " dictionary, but not in"
-					    " MySQL!", name);
+					    " MyBlockchain!", name);
 
 			/* If m_primary_key >= MAX_KEY, its (m_primary_key)
 			value could be out of bound if continue to index
 			into key_info[] array. Find InnoDB primary index,
 			and assign its key_length to ref_length.
-			In addition, since MySQL indexes are sorted starting
+			In addition, since MyBlockchain indexes are sorted starting
 			with primary index, unique index etc., initialize
 			ref_length to the first index key length in
 			case we fail to find InnoDB cluster index.
@@ -5704,7 +5704,7 @@ table_opened:
 			}
 
 			/* Find corresponding cluster index
-			key length in MySQL's key_info[] array */
+			key length in MyBlockchain's key_info[] array */
 			for (uint i = 0; i < table->s->keys; i++) {
 				dict_index_t*	index;
 				index = innobase_get_index(i);
@@ -5714,7 +5714,7 @@ table_opened:
 				}
 			}
 		} else {
-			/* MySQL allocates the buffer for ref.
+			/* MyBlockchain allocates the buffer for ref.
 			key_info->key_length includes space for all key
 			columns + one byte for each column that may be
 			NULL. ref_length must be as exact as possible to
@@ -5727,11 +5727,11 @@ table_opened:
 		if (m_primary_key != MAX_KEY) {
 			sql_print_error(
 				"Table %s has no primary key in InnoDB data"
-				" dictionary, but has one in MySQL! If you"
-				" created the table with a MySQL version <"
+				" dictionary, but has one in MyBlockchain! If you"
+				" created the table with a MyBlockchain version <"
 				" 3.23.54 and did not define a primary key,"
 				" but defined a unique key with all non-NULL"
-				" columns, then MySQL internally treats that"
+				" columns, then MyBlockchain internally treats that"
 				" key as the primary key. You can fix this"
 				" error by dump + DROP + CREATE + reimport"
 				" of the table.", name);
@@ -5745,7 +5745,7 @@ table_opened:
 					    "InnoDB: Table %s has no"
 					    " primary key in InnoDB data"
 					    " dictionary, but has one in"
-					    " MySQL!", name);
+					    " MyBlockchain!", name);
 		}
 
 		m_prebuilt->clust_index_was_generated = TRUE;
@@ -5753,7 +5753,7 @@ table_opened:
 		ref_length = DATA_ROW_ID_LEN;
 
 		/* If we automatically created the clustered index, then
-		MySQL does not know about it, and MySQL must NOT be aware
+		MyBlockchain does not know about it, and MyBlockchain must NOT be aware
 		of the index used on scan, to make it avoid checking if we
 		update the column of the index. That is why we assert below
 		that key_used_on_scan is the undefined value MAX_KEY.
@@ -5768,7 +5768,7 @@ table_opened:
 		}
 	}
 
-	/* Index block size in InnoDB: used by MySQL in query optimization */
+	/* Index block size in InnoDB: used by MyBlockchain in query optimization */
 	stats.block_size = UNIV_PAGE_SIZE;
 
 	if (m_prebuilt->table != NULL) {
@@ -5789,7 +5789,7 @@ table_opened:
 		/* Since a table can already be "open" in InnoDB's internal
 		data dictionary, we only init the autoinc counter once, the
 		first time the table is loaded. We can safely reuse the
-		autoinc value from a previous MySQL open. */
+		autoinc value from a previous MyBlockchain open. */
 		if (dict_table_autoinc_read(m_prebuilt->table) == 0) {
 
 			innobase_initialize_autoinc();
@@ -5806,7 +5806,7 @@ table_opened:
 
 			ut_ad(index->type & DICT_FTS);
 			index->parser =
-				static_cast<st_mysql_ftparser *>(
+				static_cast<st_myblockchain_ftparser *>(
 					plugin_decl(parser)->info);
 
 			index->is_ngram = strncmp(
@@ -5886,7 +5886,7 @@ ha_innobase::max_supported_key_part_length() const
 /*==============================================*/
 {
 	/* A table format specific index column length check will be performed
-	at ha_innobase::add_index() and row_create_index_for_mysql() */
+	at ha_innobase::add_index() and row_create_index_for_myblockchain() */
 	return(innobase_large_prefix
 		? REC_VERSION_56_MAX_INDEX_COL_LEN
 		: REC_ANTELOPE_MAX_INDEX_COL_LEN - 1);
@@ -5929,11 +5929,11 @@ ha_innobase::close()
 	DBUG_RETURN(0);
 }
 
-/* The following accessor functions should really be inside MySQL code! */
+/* The following accessor functions should really be inside MyBlockchain code! */
 
 /** Gets field offset for a field in a table.
-@param[in]	table	MySQL table object
-@param[in]	field	MySQL field object
+@param[in]	table	MyBlockchain table object
+@param[in]	field	MyBlockchain field object
 @return offset */
 static inline
 uint
@@ -6067,7 +6067,7 @@ Get the next token from the given string and store it in *token.
 It is mostly copied from MyISAM's doc parsing function ft_simple_get_word()
 @return length of string processed */
 ulint
-innobase_mysql_fts_get_token(
+innobase_myblockchain_fts_get_token(
 /*=========================*/
 	CHARSET_INFO*	cs,		/*!< in: Character set */
 	const byte*	start,		/*!< in: start of text */
@@ -6131,29 +6131,29 @@ innobase_mysql_fts_get_token(
 	return(doc - start);
 }
 
-/** Converts a MySQL type to an InnoDB type. Note that this function returns
-the 'mtype' of InnoDB. InnoDB differentiates between MySQL's old <= 4.1
+/** Converts a MyBlockchain type to an InnoDB type. Note that this function returns
+the 'mtype' of InnoDB. InnoDB differentiates between MyBlockchain's old <= 4.1
 VARCHAR and the new true VARCHAR in >= 5.0.3 by the 'prtype'.
 @param[out]	unsigned_flag	DATA_UNSIGNED if an 'unsigned type'; at least
 ENUM and SET, and unsigned integer types are 'unsigned types'
-@param[in]	f		MySQL Field
+@param[in]	f		MyBlockchain Field
 @return DATA_BINARY, DATA_VARCHAR, ... */
 ulint
-get_innobase_type_from_mysql_type(
+get_innobase_type_from_myblockchain_type(
 	ulint*			unsigned_flag,
 	const void*		f)
 {
 	const class Field* field = reinterpret_cast<const class Field*>(f);
 
-	/* The following asserts try to check that the MySQL type code fits in
+	/* The following asserts try to check that the MyBlockchain type code fits in
 	8 bits: this is used in ibuf and also when DATA_NOT_NULL is ORed to
 	the type */
 
-	DBUG_ASSERT((ulint)MYSQL_TYPE_STRING < 256);
-	DBUG_ASSERT((ulint)MYSQL_TYPE_VAR_STRING < 256);
-	DBUG_ASSERT((ulint)MYSQL_TYPE_DOUBLE < 256);
-	DBUG_ASSERT((ulint)MYSQL_TYPE_FLOAT < 256);
-	DBUG_ASSERT((ulint)MYSQL_TYPE_DECIMAL < 256);
+	DBUG_ASSERT((ulint)MYBLOCKCHAIN_TYPE_STRING < 256);
+	DBUG_ASSERT((ulint)MYBLOCKCHAIN_TYPE_VAR_STRING < 256);
+	DBUG_ASSERT((ulint)MYBLOCKCHAIN_TYPE_DOUBLE < 256);
+	DBUG_ASSERT((ulint)MYBLOCKCHAIN_TYPE_FLOAT < 256);
+	DBUG_ASSERT((ulint)MYBLOCKCHAIN_TYPE_DECIMAL < 256);
 
 	if (field->flags & UNSIGNED_FLAG) {
 
@@ -6162,14 +6162,14 @@ get_innobase_type_from_mysql_type(
 		*unsigned_flag = 0;
 	}
 
-	if (field->real_type() == MYSQL_TYPE_ENUM
-		|| field->real_type() == MYSQL_TYPE_SET) {
+	if (field->real_type() == MYBLOCKCHAIN_TYPE_ENUM
+		|| field->real_type() == MYBLOCKCHAIN_TYPE_SET) {
 
-		/* MySQL has field->type() a string type for these, but the
+		/* MyBlockchain has field->type() a string type for these, but the
 		data is actually internally stored as an unsigned integer
 		code! */
 
-		*unsigned_flag = DATA_UNSIGNED; /* MySQL has its own unsigned
+		*unsigned_flag = DATA_UNSIGNED; /* MyBlockchain has its own unsigned
 						flag set to zero, even though
 						internally this is an unsigned
 						integer type */
@@ -6177,70 +6177,70 @@ get_innobase_type_from_mysql_type(
 	}
 
 	switch (field->type()) {
-		/* NOTE that we only allow string types in DATA_MYSQL and
-		DATA_VARMYSQL */
-	case MYSQL_TYPE_VAR_STRING:	/* old <= 4.1 VARCHAR */
-	case MYSQL_TYPE_VARCHAR:	/* new >= 5.0.3 true VARCHAR */
+		/* NOTE that we only allow string types in DATA_MYBLOCKCHAIN and
+		DATA_VARMYBLOCKCHAIN */
+	case MYBLOCKCHAIN_TYPE_VAR_STRING:	/* old <= 4.1 VARCHAR */
+	case MYBLOCKCHAIN_TYPE_VARCHAR:	/* new >= 5.0.3 true VARCHAR */
 		if (field->binary()) {
 			return(DATA_BINARY);
 		} else if (strcmp(field->charset()->name,
 				  "latin1_swedish_ci") == 0) {
 			return(DATA_VARCHAR);
 		} else {
-			return(DATA_VARMYSQL);
+			return(DATA_VARMYBLOCKCHAIN);
 		}
-	case MYSQL_TYPE_BIT:
-	case MYSQL_TYPE_STRING: if (field->binary()) {
+	case MYBLOCKCHAIN_TYPE_BIT:
+	case MYBLOCKCHAIN_TYPE_STRING: if (field->binary()) {
 
 			return(DATA_FIXBINARY);
 		} else if (strcmp(field->charset()->name,
 				  "latin1_swedish_ci") == 0) {
 			return(DATA_CHAR);
 		} else {
-			return(DATA_MYSQL);
+			return(DATA_MYBLOCKCHAIN);
 		}
-	case MYSQL_TYPE_NEWDECIMAL:
+	case MYBLOCKCHAIN_TYPE_NEWDECIMAL:
 		return(DATA_FIXBINARY);
-	case MYSQL_TYPE_LONG:
-	case MYSQL_TYPE_LONGLONG:
-	case MYSQL_TYPE_TINY:
-	case MYSQL_TYPE_SHORT:
-	case MYSQL_TYPE_INT24:
-	case MYSQL_TYPE_DATE:
-	case MYSQL_TYPE_YEAR:
-	case MYSQL_TYPE_NEWDATE:
+	case MYBLOCKCHAIN_TYPE_LONG:
+	case MYBLOCKCHAIN_TYPE_LONGLONG:
+	case MYBLOCKCHAIN_TYPE_TINY:
+	case MYBLOCKCHAIN_TYPE_SHORT:
+	case MYBLOCKCHAIN_TYPE_INT24:
+	case MYBLOCKCHAIN_TYPE_DATE:
+	case MYBLOCKCHAIN_TYPE_YEAR:
+	case MYBLOCKCHAIN_TYPE_NEWDATE:
 		return(DATA_INT);
-	case MYSQL_TYPE_TIME:
-	case MYSQL_TYPE_DATETIME:
-	case MYSQL_TYPE_TIMESTAMP:
+	case MYBLOCKCHAIN_TYPE_TIME:
+	case MYBLOCKCHAIN_TYPE_DATETIME:
+	case MYBLOCKCHAIN_TYPE_TIMESTAMP:
 		switch (field->real_type()) {
-		case MYSQL_TYPE_TIME:
-		case MYSQL_TYPE_DATETIME:
-		case MYSQL_TYPE_TIMESTAMP:
+		case MYBLOCKCHAIN_TYPE_TIME:
+		case MYBLOCKCHAIN_TYPE_DATETIME:
+		case MYBLOCKCHAIN_TYPE_TIMESTAMP:
 			return(DATA_INT);
 		default: /* Fall through */
-			DBUG_ASSERT((ulint)MYSQL_TYPE_DECIMAL < 256);
-		case MYSQL_TYPE_TIME2:
-		case MYSQL_TYPE_DATETIME2:
-		case MYSQL_TYPE_TIMESTAMP2:
+			DBUG_ASSERT((ulint)MYBLOCKCHAIN_TYPE_DECIMAL < 256);
+		case MYBLOCKCHAIN_TYPE_TIME2:
+		case MYBLOCKCHAIN_TYPE_DATETIME2:
+		case MYBLOCKCHAIN_TYPE_TIMESTAMP2:
 			return(DATA_FIXBINARY);
 		}
-	case MYSQL_TYPE_FLOAT:
+	case MYBLOCKCHAIN_TYPE_FLOAT:
 		return(DATA_FLOAT);
-	case MYSQL_TYPE_DOUBLE:
+	case MYBLOCKCHAIN_TYPE_DOUBLE:
 		return(DATA_DOUBLE);
-	case MYSQL_TYPE_DECIMAL:
+	case MYBLOCKCHAIN_TYPE_DECIMAL:
 		return(DATA_DECIMAL);
-	case MYSQL_TYPE_GEOMETRY:
+	case MYBLOCKCHAIN_TYPE_GEOMETRY:
 		return(DATA_GEOMETRY);
-	case MYSQL_TYPE_TINY_BLOB:
-	case MYSQL_TYPE_MEDIUM_BLOB:
-	case MYSQL_TYPE_BLOB:
-	case MYSQL_TYPE_LONG_BLOB:
-        case MYSQL_TYPE_JSON:   // JSON fields are stored as BLOBs
+	case MYBLOCKCHAIN_TYPE_TINY_BLOB:
+	case MYBLOCKCHAIN_TYPE_MEDIUM_BLOB:
+	case MYBLOCKCHAIN_TYPE_BLOB:
+	case MYBLOCKCHAIN_TYPE_LONG_BLOB:
+        case MYBLOCKCHAIN_TYPE_JSON:   // JSON fields are stored as BLOBs
 		return(DATA_BLOB);
-	case MYSQL_TYPE_NULL:
-		/* MySQL currently accepts "NULL" datatype, but will
+	case MYBLOCKCHAIN_TYPE_NULL:
+		/* MyBlockchain currently accepts "NULL" datatype, but will
 		reject such datatype in the next release. We will cope
 		with it and not trigger assertion failure in 5.1 */
 		break;
@@ -6274,7 +6274,7 @@ build_template_needs_field(
 	ibool		index_contains,	/*!< in:
 					dict_index_contains_col_or_prefix(
 					index, i) */
-	ibool		read_just_key,	/*!< in: TRUE when MySQL calls
+	ibool		read_just_key,	/*!< in: TRUE when MyBlockchain calls
 					ha_innobase::extra with the
 					argument HA_EXTRA_KEYREAD; it is enough
 					to read just columns defined in
@@ -6287,7 +6287,7 @@ build_template_needs_field(
 					/*!< in: true=fetch the
 					primary key columns */
 	dict_index_t*	index,		/*!< in: InnoDB index to use */
-	const TABLE*	table,		/*!< in: MySQL table object */
+	const TABLE*	table,		/*!< in: MyBlockchain table object */
 	ulint		i,		/*!< in: field index in InnoDB table */
 	ulint		num_v)		/*!< in: num virtual column so far */
 {
@@ -6352,23 +6352,23 @@ build_template_needs_field_in_icp(
 Adds a field to a m_prebuilt struct 'template'.
 @return the field template */
 static
-mysql_row_templ_t*
+myblockchain_row_templ_t*
 build_template_field(
 /*=================*/
 	row_prebuilt_t*	prebuilt,	/*!< in/out: template */
 	dict_index_t*	clust_index,	/*!< in: InnoDB clustered index */
 	dict_index_t*	index,		/*!< in: InnoDB index to use */
-	TABLE*		table,		/*!< in: MySQL table object */
-	const Field*	field,		/*!< in: field in MySQL table */
+	TABLE*		table,		/*!< in: MyBlockchain table object */
+	const Field*	field,		/*!< in: field in MyBlockchain table */
 	ulint		i,		/*!< in: field index in InnoDB table */
 	ulint		v_no)		/*!< in: field index for virtual col */
 {
-	mysql_row_templ_t*	templ;
+	myblockchain_row_templ_t*	templ;
 	const dict_col_t*	col;
 
 	ut_ad(clust_index->table == index->table);
 
-	templ = prebuilt->mysql_template + prebuilt->n_template++;
+	templ = prebuilt->myblockchain_template + prebuilt->n_template++;
 	UNIV_MEM_INVALID(templ, sizeof *templ);
 
 	if (innobase_is_v_fld(field)) {
@@ -6399,25 +6399,25 @@ build_template_field(
 	}
 
 	if (field->real_maybe_null()) {
-		templ->mysql_null_byte_offset =
+		templ->myblockchain_null_byte_offset =
 			field->null_offset();
 
-		templ->mysql_null_bit_mask = (ulint) field->null_bit;
+		templ->myblockchain_null_bit_mask = (ulint) field->null_bit;
 	} else {
-		templ->mysql_null_bit_mask = 0;
+		templ->myblockchain_null_bit_mask = 0;
 	}
 
 
-	templ->mysql_col_offset = (ulint) get_field_offset(table, field);
-	templ->mysql_col_len = (ulint) field->pack_length();
+	templ->myblockchain_col_offset = (ulint) get_field_offset(table, field);
+	templ->myblockchain_col_len = (ulint) field->pack_length();
 	templ->type = col->mtype;
-	templ->mysql_type = (ulint) field->type();
+	templ->myblockchain_type = (ulint) field->type();
 
-	if (templ->mysql_type == DATA_MYSQL_TRUE_VARCHAR) {
-		templ->mysql_length_bytes = (ulint)
+	if (templ->myblockchain_type == DATA_MYBLOCKCHAIN_TRUE_VARCHAR) {
+		templ->myblockchain_length_bytes = (ulint)
 			(((Field_varstring*) field)->length_bytes);
 	} else {
-		templ->mysql_length_bytes = 0;
+		templ->myblockchain_length_bytes = 0;
 	}
 
 	templ->charset = dtype_get_charset_coll(col->prtype);
@@ -6435,10 +6435,10 @@ build_template_field(
 		prebuilt->need_to_access_clustered = TRUE;
 	}
 
-	if (prebuilt->mysql_prefix_len < templ->mysql_col_offset
-	    + templ->mysql_col_len) {
-		prebuilt->mysql_prefix_len = templ->mysql_col_offset
-			+ templ->mysql_col_len;
+	if (prebuilt->myblockchain_prefix_len < templ->myblockchain_col_offset
+	    + templ->myblockchain_col_len) {
+		prebuilt->myblockchain_prefix_len = templ->myblockchain_col_offset
+			+ templ->myblockchain_col_len;
 	}
 
 	if (DATA_LARGE_MTYPE(templ->type)) {
@@ -6456,13 +6456,13 @@ build_template_field(
 
 /**************************************************************//**
 Builds a 'template' to the m_prebuilt struct. The template is used in fast
-retrieval of just those column values MySQL needs in its processing. */
+retrieval of just those column values MyBlockchain needs in its processing. */
 
 void
 ha_innobase::build_template(
 /*========================*/
-	bool		whole_row)	/*!< in: true=ROW_MYSQL_WHOLE_ROW,
-					false=ROW_MYSQL_REC_FIELDS */
+	bool		whole_row)	/*!< in: true=ROW_MYBLOCKCHAIN_WHOLE_ROW,
+					false=ROW_MYBLOCKCHAIN_REC_FIELDS */
 {
 	dict_index_t*	index;
 	dict_index_t*	clust_index;
@@ -6485,9 +6485,9 @@ ha_innobase::build_template(
 			key, or all columns in the table */
 
 			if (m_prebuilt->read_just_key) {
-				/* MySQL has instructed us that it is enough
+				/* MyBlockchain has instructed us that it is enough
 				to fetch the columns in the key; looks like
-				MySQL can set this flag also when there is
+				MyBlockchain can set this flag also when there is
 				only a prefix of the column in the key: in
 				that case we retrieve the whole column from
 				the clustered index */
@@ -6501,7 +6501,7 @@ ha_innobase::build_template(
 			/* We must at least fetch all primary key cols. Note
 			that if the clustered index was internally generated
 			by InnoDB on the row id (no primary key was
-			defined), then row_search_for_mysql() will always
+			defined), then row_search_for_myblockchain() will always
 			retrieve the row id to a special buffer in the
 			m_prebuilt struct. */
 
@@ -6524,24 +6524,24 @@ ha_innobase::build_template(
 
 	n_fields = (ulint) table->s->fields; /* number of columns */
 
-	if (!m_prebuilt->mysql_template) {
-		m_prebuilt->mysql_template = (mysql_row_templ_t*)
-			ut_malloc_nokey(n_fields * sizeof(mysql_row_templ_t));
+	if (!m_prebuilt->myblockchain_template) {
+		m_prebuilt->myblockchain_template = (myblockchain_row_templ_t*)
+			ut_malloc_nokey(n_fields * sizeof(myblockchain_row_templ_t));
 	}
 
 	m_prebuilt->template_type = whole_row
-		? ROW_MYSQL_WHOLE_ROW : ROW_MYSQL_REC_FIELDS;
+		? ROW_MYBLOCKCHAIN_WHOLE_ROW : ROW_MYBLOCKCHAIN_REC_FIELDS;
 	m_prebuilt->null_bitmap_len = table->s->null_bytes;
 
-	/* Prepare to build m_prebuilt->mysql_template[]. */
+	/* Prepare to build m_prebuilt->myblockchain_template[]. */
 	m_prebuilt->templ_contains_blob = FALSE;
 	m_prebuilt->templ_contains_fixed_point = FALSE;
-	m_prebuilt->mysql_prefix_len = 0;
+	m_prebuilt->myblockchain_prefix_len = 0;
 	m_prebuilt->n_template = 0;
 	m_prebuilt->idx_cond_n_cols = 0;
 
 	/* Note that in InnoDB, i is the column number in the table.
-	MySQL calls columns 'fields'. */
+	MyBlockchain calls columns 'fields'. */
 
 	if (active_index != MAX_KEY
 	    && active_index == pushed_idx_cond_keyno) {
@@ -6580,7 +6580,7 @@ ha_innobase::build_template(
 				    is_v ? num_v : i - num_v, is_v)) {
 				/* Needed in ICP */
 				const Field*		field;
-				mysql_row_templ_t*	templ;
+				myblockchain_row_templ_t*	templ;
 
 				if (whole_row) {
 					field = table->field[i];
@@ -6685,7 +6685,7 @@ ha_innobase::build_template(
 		/* Include the fields that are not needed in index condition
 		pushdown. */
 		for (i = 0; i < n_fields; i++) {
-			mysql_row_templ_t*	templ;
+			myblockchain_row_templ_t*	templ;
 			ibool			index_contains;
 
 			if (innobase_is_v_fld(table->field[i])) {
@@ -6733,7 +6733,7 @@ ha_innobase::build_template(
 
 		m_prebuilt->idx_cond = this;
 	} else {
-		mysql_row_templ_t*	templ;
+		myblockchain_row_templ_t*	templ;
 		ulint			num_v = 0;
 		/* No index condition pushdown */
 		m_prebuilt->idx_cond = NULL;
@@ -6783,8 +6783,8 @@ ha_innobase::build_template(
 		record */
 		for (i = 0; i < m_prebuilt->n_template; i++) {
 
-			mysql_row_templ_t*	templ
-				= &m_prebuilt->mysql_template[i];
+			myblockchain_row_templ_t*	templ
+				= &m_prebuilt->myblockchain_template[i];
 
 			templ->rec_field_no = templ->clust_rec_field_no;
 		}
@@ -6792,9 +6792,9 @@ ha_innobase::build_template(
 }
 
 /********************************************************************//**
-This special handling is really to overcome the limitations of MySQL's
+This special handling is really to overcome the limitations of MyBlockchain's
 binlogging. We need to eliminate the non-determinism that will arise in
-INSERT ... SELECT type of statements, since MySQL binlog only stores the
+INSERT ... SELECT type of statements, since MyBlockchain binlog only stores the
 min value of the autoinc interval. Once that is fixed we can get rid of
 the special lock handling.
 @return DB_SUCCESS if all OK else error code */
@@ -6846,7 +6846,7 @@ ha_innobase::innobase_lock_autoinc(void)
 		/* Fall through to old style locking. */
 
 	case AUTOINC_OLD_STYLE_LOCKING:
-		error = row_lock_table_autoinc_for_mysql(m_prebuilt);
+		error = row_lock_table_autoinc_for_myblockchain(m_prebuilt);
 
 		if (error == DB_SUCCESS) {
 
@@ -6887,7 +6887,7 @@ ha_innobase::innobase_set_max_autoinc(
 }
 
 /** Write Row interface optimized for intrinisc table.
-@param[in]	record	a row in MySQL format.
+@param[in]	record	a row in MyBlockchain format.
 @return 0 on success or error code */
 int
 ha_innobase::intrinsic_table_write_row(uchar* record)
@@ -6897,28 +6897,28 @@ ha_innobase::intrinsic_table_write_row(uchar* record)
 	/* No auto-increment support for intrinsic table. */
 	ut_ad(!(table->next_number_field && record == table->record[0]));
 
-	if (m_prebuilt->mysql_template == NULL
-	    || m_prebuilt->template_type != ROW_MYSQL_WHOLE_ROW) {
+	if (m_prebuilt->myblockchain_template == NULL
+	    || m_prebuilt->template_type != ROW_MYBLOCKCHAIN_WHOLE_ROW) {
 		/* Build the template used in converting quickly between
-		the two database formats */
+		the two blockchain formats */
 		build_template(true);
 	}
 
-	err = row_insert_for_mysql((byte*) record, m_prebuilt);
+	err = row_insert_for_myblockchain((byte*) record, m_prebuilt);
 
-	return(convert_error_code_to_mysql(
+	return(convert_error_code_to_myblockchain(
 		err, m_prebuilt->table->flags, m_user_thd));
 }
 
 /********************************************************************//**
-Stores a row in an InnoDB database, to the table specified in this
+Stores a row in an InnoDB blockchain, to the table specified in this
 handle.
 @return error code */
 
 int
 ha_innobase::write_row(
 /*===================*/
-	uchar*	record)	/*!< in: a row in MySQL format */
+	uchar*	record)	/*!< in: a row in MyBlockchain format */
 {
 	dberr_t		error;
 	ulint		sql_command;
@@ -6980,7 +6980,7 @@ ha_innobase::write_row(
 		a bit tricky to determine the source table.  The cursor
 		position in the source table need not be adjusted after the
 		intermediate COMMIT, since writes by other transactions are
-		being blocked by a MySQL table lock TL_WRITE_ALLOW_READ. */
+		being blocked by a MyBlockchain table lock TL_WRITE_ALLOW_READ. */
 
 		dict_table_t*	src_table;
 		enum lock_mode	mode;
@@ -7023,7 +7023,7 @@ no_commit:
 			/* Note that this transaction is still active. */
 			trx_register_for_2pc(m_prebuilt->trx);
 			/* Re-acquire the table lock on the source table. */
-			row_lock_table_for_mysql(m_prebuilt, src_table, mode);
+			row_lock_table_for_myblockchain(m_prebuilt, src_table, mode);
 			/* We will need an IX lock on the destination table. */
 			m_prebuilt->sql_stat_start = TRUE;
 		}
@@ -7053,7 +7053,7 @@ no_commit:
 				goto report_error;
 			}
 
-			/* MySQL errors are passed straight back. */
+			/* MyBlockchain errors are passed straight back. */
 			goto func_exit;
 		}
 
@@ -7062,11 +7062,11 @@ no_commit:
 
 	/* Step-4: Prepare INSERT graph that will be executed for actual INSERT
 	(This is a one time operation) */
-	if (m_prebuilt->mysql_template == NULL
-	    || m_prebuilt->template_type != ROW_MYSQL_WHOLE_ROW) {
+	if (m_prebuilt->myblockchain_template == NULL
+	    || m_prebuilt->template_type != ROW_MYBLOCKCHAIN_WHOLE_ROW) {
 
 		/* Build the template used in converting quickly between
-		the two database formats */
+		the two blockchain formats */
 
 		build_template(true);
 	}
@@ -7074,7 +7074,7 @@ no_commit:
 	innobase_srv_conc_enter_innodb(m_prebuilt);
 
 	/* Step-5: Execute insert graph that will result in actual insert. */
-	error = row_insert_for_mysql((byte*) record, m_prebuilt);
+	error = row_insert_for_myblockchain((byte*) record, m_prebuilt);
 
 	DEBUG_SYNC(m_user_thd, "ib_after_row_insert");
 
@@ -7096,7 +7096,7 @@ no_commit:
 		col_max_value =
 			table->next_number_field->get_max_int_value();
 
-		/* Get the value that MySQL attempted to store in the table. */
+		/* Get the value that MyBlockchain attempted to store in the table. */
 		auto_inc = table->next_number_field->val_int();
 
 		switch (error) {
@@ -7171,12 +7171,12 @@ report_error:
 	/* Step-7: Cleanup and exit. */
 	if (error == DB_TABLESPACE_DELETED) {
 		ib_senderrf(
-			trx->mysql_thd, IB_LOG_LEVEL_ERROR,
+			trx->myblockchain_thd, IB_LOG_LEVEL_ERROR,
 			ER_TABLESPACE_DISCARDED,
 			table->s->table_name.str);
 	}
 
-	error_result = convert_error_code_to_mysql(
+	error_result = convert_error_code_to_myblockchain(
 		error, m_prebuilt->table->flags, m_user_thd);
 
 	if (error_result == HA_FTS_INVALID_DOCID) {
@@ -7197,10 +7197,10 @@ so needs to be logged.
 @param[in,out]	vfield			field to filled
 @param[in]	o_len			actual column length
 @param[in,out]	col			column to be filled
-@param[in]	old_mysql_row_col	MySQL old field ptr
-@param[in]	col_pack_len		MySQL field col length
+@param[in]	old_myblockchain_row_col	MyBlockchain old field ptr
+@param[in]	col_pack_len		MyBlockchain field col length
 @param[in,out]	buf			buffer for a converted integer value
-@return used buffer ptr from row_mysql_store_col_in_innobase_format() */
+@return used buffer ptr from row_myblockchain_store_col_in_innobase_format() */
 static
 byte*
 innodb_fill_old_vcol_val(
@@ -7208,7 +7208,7 @@ innodb_fill_old_vcol_val(
 	dfield_t*	vfield,
 	ulint		o_len,
 	dict_col_t*	col,
-	const byte*	old_mysql_row_col,
+	const byte*	old_myblockchain_row_col,
 	ulint		col_pack_len,
 	byte*		buf)
 {
@@ -7216,11 +7216,11 @@ innodb_fill_old_vcol_val(
 		col, dfield_get_type(vfield));
 	if (o_len != UNIV_SQL_NULL) {
 
-		buf = row_mysql_store_col_in_innobase_format(
+		buf = row_myblockchain_store_col_in_innobase_format(
 			vfield,
 			buf,
 			TRUE,
-			old_mysql_row_col,
+			old_myblockchain_row_col,
 			col_pack_len,
 			dict_table_is_comp(prebuilt->table));
 	} else {
@@ -7239,9 +7239,9 @@ dberr_t
 calc_row_difference(
 /*================*/
 	upd_t*		uvect,		/*!< in/out: update vector */
-	const uchar*	old_row,	/*!< in: old row in MySQL format */
-	uchar*		new_row,	/*!< in: new row in MySQL format */
-	TABLE*		table,		/*!< in: table in MySQL data
+	const uchar*	old_row,	/*!< in: old row in MyBlockchain format */
+	uchar*		new_row,	/*!< in: new row in MyBlockchain format */
+	TABLE*		table,		/*!< in: table in MyBlockchain data
 					dictionary */
 	uchar*		upd_buff,	/*!< in: buffer to use */
 	ulint		buff_len,	/*!< in: buffer length */
@@ -7250,13 +7250,13 @@ calc_row_difference(
 {
 	uchar*		original_upd_buff = upd_buff;
 	Field*		field;
-	enum_field_types field_mysql_type;
+	enum_field_types field_myblockchain_type;
 	uint		n_fields;
 	ulint		o_len;
 	ulint		n_len;
 	ulint		col_pack_len;
-	const byte*	new_mysql_row_col;
-	const byte*	old_mysql_row_col;
+	const byte*	new_myblockchain_row_col;
+	const byte*	old_myblockchain_row_col;
 	const byte*	o_ptr;
 	const byte*	n_ptr;
 	byte*		buf;
@@ -7294,10 +7294,10 @@ calc_row_difference(
 		o_ptr = (const byte*) old_row + get_field_offset(table, field);
 		n_ptr = (const byte*) new_row + get_field_offset(table, field);
 
-		/* Use new_mysql_row_col and col_pack_len save the values */
+		/* Use new_myblockchain_row_col and col_pack_len save the values */
 
-		new_mysql_row_col = n_ptr;
-		old_mysql_row_col = o_ptr;
+		new_myblockchain_row_col = n_ptr;
+		old_myblockchain_row_col = o_ptr;
 		col_pack_len = field->pack_length();
 
 		o_len = col_pack_len;
@@ -7306,7 +7306,7 @@ calc_row_difference(
 		/* We use o_ptr and n_ptr to dig up the actual data for
 		comparison. */
 
-		field_mysql_type = field->type();
+		field_myblockchain_type = field->type();
 
 		col_type = col->mtype;
 
@@ -7316,25 +7316,25 @@ calc_row_difference(
 		case DATA_POINT:
 		case DATA_VAR_POINT:
 		case DATA_GEOMETRY:
-			o_ptr = row_mysql_read_blob_ref(&o_len, o_ptr, o_len);
-			n_ptr = row_mysql_read_blob_ref(&n_len, n_ptr, n_len);
+			o_ptr = row_myblockchain_read_blob_ref(&o_len, o_ptr, o_len);
+			n_ptr = row_myblockchain_read_blob_ref(&n_len, n_ptr, n_len);
 
 			break;
 
 		case DATA_VARCHAR:
 		case DATA_BINARY:
-		case DATA_VARMYSQL:
-			if (field_mysql_type == MYSQL_TYPE_VARCHAR) {
+		case DATA_VARMYBLOCKCHAIN:
+			if (field_myblockchain_type == MYBLOCKCHAIN_TYPE_VARCHAR) {
 				/* This is a >= 5.0.3 type true VARCHAR where
 				the real payload data length is stored in
 				1 or 2 bytes */
 
-				o_ptr = row_mysql_read_true_varchar(
+				o_ptr = row_myblockchain_read_true_varchar(
 					&o_len, o_ptr,
 					(ulint)
 					(((Field_varstring*) field)->length_bytes));
 
-				n_ptr = row_mysql_read_true_varchar(
+				n_ptr = row_myblockchain_read_true_varchar(
 					&n_len, n_ptr,
 					(ulint)
 					(((Field_varstring*) field)->length_bytes));
@@ -7345,7 +7345,7 @@ calc_row_difference(
 			;
 		}
 
-		if (field_mysql_type == MYSQL_TYPE_LONGLONG
+		if (field_myblockchain_type == MYBLOCKCHAIN_TYPE_LONGLONG
 		    && prebuilt->table->fts
 		    && innobase_strcasecmp(
 			field->field_name, FTS_DOC_ID_COL_NAME) == 0) {
@@ -7395,7 +7395,7 @@ calc_row_difference(
 					uvect->old_vrow, num_v);
 				buf = innodb_fill_old_vcol_val(
 					prebuilt, vfield, o_len,
-					col, old_mysql_row_col,
+					col, old_myblockchain_row_col,
 					col_pack_len, buf);
 			       num_v++;
 			       continue;
@@ -7410,7 +7410,7 @@ calc_row_difference(
 			UNIV_MEM_INVALID(ufield, sizeof *ufield);
 
 			/* Let us use a dummy dfield to make the conversion
-			from the MySQL column format to the InnoDB format */
+			from the MyBlockchain column format to the InnoDB format */
 
 
 			/* If the length of new geometry object is 0, means
@@ -7425,11 +7425,11 @@ calc_row_difference(
 				dict_col_copy_type(
 					col, dfield_get_type(&dfield));
 
-				buf = row_mysql_store_col_in_innobase_format(
+				buf = row_myblockchain_store_col_in_innobase_format(
 					&dfield,
 					(byte*) buf,
 					TRUE,
-					new_mysql_row_col,
+					new_myblockchain_row_col,
 					col_pack_len,
 					dict_table_is_comp(prebuilt->table));
 				dfield_copy(&ufield->new_val, &dfield);
@@ -7460,11 +7460,11 @@ calc_row_difference(
 								&dfield));
 					}
 
-					buf = row_mysql_store_col_in_innobase_format(
+					buf = row_myblockchain_store_col_in_innobase_format(
 						&dfield,
 						(byte*) buf,
 						TRUE,
-						old_mysql_row_col,
+						old_myblockchain_row_col,
 						col_pack_len,
 						dict_table_is_comp(
 						prebuilt->table));
@@ -7522,7 +7522,7 @@ calc_row_difference(
 				uvect->old_vrow, num_v);
 			buf = innodb_fill_old_vcol_val(
 				prebuilt, vfield, o_len,
-				col, old_mysql_row_col,
+				col, old_myblockchain_row_col,
 				col_pack_len, buf);
 			ut_ad(col->ord_part);
 			num_v++;
@@ -7615,8 +7615,8 @@ overhead for CPU when we check which fields are actually updated.
 TODO: currently InnoDB does not prevent the 'Halloween problem':
 in a searched update a single row can get updated several times
 if its index columns are updated!
-@param[in] old_row	Old row contents in MySQL format
-@param[out] new_row	Updated row contents in MySQL format
+@param[in] old_row	Old row contents in MyBlockchain format
+@param[out] new_row	Updated row contents in MyBlockchain format
 @return error number or 0 */
 
 int
@@ -7694,14 +7694,14 @@ ha_innobase::update_row(
 
 	innobase_srv_conc_enter_innodb(m_prebuilt);
 
-	error = row_update_for_mysql((byte*) old_row, m_prebuilt);
+	error = row_update_for_myblockchain((byte*) old_row, m_prebuilt);
 
 	/* We need to do some special AUTOINC handling for the following case:
 
 	INSERT INTO t (c1,c2) VALUES(x,y) ON DUPLICATE KEY UPDATE ...
 
 	We need to use the AUTOINC counter that was actually used by
-	MySQL in the UPDATE statement, which can be different from the
+	MyBlockchain in the UPDATE statement, which can be different from the
 	value used in the INSERT statement. */
 
 	if (error == DB_SUCCESS
@@ -7739,16 +7739,16 @@ ha_innobase::update_row(
 
 func_exit:
 
-	err = convert_error_code_to_mysql(
+	err = convert_error_code_to_myblockchain(
 		error, m_prebuilt->table->flags, m_user_thd);
 
 	/* If success and no columns were updated. */
 	if (err == 0 && uvect->n_fields == 0) {
 
 		/* This is the same as success, but instructs
-		MySQL that the row is not really updated and it
+		MyBlockchain that the row is not really updated and it
 		should not increase the count of updated rows.
-		This is fix for http://bugs.mysql.com/29157 */
+		This is fix for http://bugs.myblockchain.com/29157 */
 		err = HA_ERR_RECORD_IS_THE_SAME;
 	} else if (err == HA_FTS_INVALID_DOCID) {
 		my_error(HA_FTS_INVALID_DOCID, MYF(0));
@@ -7769,7 +7769,7 @@ Deletes a row given as the parameter.
 int
 ha_innobase::delete_row(
 /*====================*/
-	const uchar*	record)	/*!< in: a row in MySQL format */
+	const uchar*	record)	/*!< in: a row in MyBlockchain format */
 {
 	dberr_t		error;
 	trx_t*		trx = thd_to_trx(m_user_thd);
@@ -7804,7 +7804,7 @@ ha_innobase::delete_row(
 
 	innobase_srv_conc_enter_innodb(m_prebuilt);
 
-	error = row_update_for_mysql((byte*) record, m_prebuilt);
+	error = row_update_for_myblockchain((byte*) record, m_prebuilt);
 
 	innobase_srv_conc_exit_innodb(m_prebuilt);
 
@@ -7813,7 +7813,7 @@ ha_innobase::delete_row(
 
 	innobase_active_small();
 
-	DBUG_RETURN(convert_error_code_to_mysql(
+	DBUG_RETURN(convert_error_code_to_myblockchain(
 			    error, m_prebuilt->table->flags, m_user_thd));
 }
 
@@ -7844,7 +7844,7 @@ ha_innobase::delete_all_rows()
 		dict_stats_update(m_prebuilt->table, DICT_STATS_EMPTY_TABLE);
 	}
 
-	DBUG_RETURN(convert_error_code_to_mysql(
+	DBUG_RETURN(convert_error_code_to_myblockchain(
 			    error, m_prebuilt->table->flags, m_user_thd));
 }
 
@@ -7892,7 +7892,7 @@ ha_innobase::unlock_row(void)
 		}
 		/* fall through */
 	case ROW_READ_TRY_SEMI_CONSISTENT:
-		row_unlock_for_mysql(m_prebuilt, FALSE);
+		row_unlock_for_myblockchain(m_prebuilt, FALSE);
 		break;
 	case ROW_READ_DID_SEMI_CONSISTENT:
 		m_prebuilt->row_read_type = ROW_READ_TRY_SEMI_CONSISTENT;
@@ -7902,7 +7902,7 @@ ha_innobase::unlock_row(void)
 	DBUG_VOID_RETURN;
 }
 
-/* See handler.h and row0mysql.h for docs on this function. */
+/* See handler.h and row0myblockchain.h for docs on this function. */
 
 bool
 ha_innobase::was_semi_consistent_read(void)
@@ -7911,7 +7911,7 @@ ha_innobase::was_semi_consistent_read(void)
 	return(m_prebuilt->row_read_type == ROW_READ_DID_SEMI_CONSISTENT);
 }
 
-/* See handler.h and row0mysql.h for docs on this function. */
+/* See handler.h and row0myblockchain.h for docs on this function. */
 
 void
 ha_innobase::try_semi_consistent_read(bool yes)
@@ -7920,7 +7920,7 @@ ha_innobase::try_semi_consistent_read(bool yes)
 	ut_a(m_prebuilt->trx == thd_to_trx(ha_thd()));
 
 	/* Row read type is set to semi consistent read if this was
-	requested by the MySQL and either innodb_locks_unsafe_for_binlog
+	requested by the MyBlockchain and either innodb_locks_unsafe_for_binlog
 	option is used or this session is using READ COMMITTED isolation
 	level. */
 
@@ -7974,7 +7974,7 @@ ha_innobase::index_end(void)
 }
 
 /*********************************************************************//**
-Converts a search mode flag understood by MySQL to a flag understood
+Converts a search mode flag understood by MyBlockchain to a flag understood
 by InnoDB. */
 page_cur_mode_t
 convert_search_mode_to_innobase(
@@ -8024,40 +8024,40 @@ convert_search_mode_to_innobase(
 The following does not cover all the details, but explains how we determine
 the start of a new SQL statement, and what is associated with it.
 
-For each table in the database the MySQL interpreter may have several
+For each table in the blockchain the MyBlockchain interpreter may have several
 table handle instances in use, also in a single SQL query. For each table
 handle instance there is an InnoDB  'm_prebuilt' struct which contains most
 of the InnoDB data associated with this table handle instance.
 
-  A) if the user has not explicitly set any MySQL table level locks:
+  A) if the user has not explicitly set any MyBlockchain table level locks:
 
-  1) MySQL calls ::external_lock to set an 'intention' table level lock on
+  1) MyBlockchain calls ::external_lock to set an 'intention' table level lock on
 the table of the handle instance. There we set
 m_prebuilt->sql_stat_start = TRUE. The flag sql_stat_start should be set
 true if we are taking this table handle instance to use in a new SQL
-statement issued by the user. We also increment trx->n_mysql_tables_in_use.
+statement issued by the user. We also increment trx->n_myblockchain_tables_in_use.
 
-  2) If m_prebuilt->sql_stat_start == TRUE we 'pre-compile' the MySQL search
+  2) If m_prebuilt->sql_stat_start == TRUE we 'pre-compile' the MyBlockchain search
 instructions to m_prebuilt->template of the table handle instance in
 ::index_read. The template is used to save CPU time in large joins.
 
-  3) In row_search_for_mysql, if m_prebuilt->sql_stat_start is true, we
+  3) In row_search_for_myblockchain, if m_prebuilt->sql_stat_start is true, we
 allocate a new consistent read view for the trx if it does not yet have one,
 or in the case of a locking read, set an InnoDB 'intention' table level
 lock on the table.
 
-  4) We do the SELECT. MySQL may repeatedly call ::index_read for the
+  4) We do the SELECT. MyBlockchain may repeatedly call ::index_read for the
 same table handle instance, if it is a join.
 
-  5) When the SELECT ends, MySQL removes its intention table level locks
-in ::external_lock. When trx->n_mysql_tables_in_use drops to zero,
+  5) When the SELECT ends, MyBlockchain removes its intention table level locks
+in ::external_lock. When trx->n_myblockchain_tables_in_use drops to zero,
  (a) we execute a COMMIT there if the autocommit is on,
  (b) we also release possible 'SQL statement level resources' InnoDB may
-have for this SQL statement. The MySQL interpreter does NOT execute
+have for this SQL statement. The MyBlockchain interpreter does NOT execute
 autocommit for pure read transactions, though it should. That is why the
 table handler in that case has to execute the COMMIT in ::external_lock.
 
-  B) If the user has explicitly set MySQL table level locks, then MySQL
+  B) If the user has explicitly set MyBlockchain table level locks, then MyBlockchain
 does NOT call ::external_lock at the start of the statement. To determine
 when we are at the start of a new SQL statement we at the start of
 ::index_read also compare the query id to the latest query id where the
@@ -8131,7 +8131,7 @@ ha_innobase::index_read(
 		/* Convert the search key value to InnoDB format into
 		m_prebuilt->search_tuple */
 
-		row_sel_convert_mysql_key_to_innobase(
+		row_sel_convert_myblockchain_key_to_innobase(
 			m_prebuilt->search_tuple,
 			m_prebuilt->srch_key_val1,
 			m_prebuilt->srch_key_val_len,
@@ -8205,7 +8205,7 @@ ha_innobase::index_read(
 		error = 0;
 		table->status = 0;
 		srv_stats.n_rows_read.add(
-			thd_get_thread_id(m_prebuilt->trx->mysql_thd), 1);
+			thd_get_thread_id(m_prebuilt->trx->myblockchain_thd), 1);
 		break;
 
 	case DB_RECORD_NOT_FOUND:
@@ -8220,7 +8220,7 @@ ha_innobase::index_read(
 
 	case DB_TABLESPACE_DELETED:
 		ib_senderrf(
-			m_prebuilt->trx->mysql_thd, IB_LOG_LEVEL_ERROR,
+			m_prebuilt->trx->myblockchain_thd, IB_LOG_LEVEL_ERROR,
 			ER_TABLESPACE_DISCARDED,
 			table->s->table_name.str);
 
@@ -8231,7 +8231,7 @@ ha_innobase::index_read(
 	case DB_TABLESPACE_NOT_FOUND:
 
 		ib_senderrf(
-			m_prebuilt->trx->mysql_thd, IB_LOG_LEVEL_ERROR,
+			m_prebuilt->trx->myblockchain_thd, IB_LOG_LEVEL_ERROR,
 			ER_TABLESPACE_MISSING,
 			table->s->table_name.str);
 
@@ -8240,7 +8240,7 @@ ha_innobase::index_read(
 		break;
 
 	default:
-		error = convert_error_code_to_mysql(
+		error = convert_error_code_to_myblockchain(
 			ret, m_prebuilt->table->flags, m_user_thd);
 
 		table->status = STATUS_NOT_FOUND;
@@ -8398,7 +8398,7 @@ ha_innobase::change_active_index(
 		}
 
 		/* The caller seems to ignore this.  Thus, we must check
-		this again in row_search_for_mysql(). */
+		this again in row_search_for_myblockchain(). */
 		DBUG_RETURN(HA_ERR_TABLE_DEF_CHANGED);
 	}
 
@@ -8429,11 +8429,11 @@ ha_innobase::change_active_index(
 			 && m_prebuilt->in_fts_query);
 	}
 
-	/* MySQL changes the active index for a handle also during some
+	/* MyBlockchain changes the active index for a handle also during some
 	queries, for example SELECT MAX(a), SUM(a) first retrieves the MAX()
 	and then calculates the sum. Previously we played safe and used
-	the flag ROW_MYSQL_WHOLE_ROW below, but that caused unnecessary
-	copying. Starting from MySQL-4.1 we use a more efficient flag here. */
+	the flag ROW_MYBLOCKCHAIN_WHOLE_ROW below, but that caused unnecessary
+	copying. Starting from MyBlockchain-4.1 we use a more efficient flag here. */
 
 	build_template(false);
 
@@ -8448,7 +8448,7 @@ positioned using index_read.
 int
 ha_innobase::general_fetch(
 /*=======================*/
-	uchar*	buf,		/*!< in/out: buffer for next row in MySQL
+	uchar*	buf,		/*!< in/out: buffer for next row in MyBlockchain
 				format */
 	uint	direction,	/*!< in: ROW_SEL_NEXT or ROW_SEL_PREV */
 	uint	match_mode)	/*!< in: 0, ROW_SEL_EXACT, or
@@ -8491,7 +8491,7 @@ ha_innobase::general_fetch(
 	case DB_SUCCESS:
 		error = 0;
 		table->status = 0;
-		srv_stats.n_rows_read.add(thd_get_thread_id(trx->mysql_thd), 1);
+		srv_stats.n_rows_read.add(thd_get_thread_id(trx->myblockchain_thd), 1);
 		break;
 	case DB_RECORD_NOT_FOUND:
 		error = HA_ERR_END_OF_FILE;
@@ -8503,7 +8503,7 @@ ha_innobase::general_fetch(
 		break;
 	case DB_TABLESPACE_DELETED:
 		ib_senderrf(
-			trx->mysql_thd, IB_LOG_LEVEL_ERROR,
+			trx->myblockchain_thd, IB_LOG_LEVEL_ERROR,
 			ER_TABLESPACE_DISCARDED,
 			table->s->table_name.str);
 
@@ -8513,7 +8513,7 @@ ha_innobase::general_fetch(
 	case DB_TABLESPACE_NOT_FOUND:
 
 		ib_senderrf(
-			trx->mysql_thd, IB_LOG_LEVEL_ERROR,
+			trx->myblockchain_thd, IB_LOG_LEVEL_ERROR,
 			ER_TABLESPACE_MISSING,
 			table->s->table_name.str);
 
@@ -8521,7 +8521,7 @@ ha_innobase::general_fetch(
 		error = HA_ERR_TABLESPACE_MISSING;
 		break;
 	default:
-		error = convert_error_code_to_mysql(
+		error = convert_error_code_to_myblockchain(
 			ret, m_prebuilt->table->flags, m_user_thd);
 
 		table->status = STATUS_NOT_FOUND;
@@ -8539,7 +8539,7 @@ positioned using index_read.
 int
 ha_innobase::index_next(
 /*====================*/
-	uchar*		buf)	/*!< in/out: buffer for next row in MySQL
+	uchar*		buf)	/*!< in/out: buffer for next row in MyBlockchain
 				format */
 {
 	ha_statistic_increment(&SSV::ha_read_next_count);
@@ -8571,7 +8571,7 @@ positioned using index_read.
 int
 ha_innobase::index_prev(
 /*====================*/
-	uchar*	buf)	/*!< in/out: buffer for previous row in MySQL format */
+	uchar*	buf)	/*!< in/out: buffer for previous row in MyBlockchain format */
 {
 	ha_statistic_increment(&SSV::ha_read_prev_count);
 
@@ -8594,7 +8594,7 @@ ha_innobase::index_first(
 
 	int	error = index_read(buf, NULL, 0, HA_READ_AFTER_KEY);
 
-	/* MySQL does not seem to allow this to return HA_ERR_KEY_NOT_FOUND */
+	/* MyBlockchain does not seem to allow this to return HA_ERR_KEY_NOT_FOUND */
 
 	if (error == HA_ERR_KEY_NOT_FOUND) {
 		error = HA_ERR_END_OF_FILE;
@@ -8619,7 +8619,7 @@ ha_innobase::index_last(
 
 	int	error = index_read(buf, NULL, 0, HA_READ_BEFORE_KEY);
 
-	/* MySQL does not seem to allow this to return HA_ERR_KEY_NOT_FOUND */
+	/* MyBlockchain does not seem to allow this to return HA_ERR_KEY_NOT_FOUND */
 
 	if (error == HA_ERR_KEY_NOT_FOUND) {
 		error = HA_ERR_END_OF_FILE;
@@ -8688,7 +8688,7 @@ int
 ha_innobase::rnd_next(
 /*==================*/
 	uchar*	buf)	/*!< in/out: returns the row in this buffer,
-			in MySQL format */
+			in MyBlockchain format */
 {
 	int	error;
 
@@ -8720,7 +8720,7 @@ ha_innobase::rnd_pos(
 /*=================*/
 	uchar*	buf,	/*!< in/out: buffer for the row */
 	uchar*	pos)	/*!< in: primary key value of the row in the
-			MySQL format, or the row id if the clustered
+			MyBlockchain format, or the row id if the clustered
 			index was internally generated by InnoDB; the
 			length of data in pos has to be ref_length */
 {
@@ -8881,7 +8881,7 @@ ha_innobase::ft_init_ext(
 	dberr_t	error = fts_query(trx, index, flags, q, query_len, &result);
 
 	if (error != DB_SUCCESS) {
-		my_error(convert_error_code_to_mysql(error, 0, NULL), MYF(0));
+		my_error(convert_error_code_to_myblockchain(error, 0, NULL), MYF(0));
 		return(NULL);
 	}
 
@@ -8917,7 +8917,7 @@ ha_innobase::ft_init_ext_with_hints(
 
 /*****************************************************************//**
 Set up search tuple for a query through FTS_DOC_ID_INDEX on
-supplied Doc ID. This is used by MySQL to retrieve the documents
+supplied Doc ID. This is used by MyBlockchain to retrieve the documents
 once the search result (Doc IDs) is available */
 static
 void
@@ -9047,7 +9047,7 @@ next_record:
 
 		innobase_srv_conc_enter_innodb(m_prebuilt);
 
-		dberr_t ret = row_search_for_mysql(
+		dberr_t ret = row_search_for_myblockchain(
 			(byte*) buf, PAGE_CUR_GE, m_prebuilt, ROW_SEL_EXACT, 0);
 
 		innobase_srv_conc_exit_innodb(m_prebuilt);
@@ -9082,7 +9082,7 @@ next_record:
 		case DB_TABLESPACE_DELETED:
 
 			ib_senderrf(
-				m_prebuilt->trx->mysql_thd, IB_LOG_LEVEL_ERROR,
+				m_prebuilt->trx->myblockchain_thd, IB_LOG_LEVEL_ERROR,
 				ER_TABLESPACE_DISCARDED,
 				table->s->table_name.str);
 
@@ -9092,7 +9092,7 @@ next_record:
 		case DB_TABLESPACE_NOT_FOUND:
 
 			ib_senderrf(
-				m_prebuilt->trx->mysql_thd, IB_LOG_LEVEL_ERROR,
+				m_prebuilt->trx->myblockchain_thd, IB_LOG_LEVEL_ERROR,
 				ER_TABLESPACE_MISSING,
 				table->s->table_name.str);
 
@@ -9100,7 +9100,7 @@ next_record:
 			error = HA_ERR_TABLESPACE_MISSING;
 			break;
 		default:
-			error = convert_error_code_to_mysql(
+			error = convert_error_code_to_myblockchain(
 				ret, 0, m_user_thd);
 
 			table->status = STATUS_NOT_FOUND;
@@ -9136,7 +9136,7 @@ was positioned the last time. */
 void
 ha_innobase::position(
 /*==================*/
-	const uchar*	record)	/*!< in: row in MySQL format */
+	const uchar*	record)	/*!< in: row in MyBlockchain format */
 {
 	uint		len;
 
@@ -9146,7 +9146,7 @@ ha_innobase::position(
 		/* No primary key was defined for the table and we
 		generated the clustered index from row id: the
 		row reference will be the row id, not any key value
-		that MySQL knows of */
+		that MyBlockchain knows of */
 
 		len = DATA_ROW_ID_LEN;
 
@@ -9194,7 +9194,7 @@ create_table_check_doc_id_col(
 		if (!field->stored_in_db)
 		  continue;
 
-		col_type = get_innobase_type_from_mysql_type(
+		col_type = get_innobase_type_from_myblockchain_type(
 			&unsigned_type, field);
 
 		col_len = field->pack_length();
@@ -9212,7 +9212,7 @@ create_table_check_doc_id_col(
 				*doc_id_col = i;
 			} else {
 				push_warning_printf(
-					trx->mysql_thd,
+					trx->myblockchain_thd,
 					Sql_condition::SL_WARNING,
 					ER_ILLEGAL_HA_CREATE_OPTION,
 					"InnoDB: FTS_DOC_ID column must be"
@@ -9232,7 +9232,7 @@ create_table_check_doc_id_col(
 
 /** Set up base columns for virtual column
 @param[in]	table		InnoDB table
-@param[in]	field		MySQL field
+@param[in]	field		MyBlockchain field
 @param[in,out]	v_col		virtual column */
 void
 innodb_base_col_setup(
@@ -9264,7 +9264,7 @@ innodb_base_col_setup(
 	}
 }
 
-/** Create a table definition to an InnoDB database.
+/** Create a table definition to an InnoDB blockchain.
 @return ER_* level error */
 inline __attribute__((warn_unused_result))
 int
@@ -9292,9 +9292,9 @@ create_table_info_t::create_table_def()
 	DBUG_ENTER("create_table_def");
 	DBUG_PRINT("enter", ("table_name: %s", m_table_name));
 
-	DBUG_ASSERT(m_trx->mysql_thd == m_thd);
+	DBUG_ASSERT(m_trx->myblockchain_thd == m_thd);
 
-	/* MySQL does the name length check. But we do additional check
+	/* MyBlockchain does the name length check. But we do additional check
 	on the name length here */
 	const size_t	table_name_len = strlen(m_table_name);
 	if (table_name_len > MAX_FULL_NAME_LEN) {
@@ -9331,7 +9331,7 @@ create_table_info_t::create_table_def()
 
 		/* Raise error if the Doc ID column is of wrong type or name */
 		if (doc_id_col == ULINT_UNDEFINED) {
-			trx_commit_for_mysql(m_trx);
+			trx_commit_for_myblockchain(m_trx);
 
 			err = DB_ERROR;
 			goto error_ret;
@@ -9393,7 +9393,7 @@ create_table_info_t::create_table_def()
 
 		/* Generate a unique column name by pre-pending table-name for
 		intrinsic tables. For other tables (including normal
-		temporary) column names are unique. If not, MySQL layer will
+		temporary) column names are unique. If not, MyBlockchain layer will
 		block such statement.
 		This is work-around fix till Optimizer can handle this issue
 		(probably 5.7.4+). */
@@ -9410,7 +9410,7 @@ create_table_info_t::create_table_def()
 				    "%s", field->field_name);
 		}
 
-		col_type = get_innobase_type_from_mysql_type(
+		col_type = get_innobase_type_from_myblockchain_type(
 			&unsigned_type, field);
 
 		if (!col_type) {
@@ -9452,14 +9452,14 @@ create_table_info_t::create_table_def()
 
 		col_len = field->pack_length();
 
-		/* The MySQL pack length contains 1 or 2 bytes length field
+		/* The MyBlockchain pack length contains 1 or 2 bytes length field
 		for a true VARCHAR. Let us subtract that, so that the InnoDB
 		column length in the InnoDB data dictionary is the real
 		maximum byte length of the actual data. */
 
 		long_true_varchar = 0;
 
-		if (field->type() == MYSQL_TYPE_VARCHAR) {
+		if (field->type() == MYBLOCKCHAIN_TYPE_VARCHAR) {
 			col_len -= ((Field_varstring*) field)->length_bytes;
 
 			if (((Field_varstring*) field)->length_bytes == 2) {
@@ -9481,7 +9481,7 @@ create_table_info_t::create_table_def()
 err_col:
 			dict_mem_table_free(table);
 			mem_heap_free(heap);
-			trx_commit_for_mysql(m_trx);
+			trx_commit_for_myblockchain(m_trx);
 
 			err = DB_ERROR;
 			goto error_ret;
@@ -9614,7 +9614,7 @@ err_col:
                 }
 
 		if (err == DB_SUCCESS) {
-			err = row_create_table_for_mysql(
+			err = row_create_table_for_myblockchain(
 				table, algorithm, m_trx, false);
 		}
 
@@ -9658,11 +9658,11 @@ err_col:
 	}
 
 error_ret:
-	DBUG_RETURN(convert_error_code_to_mysql(err, m_flags, m_thd));
+	DBUG_RETURN(convert_error_code_to_myblockchain(err, m_flags, m_thd));
 }
 
 /*****************************************************************//**
-Creates an index in an InnoDB database. */
+Creates an index in an InnoDB blockchain. */
 inline
 int
 create_index(
@@ -9714,8 +9714,8 @@ create_index(
 				index, key_part->field->field_name, 0);
 		}
 
-		DBUG_RETURN(convert_error_code_to_mysql(
-				    row_create_index_for_mysql(
+		DBUG_RETURN(convert_error_code_to_myblockchain(
+				    row_create_index_for_myblockchain(
 					    index, trx, NULL, NULL),
 				    flags, NULL));
 
@@ -9741,7 +9741,7 @@ create_index(
 	index = dict_mem_index_create(table_name, key->name, 0,
 				      ind_type, key->user_defined_key_parts);
 
-	innodb_session_t*& priv = thd_to_innodb_session(trx->mysql_thd);
+	innodb_session_t*& priv = thd_to_innodb_session(trx->myblockchain_thd);
 	dict_table_t* handler = priv->lookup_table_handler(table_name);
 
 	if (handler != NULL) {
@@ -9768,11 +9768,11 @@ create_index(
 		ulint		is_unsigned;
 
 
-		/* (The flag HA_PART_KEY_SEG denotes in MySQL a
+		/* (The flag HA_PART_KEY_SEG denotes in MyBlockchain a
 		column prefix field in an index: we only store a
 		specified number of first bytes of the column to
 		the index field.) The flag does not seem to be
-		properly set by MySQL. Let us fall back on testing
+		properly set by MyBlockchain. Let us fall back on testing
 		the length of the key part versus the column.
 		We first reach to the table's column; if the index is on a
 		prefix, key_part->field is not the table's column (it's a
@@ -9792,13 +9792,13 @@ create_index(
 			field_name = dict_table_get_col_name(handler, col_no);
 		}
 
-		col_type = get_innobase_type_from_mysql_type(
+		col_type = get_innobase_type_from_myblockchain_type(
 			&is_unsigned, key_part->field);
 
 		if (DATA_LARGE_MTYPE(col_type)
 		    || (key_part->length < field->pack_length()
-			&& field->type() != MYSQL_TYPE_VARCHAR)
-		    || (field->type() == MYSQL_TYPE_VARCHAR
+			&& field->type() != MYBLOCKCHAIN_TYPE_VARCHAR)
+		    || (field->type() == MYBLOCKCHAIN_TYPE_VARCHAR
 			&& key_part->length < field->pack_length()
 			- ((Field_varstring*) field)->length_bytes)) {
 
@@ -9811,7 +9811,7 @@ create_index(
 			case DATA_DOUBLE:
 			case DATA_DECIMAL:
 				sql_print_error(
-					"MySQL is trying to create a column"
+					"MyBlockchain is trying to create a column"
 					" prefix index field, on an"
 					" inappropriate data type. Table"
 					" name %s, column name %s.",
@@ -9839,8 +9839,8 @@ create_index(
 	still do our own checking using field_lengths to be absolutely
 	sure we don't create too long indexes. */
 
-	error = convert_error_code_to_mysql(
-		row_create_index_for_mysql(index, trx, field_lengths, handler),
+	error = convert_error_code_to_myblockchain(
+		row_create_index_for_myblockchain(index, trx, field_lengths, handler),
 		flags, NULL);
 
 	if (error && handler != NULL) {
@@ -9872,7 +9872,7 @@ create_clustered_index_when_no_primary(
 				      innobase_index_reserve_name,
 				      0, DICT_CLUSTERED, 0);
 
-	innodb_session_t*& priv = thd_to_innodb_session(trx->mysql_thd);
+	innodb_session_t*& priv = thd_to_innodb_session(trx->myblockchain_thd);
 
 	dict_table_t* handler = priv->lookup_table_handler(table_name);
 
@@ -9887,13 +9887,13 @@ create_clustered_index_when_no_primary(
 		index->disable_ahi = true;
 	}
 
-	error = row_create_index_for_mysql(index, trx, NULL, handler);
+	error = row_create_index_for_myblockchain(index, trx, NULL, handler);
 
 	if (error != DB_SUCCESS && handler != NULL) {
 		priv->unregister_table_handler(table_name);
 	}
 
-	return(convert_error_code_to_mysql(error, flags, NULL));
+	return(convert_error_code_to_myblockchain(error, flags, NULL));
 }
 
 /** Return a display name for the row format
@@ -9962,7 +9962,7 @@ create_table_info_t::create_option_data_directory_is_valid()
 /** Validate the tablespace name provided for a tablespace DDL
 @param[in]	name		A proposed tablespace name
 @param[in]	for_table	Caller is putting a table here
-@return MySQL handler error code like HA_... */
+@return MyBlockchain handler error code like HA_... */
 static
 int
 validate_tablespace_name(
@@ -10053,7 +10053,7 @@ create_table_info_t::create_option_tablespace_is_valid()
 	/* If TABLESPACE=innodb_file_per_table this function is not called
 	since tablespace_is_shared_space() will return false.  Any other
 	tablespace is incompatible with the DATA DIRECTORY phrase.
-	On any ALTER TABLE that contains a DATA DIRECTORY, MySQL will issue
+	On any ALTER TABLE that contains a DATA DIRECTORY, MyBlockchain will issue
 	a warning like "<DATA DIRECTORY> option ignored." The check below is
 	needed for CREATE TABLE only. ALTER TABLE may be moving remote
 	file-per-table table to a general tablespace, in which case the
@@ -10438,10 +10438,10 @@ create_table_info_t::parse_table_name(
 
 #ifdef _WIN32
 	/* Names passed in from server are in two formats:
-	1. <database_name>/<table_name>: for normal table creation
+	1. <blockchain_name>/<table_name>: for normal table creation
 	2. full path: for temp table creation, or DATA DIRECTORY.
 
-	When srv_file_per_table is on and mysqld_embedded is off,
+	When srv_file_per_table is on and myblockchaind_embedded is off,
 	check for full path pattern, i.e.
 	X:\dir\...,		X is a driver letter, or
 	\\dir1\dir2\...,	UNC path
@@ -10449,7 +10449,7 @@ create_table_info_t::parse_table_name(
 	table. Currently InnoDB does not support symbolic link on Windows. */
 
 	if (m_innodb_file_per_table
-	    && !mysqld_embedded
+	    && !myblockchaind_embedded
 	    && !(m_create_info->options & HA_LEX_CREATE_TMP_TABLE)) {
 
 		if ((name[1] == ':')
@@ -11036,7 +11036,7 @@ create_table_info_t::initialize()
 
 	parent_trx = check_trx_exists(m_thd);
 
-	/* In case MySQL calls this in the middle of a SELECT query, release
+	/* In case MyBlockchain calls this in the middle of a SELECT query, release
 	possible adaptive hash latch to avoid deadlocks of threads */
 
 	trx_search_latch_release_if_reserved(parent_trx);
@@ -11044,7 +11044,7 @@ create_table_info_t::initialize()
 }
 
 
-/** Prepare to create a new table to an InnoDB database.
+/** Prepare to create a new table to an InnoDB blockchain.
 @param[in]	name	Table name
 @return error number */
 int
@@ -11083,7 +11083,7 @@ create_table_info_t::prepare_create_table(
 	DBUG_RETURN(parse_table_name(name));
 }
 
-/** Create a new table to an InnoDB database.
+/** Create a new table to an InnoDB blockchain.
 @return error number */
 int
 create_table_info_t::create_table()
@@ -11101,7 +11101,7 @@ create_table_info_t::create_table()
 	primary_key_no = (m_form->s->primary_key != MAX_KEY ?
 			  (int) m_form->s->primary_key : -1);
 
-	/* Our function innobase_get_mysql_key_number_for_index assumes
+	/* Our function innobase_get_myblockchain_key_number_for_index assumes
 	the primary key is always number 0, if it exists */
 	ut_a(primary_key_no == -1 || primary_key_no == 0);
 
@@ -11181,7 +11181,7 @@ create_table_info_t::create_table()
 			m_trx, innobase_table, m_table_name,
 			(ret == FTS_EXIST_DOC_ID_INDEX));
 
-		error = convert_error_code_to_mysql(err, 0, NULL);
+		error = convert_error_code_to_myblockchain(err, 0, NULL);
 
 		dict_table_close(innobase_table, TRUE, FALSE);
 
@@ -11189,7 +11189,7 @@ create_table_info_t::create_table()
 			trx_rollback_to_savepoint(m_trx, NULL);
 			m_trx->error_state = DB_SUCCESS;
 
-			row_drop_table_for_mysql(m_table_name, m_trx, FALSE);
+			row_drop_table_for_myblockchain(m_table_name, m_trx, FALSE);
 
 			m_trx->error_state = DB_SUCCESS;
 			DBUG_RETURN(error);
@@ -11220,7 +11220,7 @@ create_table_info_t::create_table()
 	stmt = innobase_get_stmt_unsafe(m_thd, &stmt_len);
 
 	innodb_session_t*&	priv =
-		thd_to_innodb_session(m_trx->mysql_thd);
+		thd_to_innodb_session(m_trx->myblockchain_thd);
 	dict_table_t*		handler =
 		priv->lookup_table_handler(m_table_name);
 
@@ -11259,7 +11259,7 @@ create_table_info_t::create_table()
 			break;
 		}
 
-		error = convert_error_code_to_mysql(err, m_flags, NULL);
+		error = convert_error_code_to_myblockchain(err, m_flags, NULL);
 
 		if (error) {
 			if (handler != NULL) {
@@ -11284,7 +11284,7 @@ create_table_info_t::create_table()
 	DBUG_RETURN(0);
 }
 
-/** Update a new table in an InnoDB database.
+/** Update a new table in an InnoDB blockchain.
 @return error number */
 int
 create_table_info_t::create_table_update_dict()
@@ -11340,7 +11340,7 @@ create_table_info_t::create_table_update_dict()
 		if (!innobase_fts_load_stopword(innobase_table, NULL, m_thd)) {
 			dict_table_close(innobase_table, FALSE, FALSE);
 			srv_active_wake_master_thread();
-			trx_free_for_mysql(m_trx);
+			trx_free_for_myblockchain(m_trx);
 			DBUG_RETURN(-1);
 		}
 	}
@@ -11393,7 +11393,7 @@ create_table_info_t::allocate_trx()
 	m_trx->ddl = true;
 }
 
-/** Create a new table to an InnoDB database.
+/** Create a new table to an InnoDB blockchain.
 @param[in]	name		Table name, format: "db/table_name".
 @param[in]	form		Table format; columns and index information.
 @param[in]	create_info	Create info (including create statement string).
@@ -11405,7 +11405,7 @@ ha_innobase::create(
 	HA_CREATE_INFO*	create_info)
 {
 	int		error;
-	char		norm_name[FN_REFLEN];	/* {database}/{tablename} */
+	char		norm_name[FN_REFLEN];	/* {blockchain}/{tablename} */
 	char		temp_path[FN_REFLEN];	/* Absolute path of temp frm */
 	char		remote_path[FN_REFLEN];	/* Absolute path of table */
 	char		tablespace[NAME_LEN];	/* Tablespace name identifier */
@@ -11436,12 +11436,12 @@ ha_innobase::create(
 
 	/* Latch the InnoDB data dictionary exclusively so that no deadlocks
 	or lock waits can happen in it during a table create operation.
-	Drop table etc. do this latching in row0mysql.cc.
+	Drop table etc. do this latching in row0myblockchain.cc.
 	Avoid locking dictionary if table is intrinsic.
 	Table Object for such table is cached in THD instead of storing it
 	to dictionary. */
 	if (!info.is_intrinsic_temp_table()) {
-		row_mysql_lock_data_dictionary(trx);
+		row_myblockchain_lock_data_dictionary(trx);
 	}
 
 	if ((error = info.create_table())) {
@@ -11452,7 +11452,7 @@ ha_innobase::create(
 
 	if (!info.is_intrinsic_temp_table()) {
 		ut_ad(!srv_read_only_mode);
-		row_mysql_unlock_data_dictionary(trx);
+		row_myblockchain_unlock_data_dictionary(trx);
 		/* Flush the log to reduce probability that the .frm files and
 		the InnoDB data dictionary get out-of-sync if the user runs
 		with innodb_flush_log_at_trx_commit = 0 */
@@ -11466,15 +11466,15 @@ ha_innobase::create(
 
 	srv_active_wake_master_thread();
 
-	trx_free_for_mysql(trx);
+	trx_free_for_myblockchain(trx);
 
 	DBUG_RETURN(error);
 
 cleanup:
-	trx_rollback_for_mysql(trx);
+	trx_rollback_for_myblockchain(trx);
 
 	if (!info.is_intrinsic_temp_table()) {
-		row_mysql_unlock_data_dictionary(trx);
+		row_myblockchain_unlock_data_dictionary(trx);
 	} else {
 		THD* thd = info.thd();
 
@@ -11504,7 +11504,7 @@ cleanup:
 		}
 	}
 
-	trx_free_for_mysql(trx);
+	trx_free_for_myblockchain(trx);
 
 	DBUG_RETURN(error);
 }
@@ -11534,7 +11534,7 @@ ha_innobase::discard_or_import_tablespace(
 	if (dict_table_is_temporary(dict_table)) {
 
 		ib_senderrf(
-			m_prebuilt->trx->mysql_thd, IB_LOG_LEVEL_ERROR,
+			m_prebuilt->trx->myblockchain_thd, IB_LOG_LEVEL_ERROR,
 			ER_CANNOT_DISCARD_TEMPORARY_TABLE);
 
 		DBUG_RETURN(HA_ERR_TABLE_NEEDS_UPGRADE);
@@ -11542,7 +11542,7 @@ ha_innobase::discard_or_import_tablespace(
 
 	if (dict_table->space == srv_sys_space.space_id()) {
 		ib_senderrf(
-			m_prebuilt->trx->mysql_thd, IB_LOG_LEVEL_ERROR,
+			m_prebuilt->trx->myblockchain_thd, IB_LOG_LEVEL_ERROR,
 			ER_TABLE_IN_SYSTEM_TABLESPACE,
 			dict_table->name.m_name);
 
@@ -11569,7 +11569,7 @@ ha_innobase::discard_or_import_tablespace(
 	trx_start_if_not_started(m_prebuilt->trx, true);
 
 	/* Obtain an exclusive lock on the table. */
-	dberr_t	err = row_mysql_lock_table(
+	dberr_t	err = row_myblockchain_lock_table(
 		m_prebuilt->trx, dict_table, LOCK_X,
 		discard ? "setting table lock for DISCARD TABLESPACE"
 			: "setting table lock for IMPORT TABLESPACE");
@@ -11585,30 +11585,30 @@ ha_innobase::discard_or_import_tablespace(
 
 		if (dict_table->ibd_file_missing) {
 			ib_senderrf(
-				m_prebuilt->trx->mysql_thd,
+				m_prebuilt->trx->myblockchain_thd,
 				IB_LOG_LEVEL_WARN, ER_TABLESPACE_MISSING,
 				dict_table->name.m_name);
 		}
 
-		err = row_discard_tablespace_for_mysql(
+		err = row_discard_tablespace_for_myblockchain(
 			dict_table->name.m_name, m_prebuilt->trx);
 
 	} else if (!dict_table->ibd_file_missing) {
 		/* Commit the transaction in order to
 		release the table lock. */
-		trx_commit_for_mysql(m_prebuilt->trx);
+		trx_commit_for_myblockchain(m_prebuilt->trx);
 
 		ib::error() << "Unable to import tablespace "
 			<< dict_table->name << " because it already"
 			" exists.  Please DISCARD the tablespace"
 			" before IMPORT.";
 		ib_senderrf(
-			m_prebuilt->trx->mysql_thd, IB_LOG_LEVEL_ERROR,
+			m_prebuilt->trx->myblockchain_thd, IB_LOG_LEVEL_ERROR,
 			ER_TABLESPACE_EXISTS, dict_table->name.m_name);
 
 		DBUG_RETURN(HA_ERR_TABLE_EXIST);
 	} else {
-		err = row_import_for_mysql(dict_table, m_prebuilt);
+		err = row_import_for_myblockchain(dict_table, m_prebuilt);
 
 		if (err == DB_SUCCESS) {
 
@@ -11620,7 +11620,7 @@ ha_innobase::discard_or_import_tablespace(
 	}
 
 	/* Commit the transaction in order to release the table lock. */
-	trx_commit_for_mysql(m_prebuilt->trx);
+	trx_commit_for_myblockchain(m_prebuilt->trx);
 
 	if (err == DB_SUCCESS && !discard
 	    && dict_stats_is_persistent_enabled(dict_table)) {
@@ -11641,7 +11641,7 @@ ha_innobase::discard_or_import_tablespace(
 		}
 	}
 
-	DBUG_RETURN(convert_error_code_to_mysql(err, dict_table->flags, NULL));
+	DBUG_RETURN(convert_error_code_to_myblockchain(err, dict_table->flags, NULL));
 }
 
 /*****************************************************************//**
@@ -11677,7 +11677,7 @@ ha_innobase::truncate()
 	dberr_t	err;
 
 	/* Truncate the table in InnoDB */
-	err = row_truncate_table_for_mysql(m_prebuilt->table, m_prebuilt->trx);
+	err = row_truncate_table_for_myblockchain(m_prebuilt->table, m_prebuilt->trx);
 
 	int	error;
 
@@ -11685,7 +11685,7 @@ ha_innobase::truncate()
 	case DB_TABLESPACE_DELETED:
 	case DB_TABLESPACE_NOT_FOUND:
 		ib_senderrf(
-			m_prebuilt->trx->mysql_thd, IB_LOG_LEVEL_ERROR,
+			m_prebuilt->trx->myblockchain_thd, IB_LOG_LEVEL_ERROR,
 			(err == DB_TABLESPACE_DELETED ?
 			ER_TABLESPACE_DISCARDED : ER_TABLESPACE_MISSING),
 			table->s->table_name.str);
@@ -11694,9 +11694,9 @@ ha_innobase::truncate()
 		break;
 
 	default:
-		error = convert_error_code_to_mysql(
+		error = convert_error_code_to_myblockchain(
 			err, m_prebuilt->table->flags,
-			m_prebuilt->trx->mysql_thd);
+			m_prebuilt->trx->myblockchain_thd);
 
 		table->status = STATUS_NOT_FOUND;
 		break;
@@ -11706,8 +11706,8 @@ ha_innobase::truncate()
 }
 
 /*****************************************************************//**
-Drops a table from an InnoDB database. Before calling this function,
-MySQL calls innobase_commit to commit the transaction of the current user.
+Drops a table from an InnoDB blockchain. Before calling this function,
+MyBlockchain calls innobase_commit to commit the transaction of the current user.
 Then the current user cannot have locks set on the table. Drop table
 operation inside InnoDB will remove all locks any user has on the table
 inside InnoDB.
@@ -11733,7 +11733,7 @@ ha_innobase::delete_table(
 		test_ut_format_name();
 	);
 
-	/* Strangely, MySQL passes the table name without the '.frm'
+	/* Strangely, MyBlockchain passes the table name without the '.frm'
 	extension, in contrast to ::create */
 	normalize_table_name(norm_name, name);
 
@@ -11791,7 +11791,7 @@ ha_innobase::delete_table(
 
 	/* Drop the table in InnoDB */
 
-	err = row_drop_table_for_mysql(
+	err = row_drop_table_for_myblockchain(
 		norm_name, trx, thd_sql_command(thd) == SQLCOM_DROP_DB,
 		true, handler);
 
@@ -11810,19 +11810,19 @@ ha_innobase::delete_table(
 		ut_a(len < FN_REFLEN);
 		norm_name[len] = '#';
 		norm_name[len + 1] = 0;
-		err = row_drop_database_for_mysql(norm_name, trx,
+		err = row_drop_blockchain_for_myblockchain(norm_name, trx,
 			&num_partitions);
 		norm_name[len] = 0;
 		if (num_partitions == 0
-		    && !row_is_mysql_tmp_table_name(norm_name)) {
+		    && !row_is_myblockchain_tmp_table_name(norm_name)) {
 			table_name_t tbl_name;
 			tbl_name.m_name = norm_name;
 			ib::error() << "Table " << tbl_name <<
 				" does not exist in the InnoDB"
-				" internal data dictionary though MySQL is"
+				" internal data dictionary though MyBlockchain is"
 				" trying to drop it. Have you copied the .frm"
-				" file of the table to the MySQL database"
-				" directory from another database? "
+				" file of the table to the MyBlockchain blockchain"
+				" directory from another blockchain? "
 				<< TROUBLESHOOTING_MSG;
 		}
 		if (num_partitions == 0) {
@@ -11857,7 +11857,7 @@ ha_innobase::delete_table(
 			create_table_info_t::normalize_table_name_low(
 				par_case_name, name, FALSE);
 #endif /* _WIN32 */
-			err = row_drop_table_for_mysql(
+			err = row_drop_table_for_myblockchain(
 				par_case_name, trx,
 				thd_sql_command(thd) == SQLCOM_DROP_DB,
 				true, handler);
@@ -11877,16 +11877,16 @@ ha_innobase::delete_table(
 
 	innobase_commit_low(trx);
 
-	trx_free_for_mysql(trx);
+	trx_free_for_myblockchain(trx);
 
-	DBUG_RETURN(convert_error_code_to_mysql(err, 0, NULL));
+	DBUG_RETURN(convert_error_code_to_myblockchain(err, 0, NULL));
 }
 
 /** Validate the parameters in st_alter_tablespace
 before using them in InnoDB tablespace functions.
 @param[in]	thd		Connection
 @param[in]	alter_info	How to do the command.
-@return MySQL handler error code like HA_... */
+@return MyBlockchain handler error code like HA_... */
 static
 int
 validate_create_tablespace_info(
@@ -12017,7 +12017,7 @@ validate_create_tablespace_info(
 
 	/* CREATE TABLESPACE...ADD DATAFILE can be inside but not under
 	the datadir.*/
-	if (folder.is_child_of(folder_mysql_datadir)) {
+	if (folder.is_child_of(folder_myblockchain_datadir)) {
 		my_error(ER_WRONG_FILE_NAME, MYF(0),
 			 alter_info->data_file_name);
 		my_printf_error(ER_WRONG_FILE_NAME,
@@ -12035,7 +12035,7 @@ validate_create_tablespace_info(
 @param[in]	hton		Handlerton of InnoDB
 @param[in]	thd		Connection
 @param[in]	alter_info	How to do the command
-@return MySQL error code*/
+@return MyBlockchain error code*/
 static
 int
 innobase_create_tablespace(
@@ -12061,14 +12061,14 @@ innobase_create_tablespace(
 
 	dberr_t err = tablespace.add_datafile(alter_info->data_file_name);
 	if (err != DB_SUCCESS) {
-		DBUG_RETURN(convert_error_code_to_mysql(err, 0, NULL));
+		DBUG_RETURN(convert_error_code_to_myblockchain(err, 0, NULL));
 	}
 
 	/* Get the transaction associated with the current thd and make
 	sure it will not block this DDL. */
 	trx_t*	parent_trx = check_trx_exists(thd);
 
-	/* In case MySQL calls this in the middle of a SELECT
+	/* In case MyBlockchain calls this in the middle of a SELECT
 	query, release possible adaptive hash latch to avoid
 	deadlocks of threads */
 	trx_search_latch_release_if_reserved(parent_trx);
@@ -12078,7 +12078,7 @@ innobase_create_tablespace(
 	++trx->will_lock;
 
 	trx_start_if_not_started(trx, true);
-	row_mysql_lock_data_dictionary(trx);
+	row_myblockchain_lock_data_dictionary(trx);
 
 	/* In FSP_FLAGS, a zip_ssize of zero means that the tablespace
 	holds non-compresssed tables.  A non-zero zip_ssize means that
@@ -12103,16 +12103,16 @@ innobase_create_tablespace(
 
 	err = dict_build_tablespace(&tablespace);
 	if (err != DB_SUCCESS) {
-		error = convert_error_code_to_mysql(err, 0, NULL);
-		trx_rollback_for_mysql(trx);
+		error = convert_error_code_to_myblockchain(err, 0, NULL);
+		trx_rollback_for_myblockchain(trx);
 		goto cleanup;
 	}
 
 	innobase_commit_low(trx);
 
 cleanup:
-	row_mysql_unlock_data_dictionary(trx);
-	trx_free_for_mysql(trx);
+	row_myblockchain_unlock_data_dictionary(trx);
+	trx_free_for_myblockchain(trx);
 
 	DBUG_RETURN(error);
 }
@@ -12121,7 +12121,7 @@ cleanup:
 @param[in]	hton		Handlerton of InnoDB
 @param[in]	thd		Connection
 @param[in]	alter_info	How to do the command
-@return MySQL error code*/
+@return MyBlockchain error code*/
 static
 int
 innobase_drop_tablespace(
@@ -12161,7 +12161,7 @@ innobase_drop_tablespace(
 	it will not block this DDL. */
 	trx_t*	parent_trx = check_trx_exists(thd);
 
-	/* In case MySQL calls this in the middle of a SELECT
+	/* In case MyBlockchain calls this in the middle of a SELECT
 	query, release possible adaptive hash latch to avoid
 	deadlocks of threads */
 	trx_search_latch_release_if_reserved(parent_trx);
@@ -12171,7 +12171,7 @@ innobase_drop_tablespace(
 	++trx->will_lock;
 
 	trx_start_if_not_started(trx, true);
-	row_mysql_lock_data_dictionary(trx);
+	row_myblockchain_lock_data_dictionary(trx);
 
 	/* Update SYS_TABLESPACES and SYS_DATAFILES */
 	err = dict_delete_tablespace_and_datafiles(space_id, trx);
@@ -12179,8 +12179,8 @@ innobase_drop_tablespace(
 		ib::error() << "Unable to delete the dictionary entries"
 			" for tablespace `" << alter_info->tablespace_name
 			<< "`, Space ID " << space_id;
-		error = convert_error_code_to_mysql(err, 0, NULL);
-		trx_rollback_for_mysql(trx);
+		error = convert_error_code_to_myblockchain(err, 0, NULL);
+		trx_rollback_for_myblockchain(trx);
 		goto cleanup;
 	}
 
@@ -12190,16 +12190,16 @@ innobase_drop_tablespace(
 		ib::error() << "Unable to delete the tablespace `"
 			<< alter_info->tablespace_name
 			<< "`, Space ID " << space_id;
-		error = convert_error_code_to_mysql(err, 0, NULL);
-		trx_rollback_for_mysql(trx);
+		error = convert_error_code_to_myblockchain(err, 0, NULL);
+		trx_rollback_for_myblockchain(trx);
 		goto cleanup;
 	}
 
 	innobase_commit_low(trx);
 
 cleanup:
-	row_mysql_unlock_data_dictionary(trx);
-	trx_free_for_mysql(trx);
+	row_myblockchain_unlock_data_dictionary(trx);
+	trx_free_for_myblockchain(trx);
 
 	DBUG_RETURN(error);
 }
@@ -12208,7 +12208,7 @@ cleanup:
 @param[in]	hton		Handlerton of InnoDB
 @param[in]	thd		Connection
 @param[in]	alter_info	How to do the command
-@return MySQL error code*/
+@return MyBlockchain error code*/
 static
 int
 innobase_alter_tablespace(
@@ -12266,14 +12266,14 @@ innobase_alter_tablespace(
 	DBUG_RETURN(error);
 }
 
-/** Remove all tables in the named database inside InnoDB.
+/** Remove all tables in the named blockchain inside InnoDB.
 @param[in]	hton	handlerton from InnoDB
 @param[in]	path	Database path; Inside InnoDB the name of the last
-directory in the path is used as the database name.
-For example, in 'mysql/data/test' the database name is 'test'. */
+directory in the path is used as the blockchain name.
+For example, in 'myblockchain/data/test' the blockchain name is 'test'. */
 static
 void
-innobase_drop_database(
+innobase_drop_blockchain(
 	handlerton*	hton,
 	char*		path)
 {
@@ -12294,7 +12294,7 @@ innobase_drop_database(
 	if (thd != NULL) {
 		trx_t*	parent_trx = check_trx_exists(thd);
 
-		/* In case MySQL calls this in the middle of a SELECT
+		/* In case MyBlockchain calls this in the middle of a SELECT
 		query, release possible adaptive hash latch to avoid
 		deadlocks of threads */
 
@@ -12332,7 +12332,7 @@ innobase_drop_database(
 
 	ulint	dummy;
 
-	row_drop_database_for_mysql(namebuf, trx, &dummy);
+	row_drop_blockchain_for_myblockchain(namebuf, trx, &dummy);
 
 	my_free(namebuf);
 
@@ -12344,7 +12344,7 @@ innobase_drop_database(
 
 	innobase_commit_low(trx);
 
-	trx_free_for_mysql(trx);
+	trx_free_for_myblockchain(trx);
 }
 
 /*********************************************************************//**
@@ -12379,14 +12379,14 @@ innobase_rename_table(
 	/* Serialize data dictionary operations with dictionary mutex:
 	no deadlocks can occur then in these operations. */
 
-	row_mysql_lock_data_dictionary(trx);
+	row_myblockchain_lock_data_dictionary(trx);
 
 	/* Transaction must be flagged as a locking transaction or it hasn't
 	been started yet. */
 
 	ut_a(trx->will_lock > 0);
 
-	error = row_rename_table_for_mysql(norm_from, norm_to, trx, TRUE);
+	error = row_rename_table_for_myblockchain(norm_from, norm_to, trx, TRUE);
 
 	if (error == DB_TABLE_NOT_FOUND) {
 		/* May be partitioned table, which consists of partitions
@@ -12396,15 +12396,15 @@ innobase_rename_table(
 		++trx->will_lock;
 		trx_set_dict_operation(trx, TRX_DICT_OP_INDEX);
 		trx_start_if_not_started(trx, true);
-		error = row_rename_partitions_for_mysql(norm_from, norm_to,
+		error = row_rename_partitions_for_myblockchain(norm_from, norm_to,
 							trx);
 		if (error == DB_TABLE_NOT_FOUND) {
 			ib::error() << "Table " << ut_get_name(trx, norm_from)
 				<< " does not exist in the InnoDB internal"
-				" data dictionary though MySQL is trying to"
+				" data dictionary though MyBlockchain is trying to"
 				" rename the table. Have you copied the .frm"
-				" file of the table to the MySQL database"
-				" directory from another database? "
+				" file of the table to the MyBlockchain blockchain"
+				" directory from another blockchain? "
 				<< TROUBLESHOOTING_MSG;
 		}
 	}
@@ -12435,7 +12435,7 @@ innobase_rename_table(
 					par_case_name, from, FALSE);
 #endif /* _WIN32 */
 				trx_start_if_not_started(trx, true);
-				error = row_rename_table_for_mysql(
+				error = row_rename_table_for_myblockchain(
 					par_case_name, norm_to, trx, TRUE);
 			}
 		}
@@ -12460,7 +12460,7 @@ innobase_rename_table(
 		}
 	}
 
-	row_mysql_unlock_data_dictionary(trx);
+	row_myblockchain_unlock_data_dictionary(trx);
 
 	/* Flush the log to reduce probability that the .frm
 	files and the InnoDB data dictionary get out-of-sync
@@ -12509,7 +12509,7 @@ ha_innobase::rename_table(
 
 	innobase_commit_low(trx);
 
-	trx_free_for_mysql(trx);
+	trx_free_for_myblockchain(trx);
 
 	if (error == DB_SUCCESS) {
 		char	norm_from[MAX_FULL_NAME_LEN];
@@ -12533,8 +12533,8 @@ ha_innobase::rename_table(
 
 	/* Add a special case to handle the Duplicated Key error
 	and return DB_ERROR instead.
-	This is to avoid a possible SIGSEGV error from mysql error
-	handling code. Currently, mysql handles the Duplicated Key
+	This is to avoid a possible SIGSEGV error from myblockchain error
+	handling code. Currently, myblockchain handles the Duplicated Key
 	error by re-entering the storage layer and getting dup key
 	info by calling get_dup_key(). This operation requires a valid
 	table handle ('row_prebuilt_t' structure) which could no
@@ -12549,7 +12549,7 @@ ha_innobase::rename_table(
 		error = DB_ERROR;
 	}
 
-	DBUG_RETURN(convert_error_code_to_mysql(error, 0, NULL));
+	DBUG_RETURN(convert_error_code_to_myblockchain(error, 0, NULL));
 }
 
 /*********************************************************************//**
@@ -12620,7 +12620,7 @@ ha_innobase::records(
 		DBUG_RETURN(HA_ERR_TABLE_DEF_CHANGED);
 	}
 
-	/* (Re)Build the m_prebuilt->mysql_template if it is null to use
+	/* (Re)Build the m_prebuilt->myblockchain_template if it is null to use
 	the clustered index and just the key, no off-record data. */
 	m_prebuilt->index = index;
 	dtuple_set_n_fields(m_prebuilt->search_tuple, 0);
@@ -12628,7 +12628,7 @@ ha_innobase::records(
 	build_template(false);
 
 	/* Count the records in the clustered index */
-	ret = row_scan_index_for_mysql(m_prebuilt, index, false, &n_rows);
+	ret = row_scan_index_for_myblockchain(m_prebuilt, index, false, &n_rows);
 	reset_template();
 	switch (ret) {
 	case DB_SUCCESS:
@@ -12637,13 +12637,13 @@ ha_innobase::records(
 	case DB_LOCK_TABLE_FULL:
 	case DB_LOCK_WAIT_TIMEOUT:
 		*num_rows = HA_POS_ERROR;
-		DBUG_RETURN(convert_error_code_to_mysql(ret, 0, m_user_thd));
+		DBUG_RETURN(convert_error_code_to_myblockchain(ret, 0, m_user_thd));
 	case DB_INTERRUPTED:
 		*num_rows = HA_POS_ERROR;
 		DBUG_RETURN(HA_ERR_QUERY_INTERRUPTED);
 	default:
 		/* No other error besides the three below is returned from
-		row_scan_index_for_mysql(). Make a debug catch. */
+		row_scan_index_for_myblockchain(). Make a debug catch. */
 		*num_rows = HA_POS_ERROR;
 		ut_ad(0);
 		DBUG_RETURN(-1);
@@ -12697,7 +12697,7 @@ ha_innobase::records_in_range(
 	index = innobase_get_index(keynr);
 
 	/* There exists possibility of not being able to find requested
-	index due to inconsistency between MySQL and InoDB dictionary info.
+	index due to inconsistency between MyBlockchain and InoDB dictionary info.
 	Necessary message should have been printed in innobase_get_index() */
 	if (dict_table_is_discarded(m_prebuilt->table)) {
 		n_rows = HA_POS_ERROR;
@@ -12725,7 +12725,7 @@ ha_innobase::records_in_range(
 	range_end = dtuple_create(heap, key->actual_key_parts);
 	dict_index_copy_types(range_end, index, key->actual_key_parts);
 
-	row_sel_convert_mysql_key_to_innobase(
+	row_sel_convert_myblockchain_key_to_innobase(
 		range_start,
 		m_prebuilt->srch_key_val1,
 		m_prebuilt->srch_key_val_len,
@@ -12738,7 +12738,7 @@ ha_innobase::records_in_range(
 		    ? range_start->n_fields > 0
 		    : range_start->n_fields == 0);
 
-	row_sel_convert_mysql_key_to_innobase(
+	row_sel_convert_myblockchain_key_to_innobase(
 		range_end,
 		m_prebuilt->srch_key_val2,
 		m_prebuilt->srch_key_val_len,
@@ -12786,11 +12786,11 @@ func_exit:
 
 	m_prebuilt->trx->op_info = (char*)"";
 
-	/* The MySQL optimizer seems to believe an estimate of 0 rows is
+	/* The MyBlockchain optimizer seems to believe an estimate of 0 rows is
 	always accurate and may return the result 'Empty set' based on that.
 	The accuracy is not guaranteed, and even if it were, for a locking
 	read we should anyway perform the search to set the next-key lock.
-	Add 1 to the value to make sure MySQL does not make the assumption! */
+	Add 1 to the value to make sure MyBlockchain does not make the assumption! */
 
 	if (n_rows == 0) {
 		n_rows = 1;
@@ -12814,7 +12814,7 @@ ha_innobase::estimate_rows_upper_bound()
 
 	DBUG_ENTER("estimate_rows_upper_bound");
 
-	/* We do not know if MySQL can call this function before calling
+	/* We do not know if MyBlockchain can call this function before calling
 	external_lock(). To be safe, update the thd of the current table
 	handle. */
 
@@ -12835,7 +12835,7 @@ ha_innobase::estimate_rows_upper_bound()
 
 	/* Calculate a minimum length for a clustered index record and from
 	that an upper bound for the number of rows. Since we only calculate
-	new statistics in row0mysql.cc when a table has grown by a threshold
+	new statistics in row0myblockchain.cc when a table has grown by a threshold
 	factor, we must add a safety factor 2 in front of the formula below. */
 
 	estimate = 2 * local_data_file_length
@@ -12863,7 +12863,7 @@ double
 ha_innobase::scan_time()
 /*====================*/
 {
-	/* Since MySQL seems to favor table scans too much over index
+	/* Since MyBlockchain seems to favor table scans too much over index
 	searches, we pretend that a sequential read takes the same time
 	as a random disk read, that is, we do not divide the following
 	by 10, which would be physically realistic. */
@@ -12941,21 +12941,21 @@ ha_innobase::get_memory_buffer_size() const
 }
 
 /*********************************************************************//**
-Calculates the key number used inside MySQL for an Innobase index. We will
+Calculates the key number used inside MyBlockchain for an Innobase index. We will
 first check the "index translation table" for a match of the index to get
 the index number. If there does not exist an "index translation table",
 or not able to find the index in the translation table, then we will fall back
 to the traditional way of looping through dict_index_t list to find a
 match. In this case, we have to take into account if we generated a
 default clustered index for the table
-@return the key number used inside MySQL */
+@return the key number used inside MyBlockchain */
 static
 int
-innobase_get_mysql_key_number_for_index(
+innobase_get_myblockchain_key_number_for_index(
 /*====================================*/
 	INNOBASE_SHARE*		share,	/*!< in: share structure for index
 					translation table. */
-	const TABLE*		table,	/*!< in: table in MySQL data
+	const TABLE*		table,	/*!< in: table in MyBlockchain data
 					dictionary */
 	dict_table_t*		ib_table,/*!< in: table in InnoDB data
 					dictionary */
@@ -13003,7 +13003,7 @@ innobase_get_mysql_key_number_for_index(
 
 	/* If we do not have an "index translation table", or not able
 	to find the index in the translation table, we'll directly find
-	matching index with information from mysql TABLE structure and
+	matching index with information from myblockchain TABLE structure and
 	InnoDB dict_index_t list */
 	for (i = 0; i < table->s->keys; i++) {
 		ind = dict_table_get_index_on_name(
@@ -13020,12 +13020,12 @@ innobase_get_mysql_key_number_for_index(
 	     ind = dict_table_get_next_index(ind)) {
 		if (index == ind) {
 			/* Temp index is internal to InnoDB, that is
-			not present in the MySQL index list, so no
+			not present in the MyBlockchain index list, so no
 			need to print such mismatch warning. */
 			if (index->is_committed()) {
 				sql_print_warning(
 					"Found index %s in InnoDB index list"
-					" but not its MySQL index number."
+					" but not its MyBlockchain index number."
 					" It could be an InnoDB internal"
 					" index.",
 					index->name());
@@ -13115,7 +13115,7 @@ innodb_rec_per_key(
 }
 
 /*********************************************************************//**
-Returns statistics information of the table to the MySQL interpreter,
+Returns statistics information of the table to the MyBlockchain interpreter,
 in various fields of the handle object.
 @return HA_ERR_* error code or 0 */
 
@@ -13136,16 +13136,16 @@ ha_innobase::info_low(
 	statistics calculation on tables, because that may crash the
 	server if an index is badly corrupted. */
 
-	/* We do not know if MySQL can call this function before calling
+	/* We do not know if MyBlockchain can call this function before calling
 	external_lock(). To be safe, update the thd of the current table
 	handle. */
 
 	update_thd(ha_thd());
 
-	/* In case MySQL calls this in the middle of a SELECT query, release
+	/* In case MyBlockchain calls this in the middle of a SELECT query, release
 	possible adaptive hash latch to avoid deadlocks of threads */
 
-	m_prebuilt->trx->op_info = (char*)"returning various info to MySQL";
+	m_prebuilt->trx->op_info = (char*)"returning various info to MyBlockchain";
 
 	trx_search_latch_release_if_reserved(m_prebuilt->trx);
 
@@ -13182,7 +13182,7 @@ ha_innobase::info_low(
 			}
 
 			m_prebuilt->trx->op_info =
-				"returning various info to MySQL";
+				"returning various info to MyBlockchain";
 		}
 
 
@@ -13213,7 +13213,7 @@ ha_innobase::info_low(
 		}
 
 		/*
-		The MySQL optimizer seems to assume in a left join that n_rows
+		The MyBlockchain optimizer seems to assume in a left join that n_rows
 		is an accurate estimate if it is zero. Of course, it is not,
 		since we do not have any locks on the rows yet at this phase.
 		Since SHOW TABLE STATUS seems to call this function with the
@@ -13257,7 +13257,7 @@ ha_innobase::info_low(
 
 		/* Since fsp_get_available_space_in_free_extents() is
 		acquiring latches inside InnoDB, we do not call it if we
-		are asked by MySQL to avoid locking. Another reason to
+		are asked by MyBlockchain to avoid locking. Another reason to
 		avoid the call is that it uses quite a lot of CPU.
 		See Bug#38185. */
 		if (flag & HA_STATUS_NO_LOCK
@@ -13317,7 +13317,7 @@ ha_innobase::info_low(
 
 	if (flag & HA_STATUS_CONST) {
 		ulong	i;
-		/* Verify the number of index in InnoDB and MySQL
+		/* Verify the number of index in InnoDB and MyBlockchain
 		matches up. If m_prebuilt->clust_index_was_generated
 		holds, InnoDB defines GEN_CLUST_INDEX internally */
 		ulint	num_innodb_index = UT_LIST_GET_LEN(ib_table->indexes)
@@ -13325,7 +13325,7 @@ ha_innobase::info_low(
 		if (table->s->keys < num_innodb_index) {
 			/* If there are too many indexes defined
 			inside InnoDB, ignore those that are being
-			created, because MySQL will only consider
+			created, because MyBlockchain will only consider
 			the fully built indexes here. */
 
 			for (const dict_index_t* index
@@ -13335,7 +13335,7 @@ ha_innobase::info_low(
 
 				/* First, online index creation is
 				completed inside InnoDB, and then
-				MySQL attempts to upgrade the
+				MyBlockchain attempts to upgrade the
 				meta-data lock so that it can rebuild
 				the .frm file. If we get here in that
 				time frame, dict_index_is_online_ddl()
@@ -13358,7 +13358,7 @@ ha_innobase::info_low(
 			sql_print_error("InnoDB: Table %s contains %lu"
 					" indexes inside InnoDB, which"
 					" is different from the number of"
-					" indexes %u defined in MySQL",
+					" indexes %u defined in MyBlockchain",
 					ib_table->name.m_name,
 					num_innodb_index, table->s->keys);
 		}
@@ -13381,7 +13381,7 @@ ha_innobase::info_low(
 			if (index == NULL) {
 				sql_print_error("Table %s contains fewer"
 						" indexes inside InnoDB than"
-						" are defined in the MySQL"
+						" are defined in the MyBlockchain"
 						" .frm file. Have you mixed up"
 						" .frm files from different"
 						" installations? %s\n",
@@ -13413,7 +13413,7 @@ ha_innobase::info_low(
 					sql_print_error(
 						"Index %s of %s has %lu columns"
 						" unique inside InnoDB, but"
-						" MySQL is asking statistics for"
+						" MyBlockchain is asking statistics for"
 						" %lu columns. Have you mixed"
 						" up .frm files from different"
 						" installations? %s",
@@ -13455,7 +13455,7 @@ ha_innobase::info_low(
 					innodb_rec_per_key(index, j,
 							   stats.records));
 
-				/* Since MySQL seems to favor table scans
+				/* Since MyBlockchain seems to favor table scans
 				too much over index searches, we pretend
 				index selectivity is 2 times better than
 				our estimate: */
@@ -13475,7 +13475,7 @@ ha_innobase::info_low(
 		}
 
 		my_snprintf(path, sizeof(path), "%s/%s%s",
-			    mysql_data_home, table->s->normalized_path.str,
+			    myblockchain_data_home, table->s->normalized_path.str,
 			    reg_ext);
 
 		unpack_filename(path,path);
@@ -13504,7 +13504,7 @@ ha_innobase::info_low(
 		err_index = trx_get_error_info(m_prebuilt->trx);
 
 		if (err_index) {
-			errkey = innobase_get_mysql_key_number_for_index(
+			errkey = innobase_get_myblockchain_key_number_for_index(
 					m_share, table, ib_table, err_index);
 		} else {
 			errkey = (unsigned int) (
@@ -13537,7 +13537,7 @@ func_exit:
 }
 
 /*********************************************************************//**
-Returns statistics information of the table to the MySQL interpreter,
+Returns statistics information of the table to the MyBlockchain interpreter,
 in various fields of the handle object.
 @return HA_ERR_* error code or 0 */
 
@@ -13641,7 +13641,7 @@ ha_innobase::analyze(
 
 /**********************************************************************//**
 This is mapped to "ALTER TABLE tablename ENGINE=InnoDB", which rebuilds
-the table in MySQL. */
+the table in MyBlockchain. */
 
 int
 ha_innobase::optimize(
@@ -13652,13 +13652,13 @@ ha_innobase::optimize(
 
 	TrxInInnoDB	trx_in_innodb(m_prebuilt->trx);
 
-	/* FTS-FIXME: Since MySQL doesn't support engine-specific commands,
+	/* FTS-FIXME: Since MyBlockchain doesn't support engine-specific commands,
 	we have to hijack some existing command in order to be able to test
 	the new admin commands added in InnoDB's FTS support. For now, we
-	use MySQL's OPTIMIZE command, normally mapped to ALTER TABLE in
+	use MyBlockchain's OPTIMIZE command, normally mapped to ALTER TABLE in
 	InnoDB (so it recreates the table anew), and map it to OPTIMIZE.
 
-	This works OK otherwise, but MySQL locks the entire table during
+	This works OK otherwise, but MyBlockchain locks the entire table during
 	calls to OPTIMIZE, which is undesirable. */
 
 	if (innodb_optimize_fulltext_only) {
@@ -13700,7 +13700,7 @@ ha_innobase::check(
 
 	TrxInInnoDB	trx_in_innodb(m_prebuilt->trx);
 
-	if (m_prebuilt->mysql_template == NULL) {
+	if (m_prebuilt->myblockchain_template == NULL) {
 		/* Build the template; we will use a dummy template
 		in index scans done in checking */
 
@@ -13837,7 +13837,7 @@ ha_innobase::check(
 		}
 
 		m_prebuilt->sql_stat_start = TRUE;
-		m_prebuilt->template_type = ROW_MYSQL_DUMMY_TEMPLATE;
+		m_prebuilt->template_type = ROW_MYBLOCKCHAIN_DUMMY_TEMPLATE;
 		m_prebuilt->n_template = 0;
 		m_prebuilt->need_to_access_clustered = FALSE;
 
@@ -13849,7 +13849,7 @@ ha_innobase::check(
 		if (dict_index_is_spatial(index)) {
 			ret = row_count_rtree_recs(m_prebuilt, &n_rows);
 		} else {
-			ret = row_scan_index_for_mysql(
+			ret = row_scan_index_for_myblockchain(
 				m_prebuilt, index, true, &n_rows);
 		}
 
@@ -13929,7 +13929,7 @@ ha_innobase::get_foreign_key_create_info(void)
 {
 	ut_a(m_prebuilt != NULL);
 
-	/* We do not know if MySQL can call this function before calling
+	/* We do not know if MyBlockchain can call this function before calling
 	external_lock(). To be safe, update the thd of the current table
 	handle. */
 
@@ -13937,7 +13937,7 @@ ha_innobase::get_foreign_key_create_info(void)
 
 	m_prebuilt->trx->op_info = (char*)"getting info on foreign keys";
 
-	/* In case MySQL calls this in the middle of a SELECT query,
+	/* In case MyBlockchain calls this in the middle of a SELECT query,
 	release possible adaptive hash latch to avoid
 	deadlocks of threads */
 
@@ -13987,7 +13987,7 @@ ha_innobase::get_foreign_key_create_info(void)
 
 
 /***********************************************************************//**
-Maps a InnoDB foreign key constraint to a equivalent MySQL foreign key info.
+Maps a InnoDB foreign key constraint to a equivalent MyBlockchain foreign key info.
 @return pointer to foreign key info */
 static
 FOREIGN_KEY_INFO*
@@ -14010,9 +14010,9 @@ get_foreign_key_info(
 	f_key_info.foreign_id = thd_make_lex_string(
 		thd, 0, ptr, (uint) strlen(ptr), 1);
 
-	/* Name format: database name, '/', table name, '\0' */
+	/* Name format: blockchain name, '/', table name, '\0' */
 
-	/* Referenced (parent) database name */
+	/* Referenced (parent) blockchain name */
 	len = dict_get_db_name_len(foreign->referenced_table_name);
 	ut_a(len < sizeof(tmp_buff));
 	ut_memcpy(tmp_buff, foreign->referenced_table_name, len);
@@ -14028,7 +14028,7 @@ get_foreign_key_info(
 	f_key_info.referenced_table = thd_make_lex_string(
 		thd, 0, name_buff, static_cast<unsigned int>(len), 1);
 
-	/* Dependent (child) database name */
+	/* Dependent (child) blockchain name */
 	len = dict_get_db_name_len(foreign->foreign_table_name);
 	ut_a(len < sizeof(tmp_buff));
 	ut_memcpy(tmp_buff, foreign->foreign_table_name, len);
@@ -14208,19 +14208,19 @@ ha_innobase::can_switch_engines(void)
 	m_prebuilt->trx->op_info =
 			"determining if there are foreign key constraints";
 
-	row_mysql_freeze_data_dictionary(m_prebuilt->trx);
+	row_myblockchain_freeze_data_dictionary(m_prebuilt->trx);
 
 	bool	can_switch = m_prebuilt->table->referenced_set.empty()
 		&& m_prebuilt->table->foreign_set.empty();
 
-	row_mysql_unfreeze_data_dictionary(m_prebuilt->trx);
+	row_myblockchain_unfreeze_data_dictionary(m_prebuilt->trx);
 	m_prebuilt->trx->op_info = "";
 
 	DBUG_RETURN(can_switch);
 }
 
 /*******************************************************************//**
-Checks if a table is referenced by a foreign key. The MySQL manual states that
+Checks if a table is referenced by a foreign key. The MyBlockchain manual states that
 a REPLACE is either equivalent to an INSERT, or DELETE(s) + INSERT. Only a
 delete is then allowed internally to resolve a duplicate key conflict in
 REPLACE, not an update.
@@ -14264,14 +14264,14 @@ ha_innobase::extra(
 {
 	check_trx_exists(ha_thd());
 
-	/* Warning: since it is not sure that MySQL calls external_lock
+	/* Warning: since it is not sure that MyBlockchain calls external_lock
 	before calling this function, the trx field in m_prebuilt can be
 	obsolete! */
 
 	switch (operation) {
 	case HA_EXTRA_FLUSH:
 		if (m_prebuilt->blob_heap) {
-			row_mysql_prebuilt_free_blob_heap(m_prebuilt);
+			row_myblockchain_prebuilt_free_blob_heap(m_prebuilt);
 		}
 		break;
 	case HA_EXTRA_RESET_STATE:
@@ -14289,7 +14289,7 @@ ha_innobase::extra(
 		break;
 
 		/* IMPORTANT: m_prebuilt->trx can be obsolete in
-		this method, because it is not sure that MySQL
+		this method, because it is not sure that MyBlockchain
 		calls external_lock before this method with the
 		parameters below.  We must not invoke update_thd()
 		either, because the calling threads may change.
@@ -14314,7 +14314,7 @@ ha_innobase::extra(
 }
 
 /**
-MySQL calls this method at the end of each statement. This method
+MyBlockchain calls this method at the end of each statement. This method
 exists for readability only. ha_innobase::reset() doesn't give any
 clue about the method. */
 
@@ -14322,7 +14322,7 @@ int
 ha_innobase::end_stmt()
 {
 	if (m_prebuilt->blob_heap) {
-		row_mysql_prebuilt_free_blob_heap(m_prebuilt);
+		row_myblockchain_prebuilt_free_blob_heap(m_prebuilt);
 	}
 
 	reset_template();
@@ -14348,7 +14348,7 @@ ha_innobase::end_stmt()
 }
 
 /**
-MySQL calls this method at the end of each statement */
+MyBlockchain calls this method at the end of each statement */
 
 int
 ha_innobase::reset()
@@ -14357,13 +14357,13 @@ ha_innobase::reset()
 }
 
 /******************************************************************//**
-MySQL calls this function at the start of each SQL statement inside LOCK
+MyBlockchain calls this function at the start of each SQL statement inside LOCK
 TABLES. Inside LOCK TABLES the ::external_lock method does not work to
 mark SQL statement borders. Note also a special case: if a temporary table
-is created inside LOCK TABLES, MySQL has not called external_lock() at all
+is created inside LOCK TABLES, MyBlockchain has not called external_lock() at all
 on that table.
-MySQL-5.0 also calls this before each statement in an execution of a stored
-procedure. To make the execution more deterministic for binlogging, MySQL-5.0
+MyBlockchain-5.0 also calls this before each statement in an execution of a stored
+procedure. To make the execution more deterministic for binlogging, MyBlockchain-5.0
 locks all tables involved in a stored procedure with full explicit table
 locks (thd_in_lock_tables(thd) holds in store_lock()) before executing the
 procedure.
@@ -14407,7 +14407,7 @@ ha_innobase::start_stmt(
 	reset_template();
 
 	if (dict_table_is_temporary(m_prebuilt->table)
-	    && m_mysql_has_locked
+	    && m_myblockchain_has_locked
 	    && m_prebuilt->select_lock_type == LOCK_NONE) {
 		dberr_t error;
 
@@ -14418,10 +14418,10 @@ ha_innobase::start_stmt(
 			init_table_handle_for_HANDLER();
 			m_prebuilt->select_lock_type = LOCK_X;
 			m_prebuilt->stored_select_lock_type = LOCK_X;
-			error = row_lock_table_for_mysql(m_prebuilt, NULL, 1);
+			error = row_lock_table_for_myblockchain(m_prebuilt, NULL, 1);
 
 			if (error != DB_SUCCESS) {
-				int	st = convert_error_code_to_mysql(
+				int	st = convert_error_code_to_myblockchain(
 					error, 0, thd);
 				DBUG_RETURN(st);
 			}
@@ -14429,9 +14429,9 @@ ha_innobase::start_stmt(
 		}
 	}
 
-	if (!m_mysql_has_locked) {
+	if (!m_myblockchain_has_locked) {
 		/* This handle is for a temporary table created inside
-		this same LOCK TABLES; since MySQL does NOT call external_lock
+		this same LOCK TABLES; since MyBlockchain does NOT call external_lock
 		in this case, we must use x-row locks inside InnoDB to be
 		prepared for an update of a row */
 
@@ -14479,13 +14479,13 @@ ha_innobase::start_stmt(
 }
 
 /******************************************************************//**
-Maps a MySQL trx isolation level code to the InnoDB isolation level code
+Maps a MyBlockchain trx isolation level code to the InnoDB isolation level code
 @return InnoDB isolation level */
 static inline
 ulint
 innobase_map_isolation_level(
 /*=========================*/
-	enum_tx_isolation	iso)	/*!< in: MySQL isolation level code */
+	enum_tx_isolation	iso)	/*!< in: MyBlockchain isolation level code */
 {
 	switch (iso) {
 	case ISO_REPEATABLE_READ:	return(TRX_ISO_REPEATABLE_READ);
@@ -14500,8 +14500,8 @@ innobase_map_isolation_level(
 }
 
 /******************************************************************//**
-As MySQL will execute an external lock for every new table it uses when it
-starts to process an SQL statement (an exception is when MySQL calls
+As MyBlockchain will execute an external lock for every new table it uses when it
+starts to process an SQL statement (an exception is when MyBlockchain calls
 start_stmt for the handle) we can use this function to store the pointer to
 the THD in the handle. We will also use this function to communicate
 to InnoDB that a new SQL statement has started and that we must store a
@@ -14639,7 +14639,7 @@ ha_innobase::external_lock(
 	}
 
 	if (lock_type != F_UNLCK) {
-		/* MySQL is setting a new table lock */
+		/* MyBlockchain is setting a new table lock */
 
 		*trx->detailed_error = 0;
 
@@ -14680,22 +14680,22 @@ ha_innobase::external_lock(
 			    && thd_test_options(thd, OPTION_NOT_AUTOCOMMIT)
 			    && thd_in_lock_tables(thd)) {
 
-				dberr_t	error = row_lock_table_for_mysql(
+				dberr_t	error = row_lock_table_for_myblockchain(
 					m_prebuilt, NULL, 0);
 
 				if (error != DB_SUCCESS) {
 
 					DBUG_RETURN(
-						convert_error_code_to_mysql(
+						convert_error_code_to_myblockchain(
 							error, 0, thd));
 				}
 			}
 
-			trx->mysql_n_tables_locked++;
+			trx->myblockchain_n_tables_locked++;
 		}
 
-		trx->n_mysql_tables_in_use++;
-		m_mysql_has_locked = true;
+		trx->n_myblockchain_tables_in_use++;
+		m_myblockchain_has_locked = true;
 
 		if (!trx_is_started(trx)
 		    && (m_prebuilt->select_lock_type != LOCK_NONE
@@ -14719,19 +14719,19 @@ ha_innobase::external_lock(
 		DEBUG_SYNC_C("ha_innobase_end_statement");
 	}
 
-	/* MySQL is releasing a table lock */
+	/* MyBlockchain is releasing a table lock */
 
-	trx->n_mysql_tables_in_use--;
-	m_mysql_has_locked = false;
+	trx->n_myblockchain_tables_in_use--;
+	m_myblockchain_has_locked = false;
 
 	innobase_srv_conc_force_exit_innodb(trx);
 
-	/* If the MySQL lock count drops to zero we know that the current SQL
+	/* If the MyBlockchain lock count drops to zero we know that the current SQL
 	statement has ended */
 
-	if (trx->n_mysql_tables_in_use == 0) {
+	if (trx->n_myblockchain_tables_in_use == 0) {
 
-		trx->mysql_n_tables_locked = 0;
+		trx->myblockchain_n_tables_locked = 0;
 		m_prebuilt->used_in_HANDLER = FALSE;
 
 		if (!thd_test_options(
@@ -14770,7 +14770,7 @@ ha_innobase::external_lock(
 }
 
 /************************************************************************//**
-Here we export InnoDB status variables to MySQL. */
+Here we export InnoDB status variables to MyBlockchain. */
 static
 void
 innodb_export_status()
@@ -14790,7 +14790,7 @@ int
 innodb_show_status(
 /*===============*/
 	handlerton*	hton,	/*!< in: the innodb handlerton */
-	THD*		thd,	/*!< in: the MySQL query thread of the caller */
+	THD*		thd,	/*!< in: the MyBlockchain query thread of the caller */
 	stat_print_fn*	stat_print)
 {
 	static const char	truncated_msg[] = "... truncated...\n";
@@ -15011,7 +15011,7 @@ struct ShowStatus {
 
 	The user has to parse the dataunfortunately
 	@param[in,out]	hton		the innodb handlerton
-	@param[in,out]	thd		the MySQL query thread of the caller
+	@param[in,out]	thd		the MyBlockchain query thread of the caller
 	@param[in,out]	stat_print	function for printing statistics
 	@return true on success. */
 	bool to_string(
@@ -15032,7 +15032,7 @@ We store the metrics  in the "Status" column as:
 
 The user has to parse the dataunfortunately
 @param[in,out]	hton		the innodb handlerton
-@param[in,out]	thd		the MySQL query thread of the caller
+@param[in,out]	thd		the MyBlockchain query thread of the caller
 @param[in,out]	stat_print	function for printing statistics
 @return true on success. */
 bool
@@ -15080,7 +15080,7 @@ ShowStatus::to_string(
 
 /** Implements the SHOW MUTEX STATUS command, for mutexes.
 @param[in,out]	hton		the innodb handlerton
-@param[in,out]	thd		the MySQL query thread of the caller
+@param[in,out]	thd		the MyBlockchain query thread of the caller
 @param[in,out]	stat_print	function for printing statistics
 @return 0 on success. */
 static
@@ -15107,7 +15107,7 @@ innodb_show_mutex_status(
 
 /** Implements the SHOW MUTEX STATUS command.
 @param[in,out]	hton		the innodb handlerton
-@param[in,out]	thd		the MySQL query thread of the caller
+@param[in,out]	thd		the MyBlockchain query thread of the caller
 @param[in,out]	stat_print	function for printing statistics
 @return 0 on success. */
 static
@@ -15204,7 +15204,7 @@ innodb_show_rwlock_status(
 
 /** Implements the SHOW MUTEX STATUS command.
 @param[in,out]	hton		the innodb handlerton
-@param[in,out]	thd		the MySQL query thread of the caller
+@param[in,out]	thd		the MyBlockchain query thread of the caller
 @param[in,out]	stat_print	function for printing statistics
 @return 0 on success. */
 static
@@ -15231,7 +15231,7 @@ bool
 innobase_show_status(
 /*=================*/
 	handlerton*		hton,	/*!< in: the innodb handlerton */
-	THD*			thd,	/*!< in: the MySQL query thread
+	THD*			thd,	/*!< in: the MyBlockchain query thread
 					of the caller */
 	stat_print_fn*		stat_print,
 	enum ha_stat_type	stat_type)
@@ -15257,12 +15257,12 @@ innobase_show_status(
 
 /** Refresh template for the virtual columns and their base columns if
 the share structure exists
-@param[in]      table           MySQL TABLE
+@param[in]      table           MyBlockchain TABLE
 @param[in]      ib_table        InnoDB dict_table_t
 @param[in]	table_name	table_name used to find the share structure */
 void
 refresh_share_vtempl(
-	const TABLE*		mysql_table,
+	const TABLE*		myblockchain_table,
 	const dict_table_t*	ib_table,
 	const char*		table_name)
 {
@@ -15270,7 +15270,7 @@ refresh_share_vtempl(
 
 	ulint	fold = ut_fold_string(table_name);
 
-	mysql_mutex_lock(&innobase_share_mutex);
+	myblockchain_mutex_lock(&innobase_share_mutex);
 
 	HASH_SEARCH(table_name_hash, innobase_open_tables, fold,
 		    INNOBASE_SHARE*, share,
@@ -15279,17 +15279,17 @@ refresh_share_vtempl(
 
 	if (share == NULL) {
 		ut_ad(0);
-		mysql_mutex_unlock(&innobase_share_mutex);
+		myblockchain_mutex_unlock(&innobase_share_mutex);
 		return;
 	}
 
 	free_share_vtemp(share);
 
 	innobase_build_v_templ(
-		mysql_table, ib_table, &(share->s_templ), true,
+		myblockchain_table, ib_table, &(share->s_templ), true,
 		share->table_name);
 
-	mysql_mutex_unlock(&innobase_share_mutex);
+	myblockchain_mutex_unlock(&innobase_share_mutex);
 
 	return;
 }
@@ -15305,7 +15305,7 @@ get_share(
 {
 	INNOBASE_SHARE*	share;
 
-	mysql_mutex_lock(&innobase_share_mutex);
+	myblockchain_mutex_lock(&innobase_share_mutex);
 
 	ulint	fold = ut_fold_string(table_name);
 
@@ -15342,7 +15342,7 @@ get_share(
 
 	++share->use_count;
 
-	mysql_mutex_unlock(&innobase_share_mutex);
+	myblockchain_mutex_unlock(&innobase_share_mutex);
 
 	return(share);
 }
@@ -15364,7 +15364,7 @@ free_share(
 /*=======*/
 	INNOBASE_SHARE*	share)	/*!< in/own: table share to free */
 {
-	mysql_mutex_lock(&innobase_share_mutex);
+	myblockchain_mutex_lock(&innobase_share_mutex);
 
 #ifdef UNIV_DEBUG
 	INNOBASE_SHARE* share2;
@@ -15397,7 +15397,7 @@ free_share(
 		shrinks too much */
 	}
 
-	mysql_mutex_unlock(&innobase_share_mutex);
+	myblockchain_mutex_unlock(&innobase_share_mutex);
 }
 
 /*********************************************************************//**
@@ -15417,17 +15417,17 @@ ha_innobase::lock_count(void) const
 }
 
 /*****************************************************************//**
-Supposed to convert a MySQL table lock stored in the 'lock' field of the
+Supposed to convert a MyBlockchain table lock stored in the 'lock' field of the
 handle to a proper type before storing pointer to the lock into an array
 of pointers.
 In practice, since InnoDB no longer relies on THR_LOCK locks and its
 lock_count() method returns 0 it just informs storage engine about type
 of THR_LOCK which SQL-layer would have acquired for this specific statement
 on this specific table.
-MySQL also calls this if it wants to reset some table locks to a not-locked
+MyBlockchain also calls this if it wants to reset some table locks to a not-locked
 state during the processing of an SQL query. An example is that during a
 SELECT the read lock is released early on the 'const' tables where we only
-fetch one row. MySQL does not call this when it releases all locks at the
+fetch one row. MyBlockchain does not call this when it releases all locks at the
 end of an SQL statement.
 @return pointer to the current element in the 'to' array. */
 
@@ -15451,15 +15451,15 @@ ha_innobase::store_lock(
 
 	TrxInInnoDB	trx_in_innodb(trx);
 
-	/* NOTE: MySQL can call this function with lock 'type' TL_IGNORE!
+	/* NOTE: MyBlockchain can call this function with lock 'type' TL_IGNORE!
 	Be careful to ignore TL_IGNORE if we are going to do something with
 	only 'real' locks! */
 
-	/* If no MySQL table is in use, we need to set the isolation level
+	/* If no MyBlockchain table is in use, we need to set the isolation level
 	of the transaction. */
 
 	if (lock_type != TL_IGNORE
-	    && trx->n_mysql_tables_in_use == 0) {
+	    && trx->n_myblockchain_tables_in_use == 0) {
 		trx->isolation_level = innobase_map_isolation_level(
 			(enum_tx_isolation) thd_tx_isolation(thd));
 
@@ -15496,7 +15496,7 @@ ha_innobase::store_lock(
 		|| sql_command == SQLCOM_DROP_INDEX
 		|| sql_command == SQLCOM_DELETE)) {
 
-		ib_senderrf(trx->mysql_thd,
+		ib_senderrf(trx->myblockchain_thd,
 			    IB_LOG_LEVEL_WARN, ER_READ_ONLY_MODE);
 
 	} else if (sql_command == SQLCOM_FLUSH
@@ -15525,7 +15525,7 @@ ha_innobase::store_lock(
 	/* Check for DROP TABLE */
 	} else if (sql_command == SQLCOM_DROP_TABLE) {
 
-		/* MySQL calls this function in DROP TABLE though this table
+		/* MyBlockchain calls this function in DROP TABLE though this table
 		handle may belong to another thd that is running a query. Let
 		us in that case skip any changes to the m_prebuilt struct. */
 
@@ -15538,14 +15538,14 @@ ha_innobase::store_lock(
 		       && sql_command != SQLCOM_SELECT)) {
 
 		/* The OR cases above are in this order:
-		1) MySQL is doing LOCK TABLES ... READ LOCAL, or we
+		1) MyBlockchain is doing LOCK TABLES ... READ LOCAL, or we
 		are processing a stored procedure or function, or
 		2) (we do not know when TL_READ_HIGH_PRIORITY is used), or
 		3) this is a SELECT ... IN SHARE MODE, or
 		4) we are doing a complex SQL statement like
-		INSERT INTO ... SELECT ... and the logical logging (MySQL
+		INSERT INTO ... SELECT ... and the logical logging (MyBlockchain
 		binlog) requires the use of a locking read, or
-		MySQL is doing LOCK TABLES ... READ.
+		MyBlockchain is doing LOCK TABLES ... READ.
 		5) we let InnoDB do locking reads for all SQL statements that
 		are not simple SELECTs; note that select_lock_type in this
 		case may get strengthened in ::external_lock() to LOCK_X.
@@ -15571,7 +15571,7 @@ ha_innobase::store_lock(
 			/* If we either have innobase_locks_unsafe_for_binlog
 			option set or this session is using READ COMMITTED
 			isolation level and isolation level of the transaction
-			is not set to serializable and MySQL is doing
+			is not set to serializable and MyBlockchain is doing
 			INSERT INTO...SELECT or REPLACE INTO...SELECT
 			or UPDATE ... = (SELECT ...) or CREATE  ...
 			SELECT... without FOR UPDATE or IN SHARE
@@ -15713,7 +15713,7 @@ ha_innobase::get_auto_increment(
 
 	TrxInInnoDB	trx_in_innodb(trx);
 
-	/* Note: We can't rely on *first_value since some MySQL engines,
+	/* Note: We can't rely on *first_value since some MyBlockchain engines,
 	in particular the partition engine, don't initialize it to 0 when
 	invoking this method. So we are not sure if it's guaranteed to
 	be 0 or not. */
@@ -15889,11 +15889,11 @@ int
 ha_innobase::cmp_ref(
 /*=================*/
 	const uchar*	ref1,	/*!< in: an (internal) primary key value in the
-				MySQL key value format */
+				MyBlockchain key value format */
 	const uchar*	ref2)	/*!< in: an (internal) primary key value in the
-				MySQL key value format */
+				MyBlockchain key value format */
 {
-	enum_field_types mysql_type;
+	enum_field_types myblockchain_type;
 	Field*		field;
 	KEY_PART_INFO*	key_part;
 	KEY_PART_INFO*	key_part_end;
@@ -15917,14 +15917,14 @@ ha_innobase::cmp_ref(
 
 	for (; key_part != key_part_end; ++key_part) {
 		field = key_part->field;
-		mysql_type = field->type();
+		myblockchain_type = field->type();
 
-		if (mysql_type == MYSQL_TYPE_TINY_BLOB
-			|| mysql_type == MYSQL_TYPE_MEDIUM_BLOB
-			|| mysql_type == MYSQL_TYPE_BLOB
-			|| mysql_type == MYSQL_TYPE_LONG_BLOB) {
+		if (myblockchain_type == MYBLOCKCHAIN_TYPE_TINY_BLOB
+			|| myblockchain_type == MYBLOCKCHAIN_TYPE_MEDIUM_BLOB
+			|| myblockchain_type == MYBLOCKCHAIN_TYPE_BLOB
+			|| myblockchain_type == MYBLOCKCHAIN_TYPE_LONG_BLOB) {
 
-			/* In the MySQL key value format, a column prefix of
+			/* In the MyBlockchain key value format, a column prefix of
 			a BLOB is preceded by a 2-byte length field */
 
 			len1 = innobase_read_from_2_little_endian(ref1);
@@ -16054,7 +16054,7 @@ int
 innobase_xa_prepare(
 /*================*/
 	handlerton*	hton,		/*!< in: InnoDB handlerton */
-	THD*		thd,		/*!< in: handle to the MySQL thread of
+	THD*		thd,		/*!< in: handle to the MyBlockchain thread of
 					the user whose XA transaction should
 					be prepared */
 	bool		prepare_trx)	/*!< in: true - prepare transaction
@@ -16073,7 +16073,7 @@ innobase_xa_prepare(
 		return(0);
 	}
 
-	thd_get_xid(thd, (MYSQL_XID*) trx->xid);
+	thd_get_xid(thd, (MYBLOCKCHAIN_XID*) trx->xid);
 
 	/* Release a possible FIFO ticket and search latch. Since we will
 	reserve the trx_sys->mutex, we have to release the search system
@@ -16092,7 +16092,7 @@ innobase_xa_prepare(
 
 	if (!trx_is_registered_for_2pc(trx) && trx_is_started(trx)) {
 
-		sql_print_error("Transaction not registered for MySQL 2PC,"
+		sql_print_error("Transaction not registered for MyBlockchain 2PC,"
 				" but transaction is active");
 	}
 
@@ -16104,7 +16104,7 @@ innobase_xa_prepare(
 
 		ut_ad(trx_is_registered_for_2pc(trx));
 
-		dberr_t	err = trx_prepare_for_mysql(trx);
+		dberr_t	err = trx_prepare_for_myblockchain(trx);
 
 		ut_ad(err == DB_SUCCESS || err == DB_FORCED_ABORT);
 
@@ -16133,7 +16133,7 @@ innobase_xa_prepare(
 		|| !thd_test_options(
 			thd, OPTION_NOT_AUTOCOMMIT | OPTION_BEGIN))) {
 
-		/* For mysqlbackup to work the order of transactions in binlog
+		/* For myblockchainbackup to work the order of transactions in binlog
 		and InnoDB must be the same. Consider the situation
 
 		  thread1> prepare; write to binlog; ...
@@ -16167,7 +16167,7 @@ innobase_xa_recover(
 		return(0);
 	}
 
-	return(trx_recover_for_mysql(xid_list, len));
+	return(trx_recover_for_myblockchain(xid_list, len));
 }
 
 /*******************************************************************//**
@@ -16189,7 +16189,7 @@ innobase_commit_by_xid(
 		TrxInInnoDB	trx_in_innodb(trx);
 
 		innobase_commit_low(trx);
-                ut_ad(trx->mysql_thd == NULL);
+                ut_ad(trx->myblockchain_thd == NULL);
 		/* use cases are: disconnected xa, slave xa, recovery */
 		trx_deregister_from_2pc(trx);
 		ut_ad(!trx->will_lock);    /* trx cache requirement */
@@ -16272,13 +16272,13 @@ ha_innobase::check_if_incompatible_data(
 
 /****************************************************************//**
 Update the system variable innodb_io_capacity_max using the "saved"
-value. This function is registered as a callback with MySQL. */
+value. This function is registered as a callback with MyBlockchain. */
 static
 void
 innodb_io_capacity_max_update(
 /*===========================*/
 	THD*				thd,	/*!< in: thread handle */
-	struct st_mysql_sys_var*	var,	/*!< in: pointer to
+	struct st_myblockchain_sys_var*	var,	/*!< in: pointer to
 						system variable */
 	void*				var_ptr,/*!< out: where the
 						formal string goes */
@@ -16304,13 +16304,13 @@ innodb_io_capacity_max_update(
 
 /****************************************************************//**
 Update the system variable innodb_io_capacity using the "saved"
-value. This function is registered as a callback with MySQL. */
+value. This function is registered as a callback with MyBlockchain. */
 static
 void
 innodb_io_capacity_update(
 /*======================*/
 	THD*				thd,	/*!< in: thread handle */
-	struct st_mysql_sys_var*	var,	/*!< in: pointer to
+	struct st_myblockchain_sys_var*	var,	/*!< in: pointer to
 						system variable */
 	void*				var_ptr,/*!< out: where the
 						formal string goes */
@@ -16335,13 +16335,13 @@ innodb_io_capacity_update(
 
 /****************************************************************//**
 Update the system variable innodb_max_dirty_pages_pct using the "saved"
-value. This function is registered as a callback with MySQL. */
+value. This function is registered as a callback with MyBlockchain. */
 static
 void
 innodb_max_dirty_pages_pct_update(
 /*==============================*/
 	THD*				thd,	/*!< in: thread handle */
-	struct st_mysql_sys_var*	var,	/*!< in: pointer to
+	struct st_myblockchain_sys_var*	var,	/*!< in: pointer to
 						system variable */
 	void*				var_ptr,/*!< out: where the
 						formal string goes */
@@ -16369,13 +16369,13 @@ innodb_max_dirty_pages_pct_update(
 
 /****************************************************************//**
 Update the system variable innodb_max_dirty_pages_pct_lwm using the
-"saved" value. This function is registered as a callback with MySQL. */
+"saved" value. This function is registered as a callback with MyBlockchain. */
 static
 void
 innodb_max_dirty_pages_pct_lwm_update(
 /*==================================*/
 	THD*				thd,	/*!< in: thread handle */
-	struct st_mysql_sys_var*	var,	/*!< in: pointer to
+	struct st_myblockchain_sys_var*	var,	/*!< in: pointer to
 						system variable */
 	void*				var_ptr,/*!< out: where the
 						formal string goes */
@@ -16468,18 +16468,18 @@ innobase_file_format_validate_and_set(
 
 /*************************************************************//**
 Check if it is a valid file format. This function is registered as
-a callback with MySQL.
+a callback with MyBlockchain.
 @return 0 for valid file format */
 static
 int
 innodb_file_format_name_validate(
 /*=============================*/
 	THD*				thd,	/*!< in: thread handle */
-	struct st_mysql_sys_var*	var,	/*!< in: pointer to system
+	struct st_myblockchain_sys_var*	var,	/*!< in: pointer to system
 						variable */
 	void*				save,	/*!< out: immediate result
 						for update function */
-	struct st_mysql_value*		value)	/*!< in: incoming string */
+	struct st_myblockchain_value*		value)	/*!< in: incoming string */
 {
 	const char*	file_format_input;
 	char		buff[STRING_BUFFER_USUAL_SIZE];
@@ -16513,13 +16513,13 @@ innodb_file_format_name_validate(
 
 /****************************************************************//**
 Update the system variable innodb_file_format using the "saved"
-value. This function is registered as a callback with MySQL. */
+value. This function is registered as a callback with MyBlockchain. */
 static
 void
 innodb_file_format_name_update(
 /*===========================*/
 	THD*				thd,		/*!< in: thread handle */
-	struct st_mysql_sys_var*	var,		/*!< in: pointer to
+	struct st_myblockchain_sys_var*	var,		/*!< in: pointer to
 							system variable */
 	void*				var_ptr,	/*!< out: where the
 							formal string goes */
@@ -16552,18 +16552,18 @@ innodb_file_format_name_update(
 
 /*************************************************************//**
 Check if valid argument to innodb_file_format_max. This function
-is registered as a callback with MySQL.
+is registered as a callback with MyBlockchain.
 @return 0 for valid file format */
 static
 int
 innodb_file_format_max_validate(
 /*============================*/
 	THD*				thd,	/*!< in: thread handle */
-	struct st_mysql_sys_var*	var,	/*!< in: pointer to system
+	struct st_myblockchain_sys_var*	var,	/*!< in: pointer to system
 						variable */
 	void*				save,	/*!< out: immediate result
 						for update function */
-	struct st_mysql_value*		value)	/*!< in: incoming string */
+	struct st_myblockchain_value*		value)	/*!< in: incoming string */
 {
 	const char*	file_format_input;
 	char		buff[STRING_BUFFER_USUAL_SIZE];
@@ -16607,13 +16607,13 @@ innodb_file_format_max_validate(
 
 /****************************************************************//**
 Update the system variable innodb_file_format_max using the "saved"
-value. This function is registered as a callback with MySQL. */
+value. This function is registered as a callback with MyBlockchain. */
 static
 void
 innodb_file_format_max_update(
 /*==========================*/
 	THD*				thd,	/*!< in: thread handle */
-	struct st_mysql_sys_var*	var,	/*!< in: pointer to
+	struct st_myblockchain_sys_var*	var,	/*!< in: pointer to
 						system variable */
 	void*				var_ptr,/*!< out: where the
 						formal string goes */
@@ -16658,14 +16658,14 @@ innodb_file_format_max_update(
 }
 
 /** Update innodb_large_prefix.
-@param[in,out]	thd	MySQL client connection
+@param[in,out]	thd	MyBlockchain client connection
 @param[out]	var_ptr	current value
 @param[in]	save	to-be-assigned value */
 static
 void
 innodb_large_prefix_update(
 	THD*		thd,
-	st_mysql_sys_var*,
+	st_myblockchain_sys_var*,
 	void*		var_ptr,
 	const void*	save)
 {
@@ -16677,18 +16677,18 @@ innodb_large_prefix_update(
 
 /*************************************************************//**
 Check whether valid argument given to innobase_*_stopword_table.
-This function is registered as a callback with MySQL.
+This function is registered as a callback with MyBlockchain.
 @return 0 for valid stopword table */
 static
 int
 innodb_stopword_table_validate(
 /*===========================*/
 	THD*				thd,	/*!< in: thread handle */
-	struct st_mysql_sys_var*	var,	/*!< in: pointer to system
+	struct st_myblockchain_sys_var*	var,	/*!< in: pointer to system
 						variable */
 	void*				save,	/*!< out: immediate result
 						for update function */
-	struct st_mysql_value*		value)	/*!< in: incoming string */
+	struct st_myblockchain_value*		value)	/*!< in: incoming string */
 {
 	const char*	stopword_table_name;
 	char		buff[STRING_BUFFER_USUAL_SIZE];
@@ -16703,7 +16703,7 @@ innodb_stopword_table_validate(
 
 	trx = check_trx_exists(thd);
 
-	row_mysql_lock_data_dictionary(trx);
+	row_myblockchain_lock_data_dictionary(trx);
 
 	/* Validate the stopword table's (if supplied) existence and
 	of the right format */
@@ -16713,13 +16713,13 @@ innodb_stopword_table_validate(
 		ret = 0;
 	}
 
-	row_mysql_unlock_data_dictionary(trx);
+	row_myblockchain_unlock_data_dictionary(trx);
 
 	return(ret);
 }
 
 /** Update the system variable innodb_buffer_pool_size using the "saved"
-value. This function is registered as a callback with MySQL.
+value. This function is registered as a callback with MyBlockchain.
 @param[in]	thd	thread handle
 @param[in]	var	pointer to system variable
 @param[out]	var_ptr	where the formal string goes
@@ -16728,7 +16728,7 @@ static
 void
 innodb_buffer_pool_size_update(
 	THD*				thd,
-	struct st_mysql_sys_var*	var,
+	struct st_myblockchain_sys_var*	var,
 	void*				var_ptr,
 	const void*			save)
 {
@@ -16800,18 +16800,18 @@ innodb_buffer_pool_size_update(
 
 /*************************************************************//**
 Check whether valid argument given to "innodb_fts_internal_tbl_name"
-This function is registered as a callback with MySQL.
+This function is registered as a callback with MyBlockchain.
 @return 0 for valid stopword table */
 static
 int
 innodb_internal_table_validate(
 /*===========================*/
 	THD*				thd,	/*!< in: thread handle */
-	struct st_mysql_sys_var*	var,	/*!< in: pointer to system
+	struct st_myblockchain_sys_var*	var,	/*!< in: pointer to system
 						variable */
 	void*				save,	/*!< out: immediate result
 						for update function */
-	struct st_mysql_value*		value)	/*!< in: incoming string */
+	struct st_myblockchain_value*		value)	/*!< in: incoming string */
 {
 	const char*	table_name;
 	char		buff[STRING_BUFFER_USUAL_SIZE];
@@ -16846,13 +16846,13 @@ innodb_internal_table_validate(
 
 /****************************************************************//**
 Update the system variable innodb_adaptive_hash_index using the "saved"
-value. This function is registered as a callback with MySQL. */
+value. This function is registered as a callback with MyBlockchain. */
 static
 void
 innodb_adaptive_hash_index_update(
 /*==============================*/
 	THD*				thd,	/*!< in: thread handle */
-	struct st_mysql_sys_var*	var,	/*!< in: pointer to
+	struct st_myblockchain_sys_var*	var,	/*!< in: pointer to
 						system variable */
 	void*				var_ptr,/*!< out: where the
 						formal string goes */
@@ -16868,13 +16868,13 @@ innodb_adaptive_hash_index_update(
 
 /****************************************************************//**
 Update the system variable innodb_cmp_per_index using the "saved"
-value. This function is registered as a callback with MySQL. */
+value. This function is registered as a callback with MyBlockchain. */
 static
 void
 innodb_cmp_per_index_update(
 /*========================*/
 	THD*				thd,	/*!< in: thread handle */
-	struct st_mysql_sys_var*	var,	/*!< in: pointer to
+	struct st_myblockchain_sys_var*	var,	/*!< in: pointer to
 						system variable */
 	void*				var_ptr,/*!< out: where the
 						formal string goes */
@@ -16892,13 +16892,13 @@ innodb_cmp_per_index_update(
 
 /****************************************************************//**
 Update the system variable innodb_old_blocks_pct using the "saved"
-value. This function is registered as a callback with MySQL. */
+value. This function is registered as a callback with MyBlockchain. */
 static
 void
 innodb_old_blocks_pct_update(
 /*=========================*/
 	THD*				thd,	/*!< in: thread handle */
-	struct st_mysql_sys_var*	var,	/*!< in: pointer to
+	struct st_myblockchain_sys_var*	var,	/*!< in: pointer to
 						system variable */
 	void*				var_ptr,/*!< out: where the
 						formal string goes */
@@ -16912,13 +16912,13 @@ innodb_old_blocks_pct_update(
 
 /****************************************************************//**
 Update the system variable innodb_old_blocks_pct using the "saved"
-value. This function is registered as a callback with MySQL. */
+value. This function is registered as a callback with MyBlockchain. */
 static
 void
 innodb_change_buffer_max_size_update(
 /*=================================*/
 	THD*				thd,	/*!< in: thread handle */
-	struct st_mysql_sys_var*	var,	/*!< in: pointer to
+	struct st_myblockchain_sys_var*	var,	/*!< in: pointer to
 						system variable */
 	void*				var_ptr,/*!< out: where the
 						formal string goes */
@@ -16941,7 +16941,7 @@ void
 innodb_save_page_no(
 /*================*/
 	THD*				thd,	/*!< in: thread handle */
-	struct st_mysql_sys_var*	var,	/*!< in: pointer to
+	struct st_myblockchain_sys_var*	var,	/*!< in: pointer to
 						system variable */
 	void*				var_ptr,/*!< out: where the
 						formal string goes */
@@ -16961,7 +16961,7 @@ void
 innodb_make_page_dirty(
 /*===================*/
 	THD*				thd,	/*!< in: thread handle */
-	struct st_mysql_sys_var*	var,	/*!< in: pointer to
+	struct st_myblockchain_sys_var*	var,	/*!< in: pointer to
 						system variable */
 	void*				var_ptr,/*!< out: where the
 						formal string goes */
@@ -17027,18 +17027,18 @@ innodb_find_change_buffering_value(
 
 /*************************************************************//**
 Check if it is a valid value of innodb_change_buffering. This function is
-registered as a callback with MySQL.
+registered as a callback with MyBlockchain.
 @return 0 for valid innodb_change_buffering */
 static
 int
 innodb_change_buffering_validate(
 /*=============================*/
 	THD*				thd,	/*!< in: thread handle */
-	struct st_mysql_sys_var*	var,	/*!< in: pointer to system
+	struct st_myblockchain_sys_var*	var,	/*!< in: pointer to system
 						variable */
 	void*				save,	/*!< out: immediate result
 						for update function */
-	struct st_mysql_value*		value)	/*!< in: incoming string */
+	struct st_myblockchain_value*		value)	/*!< in: incoming string */
 {
 	const char*	change_buffering_input;
 	char		buff[STRING_BUFFER_USUAL_SIZE];
@@ -17071,13 +17071,13 @@ innodb_change_buffering_validate(
 
 /****************************************************************//**
 Update the system variable innodb_change_buffering using the "saved"
-value. This function is registered as a callback with MySQL. */
+value. This function is registered as a callback with MyBlockchain. */
 static
 void
 innodb_change_buffering_update(
 /*===========================*/
 	THD*				thd,	/*!< in: thread handle */
-	struct st_mysql_sys_var*	var,	/*!< in: pointer to
+	struct st_myblockchain_sys_var*	var,	/*!< in: pointer to
 						system variable */
 	void*				var_ptr,/*!< out: where the
 						formal string goes */
@@ -17107,7 +17107,7 @@ void
 innodb_stats_sample_pages_update(
 /*=============================*/
 	THD*				thd,	/*!< in: thread handle */
-	struct st_mysql_sys_var*	var,	/*!< in: pointer to
+	struct st_myblockchain_sys_var*	var,	/*!< in: pointer to
 						system variable */
 	void*				var_ptr,/*!< out: where the
 						formal string goes */
@@ -17380,18 +17380,18 @@ innodb_monitor_valid_byname(
 }
 /*************************************************************//**
 Validate passed-in "value" is a valid monitor counter name.
-This function is registered as a callback with MySQL.
+This function is registered as a callback with MyBlockchain.
 @return 0 for valid name */
 static
 int
 innodb_monitor_validate(
 /*====================*/
 	THD*				thd,	/*!< in: thread handle */
-	struct st_mysql_sys_var*	var,	/*!< in: pointer to system
+	struct st_myblockchain_sys_var*	var,	/*!< in: pointer to system
 						variable */
 	void*				save,	/*!< out: immediate result
 						for update function */
-	struct st_mysql_value*		value)	/*!< in: incoming string */
+	struct st_myblockchain_value*		value)	/*!< in: incoming string */
 {
 	const char*	name;
 	char*		monitor_name;
@@ -17404,7 +17404,7 @@ innodb_monitor_validate(
 
 	name = value->val_str(value, buff, &len);
 
-	/* monitor_name could point to memory from MySQL
+	/* monitor_name could point to memory from MyBlockchain
 	or buff[]. Always dup the name to memory allocated
 	by InnoDB, so we can access it in another callback
 	function innodb_monitor_update() and free it appropriately */
@@ -17551,11 +17551,11 @@ int
 innodb_srv_buf_dump_filename_validate(
 /*==================================*/
 	THD*				thd,	/*!< in: thread handle */
-	struct st_mysql_sys_var*	var,	/*!< in: pointer to system
+	struct st_myblockchain_sys_var*	var,	/*!< in: pointer to system
 						variable */
 	void*				save,	/*!< out: immediate result
 						for update function */
-	struct st_mysql_value*		value)	/*!< in: incoming string */
+	struct st_myblockchain_value*		value)	/*!< in: incoming string */
 {
 	char		buff[OS_FILE_MAX_PATH];
 	int		len = sizeof(buff);
@@ -17637,7 +17637,7 @@ void
 innodb_buffer_pool_evict_update(
 /*============================*/
 	THD*			thd,	/*!< in: thread handle */
-	struct st_mysql_sys_var*var,	/*!< in: pointer to system variable */
+	struct st_myblockchain_sys_var*var,	/*!< in: pointer to system variable */
 	void*			var_ptr,/*!< out: ignored */
 	const void*		save)	/*!< in: immediate result
 					from check function */
@@ -17662,13 +17662,13 @@ innodb_buffer_pool_evict_update(
 /****************************************************************//**
 Update the system variable innodb_monitor_enable and enable
 specified monitor counter.
-This function is registered as a callback with MySQL. */
+This function is registered as a callback with MyBlockchain. */
 static
 void
 innodb_enable_monitor_update(
 /*=========================*/
 	THD*				thd,	/*!< in: thread handle */
-	struct st_mysql_sys_var*	var,	/*!< in: pointer to
+	struct st_myblockchain_sys_var*	var,	/*!< in: pointer to
 						system variable */
 	void*				var_ptr,/*!< out: where the
 						formal string goes */
@@ -17686,7 +17686,7 @@ void
 innodb_disable_monitor_update(
 /*==========================*/
 	THD*				thd,	/*!< in: thread handle */
-	struct st_mysql_sys_var*	var,	/*!< in: pointer to
+	struct st_myblockchain_sys_var*	var,	/*!< in: pointer to
 						system variable */
 	void*				var_ptr,/*!< out: where the
 						formal string goes */
@@ -17699,13 +17699,13 @@ innodb_disable_monitor_update(
 /****************************************************************//**
 Update the system variable innodb_monitor_reset and reset
 specified monitor counter(s).
-This function is registered as a callback with MySQL. */
+This function is registered as a callback with MyBlockchain. */
 static
 void
 innodb_reset_monitor_update(
 /*========================*/
 	THD*				thd,	/*!< in: thread handle */
-	struct st_mysql_sys_var*	var,	/*!< in: pointer to
+	struct st_myblockchain_sys_var*	var,	/*!< in: pointer to
 						system variable */
 	void*				var_ptr,/*!< out: where the
 						formal string goes */
@@ -17718,13 +17718,13 @@ innodb_reset_monitor_update(
 /****************************************************************//**
 Update the system variable innodb_monitor_reset_all and reset
 all value related monitor counter.
-This function is registered as a callback with MySQL. */
+This function is registered as a callback with MyBlockchain. */
 static
 void
 innodb_reset_all_monitor_update(
 /*============================*/
 	THD*				thd,	/*!< in: thread handle */
-	struct st_mysql_sys_var*	var,	/*!< in: pointer to
+	struct st_myblockchain_sys_var*	var,	/*!< in: pointer to
 						system variable */
 	void*				var_ptr,/*!< out: where the
 						formal string goes */
@@ -17776,7 +17776,7 @@ innodb_enable_monitor_at_startup(
 }
 
 /****************************************************************//**
-Callback function for accessing the InnoDB variables from MySQL:
+Callback function for accessing the InnoDB variables from MyBlockchain:
 SHOW VARIABLES. */
 static
 int
@@ -17803,7 +17803,7 @@ and returns true.
 bool
 innobase_index_name_is_reserved(
 /*============================*/
-	THD*		thd,		/*!< in/out: MySQL connection */
+	THD*		thd,		/*!< in/out: MyBlockchain connection */
 	const KEY*	key_info,	/*!< in: Indexes to be created */
 	ulint		num_of_keys)	/*!< in: Number of indexes to
 					be created. */
@@ -17816,7 +17816,7 @@ innobase_index_name_is_reserved(
 
 		if (innobase_strcasecmp(key->name,
 					innobase_index_reserve_name) == 0) {
-			/* Push warning to mysql */
+			/* Push warning to myblockchain */
 			push_warning_printf(thd,
 					    Sql_condition::SL_WARNING,
 					    ER_WRONG_NAME_FOR_INDEX,
@@ -17912,14 +17912,14 @@ static uint	innodb_merge_threshold_set_all_debug
 
 /****************************************************************//**
 Set the purge state to RUN. If purge is disabled then it
-is a no-op. This function is registered as a callback with MySQL. */
+is a no-op. This function is registered as a callback with MyBlockchain. */
 static
 void
 purge_run_now_set(
 /*==============*/
 	THD*				thd	/*!< in: thread handle */
 					__attribute__((unused)),
-	struct st_mysql_sys_var*	var	/*!< in: pointer to system
+	struct st_myblockchain_sys_var*	var	/*!< in: pointer to system
 						variable */
 					__attribute__((unused)),
 	void*				var_ptr	/*!< out: where the formal
@@ -17935,14 +17935,14 @@ purge_run_now_set(
 
 /****************************************************************//**
 Set the purge state to STOP. If purge is disabled then it
-is a no-op. This function is registered as a callback with MySQL. */
+is a no-op. This function is registered as a callback with MyBlockchain. */
 static
 void
 purge_stop_now_set(
 /*===============*/
 	THD*				thd	/*!< in: thread handle */
 					__attribute__((unused)),
-	struct st_mysql_sys_var*	var	/*!< in: pointer to system
+	struct st_myblockchain_sys_var*	var	/*!< in: pointer to system
 						variable */
 					__attribute__((unused)),
 	void*				var_ptr	/*!< out: where the formal
@@ -17964,7 +17964,7 @@ checkpoint_now_set(
 /*===============*/
 	THD*				thd	/*!< in: thread handle */
 					__attribute__((unused)),
-	struct st_mysql_sys_var*	var	/*!< in: pointer to system
+	struct st_myblockchain_sys_var*	var	/*!< in: pointer to system
 						variable */
 					__attribute__((unused)),
 	void*				var_ptr	/*!< out: where the formal
@@ -17992,7 +17992,7 @@ buf_flush_list_now_set(
 /*===================*/
 	THD*				thd	/*!< in: thread handle */
 					__attribute__((unused)),
-	struct st_mysql_sys_var*	var	/*!< in: pointer to system
+	struct st_myblockchain_sys_var*	var	/*!< in: pointer to system
 						variable */
 					__attribute__((unused)),
 	void*				var_ptr	/*!< out: where the formal
@@ -18017,7 +18017,7 @@ static
 void
 innodb_merge_threshold_set_all_debug_update(
 	THD*				thd,
-	struct st_mysql_sys_var*	var,
+	struct st_myblockchain_sys_var*	var,
 	void*				var_ptr,
 	const void*			save)
 {
@@ -18093,13 +18093,13 @@ innobase_fts_count_matches(
 }
 
 /* These variables are never read by InnoDB or changed. They are a kind of
-dummies that are needed by the MySQL infrastructure to call
+dummies that are needed by the MyBlockchain infrastructure to call
 buffer_pool_dump_now(), buffer_pool_load_now() and buffer_pool_load_abort()
 by the user by doing:
   SET GLOBAL innodb_buffer_pool_dump_now=ON;
   SET GLOBAL innodb_buffer_pool_load_now=ON;
   SET GLOBAL innodb_buffer_pool_load_abort=ON;
-Their values are read by MySQL and displayed to the user when the variables
+Their values are read by MyBlockchain and displayed to the user when the variables
 are queried, e.g.:
   SELECT @@innodb_buffer_pool_dump_now;
   SELECT @@innodb_buffer_pool_load_now;
@@ -18110,14 +18110,14 @@ static my_bool	innodb_buffer_pool_load_abort = FALSE;
 
 /****************************************************************//**
 Trigger a dump of the buffer pool if innodb_buffer_pool_dump_now is set
-to ON. This function is registered as a callback with MySQL. */
+to ON. This function is registered as a callback with MyBlockchain. */
 static
 void
 buffer_pool_dump_now(
 /*=================*/
 	THD*				thd	/*!< in: thread handle */
 					__attribute__((unused)),
-	struct st_mysql_sys_var*	var	/*!< in: pointer to system
+	struct st_myblockchain_sys_var*	var	/*!< in: pointer to system
 						variable */
 					__attribute__((unused)),
 	void*				var_ptr	/*!< out: where the formal
@@ -18133,14 +18133,14 @@ buffer_pool_dump_now(
 
 /****************************************************************//**
 Trigger a load of the buffer pool if innodb_buffer_pool_load_now is set
-to ON. This function is registered as a callback with MySQL. */
+to ON. This function is registered as a callback with MyBlockchain. */
 static
 void
 buffer_pool_load_now(
 /*=================*/
 	THD*				thd	/*!< in: thread handle */
 					__attribute__((unused)),
-	struct st_mysql_sys_var*	var	/*!< in: pointer to system
+	struct st_myblockchain_sys_var*	var	/*!< in: pointer to system
 						variable */
 					__attribute__((unused)),
 	void*				var_ptr	/*!< out: where the formal
@@ -18156,14 +18156,14 @@ buffer_pool_load_now(
 
 /****************************************************************//**
 Abort a load of the buffer pool if innodb_buffer_pool_load_abort
-is set to ON. This function is registered as a callback with MySQL. */
+is set to ON. This function is registered as a callback with MyBlockchain. */
 static
 void
 buffer_pool_load_abort(
 /*===================*/
 	THD*				thd	/*!< in: thread handle */
 					__attribute__((unused)),
-	struct st_mysql_sys_var*	var	/*!< in: pointer to system
+	struct st_myblockchain_sys_var*	var	/*!< in: pointer to system
 						variable */
 					__attribute__((unused)),
 	void*				var_ptr	/*!< out: where the formal
@@ -18179,13 +18179,13 @@ buffer_pool_load_abort(
 
 /****************************************************************//**
 Update the system variable innodb_log_write_ahead_size using the "saved"
-value. This function is registered as a callback with MySQL. */
+value. This function is registered as a callback with MyBlockchain. */
 static
 void
 innodb_log_write_ahead_size_update(
 /*===============================*/
 	THD*				thd,	/*!< in: thread handle */
-	struct st_mysql_sys_var*	var,	/*!< in: pointer to
+	struct st_myblockchain_sys_var*	var,	/*!< in: pointer to
 						system variable */
 	void*				var_ptr,/*!< out: where the
 						formal string goes */
@@ -18233,7 +18233,7 @@ static
 void
 innodb_status_output_update(
 	THD*,
-	struct st_mysql_sys_var*,
+	struct st_myblockchain_sys_var*,
 	void*				var_ptr,
 	const void*			save)
 {
@@ -18252,7 +18252,7 @@ static
 void
 innodb_log_checksum_algorithm_update(
 	THD*				thd,
-	struct st_mysql_sys_var*	var,
+	struct st_myblockchain_sys_var*	var,
 	void*				var_ptr,
 	const void*			save)
 {
@@ -18273,12 +18273,12 @@ static SHOW_VAR innodb_status_variables_export[]= {
 	{NullS, NullS, SHOW_LONG, SHOW_SCOPE_GLOBAL}
 };
 
-static struct st_mysql_storage_engine innobase_storage_engine=
-{ MYSQL_HANDLERTON_INTERFACE_VERSION };
+static struct st_myblockchain_storage_engine innobase_storage_engine=
+{ MYBLOCKCHAIN_HANDLERTON_INTERFACE_VERSION };
 
 /* plugin options */
 
-static MYSQL_SYSVAR_ENUM(checksum_algorithm, srv_checksum_algorithm,
+static MYBLOCKCHAIN_SYSVAR_ENUM(checksum_algorithm, srv_checksum_algorithm,
   PLUGIN_VAR_RQCMDARG,
   "The algorithm InnoDB uses for page checksumming. Possible values are"
   " CRC32 (hardware accelerated if the CPU supports it)"
@@ -18298,11 +18298,11 @@ static MYSQL_SYSVAR_ENUM(checksum_algorithm, srv_checksum_algorithm,
     " write a constant magic number, do not allow values other than that"
     " magic number when reading;"
   " Files updated when this option is set to crc32 or strict_crc32 will"
-  " not be readable by MySQL versions older than 5.6.3",
+  " not be readable by MyBlockchain versions older than 5.6.3",
   NULL, NULL, SRV_CHECKSUM_ALGORITHM_CRC32,
   &innodb_checksum_algorithm_typelib);
 
-static MYSQL_SYSVAR_ENUM(log_checksum_algorithm, srv_log_checksum_algorithm,
+static MYBLOCKCHAIN_SYSVAR_ENUM(log_checksum_algorithm, srv_log_checksum_algorithm,
   PLUGIN_VAR_RQCMDARG,
   "The algorithm InnoDB uses for redo log block checksums. Possible values are"
   " CRC32 (hardware accelerated if the CPU supports it)"
@@ -18322,11 +18322,11 @@ static MYSQL_SYSVAR_ENUM(log_checksum_algorithm, srv_log_checksum_algorithm,
     " write a constant magic number, do not allow values other than that"
     " magic number when reading;"
   " Redo logs created when this option is set to crc32, strict_crc32, none, or"
-  " strict_none will not be readable by MySQL versions older than 5.7.6",
+  " strict_none will not be readable by MyBlockchain versions older than 5.7.6",
   NULL, innodb_log_checksum_algorithm_update, SRV_CHECKSUM_ALGORITHM_INNODB,
   &innodb_checksum_algorithm_typelib);
 
-static MYSQL_SYSVAR_BOOL(checksums, innobase_use_checksums,
+static MYBLOCKCHAIN_SYSVAR_BOOL(checksums, innobase_use_checksums,
   PLUGIN_VAR_NOCMDARG | PLUGIN_VAR_READONLY,
   "DEPRECATED. Use innodb_checksum_algorithm=NONE instead of setting"
   " this to OFF."
@@ -18334,23 +18334,23 @@ static MYSQL_SYSVAR_BOOL(checksums, innobase_use_checksums,
   " Disable with --skip-innodb-checksums.",
   NULL, NULL, TRUE);
 
-static MYSQL_SYSVAR_STR(data_home_dir, innobase_data_home_dir,
+static MYBLOCKCHAIN_SYSVAR_STR(data_home_dir, innobase_data_home_dir,
   PLUGIN_VAR_READONLY,
   "The common part for InnoDB table spaces.",
   NULL, NULL, NULL);
 
-static MYSQL_SYSVAR_BOOL(doublewrite, innobase_use_doublewrite,
+static MYBLOCKCHAIN_SYSVAR_BOOL(doublewrite, innobase_use_doublewrite,
   PLUGIN_VAR_NOCMDARG | PLUGIN_VAR_READONLY,
   "Enable InnoDB doublewrite buffer (enabled by default)."
   " Disable with --skip-innodb-doublewrite.",
   NULL, NULL, TRUE);
 
-static MYSQL_SYSVAR_ULONG(io_capacity, srv_io_capacity,
+static MYBLOCKCHAIN_SYSVAR_ULONG(io_capacity, srv_io_capacity,
   PLUGIN_VAR_RQCMDARG,
   "Number of IOPs the server can do. Tunes the background IO rate",
   NULL, innodb_io_capacity_update, 200, 100, ~0UL, 0);
 
-static MYSQL_SYSVAR_ULONG(io_capacity_max, srv_max_io_capacity,
+static MYBLOCKCHAIN_SYSVAR_ULONG(io_capacity_max, srv_max_io_capacity,
   PLUGIN_VAR_RQCMDARG,
   "Limit to which innodb_io_capacity can be inflated.",
   NULL, innodb_io_capacity_max_update,
@@ -18358,27 +18358,27 @@ static MYSQL_SYSVAR_ULONG(io_capacity_max, srv_max_io_capacity,
   SRV_MAX_IO_CAPACITY_LIMIT, 0);
 
 #ifdef UNIV_DEBUG
-static MYSQL_SYSVAR_BOOL(purge_run_now, innodb_purge_run_now,
+static MYBLOCKCHAIN_SYSVAR_BOOL(purge_run_now, innodb_purge_run_now,
   PLUGIN_VAR_OPCMDARG,
   "Set purge state to RUN",
   NULL, purge_run_now_set, FALSE);
 
-static MYSQL_SYSVAR_BOOL(purge_stop_now, innodb_purge_stop_now,
+static MYBLOCKCHAIN_SYSVAR_BOOL(purge_stop_now, innodb_purge_stop_now,
   PLUGIN_VAR_OPCMDARG,
   "Set purge state to STOP",
   NULL, purge_stop_now_set, FALSE);
 
-static MYSQL_SYSVAR_BOOL(log_checkpoint_now, innodb_log_checkpoint_now,
+static MYBLOCKCHAIN_SYSVAR_BOOL(log_checkpoint_now, innodb_log_checkpoint_now,
   PLUGIN_VAR_OPCMDARG,
   "Force checkpoint now",
   NULL, checkpoint_now_set, FALSE);
 
-static MYSQL_SYSVAR_BOOL(buf_flush_list_now, innodb_buf_flush_list_now,
+static MYBLOCKCHAIN_SYSVAR_BOOL(buf_flush_list_now, innodb_buf_flush_list_now,
   PLUGIN_VAR_OPCMDARG,
   "Force dirty page flush now",
   NULL, buf_flush_list_now_set, FALSE);
 
-static MYSQL_SYSVAR_UINT(merge_threshold_set_all_debug,
+static MYBLOCKCHAIN_SYSVAR_UINT(merge_threshold_set_all_debug,
   innodb_merge_threshold_set_all_debug,
   PLUGIN_VAR_RQCMDARG,
   "Override current MERGE_THRESHOLD setting for all indexes at dictionary"
@@ -18387,7 +18387,7 @@ static MYSQL_SYSVAR_UINT(merge_threshold_set_all_debug,
   DICT_INDEX_MERGE_THRESHOLD_DEFAULT, 1, 50, 0);
 #endif /* UNIV_DEBUG */
 
-static MYSQL_SYSVAR_ULONG(purge_batch_size, srv_purge_batch_size,
+static MYBLOCKCHAIN_SYSVAR_ULONG(purge_batch_size, srv_purge_batch_size,
   PLUGIN_VAR_OPCMDARG,
   "Number of UNDO log pages to purge in one batch from the history list.",
   NULL, NULL,
@@ -18395,7 +18395,7 @@ static MYSQL_SYSVAR_ULONG(purge_batch_size, srv_purge_batch_size,
   1,			/* Minimum value */
   5000, 0);		/* Maximum value */
 
-static MYSQL_SYSVAR_ULONG(purge_threads, srv_n_purge_threads,
+static MYBLOCKCHAIN_SYSVAR_ULONG(purge_threads, srv_n_purge_threads,
   PLUGIN_VAR_OPCMDARG | PLUGIN_VAR_READONLY,
   "Purge threads can be from 1 to 32. Default is 4.",
   NULL, NULL,
@@ -18403,7 +18403,7 @@ static MYSQL_SYSVAR_ULONG(purge_threads, srv_n_purge_threads,
   1,			/* Minimum value */
   32, 0);		/* Maximum value */
 
-static MYSQL_SYSVAR_ULONG(sync_array_size, srv_sync_array_size,
+static MYBLOCKCHAIN_SYSVAR_ULONG(sync_array_size, srv_sync_array_size,
   PLUGIN_VAR_OPCMDARG | PLUGIN_VAR_READONLY,
   "Size of the mutex/lock wait array.",
   NULL, NULL,
@@ -18411,18 +18411,18 @@ static MYSQL_SYSVAR_ULONG(sync_array_size, srv_sync_array_size,
   1,			/* Minimum value */
   1024, 0);		/* Maximum value */
 
-static MYSQL_SYSVAR_ULONG(fast_shutdown, innobase_fast_shutdown,
+static MYBLOCKCHAIN_SYSVAR_ULONG(fast_shutdown, innobase_fast_shutdown,
   PLUGIN_VAR_OPCMDARG,
   "Speeds up the shutdown process of the InnoDB storage engine. Possible"
   " values are 0, 1 (faster) or 2 (fastest - crash-like).",
   NULL, NULL, 1, 0, 2, 0);
 
-static MYSQL_SYSVAR_BOOL(file_per_table, srv_file_per_table,
+static MYBLOCKCHAIN_SYSVAR_BOOL(file_per_table, srv_file_per_table,
   PLUGIN_VAR_NOCMDARG,
-  "Stores each InnoDB table to an .ibd file in the database dir.",
+  "Stores each InnoDB table to an .ibd file in the blockchain dir.",
   NULL, NULL, TRUE);
 
-static MYSQL_SYSVAR_STR(file_format, innobase_file_format_name,
+static MYBLOCKCHAIN_SYSVAR_STR(file_format, innobase_file_format_name,
   PLUGIN_VAR_RQCMDARG,
   "File format to use for new tables in .ibd files.",
   innodb_file_format_name_validate,
@@ -18434,7 +18434,7 @@ table space exceeds the maximum file format supported
 by the server. Can be set during server startup at command
 line or configure file, and a read only variable after
 server startup */
-static MYSQL_SYSVAR_BOOL(file_format_check, innobase_file_format_check,
+static MYBLOCKCHAIN_SYSVAR_BOOL(file_format_check, innobase_file_format_check,
   PLUGIN_VAR_NOCMDARG | PLUGIN_VAR_READONLY,
   "Whether to perform system file format check.",
   NULL, NULL, TRUE);
@@ -18443,100 +18443,100 @@ static MYSQL_SYSVAR_BOOL(file_format_check, innobase_file_format_check,
 name needs to be updated accordingly. Please refer to
 file_format_name_map[] defined in trx0sys.cc for the next
 file format name. */
-static MYSQL_SYSVAR_STR(file_format_max, innobase_file_format_max,
+static MYBLOCKCHAIN_SYSVAR_STR(file_format_max, innobase_file_format_max,
   PLUGIN_VAR_OPCMDARG,
   "The highest file format in the tablespace.",
   innodb_file_format_max_validate,
   innodb_file_format_max_update, innodb_file_format_max_default);
 
-static MYSQL_SYSVAR_STR(ft_server_stopword_table, innobase_server_stopword_table,
+static MYBLOCKCHAIN_SYSVAR_STR(ft_server_stopword_table, innobase_server_stopword_table,
   PLUGIN_VAR_OPCMDARG | PLUGIN_VAR_MEMALLOC,
   "The user supplied stopword table name.",
   innodb_stopword_table_validate,
   NULL,
   NULL);
 
-static MYSQL_SYSVAR_UINT(flush_log_at_timeout, srv_flush_log_at_timeout,
+static MYBLOCKCHAIN_SYSVAR_UINT(flush_log_at_timeout, srv_flush_log_at_timeout,
   PLUGIN_VAR_OPCMDARG,
   "Write and flush logs every (n) second.",
   NULL, NULL, 1, 0, 2700, 0);
 
-static MYSQL_SYSVAR_ULONG(flush_log_at_trx_commit, srv_flush_log_at_trx_commit,
+static MYBLOCKCHAIN_SYSVAR_ULONG(flush_log_at_trx_commit, srv_flush_log_at_trx_commit,
   PLUGIN_VAR_OPCMDARG,
   "Set to 0 (write and flush once per second),"
   " 1 (write and flush at each commit)"
   " or 2 (write at commit, flush once per second).",
   NULL, NULL, 1, 0, 2, 0);
 
-static MYSQL_SYSVAR_STR(flush_method, innobase_file_flush_method,
+static MYBLOCKCHAIN_SYSVAR_STR(flush_method, innobase_file_flush_method,
   PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
   "With which method to flush data.", NULL, NULL, NULL);
 
-static MYSQL_SYSVAR_BOOL(large_prefix, innobase_large_prefix,
+static MYBLOCKCHAIN_SYSVAR_BOOL(large_prefix, innobase_large_prefix,
   PLUGIN_VAR_NOCMDARG,
   "Support large index prefix length of REC_VERSION_56_MAX_INDEX_COL_LEN (3072) bytes.",
   NULL, innodb_large_prefix_update, TRUE);
 
-static MYSQL_SYSVAR_BOOL(force_load_corrupted, srv_load_corrupted,
+static MYBLOCKCHAIN_SYSVAR_BOOL(force_load_corrupted, srv_load_corrupted,
   PLUGIN_VAR_NOCMDARG | PLUGIN_VAR_READONLY,
   "Force InnoDB to load metadata of corrupted table.",
   NULL, NULL, FALSE);
 
-static MYSQL_SYSVAR_BOOL(locks_unsafe_for_binlog, innobase_locks_unsafe_for_binlog,
+static MYBLOCKCHAIN_SYSVAR_BOOL(locks_unsafe_for_binlog, innobase_locks_unsafe_for_binlog,
   PLUGIN_VAR_NOCMDARG | PLUGIN_VAR_READONLY,
   "DEPRECATED. This option may be removed in future releases."
   " Please use READ COMMITTED transaction isolation level instead."
   " Force InnoDB to not use next-key locking, to use only row-level locking.",
   NULL, NULL, FALSE);
 
-static MYSQL_SYSVAR_STR(log_group_home_dir, srv_log_group_home_dir,
+static MYBLOCKCHAIN_SYSVAR_STR(log_group_home_dir, srv_log_group_home_dir,
   PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
   "Path to InnoDB log files.", NULL, NULL, NULL);
 
-static MYSQL_SYSVAR_ULONG(page_cleaners, srv_n_page_cleaners,
+static MYBLOCKCHAIN_SYSVAR_ULONG(page_cleaners, srv_n_page_cleaners,
   PLUGIN_VAR_OPCMDARG | PLUGIN_VAR_READONLY,
   "Page cleaner threads can be from 1 to 64. Default is 4.",
   NULL, NULL, 4, 1, 64, 0);
 
-static MYSQL_SYSVAR_DOUBLE(max_dirty_pages_pct, srv_max_buf_pool_modified_pct,
+static MYBLOCKCHAIN_SYSVAR_DOUBLE(max_dirty_pages_pct, srv_max_buf_pool_modified_pct,
   PLUGIN_VAR_RQCMDARG,
   "Percentage of dirty pages allowed in bufferpool.",
   NULL, innodb_max_dirty_pages_pct_update, 75.0, 0, 99.999, 0);
 
-static MYSQL_SYSVAR_DOUBLE(max_dirty_pages_pct_lwm,
+static MYBLOCKCHAIN_SYSVAR_DOUBLE(max_dirty_pages_pct_lwm,
   srv_max_dirty_pages_pct_lwm,
   PLUGIN_VAR_RQCMDARG,
   "Percentage of dirty pages at which flushing kicks in.",
   NULL, innodb_max_dirty_pages_pct_lwm_update, 0, 0, 99.999, 0);
 
-static MYSQL_SYSVAR_ULONG(adaptive_flushing_lwm,
+static MYBLOCKCHAIN_SYSVAR_ULONG(adaptive_flushing_lwm,
   srv_adaptive_flushing_lwm,
   PLUGIN_VAR_RQCMDARG,
   "Percentage of log capacity below which no adaptive flushing happens.",
   NULL, NULL, 10, 0, 70, 0);
 
-static MYSQL_SYSVAR_BOOL(adaptive_flushing, srv_adaptive_flushing,
+static MYBLOCKCHAIN_SYSVAR_BOOL(adaptive_flushing, srv_adaptive_flushing,
   PLUGIN_VAR_NOCMDARG,
   "Attempt flushing dirty pages to avoid IO bursts at checkpoints.",
   NULL, NULL, TRUE);
 
-static MYSQL_SYSVAR_BOOL(flush_sync, srv_flush_sync,
+static MYBLOCKCHAIN_SYSVAR_BOOL(flush_sync, srv_flush_sync,
   PLUGIN_VAR_NOCMDARG,
   "Allow IO bursts at the checkpoints ignoring io_capacity setting.",
   NULL, NULL, TRUE);
 
-static MYSQL_SYSVAR_ULONG(flushing_avg_loops,
+static MYBLOCKCHAIN_SYSVAR_ULONG(flushing_avg_loops,
   srv_flushing_avg_loops,
   PLUGIN_VAR_RQCMDARG,
   "Number of iterations over which the background flushing is averaged.",
   NULL, NULL, 30, 1, 1000, 0);
 
-static MYSQL_SYSVAR_ULONG(max_purge_lag, srv_max_purge_lag,
+static MYBLOCKCHAIN_SYSVAR_ULONG(max_purge_lag, srv_max_purge_lag,
   PLUGIN_VAR_RQCMDARG,
   "Desired maximum length of the purge queue (0 = no limit)",
   NULL, NULL, 0, 0, ~0UL, 0);
 
-static MYSQL_SYSVAR_ULONG(max_purge_lag_delay, srv_max_purge_lag_delay,
+static MYBLOCKCHAIN_SYSVAR_ULONG(max_purge_lag_delay, srv_max_purge_lag_delay,
    PLUGIN_VAR_RQCMDARG,
    "Maximum delay of user threads in micro-seconds",
    NULL, NULL,
@@ -18544,41 +18544,41 @@ static MYSQL_SYSVAR_ULONG(max_purge_lag_delay, srv_max_purge_lag_delay,
    0L,			/* Minimum value */
    10000000UL, 0);	/* Maximum value */
 
-static MYSQL_SYSVAR_BOOL(rollback_on_timeout, innobase_rollback_on_timeout,
+static MYBLOCKCHAIN_SYSVAR_BOOL(rollback_on_timeout, innobase_rollback_on_timeout,
   PLUGIN_VAR_OPCMDARG | PLUGIN_VAR_READONLY,
   "Roll back the complete transaction on lock wait timeout, for 4.x compatibility (disabled by default)",
   NULL, NULL, FALSE);
 
-static MYSQL_SYSVAR_BOOL(status_file, innobase_create_status_file,
+static MYBLOCKCHAIN_SYSVAR_BOOL(status_file, innobase_create_status_file,
   PLUGIN_VAR_OPCMDARG | PLUGIN_VAR_NOSYSVAR,
   "Enable SHOW ENGINE INNODB STATUS output in the innodb_status.<pid> file",
   NULL, NULL, FALSE);
 
-static MYSQL_SYSVAR_BOOL(stats_on_metadata, innobase_stats_on_metadata,
+static MYBLOCKCHAIN_SYSVAR_BOOL(stats_on_metadata, innobase_stats_on_metadata,
   PLUGIN_VAR_OPCMDARG,
   "Enable statistics gathering for metadata commands such as"
   " SHOW TABLE STATUS for tables that use transient statistics (off by default)",
   NULL, NULL, FALSE);
 
-static MYSQL_SYSVAR_ULONGLONG(stats_sample_pages, srv_stats_transient_sample_pages,
+static MYBLOCKCHAIN_SYSVAR_ULONGLONG(stats_sample_pages, srv_stats_transient_sample_pages,
   PLUGIN_VAR_RQCMDARG,
   "Deprecated, use innodb_stats_transient_sample_pages instead",
   NULL, innodb_stats_sample_pages_update, 8, 1, ~0ULL, 0);
 
-static MYSQL_SYSVAR_ULONGLONG(stats_transient_sample_pages,
+static MYBLOCKCHAIN_SYSVAR_ULONGLONG(stats_transient_sample_pages,
   srv_stats_transient_sample_pages,
   PLUGIN_VAR_RQCMDARG,
   "The number of leaf index pages to sample when calculating transient"
   " statistics (if persistent statistics are not used, default 8)",
   NULL, NULL, 8, 1, ~0ULL, 0);
 
-static MYSQL_SYSVAR_BOOL(stats_persistent, srv_stats_persistent,
+static MYBLOCKCHAIN_SYSVAR_BOOL(stats_persistent, srv_stats_persistent,
   PLUGIN_VAR_OPCMDARG,
   "InnoDB persistent statistics enabled for all tables unless overridden"
   " at table level",
   NULL, NULL, TRUE);
 
-static MYSQL_SYSVAR_BOOL(stats_auto_recalc, srv_stats_auto_recalc,
+static MYBLOCKCHAIN_SYSVAR_BOOL(stats_auto_recalc, srv_stats_auto_recalc,
   PLUGIN_VAR_OPCMDARG,
   "InnoDB automatic recalculation of persistent statistics enabled for all"
   " tables unless overridden at table level (automatic recalculation is only"
@@ -18586,14 +18586,14 @@ static MYSQL_SYSVAR_BOOL(stats_auto_recalc, srv_stats_auto_recalc,
   " new statistics)",
   NULL, NULL, TRUE);
 
-static MYSQL_SYSVAR_ULONGLONG(stats_persistent_sample_pages,
+static MYBLOCKCHAIN_SYSVAR_ULONGLONG(stats_persistent_sample_pages,
   srv_stats_persistent_sample_pages,
   PLUGIN_VAR_RQCMDARG,
   "The number of leaf index pages to sample when calculating persistent"
   " statistics (by ANALYZE, default 20)",
   NULL, NULL, 20, 1, ~0ULL, 0);
 
-static MYSQL_SYSVAR_BOOL(adaptive_hash_index, btr_search_enabled,
+static MYBLOCKCHAIN_SYSVAR_BOOL(adaptive_hash_index, btr_search_enabled,
   PLUGIN_VAR_OPCMDARG,
   "Enable InnoDB adaptive hash index (enabled by default). "
   " Disable with --skip-innodb-adaptive-hash-index.",
@@ -18602,24 +18602,24 @@ static MYSQL_SYSVAR_BOOL(adaptive_hash_index, btr_search_enabled,
 /** Number of distinct partitions of AHI.
 Each partition is protected by its own latch and so we have parts number
 of latches protecting complete search system. */
-static MYSQL_SYSVAR_ULONG(adaptive_hash_index_parts, btr_ahi_parts,
+static MYBLOCKCHAIN_SYSVAR_ULONG(adaptive_hash_index_parts, btr_ahi_parts,
   PLUGIN_VAR_OPCMDARG | PLUGIN_VAR_READONLY,
   "Number of InnoDB Adapative Hash Index Partitions. (default = 8). ",
   NULL, NULL, 8, 1, 512, 0);
 
-static MYSQL_SYSVAR_ULONG(replication_delay, srv_replication_delay,
+static MYBLOCKCHAIN_SYSVAR_ULONG(replication_delay, srv_replication_delay,
   PLUGIN_VAR_RQCMDARG,
   "Replication thread delay (ms) on the slave server if"
   " innodb_thread_concurrency is reached (0 by default)",
   NULL, NULL, 0, 0, ~0UL, 0);
 
-static MYSQL_SYSVAR_UINT(compression_level, page_zip_level,
+static MYBLOCKCHAIN_SYSVAR_UINT(compression_level, page_zip_level,
   PLUGIN_VAR_RQCMDARG,
   "Compression level used for compressed row format.  0 is no compression"
   ", 1 is fastest, 9 is best compression and default is 6.",
   NULL, NULL, DEFAULT_COMPRESSION_LEVEL, 0, 9, 0);
 
-static MYSQL_SYSVAR_BOOL(log_compressed_pages, page_zip_log_pages,
+static MYBLOCKCHAIN_SYSVAR_BOOL(log_compressed_pages, page_zip_log_pages,
        PLUGIN_VAR_OPCMDARG,
   "Enables/disables the logging of entire compressed page images."
   " InnoDB logs the compressed pages to prevent corruption if"
@@ -18628,7 +18628,7 @@ static MYSQL_SYSVAR_BOOL(log_compressed_pages, page_zip_log_pages,
   " compression algorithm doesn't change.",
   NULL, NULL, TRUE);
 
-static MYSQL_SYSVAR_ULONG(autoextend_increment,
+static MYBLOCKCHAIN_SYSVAR_ULONG(autoextend_increment,
   sys_tablespace_auto_extend_increment,
   PLUGIN_VAR_RQCMDARG,
   "Data file autoextend increment in megabytes",
@@ -18639,7 +18639,7 @@ BUF_POOL_SIZE_THRESHOLD (srv/srv0start.cc), then srv_buf_pool_instances_default
 can be removed and 8 used instead. The problem with the current setup is that
 with 128MiB default buffer pool size and 8 instances by default we would emit
 a warning when no options are specified. */
-static MYSQL_SYSVAR_LONGLONG(buffer_pool_size, innobase_buffer_pool_size,
+static MYBLOCKCHAIN_SYSVAR_LONGLONG(buffer_pool_size, innobase_buffer_pool_size,
   PLUGIN_VAR_RQCMDARG,
   "The size of the memory buffer InnoDB uses to cache data and indexes of its tables.",
   NULL, innodb_buffer_pool_size_update,
@@ -18647,7 +18647,7 @@ static MYSQL_SYSVAR_LONGLONG(buffer_pool_size, innobase_buffer_pool_size,
   static_cast<longlong>(srv_buf_pool_min_size),
   LLONG_MAX, 1024*1024L);
 
-static MYSQL_SYSVAR_ULONG(buffer_pool_chunk_size, srv_buf_pool_chunk_unit,
+static MYBLOCKCHAIN_SYSVAR_ULONG(buffer_pool_chunk_size, srv_buf_pool_chunk_unit,
   PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
   "Size of a single memory chunk within each buffer pool instance"
   " for resizing buffer pool. Online buffer pool resizing happens"
@@ -18656,71 +18656,71 @@ static MYSQL_SYSVAR_ULONG(buffer_pool_chunk_size, srv_buf_pool_chunk_unit,
   128 * 1024 * 1024, 1024 * 1024, LONG_MAX, 1024 * 1024);
 
 #if defined UNIV_DEBUG || defined UNIV_PERF_DEBUG
-static MYSQL_SYSVAR_ULONG(page_hash_locks, srv_n_page_hash_locks,
+static MYBLOCKCHAIN_SYSVAR_ULONG(page_hash_locks, srv_n_page_hash_locks,
   PLUGIN_VAR_OPCMDARG | PLUGIN_VAR_READONLY,
   "Number of rw_locks protecting buffer pool page_hash. Rounded up to the next power of 2",
   NULL, NULL, 16, 1, MAX_PAGE_HASH_LOCKS, 0);
 
-static MYSQL_SYSVAR_ULONG(doublewrite_batch_size, srv_doublewrite_batch_size,
+static MYBLOCKCHAIN_SYSVAR_ULONG(doublewrite_batch_size, srv_doublewrite_batch_size,
   PLUGIN_VAR_OPCMDARG | PLUGIN_VAR_READONLY,
   "Number of pages reserved in doublewrite buffer for batch flushing",
   NULL, NULL, 120, 1, 127, 0);
 #endif /* defined UNIV_DEBUG || defined UNIV_PERF_DEBUG */
 
-static MYSQL_SYSVAR_ULONG(buffer_pool_instances, srv_buf_pool_instances,
+static MYBLOCKCHAIN_SYSVAR_ULONG(buffer_pool_instances, srv_buf_pool_instances,
   PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
   "Number of buffer pool instances, set to higher value on high-end machines to increase scalability",
   NULL, NULL, srv_buf_pool_instances_default, 0, MAX_BUFFER_POOLS, 0);
 
-static MYSQL_SYSVAR_STR(buffer_pool_filename, srv_buf_dump_filename,
+static MYBLOCKCHAIN_SYSVAR_STR(buffer_pool_filename, srv_buf_dump_filename,
   PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_MEMALLOC,
   "Filename to/from which to dump/load the InnoDB buffer pool",
   innodb_srv_buf_dump_filename_validate, NULL, SRV_BUF_DUMP_FILENAME_DEFAULT);
 
-static MYSQL_SYSVAR_BOOL(buffer_pool_dump_now, innodb_buffer_pool_dump_now,
+static MYBLOCKCHAIN_SYSVAR_BOOL(buffer_pool_dump_now, innodb_buffer_pool_dump_now,
   PLUGIN_VAR_RQCMDARG,
   "Trigger an immediate dump of the buffer pool into a file named @@innodb_buffer_pool_filename",
   NULL, buffer_pool_dump_now, FALSE);
 
-static MYSQL_SYSVAR_BOOL(buffer_pool_dump_at_shutdown, srv_buffer_pool_dump_at_shutdown,
+static MYBLOCKCHAIN_SYSVAR_BOOL(buffer_pool_dump_at_shutdown, srv_buffer_pool_dump_at_shutdown,
   PLUGIN_VAR_RQCMDARG,
   "Dump the buffer pool into a file named @@innodb_buffer_pool_filename",
   NULL, NULL, TRUE);
 
-static MYSQL_SYSVAR_ULONG(buffer_pool_dump_pct, srv_buf_pool_dump_pct,
+static MYBLOCKCHAIN_SYSVAR_ULONG(buffer_pool_dump_pct, srv_buf_pool_dump_pct,
   PLUGIN_VAR_RQCMDARG,
   "Dump only the hottest N% of each buffer pool, defaults to 25",
   NULL, NULL, 25, 1, 100, 0);
 
 #ifdef UNIV_DEBUG
-static MYSQL_SYSVAR_STR(buffer_pool_evict, srv_buffer_pool_evict,
+static MYBLOCKCHAIN_SYSVAR_STR(buffer_pool_evict, srv_buffer_pool_evict,
   PLUGIN_VAR_RQCMDARG,
   "Evict pages from the buffer pool",
   NULL, innodb_buffer_pool_evict_update, "");
 #endif /* UNIV_DEBUG */
 
-static MYSQL_SYSVAR_BOOL(buffer_pool_load_now, innodb_buffer_pool_load_now,
+static MYBLOCKCHAIN_SYSVAR_BOOL(buffer_pool_load_now, innodb_buffer_pool_load_now,
   PLUGIN_VAR_RQCMDARG,
   "Trigger an immediate load of the buffer pool from a file named @@innodb_buffer_pool_filename",
   NULL, buffer_pool_load_now, FALSE);
 
-static MYSQL_SYSVAR_BOOL(buffer_pool_load_abort, innodb_buffer_pool_load_abort,
+static MYBLOCKCHAIN_SYSVAR_BOOL(buffer_pool_load_abort, innodb_buffer_pool_load_abort,
   PLUGIN_VAR_RQCMDARG,
   "Abort a currently running load of the buffer pool",
   NULL, buffer_pool_load_abort, FALSE);
 
 /* there is no point in changing this during runtime, thus readonly */
-static MYSQL_SYSVAR_BOOL(buffer_pool_load_at_startup, srv_buffer_pool_load_at_startup,
+static MYBLOCKCHAIN_SYSVAR_BOOL(buffer_pool_load_at_startup, srv_buffer_pool_load_at_startup,
   PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
   "Load the buffer pool from a file named @@innodb_buffer_pool_filename",
   NULL, NULL, TRUE);
 
-static MYSQL_SYSVAR_ULONG(lru_scan_depth, srv_LRU_scan_depth,
+static MYBLOCKCHAIN_SYSVAR_ULONG(lru_scan_depth, srv_LRU_scan_depth,
   PLUGIN_VAR_RQCMDARG,
   "How deep to scan LRU to keep it clean",
   NULL, NULL, 1024, 100, ~0UL, 0);
 
-static MYSQL_SYSVAR_ULONG(flush_neighbors, srv_flush_neighbors,
+static MYBLOCKCHAIN_SYSVAR_ULONG(flush_neighbors, srv_flush_neighbors,
   PLUGIN_VAR_OPCMDARG,
   "Set to 0 (don't flush neighbors from buffer pool),"
   " 1 (flush contiguous neighbors from buffer pool)"
@@ -18728,170 +18728,170 @@ static MYSQL_SYSVAR_ULONG(flush_neighbors, srv_flush_neighbors,
   " when flushing a block",
   NULL, NULL, 1, 0, 2, 0);
 
-static MYSQL_SYSVAR_ULONG(commit_concurrency, innobase_commit_concurrency,
+static MYBLOCKCHAIN_SYSVAR_ULONG(commit_concurrency, innobase_commit_concurrency,
   PLUGIN_VAR_RQCMDARG,
   "Helps in performance tuning in heavily concurrent environments.",
   innobase_commit_concurrency_validate, NULL, 0, 0, 1000, 0);
 
-static MYSQL_SYSVAR_ULONG(concurrency_tickets, srv_n_free_tickets_to_enter,
+static MYBLOCKCHAIN_SYSVAR_ULONG(concurrency_tickets, srv_n_free_tickets_to_enter,
   PLUGIN_VAR_RQCMDARG,
   "Number of times a thread is allowed to enter InnoDB within the same SQL query after it has once got the ticket",
   NULL, NULL, 5000L, 1L, ~0UL, 0);
 
-static MYSQL_SYSVAR_LONG(fill_factor, innobase_fill_factor,
+static MYBLOCKCHAIN_SYSVAR_LONG(fill_factor, innobase_fill_factor,
   PLUGIN_VAR_RQCMDARG,
   "Percentage of B-tree page filled during bulk insert",
   NULL, NULL, 100, 10, 100, 0);
 
-static MYSQL_SYSVAR_BOOL(ft_enable_diag_print, fts_enable_diag_print,
+static MYBLOCKCHAIN_SYSVAR_BOOL(ft_enable_diag_print, fts_enable_diag_print,
   PLUGIN_VAR_OPCMDARG,
   "Whether to enable additional FTS diagnostic printout ",
   NULL, NULL, FALSE);
 
-static MYSQL_SYSVAR_BOOL(disable_sort_file_cache, srv_disable_sort_file_cache,
+static MYBLOCKCHAIN_SYSVAR_BOOL(disable_sort_file_cache, srv_disable_sort_file_cache,
   PLUGIN_VAR_OPCMDARG,
   "Whether to disable OS system file cache for sort I/O",
   NULL, NULL, FALSE);
 
-static MYSQL_SYSVAR_STR(ft_aux_table, fts_internal_tbl_name,
+static MYBLOCKCHAIN_SYSVAR_STR(ft_aux_table, fts_internal_tbl_name,
   PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_MEMALLOC,
   "FTS internal auxiliary table to be checked",
   innodb_internal_table_validate,
   NULL, NULL);
 
-static MYSQL_SYSVAR_ULONG(ft_cache_size, fts_max_cache_size,
+static MYBLOCKCHAIN_SYSVAR_ULONG(ft_cache_size, fts_max_cache_size,
   PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
   "InnoDB Fulltext search cache size in bytes",
   NULL, NULL, 8000000, 1600000, 80000000, 0);
 
-static MYSQL_SYSVAR_ULONG(ft_total_cache_size, fts_max_total_cache_size,
+static MYBLOCKCHAIN_SYSVAR_ULONG(ft_total_cache_size, fts_max_total_cache_size,
   PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
   "Total memory allocated for InnoDB Fulltext Search cache",
   NULL, NULL, 640000000, 32000000, 1600000000, 0);
 
-static MYSQL_SYSVAR_ULONG(ft_result_cache_limit, fts_result_cache_limit,
+static MYBLOCKCHAIN_SYSVAR_ULONG(ft_result_cache_limit, fts_result_cache_limit,
   PLUGIN_VAR_RQCMDARG,
   "InnoDB Fulltext search query result cache limit in bytes",
   NULL, NULL, 2000000000L, 1000000L, 4294967295UL, 0);
 
-static MYSQL_SYSVAR_ULONG(ft_min_token_size, fts_min_token_size,
+static MYBLOCKCHAIN_SYSVAR_ULONG(ft_min_token_size, fts_min_token_size,
   PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
   "InnoDB Fulltext search minimum token size in characters",
   NULL, NULL, 3, 0, 16, 0);
 
-static MYSQL_SYSVAR_ULONG(ft_max_token_size, fts_max_token_size,
+static MYBLOCKCHAIN_SYSVAR_ULONG(ft_max_token_size, fts_max_token_size,
   PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
   "InnoDB Fulltext search maximum token size in characters",
   NULL, NULL, FTS_MAX_WORD_LEN_IN_CHAR, 10, FTS_MAX_WORD_LEN_IN_CHAR, 0);
 
-static MYSQL_SYSVAR_ULONG(ft_num_word_optimize, fts_num_word_optimize,
+static MYBLOCKCHAIN_SYSVAR_ULONG(ft_num_word_optimize, fts_num_word_optimize,
   PLUGIN_VAR_OPCMDARG,
   "InnoDB Fulltext search number of words to optimize for each optimize table call ",
   NULL, NULL, 2000, 1000, 10000, 0);
 
-static MYSQL_SYSVAR_ULONG(ft_sort_pll_degree, fts_sort_pll_degree,
+static MYBLOCKCHAIN_SYSVAR_ULONG(ft_sort_pll_degree, fts_sort_pll_degree,
   PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
   "InnoDB Fulltext search parallel sort degree, will round up to nearest power of 2 number",
   NULL, NULL, 2, 1, 16, 0);
 
-static MYSQL_SYSVAR_ULONG(sort_buffer_size, srv_sort_buf_size,
+static MYBLOCKCHAIN_SYSVAR_ULONG(sort_buffer_size, srv_sort_buf_size,
   PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
   "Memory buffer size for index creation",
   NULL, NULL, 1048576, 65536, 64<<20, 0);
 
-static MYSQL_SYSVAR_ULONGLONG(online_alter_log_max_size, srv_online_max_size,
+static MYBLOCKCHAIN_SYSVAR_ULONGLONG(online_alter_log_max_size, srv_online_max_size,
   PLUGIN_VAR_RQCMDARG,
   "Maximum modification log file size for online index creation",
   NULL, NULL, 128<<20, 65536, ~0ULL, 0);
 
-static MYSQL_SYSVAR_BOOL(optimize_fulltext_only, innodb_optimize_fulltext_only,
+static MYBLOCKCHAIN_SYSVAR_BOOL(optimize_fulltext_only, innodb_optimize_fulltext_only,
   PLUGIN_VAR_NOCMDARG,
   "Only optimize the Fulltext index of the table",
   NULL, NULL, FALSE);
 
-static MYSQL_SYSVAR_ULONG(read_io_threads, innobase_read_io_threads,
+static MYBLOCKCHAIN_SYSVAR_ULONG(read_io_threads, innobase_read_io_threads,
   PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
   "Number of background read I/O threads in InnoDB.",
   NULL, NULL, 4, 1, 64, 0);
 
-static MYSQL_SYSVAR_ULONG(write_io_threads, innobase_write_io_threads,
+static MYBLOCKCHAIN_SYSVAR_ULONG(write_io_threads, innobase_write_io_threads,
   PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
   "Number of background write I/O threads in InnoDB.",
   NULL, NULL, 4, 1, 64, 0);
 
-static MYSQL_SYSVAR_ULONG(force_recovery, srv_force_recovery,
+static MYBLOCKCHAIN_SYSVAR_ULONG(force_recovery, srv_force_recovery,
   PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
-  "Helps to save your data in case the disk image of the database becomes corrupt.",
+  "Helps to save your data in case the disk image of the blockchain becomes corrupt.",
   NULL, NULL, 0, 0, 6, 0);
 
 #ifndef DBUG_OFF
-static MYSQL_SYSVAR_ULONG(force_recovery_crash, srv_force_recovery_crash,
+static MYBLOCKCHAIN_SYSVAR_ULONG(force_recovery_crash, srv_force_recovery_crash,
   PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
   "Kills the server during crash recovery.",
   NULL, NULL, 0, 0, 100, 0);
 #endif /* !DBUG_OFF */
 
-static MYSQL_SYSVAR_ULONG(page_size, srv_page_size,
+static MYBLOCKCHAIN_SYSVAR_ULONG(page_size, srv_page_size,
   PLUGIN_VAR_OPCMDARG | PLUGIN_VAR_READONLY,
   "Page size to use for all InnoDB tablespaces.",
   NULL, NULL, UNIV_PAGE_SIZE_DEF,
   UNIV_PAGE_SIZE_MIN, UNIV_PAGE_SIZE_MAX, 0);
 
-static MYSQL_SYSVAR_LONG(log_buffer_size, innobase_log_buffer_size,
+static MYBLOCKCHAIN_SYSVAR_LONG(log_buffer_size, innobase_log_buffer_size,
   PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
   "The size of the buffer which InnoDB uses to write log to the log files on disk.",
   NULL, NULL, 16*1024*1024L, 256*1024L, LONG_MAX, 1024);
 
-static MYSQL_SYSVAR_LONGLONG(log_file_size, innobase_log_file_size,
+static MYBLOCKCHAIN_SYSVAR_LONGLONG(log_file_size, innobase_log_file_size,
   PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
   "Size of each log file in a log group.",
   NULL, NULL, 48*1024*1024L, 1*1024*1024L, LLONG_MAX, 1024*1024L);
 
-static MYSQL_SYSVAR_ULONG(log_files_in_group, srv_n_log_files,
+static MYBLOCKCHAIN_SYSVAR_ULONG(log_files_in_group, srv_n_log_files,
   PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
   "Number of log files in the log group. InnoDB writes to the files in a circular fashion.",
   NULL, NULL, 2, 2, SRV_N_LOG_FILES_MAX, 0);
 
-static MYSQL_SYSVAR_ULONG(log_write_ahead_size, srv_log_write_ahead_size,
+static MYBLOCKCHAIN_SYSVAR_ULONG(log_write_ahead_size, srv_log_write_ahead_size,
   PLUGIN_VAR_RQCMDARG,
   "Redo log write ahead unit size to avoid read-on-write,"
   " it should match the OS cache block IO size",
   NULL, innodb_log_write_ahead_size_update,
   8*1024L, OS_FILE_LOG_BLOCK_SIZE, UNIV_PAGE_SIZE_DEF, OS_FILE_LOG_BLOCK_SIZE);
 
-static MYSQL_SYSVAR_UINT(old_blocks_pct, innobase_old_blocks_pct,
+static MYBLOCKCHAIN_SYSVAR_UINT(old_blocks_pct, innobase_old_blocks_pct,
   PLUGIN_VAR_RQCMDARG,
   "Percentage of the buffer pool to reserve for 'old' blocks.",
   NULL, innodb_old_blocks_pct_update, 100 * 3 / 8, 5, 95, 0);
 
-static MYSQL_SYSVAR_UINT(old_blocks_time, buf_LRU_old_threshold_ms,
+static MYBLOCKCHAIN_SYSVAR_UINT(old_blocks_time, buf_LRU_old_threshold_ms,
   PLUGIN_VAR_RQCMDARG,
   "Move blocks to the 'new' end of the buffer pool if the first access"
   " was at least this many milliseconds ago."
   " The timeout is disabled if 0.",
   NULL, NULL, 1000, 0, UINT_MAX32, 0);
 
-static MYSQL_SYSVAR_LONG(open_files, innobase_open_files,
+static MYBLOCKCHAIN_SYSVAR_LONG(open_files, innobase_open_files,
   PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
   "How many files at the maximum InnoDB keeps open at the same time.",
   NULL, NULL, 0L, 0L, LONG_MAX, 0);
 
-static MYSQL_SYSVAR_ULONG(sync_spin_loops, srv_n_spin_wait_rounds,
+static MYBLOCKCHAIN_SYSVAR_ULONG(sync_spin_loops, srv_n_spin_wait_rounds,
   PLUGIN_VAR_RQCMDARG,
   "Count of spin-loop rounds in InnoDB mutexes (30 by default)",
   NULL, NULL, 30L, 0L, ~0UL, 0);
 
-static MYSQL_SYSVAR_ULONG(spin_wait_delay, srv_spin_wait_delay,
+static MYBLOCKCHAIN_SYSVAR_ULONG(spin_wait_delay, srv_spin_wait_delay,
   PLUGIN_VAR_OPCMDARG,
   "Maximum delay between polling for a spin lock (6 by default)",
   NULL, NULL, 6L, 0L, ~0UL, 0);
 
-static MYSQL_SYSVAR_ULONG(thread_concurrency, srv_thread_concurrency,
+static MYBLOCKCHAIN_SYSVAR_ULONG(thread_concurrency, srv_thread_concurrency,
   PLUGIN_VAR_RQCMDARG,
   "Helps in performance tuning in heavily concurrent environments. Sets the maximum number of threads allowed inside InnoDB. Value 0 will disable the thread throttling.",
   NULL, NULL, 0, 0, 1000, 0);
 
-static MYSQL_SYSVAR_ULONG(
+static MYBLOCKCHAIN_SYSVAR_ULONG(
   adaptive_max_sleep_delay, srv_adaptive_max_sleep_delay,
   PLUGIN_VAR_RQCMDARG,
   "The upper limit of the sleep delay in usec. Value of 0 disables it.",
@@ -18900,7 +18900,7 @@ static MYSQL_SYSVAR_ULONG(
   0,				/* Minimum value */
   1000000, 0);			/* Maximum value */
 
-static MYSQL_SYSVAR_ULONG(thread_sleep_delay, srv_thread_sleep_delay,
+static MYBLOCKCHAIN_SYSVAR_ULONG(thread_sleep_delay, srv_thread_sleep_delay,
   PLUGIN_VAR_RQCMDARG,
   "Time of innodb thread sleeping before joining InnoDB queue (usec)."
   " Value 0 disable a sleep",
@@ -18909,22 +18909,22 @@ static MYSQL_SYSVAR_ULONG(thread_sleep_delay, srv_thread_sleep_delay,
   0L,
   1000000L, 0);
 
-static MYSQL_SYSVAR_STR(data_file_path, innobase_data_file_path,
+static MYBLOCKCHAIN_SYSVAR_STR(data_file_path, innobase_data_file_path,
   PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
   "Path to individual files and their sizes.",
   NULL, NULL, NULL);
 
-static MYSQL_SYSVAR_STR(temp_data_file_path, innobase_temp_data_file_path,
+static MYBLOCKCHAIN_SYSVAR_STR(temp_data_file_path, innobase_temp_data_file_path,
   PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
   "Path to files and their sizes making temp-tablespace.",
   NULL, NULL, NULL);
 
-static MYSQL_SYSVAR_STR(undo_directory, srv_undo_dir,
+static MYBLOCKCHAIN_SYSVAR_STR(undo_directory, srv_undo_dir,
   PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
   "Directory where undo tablespace files live, this path can be absolute.",
   NULL, NULL, NULL);
 
-static MYSQL_SYSVAR_ULONG(undo_tablespaces, srv_undo_tablespaces,
+static MYBLOCKCHAIN_SYSVAR_ULONG(undo_tablespaces, srv_undo_tablespaces,
   PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
   "Number of undo tablespaces to use. ",
   NULL, NULL,
@@ -18932,7 +18932,7 @@ static MYSQL_SYSVAR_ULONG(undo_tablespaces, srv_undo_tablespaces,
   0L,			/* Minimum value */
   95L, 0);		/* Maximum value */
 
-static MYSQL_SYSVAR_ULONG(undo_logs, srv_undo_logs,
+static MYBLOCKCHAIN_SYSVAR_ULONG(undo_logs, srv_undo_logs,
   PLUGIN_VAR_OPCMDARG,
   "Number of undo logs to use.",
   NULL, NULL,
@@ -18940,7 +18940,7 @@ static MYSQL_SYSVAR_ULONG(undo_logs, srv_undo_logs,
   1,			/* Minimum value */
   TRX_SYS_N_RSEGS, 0);	/* Maximum value */
 
-static MYSQL_SYSVAR_ULONGLONG(max_undo_log_size, srv_max_undo_log_size,
+static MYBLOCKCHAIN_SYSVAR_ULONGLONG(max_undo_log_size, srv_max_undo_log_size,
   PLUGIN_VAR_OPCMDARG,
   "Maximum size of UNDO tablespace in MB (If UNDO tablespace grows"
   " beyond ths size it will be truncated in due-course). ",
@@ -18949,20 +18949,20 @@ static MYSQL_SYSVAR_ULONGLONG(max_undo_log_size, srv_max_undo_log_size,
   10 * 1024 * 1024L,
   ~0ULL, 0);
 
-static MYSQL_SYSVAR_ULONG(purge_rseg_truncate_frequency,
+static MYBLOCKCHAIN_SYSVAR_ULONG(purge_rseg_truncate_frequency,
   srv_purge_rseg_truncate_frequency,
   PLUGIN_VAR_OPCMDARG,
   "Dictates rate at which UNDO records are purged. Value N means"
   " purge rollback segment(s) on every Nth iteration of purge invocation",
   NULL, NULL, 128, 1, 128, 0);
 
-static MYSQL_SYSVAR_BOOL(undo_log_truncate, srv_undo_log_truncate,
+static MYBLOCKCHAIN_SYSVAR_BOOL(undo_log_truncate, srv_undo_log_truncate,
   PLUGIN_VAR_OPCMDARG,
   "Enable or Disable Truncate of UNDO tablespace.",
   NULL, NULL, FALSE);
 
 /* Alias for innodb_undo_logs, this config variable is deprecated. */
-static MYSQL_SYSVAR_ULONG(rollback_segments, srv_undo_logs,
+static MYBLOCKCHAIN_SYSVAR_ULONG(rollback_segments, srv_undo_logs,
   PLUGIN_VAR_OPCMDARG,
   "Number of undo logs to use (deprecated).",
   NULL, NULL,
@@ -18970,7 +18970,7 @@ static MYSQL_SYSVAR_ULONG(rollback_segments, srv_undo_logs,
   1,			/* Minimum value */
   TRX_SYS_N_RSEGS, 0);	/* Maximum value */
 
-static MYSQL_SYSVAR_LONG(autoinc_lock_mode, innobase_autoinc_lock_mode,
+static MYBLOCKCHAIN_SYSVAR_LONG(autoinc_lock_mode, innobase_autoinc_lock_mode,
   PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_READONLY,
   "The AUTOINC lock modes supported by InnoDB:"
   " 0 => Old style AUTOINC locking (for backward compatibility);"
@@ -18981,31 +18981,31 @@ static MYSQL_SYSVAR_LONG(autoinc_lock_mode, innobase_autoinc_lock_mode,
   AUTOINC_OLD_STYLE_LOCKING,	/* Minimum value */
   AUTOINC_NO_LOCKING, 0);	/* Maximum value */
 
-static MYSQL_SYSVAR_STR(version, innodb_version_str,
+static MYBLOCKCHAIN_SYSVAR_STR(version, innodb_version_str,
   PLUGIN_VAR_NOCMDOPT | PLUGIN_VAR_READONLY,
   "InnoDB version", NULL, NULL, INNODB_VERSION_STR);
 
-static MYSQL_SYSVAR_BOOL(use_native_aio, srv_use_native_aio,
+static MYBLOCKCHAIN_SYSVAR_BOOL(use_native_aio, srv_use_native_aio,
   PLUGIN_VAR_NOCMDARG | PLUGIN_VAR_READONLY,
   "Use native AIO if supported on this platform.",
   NULL, NULL, TRUE);
 
-static MYSQL_SYSVAR_BOOL(api_enable_binlog, ib_binlog_enabled,
+static MYBLOCKCHAIN_SYSVAR_BOOL(api_enable_binlog, ib_binlog_enabled,
   PLUGIN_VAR_NOCMDARG | PLUGIN_VAR_READONLY,
   "Enable binlog for applications direct access InnoDB through InnoDB APIs",
   NULL, NULL, FALSE);
 
-static MYSQL_SYSVAR_BOOL(api_enable_mdl, ib_mdl_enabled,
+static MYBLOCKCHAIN_SYSVAR_BOOL(api_enable_mdl, ib_mdl_enabled,
   PLUGIN_VAR_NOCMDARG | PLUGIN_VAR_READONLY,
   "Enable MDL for applications direct access InnoDB through InnoDB APIs",
   NULL, NULL, FALSE);
 
-static MYSQL_SYSVAR_BOOL(api_disable_rowlock, ib_disable_row_lock,
+static MYBLOCKCHAIN_SYSVAR_BOOL(api_disable_rowlock, ib_disable_row_lock,
   PLUGIN_VAR_NOCMDARG | PLUGIN_VAR_READONLY,
   "Disable row lock when direct access InnoDB through InnoDB APIs",
   NULL, NULL, FALSE);
 
-static MYSQL_SYSVAR_ULONG(api_trx_level, ib_trx_level_setting,
+static MYBLOCKCHAIN_SYSVAR_ULONG(api_trx_level, ib_trx_level_setting,
   PLUGIN_VAR_OPCMDARG,
   "InnoDB API transaction isolation level",
   NULL, NULL,
@@ -19013,7 +19013,7 @@ static MYSQL_SYSVAR_ULONG(api_trx_level, ib_trx_level_setting,
   0,		/* Minimum value */
   3, 0);	/* Maximum value */
 
-static MYSQL_SYSVAR_ULONG(api_bk_commit_interval, ib_bk_commit_interval,
+static MYBLOCKCHAIN_SYSVAR_ULONG(api_bk_commit_interval, ib_bk_commit_interval,
   PLUGIN_VAR_OPCMDARG,
   "Background commit interval in seconds",
   NULL, NULL,
@@ -19021,14 +19021,14 @@ static MYSQL_SYSVAR_ULONG(api_bk_commit_interval, ib_bk_commit_interval,
   1,		/* Minimum value */
   1024 * 1024 * 1024, 0);	/* Maximum value */
 
-static MYSQL_SYSVAR_STR(change_buffering, innobase_change_buffering,
+static MYBLOCKCHAIN_SYSVAR_STR(change_buffering, innobase_change_buffering,
   PLUGIN_VAR_RQCMDARG,
   "Buffer changes to reduce random access:"
   " OFF, ON, inserting, deleting, changing, or purging.",
   innodb_change_buffering_validate,
   innodb_change_buffering_update, "all");
 
-static MYSQL_SYSVAR_UINT(change_buffer_max_size,
+static MYBLOCKCHAIN_SYSVAR_UINT(change_buffer_max_size,
   srv_change_buffer_max_size,
   PLUGIN_VAR_RQCMDARG,
   "Maximum on-disk size of change buffer in terms of percentage"
@@ -19036,7 +19036,7 @@ static MYSQL_SYSVAR_UINT(change_buffer_max_size,
   NULL, innodb_change_buffer_max_size_update,
   CHANGE_BUFFER_DEFAULT_SIZE, 0, 50, 0);
 
-static MYSQL_SYSVAR_ENUM(stats_method, srv_innodb_stats_method,
+static MYBLOCKCHAIN_SYSVAR_ENUM(stats_method, srv_innodb_stats_method,
    PLUGIN_VAR_RQCMDARG,
   "Specifies how InnoDB index statistics collection code should"
   " treat NULLs. Possible values are NULLS_EQUAL (default),"
@@ -19044,302 +19044,302 @@ static MYSQL_SYSVAR_ENUM(stats_method, srv_innodb_stats_method,
    NULL, NULL, SRV_STATS_NULLS_EQUAL, &innodb_stats_method_typelib);
 
 #if defined UNIV_DEBUG || defined UNIV_IBUF_DEBUG
-static MYSQL_SYSVAR_UINT(change_buffering_debug, ibuf_debug,
+static MYBLOCKCHAIN_SYSVAR_UINT(change_buffering_debug, ibuf_debug,
   PLUGIN_VAR_RQCMDARG,
   "Debug flags for InnoDB change buffering (0=none, 2=crash at merge)",
   NULL, NULL, 0, 0, 2, 0);
 
-static MYSQL_SYSVAR_BOOL(disable_background_merge,
+static MYBLOCKCHAIN_SYSVAR_BOOL(disable_background_merge,
   srv_ibuf_disable_background_merge,
   PLUGIN_VAR_NOCMDARG | PLUGIN_VAR_RQCMDARG,
   "Disable change buffering merges by the master thread",
   NULL, NULL, FALSE);
 
-static MYSQL_SYSVAR_ENUM(compress_debug, srv_debug_compress,
+static MYBLOCKCHAIN_SYSVAR_ENUM(compress_debug, srv_debug_compress,
   PLUGIN_VAR_RQCMDARG,
   "Compress all tables, without specifying the COMRPESS table attribute",
   NULL, NULL, Compression::NONE, &innodb_debug_compress_typelib);
 #endif /* UNIV_DEBUG || UNIV_IBUF_DEBUG */
 
-static MYSQL_SYSVAR_BOOL(random_read_ahead, srv_random_read_ahead,
+static MYBLOCKCHAIN_SYSVAR_BOOL(random_read_ahead, srv_random_read_ahead,
   PLUGIN_VAR_NOCMDARG,
   "Whether to use read ahead for random access within an extent.",
   NULL, NULL, FALSE);
 
-static MYSQL_SYSVAR_ULONG(read_ahead_threshold, srv_read_ahead_threshold,
+static MYBLOCKCHAIN_SYSVAR_ULONG(read_ahead_threshold, srv_read_ahead_threshold,
   PLUGIN_VAR_RQCMDARG,
   "Number of pages that must be accessed sequentially for InnoDB to"
   " trigger a readahead.",
   NULL, NULL, 56, 0, 64, 0);
 
-static MYSQL_SYSVAR_STR(monitor_enable, innobase_enable_monitor_counter,
+static MYBLOCKCHAIN_SYSVAR_STR(monitor_enable, innobase_enable_monitor_counter,
   PLUGIN_VAR_RQCMDARG,
   "Turn on a monitor counter",
   innodb_monitor_validate,
   innodb_enable_monitor_update, NULL);
 
-static MYSQL_SYSVAR_STR(monitor_disable, innobase_disable_monitor_counter,
+static MYBLOCKCHAIN_SYSVAR_STR(monitor_disable, innobase_disable_monitor_counter,
   PLUGIN_VAR_RQCMDARG,
   "Turn off a monitor counter",
   innodb_monitor_validate,
   innodb_disable_monitor_update, NULL);
 
-static MYSQL_SYSVAR_STR(monitor_reset, innobase_reset_monitor_counter,
+static MYBLOCKCHAIN_SYSVAR_STR(monitor_reset, innobase_reset_monitor_counter,
   PLUGIN_VAR_RQCMDARG,
   "Reset a monitor counter",
   innodb_monitor_validate,
   innodb_reset_monitor_update, NULL);
 
-static MYSQL_SYSVAR_STR(monitor_reset_all, innobase_reset_all_monitor_counter,
+static MYBLOCKCHAIN_SYSVAR_STR(monitor_reset_all, innobase_reset_all_monitor_counter,
   PLUGIN_VAR_RQCMDARG,
   "Reset all values for a monitor counter",
   innodb_monitor_validate,
   innodb_reset_all_monitor_update, NULL);
 
-static MYSQL_SYSVAR_BOOL(status_output, srv_print_innodb_monitor,
+static MYBLOCKCHAIN_SYSVAR_BOOL(status_output, srv_print_innodb_monitor,
   PLUGIN_VAR_OPCMDARG, "Enable InnoDB monitor output to the error log.",
   NULL, innodb_status_output_update, FALSE);
 
-static MYSQL_SYSVAR_BOOL(status_output_locks, srv_print_innodb_lock_monitor,
+static MYBLOCKCHAIN_SYSVAR_BOOL(status_output_locks, srv_print_innodb_lock_monitor,
   PLUGIN_VAR_OPCMDARG, "Enable InnoDB lock monitor output to the error log."
   " Requires innodb_status_output=ON.",
   NULL, innodb_status_output_update, FALSE);
 
-static MYSQL_SYSVAR_BOOL(print_all_deadlocks, srv_print_all_deadlocks,
+static MYBLOCKCHAIN_SYSVAR_BOOL(print_all_deadlocks, srv_print_all_deadlocks,
   PLUGIN_VAR_OPCMDARG,
-  "Print all deadlocks to MySQL error log (off by default)",
+  "Print all deadlocks to MyBlockchain error log (off by default)",
   NULL, NULL, FALSE);
 
-static MYSQL_SYSVAR_ULONG(compression_failure_threshold_pct,
+static MYBLOCKCHAIN_SYSVAR_ULONG(compression_failure_threshold_pct,
   zip_failure_threshold_pct, PLUGIN_VAR_OPCMDARG,
   "If the compression failure rate of a table is greater than this number"
   " more padding is added to the pages to reduce the failures. A value of"
   " zero implies no padding",
   NULL, NULL, 5, 0, 100, 0);
 
-static MYSQL_SYSVAR_ULONG(compression_pad_pct_max,
+static MYBLOCKCHAIN_SYSVAR_ULONG(compression_pad_pct_max,
   zip_pad_max, PLUGIN_VAR_OPCMDARG,
   "Percentage of empty space on a data page that can be reserved"
   " to make the page compressible.",
   NULL, NULL, 50, 0, 75, 0);
 
-static MYSQL_SYSVAR_BOOL(read_only, srv_read_only_mode,
+static MYBLOCKCHAIN_SYSVAR_BOOL(read_only, srv_read_only_mode,
   PLUGIN_VAR_OPCMDARG | PLUGIN_VAR_READONLY,
   "Start InnoDB in read only mode (off by default)",
   NULL, NULL, FALSE);
 
-static MYSQL_SYSVAR_BOOL(cmp_per_index_enabled, srv_cmp_per_index_enabled,
+static MYBLOCKCHAIN_SYSVAR_BOOL(cmp_per_index_enabled, srv_cmp_per_index_enabled,
   PLUGIN_VAR_OPCMDARG,
   "Enable INFORMATION_SCHEMA.innodb_cmp_per_index,"
   " may have negative impact on performance (off by default)",
   NULL, innodb_cmp_per_index_update, FALSE);
 
 #ifdef UNIV_DEBUG
-static MYSQL_SYSVAR_UINT(trx_rseg_n_slots_debug, trx_rseg_n_slots_debug,
+static MYBLOCKCHAIN_SYSVAR_UINT(trx_rseg_n_slots_debug, trx_rseg_n_slots_debug,
   PLUGIN_VAR_RQCMDARG,
   "Debug flags for InnoDB to limit TRX_RSEG_N_SLOTS for trx_rsegf_undo_find_free()",
   NULL, NULL, 0, 0, 1024, 0);
 
-static MYSQL_SYSVAR_UINT(limit_optimistic_insert_debug,
+static MYBLOCKCHAIN_SYSVAR_UINT(limit_optimistic_insert_debug,
   btr_cur_limit_optimistic_insert_debug, PLUGIN_VAR_RQCMDARG,
   "Artificially limit the number of records per B-tree page (0=unlimited).",
   NULL, NULL, 0, 0, UINT_MAX32, 0);
 
-static MYSQL_SYSVAR_BOOL(trx_purge_view_update_only_debug,
+static MYBLOCKCHAIN_SYSVAR_BOOL(trx_purge_view_update_only_debug,
   srv_purge_view_update_only_debug, PLUGIN_VAR_NOCMDARG,
   "Pause actual purging any delete-marked records, but merely update the purge view."
   " It is to create artificially the situation the purge view have been updated"
   " but the each purges were not done yet.",
   NULL, NULL, FALSE);
 
-static MYSQL_SYSVAR_ULONG(fil_make_page_dirty_debug,
+static MYBLOCKCHAIN_SYSVAR_ULONG(fil_make_page_dirty_debug,
   srv_fil_make_page_dirty_debug, PLUGIN_VAR_OPCMDARG,
   "Make the first page of the given tablespace dirty.",
   NULL, innodb_make_page_dirty, 0, 0, UINT_MAX32, 0);
 
-static MYSQL_SYSVAR_ULONG(saved_page_number_debug,
+static MYBLOCKCHAIN_SYSVAR_ULONG(saved_page_number_debug,
   srv_saved_page_number_debug, PLUGIN_VAR_OPCMDARG,
   "An InnoDB page number.",
   NULL, innodb_save_page_no, 0, 0, UINT_MAX32, 0);
 
-static MYSQL_SYSVAR_BOOL(disable_resize_buffer_pool_debug,
+static MYBLOCKCHAIN_SYSVAR_BOOL(disable_resize_buffer_pool_debug,
   buf_disable_resize_buffer_pool_debug, PLUGIN_VAR_NOCMDARG,
   "Disable resizing buffer pool to make assertion code not expensive.",
   NULL, NULL, TRUE);
 
-static MYSQL_SYSVAR_BOOL(sync_debug, srv_sync_debug,
+static MYBLOCKCHAIN_SYSVAR_BOOL(sync_debug, srv_sync_debug,
   PLUGIN_VAR_OPCMDARG | PLUGIN_VAR_READONLY,
   "Enable the sync debug checks",
   NULL, NULL, FALSE);
 #endif /* UNIV_DEBUG */
 
-static struct st_mysql_sys_var* innobase_system_variables[]= {
-  MYSQL_SYSVAR(api_trx_level),
-  MYSQL_SYSVAR(api_bk_commit_interval),
-  MYSQL_SYSVAR(autoextend_increment),
-  MYSQL_SYSVAR(buffer_pool_size),
-  MYSQL_SYSVAR(buffer_pool_chunk_size),
-  MYSQL_SYSVAR(buffer_pool_instances),
-  MYSQL_SYSVAR(buffer_pool_filename),
-  MYSQL_SYSVAR(buffer_pool_dump_now),
-  MYSQL_SYSVAR(buffer_pool_dump_at_shutdown),
-  MYSQL_SYSVAR(buffer_pool_dump_pct),
+static struct st_myblockchain_sys_var* innobase_system_variables[]= {
+  MYBLOCKCHAIN_SYSVAR(api_trx_level),
+  MYBLOCKCHAIN_SYSVAR(api_bk_commit_interval),
+  MYBLOCKCHAIN_SYSVAR(autoextend_increment),
+  MYBLOCKCHAIN_SYSVAR(buffer_pool_size),
+  MYBLOCKCHAIN_SYSVAR(buffer_pool_chunk_size),
+  MYBLOCKCHAIN_SYSVAR(buffer_pool_instances),
+  MYBLOCKCHAIN_SYSVAR(buffer_pool_filename),
+  MYBLOCKCHAIN_SYSVAR(buffer_pool_dump_now),
+  MYBLOCKCHAIN_SYSVAR(buffer_pool_dump_at_shutdown),
+  MYBLOCKCHAIN_SYSVAR(buffer_pool_dump_pct),
 #ifdef UNIV_DEBUG
-  MYSQL_SYSVAR(buffer_pool_evict),
+  MYBLOCKCHAIN_SYSVAR(buffer_pool_evict),
 #endif /* UNIV_DEBUG */
-  MYSQL_SYSVAR(buffer_pool_load_now),
-  MYSQL_SYSVAR(buffer_pool_load_abort),
-  MYSQL_SYSVAR(buffer_pool_load_at_startup),
-  MYSQL_SYSVAR(lru_scan_depth),
-  MYSQL_SYSVAR(flush_neighbors),
-  MYSQL_SYSVAR(checksum_algorithm),
-  MYSQL_SYSVAR(log_checksum_algorithm),
-  MYSQL_SYSVAR(checksums),
-  MYSQL_SYSVAR(commit_concurrency),
-  MYSQL_SYSVAR(concurrency_tickets),
-  MYSQL_SYSVAR(compression_level),
-  MYSQL_SYSVAR(data_file_path),
-  MYSQL_SYSVAR(temp_data_file_path),
-  MYSQL_SYSVAR(data_home_dir),
-  MYSQL_SYSVAR(doublewrite),
-  MYSQL_SYSVAR(api_enable_binlog),
-  MYSQL_SYSVAR(api_enable_mdl),
-  MYSQL_SYSVAR(api_disable_rowlock),
-  MYSQL_SYSVAR(fast_shutdown),
-  MYSQL_SYSVAR(read_io_threads),
-  MYSQL_SYSVAR(write_io_threads),
-  MYSQL_SYSVAR(file_per_table),
-  MYSQL_SYSVAR(file_format),
-  MYSQL_SYSVAR(file_format_check),
-  MYSQL_SYSVAR(file_format_max),
-  MYSQL_SYSVAR(flush_log_at_timeout),
-  MYSQL_SYSVAR(flush_log_at_trx_commit),
-  MYSQL_SYSVAR(flush_method),
-  MYSQL_SYSVAR(force_recovery),
+  MYBLOCKCHAIN_SYSVAR(buffer_pool_load_now),
+  MYBLOCKCHAIN_SYSVAR(buffer_pool_load_abort),
+  MYBLOCKCHAIN_SYSVAR(buffer_pool_load_at_startup),
+  MYBLOCKCHAIN_SYSVAR(lru_scan_depth),
+  MYBLOCKCHAIN_SYSVAR(flush_neighbors),
+  MYBLOCKCHAIN_SYSVAR(checksum_algorithm),
+  MYBLOCKCHAIN_SYSVAR(log_checksum_algorithm),
+  MYBLOCKCHAIN_SYSVAR(checksums),
+  MYBLOCKCHAIN_SYSVAR(commit_concurrency),
+  MYBLOCKCHAIN_SYSVAR(concurrency_tickets),
+  MYBLOCKCHAIN_SYSVAR(compression_level),
+  MYBLOCKCHAIN_SYSVAR(data_file_path),
+  MYBLOCKCHAIN_SYSVAR(temp_data_file_path),
+  MYBLOCKCHAIN_SYSVAR(data_home_dir),
+  MYBLOCKCHAIN_SYSVAR(doublewrite),
+  MYBLOCKCHAIN_SYSVAR(api_enable_binlog),
+  MYBLOCKCHAIN_SYSVAR(api_enable_mdl),
+  MYBLOCKCHAIN_SYSVAR(api_disable_rowlock),
+  MYBLOCKCHAIN_SYSVAR(fast_shutdown),
+  MYBLOCKCHAIN_SYSVAR(read_io_threads),
+  MYBLOCKCHAIN_SYSVAR(write_io_threads),
+  MYBLOCKCHAIN_SYSVAR(file_per_table),
+  MYBLOCKCHAIN_SYSVAR(file_format),
+  MYBLOCKCHAIN_SYSVAR(file_format_check),
+  MYBLOCKCHAIN_SYSVAR(file_format_max),
+  MYBLOCKCHAIN_SYSVAR(flush_log_at_timeout),
+  MYBLOCKCHAIN_SYSVAR(flush_log_at_trx_commit),
+  MYBLOCKCHAIN_SYSVAR(flush_method),
+  MYBLOCKCHAIN_SYSVAR(force_recovery),
 #ifndef DBUG_OFF
-  MYSQL_SYSVAR(force_recovery_crash),
+  MYBLOCKCHAIN_SYSVAR(force_recovery_crash),
 #endif /* !DBUG_OFF */
-  MYSQL_SYSVAR(fill_factor),
-  MYSQL_SYSVAR(ft_cache_size),
-  MYSQL_SYSVAR(ft_total_cache_size),
-  MYSQL_SYSVAR(ft_result_cache_limit),
-  MYSQL_SYSVAR(ft_enable_stopword),
-  MYSQL_SYSVAR(ft_max_token_size),
-  MYSQL_SYSVAR(ft_min_token_size),
-  MYSQL_SYSVAR(ft_num_word_optimize),
-  MYSQL_SYSVAR(ft_sort_pll_degree),
-  MYSQL_SYSVAR(large_prefix),
-  MYSQL_SYSVAR(force_load_corrupted),
-  MYSQL_SYSVAR(locks_unsafe_for_binlog),
-  MYSQL_SYSVAR(lock_wait_timeout),
-  MYSQL_SYSVAR(page_size),
-  MYSQL_SYSVAR(log_buffer_size),
-  MYSQL_SYSVAR(log_file_size),
-  MYSQL_SYSVAR(log_files_in_group),
-  MYSQL_SYSVAR(log_write_ahead_size),
-  MYSQL_SYSVAR(log_group_home_dir),
-  MYSQL_SYSVAR(log_compressed_pages),
-  MYSQL_SYSVAR(max_dirty_pages_pct),
-  MYSQL_SYSVAR(max_dirty_pages_pct_lwm),
-  MYSQL_SYSVAR(adaptive_flushing_lwm),
-  MYSQL_SYSVAR(adaptive_flushing),
-  MYSQL_SYSVAR(flush_sync),
-  MYSQL_SYSVAR(flushing_avg_loops),
-  MYSQL_SYSVAR(max_purge_lag),
-  MYSQL_SYSVAR(max_purge_lag_delay),
-  MYSQL_SYSVAR(old_blocks_pct),
-  MYSQL_SYSVAR(old_blocks_time),
-  MYSQL_SYSVAR(open_files),
-  MYSQL_SYSVAR(optimize_fulltext_only),
-  MYSQL_SYSVAR(rollback_on_timeout),
-  MYSQL_SYSVAR(ft_aux_table),
-  MYSQL_SYSVAR(ft_enable_diag_print),
-  MYSQL_SYSVAR(ft_server_stopword_table),
-  MYSQL_SYSVAR(ft_user_stopword_table),
-  MYSQL_SYSVAR(disable_sort_file_cache),
-  MYSQL_SYSVAR(stats_on_metadata),
-  MYSQL_SYSVAR(stats_sample_pages),
-  MYSQL_SYSVAR(stats_transient_sample_pages),
-  MYSQL_SYSVAR(stats_persistent),
-  MYSQL_SYSVAR(stats_persistent_sample_pages),
-  MYSQL_SYSVAR(stats_auto_recalc),
-  MYSQL_SYSVAR(adaptive_hash_index),
-  MYSQL_SYSVAR(adaptive_hash_index_parts),
-  MYSQL_SYSVAR(stats_method),
-  MYSQL_SYSVAR(replication_delay),
-  MYSQL_SYSVAR(status_file),
-  MYSQL_SYSVAR(strict_mode),
-  MYSQL_SYSVAR(support_xa),
-  MYSQL_SYSVAR(sort_buffer_size),
-  MYSQL_SYSVAR(online_alter_log_max_size),
-  MYSQL_SYSVAR(sync_spin_loops),
-  MYSQL_SYSVAR(spin_wait_delay),
-  MYSQL_SYSVAR(table_locks),
-  MYSQL_SYSVAR(thread_concurrency),
-  MYSQL_SYSVAR(adaptive_max_sleep_delay),
-  MYSQL_SYSVAR(thread_sleep_delay),
-  MYSQL_SYSVAR(autoinc_lock_mode),
-  MYSQL_SYSVAR(version),
-  MYSQL_SYSVAR(use_native_aio),
-  MYSQL_SYSVAR(change_buffering),
-  MYSQL_SYSVAR(change_buffer_max_size),
+  MYBLOCKCHAIN_SYSVAR(fill_factor),
+  MYBLOCKCHAIN_SYSVAR(ft_cache_size),
+  MYBLOCKCHAIN_SYSVAR(ft_total_cache_size),
+  MYBLOCKCHAIN_SYSVAR(ft_result_cache_limit),
+  MYBLOCKCHAIN_SYSVAR(ft_enable_stopword),
+  MYBLOCKCHAIN_SYSVAR(ft_max_token_size),
+  MYBLOCKCHAIN_SYSVAR(ft_min_token_size),
+  MYBLOCKCHAIN_SYSVAR(ft_num_word_optimize),
+  MYBLOCKCHAIN_SYSVAR(ft_sort_pll_degree),
+  MYBLOCKCHAIN_SYSVAR(large_prefix),
+  MYBLOCKCHAIN_SYSVAR(force_load_corrupted),
+  MYBLOCKCHAIN_SYSVAR(locks_unsafe_for_binlog),
+  MYBLOCKCHAIN_SYSVAR(lock_wait_timeout),
+  MYBLOCKCHAIN_SYSVAR(page_size),
+  MYBLOCKCHAIN_SYSVAR(log_buffer_size),
+  MYBLOCKCHAIN_SYSVAR(log_file_size),
+  MYBLOCKCHAIN_SYSVAR(log_files_in_group),
+  MYBLOCKCHAIN_SYSVAR(log_write_ahead_size),
+  MYBLOCKCHAIN_SYSVAR(log_group_home_dir),
+  MYBLOCKCHAIN_SYSVAR(log_compressed_pages),
+  MYBLOCKCHAIN_SYSVAR(max_dirty_pages_pct),
+  MYBLOCKCHAIN_SYSVAR(max_dirty_pages_pct_lwm),
+  MYBLOCKCHAIN_SYSVAR(adaptive_flushing_lwm),
+  MYBLOCKCHAIN_SYSVAR(adaptive_flushing),
+  MYBLOCKCHAIN_SYSVAR(flush_sync),
+  MYBLOCKCHAIN_SYSVAR(flushing_avg_loops),
+  MYBLOCKCHAIN_SYSVAR(max_purge_lag),
+  MYBLOCKCHAIN_SYSVAR(max_purge_lag_delay),
+  MYBLOCKCHAIN_SYSVAR(old_blocks_pct),
+  MYBLOCKCHAIN_SYSVAR(old_blocks_time),
+  MYBLOCKCHAIN_SYSVAR(open_files),
+  MYBLOCKCHAIN_SYSVAR(optimize_fulltext_only),
+  MYBLOCKCHAIN_SYSVAR(rollback_on_timeout),
+  MYBLOCKCHAIN_SYSVAR(ft_aux_table),
+  MYBLOCKCHAIN_SYSVAR(ft_enable_diag_print),
+  MYBLOCKCHAIN_SYSVAR(ft_server_stopword_table),
+  MYBLOCKCHAIN_SYSVAR(ft_user_stopword_table),
+  MYBLOCKCHAIN_SYSVAR(disable_sort_file_cache),
+  MYBLOCKCHAIN_SYSVAR(stats_on_metadata),
+  MYBLOCKCHAIN_SYSVAR(stats_sample_pages),
+  MYBLOCKCHAIN_SYSVAR(stats_transient_sample_pages),
+  MYBLOCKCHAIN_SYSVAR(stats_persistent),
+  MYBLOCKCHAIN_SYSVAR(stats_persistent_sample_pages),
+  MYBLOCKCHAIN_SYSVAR(stats_auto_recalc),
+  MYBLOCKCHAIN_SYSVAR(adaptive_hash_index),
+  MYBLOCKCHAIN_SYSVAR(adaptive_hash_index_parts),
+  MYBLOCKCHAIN_SYSVAR(stats_method),
+  MYBLOCKCHAIN_SYSVAR(replication_delay),
+  MYBLOCKCHAIN_SYSVAR(status_file),
+  MYBLOCKCHAIN_SYSVAR(strict_mode),
+  MYBLOCKCHAIN_SYSVAR(support_xa),
+  MYBLOCKCHAIN_SYSVAR(sort_buffer_size),
+  MYBLOCKCHAIN_SYSVAR(online_alter_log_max_size),
+  MYBLOCKCHAIN_SYSVAR(sync_spin_loops),
+  MYBLOCKCHAIN_SYSVAR(spin_wait_delay),
+  MYBLOCKCHAIN_SYSVAR(table_locks),
+  MYBLOCKCHAIN_SYSVAR(thread_concurrency),
+  MYBLOCKCHAIN_SYSVAR(adaptive_max_sleep_delay),
+  MYBLOCKCHAIN_SYSVAR(thread_sleep_delay),
+  MYBLOCKCHAIN_SYSVAR(autoinc_lock_mode),
+  MYBLOCKCHAIN_SYSVAR(version),
+  MYBLOCKCHAIN_SYSVAR(use_native_aio),
+  MYBLOCKCHAIN_SYSVAR(change_buffering),
+  MYBLOCKCHAIN_SYSVAR(change_buffer_max_size),
 #if defined UNIV_DEBUG || defined UNIV_IBUF_DEBUG
-  MYSQL_SYSVAR(change_buffering_debug),
-  MYSQL_SYSVAR(disable_background_merge),
+  MYBLOCKCHAIN_SYSVAR(change_buffering_debug),
+  MYBLOCKCHAIN_SYSVAR(disable_background_merge),
 #endif /* UNIV_DEBUG || UNIV_IBUF_DEBUG */
-  MYSQL_SYSVAR(random_read_ahead),
-  MYSQL_SYSVAR(read_ahead_threshold),
-  MYSQL_SYSVAR(read_only),
-  MYSQL_SYSVAR(io_capacity),
-  MYSQL_SYSVAR(io_capacity_max),
-  MYSQL_SYSVAR(page_cleaners),
-  MYSQL_SYSVAR(monitor_enable),
-  MYSQL_SYSVAR(monitor_disable),
-  MYSQL_SYSVAR(monitor_reset),
-  MYSQL_SYSVAR(monitor_reset_all),
-  MYSQL_SYSVAR(purge_threads),
-  MYSQL_SYSVAR(purge_batch_size),
+  MYBLOCKCHAIN_SYSVAR(random_read_ahead),
+  MYBLOCKCHAIN_SYSVAR(read_ahead_threshold),
+  MYBLOCKCHAIN_SYSVAR(read_only),
+  MYBLOCKCHAIN_SYSVAR(io_capacity),
+  MYBLOCKCHAIN_SYSVAR(io_capacity_max),
+  MYBLOCKCHAIN_SYSVAR(page_cleaners),
+  MYBLOCKCHAIN_SYSVAR(monitor_enable),
+  MYBLOCKCHAIN_SYSVAR(monitor_disable),
+  MYBLOCKCHAIN_SYSVAR(monitor_reset),
+  MYBLOCKCHAIN_SYSVAR(monitor_reset_all),
+  MYBLOCKCHAIN_SYSVAR(purge_threads),
+  MYBLOCKCHAIN_SYSVAR(purge_batch_size),
 #ifdef UNIV_DEBUG
-  MYSQL_SYSVAR(purge_run_now),
-  MYSQL_SYSVAR(purge_stop_now),
-  MYSQL_SYSVAR(log_checkpoint_now),
-  MYSQL_SYSVAR(buf_flush_list_now),
-  MYSQL_SYSVAR(merge_threshold_set_all_debug),
+  MYBLOCKCHAIN_SYSVAR(purge_run_now),
+  MYBLOCKCHAIN_SYSVAR(purge_stop_now),
+  MYBLOCKCHAIN_SYSVAR(log_checkpoint_now),
+  MYBLOCKCHAIN_SYSVAR(buf_flush_list_now),
+  MYBLOCKCHAIN_SYSVAR(merge_threshold_set_all_debug),
 #endif /* UNIV_DEBUG */
 #if defined UNIV_DEBUG || defined UNIV_PERF_DEBUG
-  MYSQL_SYSVAR(page_hash_locks),
-  MYSQL_SYSVAR(doublewrite_batch_size),
+  MYBLOCKCHAIN_SYSVAR(page_hash_locks),
+  MYBLOCKCHAIN_SYSVAR(doublewrite_batch_size),
 #endif /* defined UNIV_DEBUG || defined UNIV_PERF_DEBUG */
-  MYSQL_SYSVAR(status_output),
-  MYSQL_SYSVAR(status_output_locks),
-  MYSQL_SYSVAR(print_all_deadlocks),
-  MYSQL_SYSVAR(cmp_per_index_enabled),
-  MYSQL_SYSVAR(undo_logs),
-  MYSQL_SYSVAR(max_undo_log_size),
-  MYSQL_SYSVAR(purge_rseg_truncate_frequency),
-  MYSQL_SYSVAR(undo_log_truncate),
-  MYSQL_SYSVAR(rollback_segments),
-  MYSQL_SYSVAR(undo_directory),
-  MYSQL_SYSVAR(undo_tablespaces),
-  MYSQL_SYSVAR(sync_array_size),
-  MYSQL_SYSVAR(compression_failure_threshold_pct),
-  MYSQL_SYSVAR(compression_pad_pct_max),
+  MYBLOCKCHAIN_SYSVAR(status_output),
+  MYBLOCKCHAIN_SYSVAR(status_output_locks),
+  MYBLOCKCHAIN_SYSVAR(print_all_deadlocks),
+  MYBLOCKCHAIN_SYSVAR(cmp_per_index_enabled),
+  MYBLOCKCHAIN_SYSVAR(undo_logs),
+  MYBLOCKCHAIN_SYSVAR(max_undo_log_size),
+  MYBLOCKCHAIN_SYSVAR(purge_rseg_truncate_frequency),
+  MYBLOCKCHAIN_SYSVAR(undo_log_truncate),
+  MYBLOCKCHAIN_SYSVAR(rollback_segments),
+  MYBLOCKCHAIN_SYSVAR(undo_directory),
+  MYBLOCKCHAIN_SYSVAR(undo_tablespaces),
+  MYBLOCKCHAIN_SYSVAR(sync_array_size),
+  MYBLOCKCHAIN_SYSVAR(compression_failure_threshold_pct),
+  MYBLOCKCHAIN_SYSVAR(compression_pad_pct_max),
 #ifdef UNIV_DEBUG
-  MYSQL_SYSVAR(trx_rseg_n_slots_debug),
-  MYSQL_SYSVAR(limit_optimistic_insert_debug),
-  MYSQL_SYSVAR(trx_purge_view_update_only_debug),
-  MYSQL_SYSVAR(fil_make_page_dirty_debug),
-  MYSQL_SYSVAR(saved_page_number_debug),
-  MYSQL_SYSVAR(compress_debug),
-  MYSQL_SYSVAR(disable_resize_buffer_pool_debug),
-  MYSQL_SYSVAR(sync_debug),
+  MYBLOCKCHAIN_SYSVAR(trx_rseg_n_slots_debug),
+  MYBLOCKCHAIN_SYSVAR(limit_optimistic_insert_debug),
+  MYBLOCKCHAIN_SYSVAR(trx_purge_view_update_only_debug),
+  MYBLOCKCHAIN_SYSVAR(fil_make_page_dirty_debug),
+  MYBLOCKCHAIN_SYSVAR(saved_page_number_debug),
+  MYBLOCKCHAIN_SYSVAR(compress_debug),
+  MYBLOCKCHAIN_SYSVAR(disable_resize_buffer_pool_debug),
+  MYBLOCKCHAIN_SYSVAR(sync_debug),
 #endif /* UNIV_DEBUG */
   NULL
 };
 
-mysql_declare_plugin(innobase)
+myblockchain_declare_plugin(innobase)
 {
-  MYSQL_STORAGE_ENGINE_PLUGIN,
+  MYBLOCKCHAIN_STORAGE_ENGINE_PLUGIN,
   &innobase_storage_engine,
   innobase_hton_name,
   plugin_author,
@@ -19384,7 +19384,7 @@ i_s_innodb_sys_tablespaces,
 i_s_innodb_sys_datafiles,
 i_s_innodb_sys_virtual
 
-mysql_declare_plugin_end;
+myblockchain_declare_plugin_end;
 
 /** @brief Initialize the default value of innodb_commit_concurrency.
 
@@ -19400,7 +19400,7 @@ void
 innobase_commit_concurrency_init_default()
 /*======================================*/
 {
-	MYSQL_SYSVAR_NAME(commit_concurrency).def_val
+	MYBLOCKCHAIN_SYSVAR_NAME(commit_concurrency).def_val
 		= innobase_commit_concurrency;
 }
 
@@ -19414,8 +19414,8 @@ void
 innobase_undo_logs_init_default_max()
 /*=================================*/
 {
-	MYSQL_SYSVAR_NAME(undo_logs).max_val
-		= MYSQL_SYSVAR_NAME(undo_logs).def_val
+	MYBLOCKCHAIN_SYSVAR_NAME(undo_logs).max_val
+		= MYBLOCKCHAIN_SYSVAR_NAME(undo_logs).def_val
 		= static_cast<unsigned long>(srv_available_undo_logs);
 }
 
@@ -19519,10 +19519,10 @@ innobase_init_vc_templ(
 
 	/* Acquire innobase_share_mutex to see if table->vc_templ
 	is assigned with its counter part in the share structure */
-	mysql_mutex_lock(&innobase_share_mutex);
+	myblockchain_mutex_lock(&innobase_share_mutex);
 
 	if (table->vc_templ) {
-		mysql_mutex_unlock(&innobase_share_mutex);
+		myblockchain_mutex_unlock(&innobase_share_mutex);
 
 		return;
 	}
@@ -19557,14 +19557,14 @@ innobase_init_vc_templ(
 		static_cast<void*>(table));
 	ut_ad(!ret);
 	table->vc_templ_purge = true;
-	mysql_mutex_unlock(&innobase_share_mutex);
+	myblockchain_mutex_unlock(&innobase_share_mutex);
 }
 
 /** Get the computed value by supplying the base column values.
 @param[in,out]	row		the data row
 @param[in]	col		virtual column
 @param[in]	index		index
-@param[in,out]	my_rec		mysql record to store the data
+@param[in,out]	my_rec		myblockchain record to store the data
 @param[in,out]	local_heap	heap memory for processing large data etc.
 @param[in,out]	heap		memory heap that copies the actual index row
 @param[in]	in_purge	whether this is called by purge
@@ -19582,7 +19582,7 @@ innobase_get_computed_value(
 {
 	byte		rec_buf1[REC_VERSION_56_MAX_INDEX_COL_LEN];
 	byte		rec_buf2[REC_VERSION_56_MAX_INDEX_COL_LEN];
-	byte*		mysql_rec;
+	byte*		myblockchain_rec;
 	byte*		buf;
 	dfield_t*	field;
 	ulint		len;
@@ -19590,7 +19590,7 @@ innobase_get_computed_value(
 
 	ut_ad(index->table->vc_templ);
 
-	const mysql_row_templ_t*
+	const myblockchain_row_templ_t*
 			vctempl =  index->table->vc_templ->vtempl[
 				index->table->vc_templ->n_col + col->v_pos];
 	if (!heap || index->table->vc_templ->rec_len
@@ -19600,19 +19600,19 @@ innobase_get_computed_value(
 		}
 
 		if (!my_rec) {
-			mysql_rec = static_cast<byte*>(mem_heap_alloc(
+			myblockchain_rec = static_cast<byte*>(mem_heap_alloc(
 				*local_heap, index->table->vc_templ->rec_len));
 		} else {
-			mysql_rec = my_rec;
+			myblockchain_rec = my_rec;
 		}
 
 		buf = static_cast<byte*>(mem_heap_alloc(
 				*local_heap, index->table->vc_templ->rec_len));
 	} else {
 		if (!my_rec) {
-			mysql_rec = rec_buf1;
+			myblockchain_rec = rec_buf1;
 		} else {
-			mysql_rec = my_rec;
+			myblockchain_rec = my_rec;
 		}
 
 		buf = rec_buf2;
@@ -19622,7 +19622,7 @@ innobase_get_computed_value(
 		dict_col_t*			base_col = col->base_col[i];
 		const dfield_t*			row_field;
 		ulint				col_no = base_col->ind;
-		const mysql_row_templ_t*	templ
+		const myblockchain_row_templ_t*	templ
 			= index->table->vc_templ->vtempl[col_no];
 		const byte*			data;
 
@@ -19642,25 +19642,25 @@ innobase_get_computed_value(
 		}
 
 		if (len == UNIV_SQL_NULL) {
-                        mysql_rec[templ->mysql_null_byte_offset]
-                                |= (byte) templ->mysql_null_bit_mask;
-                        memcpy(mysql_rec + templ->mysql_col_offset,
+                        myblockchain_rec[templ->myblockchain_null_byte_offset]
+                                |= (byte) templ->myblockchain_null_bit_mask;
+                        memcpy(myblockchain_rec + templ->myblockchain_col_offset,
                                static_cast<const byte*>(
 					index->table->vc_templ->default_rec
-					+ templ->mysql_col_offset),
-                               templ->mysql_col_len);
+					+ templ->myblockchain_col_offset),
+                               templ->myblockchain_col_len);
                 } else {
 
-			row_sel_field_store_in_mysql_format(
-				mysql_rec + templ->mysql_col_offset,
+			row_sel_field_store_in_myblockchain_format(
+				myblockchain_rec + templ->myblockchain_col_offset,
 				templ, index, templ->clust_rec_field_no,
 				(const byte*)data, len);
 
-			if (templ->mysql_null_bit_mask) {
+			if (templ->myblockchain_null_bit_mask) {
 				/* It is a nullable column with a
 				non-NULL value */
-				mysql_rec[templ->mysql_null_byte_offset]
-					&= ~(byte) templ->mysql_null_bit_mask;
+				myblockchain_rec[templ->myblockchain_null_byte_offset]
+					&= ~(byte) templ->myblockchain_null_bit_mask;
 			}
 		}
 	}
@@ -19674,41 +19674,41 @@ innobase_get_computed_value(
 			byte*   blob_mem = static_cast<byte*>(
 				mem_heap_alloc(heap, max_len));
 
-			row_mysql_store_blob_ref(
-				mysql_rec + vctempl->mysql_col_offset,
-				vctempl->mysql_col_len, blob_mem, max_len);
+			row_myblockchain_store_blob_ref(
+				myblockchain_rec + vctempl->myblockchain_col_offset,
+				vctempl->myblockchain_col_len, blob_mem, max_len);
                 }
 
 		handler::my_eval_gcolumn_expr(
 			current_thd, false, index->table->vc_templ->db_name,
 			index->table->vc_templ->tb_name, 1ULL << col->m_col.ind,
-			(uchar *)mysql_rec);
+			(uchar *)myblockchain_rec);
         }
 
 	else {
 		handler::my_eval_gcolumn_expr(
 			current_thd, index->table->vc_templ->db_name,
 			index->table->vc_templ->tb_name, 1ULL << col->m_col.ind,
-			(uchar *)mysql_rec);
+			(uchar *)myblockchain_rec);
 	}
 
-	/* we just want to store the data in passed in MySQL record */
+	/* we just want to store the data in passed in MyBlockchain record */
 	if (my_rec) {
 		return(NULL);
 	}
 
-	if (vctempl->mysql_null_bit_mask
-	    && (mysql_rec[vctempl->mysql_null_byte_offset]
-	        & vctempl->mysql_null_bit_mask)) {
+	if (vctempl->myblockchain_null_bit_mask
+	    && (myblockchain_rec[vctempl->myblockchain_null_byte_offset]
+	        & vctempl->myblockchain_null_bit_mask)) {
 		dfield_set_null(field);
 		field->type.prtype |= DATA_VIRTUAL;
 		return(field);
 	}
 
-	row_mysql_store_col_in_innobase_format(
+	row_myblockchain_store_col_in_innobase_format(
 		field, buf,
-		TRUE, mysql_rec + vctempl->mysql_col_offset,
-		vctempl->mysql_col_len, dict_table_is_comp(index->table));
+		TRUE, myblockchain_rec + vctempl->myblockchain_col_offset,
+		vctempl->myblockchain_col_len, dict_table_is_comp(index->table));
 	field->type.prtype |= DATA_VIRTUAL;
 
 	/* If this is a prefix index, we only need a portion of the field */
@@ -19730,7 +19730,7 @@ innobase_get_computed_value(
 }
 
 /** Attempt to push down an index condition.
-@param[in] keyno MySQL key number
+@param[in] keyno MyBlockchain key number
 @param[in] idx_cond Index condition to be checked
 @return Part of idx_cond which the handler will not evaluate */
 
@@ -19765,7 +19765,7 @@ ib_senderrf(
 /*========*/
 	THD*		thd,		/*!< in/out: session */
 	ib_log_level_t	level,		/*!< in: warning level */
-	ib_uint32_t	code,		/*!< MySQL error code */
+	ib_uint32_t	code,		/*!< MyBlockchain error code */
 	...)				/*!< Args */
 {
 	va_list		args;
@@ -19857,7 +19857,7 @@ ib_errf(
 /*====*/
 	THD*		thd,		/*!< in/out: session */
 	ib_log_level_t	level,		/*!< in: warning level */
-	ib_uint32_t	code,		/*!< MySQL error code */
+	ib_uint32_t	code,		/*!< MyBlockchain error code */
 	const char*	format,		/*!< printf format */
 	...)				/*!< Args */
 {
@@ -19917,7 +19917,7 @@ const char*	TROUBLESHOOT_DATADICT_MSG =
 	" for how to resolve the issue.";
 
 const char*	BUG_REPORT_MSG =
-	"Submit a detailed bug report to http://bugs.mysql.com";
+	"Submit a detailed bug report to http://bugs.myblockchain.com";
 
 const char*	FORCE_RECOVERY_MSG =
 	"Please refer to " REFMAN "forcing-innodb-recovery.html"

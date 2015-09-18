@@ -48,7 +48,7 @@ int64 Show_variable_query_extractor::get_variable_value(
         &extractor, &Show_variable_query_extractor::extract_variable));
 
   /*
-    Note: Because MySQL uses the C escape syntax in strings (for example, '\n'
+    Note: Because MyBlockchain uses the C escape syntax in strings (for example, '\n'
     to represent newline), you must double any '\' that you use in your LIKE
     strings. For example, to search for '\n', specify it as '\\n'.To search for
     '\', specify it as '\\\\' (the backslashes are stripped once by the parser

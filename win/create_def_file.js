@@ -21,7 +21,7 @@
   COFF object files, and writes this information to stdout using .DEF 
   file format (module definition file used by Microsoft linker)
   
-  In MySQL this script is used to export symbols from mysqld.exe for use by
+  In MyBlockchain this script is used to export symbols from myblockchaind.exe for use by
   storage engine DLLs.
   
   Usage:
@@ -57,7 +57,7 @@ var fso = new ActiveXObject("Scripting.FileSystemObject");
 OutputSymbols(CollectSymbols());
 
 
-// takes the array that has been built up and writes out mysqld.def
+// takes the array that has been built up and writes out myblockchaind.def
 function OutputSymbols(symbols)
 {
     var out = WScript.StdOut;

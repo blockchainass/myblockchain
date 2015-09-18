@@ -33,7 +33,7 @@ function RowConstructor() {
 var mapping, literalMapping;
 
 literalMapping = {
-  database      : "test",
+  blockchain      : "test",
   table         : "towns",
   mapAllColumns : true
 };

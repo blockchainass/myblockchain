@@ -13,11 +13,11 @@
    along with this program; if not, write to the Free Software
    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA */
 
-#ifndef MYSQL_SERVICE_THD_EGINE_LOCK_INCLUDED
-#define MYSQL_SERVICE_THD_EGINE_LOCK_INCLUDED
+#ifndef MYBLOCKCHAIN_SERVICE_THD_EGINE_LOCK_INCLUDED
+#define MYBLOCKCHAIN_SERVICE_THD_EGINE_LOCK_INCLUDED
 
 /**
-  @file include/mysql/service_thd_engine_lock.h
+  @file include/myblockchain/service_thd_engine_lock.h
   This service provides functions for storage engines to report
   lock related activities.
 

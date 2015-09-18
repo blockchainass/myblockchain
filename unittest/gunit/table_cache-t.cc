@@ -20,7 +20,7 @@
 
 #include "table_cache.h"
 
-#include "mysqld_thd_manager.h"
+#include "myblockchaind_thd_manager.h"
 #include "ha_example.h"
 
 /*
@@ -762,7 +762,7 @@ TEST_F(TableCacheDoubleCacheDeathTest, ManagerLockAndUnlock)
 
   cache_1->assert_owner();
   cache_2->assert_owner();
-  mysql_mutex_assert_owner(&LOCK_open);
+  myblockchain_mutex_assert_owner(&LOCK_open);
 
   // Locks should be unlocked after we call unlock method
   table_cache_manager.unlock_all_and_tdc();

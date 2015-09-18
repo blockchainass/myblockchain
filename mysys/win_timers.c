@@ -232,7 +232,7 @@ my_timer_initialize(void)
     goto err;
   }
 
-  if (mysql_thread_create(key_thread_timer_notifier, &timer_notify_thread, 0,
+  if (myblockchain_thread_create(key_thread_timer_notifier, &timer_notify_thread, 0,
                           timer_notify_thread_func, 0))
   {
     my_message_local(ERROR_LEVEL,

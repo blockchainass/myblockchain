@@ -13,7 +13,7 @@
    along with this program; if not, write to the Free Software
    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA */
 
-/* Test av heap-database */
+/* Test av heap-blockchain */
 /* Programmet skapar en heap-databas. Till denna skrivs ett antal poster.
    Databasen st{ngs. D{refter |ppnas den p} nytt och en del av posterna
    raderas.
@@ -141,7 +141,7 @@ int main(int argc, char **argv)
   my_end(MY_GIVE_INFO);
   return(0);
 err:
-  printf("got error: %d when using heap-database\n",my_errno);
+  printf("got error: %d when using heap-blockchain\n",my_errno);
   return(1);
 } /* main */
 

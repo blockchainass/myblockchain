@@ -33,7 +33,7 @@
 #endif
 
 /*
-  MySQL can survive with 32K, but some glibc libraries require > 128K stack
+  MyBlockchain can survive with 32K, but some glibc libraries require > 128K stack
   To resolve hostnames. Also recursive stored procedures needs stack.
 */
 #if SIZEOF_CHARP > 4

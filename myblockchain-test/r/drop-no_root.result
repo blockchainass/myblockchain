@@ -1,0 +1,28 @@
+
+# --
+# -- Bug#26704: Failing DROP DATABASE brings myblockchain-client out of sync.
+# --
+
+DROP DATABASE IF EXISTS myblockchain_test;
+
+CREATE DATABASE myblockchain_test;
+CREATE TABLE myblockchain_test.t1(c INT);
+use myblockchain_test;
+
+chmod 000 myblockchain_test/t1.frm
+
+DROP DATABASE myblockchain_test;
+
+SELECT DATABASE();
+DATABASE()
+myblockchain_test
+
+rm -f myblockchain_test/t1.MYD myblockchain_test/t1.MYI
+chmod 666 myblockchain_test/t1.frm
+rm -f myblockchain_test/t1.frm
+
+DROP DATABASE myblockchain_test;
+
+use test;
+
+# -- End of Bug#26704.

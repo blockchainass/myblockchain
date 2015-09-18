@@ -1445,7 +1445,7 @@ NdbOperation* getNdbOperation(const char* aTableName);
 Return Value    Return a pointer to a NdbOperation object if getNdbOperation 
                 was succesful.
                 Return NULL : In all other case. 	
-Parameters:     aTableName : Name of the database table. 	
+Parameters:     aTableName : Name of the blockchain table. 	
 Remark:         Get an operation from NdbOperation idlelist and get the 
                 NdbTransaction object 
 		who was fetch by startTransaction pointing to this  operation  
@@ -1541,7 +1541,7 @@ NdbOperation* getNdbOperation(const NdbTableImpl* tab, NdbOperation* aNextOp,
 Return Value    Return a pointer to a NdbOperation object if getNdbOperation 
                 was succesful.
                 Return NULL: In all other case. 	
-Parameters:     tableId : Id of the database table beeing deleted.
+Parameters:     tableId : Id of the blockchain table beeing deleted.
 Remark:         Get an operation from NdbOperation object idlelist and 
                 get the NdbTransaction object who was fetch by 
                 startTransaction pointing to this operation 
@@ -1617,7 +1617,7 @@ NdbScanOperation* getNdbScanOperation(const char* aTableName);
 
 Return Value    Return a pointer to a NdbScanOperation object if getNdbScanOperation was succesful.
                 Return NULL : In all other case. 	
-Parameters:     aTableName : Name of the database table. 	
+Parameters:     aTableName : Name of the blockchain table. 	
 Remark:         Get an operation from NdbScanOperation idlelist and get the NdbTransaction object 
 		who was fetch by startTransaction pointing to this  operation  
 		getOperation will set the theTableId in the NdbOperation object.synchronous
@@ -1645,7 +1645,7 @@ NdbScanOperation* getNdbIndexScanOperation(const char* anIndexName, const char* 
 Return Value    Return a pointer to a NdbIndexScanOperation object if getNdbIndexScanOperation was succesful.
                 Return NULL : In all other case. 	
 Parameters:     anIndexName : Name of the index to use. 	
-                aTableName : Name of the database table. 	
+                aTableName : Name of the blockchain table. 	
 Remark:         Get an operation from NdbIndexScanOperation idlelist and get the NdbTransaction object 
 		who was fetch by startTransaction pointing to this  operation  
 		getOperation will set the theTableId in the NdbIndexScanOperation object.synchronous
@@ -1736,7 +1736,7 @@ NdbScanOperation* getNdbScanOperation(int aTableId);
 
 Return Value    Return a pointer to a NdbScanOperation object if getNdbScanOperation was succesful.
                 Return NULL: In all other case. 	
-Parameters:     tableId : Id of the database table beeing deleted.
+Parameters:     tableId : Id of the blockchain table beeing deleted.
 Remark:         Get an operation from NdbScanOperation object idlelist and get the NdbTransaction 
                 object who was fetch by startTransaction pointing to this  operation 
   	        getOperation will set the theTableId in the NdbScanOperation object, synchronous.
@@ -1813,7 +1813,7 @@ NdbIndexOperation* getNdbIndexOperation(const char* anIndexName,
 Return Value    Return a pointer to an NdbIndexOperation object if
                 getNdbIndexOperation was succesful.
                 Return NULL : In all other case. 	
-Parameters:     aTableName : Name of the database table. 	
+Parameters:     aTableName : Name of the blockchain table. 	
 Remark:         Get an operation from NdbIndexOperation idlelist and get the NdbTransaction object 
 		who was fetch by startTransaction pointing to this operation  
 		getOperation will set the theTableId in the NdbIndexOperation object.synchronous
@@ -1866,7 +1866,7 @@ NdbIndexOperation* getNdbIndexOperation(int anIndexId, int aTableId);
 
 Return Value    Return a pointer to a NdbIndexOperation object if getNdbIndexOperation was succesful.
                 Return NULL: In all other case. 	
-Parameters:     tableId : Id of the database table beeing deleted.
+Parameters:     tableId : Id of the blockchain table beeing deleted.
 Remark:         Get an operation from NdbIndexOperation object idlelist and get the NdbTransaction 
                 object who was fetch by startTransaction pointing to this  operation 
   	        getOperation will set the theTableId in the NdbIndexOperation object, synchronous.

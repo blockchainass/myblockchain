@@ -59,7 +59,7 @@ ha_rows mi_records_in_range(MI_INFO *info, int inx,
     DBUG_RETURN(HA_POS_ERROR);
   info->update&= (HA_STATE_CHANGED+HA_STATE_ROW_CHANGED);
   if (info->s->concurrent_insert)
-    mysql_rwlock_rdlock(&info->s->key_root_lock[inx]);
+    myblockchain_rwlock_rdlock(&info->s->key_root_lock[inx]);
 
   switch(info->s->keyinfo[inx].key_alg){
   case HA_KEY_ALG_RTREE:
@@ -106,7 +106,7 @@ ha_rows mi_records_in_range(MI_INFO *info, int inx,
   }
 
   if (info->s->concurrent_insert)
-    mysql_rwlock_unlock(&info->s->key_root_lock[inx]);
+    myblockchain_rwlock_unlock(&info->s->key_root_lock[inx]);
   fast_mi_writeinfo(info);
 
   DBUG_PRINT("info",("records: %ld",(ulong) (res)));

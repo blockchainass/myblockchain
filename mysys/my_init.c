@@ -18,8 +18,8 @@
 #include "my_static.h"
 #include "mysys_err.h"
 #include "m_string.h"
-#include "mysql/psi/mysql_stage.h"
-#include "mysql/psi/mysql_file.h"
+#include "myblockchain/psi/myblockchain_stage.h"
+#include "myblockchain/psi/myblockchain_file.h"
 
 #ifdef HAVE_SYS_RESOURCE_H
 #include <sys/resource.h>
@@ -39,8 +39,8 @@ static void my_win_init();
 
 my_bool my_init_done= FALSE;
 ulong  my_thread_stack_size= 65536;
-MYSQL_FILE *mysql_stdin= NULL;
-static MYSQL_FILE instrumented_stdin;
+MYBLOCKCHAIN_FILE *myblockchain_stdin= NULL;
+static MYBLOCKCHAIN_FILE instrumented_stdin;
 
 
 static ulong atoi_octal(const char *str)
@@ -109,7 +109,7 @@ my_bool my_init()
 
   instrumented_stdin.m_file= stdin;
   instrumented_stdin.m_psi= NULL;       /* not yet instrumented */
-  mysql_stdin= & instrumented_stdin;
+  myblockchain_stdin= & instrumented_stdin;
 
   if (my_thread_global_init())
     return TRUE;
@@ -294,14 +294,14 @@ static void win_init_time()
 
 
 /*
-  Open HKEY_LOCAL_MACHINE\SOFTWARE\MySQL and set any strings found
+  Open HKEY_LOCAL_MACHINE\SOFTWARE\MyBlockchain and set any strings found
   there as environment variables
 */
 static void win_init_registry()
 {
   HKEY key_handle;
 
-  if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, (LPCTSTR)"SOFTWARE\\MySQL",
+  if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, (LPCTSTR)"SOFTWARE\\MyBlockchain",
                     0, KEY_READ, &key_handle) == ERROR_SUCCESS)
   {
     LONG ret;
@@ -544,22 +544,22 @@ void my_init_mysys_psi_keys()
   int count;
 
   count= sizeof(all_mysys_mutexes)/sizeof(all_mysys_mutexes[0]);
-  mysql_mutex_register(category, all_mysys_mutexes, count);
+  myblockchain_mutex_register(category, all_mysys_mutexes, count);
 
   count= sizeof(all_mysys_rwlocks)/sizeof(all_mysys_rwlocks[0]);
-  mysql_rwlock_register(category, all_mysys_rwlocks, count);
+  myblockchain_rwlock_register(category, all_mysys_rwlocks, count);
 
   count= sizeof(all_mysys_conds)/sizeof(all_mysys_conds[0]);
-  mysql_cond_register(category, all_mysys_conds, count);
+  myblockchain_cond_register(category, all_mysys_conds, count);
 
   count= sizeof(all_mysys_files)/sizeof(all_mysys_files[0]);
-  mysql_file_register(category, all_mysys_files, count);
+  myblockchain_file_register(category, all_mysys_files, count);
 
   count= array_elements(all_mysys_stages);
-  mysql_stage_register(category, all_mysys_stages, count);
+  myblockchain_stage_register(category, all_mysys_stages, count);
 
   count= array_elements(all_mysys_memory);
-  mysql_memory_register(category, all_mysys_memory, count);
+  myblockchain_memory_register(category, all_mysys_memory, count);
 }
 #endif /* HAVE_PSI_INTERFACE */
 

@@ -15,8 +15,8 @@
    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifndef MYSQL_CONNECTION_OPTIONS_INCLUDED
-#define MYSQL_CONNECTION_OPTIONS_INCLUDED
+#ifndef MYBLOCKCHAIN_CONNECTION_OPTIONS_INCLUDED
+#define MYBLOCKCHAIN_CONNECTION_OPTIONS_INCLUDED
 
 #include "client_priv.h"
 #include <vector>
@@ -32,7 +32,7 @@ namespace Base{
 namespace Options{
 
 /**
-  Options provider providing options to specify connection to MySQL server.
+  Options provider providing options to specify connection to MyBlockchain server.
  */
 class Mysql_connection_options
   : public Composite_options_provider, I_connection_factory
@@ -40,7 +40,7 @@ class Mysql_connection_options
 private:
   /**
     Options provider enclosing options related to SSL settings of connection
-    to MySQL server.
+    to MyBlockchain server.
    */
   class Ssl_options : public Abstract_options_provider
   {
@@ -52,9 +52,9 @@ public:
     void create_options();
 
     /**
-      Applies option values to MYSQL connection structure.
+      Applies option values to MYBLOCKCHAIN connection structure.
      */
-    void apply_for_connection(MYSQL* connection);
+    void apply_for_connection(MYBLOCKCHAIN* connection);
 
 private:
     void option_callback(char* argument __attribute__((unused)));
@@ -63,7 +63,7 @@ private:
 
 public:
   /**
-    Constructs new MySQL server connection options provider. Calling this
+    Constructs new MyBlockchain server connection options provider. Calling this
     function from multiple threads simultaneously is not thread safe.
     @param program Pointer to main program class.
    */
@@ -77,19 +77,19 @@ public:
   void create_options();
 
   /**
-    Provides new connection to MySQL database server based on option values.
+    Provides new connection to MyBlockchain blockchain server based on option values.
     Implementation of I_connection_factory interface.
    */
-  MYSQL* create_connection();
+  MYBLOCKCHAIN* create_connection();
 
   /**
-    Retrieves charset that will be used in new MySQL connections.. Can be NULL
+    Retrieves charset that will be used in new MyBlockchain connections.. Can be NULL
     if none was set explicitly.
    */
   CHARSET_INFO* get_current_charset() const;
 
   /**
-    Sets charset that will be used in new MySQL connections.
+    Sets charset that will be used in new MyBlockchain connections.
    */
   void set_current_charset(CHARSET_INFO* charset);
 
@@ -101,22 +101,22 @@ private:
   const char* get_null_or_string(Nullable<std::string>& maybeString);
 
   /**
-    Prints database connection error and exits program.
+    Prints blockchain connection error and exits program.
    */
-  void db_error(MYSQL* connection, const char* when);
+  void db_error(MYBLOCKCHAIN* connection, const char* when);
 #ifdef _WIN32
   void pipe_protocol_callback(char* not_used __attribute__((unused)));
 #endif
   void protocol_callback(char* not_used __attribute__((unused)));
   void secure_auth_callback(char* argument __attribute__((unused)));
 
-  static bool mysql_inited;
+  static bool myblockchain_inited;
 
   /*
    List of created connections. As we don't have memory management for
    C structs we must clear it by options provider destruction.
    */
-  std::vector<MYSQL*> m_allocated_connections;
+  std::vector<MYBLOCKCHAIN*> m_allocated_connections;
   my_boost::mutex m_connection_mutex;
   Ssl_options m_ssl_options_provider;
   Abstract_program *m_program;
@@ -124,8 +124,8 @@ private:
   uint32 m_protocol;
   Nullable<std::string> m_bind_addr;
   Nullable<std::string> m_host;
-  uint32 m_mysql_port;
-  Nullable<std::string> m_mysql_unix_port;
+  uint32 m_myblockchain_port;
+  Nullable<std::string> m_myblockchain_unix_port;
 #if defined (_WIN32) && !defined (EMBEDDED_LIBRARY)
   Nullable<std::string> m_shared_memory_base_name;
 #endif

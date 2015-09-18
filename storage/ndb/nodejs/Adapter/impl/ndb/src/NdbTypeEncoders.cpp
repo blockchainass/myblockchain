@@ -44,7 +44,7 @@ using namespace v8;
 
 extern void freeBufferContentsFromJs(char *, void *);  // in BlobHandler.cpp
 
-Handle<String>    /* keys of MySQLTime (Adapter/impl/common/MySQLTime.js) */
+Handle<String>    /* keys of MyBlockchainTime (Adapter/impl/common/MyBlockchainTime.js) */
   K_sign, 
   K_year, 
   K_month, 
@@ -200,10 +200,10 @@ Handle<Value> encoderWrite(const Arguments & args) {
 struct encoder_stats_t {
   unsigned read_strings_externalized; // JS Strings that reference ASCII or UTF16LE buffers
   unsigned read_strings_created; // JS Strings created from UTF-8 representation
-  unsigned read_strings_recoded; // Reads recoded from MySQL Charset to UTF-8
+  unsigned read_strings_recoded; // Reads recoded from MyBlockchain Charset to UTF-8
   unsigned externalized_text_writes;  // String reused as TEXT buffer (no copying)
   unsigned direct_writes;  // ASCII/UTF16LE/UTF8 written directly to DB buffer
-  unsigned recode_writes;  // Writes recoded from UTF8 to MySQL Charset
+  unsigned recode_writes;  // Writes recoded from UTF8 to MyBlockchain Charset
 } stats;
 
 
@@ -791,8 +791,8 @@ Handle<Value> varbinaryWriter(const NdbDictionary::Column * col,
 
 /** 
  * V8 can work with two kinds of external strings: Strict ASCII and UTF-16.
- * But working with external UTF-16 depends on MySQL's UTF-16-LE charset, 
- * which is available only in MySQL 5.6 and higher. 
+ * But working with external UTF-16 depends on MyBlockchain's UTF-16-LE charset, 
+ * which is available only in MyBlockchain 5.6 and higher. 
  * 
  * (A) For any strict ASCII string, even if its character set is latin1 or
  *     UTF-8 (i.e. it could have non-ascii characters, but it doesn't), we 
@@ -1252,7 +1252,7 @@ Handle<Value> varcharWriter(const NdbDictionary::Column * col,
 
 /******  Temporal types ********/
 
-/* TimeHelper defines a C structure for managing parts of a MySQL temporal type
+/* TimeHelper defines a C structure for managing parts of a MyBlockchain temporal type
    and is able to read and write a JavaScript object that handles that date
    with no loss of precision.
 */
@@ -1299,15 +1299,15 @@ Handle<Value> TimeHelper::toJs() {
   return scope.Close(obj);
 }
 
-TimeHelper::TimeHelper(Handle<Value> mysqlTime) :
+TimeHelper::TimeHelper(Handle<Value> myblockchainTime) :
   sign(+1), valid(false), 
   year(0), month(0), day(0), hour(0), minute(0), second(0), microsec(0)
 {
   HandleScope scope;
   int nkeys = 0;
 
-  if(mysqlTime->IsObject()) {
-    Local<Object> obj = mysqlTime->ToObject();
+  if(myblockchainTime->IsObject()) {
+    Local<Object> obj = myblockchainTime->ToObject();
     if(obj->Has(K_valid) && ! (obj->Get(K_valid)->BooleanValue())) {
       return; // return with this.valid still set to false.
     }
@@ -1365,7 +1365,7 @@ Handle<Value> TimestampWriter(const NdbDictionary::Column * col,
   bool valid = value->IsDate();
   if(valid) {
     dval = Date::Cast(*value)->NumberValue() / 1000;
-    valid = (dval >= 0);   // MySQL does not accept dates before 1970
+    valid = (dval >= 0);   // MyBlockchain does not accept dates before 1970
     *tpos = static_cast<uint32_t>(dval);
   }
   return valid ? writerOK : K_22007_InvalidDatetime;
@@ -1396,7 +1396,7 @@ Handle<Value> Timestamp2Writer(const NdbDictionary::Column * col,
     timeMilliseconds %= 1000;
     pack_bigendian(timeSeconds, buffer+offset, 4);
     writeFraction(col, timeMilliseconds * 1000, buffer+offset+4);
-    valid = (timeSeconds >= 0);   // MySQL does not accept dates before 1970
+    valid = (timeSeconds >= 0);   // MyBlockchain does not accept dates before 1970
   }
   return valid ? writerOK : K_22007_InvalidDatetime;
 }
@@ -1438,7 +1438,7 @@ Handle<Value> DatetimeWriter(const NdbDictionary::Column * col,
 
   The packed datetime2 integer part is:
    
-  1 bit  sign (1= non-negative, 0= negative)     [ALWAYS POSITIVE IN MYSQL 5.6]
+  1 bit  sign (1= non-negative, 0= negative)     [ALWAYS POSITIVE IN MYBLOCKCHAIN 5.6]
  17 bits year*13+month  (year 0-9999, month 1-12)
   5 bits day            (0-31)
   5 bits hour           (0-23)

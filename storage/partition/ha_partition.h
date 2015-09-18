@@ -63,7 +63,7 @@ private:
     Since the partition handler is a handler on top of other handlers, it
     is necessary to keep information about what the underlying handler
     characteristics is. It is not possible to keep any handler instances
-    for this since the MySQL Server sometimes allocating the handler object
+    for this since the MyBlockchain Server sometimes allocating the handler object
     without freeing them.
   */
   ulong m_low_byte_first;
@@ -127,7 +127,7 @@ private:
   /*
     Variables for lock structures.
   */
-  THR_LOCK_DATA lock;                   /* MySQL lock */
+  THR_LOCK_DATA lock;                   /* MyBlockchain lock */
 
   /** For optimizing ha_start_bulk_insert calls */
   MY_BITMAP m_bulk_insert_started;
@@ -156,7 +156,7 @@ public:
     -------------------------------------------------------------------------
     Object create/delete method. The normal called when a table object
     exists. There is also a method to create the handler object with only
-    partition information. This is used from mysql_create_table when the
+    partition information. This is used from myblockchain_create_table when the
     table is to be created and the engine type is deduced to be the
     partition handler.
     -------------------------------------------------------------------------
@@ -788,7 +788,7 @@ public:
     (MyISAM)
 
     HA_CAN_SQL_HANDLER:
-    Can the HANDLER interface in the MySQL API be used towards this
+    Can the HANDLER interface in the MyBlockchain API be used towards this
     storage engine.
     (MyISAM, InnoDB)
 
@@ -832,7 +832,7 @@ public:
     here.
 
     part is the key part to check. First key part is 0
-    If all_parts it's set, MySQL want to know the flags for the combined
+    If all_parts it's set, MyBlockchain want to know the flags for the combined
     index up to and including 'part'.
 
     HA_READ_NEXT:

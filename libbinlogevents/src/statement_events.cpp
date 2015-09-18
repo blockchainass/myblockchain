@@ -36,7 +36,7 @@ Query_event::Query_event(Log_event_type type_arg)
 }
 
 /**
-  The constructor used by MySQL master to create a query event, to be
+  The constructor used by MyBlockchain master to create a query event, to be
   written to the binary log.
 */
 Query_event::Query_event(const char* query_arg, const char* catalog_arg,
@@ -59,7 +59,7 @@ Query_event::Query_event(const char* query_arg, const char* catalog_arg,
   auto_increment_increment(static_cast<uint16_t>(auto_increment_increment_arg)),
   auto_increment_offset(static_cast<uint16_t>(auto_increment_offset_arg)),
   time_zone_len(0), lc_time_names_number(number),
-  charset_database_number(0),
+  charset_blockchain_number(0),
   table_map_for_update(table_map_for_update_arg),
   master_data_written(0), mts_accessed_dbs(0)
 {
@@ -116,7 +116,7 @@ Query_event::Query_event(const char* buf, unsigned int event_len,
   flags2_inited(0), sql_mode_inited(0), charset_inited(0),
   auto_increment_increment(1), auto_increment_offset(1),
   time_zone_len(0), catalog_len(0), lc_time_names_number(0),
-  charset_database_number(0), table_map_for_update(0), master_data_written(0),
+  charset_blockchain_number(0), table_map_for_update(0), master_data_written(0),
   explicit_defaults_ts(TERNARY_UNSET),
   mts_accessed_dbs(OVER_MAX_DBS_IN_EVENT_MTS)
 {
@@ -191,11 +191,11 @@ Query_event::Query_event(const char* buf, unsigned int event_len,
   }
   /*
     We have parsed everything we know in the post header for QUERY_EVENT,
-    the rest of post header is either comes from older version MySQL or
+    the rest of post header is either comes from older version MyBlockchain or
     dedicated to derived events (e.g. Execute_load_query...)
   */
 
-  /* variable-part: the status vars; only in MySQL 5.0  */
+  /* variable-part: the status vars; only in MyBlockchain 5.0  */
   start= (Log_event_header::Byte*) (buf + post_header_len);
   end= (const Log_event_header::Byte*) (start + status_vars_len);
   for (const Log_event_header::Byte* pos= start; pos < end;)
@@ -261,8 +261,8 @@ Query_event::Query_event(const char* buf, unsigned int event_len,
       break;
     case Q_CHARSET_DATABASE_CODE:
       CHECK_SPACE(pos, end, 2);
-      memcpy(&charset_database_number, pos, sizeof(lc_time_names_number));
-      charset_database_number= le16toh(charset_database_number);
+      memcpy(&charset_blockchain_number, pos, sizeof(lc_time_names_number));
+      charset_blockchain_number= le16toh(charset_blockchain_number);
       pos+= 2;
       break;
     case Q_TABLE_MAP_FOR_UPDATE_CODE:
@@ -332,7 +332,7 @@ break;
       {
         #ifndef DBUG_OFF
         /*
-          This is specific to mysql test run on the server
+          This is specific to myblockchain test run on the server
           for the keyword "query_log_event_mts_corrupt_db_names"
         */
         if (binary_log_debug::debug_query_mts_corrupt_db_names)
@@ -547,7 +547,7 @@ err:
 }
 
 /**
-  Constructor receives a packet from the MySQL master or the binary
+  Constructor receives a packet from the MyBlockchain master or the binary
   log and decodes it to create an Intvar_event.
   Written every time a statement uses an AUTO_INCREMENT column or the
   LAST_INSERT_ID() function; precedes other events for the statement.

@@ -144,7 +144,7 @@ enum options_mc {
 static struct my_option my_long_options[] =
 {
   {"analyze", 'a',
-   "Analyze distribution of keys. Will make some joins in MySQL faster. You can check the calculated distribution.",
+   "Analyze distribution of keys. Will make some joins in MyBlockchain faster. You can check the calculated distribution.",
    0, 0, 0, GET_NO_ARG, NO_ARG, 0, 0, 0, 0, 0, 0},
   {"block-search", 'b',
    "No help available.",
@@ -429,7 +429,7 @@ static void usage(void)
 
   puts("Other actions:\n\
   -a, --analyze	      Analyze distribution of keys. Will make some joins in\n\
-		      MySQL faster.  You can check the calculated distribution\n\
+		      MyBlockchain faster.  You can check the calculated distribution\n\
 		      by using '--description --verbose table_name'.\n\
   --stats_method=name Specifies how index statistics collection code should\n\
                       treat NULLs. Possible values of name are \"nulls_unequal\"\n\
@@ -955,7 +955,7 @@ static int myisamchk(MI_CHECK *param, char * filename)
       We mark the table as locked (without doing file locks) to be able to
       use functions that only works on locked tables (like row caching).
     */
-    mi_lock_database(info, F_EXTRA_LCK);
+    mi_lock_blockchain(info, F_EXTRA_LCK);
     datafile=info->dfile;
 
     if (param->testflag & (T_REP_ANY | T_SORT_RECORDS | T_SORT_INDEX))
@@ -1131,7 +1131,7 @@ static int myisamchk(MI_CHECK *param, char * filename)
     (void) lock_file(param, share->kfile,0L,F_UNLCK,"indexfile",filename);
     info->update&= ~HA_STATE_CHANGED;
   }
-  mi_lock_database(info, F_UNLCK);
+  mi_lock_blockchain(info, F_UNLCK);
 end2:
   if (mi_close(info))
   {

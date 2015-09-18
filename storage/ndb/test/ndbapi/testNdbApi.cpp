@@ -5097,10 +5097,10 @@ check_connect_until_no_more_nodeid(const char* constr)
         result = false;
       }
       else if (strstr(con->get_latest_error_msg(),
-                      "No free node id found for mysqld(API)") == NULL)
+                      "No free node id found for myblockchaind(API)") == NULL)
       {
         // The error message should end with "No free node id
-        // found for mysqld(API)" since this host is configured in the config
+        // found for myblockchaind(API)" since this host is configured in the config
         g_err << "Unexpected error message " << con->get_latest_error_msg()
               << " returned" << endl;
         result = false;

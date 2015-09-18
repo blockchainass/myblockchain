@@ -56,7 +56,7 @@ extern "C" my_bool get_one_option(int, const struct my_option *, char *)
 }  // namespace
 
 // Some globals needed for merge_small_tests.cc
-mysql_mutex_t LOCK_open;
+myblockchain_mutex_t LOCK_open;
 uint    opt_debug_sync_timeout= 0;
 thread_local_key_t THR_MALLOC;
 thread_local_key_t THR_THD;

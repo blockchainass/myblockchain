@@ -15,7 +15,7 @@
    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
  */
 
-package com.mysql.clusterj.tie;
+package com.myblockchain.clusterj.tie;
 
 import java.lang.reflect.Method;
 
@@ -26,32 +26,32 @@ import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
 
-import com.mysql.clusterj.ClusterJFatalInternalException;
-import com.mysql.clusterj.ClusterJUserException;
-import com.mysql.clusterj.ColumnMetadata;
+import com.myblockchain.clusterj.ClusterJFatalInternalException;
+import com.myblockchain.clusterj.ClusterJUserException;
+import com.myblockchain.clusterj.ColumnMetadata;
 
-import com.mysql.clusterj.core.CacheManager;
+import com.myblockchain.clusterj.core.CacheManager;
 
-import com.mysql.clusterj.core.metadata.DomainTypeHandlerImpl;
-import com.mysql.clusterj.core.metadata.InvocationHandlerImpl;
+import com.myblockchain.clusterj.core.metadata.DomainTypeHandlerImpl;
+import com.myblockchain.clusterj.core.metadata.InvocationHandlerImpl;
 
-import com.mysql.clusterj.core.spi.DomainFieldHandler;
-import com.mysql.clusterj.core.spi.DomainTypeHandler;
-import com.mysql.clusterj.core.spi.SmartValueHandler;
+import com.myblockchain.clusterj.core.spi.DomainFieldHandler;
+import com.myblockchain.clusterj.core.spi.DomainTypeHandler;
+import com.myblockchain.clusterj.core.spi.SmartValueHandler;
 
-import com.mysql.clusterj.core.store.ClusterTransaction;
-import com.mysql.clusterj.core.store.Db;
-import com.mysql.clusterj.core.store.Operation;
-import com.mysql.clusterj.core.store.ResultData;
+import com.myblockchain.clusterj.core.store.ClusterTransaction;
+import com.myblockchain.clusterj.core.store.Db;
+import com.myblockchain.clusterj.core.store.Operation;
+import com.myblockchain.clusterj.core.store.ResultData;
 
-import com.mysql.clusterj.core.util.I18NHelper;
-import com.mysql.clusterj.core.util.Logger;
-import com.mysql.clusterj.core.util.LoggerFactoryService;
+import com.myblockchain.clusterj.core.util.I18NHelper;
+import com.myblockchain.clusterj.core.util.Logger;
+import com.myblockchain.clusterj.core.util.LoggerFactoryService;
 
 /** NdbRecordSmartValueHandlerImpl is the implementation class that
  * provides a value handler for a proxy or dynamic object that stores
  * values in an ndb record buffer instead of an object array. 
- * Subsequent database operations (insert, update, delete) use the
+ * Subsequent blockchain operations (insert, update, delete) use the
  * already-stored data instead of constructing a new data buffer. This class
  * replaces the InvocationHandler and uses the type-specific data transforms
  * done by DomainFieldHandler.
@@ -190,7 +190,7 @@ public class NdbRecordSmartValueHandlerImpl implements SmartValueHandler {
         Runnable postExecuteOperation = new Runnable() {
             public void run() {
                 if (operation.getErrorCode() == 0) {
-                    // found row in database
+                    // found row in blockchain
                     valueHandler.found(Boolean.TRUE);
                     operation.loadBlobValues();
                     domainTypeHandler.objectResetModified(valueHandler);

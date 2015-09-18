@@ -82,7 +82,7 @@ t3.run = function() {
   });
 };
 
-/* If you write a decimal number to an int column, MySQL rounds 
+/* If you write a decimal number to an int column, MyBlockchain rounds 
    it to the nearest int 
 */
 var t4 = new harness.ConcurrentTest("WriteFloatToIntCol");
@@ -94,7 +94,7 @@ t4.run = function() {
 };
 
 /* If you write a string containing a decimal number to an int column,
-   MySQL converts it to a number and then rounds the number to an int.
+   MyBlockchain converts it to a number and then rounds the number to an int.
 */
 var t5 = new harness.ConcurrentTest("WriteStringToIntCol:4");
 t5.run = function() {

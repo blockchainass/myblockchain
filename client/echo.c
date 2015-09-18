@@ -1,4 +1,4 @@
-/* Copyright (c) 2000, 2007 MySQL AB
+/* Copyright (c) 2000, 2007 MyBlockchain AB
    Use is subject to license terms
 
    This program is free software; you can redistribute it and/or modify
@@ -18,9 +18,9 @@
   echo is a replacement for the "echo" command builtin to cmd.exe
   on Windows, to get a Unix eqvivalent behaviour when running commands
   like:
-    $> echo "hello" | mysql
+    $> echo "hello" | myblockchain
 
-  The windows "echo" would have sent "hello" to mysql while
+  The windows "echo" would have sent "hello" to myblockchain while
   Unix echo will send hello without the enclosing hyphens
 
   This is a very advanced high tech program so take care when

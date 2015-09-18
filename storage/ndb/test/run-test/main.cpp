@@ -75,14 +75,14 @@ const char *save_file = 0;
 const char *save_group_suffix = 0;
 const char * g_dummy;
 char * g_env_path = 0;
-const char* g_mysqld_host = 0;
+const char* g_myblockchaind_host = 0;
 
 const char * g_ndb_mgmd_bin_path = 0;
 const char * g_ndbd_bin_path = 0;
 const char * g_ndbmtd_bin_path = 0;
-const char * g_mysqld_bin_path = 0;
-const char * g_mysql_install_db_bin_path = 0;
-const char * g_libmysqlclient_so_path = 0;
+const char * g_myblockchaind_bin_path = 0;
+const char * g_myblockchain_install_db_bin_path = 0;
+const char * g_libmyblockchainclient_so_path = 0;
 
 static struct
 {
@@ -93,12 +93,12 @@ static struct
   { true,  "ndb_mgmd",          &g_ndb_mgmd_bin_path},
   { true,  "ndbd",              &g_ndbd_bin_path },
   { false, "ndbmtd",            &g_ndbmtd_bin_path },
-  { true,  "mysqld",            &g_mysqld_bin_path },
-  { true,  "mysql_install_db",  &g_mysql_install_db_bin_path },
+  { true,  "myblockchaind",            &g_myblockchaind_bin_path },
+  { true,  "myblockchain_install_db",  &g_myblockchain_install_db_bin_path },
 #if defined(__MACH__)
-  { true,  "libmysqlclient.dylib", &g_libmysqlclient_so_path },
+  { true,  "libmyblockchainclient.dylib", &g_libmyblockchainclient_so_path },
 #else
-  { true,  "libmysqlclient.so", &g_libmysqlclient_so_path },
+  { true,  "libmyblockchainclient.so", &g_libmyblockchainclient_so_path },
 #endif
   { true, 0, 0 }
 };
@@ -111,7 +111,7 @@ g_search_path[] =
   "sbin",
   "scripts",
   "lib",
-  "lib/mysql",
+  "lib/myblockchain",
   0
 };
 static bool find_binaries();
@@ -126,8 +126,8 @@ static struct my_option g_options[] =
   { "clusters", 256, "Cluster",
     (uchar **) &g_clusters, (uchar **) &g_clusters,
     0, GET_STR, REQUIRED_ARG, 0, 0, 0, 0, 0, 0},
-  { "mysqld", 256, "atrt mysqld",
-    (uchar **) &g_mysqld_host, (uchar **) &g_mysqld_host,
+  { "myblockchaind", 256, "atrt myblockchaind",
+    (uchar **) &g_myblockchaind_host, (uchar **) &g_myblockchaind_host,
     0, GET_STR, REQUIRED_ARG, 0, 0, 0, 0, 0, 0},
   { "replicate", 1024, "replicate",
     (uchar **) &g_dummy, (uchar **) &g_dummy,
@@ -147,10 +147,10 @@ static struct my_option g_options[] =
   { "baseport", 256, "Base port",
     (uchar **) &g_baseport, (uchar **) &g_baseport,
     0, GET_INT, REQUIRED_ARG, g_baseport, 0, 0, 0, 0, 0},
-  { "prefix", 256, "mysql install dir",
+  { "prefix", 256, "myblockchain install dir",
     (uchar **) &g_prefix, (uchar **) &g_prefix,
     0, GET_STR, REQUIRED_ARG, 0, 0, 0, 0, 0, 0},
-  { "prefix1", 256, "mysql install dir 1",
+  { "prefix1", 256, "myblockchain install dir 1",
     (uchar **) &g_prefix1, (uchar **) &g_prefix1,
     0, GET_STR, REQUIRED_ARG, 0, 0, 0, 0, 0, 0},
   { "verbose", 'v', "Verbosity",
@@ -190,7 +190,7 @@ static struct my_option g_options[] =
 };
 
 const int p_ndb     = atrt_process::AP_NDB_MGMD | atrt_process::AP_NDBD;
-const int p_servers = atrt_process::AP_MYSQLD;
+const int p_servers = atrt_process::AP_MYBLOCKCHAIND;
 const int p_clients = atrt_process::AP_CLIENT | atrt_process::AP_NDB_API;
 
 int
@@ -222,7 +222,7 @@ main(int argc, char ** argv)
 
   g_config.m_generated = false;
   g_config.m_replication = g_replicate;
-  if (!setup_config(g_config, g_mysqld_host))
+  if (!setup_config(g_config, g_myblockchaind_host))
   {
     g_logger.critical("Failed to setup configuration");
     goto end;
@@ -315,7 +315,7 @@ main(int argc, char ** argv)
     
     if (!setup_db(g_config))
     {
-      g_logger.critical("Failed to setup database");
+      g_logger.critical("Failed to setup blockchain");
       goto end;
     }
 
@@ -410,7 +410,7 @@ main(int argc, char ** argv)
 
       if (!setup_db(g_config))
       {
-        g_logger.critical("Failed to setup database");
+        g_logger.critical("Failed to setup blockchain");
         goto end;
       }
       
@@ -728,12 +728,12 @@ parse_args(int argc, char** argv)
     const char* env = getenv("PATH");
     if (env && strlen(env))
     {
-      tmp.assfmt("PATH=%s:%s/mysql-test/ndb",
+      tmp.assfmt("PATH=%s:%s/myblockchain-test/ndb",
 		 env, g_prefix);
     }
     else
     {
-      tmp.assfmt("PATH=%s/mysql-test/ndb", g_prefix);
+      tmp.assfmt("PATH=%s/myblockchain-test/ndb", g_prefix);
     }
     to_native(tmp);
     g_env_path = strdup(tmp.c_str());
@@ -921,7 +921,7 @@ wait_ndb(atrt_config& config, int goal){
     if (strcmp(cluster->m_name.c_str(), ".atrt") == 0)
     {
       /**
-       * skip atrt mysql
+       * skip atrt myblockchain
        */
       cnt++;
       continue;
@@ -1075,7 +1075,7 @@ bool
 start_processes(atrt_config& config, int types){
   for(unsigned i = 0; i<config.m_processes.size(); i++){
     atrt_process & proc = *config.m_processes[i];
-    if(IF_WIN(!(proc.m_type & atrt_process::AP_MYSQLD), 1)
+    if(IF_WIN(!(proc.m_type & atrt_process::AP_MYBLOCKCHAIND), 1)
        && (types & proc.m_type) != 0 && proc.m_proc.m_path != ""){
       if(!start_process(proc)){
 	return false;
@@ -1091,9 +1091,9 @@ stop_process(atrt_process & proc){
     return true;
   }
 
-  if (proc.m_type == atrt_process::AP_MYSQLD)
+  if (proc.m_type == atrt_process::AP_MYBLOCKCHAIND)
   {
-    disconnect_mysqld(proc);
+    disconnect_myblockchaind(proc);
   }
 
   {
@@ -1190,7 +1190,7 @@ is_running(atrt_config& config, int types){
       if(proc.m_proc.m_status == "running")
 	running++;
       else {
-        if(IF_WIN(proc.m_type & atrt_process::AP_MYSQLD, 0))  {
+        if(IF_WIN(proc.m_type & atrt_process::AP_MYBLOCKCHAIND, 0))  {
           running++;
         }
       }
@@ -1289,17 +1289,17 @@ read_test_case(FILE * file, atrt_testcase& tc, int& line){
     tc.m_run_all= false;
 
   const char * str;
-  if (p.get("mysqld", &str))
+  if (p.get("myblockchaind", &str))
   {
-    tc.m_mysqld_options.assign(str);
+    tc.m_myblockchaind_options.assign(str);
   }
   else
   {
-    tc.m_mysqld_options.assign("");
+    tc.m_myblockchaind_options.assign("");
   }
 
   tc.m_cmd.m_cmd_type = atrt_process::AP_NDB_API;
-  if (p.get("cmd-type", &str) && strcmp(str, "mysql") == 0)
+  if (p.get("cmd-type", &str) && strcmp(str, "myblockchain") == 0)
   {
     tc.m_cmd.m_cmd_type = atrt_process::AP_CLIENT;
   }
@@ -1374,22 +1374,22 @@ setup_test_case(atrt_config& config, const atrt_testcase& tc){
     }
   }
 
-  if (tc.m_mysqld_options != "")
+  if (tc.m_myblockchaind_options != "")
   {
-    g_logger.info("restarting mysqld with extra options: %s",
-                  tc.m_mysqld_options.c_str());
+    g_logger.info("restarting myblockchaind with extra options: %s",
+                  tc.m_myblockchaind_options.c_str());
 
     /**
-     * Apply testcase specific mysqld options
+     * Apply testcase specific myblockchaind options
      */
     for (unsigned i = 0; i<config.m_processes.size(); i++)
     {
       atrt_process & proc = *config.m_processes[i];
-      if (proc.m_type == atrt_process::AP_MYSQLD)
+      if (proc.m_type == atrt_process::AP_MYBLOCKCHAIND)
       {
         proc.m_save.m_proc = proc.m_proc;
         proc.m_save.m_saved = true;
-        proc.m_proc.m_args.appfmt(" %s", tc.m_mysqld_options.c_str());
+        proc.m_proc.m_args.appfmt(" %s", tc.m_myblockchaind_options.c_str());
         if (!stop_process(proc))
         {
           return false;
@@ -1400,7 +1400,7 @@ setup_test_case(atrt_config& config, const atrt_testcase& tc){
           return false;
         }
 
-        if (!connect_mysqld(proc))
+        if (!connect_myblockchaind(proc))
         {
           return false;
         }
@@ -1538,8 +1538,8 @@ sshx(atrt_config & config, unsigned mask)
     case atrt_process::AP_NDBD: 
       type = (mask & proc.m_type) ? "ndbd" : 0;
       break;
-    case atrt_process::AP_MYSQLD:
-      type = (mask & proc.m_type) ? "mysqld" : 0;
+    case atrt_process::AP_MYBLOCKCHAIND:
+      type = (mask & proc.m_type) ? "myblockchaind" : 0;
       break;
     case atrt_process::AP_NDB_API:
       type = (mask & proc.m_type) ? "ndbapi" : 0;

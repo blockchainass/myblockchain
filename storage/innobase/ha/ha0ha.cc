@@ -490,7 +490,7 @@ ha_print_info(
 {
 #ifdef UNIV_DEBUG
 /* Some of the code here is disabled for performance reasons in production
-builds, see http://bugs.mysql.com/36941 */
+builds, see http://bugs.myblockchain.com/36941 */
 #define PRINT_USED_CELLS
 #endif /* UNIV_DEBUG */
 

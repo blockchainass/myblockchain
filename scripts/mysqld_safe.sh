@@ -2,38 +2,38 @@
 # Copyright Abandoned 1996 TCX DataKonsult AB & Monty Program KB & Detron HB
 # This file is public domain and comes with NO WARRANTY of any kind
 #
-# Script to start the MySQL daemon and restart it if it dies unexpectedly
+# Script to start the MyBlockchain daemon and restart it if it dies unexpectedly
 #
-# This should be executed in the MySQL base directory if you are using a
+# This should be executed in the MyBlockchain base directory if you are using a
 # binary installation that is not installed in its compile-time default
 # location
 #
-# mysql.server works by first doing a cd to the base directory and from there
-# executing mysqld_safe
+# myblockchain.server works by first doing a cd to the base directory and from there
+# executing myblockchaind_safe
 
 # Initialize script globals
-KILL_MYSQLD=1;
-MYSQLD=
+KILL_MYBLOCKCHAIND=1;
+MYBLOCKCHAIND=
 niceness=0
-mysqld_ld_preload=
-mysqld_ld_library_path=
+myblockchaind_ld_preload=
+myblockchaind_ld_library_path=
 
 # Initial logging status: error log is not open, and not using syslog
 logging=init
 want_syslog=0
 syslog_tag=
-user='@MYSQLD_USER@'
+user='@MYBLOCKCHAIND_USER@'
 pid_file=
 err_log=
 
-syslog_tag_mysqld=mysqld
-syslog_tag_mysqld_safe=mysqld_safe
+syslog_tag_myblockchaind=myblockchaind
+syslog_tag_myblockchaind_safe=myblockchaind_safe
 syslog_facility=daemon
 
 trap '' 1 2 3 15			# we shouldn't let anyone kill us
 trap '' 13                              # not even SIGPIPE
 
-# MySQL-specific environment variable. First off, it's not really a umask,
+# MyBlockchain-specific environment variable. First off, it's not really a umask,
 # it's the desired mode. Second, it follows umask(2), not umask(3) in that
 # octal needs to be explicit. Our shell might be a proper sh without printf,
 # multiple-base arithmetic, and binary arithmetic, so this will get ugly.
@@ -69,22 +69,22 @@ Usage: $0 [OPTIONS]
   --no-defaults              Don't read the system defaults file
   --defaults-file=FILE       Use the specified defaults file
   --defaults-extra-file=FILE Also use defaults from the specified file
-  --ledir=DIRECTORY          Look for mysqld in the specified directory
+  --ledir=DIRECTORY          Look for myblockchaind in the specified directory
   --open-files-limit=LIMIT   Limit the number of open files
   --core-file-size=LIMIT     Limit core files to the specified size
   --timezone=TZ              Set the system timezone
   --malloc-lib=LIB           Preload shared library LIB if available
-  --mysqld=FILE              Use the specified file as mysqld
-  --mysqld-version=VERSION   Use "mysqld-VERSION" as mysqld
-  --nice=NICE                Set the scheduling priority of mysqld
+  --myblockchaind=FILE              Use the specified file as myblockchaind
+  --myblockchaind-version=VERSION   Use "myblockchaind-VERSION" as myblockchaind
+  --nice=NICE                Set the scheduling priority of myblockchaind
   --plugin-dir=DIR           Plugins are under DIR or DIR/VERSION, if
                              VERSION is given
-  --skip-kill-mysqld         Don't try to kill stray mysqld processes
+  --skip-kill-myblockchaind         Don't try to kill stray myblockchaind processes
   --syslog                   Log messages to syslog with 'logger'
   --skip-syslog              Log messages to error log (default)
-  --syslog-tag=TAG           Pass -t "mysqld-TAG" to 'logger'
+  --syslog-tag=TAG           Pass -t "myblockchaind-TAG" to 'logger'
 
-All other options are passed to the mysqld program.
+All other options are passed to the myblockchaind program.
 
 EOF
         exit 1
@@ -123,13 +123,13 @@ log_generic () {
   priority="$1"
   shift
 
-  msg="`date +'%y%m%d %H:%M:%S'` mysqld_safe $*"
+  msg="`date +'%y%m%d %H:%M:%S'` myblockchaind_safe $*"
   echo "$msg"
   case $logging in
     init) ;;  # Just echo the message, don't save it anywhere
     file) echo "$msg" >> "$err_log" ;;
-    syslog) logger -t "$syslog_tag_mysqld_safe" -p "$priority" "$*" ;;
-    both) echo "$msg" >> "$err_log"; logger -t "$syslog_tag_mysqld_safe" -p "$priority" "$*" ;;
+    syslog) logger -t "$syslog_tag_myblockchaind_safe" -p "$priority" "$*" ;;
+    both) echo "$msg" >> "$err_log"; logger -t "$syslog_tag_myblockchaind_safe" -p "$priority" "$*" ;;
     *)
       echo "Internal program error (non-fatal):" \
            " unknown logging method '$logging'" >&2
@@ -160,7 +160,7 @@ eval_log_error () {
       ;;
   esac
 
-  #echo "Running mysqld: [$cmd]"
+  #echo "Running myblockchaind: [$cmd]"
   eval "$cmd"
 }
 
@@ -186,41 +186,41 @@ parse_arguments() {
     val=`echo "$arg" | sed -e 's;^--[^=]*=;;'`
     # what's before "=", or the whole $arg if no match
     optname=`echo "$arg" | sed -e 's/^\(--[^=]*\)=.*$/\1/'`
-    # replace "_" by "-" ; mysqld_safe must accept "_" like mysqld does.
+    # replace "_" by "-" ; myblockchaind_safe must accept "_" like myblockchaind does.
     optname_subst=`echo "$optname" | sed 's/_/-/g'`
     arg=`echo $arg | sed "s/^$optname/$optname_subst/"`
     case "$arg" in
-      # these get passed explicitly to mysqld
+      # these get passed explicitly to myblockchaind
       --basedir=*) MY_BASEDIR_VERSION="$val" ;;
       --datadir=*) DATADIR="$val" ;;
       --pid-file=*) pid_file="$val" ;;
       --plugin-dir=*) PLUGIN_DIR="$val" ;;
       --user=*) user="$val"; SET_USER=1 ;;
 
-      # these might have been set in a [mysqld_safe] section of my.cnf
-      # they are added to mysqld command line to override settings from my.cnf
+      # these might have been set in a [myblockchaind_safe] section of my.cnf
+      # they are added to myblockchaind command line to override settings from my.cnf
       --log-error=*) err_log="$val" ;;
-      --port=*) mysql_tcp_port="$val" ;;
-      --socket=*) mysql_unix_port="$val" ;;
+      --port=*) myblockchain_tcp_port="$val" ;;
+      --socket=*) myblockchain_unix_port="$val" ;;
 
-      # mysqld_safe-specific options - must be set in my.cnf ([mysqld_safe])!
+      # myblockchaind_safe-specific options - must be set in my.cnf ([myblockchaind_safe])!
       --core-file-size=*) core_file_size="$val" ;;
       --ledir=*) ledir="$val" ;;
       --malloc-lib=*) set_malloc_lib "$val" ;;
-      --mysqld=*) MYSQLD="$val" ;;
-      --mysqld-version=*)
+      --myblockchaind=*) MYBLOCKCHAIND="$val" ;;
+      --myblockchaind-version=*)
         if test -n "$val"
         then
-          MYSQLD="mysqld-$val"
+          MYBLOCKCHAIND="myblockchaind-$val"
           PLUGIN_VARIANT="/$val"
         else
-          MYSQLD="mysqld"
+          MYBLOCKCHAIND="myblockchaind"
         fi
         ;;
       --nice=*) niceness="$val" ;;
       --open-files-limit=*) open_files="$val" ;;
       --open_files_limit=*) open_files="$val" ;;
-      --skip-kill-mysqld*) KILL_MYSQLD=0 ;;
+      --skip-kill-myblockchaind*) KILL_MYBLOCKCHAIND=0 ;;
       --syslog) want_syslog=1 ;;
       --skip-syslog) want_syslog=0 ;;
       --syslog-tag=*) syslog_tag="$val" ;;
@@ -240,14 +240,14 @@ parse_arguments() {
 
 
 # Add a single shared library to the list of libraries which will be added to
-# LD_PRELOAD for mysqld
+# LD_PRELOAD for myblockchaind
 #
 # Since LD_PRELOAD is a space-separated value (for historical reasons), if a
 # shared lib's path contains spaces, that path will be prepended to
 # LD_LIBRARY_PATH and stripped from the lib value.
-add_mysqld_ld_preload() {
+add_myblockchaind_ld_preload() {
   lib_to_add="$1"
-  log_notice "Adding '$lib_to_add' to LD_PRELOAD for mysqld"
+  log_notice "Adding '$lib_to_add' to LD_PRELOAD for myblockchaind"
 
   case "$lib_to_add" in
     *' '*)
@@ -263,32 +263,32 @@ add_mysqld_ld_preload() {
       esac
       lib_path=`dirname "$lib_to_add"`
       lib_to_add="$lib_file"
-      [ -n "$mysqld_ld_library_path" ] && mysqld_ld_library_path="$mysqld_ld_library_path:"
-      mysqld_ld_library_path="$mysqld_ld_library_path$lib_path"
+      [ -n "$myblockchaind_ld_library_path" ] && myblockchaind_ld_library_path="$myblockchaind_ld_library_path:"
+      myblockchaind_ld_library_path="$myblockchaind_ld_library_path$lib_path"
       ;;
   esac
 
   # LD_PRELOAD is a space-separated
-  [ -n "$mysqld_ld_preload" ] && mysqld_ld_preload="$mysqld_ld_preload "
-  mysqld_ld_preload="${mysqld_ld_preload}$lib_to_add"
+  [ -n "$myblockchaind_ld_preload" ] && myblockchaind_ld_preload="$myblockchaind_ld_preload "
+  myblockchaind_ld_preload="${myblockchaind_ld_preload}$lib_to_add"
 }
 
 
 # Returns LD_PRELOAD (and LD_LIBRARY_PATH, if needed) text, quoted to be
-# suitable for use in the eval that calls mysqld.
+# suitable for use in the eval that calls myblockchaind.
 #
-# All values in mysqld_ld_preload are prepended to LD_PRELOAD.
-mysqld_ld_preload_text() {
+# All values in myblockchaind_ld_preload are prepended to LD_PRELOAD.
+myblockchaind_ld_preload_text() {
   text=
 
-  if [ -n "$mysqld_ld_preload" ]; then
-    new_text="$mysqld_ld_preload"
+  if [ -n "$myblockchaind_ld_preload" ]; then
+    new_text="$myblockchaind_ld_preload"
     [ -n "$LD_PRELOAD" ] && new_text="$new_text $LD_PRELOAD"
     text="${text}LD_PRELOAD="`shell_quote_string "$new_text"`' '
   fi
 
-  if [ -n "$mysqld_ld_library_path" ]; then
-    new_text="$mysqld_ld_library_path"
+  if [ -n "$myblockchaind_ld_library_path" ]; then
+    new_text="$myblockchaind_ld_library_path"
     [ -n "$LD_LIBRARY_PATH" ] && new_text="$new_text:$LD_LIBRARY_PATH"
     text="${text}LD_LIBRARY_PATH="`shell_quote_string "$new_text"`' '
   fi
@@ -297,17 +297,17 @@ mysqld_ld_preload_text() {
 }
 
 
-mysql_config=
-get_mysql_config() {
-  if [ -z "$mysql_config" ]; then
-    mysql_config=`echo "$0" | sed 's,/[^/][^/]*$,/mysql_config,'`
-    if [ ! -x "$mysql_config" ]; then
-      log_error "Can not run mysql_config $@ from '$mysql_config'"
+myblockchain_config=
+get_myblockchain_config() {
+  if [ -z "$myblockchain_config" ]; then
+    myblockchain_config=`echo "$0" | sed 's,/[^/][^/]*$,/myblockchain_config,'`
+    if [ ! -x "$myblockchain_config" ]; then
+      log_error "Can not run myblockchain_config $@ from '$myblockchain_config'"
       exit 1
     fi
   fi
 
-  "$mysql_config" "$@"
+  "$myblockchain_config" "$@"
 }
 
 
@@ -317,17 +317,17 @@ get_mysql_config() {
 #   then pkglibdir.  tcmalloc is part of the Google perftools project.
 # - If LIB is an absolute path, assume it is a malloc shared library
 #
-# Put LIB in mysqld_ld_preload, which will be added to LD_PRELOAD when
-# running mysqld.  See ld.so for details.
+# Put LIB in myblockchaind_ld_preload, which will be added to LD_PRELOAD when
+# running myblockchaind.  See ld.so for details.
 set_malloc_lib() {
   malloc_lib="$1"
 
   if [ "$malloc_lib" = tcmalloc ]; then
-    pkglibdir=`get_mysql_config --variable=pkglibdir`
+    pkglibdir=`get_myblockchain_config --variable=pkglibdir`
     malloc_lib=
     # This list is kept intentionally simple.  Simply set --malloc-lib
     # to a full path if another location is desired.
-    for libdir in /usr/lib "$pkglibdir" "$pkglibdir/mysql"; do
+    for libdir in /usr/lib "$pkglibdir" "$pkglibdir/myblockchain"; do
       for flavor in _minimal '' _and_profiler _debug; do
         tmp="$libdir/libtcmalloc$flavor.so"
         #log_notice "DEBUG: Checking for malloc lib '$tmp'"
@@ -360,12 +360,12 @@ set_malloc_lib() {
       ;;
   esac
 
-  add_mysqld_ld_preload "$malloc_lib"
+  add_myblockchaind_ld_preload "$malloc_lib"
 }
 
 
 #
-# First, try to find BASEDIR and ledir (where mysqld is)
+# First, try to find BASEDIR and ledir (where myblockchaind is)
 #
 
 if echo '@pkgdatadir@' | grep '^@prefix@' > /dev/null
@@ -383,28 +383,28 @@ then
   # BASEDIR is already overridden on command line.  Do not re-set.
 
   # Use BASEDIR to discover le.
-  if test -x "$MY_BASEDIR_VERSION/libexec/mysqld"
+  if test -x "$MY_BASEDIR_VERSION/libexec/myblockchaind"
   then
     ledir="$MY_BASEDIR_VERSION/libexec"
-  elif test -x "$MY_BASEDIR_VERSION/sbin/mysqld"
+  elif test -x "$MY_BASEDIR_VERSION/sbin/myblockchaind"
   then
     ledir="$MY_BASEDIR_VERSION/sbin"
   else
     ledir="$MY_BASEDIR_VERSION/bin"
   fi
-elif test -f "$relpkgdata"/english/errmsg.sys -a -x "$MY_PWD/bin/mysqld"
+elif test -f "$relpkgdata"/english/errmsg.sys -a -x "$MY_PWD/bin/myblockchaind"
 then
   MY_BASEDIR_VERSION="$MY_PWD"		# Where bin, share and data are
-  ledir="$MY_PWD/bin"			# Where mysqld is
+  ledir="$MY_PWD/bin"			# Where myblockchaind is
 # Check for the directories we would expect from a source install
-elif test -f "$relpkgdata"/english/errmsg.sys -a -x "$MY_PWD/libexec/mysqld"
+elif test -f "$relpkgdata"/english/errmsg.sys -a -x "$MY_PWD/libexec/myblockchaind"
 then
   MY_BASEDIR_VERSION="$MY_PWD"		# Where libexec, share and var are
-  ledir="$MY_PWD/libexec"		# Where mysqld is
-elif test -f "$relpkgdata"/english/errmsg.sys -a -x "$MY_PWD/sbin/mysqld"
+  ledir="$MY_PWD/libexec"		# Where myblockchaind is
+elif test -f "$relpkgdata"/english/errmsg.sys -a -x "$MY_PWD/sbin/myblockchaind"
 then
   MY_BASEDIR_VERSION="$MY_PWD"		# Where sbin, share and var are
-  ledir="$MY_PWD/sbin"			# Where mysqld is
+  ledir="$MY_PWD/sbin"			# Where myblockchaind is
 # Since we didn't find anything, used the compiled-in defaults
 else
   MY_BASEDIR_VERSION='@prefix@'
@@ -417,11 +417,11 @@ fi
 #
 
 # Try where the binary installs put it
-if test -d $MY_BASEDIR_VERSION/data/mysql
+if test -d $MY_BASEDIR_VERSION/data/myblockchain
 then
   DATADIR=$MY_BASEDIR_VERSION/data
 # Next try where the source installs put it
-elif test -d $MY_BASEDIR_VERSION/var/mysql
+elif test -d $MY_BASEDIR_VERSION/var/myblockchain
 then
   DATADIR=$MY_BASEDIR_VERSION/var
 # Or just give up and use our compiled-in default
@@ -429,14 +429,14 @@ else
   DATADIR=@localstatedir@
 fi
 
-if test -z "$MYSQL_HOME"
+if test -z "$MYBLOCKCHAIN_HOME"
 then 
-  MYSQL_HOME=$MY_BASEDIR_VERSION
+  MYBLOCKCHAIN_HOME=$MY_BASEDIR_VERSION
 fi
-export MYSQL_HOME
+export MYBLOCKCHAIN_HOME
 
 
-# Get first arguments from the my.cnf file, groups [mysqld] and [mysqld_safe]
+# Get first arguments from the my.cnf file, groups [myblockchaind] and [myblockchaind_safe]
 # and then merge with the command line arguments
 if test -x "$MY_BASEDIR_VERSION/bin/my_print_defaults"
 then
@@ -450,9 +450,9 @@ then
 elif test -x @bindir@/my_print_defaults
 then
   print_defaults="@bindir@/my_print_defaults"
-elif test -x @bindir@/mysql_print_defaults
+elif test -x @bindir@/myblockchain_print_defaults
 then
-  print_defaults="@bindir@/mysql_print_defaults"
+  print_defaults="@bindir@/myblockchain_print_defaults"
 else
   print_defaults="my_print_defaults"
 fi
@@ -464,13 +464,13 @@ append_arg_to_args () {
 args=
 
 SET_USER=2
-parse_arguments `$print_defaults $defaults --loose-verbose mysqld server`
+parse_arguments `$print_defaults $defaults --loose-verbose myblockchaind server`
 if test $SET_USER -eq 2
 then
   SET_USER=0
 fi
 
-parse_arguments `$print_defaults $defaults --loose-verbose mysqld_safe safe_mysqld`
+parse_arguments `$print_defaults $defaults --loose-verbose myblockchaind_safe safe_myblockchaind`
 parse_arguments PICK-ARGS-FROM-ARGV "$@"
 
 #
@@ -482,7 +482,7 @@ if [ -n "${PLUGIN_DIR}" ]; then
   plugin_dir="${PLUGIN_DIR}"
 else
   # Try to find plugin dir relative to basedir
-  for dir in lib64/mysql/plugin lib64/plugin lib/mysql/plugin lib/plugin
+  for dir in lib64/myblockchain/plugin lib64/plugin lib/myblockchain/plugin lib/plugin
   do
     if [ -d "${MY_BASEDIR_VERSION}/${dir}" ]; then
       plugin_dir="${MY_BASEDIR_VERSION}/${dir}"
@@ -496,9 +496,9 @@ else
 fi
 plugin_dir="${plugin_dir}${PLUGIN_VARIANT}"
 
-# A pid file is created for the mysqld_safe process. This file protects the
+# A pid file is created for the myblockchaind_safe process. This file protects the
 # server instance resources during race conditions.
-safe_pid="$DATADIR/mysqld_safe.pid"
+safe_pid="$DATADIR/myblockchaind_safe.pid"
 if test -f $safe_pid
 then
   PID=`cat "$safe_pid"`
@@ -506,21 +506,21 @@ then
   then
     if @FIND_PROC@
     then
-      log_error "A mysqld_safe process already exists"
+      log_error "A myblockchaind_safe process already exists"
       exit 1
     fi
   fi
   rm -f "$safe_pid"
   if test -f "$safe_pid"
   then
-    log_error "Fatal error: Can't remove the mysqld_safe pid file"
+    log_error "Fatal error: Can't remove the myblockchaind_safe pid file"
     exit 1
   fi
 fi
 
 # Insert pid proerply into the pid file.
 ps -e | grep  [m]ysqld_safe | awk '{print $1}' | sed -n 1p > $safe_pid
-# End of mysqld_safe pid(safe_pid) check.
+# End of myblockchaind_safe pid(safe_pid) check.
 
 # Determine what logging facility to use
 
@@ -530,8 +530,8 @@ then
   my_which logger > /dev/null 2>&1
   if [ $? -ne 0 ]
   then
-    log_error "--syslog requested, but no 'logger' program found.  Please ensure that 'logger' is in your PATH, or do not specify the --syslog option to mysqld_safe."
-    rm -f "$safe_pid"                 # Clean Up of mysqld_safe.pid file.
+    log_error "--syslog requested, but no 'logger' program found.  Please ensure that 'logger' is in your PATH, or do not specify the --syslog option to myblockchaind_safe."
+    rm -f "$safe_pid"                 # Clean Up of myblockchaind_safe.pid file.
     exit 1
   fi
 fi
@@ -542,8 +542,8 @@ then
   then
     # Sanitize the syslog tag
     syslog_tag=`echo "$syslog_tag" | sed -e 's/[^a-zA-Z0-9_-]/_/g'`
-    syslog_tag_mysqld_safe="${syslog_tag_mysqld_safe}-$syslog_tag"
-    syslog_tag_mysqld="${syslog_tag_mysqld}-$syslog_tag"
+    syslog_tag_myblockchaind_safe="${syslog_tag_myblockchaind_safe}-$syslog_tag"
+    syslog_tag_myblockchaind="${syslog_tag_myblockchaind}-$syslog_tag"
   fi
   log_notice "Logging to syslog."
   logging=syslog
@@ -553,11 +553,11 @@ if [ -n "$err_log" -o $want_syslog -eq 0 ]
 then
   if [ -n "$err_log" ]
   then
-    # mysqld adds ".err" if there is no extension on the --log-error
-    # argument; must match that here, or mysqld_safe will write to a
-    # different log file than mysqld
+    # myblockchaind adds ".err" if there is no extension on the --log-error
+    # argument; must match that here, or myblockchaind_safe will write to a
+    # different log file than myblockchaind
 
-    # mysqld does not add ".err" to "--log-error=foo."; it considers a
+    # myblockchaind does not add ".err" to "--log-error=foo."; it considers a
     # trailing "." as an extension
     
     if expr "$err_log" : '.*\.[^/]*$' > /dev/null
@@ -616,30 +616,30 @@ then
   append_arg_to_args "--open-files-limit=$open_files"
 fi
 
-safe_mysql_unix_port=${mysql_unix_port:-${MYSQL_UNIX_PORT:-@MYSQL_UNIX_ADDR@}}
-# Make sure that directory for $safe_mysql_unix_port exists
-mysql_unix_port_dir=`dirname $safe_mysql_unix_port`
-if [ ! -d $mysql_unix_port_dir ]
+safe_myblockchain_unix_port=${myblockchain_unix_port:-${MYBLOCKCHAIN_UNIX_PORT:-@MYBLOCKCHAIN_UNIX_ADDR@}}
+# Make sure that directory for $safe_myblockchain_unix_port exists
+myblockchain_unix_port_dir=`dirname $safe_myblockchain_unix_port`
+if [ ! -d $myblockchain_unix_port_dir ]
 then
-  mkdir $mysql_unix_port_dir
-  chown $user $mysql_unix_port_dir
-  chmod 755 $mysql_unix_port_dir
+  mkdir $myblockchain_unix_port_dir
+  chown $user $myblockchain_unix_port_dir
+  chmod 755 $myblockchain_unix_port_dir
 fi
 
-# If the user doesn't specify a binary, we assume name "mysqld"
-if test -z "$MYSQLD"
+# If the user doesn't specify a binary, we assume name "myblockchaind"
+if test -z "$MYBLOCKCHAIND"
 then
-  MYSQLD=mysqld
+  MYBLOCKCHAIND=myblockchaind
 fi
 
-if test ! -x "$ledir/$MYSQLD"
+if test ! -x "$ledir/$MYBLOCKCHAIND"
 then
-  log_error "The file $ledir/$MYSQLD
-does not exist or is not executable. Please cd to the mysql installation
+  log_error "The file $ledir/$MYBLOCKCHAIND
+does not exist or is not executable. Please cd to the myblockchain installation
 directory and restart this script from there as follows:
-./bin/mysqld_safe&
-See http://dev.mysql.com/doc/mysql/en/mysqld-safe.html for more information"
-  rm -f "$safe_pid"                 # Clean Up of mysqld_safe.pid file.
+./bin/myblockchaind_safe&
+See http://dev.myblockchain.com/doc/myblockchain/en/myblockchaind-safe.html for more information"
+  rm -f "$safe_pid"                 # Clean Up of myblockchaind_safe.pid file.
   exit 1
 fi
 
@@ -654,13 +654,13 @@ else
 fi
 append_arg_to_args "--pid-file=$pid_file"
 
-if test -n "$mysql_unix_port"
+if test -n "$myblockchain_unix_port"
 then
-  append_arg_to_args "--socket=$mysql_unix_port"
+  append_arg_to_args "--socket=$myblockchain_unix_port"
 fi
-if test -n "$mysql_tcp_port"
+if test -n "$myblockchain_tcp_port"
 then
-  append_arg_to_args "--port=$mysql_tcp_port"
+  append_arg_to_args "--port=$myblockchain_tcp_port"
 fi
 
 if test $niceness -eq 0
@@ -731,9 +731,9 @@ then
   if @CHECK_PID@
   then
     if @FIND_PROC@
-    then    # The pid contains a mysqld process
-      log_error "A mysqld process already exists"
-      rm -f "$safe_pid"                 # Clean Up of mysqld_safe.pid file.
+    then    # The pid contains a myblockchaind process
+      log_error "A myblockchaind process already exists"
+      rm -f "$safe_pid"                 # Clean Up of myblockchaind_safe.pid file.
       exit 1
     fi
   fi
@@ -743,8 +743,8 @@ then
     log_error "Fatal error: Can't remove the pid file:
 $pid_file
 Please remove it manually and start $0 again;
-mysqld daemon not started"
-    rm -f "$safe_pid"                 # Clean Up of mysqld_safe.pid file.
+myblockchaind daemon not started"
+    rm -f "$safe_pid"                 # Clean Up of myblockchaind_safe.pid file.
     exit 1
   fi
 fi
@@ -754,7 +754,7 @@ fi
 # checked and repaired during startup. You should add sensible key_buffer
 # and sort_buffer values to my.cnf to improve check performance or require
 # less disk space.
-# Alternatively, you can start mysqld with the "myisam-recover" option. See
+# Alternatively, you can start myblockchaind with the "myisam-recover" option. See
 # the manual for details.
 #
 # echo "Checking tables in $DATADIR"
@@ -767,9 +767,9 @@ fi
 #  ulimit -n 256 > /dev/null 2>&1		# Fix for BSD and FreeBSD systems
 #fi
 
-cmd="`mysqld_ld_preload_text`$NOHUP_NICENESS"
+cmd="`myblockchaind_ld_preload_text`$NOHUP_NICENESS"
 
-for i in  "$ledir/$MYSQLD" "$defaults" "--basedir=$MY_BASEDIR_VERSION" \
+for i in  "$ledir/$MYBLOCKCHAIND" "$defaults" "--basedir=$MY_BASEDIR_VERSION" \
   "--datadir=$DATADIR" "--plugin-dir=$plugin_dir" "$USER_OPTION"
 do
   cmd="$cmd "`shell_quote_string "$i"`
@@ -778,7 +778,7 @@ cmd="$cmd $args"
 # Avoid 'nohup: ignoring input' warning
 test -n "$NOHUP_NICENESS" && cmd="$cmd < /dev/null"
 
-log_notice "Starting $MYSQLD daemon with databases from $DATADIR"
+log_notice "Starting $MYBLOCKCHAIND daemon with blockchains from $DATADIR"
 
 # variable to track the current number of "fast" (a.k.a. subsecond) restarts
 fast_restart=0
@@ -790,7 +790,7 @@ have_sleep=1
 while true
 do
   # Some extra safety
-  rm -f $safe_mysql_unix_port "$pid_file" "$pid_file.shutdown"	
+  rm -f $safe_myblockchain_unix_port "$pid_file" "$pid_file.shutdown"	
   start_time=`date +%M%S`
 
   eval_log_error "$cmd"
@@ -840,20 +840,20 @@ do
     fi
   fi
 
-  if @TARGET_LINUX@ && test $KILL_MYSQLD -eq 1
+  if @TARGET_LINUX@ && test $KILL_MYBLOCKCHAIND -eq 1
   then
     # Test if one process was hanging.
-    # This is only a fix for Linux (running as base 3 mysqld processes)
+    # This is only a fix for Linux (running as base 3 myblockchaind processes)
     # but should work for the rest of the servers.
     # The only thing is ps x => redhat 5 gives warnings when using ps -x.
     # kill -9 is used or the process won't react on the kill.
-    numofproces=`ps xaww | grep -v "grep" | grep "$ledir/$MYSQLD\>" | grep -c "pid-file=$pid_file"`
+    numofproces=`ps xaww | grep -v "grep" | grep "$ledir/$MYBLOCKCHAIND\>" | grep -c "pid-file=$pid_file"`
 
     log_notice "Number of processes running now: $numofproces"
     I=1
     while test "$I" -le "$numofproces"
     do 
-      PROC=`ps xaww | grep "$ledir/$MYSQLD\>" | grep -v "grep" | grep "pid-file=$pid_file" | sed -n '$p'` 
+      PROC=`ps xaww | grep "$ledir/$MYBLOCKCHAIND\>" | grep -v "grep" | grep "pid-file=$pid_file" | sed -n '$p'` 
 
       for T in $PROC
       do
@@ -862,19 +862,19 @@ do
       #    echo "TEST $I - $T **"
       if kill -9 $T
       then
-        log_error "$MYSQLD process hanging, pid $T - killed"
+        log_error "$MYBLOCKCHAIND process hanging, pid $T - killed"
       else
         break
       fi
       I=`expr $I + 1`
     done
   fi
-  log_notice "mysqld restarted"
+  log_notice "myblockchaind restarted"
 done
 
 rm -f "$pid_file.shutdown"
 
-log_notice "mysqld from pid file $pid_file ended"
+log_notice "myblockchaind from pid file $pid_file ended"
 
 rm -f "$safe_pid"                       # Some Extra Safety. File is deleted
-                                        # once the mysqld process ends.
+                                        # once the myblockchaind process ends.

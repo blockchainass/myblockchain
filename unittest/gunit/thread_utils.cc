@@ -80,16 +80,16 @@ void Thread::run_wrapper(Thread *start_arg)
 
 Notification::Notification() : m_notified(FALSE)
 {
-  const int failed1= mysql_cond_init(0, &m_cond);
+  const int failed1= myblockchain_cond_init(0, &m_cond);
   LOCAL_ASSERT_FALSE(failed1);
-  const int failed2= mysql_mutex_init(0, &m_mutex, MY_MUTEX_INIT_FAST);
+  const int failed2= myblockchain_mutex_init(0, &m_mutex, MY_MUTEX_INIT_FAST);
   LOCAL_ASSERT_FALSE(failed2);
 }
 
 Notification::~Notification()
 {
-  mysql_mutex_destroy(&m_mutex);
-  mysql_cond_destroy(&m_cond);
+  myblockchain_mutex_destroy(&m_mutex);
+  myblockchain_cond_destroy(&m_cond);
 }
 
 bool Notification::has_been_notified()
@@ -103,7 +103,7 @@ void Notification::wait_for_notification()
   Mutex_lock lock(&m_mutex);
   while (!m_notified)
   {
-    const int failed= mysql_cond_wait(&m_cond, &m_mutex);
+    const int failed= myblockchain_cond_wait(&m_cond, &m_mutex);
     ASSERT_FALSE(failed);
   }
 }
@@ -112,7 +112,7 @@ void Notification::notify()
 {
   Mutex_lock lock(&m_mutex);
   m_notified= TRUE;
-  const int failed= mysql_cond_broadcast(&m_cond);
+  const int failed= myblockchain_cond_broadcast(&m_cond);
   ASSERT_FALSE(failed);
 }
 

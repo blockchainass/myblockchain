@@ -2892,7 +2892,7 @@ void Dbdict::execREAD_CONFIG_REQ(Signal* signal)
 
   // new OpRec pools
   /**
-   * one mysql index can be 2 ndb indexes
+   * one myblockchain index can be 2 ndb indexes
    */
   /**
    * TODO: Use arena-allocator for schema-transactions
@@ -5759,7 +5759,7 @@ void Dbdict::handleTabInfo(SimpleProperties::Reader & it,
         parseP->errorLine = __LINE__;
         return;
       }
-      // XXX should be done somewhere in mysql
+      // XXX should be done somewhere in myblockchain
       all_charsets[cs->number] = cs;
       unsigned i = 0;
       while (i < noOfCharsets) {
@@ -11668,7 +11668,7 @@ Dbdict::createIndex_parse(Signal* signal, bool master,
     if ((bits & TableRecord::TR_Temporary) &&
         !(tablePtr.p->m_bits & TableRecord::TR_Temporary))
     {
-      // This could be implemented later, but mysqld does currently not detect
+      // This could be implemented later, but myblockchaind does currently not detect
       // that the index disappears after SR, and it appears not too useful.
       jam();
       setError(error, CreateIndxRef::TableIsNotTemporary, __LINE__);

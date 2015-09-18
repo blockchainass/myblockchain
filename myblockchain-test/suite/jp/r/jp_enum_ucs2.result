@@ -1,0 +1,275 @@
+drop table if exists `�ԣ�`;
+drop table if exists `�ԣ�`;
+drop table if exists `�ԣ�`;
+drop table if exists `�ԣ�`;
+drop table if exists `�ԣ�`;
+drop table if exists `�ԣ�`;
+drop table if exists `�ԣ�`;
+drop table if exists `�ԣ�`;
+drop table if exists `�ԣ�`;
+SET NAMES ujis;
+SET character_set_blockchain = ucs2;
+Warnings:
+Warning	1681	Updating 'character_set_blockchain' is deprecated. It will be made read-only in a future release.
+SET collation_connection = ucs2_general_ci;
+CREATE TABLE `�ԣ�` (`�ã�` ENUM('��','��','��'), INDEX(`�ã�`)) DEFAULT CHARSET = ucs2 engine = innodb;
+CREATE TABLE `�ԣ�` (`�ã�` ENUM('��','��','��'), INDEX(`�ã�`)) DEFAULT CHARSET = ucs2 engine = innodb;
+CREATE TABLE `�ԣ�` (`�ã�` ENUM('���','���','���'), INDEX(`�ã�`)) DEFAULT CHARSET = ucs2 engine = innodb;
+CREATE TABLE `�ԣ�` (`�ã�` ENUM('��','��','��'), INDEX(`�ã�`)) DEFAULT CHARSET = ucs2 engine = myisam;
+CREATE TABLE `�ԣ�` (`�ã�` ENUM('��','��','��'), INDEX(`�ã�`)) DEFAULT CHARSET = ucs2 engine = myisam;
+CREATE TABLE `�ԣ�` (`�ã�` ENUM('���','���','���'), INDEX(`�ã�`)) DEFAULT CHARSET = ucs2 engine = myisam;
+CREATE TABLE `�ԣ�` (`�ã�` ENUM('��','��','��'), INDEX(`�ã�`)) DEFAULT CHARSET = ucs2 engine = MEMORY;
+CREATE TABLE `�ԣ�` (`�ã�` ENUM('��','��','��'), INDEX(`�ã�`)) DEFAULT CHARSET = ucs2 engine = MEMORY;
+CREATE TABLE `�ԣ�` (`�ã�` ENUM('���','���','���'), INDEX(`�ã�`)) DEFAULT CHARSET = ucs2 engine = MEMORY;
+INSERT INTO `�ԣ�` VALUES ('��'),('��'),('��');
+INSERT INTO `�ԣ�` VALUES ('��'),('��'),('��');
+INSERT INTO `�ԣ�` VALUES ('���'),('���'),('���');
+INSERT INTO `�ԣ�` VALUES ('��'),('��'),('��');
+INSERT INTO `�ԣ�` VALUES ('��'),('��'),('��');
+INSERT INTO `�ԣ�` VALUES ('���'),('���'),('���');
+INSERT INTO `�ԣ�` VALUES ('��'),('��'),('��');
+INSERT INTO `�ԣ�` VALUES ('��'),('��'),('��');
+INSERT INTO `�ԣ�` VALUES ('���'),('���'),('���');
+SELECT * FROM `�ԣ�`;
+�ã�
+��
+��
+��
+SELECT * FROM `�ԣ�`;
+�ã�
+��
+��
+��
+SELECT * FROM `�ԣ�`;
+�ã�
+���
+���
+���
+SELECT * FROM `�ԣ�`;
+�ã�
+��
+��
+��
+SELECT * FROM `�ԣ�`;
+�ã�
+��
+��
+��
+SELECT * FROM `�ԣ�`;
+�ã�
+���
+���
+���
+SELECT * FROM `�ԣ�`;
+�ã�
+��
+��
+��
+SELECT * FROM `�ԣ�`;
+�ã�
+��
+��
+��
+SELECT * FROM `�ԣ�`;
+�ã�
+���
+���
+���
+SHOW CREATE TABLE `�ԣ�`;
+Table	Create Table
+�ԣ�	CREATE TABLE `�ԣ�` (
+  `�ã�` enum('��','��','��') DEFAULT NULL,
+  KEY `�ã�` (`�ã�`)
+) ENGINE=InnoDB DEFAULT CHARSET=ucs2
+SHOW CREATE TABLE `�ԣ�`;
+Table	Create Table
+�ԣ�	CREATE TABLE `�ԣ�` (
+  `�ã�` enum('��','��','��') DEFAULT NULL,
+  KEY `�ã�` (`�ã�`)
+) ENGINE=InnoDB DEFAULT CHARSET=ucs2
+SHOW CREATE TABLE `�ԣ�`;
+Table	Create Table
+�ԣ�	CREATE TABLE `�ԣ�` (
+  `�ã�` enum('���','���','���') DEFAULT NULL,
+  KEY `�ã�` (`�ã�`)
+) ENGINE=InnoDB DEFAULT CHARSET=ucs2
+SHOW CREATE TABLE `�ԣ�`;
+Table	Create Table
+�ԣ�	CREATE TABLE `�ԣ�` (
+  `�ã�` enum('��','��','��') DEFAULT NULL,
+  KEY `�ã�` (`�ã�`)
+) ENGINE=MyISAM DEFAULT CHARSET=ucs2
+SHOW CREATE TABLE `�ԣ�`;
+Table	Create Table
+�ԣ�	CREATE TABLE `�ԣ�` (
+  `�ã�` enum('��','��','��') DEFAULT NULL,
+  KEY `�ã�` (`�ã�`)
+) ENGINE=MyISAM DEFAULT CHARSET=ucs2
+SHOW CREATE TABLE `�ԣ�`;
+Table	Create Table
+�ԣ�	CREATE TABLE `�ԣ�` (
+  `�ã�` enum('���','���','���') DEFAULT NULL,
+  KEY `�ã�` (`�ã�`)
+) ENGINE=MyISAM DEFAULT CHARSET=ucs2
+SHOW CREATE TABLE `�ԣ�`;
+Table	Create Table
+�ԣ�	CREATE TABLE `�ԣ�` (
+  `�ã�` enum('��','��','��') DEFAULT NULL,
+  KEY `�ã�` (`�ã�`)
+) ENGINE=MEMORY DEFAULT CHARSET=ucs2
+SHOW CREATE TABLE `�ԣ�`;
+Table	Create Table
+�ԣ�	CREATE TABLE `�ԣ�` (
+  `�ã�` enum('��','��','��') DEFAULT NULL,
+  KEY `�ã�` (`�ã�`)
+) ENGINE=MEMORY DEFAULT CHARSET=ucs2
+SHOW CREATE TABLE `�ԣ�`;
+Table	Create Table
+�ԣ�	CREATE TABLE `�ԣ�` (
+  `�ã�` enum('���','���','���') DEFAULT NULL,
+  KEY `�ã�` (`�ã�`)
+) ENGINE=MEMORY DEFAULT CHARSET=ucs2
+DESC `�ԣ�`;
+Field	Type	Null	Key	Default	Extra
+�ã�	enum('��','��','��')	YES	MUL	NULL	
+DESC `�ԣ�`;
+Field	Type	Null	Key	Default	Extra
+�ã�	enum('��','��','��')	YES	MUL	NULL	
+DESC `�ԣ�`;
+Field	Type	Null	Key	Default	Extra
+�ã�	enum('���','���','���')	YES	MUL	NULL	
+DESC `�ԣ�`;
+Field	Type	Null	Key	Default	Extra
+�ã�	enum('��','��','��')	YES	MUL	NULL	
+DESC `�ԣ�`;
+Field	Type	Null	Key	Default	Extra
+�ã�	enum('��','��','��')	YES	MUL	NULL	
+DESC `�ԣ�`;
+Field	Type	Null	Key	Default	Extra
+�ã�	enum('���','���','���')	YES	MUL	NULL	
+DESC `�ԣ�`;
+Field	Type	Null	Key	Default	Extra
+�ã�	enum('��','��','��')	YES	MUL	NULL	
+DESC `�ԣ�`;
+Field	Type	Null	Key	Default	Extra
+�ã�	enum('��','��','��')	YES	MUL	NULL	
+DESC `�ԣ�`;
+Field	Type	Null	Key	Default	Extra
+�ã�	enum('���','���','���')	YES	MUL	NULL	
+ALTER TABLE `�ԣ�` ADD `�ã�` CHAR(1) NOT NULL FIRST;
+ALTER TABLE `�ԣ�` ADD `�ã�` CHAR(1) NOT NULL FIRST;
+ALTER TABLE `�ԣ�` ADD `�ã�` CHAR(1) NOT NULL FIRST;
+ALTER TABLE `�ԣ�` ADD `�ã�` CHAR(1) NOT NULL FIRST;
+ALTER TABLE `�ԣ�` ADD `�ã�` CHAR(1) NOT NULL FIRST;
+ALTER TABLE `�ԣ�` ADD `�ã�` CHAR(1) NOT NULL FIRST;
+ALTER TABLE `�ԣ�` ADD `�ã�` CHAR(1) NOT NULL FIRST;
+ALTER TABLE `�ԣ�` ADD `�ã�` CHAR(1) NOT NULL FIRST;
+ALTER TABLE `�ԣ�` ADD `�ã�` CHAR(1) NOT NULL FIRST;
+SHOW CREATE TABLE `�ԣ�`;
+Table	Create Table
+�ԣ�	CREATE TABLE `�ԣ�` (
+  `�ã�` char(1) NOT NULL,
+  `�ã�` enum('��','��','��') DEFAULT NULL,
+  KEY `�ã�` (`�ã�`)
+) ENGINE=InnoDB DEFAULT CHARSET=ucs2
+SHOW CREATE TABLE `�ԣ�`;
+Table	Create Table
+�ԣ�	CREATE TABLE `�ԣ�` (
+  `�ã�` char(1) NOT NULL,
+  `�ã�` enum('��','��','��') DEFAULT NULL,
+  KEY `�ã�` (`�ã�`)
+) ENGINE=InnoDB DEFAULT CHARSET=ucs2
+SHOW CREATE TABLE `�ԣ�`;
+Table	Create Table
+�ԣ�	CREATE TABLE `�ԣ�` (
+  `�ã�` char(1) NOT NULL,
+  `�ã�` enum('���','���','���') DEFAULT NULL,
+  KEY `�ã�` (`�ã�`)
+) ENGINE=InnoDB DEFAULT CHARSET=ucs2
+SHOW CREATE TABLE `�ԣ�`;
+Table	Create Table
+�ԣ�	CREATE TABLE `�ԣ�` (
+  `�ã�` char(1) NOT NULL,
+  `�ã�` enum('��','��','��') DEFAULT NULL,
+  KEY `�ã�` (`�ã�`)
+) ENGINE=MyISAM DEFAULT CHARSET=ucs2
+SHOW CREATE TABLE `�ԣ�`;
+Table	Create Table
+�ԣ�	CREATE TABLE `�ԣ�` (
+  `�ã�` char(1) NOT NULL,
+  `�ã�` enum('��','��','��') DEFAULT NULL,
+  KEY `�ã�` (`�ã�`)
+) ENGINE=MyISAM DEFAULT CHARSET=ucs2
+SHOW CREATE TABLE `�ԣ�`;
+Table	Create Table
+�ԣ�	CREATE TABLE `�ԣ�` (
+  `�ã�` char(1) NOT NULL,
+  `�ã�` enum('���','���','���') DEFAULT NULL,
+  KEY `�ã�` (`�ã�`)
+) ENGINE=MyISAM DEFAULT CHARSET=ucs2
+SHOW CREATE TABLE `�ԣ�`;
+Table	Create Table
+�ԣ�	CREATE TABLE `�ԣ�` (
+  `�ã�` char(1) NOT NULL,
+  `�ã�` enum('��','��','��') DEFAULT NULL,
+  KEY `�ã�` (`�ã�`)
+) ENGINE=MEMORY DEFAULT CHARSET=ucs2
+SHOW CREATE TABLE `�ԣ�`;
+Table	Create Table
+�ԣ�	CREATE TABLE `�ԣ�` (
+  `�ã�` char(1) NOT NULL,
+  `�ã�` enum('��','��','��') DEFAULT NULL,
+  KEY `�ã�` (`�ã�`)
+) ENGINE=MEMORY DEFAULT CHARSET=ucs2
+SHOW CREATE TABLE `�ԣ�`;
+Table	Create Table
+�ԣ�	CREATE TABLE `�ԣ�` (
+  `�ã�` char(1) NOT NULL,
+  `�ã�` enum('���','���','���') DEFAULT NULL,
+  KEY `�ã�` (`�ã�`)
+) ENGINE=MEMORY DEFAULT CHARSET=ucs2
+DESC `�ԣ�`;
+Field	Type	Null	Key	Default	Extra
+�ã�	char(1)	NO		NULL	
+�ã�	enum('��','��','��')	YES	MUL	NULL	
+DESC `�ԣ�`;
+Field	Type	Null	Key	Default	Extra
+�ã�	char(1)	NO		NULL	
+�ã�	enum('��','��','��')	YES	MUL	NULL	
+DESC `�ԣ�`;
+Field	Type	Null	Key	Default	Extra
+�ã�	char(1)	NO		NULL	
+�ã�	enum('���','���','���')	YES	MUL	NULL	
+DESC `�ԣ�`;
+Field	Type	Null	Key	Default	Extra
+�ã�	char(1)	NO		NULL	
+�ã�	enum('��','��','��')	YES	MUL	NULL	
+DESC `�ԣ�`;
+Field	Type	Null	Key	Default	Extra
+�ã�	char(1)	NO		NULL	
+�ã�	enum('��','��','��')	YES	MUL	NULL	
+DESC `�ԣ�`;
+Field	Type	Null	Key	Default	Extra
+�ã�	char(1)	NO		NULL	
+�ã�	enum('���','���','���')	YES	MUL	NULL	
+DESC `�ԣ�`;
+Field	Type	Null	Key	Default	Extra
+�ã�	char(1)	NO		NULL	
+�ã�	enum('��','��','��')	YES	MUL	NULL	
+DESC `�ԣ�`;
+Field	Type	Null	Key	Default	Extra
+�ã�	char(1)	NO		NULL	
+�ã�	enum('��','��','��')	YES	MUL	NULL	
+DESC `�ԣ�`;
+Field	Type	Null	Key	Default	Extra
+�ã�	char(1)	NO		NULL	
+�ã�	enum('���','���','���')	YES	MUL	NULL	
+DROP TABLE `�ԣ�`;
+DROP TABLE `�ԣ�`;
+DROP TABLE `�ԣ�`;
+DROP TABLE `�ԣ�`;
+DROP TABLE `�ԣ�`;
+DROP TABLE `�ԣ�`;
+DROP TABLE `�ԣ�`;
+DROP TABLE `�ԣ�`;
+DROP TABLE `�ԣ�`;

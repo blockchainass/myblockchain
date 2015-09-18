@@ -15,14 +15,14 @@
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#include "mysqldump_tool_chain_maker.h"
+#include "myblockchaindump_tool_chain_maker.h"
 #include "i_output_writer.h"
 #include "file_writer.h"
 #include "standard_writer.h"
 #include "compression_lz4_writer.h"
 #include "compression_zlib_writer.h"
 #include "sql_formatter.h"
-#include "mysqldump_tool_chain_maker_options.h"
+#include "myblockchaindump_tool_chain_maker_options.h"
 #include <boost/algorithm/string.hpp>
 
 using namespace Mysql::Tools::Dump;
@@ -132,7 +132,7 @@ I_object_reader* Mysqldump_tool_chain_maker::create_chain(
     this->get_message_handler(), this->get_object_id_generator(),
     m_options->get_object_queue_threads_count(object_queue_id),
     new Mysql::Instance_callback<void, bool, Mysqldump_tool_chain_maker>(
-      this, &Mysqldump_tool_chain_maker::mysql_thread_callback));
+      this, &Mysqldump_tool_chain_maker::myblockchain_thread_callback));
   this->register_progress_watchers_in_child(queue);
   queue->register_object_reader(m_main_object_reader);
   m_all_created_elements.push_back(queue);
@@ -140,12 +140,12 @@ I_object_reader* Mysqldump_tool_chain_maker::create_chain(
   return queue;
 }
 
-void Mysqldump_tool_chain_maker::mysql_thread_callback(bool is_starting)
+void Mysqldump_tool_chain_maker::myblockchain_thread_callback(bool is_starting)
 {
   if (is_starting)
-    mysql_thread_init();
+    myblockchain_thread_init();
   else
-    mysql_thread_end();
+    myblockchain_thread_end();
 }
 
 Mysqldump_tool_chain_maker::~Mysqldump_tool_chain_maker()
@@ -164,9 +164,9 @@ Mysqldump_tool_chain_maker::Mysqldump_tool_chain_maker(
     message_handler, Simple_id_generator* object_id_generator,
   Mysqldump_tool_chain_maker_options* options)
   : Abstract_chain_element(message_handler, object_id_generator),
-  Abstract_mysql_chain_element_extension(
+  Abstract_myblockchain_chain_element_extension(
     connection_provider, message_handler,
-    options->m_mysql_chain_element_options),
+    options->m_myblockchain_chain_element_options),
   m_options(options),
   m_main_object_reader(NULL)
 {}

@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2005, 2006, 2008 MySQL AB, 2009 Sun Microsystems, Inc.
+   Copyright (C) 2005, 2006, 2008 MyBlockchain AB, 2009 Sun Microsystems, Inc.
     All rights reserved. Use is subject to license terms.
 
    This program is free software; you can redistribute it and/or modify
@@ -85,8 +85,8 @@ public:
    * tables and creates a new query cache 2) readers make concurrent
    * stats queries on current query cache.
    *
-   * Writer provides any Ndb object required.  Its database name must be
-   * "mysql".  No reference to it is kept.
+   * Writer provides any Ndb object required.  Its blockchain name must be
+   * "myblockchain".  No reference to it is kept.
    *
    * Readers provide structs such as Bound on stack or in TLS.  The
    * structs are opaque.  With source code the structs can be cast to
@@ -106,7 +106,7 @@ public:
     BadSysEvents = BadSysTables,
     HaveSysEvents = 746,
     /*
-     * Following are for mysqld.  Most are consumed by mysqld itself
+     * Following are for myblockchaind.  Most are consumed by myblockchaind itself
      * and should therefore not be seen by clients.
      */
     MyNotAllow = 4721,    // stats thread not open for requests
@@ -127,7 +127,7 @@ public:
    * Check succeeds if all correct objects exist.  Specific errors are
    * BadSysTables (drop required) and NoSysTables.
    *
-   * Database of the Ndb object is used and must be "mysql" for kernel
+   * Database of the Ndb object is used and must be "myblockchain" for kernel
    * to see the tables.
    */
   int create_systables(Ndb* ndb);
@@ -136,7 +136,7 @@ public:
 
   /*
    * Set index operated on.  Allocates internal structs.  Makes no
-   * database access and keeps no references to the objects.
+   * blockchain access and keeps no references to the objects.
    */
   int set_index(const NdbDictionary::Index& index,
                 const NdbDictionary::Table& table);
@@ -199,7 +199,7 @@ public:
   void get_cache_info(CacheInfo& info, CacheType type) const;
 
   /*
-   * Saved head record retrieved with get_head().  The database fields
+   * Saved head record retrieved with get_head().  The blockchain fields
    * are updated by any method which reads stats tables.  Stats exist if
    * sampleVersion is not zero.
    */
@@ -219,7 +219,7 @@ public:
   };
 
   /*
-   * Get latest saved head record.  Makes no database access.
+   * Get latest saved head record.  Makes no blockchain access.
    */
   void get_head(Head& head) const;
 
@@ -272,7 +272,7 @@ public:
 
   /*
    * Queries take a range consisting of low and high bound (start key
-   * and end key in mysql).
+   * and end key in myblockchain).
    */
   struct Range {
     Range(Bound& bound1, Bound& bound2);

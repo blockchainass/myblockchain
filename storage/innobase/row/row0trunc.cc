@@ -23,7 +23,7 @@ TRUNCATE implementation
 Created 2013-04-12 Sunny Bains
 *******************************************************/
 
-#include "row0mysql.h"
+#include "row0myblockchain.h"
 #include "pars0pars.h"
 #include "dict0crea.h"
 #include "dict0boot.h"
@@ -1189,7 +1189,7 @@ row_truncate_rollback(
 
 			ut_ad(trx_is_started(trx));
 
-			trx_commit_for_mysql(trx);
+			trx_commit_for_myblockchain(trx);
 		}
 
 	} else if (corrupted && dict_table_is_temporary(table)) {
@@ -1238,7 +1238,7 @@ row_truncate_complete(
 		table->memcached_sync_count = 0;
 	}
 
-	row_mysql_unlock_data_dictionary(trx);
+	row_myblockchain_unlock_data_dictionary(trx);
 
 	DEBUG_SYNC_C("ib_trunc_table_trunc_completing");
 
@@ -1483,7 +1483,7 @@ row_truncate_update_sys_tables_during_fix_up(
 		table_id, new_table_id, reserve_dict_mutex, trx);
 
 	if (err == DB_SUCCESS) {
-		trx_commit_for_mysql(trx);
+		trx_commit_for_myblockchain(trx);
 		trx_free_for_background(trx);
 	}
 
@@ -1683,12 +1683,12 @@ row_truncate_sanity_checks(
 }
 
 /**
-Truncates a table for MySQL.
+Truncates a table for MyBlockchain.
 @param table		table being truncated
 @param trx		transaction covering the truncate
 @return	error code or DB_SUCCESS */
 dberr_t
-row_truncate_table_for_mysql(
+row_truncate_table_for_myblockchain(
 	dict_table_t* table,
 	trx_t* trx)
 {
@@ -1800,7 +1800,7 @@ row_truncate_table_for_mysql(
 	SELECT, .....*/
 	trx->op_info = "truncating table";
 	ut_a(trx->dict_operation_lock_mode == 0);
-	row_mysql_lock_data_dictionary(trx);
+	row_myblockchain_lock_data_dictionary(trx);
 	ut_ad(mutex_own(&dict_sys->mutex));
 	ut_ad(rw_lock_own(dict_operation_lock, RW_LOCK_X));
 
@@ -1845,7 +1845,7 @@ row_truncate_table_for_mysql(
 	if (!dict_table_is_temporary(table)) {
 
 		/* Temporary tables don't need undo logging for autocommit stmt.
-		On crash (i.e. mysql restart) temporary tables are anyway not
+		On crash (i.e. myblockchain restart) temporary tables are anyway not
 		accessible. */
 		mutex_enter(&trx->undo_mutex);
 
@@ -1887,7 +1887,7 @@ row_truncate_table_for_mysql(
 	the table/index and possibly change their metadata. All
 	DML/DDL are blocked by table level X lock, with a few exceptions
 	such as queries into information schema about the table,
-	MySQL could try to access index stats for this kind of query,
+	MyBlockchain could try to access index stats for this kind of query,
 	we need to use index locks to sync up */
 	dict_table_x_lock_indexes(table);
 
@@ -2104,7 +2104,7 @@ row_truncate_table_for_mysql(
 
 	if (trx_is_started(trx)) {
 
-		trx_commit_for_mysql(trx);
+		trx_commit_for_myblockchain(trx);
 	}
 
 	return(row_truncate_complete(table, trx, fsp_flags, logger, err));
@@ -2200,7 +2200,7 @@ truncate_t::fixup_tables_in_non_system_tablespace()
 
 			if (!fil_space_get((*it)->m_space_id)) {
 
-				/* Create the database directory for name,
+				/* Create the blockchain directory for name,
 				if it does not exist yet */
 				fil_create_directory_for_tablename(
 					(*it)->m_tablename);
@@ -2921,7 +2921,7 @@ Write a TRUNCATE log record for fixing up table if truncate crashes.
 @param start_ptr	buffer to write log record
 @param end_ptr		buffer end
 @param space_id		space id
-@param tablename	the table name in the usual databasename/tablename
+@param tablename	the table name in the usual blockchainname/tablename
 			format of InnoDB
 @param flags		tablespace flags
 @param format_flags	page format

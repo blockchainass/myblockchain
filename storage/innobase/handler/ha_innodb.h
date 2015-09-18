@@ -16,7 +16,7 @@ this program; if not, write to the Free Software Foundation, Inc.,
 
 *****************************************************************************/
 
-/* The InnoDB handler: the interface between MySQL and InnoDB. */
+/* The InnoDB handler: the interface between MyBlockchain and InnoDB. */
 
 /** "GEN_CLUST_INDEX" is the name reserved for InnoDB default
 system clustered index when there is no primary key. */
@@ -31,7 +31,7 @@ which uses space_id 0 and stores extra types of system pages like UNDO
 and doublewrite. */
 extern const char reserved_system_space_name[];
 
-/* Structure defines translation table between mysql index and InnoDB
+/* Structure defines translation table between myblockchain index and InnoDB
 index structures */
 struct innodb_idx_translate_t {
 
@@ -41,7 +41,7 @@ struct innodb_idx_translate_t {
 	ulint		array_size;	/*!< array size of index_mapping */
 
 	dict_index_t**	index_mapping;	/*!< index pointer array directly
-					maps to index in InnoDB from MySQL
+					maps to index in InnoDB from MyBlockchain
 					array index */
 };
 
@@ -56,9 +56,9 @@ struct innodb_col_templ_t {
 	ulint			n_v_col;
 
 	/** array of templates for virtual col and their base columns */
-	mysql_row_templ_t**	vtempl;
+	myblockchain_row_templ_t**	vtempl;
 
-	/** table's database name */
+	/** table's blockchain name */
 	char			db_name[MAX_DATABASE_NAME_LEN];
 
 	/** table name */
@@ -68,7 +68,7 @@ struct innodb_col_templ_t {
 	char			share_name[MAX_DATABASE_NAME_LEN
 					   + MAX_TABLE_NAME_LEN];
 
-	/** MySQL record length */
+	/** MyBlockchain record length */
 	ulint			rec_len;
 
 	/** default column value if any */
@@ -86,13 +86,13 @@ typedef struct st_innobase_share {
 					/*!< hash table chain node */
 	innodb_idx_translate_t
 			idx_trans_tbl;	/*!< index translation table between
-					MySQL and InnoDB */
+					MyBlockchain and InnoDB */
 	innodb_col_templ_t
 			s_templ;	/*!< table virtual column template
 					info */
 } INNOBASE_SHARE;
 
-/** Prebuilt structures in an InnoDB table handle used within MySQL */
+/** Prebuilt structures in an InnoDB table handle used within MyBlockchain */
 struct row_prebuilt_t;
 
 /** The class defining a handle to an InnoDB table */
@@ -421,7 +421,7 @@ public:
 		Cost_estimate*		cost);
 
 	/** Attempt to push down an index condition.
-	@param[in] keyno MySQL key number
+	@param[in] keyno MyBlockchain key number
 	@param[in] idx_cond Index condition to be checked
 	@return idx_cond if pushed; NULL if not pushed */
 	Item* idx_cond_push(uint keyno, Item* idx_cond);
@@ -459,7 +459,7 @@ protected:
 	/** Builds a 'template' to the prebuilt struct.
 
 	The template is used in fast retrieval of just those column
-	values MySQL needs in its processing.
+	values MyBlockchain needs in its processing.
 	@param whole_row true if access is needed to a whole row,
 	false if accessing individual fields is enough */
 	void build_template(bool whole_row);
@@ -467,7 +467,7 @@ protected:
 	virtual int info_low(uint, bool);
 
 	/**
-	MySQL calls this method at the end of each statement. This method
+	MyBlockchain calls this method at the end of each statement. This method
 	exists for readability only, called from reset(). The name reset()
 	doesn't give any clue that it is called at the end of a statement. */
 	int end_stmt();
@@ -483,7 +483,7 @@ protected:
 	this is set in external_lock function */
 	THD*			m_user_thd;
 
-	/** information for MySQL table locking */
+	/** information for MyBlockchain table locking */
 	INNOBASE_SHARE*		m_share;
 
 	/** buffer used in updates */
@@ -509,69 +509,69 @@ protected:
 	/** number of write_row() calls */
 	uint			m_num_write_row;
 
-        /** If mysql has locked with external_lock() */
-        bool                    m_mysql_has_locked;
+        /** If myblockchain has locked with external_lock() */
+        bool                    m_myblockchain_has_locked;
 };
 
 
 /* Some accessor functions which the InnoDB plugin needs, but which
-can not be added to mysql/plugin.h as part of the public interface;
+can not be added to myblockchain/plugin.h as part of the public interface;
 the definitions are bracketed with #ifdef INNODB_COMPATIBILITY_HOOKS */
 
 #ifndef INNODB_COMPATIBILITY_HOOKS
-#error InnoDB needs MySQL to be built with #define INNODB_COMPATIBILITY_HOOKS
+#error InnoDB needs MyBlockchain to be built with #define INNODB_COMPATIBILITY_HOOKS
 #endif
 
-LEX_CSTRING thd_query_unsafe(MYSQL_THD thd);
-size_t thd_query_safe(MYSQL_THD thd, char *buf, size_t buflen);
+LEX_CSTRING thd_query_unsafe(MYBLOCKCHAIN_THD thd);
+size_t thd_query_safe(MYBLOCKCHAIN_THD thd, char *buf, size_t buflen);
 
 extern "C" {
 
-CHARSET_INFO *thd_charset(MYSQL_THD thd);
+CHARSET_INFO *thd_charset(MYBLOCKCHAIN_THD thd);
 
 /** Check if a user thread is a replication slave thread
 @param thd user thread
 @retval 0 the user thread is not a replication slave thread
 @retval 1 the user thread is a replication slave thread */
-int thd_slave_thread(const MYSQL_THD thd);
+int thd_slave_thread(const MYBLOCKCHAIN_THD thd);
 
 /** Check if a user thread is running a non-transactional update
 @param thd user thread
 @retval 0 the user thread is not running a non-transactional update
 @retval 1 the user thread is running a non-transactional update */
-int thd_non_transactional_update(const MYSQL_THD thd);
+int thd_non_transactional_update(const MYBLOCKCHAIN_THD thd);
 
 /** Get the user thread's binary logging format
 @param thd user thread
 @return Value to be used as index into the binlog_format_names array */
-int thd_binlog_format(const MYSQL_THD thd);
+int thd_binlog_format(const MYBLOCKCHAIN_THD thd);
 
 /** Check if binary logging is filtered for thread's current db.
 @param thd Thread handle
 @retval 1 the query is not filtered, 0 otherwise. */
-bool thd_binlog_filter_ok(const MYSQL_THD thd);
+bool thd_binlog_filter_ok(const MYBLOCKCHAIN_THD thd);
 
 /** Check if the query may generate row changes which may end up in the binary.
 @param thd Thread handle
 @retval 1 the query may generate row changes, 0 otherwise.
 */
-bool thd_sqlcom_can_generate_row_events(const MYSQL_THD thd);
+bool thd_sqlcom_can_generate_row_events(const MYBLOCKCHAIN_THD thd);
 
 /** Gets information on the durability property requested by a thread.
 @param thd Thread handle
 @return a durability property. */
-durability_properties thd_get_durability_property(const MYSQL_THD thd);
+durability_properties thd_get_durability_property(const MYBLOCKCHAIN_THD thd);
 
 /** Get the auto_increment_offset auto_increment_increment.
 @param thd Thread object
 @param off auto_increment_offset
 @param inc auto_increment_increment */
-void thd_get_autoinc(const MYSQL_THD thd, ulong* off, ulong* inc);
+void thd_get_autoinc(const MYBLOCKCHAIN_THD thd, ulong* off, ulong* inc);
 
 /** Is strict sql_mode set.
 @param thd Thread object
 @return True if sql_mode has strict mode (all or trans), false otherwise. */
-bool thd_is_strict_mode(const MYSQL_THD thd);
+bool thd_is_strict_mode(const MYBLOCKCHAIN_THD thd);
 
 /** Get the partition_info working copy.
 @param	thd	Thread object.
@@ -595,16 +595,16 @@ typedef struct new_ft_info
 } NEW_FT_INFO;
 
 /**
-Allocates an InnoDB transaction for a MySQL handler object.
+Allocates an InnoDB transaction for a MyBlockchain handler object.
 @return InnoDB transaction handle */
 trx_t*
 innobase_trx_allocate(
-	MYSQL_THD	thd);	/*!< in: user thread handle */
+	MYBLOCKCHAIN_THD	thd);	/*!< in: user thread handle */
 
-/** Match index columns between MySQL and InnoDB.
+/** Match index columns between MyBlockchain and InnoDB.
 This function checks whether the index column information
-is consistent between KEY info from mysql and that from innodb index.
-@param[in]	key_info	Index info from mysql
+is consistent between KEY info from myblockchain and that from innodb index.
+@param[in]	key_info	Index info from myblockchain
 @param[in]	index_info	Index info from InnoDB
 @return true if all column types match. */
 bool
@@ -620,7 +620,7 @@ and returns true.
 @return true if the index name matches the reserved name */
 bool
 innobase_index_name_is_reserved(
-	THD*			thd,		/*!< in/out: MySQL connection */
+	THD*			thd,		/*!< in/out: MyBlockchain connection */
 	const KEY*		key_info,	/*!< in: Indexes to be
 						created */
 	ulint			num_of_keys)	/*!< in: Number of indexes to
@@ -762,9 +762,9 @@ public:
 	}
 
 	/** Normalizes a table name string.
-	A normalized name consists of the database name catenated to '/' and
+	A normalized name consists of the blockchain name catenated to '/' and
 	table name. An example: test/mytable. On Windows normalization puts
-	both the database name and the table name always to lower case if
+	both the blockchain name and the table name always to lower case if
 	"set_lower_case" is set to true.
 	@param[in,out]	norm_name	Buffer to return the normalized name in.
 	@param[in]	name		Table name string.
@@ -887,7 +887,7 @@ on the Doc ID column.
 fts_doc_id_index_enum
 innobase_fts_check_doc_id_index(
 	const dict_table_t*	table,		/*!< in: table definition */
-	const TABLE*		altered_table,	/*!< in: MySQL table
+	const TABLE*		altered_table,	/*!< in: MyBlockchain table
 						that is being altered */
 	ulint*			fts_doc_col_no)	/*!< out: The column number for
 						Doc ID */
@@ -895,7 +895,7 @@ innobase_fts_check_doc_id_index(
 
 /**
 Check whether the table has a unique index with FTS_DOC_ID_INDEX_NAME
-on the Doc ID column in MySQL create index definition.
+on the Doc ID column in MyBlockchain create index definition.
 @return FTS_EXIST_DOC_ID_INDEX if there exists the FTS_DOC_ID index,
 FTS_INCORRECT_DOC_ID_INDEX if the FTS_DOC_ID index is of wrong format */
 fts_doc_id_index_enum
@@ -929,8 +929,8 @@ innobase_fts_count_matches(
 	FT_INFO_EXT*	fts_hdl);	/*!< in: FTS handler */
 
 /**
-Copy table flags from MySQL's HA_CREATE_INFO into an InnoDB table object.
-Those flags are stored in .frm file and end up in the MySQL table object,
+Copy table flags from MyBlockchain's HA_CREATE_INFO into an InnoDB table object.
+Those flags are stored in .frm file and end up in the MyBlockchain table object,
 but are frequently used inside InnoDB so we keep their copies into the
 InnoDB table object. */
 void
@@ -939,8 +939,8 @@ innobase_copy_frm_flags_from_create_info(
 	const HA_CREATE_INFO*	create_info);	/*!< in: create info */
 
 /**
-Copy table flags from MySQL's TABLE_SHARE into an InnoDB table object.
-Those flags are stored in .frm file and end up in the MySQL table object,
+Copy table flags from MyBlockchain's TABLE_SHARE into an InnoDB table object.
+Those flags are stored in .frm file and end up in the MyBlockchain table object,
 but are frequently used inside InnoDB so we keep their copies into the
 InnoDB table object. */
 void
@@ -950,7 +950,7 @@ innobase_copy_frm_flags_from_table_share(
 
 /** Set up base columns for virtual column
 @param[in]	table	the InnoDB table
-@param[in]	field	MySQL field
+@param[in]	field	MyBlockchain field
 @param[in,out]	v_col	virtual column to be set up */
 void
 innodb_base_col_setup(
@@ -962,11 +962,11 @@ innodb_base_col_setup(
 #define innobase_is_v_fld(field) ((field)->gcol_info && !(field)->stored_in_db)
 
 /** Release temporary latches.
-Call this function when mysqld passes control to the client. That is to
+Call this function when myblockchaind passes control to the client. That is to
 avoid deadlocks on the adaptive hash S-latch possibly held by thd. For more
 documentation, see handler.cc.
 @param[in]	hton	Handlerton.
-@param[in]	thd	MySQL thread.
+@param[in]	thd	MyBlockchain thread.
 @return 0 */
 int
 innobase_release_temporary_latches(
@@ -982,33 +982,33 @@ innobase_release_temporary_latches(
 	create_table_info_t::normalize_table_name_low(norm_name, name, FALSE)
 #endif /* _WIN32 */
 
-/** Obtain the InnoDB transaction of a MySQL thread.
-@param[in,out]	thd	MySQL thread handler.
+/** Obtain the InnoDB transaction of a MyBlockchain thread.
+@param[in,out]	thd	MyBlockchain thread handler.
 @return reference to transaction pointer */
 trx_t*& thd_to_trx(THD*	thd);
 
-/** Converts an InnoDB error code to a MySQL error code.
-Also tells to MySQL about a possible transaction rollback inside InnoDB caused
+/** Converts an InnoDB error code to a MyBlockchain error code.
+Also tells to MyBlockchain about a possible transaction rollback inside InnoDB caused
 by a lock wait timeout or a deadlock.
 @param[in]	error	InnoDB error code.
 @param[in]	flags	InnoDB table flags or 0.
-@param[in]	thd	MySQL thread or NULL.
-@return MySQL error code */
+@param[in]	thd	MyBlockchain thread or NULL.
+@return MyBlockchain error code */
 int
-convert_error_code_to_mysql(
+convert_error_code_to_myblockchain(
 	dberr_t	error,
 	ulint	flags,
 	THD*	thd);
 
-/** Converts a search mode flag understood by MySQL to a flag understood
+/** Converts a search mode flag understood by MyBlockchain to a flag understood
 by InnoDB.
-@param[in]	find_flag	MySQL search mode flag.
+@param[in]	find_flag	MyBlockchain search mode flag.
 @return	InnoDB search mode flag. */
 page_cur_mode_t
 convert_search_mode_to_innobase(
 	enum ha_rkey_function	find_flag);
 
-/** Commits a transaction in an InnoDB database.
+/** Commits a transaction in an InnoDB blockchain.
 @param[in]	trx	Transaction handle. */
 void
 innobase_commit_low(
@@ -1029,11 +1029,11 @@ innodb_rec_per_key(
 	ha_rows		records);
 
 /** Build template for the virtual columns and their base columns
-@param[in]	table		MySQL TABLE
+@param[in]	table		MyBlockchain TABLE
 @param[in]	ib_table	InnoDB dict_table_t
 @param[in,out]	share		InnoDB share structure
 @param[in]	locked		true if innobase_share_mutex is held
-@param[in]	share_tbl_name	original MySQL table name */
+@param[in]	share_tbl_name	original MyBlockchain table name */
 void
 innobase_build_v_templ(
 	const TABLE*		table,
@@ -1050,25 +1050,25 @@ free_share_vtemp(
 
 /** Refresh template for the virtual columns and their base columns if
 the share structure exists
-@param[in]	table		MySQL TABLE
+@param[in]	table		MyBlockchain TABLE
 @param[in]	ib_table	InnoDB dict_table_t
 @param[in]	table_name	table_name used to find the share structure */
 void
 refresh_share_vtempl(
-	const TABLE*		mysql_table,
+	const TABLE*		myblockchain_table,
 	const dict_table_t*	ib_table,
 	const char*	table_name);
 
-/** callback used by MySQL server layer to initialized
+/** callback used by MyBlockchain server layer to initialized
 the table virtual columns' template
-@param[in]	table		MySQL TABLE
+@param[in]	table		MyBlockchain TABLE
 @param[in,out]	ib_table	InnoDB dict_table_t */
 void
 innobase_build_v_templ_callback(
         const TABLE*	table,
         void*		ib_table);
 
-/** Callback function definition, used by MySQL server layer to initialized
+/** Callback function definition, used by MyBlockchain server layer to initialized
 the table virtual columns' template */
 typedef void (*my_gcolumn_templatecallback_t)(const TABLE*, void*);
 

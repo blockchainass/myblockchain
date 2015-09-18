@@ -799,7 +799,7 @@ btr_page_get_father_node_ptr_func(
 		ib::fatal()
 			<< "You should dump + drop + reimport the table to"
 			<< " fix the corruption. If the crash happens at"
-			<< " database startup. " << FORCE_RECOVERY_MSG
+			<< " blockchain startup. " << FORCE_RECOVERY_MSG
 			<< " Then dump + drop + reimport.";
 	}
 

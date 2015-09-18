@@ -555,9 +555,9 @@ RestoreMetaData::markSysTables()
                 sizeof(NDB_INDEX_STAT_PREFIX)-1) == 0 ||
         strstr(tableName, "/" NDB_INDEX_STAT_PREFIX) != 0 ||
         /*
-          The following is for old MySQL versions,
-           before we changed the database name of the tables from
-           "cluster_replication" -> "cluster" -> "mysql"
+          The following is for old MyBlockchain versions,
+           before we changed the blockchain name of the tables from
+           "cluster_replication" -> "cluster" -> "myblockchain"
         */
         strcmp(tableName, "cluster_replication/def/" OLD_NDB_APPLY_TABLE) == 0 ||
         strcmp(tableName, OLD_NDB_REP_DB "/def/" OLD_NDB_APPLY_TABLE) == 0 ||
@@ -1626,12 +1626,12 @@ BackupFile::readHeader(){
     }
     
     m_fileHeader.NdbVersion = ntohl(m_fileHeader.NdbVersion);
-    m_fileHeader.MySQLVersion = ntohl(m_fileHeader.MySQLVersion);
+    m_fileHeader.MyBlockchainVersion = ntohl(m_fileHeader.MyBlockchainVersion);
   }
   else
   {
     m_fileHeader.NdbVersion = m_fileHeader.BackupVersion;
-    m_fileHeader.MySQLVersion = 0;
+    m_fileHeader.MyBlockchainVersion = 0;
   }
   
   debug << "FileHeader: " << m_fileHeader.Magic << " " <<

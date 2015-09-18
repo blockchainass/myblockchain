@@ -1,0 +1,50 @@
+include/master-slave.inc
+Warnings:
+Note	####	Sending passwords in plain text without SSL/TLS is extremely insecure.
+Note	####	Storing MyBlockchain user name or password information in the master info repository is not secure and is therefore not recommended. Please consider using the USER and PASSWORD connection options for START SLAVE; see the 'START SLAVE Syntax' in the MyBlockchain Manual for more information.
+[connection master]
+drop blockchain if exists myblockchaintest1;
+create blockchain myblockchaintest1 /*!40100 character set latin2 */;
+use myblockchaintest1;
+drop table if exists t1;
+create table t1 (a varchar(255) character set latin2, b varchar(4));
+SET CHARACTER SET cp1250_latin2;
+INSERT INTO t1 VALUES ('�����','80');
+INSERT INTO t1 VALUES ('�����','90');
+INSERT INTO t1 VALUES ('����','A0');
+INSERT INTO t1 VALUES ('������','B0');
+INSERT INTO t1 VALUES ('����������������','C0');
+INSERT INTO t1 VALUES ('����������������','D0');
+INSERT INTO t1 VALUES ('����������������','E0');
+INSERT INTO t1 VALUES ('����������������','F0');
+select "--- on master ---";
+--- on master ---
+--- on master ---
+select hex(a),b from t1 order by b;
+hex(a)	b
+A9A6ABAEAC	80
+B9B6BBBEBC	90
+A3A1AAAF	A0
+B3B1BAA5B5BF	B0
+C0C1C2C3C4C5C6C7C8C9CACBCCCDCECF	C0
+D0D1D2D3D4D5D6D7D8D9DADBDCDDDEDF	D0
+E0E1E2E3E4E5E6E7E8E9EAEBECEDEEEF	E0
+F0F1F2F3F4F5F6F7F8F9FAFBFCFDFEFF	F0
+include/sync_slave_sql_with_master.inc
+use myblockchaintest1;
+select "--- on slave ---";
+--- on slave ---
+--- on slave ---
+select hex(a),b from t1 order by b;
+hex(a)	b
+A9A6ABAEAC	80
+B9B6BBBEBC	90
+A3A1AAAF	A0
+B3B1BAA5B5BF	B0
+C0C1C2C3C4C5C6C7C8C9CACBCCCDCECF	C0
+D0D1D2D3D4D5D6D7D8D9DADBDCDDDEDF	D0
+E0E1E2E3E4E5E6E7E8E9EAEBECEDEEEF	E0
+F0F1F2F3F4F5F6F7F8F9FAFBFCFDFEFF	F0
+drop blockchain myblockchaintest1;
+include/sync_slave_sql_with_master.inc
+include/rpl_end.inc

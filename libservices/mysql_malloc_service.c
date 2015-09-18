@@ -14,4 +14,4 @@
    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA */
 
 #include <service_versions.h>
-SERVICE_VERSION *mysql_malloc_service= (void*)VERSION_mysql_malloc;
+SERVICE_VERSION *myblockchain_malloc_service= (void*)VERSION_myblockchain_malloc;

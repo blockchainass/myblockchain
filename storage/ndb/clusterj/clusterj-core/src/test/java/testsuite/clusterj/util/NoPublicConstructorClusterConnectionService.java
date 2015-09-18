@@ -17,10 +17,10 @@
 
 package testsuite.clusterj.util;
 
-import com.mysql.clusterj.core.store.ClusterConnection;
+import com.myblockchain.clusterj.core.store.ClusterConnection;
 
 public class NoPublicConstructorClusterConnectionService 
-        implements com.mysql.clusterj.core.store.ClusterConnectionService {
+        implements com.myblockchain.clusterj.core.store.ClusterConnectionService {
 
     private NoPublicConstructorClusterConnectionService() {}
 

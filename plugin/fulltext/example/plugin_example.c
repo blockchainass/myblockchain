@@ -17,7 +17,7 @@
 #include "my_config.h"
 #include <stdlib.h>
 #include <ctype.h>
-#include <mysql/plugin_ftparser.h>
+#include <myblockchain/plugin_ftparser.h>
 #include <m_ctype.h>
 
 
@@ -101,7 +101,7 @@ static int simple_parser_plugin_deinit(void *arg __attribute__((unused)))
     1                    failure (cannot happen)
 */
 
-static int simple_parser_init(MYSQL_FTPARSER_PARAM *param
+static int simple_parser_init(MYBLOCKCHAIN_FTPARSER_PARAM *param
                               __attribute__((unused)))
 {
   return(0);
@@ -122,7 +122,7 @@ static int simple_parser_init(MYSQL_FTPARSER_PARAM *param
     1                    failure (cannot happen)
 */
 
-static int simple_parser_deinit(MYSQL_FTPARSER_PARAM *param
+static int simple_parser_deinit(MYBLOCKCHAIN_FTPARSER_PARAM *param
                                 __attribute__((unused)))
 {
   return(0);
@@ -145,12 +145,12 @@ static int simple_parser_deinit(MYSQL_FTPARSER_PARAM *param
     the list of search terms when parsing a search string.
 */
 
-static void add_word(MYSQL_FTPARSER_PARAM *param, char *word, size_t len)
+static void add_word(MYBLOCKCHAIN_FTPARSER_PARAM *param, char *word, size_t len)
 {
-  MYSQL_FTPARSER_BOOLEAN_INFO bool_info=
+  MYBLOCKCHAIN_FTPARSER_BOOLEAN_INFO bool_info=
     { FT_TOKEN_WORD, 0, 0, 0, 0, (word - param->doc), ' ', 0 };
 
-  param->mysql_add_word(param, word, len, &bool_info);
+  param->myblockchain_add_word(param, word, len, &bool_info);
 }
 
 /*
@@ -164,14 +164,14 @@ static void add_word(MYSQL_FTPARSER_PARAM *param, char *word, size_t len)
     This is the main plugin function which is called to parse
     a document or a search query. The call mode is set in
     param->mode.  This function simply splits the text into words
-    and passes every word to the MySQL full-text indexing engine.
+    and passes every word to the MyBlockchain full-text indexing engine.
 
   RETURN VALUE
     0                    success
     1                    failure (cannot happen)
 */
 
-static int simple_parser_parse(MYSQL_FTPARSER_PARAM *param)
+static int simple_parser_parse(MYBLOCKCHAIN_FTPARSER_PARAM *param)
 {
   char *end, *start, *docend= param->doc + param->length;
 
@@ -200,9 +200,9 @@ static int simple_parser_parse(MYSQL_FTPARSER_PARAM *param)
   Plugin type-specific descriptor
 */
 
-static struct st_mysql_ftparser simple_parser_descriptor=
+static struct st_myblockchain_ftparser simple_parser_descriptor=
 {
-  MYSQL_FTPARSER_INTERFACE_VERSION, /* interface version      */
+  MYBLOCKCHAIN_FTPARSER_INTERFACE_VERSION, /* interface version      */
   simple_parser_parse,              /* parsing function       */
   simple_parser_init,               /* parser init function   */
   simple_parser_deinit              /* parser deinit function */
@@ -212,7 +212,7 @@ static struct st_mysql_ftparser simple_parser_descriptor=
   Plugin status variables for SHOW STATUS
 */
 
-static struct st_mysql_show_var simple_status[]=
+static struct st_myblockchain_show_var simple_status[]=
 {
   {"static",     (char *)"just a static text",     SHOW_CHAR, SHOW_SCOPE_GLOBAL},
   {"called",     (char *)&number_of_calls, SHOW_LONG, SHOW_SCOPE_GLOBAL},
@@ -226,31 +226,31 @@ static struct st_mysql_show_var simple_status[]=
 static long     sysvar_one_value;
 static char     *sysvar_two_value;
 
-static MYSQL_SYSVAR_LONG(simple_sysvar_one, sysvar_one_value,
+static MYBLOCKCHAIN_SYSVAR_LONG(simple_sysvar_one, sysvar_one_value,
   PLUGIN_VAR_RQCMDARG,
   "Simple fulltext parser example system variable number one. Give a number.",
   NULL, NULL, 77L, 7L, 777L, 0);
 
-static MYSQL_SYSVAR_STR(simple_sysvar_two, sysvar_two_value,
+static MYBLOCKCHAIN_SYSVAR_STR(simple_sysvar_two, sysvar_two_value,
   PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_MEMALLOC,
   "Simple fulltext parser example system variable number two. Give a string.",
   NULL, NULL, "simple sysvar two default");
 
-static MYSQL_THDVAR_LONG(simple_thdvar_one,
+static MYBLOCKCHAIN_THDVAR_LONG(simple_thdvar_one,
   PLUGIN_VAR_RQCMDARG,
   "Simple fulltext parser example thread variable number one. Give a number.",
   NULL, NULL, 88L, 8L, 888L, 0);
 
-static MYSQL_THDVAR_STR(simple_thdvar_two,
+static MYBLOCKCHAIN_THDVAR_STR(simple_thdvar_two,
   PLUGIN_VAR_RQCMDARG | PLUGIN_VAR_MEMALLOC,
   "Simple fulltext parser example thread variable number two. Give a string.",
   NULL, NULL, "simple thdvar two default");
 
-static struct st_mysql_sys_var* simple_system_variables[]= {
-  MYSQL_SYSVAR(simple_sysvar_one),
-  MYSQL_SYSVAR(simple_sysvar_two),
-  MYSQL_SYSVAR(simple_thdvar_one),
-  MYSQL_SYSVAR(simple_thdvar_two),
+static struct st_myblockchain_sys_var* simple_system_variables[]= {
+  MYBLOCKCHAIN_SYSVAR(simple_sysvar_one),
+  MYBLOCKCHAIN_SYSVAR(simple_sysvar_two),
+  MYBLOCKCHAIN_SYSVAR(simple_thdvar_one),
+  MYBLOCKCHAIN_SYSVAR(simple_thdvar_two),
   NULL
 };
 
@@ -258,9 +258,9 @@ static struct st_mysql_sys_var* simple_system_variables[]= {
   Plugin library descriptor
 */
 
-mysql_declare_plugin(ftexample)
+myblockchain_declare_plugin(ftexample)
 {
-  MYSQL_FTPARSER_PLUGIN,      /* type                            */
+  MYBLOCKCHAIN_FTPARSER_PLUGIN,      /* type                            */
   &simple_parser_descriptor,  /* descriptor                      */
   "simple_parser",            /* name                            */
   "Oracle Corp",              /* author                          */
@@ -274,5 +274,5 @@ mysql_declare_plugin(ftexample)
   NULL,
   0,
 }
-mysql_declare_plugin_end;
+myblockchain_declare_plugin_end;
 

@@ -16,10 +16,10 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
  */
 
-package com.mysql.clusterj.bindings;
+package com.myblockchain.clusterj.bindings;
 
-import com.mysql.cluster.ndbj.NdbIndexOperation;
-import com.mysql.clusterj.core.store.IndexOperation;
+import com.myblockchain.cluster.ndbj.NdbIndexOperation;
+import com.myblockchain.clusterj.core.store.IndexOperation;
 
 /**
  *

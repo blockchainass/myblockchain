@@ -19,10 +19,10 @@
 
 #include "client_priv.h"
 #include "my_default.h"
-#include "mysqlcheck.h"
+#include "myblockchaincheck.h"
 #include <m_ctype.h>
-#include <mysql_version.h>
-#include <mysqld_error.h>
+#include <myblockchain_version.h>
+#include <myblockchaind_error.h>
 #include <sslopt-vars.h>
 #include <welcome_copyright_notice.h> /* ORACLE_WELCOME_COPYRIGHT_NOTICE */
 
@@ -33,24 +33,24 @@ using std::vector;
 /* Exit codes */
 
 #define EX_USAGE 1
-#define EX_MYSQLERR 2
+#define EX_MYBLOCKCHAINERR 2
 
-static MYSQL mysql_connection, *sock = 0;
+static MYBLOCKCHAIN myblockchain_connection, *sock = 0;
 static my_bool opt_alldbs = 0, opt_check_only_changed = 0, opt_extended = 0,
-               opt_compress = 0, opt_databases = 0, opt_fast = 0,
+               opt_compress = 0, opt_blockchains = 0, opt_fast = 0,
                opt_medium_check = 0, opt_quick = 0, opt_all_in_1 = 0,
                opt_silent = 0, opt_auto_repair = 0, ignore_errors = 0,
                tty_password= 0, opt_frm= 0, debug_info_flag= 0, debug_check_flag= 0,
                opt_fix_table_names= 0, opt_fix_db_names= 0, opt_upgrade= 0,
                opt_write_binlog= 1, opt_secure_auth=TRUE;
-static uint verbose = 0, opt_mysql_port=0;
+static uint verbose = 0, opt_myblockchain_port=0;
 static int my_end_arg;
-static char * opt_mysql_unix_port = 0;
+static char * opt_myblockchain_unix_port = 0;
 static char *opt_password = 0, *current_user = 0,
 	    *default_charset= 0, *current_host= 0;
 static char *opt_plugin_dir= 0, *opt_default_auth= 0;
 static int first_error = 0;
-static const char *opt_skip_database= "";
+static const char *opt_skip_blockchain= "";
 #if defined (_WIN32) && !defined (EMBEDDED_LIBRARY)
 static char *shared_memory_base_name=0;
 #endif
@@ -59,14 +59,14 @@ static char *opt_bind_addr = NULL;
 
 static struct my_option my_long_options[] =
 {
-  {"all-databases", 'A',
-   "Check all the databases. This is the same as --databases with all databases selected.",
+  {"all-blockchains", 'A',
+   "Check all the blockchains. This is the same as --blockchains with all blockchains selected.",
    &opt_alldbs, &opt_alldbs, 0, GET_BOOL, NO_ARG, 0, 0, 0, 0,
    0, 0},
   {"analyze", 'a', "Analyze given tables.", 0, 0, 0, GET_NO_ARG, NO_ARG, 0, 0,
    0, 0, 0, 0},
   {"all-in-1", '1',
-   "Instead of issuing one query for each table, use one query per database, naming all tables in the database in a comma-separated list.",
+   "Instead of issuing one query for each table, use one query per blockchain, naming all tables in the blockchain in a comma-separated list.",
    &opt_all_in_1, &opt_all_in_1, 0, GET_BOOL, NO_ARG, 0, 0, 0,
    0, 0, 0},
   {"auto-repair", OPT_AUTO_REPAIR,
@@ -90,9 +90,9 @@ static struct my_option my_long_options[] =
   {"compress", OPT_COMPRESS, "Use compression in server/client protocol.",
    &opt_compress, &opt_compress, 0, GET_BOOL, NO_ARG, 0, 0, 0,
    0, 0, 0},
-  {"databases", 'B',
-   "Check several databases. Note the difference in usage; in this case no tables are given. All name arguments are regarded as database names.",
-   &opt_databases, &opt_databases, 0, GET_BOOL, NO_ARG,
+  {"blockchains", 'B',
+   "Check several blockchains. Note the difference in usage; in this case no tables are given. All name arguments are regarded as blockchain names.",
+   &opt_blockchains, &opt_blockchains, 0, GET_BOOL, NO_ARG,
    0, 0, 0, 0, 0, 0},
 #ifdef DBUG_OFF
   {"debug", '#', "This is a non-debug version. Catch this and exit.",
@@ -121,7 +121,7 @@ static struct my_option my_long_options[] =
   {"fast",'F', "Check only tables that haven't been closed properly.",
    &opt_fast, &opt_fast, 0, GET_BOOL, NO_ARG, 0, 0, 0, 0, 0,
    0},
-  {"fix-db-names", OPT_FIX_DB_NAMES, "Fix database names.",
+  {"fix-db-names", OPT_FIX_DB_NAMES, "Fix blockchain names.",
     &opt_fix_db_names, &opt_fix_db_names,
     0, GET_BOOL, NO_ARG, 0, 0, 0, 0, 0, 0},
   {"fix-table-names", OPT_FIX_TABLE_NAMES, "Fix table names.",
@@ -162,14 +162,14 @@ static struct my_option my_long_options[] =
    &opt_plugin_dir, &opt_plugin_dir, 0,
    GET_STR, REQUIRED_ARG, 0, 0, 0, 0, 0, 0},
   {"port", 'P', "Port number to use for connection or 0 for default to, in "
-   "order of preference, my.cnf, $MYSQL_TCP_PORT, "
-#if MYSQL_PORT_DEFAULT == 0
+   "order of preference, my.cnf, $MYBLOCKCHAIN_TCP_PORT, "
+#if MYBLOCKCHAIN_PORT_DEFAULT == 0
    "/etc/services, "
 #endif
-   "built-in default (" STRINGIFY_ARG(MYSQL_PORT) ").",
-   &opt_mysql_port, &opt_mysql_port, 0, GET_UINT, REQUIRED_ARG, 0, 0, 0, 0, 0,
+   "built-in default (" STRINGIFY_ARG(MYBLOCKCHAIN_PORT) ").",
+   &opt_myblockchain_port, &opt_myblockchain_port, 0, GET_UINT, REQUIRED_ARG, 0, 0, 0, 0, 0,
    0},
-  {"protocol", OPT_MYSQL_PROTOCOL, "The protocol to use for connection (tcp, socket, pipe, memory).",
+  {"protocol", OPT_MYBLOCKCHAIN_PROTOCOL, "The protocol to use for connection (tcp, socket, pipe, memory).",
    0, 0, 0, GET_STR,  REQUIRED_ARG, 0, 0, 0, 0, 0, 0},
   {"quick", 'q',
    "If you are using this option with CHECK TABLE, it prevents the check from scanning the rows to check for wrong links. This is the fastest check. If you are using this option with REPAIR TABLE, it will try to repair only the index tree. This is the fastest repair method for a table.",
@@ -185,14 +185,14 @@ static struct my_option my_long_options[] =
 #endif
   {"silent", 's', "Print only error messages.", &opt_silent,
    &opt_silent, 0, GET_BOOL, NO_ARG, 0, 0, 0, 0, 0, 0},
-  {"skip_database", 0, "Don't process the database specified as argument",
-   &opt_skip_database, &opt_skip_database, 0, GET_STR, REQUIRED_ARG,
+  {"skip_blockchain", 0, "Don't process the blockchain specified as argument",
+   &opt_skip_blockchain, &opt_skip_blockchain, 0, GET_STR, REQUIRED_ARG,
    0, 0, 0, 0, 0, 0},
   {"socket", 'S', "The socket file to use for connection.",
-   &opt_mysql_unix_port, &opt_mysql_unix_port, 0, GET_STR,
+   &opt_myblockchain_unix_port, &opt_myblockchain_unix_port, 0, GET_STR,
    REQUIRED_ARG, 0, 0, 0, 0, 0, 0},
 #include <sslopt-longopts.h>
-  {"tables", OPT_TABLES, "Overrides option --databases (-B).", 0, 0, 0,
+  {"tables", OPT_TABLES, "Overrides option --blockchains (-B).", 0, 0, 0,
    GET_NO_ARG, NO_ARG, 0, 0, 0, 0, 0, 0},
   {"use-frm", OPT_FRM,
    "When used with REPAIR, get table structure from .frm file, so the table can be repaired even if .MYI header is corrupted.",
@@ -207,7 +207,7 @@ static struct my_option my_long_options[] =
   {0, 0, 0, 0, 0, 0, GET_NO_ARG, NO_ARG, 0, 0, 0, 0, 0, 0}
 };
 
-static const char *load_default_groups[] = { "mysqlcheck", "client", 0 };
+static const char *load_default_groups[] = { "myblockchaincheck", "client", 0 };
 
 
 static void print_version(void);
@@ -215,7 +215,7 @@ static void usage(void);
 static int get_options(int *argc, char ***argv);
 static int dbConnect(char *host, char *user,char *passwd);
 static void dbDisconnect(char *host);
-static void DBerror(MYSQL *mysql, string when);
+static void DBerror(MYBLOCKCHAIN *myblockchain, string when);
 static void safe_exit(int error);
 
 static int what_to_do = 0;
@@ -224,7 +224,7 @@ static int what_to_do = 0;
 static void print_version(void)
 {
   printf("%s  Ver %s Distrib %s, for %s (%s)\n", my_progname, CHECK_VERSION,
-   MYSQL_SERVER_VERSION, SYSTEM_TYPE, MACHINE_TYPE);
+   MYBLOCKCHAIN_SERVER_VERSION, SYSTEM_TYPE, MACHINE_TYPE);
 } /* print_version */
 
 
@@ -235,19 +235,19 @@ static void usage(void)
   puts("This program can be used to CHECK (-c, -m, -C), REPAIR (-r), ANALYZE (-a),");
   puts("or OPTIMIZE (-o) tables. Some of the options (like -e or -q) can be");
   puts("used at the same time. Not all options are supported by all storage engines.");
-  puts("Please consult the MySQL manual for latest information about the");
+  puts("Please consult the MyBlockchain manual for latest information about the");
   puts("above. The options -c, -r, -a, and -o are exclusive to each other, which");
   puts("means that the last option will be used, if several was specified.\n");
   puts("The option -c will be used by default, if none was specified. You");
   puts("can change the default behavior by making a symbolic link, or");
   puts("copying this file somewhere with another name, the alternatives are:");
-  puts("mysqlrepair:   The default option will be -r");
-  puts("mysqlanalyze:  The default option will be -a");
-  puts("mysqloptimize: The default option will be -o\n");
-  printf("Usage: %s [OPTIONS] database [tables]\n", my_progname);
-  printf("OR     %s [OPTIONS] --databases DB1 [DB2 DB3...]\n",
+  puts("myblockchainrepair:   The default option will be -r");
+  puts("myblockchainanalyze:  The default option will be -a");
+  puts("myblockchainoptimize: The default option will be -o\n");
+  printf("Usage: %s [OPTIONS] blockchain [tables]\n", my_progname);
+  printf("OR     %s [OPTIONS] --blockchains DB1 [DB2 DB3...]\n",
 	 my_progname);
-  printf("OR     %s [OPTIONS] --all-databases\n", my_progname);
+  printf("OR     %s [OPTIONS] --all-blockchains\n", my_progname);
   print_defaults("my", load_default_groups);
   /*
     Turn default for zombies off so that the help on how to 
@@ -297,7 +297,7 @@ get_one_option(int optid, const struct my_option *opt __attribute__((unused)),
     break;
   case OPT_FIX_DB_NAMES:
     what_to_do= DO_UPGRADE;
-    opt_databases= 1;
+    opt_blockchains= 1;
     CLIENT_WARN_DEPRECATED_NO_REPLACEMENT("--fix-db-names");
     break;
   case OPT_FIX_TABLE_NAMES:
@@ -330,7 +330,7 @@ get_one_option(int optid, const struct my_option *opt __attribute__((unused)),
     break;
   case 'W':
 #ifdef _WIN32
-    opt_protocol = MYSQL_PROTOCOL_PIPE;
+    opt_protocol = MYBLOCKCHAIN_PROTOCOL_PIPE;
 #endif
     break;
   case '#':
@@ -339,13 +339,13 @@ get_one_option(int optid, const struct my_option *opt __attribute__((unused)),
     break;
 #include <sslopt-case.h>
   case OPT_TABLES:
-    opt_databases = 0;
+    opt_blockchains = 0;
     break;
   case 'v':
     verbose++;
     break;
   case 'V': print_version(); exit(0);
-  case OPT_MYSQL_PROTOCOL:
+  case OPT_MYBLOCKCHAIN_PROTOCOL:
     opt_protocol= find_type_or_exit(argument, &sql_protocol_typelib,
                                     opt->name);
     break;
@@ -353,7 +353,7 @@ get_one_option(int optid, const struct my_option *opt __attribute__((unused)),
     /* --secure-auth is a zombie option. */
     if (!opt_secure_auth)
     {
-      fprintf(stderr, "mysql: [ERROR] --skip-secure-auth is not supported.\n");
+      fprintf(stderr, "myblockchain: [ERROR] --skip-secure-auth is not supported.\n");
       exit(1);
     }
     else
@@ -412,9 +412,9 @@ static int get_options(int *argc, char ***argv)
     if (opt_fix_db_names || opt_fix_table_names)
       default_charset= (char*) "utf8";
     else
-      default_charset= (char*) MYSQL_AUTODETECT_CHARSET_NAME;
+      default_charset= (char*) MYBLOCKCHAIN_AUTODETECT_CHARSET_NAME;
   }
-  if (strcmp(default_charset, MYSQL_AUTODETECT_CHARSET_NAME) &&
+  if (strcmp(default_charset, MYBLOCKCHAIN_AUTODETECT_CHARSET_NAME) &&
       !get_charset_by_csname(default_charset, MY_CS_PRIMARY, MYF(MY_WME)))
   {
     printf("Unsupported character set: %s\n", default_charset);
@@ -423,7 +423,7 @@ static int get_options(int *argc, char ***argv)
   if (*argc > 0 && opt_alldbs)
   {
     printf("You should give only options, no arguments at all, with option\n");
-    printf("--all-databases. Please see %s --help for more information.\n",
+    printf("--all-blockchains. Please see %s --help for more information.\n",
 	   my_progname);
     return 1;
   }
@@ -452,36 +452,36 @@ static int dbConnect(char *host, char *user, char *passwd)
   {
     fprintf(stderr, "# Connecting to %s...\n", host ? host : "localhost");
   }
-  mysql_init(&mysql_connection);
+  myblockchain_init(&myblockchain_connection);
   if (opt_compress)
-    mysql_options(&mysql_connection, MYSQL_OPT_COMPRESS, NullS);
-  SSL_SET_OPTIONS(&mysql_connection);
+    myblockchain_options(&myblockchain_connection, MYBLOCKCHAIN_OPT_COMPRESS, NullS);
+  SSL_SET_OPTIONS(&myblockchain_connection);
   if (opt_protocol)
-    mysql_options(&mysql_connection,MYSQL_OPT_PROTOCOL,(char*)&opt_protocol);
+    myblockchain_options(&myblockchain_connection,MYBLOCKCHAIN_OPT_PROTOCOL,(char*)&opt_protocol);
   if (opt_bind_addr)
-    mysql_options(&mysql_connection, MYSQL_OPT_BIND, opt_bind_addr);
+    myblockchain_options(&myblockchain_connection, MYBLOCKCHAIN_OPT_BIND, opt_bind_addr);
 #if defined (_WIN32) && !defined (EMBEDDED_LIBRARY)
   if (shared_memory_base_name)
-    mysql_options(&mysql_connection,MYSQL_SHARED_MEMORY_BASE_NAME,shared_memory_base_name);
+    myblockchain_options(&myblockchain_connection,MYBLOCKCHAIN_SHARED_MEMORY_BASE_NAME,shared_memory_base_name);
 #endif
 
   if (opt_plugin_dir && *opt_plugin_dir)
-    mysql_options(&mysql_connection, MYSQL_PLUGIN_DIR, opt_plugin_dir);
+    myblockchain_options(&myblockchain_connection, MYBLOCKCHAIN_PLUGIN_DIR, opt_plugin_dir);
 
   if (opt_default_auth && *opt_default_auth)
-    mysql_options(&mysql_connection, MYSQL_DEFAULT_AUTH, opt_default_auth);
+    myblockchain_options(&myblockchain_connection, MYBLOCKCHAIN_DEFAULT_AUTH, opt_default_auth);
 
-  mysql_options(&mysql_connection, MYSQL_SET_CHARSET_NAME, default_charset);
-  mysql_options(&mysql_connection, MYSQL_OPT_CONNECT_ATTR_RESET, 0);
-  mysql_options4(&mysql_connection, MYSQL_OPT_CONNECT_ATTR_ADD,
-                 "program_name", "mysqlcheck");
-  if (!(sock = mysql_real_connect(&mysql_connection, host, user, passwd,
-         NULL, opt_mysql_port, opt_mysql_unix_port, 0)))
+  myblockchain_options(&myblockchain_connection, MYBLOCKCHAIN_SET_CHARSET_NAME, default_charset);
+  myblockchain_options(&myblockchain_connection, MYBLOCKCHAIN_OPT_CONNECT_ATTR_RESET, 0);
+  myblockchain_options4(&myblockchain_connection, MYBLOCKCHAIN_OPT_CONNECT_ATTR_ADD,
+                 "program_name", "myblockchaincheck");
+  if (!(sock = myblockchain_real_connect(&myblockchain_connection, host, user, passwd,
+         NULL, opt_myblockchain_port, opt_myblockchain_unix_port, 0)))
   {
-    DBerror(&mysql_connection, "when trying to connect");
+    DBerror(&myblockchain_connection, "when trying to connect");
     DBUG_RETURN(1);
   }
-  mysql_connection.reconnect= 1;
+  myblockchain_connection.reconnect= 1;
   DBUG_RETURN(0);
 } /* dbConnect */
 
@@ -490,16 +490,16 @@ static void dbDisconnect(char *host)
 {
   if (verbose)
     fprintf(stderr, "# Disconnecting from %s...\n", host ? host : "localhost");
-  mysql_close(sock);
+  myblockchain_close(sock);
 } /* dbDisconnect */
 
 
-static void DBerror(MYSQL *mysql, string when)
+static void DBerror(MYBLOCKCHAIN *myblockchain, string when)
 {
   DBUG_ENTER("DBerror");
   my_printf_error(0,"Got error: %d: %s %s", MYF(0),
-    mysql_errno(mysql), mysql_error(mysql), when.c_str());
-  safe_exit(EX_MYSQLERR);
+    myblockchain_errno(myblockchain), myblockchain_error(myblockchain), when.c_str());
+  safe_exit(EX_MYBLOCKCHAINERR);
   DBUG_VOID_RETURN;
 } /* DBerror */
 
@@ -511,7 +511,7 @@ static void safe_exit(int error)
   if (ignore_errors)
     return;
   if (sock)
-    mysql_close(sock);
+    myblockchain_close(sock);
   exit(error);
 }
 
@@ -528,18 +528,18 @@ int main(int argc, char **argv)
     exit(EX_USAGE);
   }
   if (dbConnect(current_host, current_user, opt_password))
-    exit(EX_MYSQLERR);
+    exit(EX_MYBLOCKCHAINERR);
 
-  mysql_check(sock, what_to_do, opt_alldbs,
+  myblockchain_check(sock, what_to_do, opt_alldbs,
                 opt_check_only_changed, opt_extended,
-                opt_databases, opt_fast,
+                opt_blockchains, opt_fast,
                 opt_medium_check, opt_quick,
                 opt_all_in_1, opt_silent,
                 opt_auto_repair, ignore_errors,
                 opt_frm, opt_fix_table_names,
                 opt_fix_db_names, opt_upgrade,
                 opt_write_binlog, verbose,
-                opt_skip_database, vector<string>(argv, argv+argc),
+                opt_skip_blockchain, vector<string>(argv, argv+argc),
                 DBerror);
 
   dbDisconnect(current_host);

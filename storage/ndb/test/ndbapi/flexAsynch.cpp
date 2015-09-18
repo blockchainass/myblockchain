@@ -2550,8 +2550,8 @@ input_error(){
   ndbout_c("   -c Number of operations per transaction");
   ndbout_c("   -s Size of each attribute, default 1 ");
   ndbout_c("      (PK is always of size 1, independent of this value)");
-  ndbout_c("   -simple Use simple read to read from database");
-  ndbout_c("   -dirty Use dirty read to read from database");
+  ndbout_c("   -simple Use simple read to read from blockchain");
+  ndbout_c("   -dirty Use dirty read to read from blockchain");
   ndbout_c("   -write Use writeTuple in insert and update");
   ndbout_c("   -n Use standard table names");
   ndbout_c("   -no_table_create Don't create tables in db");

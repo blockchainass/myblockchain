@@ -1,0 +1,46 @@
+!include ../my.cnf
+[myblockchaind.1]
+log-slave-updates
+[myblockchaind.2]
+log-slave-updates
+[myblockchaind.3]
+log-slave-updates
+[myblockchaind.4]
+log-slave-updates
+[myblockchaind.5]
+log-slave-updates
+[myblockchaind.6]
+log-slave-updates
+[myblockchaind.7]
+log-slave-updates
+[myblockchaind.8]
+log-slave-updates
+[myblockchaind.9]
+log-slave-updates
+#[myblockchaind.10]
+#log-slave-updates
+#[myblockchaind.11]
+#log-slave-updates
+#[myblockchaind.12]
+#log-slave-updates
+#[myblockchaind.13]
+#log-slave-updates
+#[myblockchaind.14]
+#log-slave-updates
+#[myblockchaind.15]
+#log-slave-updates
+
+[ENV]
+SERVER_MYPORT_3= @myblockchaind.3.port
+SERVER_MYPORT_4= @myblockchaind.4.port
+SERVER_MYPORT_5= @myblockchaind.5.port
+SERVER_MYPORT_6= @myblockchaind.6.port
+SERVER_MYPORT_7= @myblockchaind.7.port
+SERVER_MYPORT_8= @myblockchaind.8.port
+SERVER_MYPORT_9= @myblockchaind.9.port
+#SERVER_MYPORT_10= @myblockchaind.10.port
+#SERVER_MYPORT_11= @myblockchaind.11.port
+#SERVER_MYPORT_12= @myblockchaind.12.port
+#SERVER_MYPORT_13= @myblockchaind.13.port
+#SERVER_MYPORT_14= @myblockchaind.14.port
+#SERVER_MYPORT_15= @myblockchaind.15.port

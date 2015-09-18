@@ -21,7 +21,7 @@
 #ifdef HAVE_MY_DEFAULT_H
 #include <my_default.h>
 #endif
-#include <mysql_version.h>
+#include <myblockchain_version.h>
 #include <ndb_version.h>
 
 #include "CPCD.hpp"
@@ -81,7 +81,7 @@ int main(int argc, char** argv){
 
   load_defaults("ndb_cpcd",load_default_groups,&argc,&argv);
   if (handle_options(&argc, &argv, my_long_options, get_one_option)) {
-    print_defaults(MYSQL_CONFIG_NAME,load_default_groups);
+    print_defaults(MYBLOCKCHAIN_CONFIG_NAME,load_default_groups);
     puts("");
     my_print_help(my_long_options);
     my_print_variables(my_long_options);

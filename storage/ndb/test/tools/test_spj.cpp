@@ -17,7 +17,7 @@
 
 #include <stdio.h>
 #include <time.h>
-#include <mysqld_error.h>
+#include <myblockchaind_error.h>
 
 #include <ndb_global.h>
 #include <ndb_opts.h>
@@ -39,7 +39,7 @@ static const char* _dbname = "TEST_DB";
 static struct my_option my_long_options[] =
 {
   NDB_STD_OPTS("spj_test"),
-  { "database", 'd', "Name of database table is in",
+  { "blockchain", 'd', "Name of blockchain table is in",
     (uchar**) &_dbname, (uchar**) &_dbname, 0,
     GET_STR, REQUIRED_ARG, 0, 0, 0, 0, 0, 0 },
   { "scan", 's', "Table scan followed by key lookup",
@@ -78,7 +78,7 @@ int main(int argc, char** argv)
 {
   NDB_INIT(argv[0]);
 
-  const char *load_default_groups[]= { "mysql_cluster",0 };
+  const char *load_default_groups[]= { "myblockchain_cluster",0 };
   load_defaults("my",load_default_groups,&argc,&argv);
   int ho_error;
 #ifndef DBUG_OFF

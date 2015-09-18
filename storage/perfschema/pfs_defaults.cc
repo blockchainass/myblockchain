@@ -49,28 +49,28 @@ void install_default_setup(PSI_bootstrap *boot)
     /* Enable all users on all hosts by default */
     insert_setup_actor(&percent, &percent, &percent, true, true);
 
-    String mysql_db("mysql", 5, &my_charset_utf8_bin);
+    String myblockchain_db("myblockchain", 5, &my_charset_utf8_bin);
     String PS_db("performance_schema", 18, &my_charset_utf8_bin);
     String IS_db("information_schema", 18, &my_charset_utf8_bin);
 
-    /* Disable sp by default in mysql. */
-    insert_setup_object(OBJECT_TYPE_EVENT, &mysql_db, &percent, false, false);
+    /* Disable sp by default in myblockchain. */
+    insert_setup_object(OBJECT_TYPE_EVENT, &myblockchain_db, &percent, false, false);
     /* Disable sp in performance/information schema. */
     insert_setup_object(OBJECT_TYPE_EVENT, &PS_db, &percent, false, false);
     insert_setup_object(OBJECT_TYPE_EVENT, &IS_db, &percent, false, false);
     /* Enable every other sp. */
     insert_setup_object(OBJECT_TYPE_EVENT, &percent, &percent, true, true);
 
-    /* Disable sp by default in mysql. */
-    insert_setup_object(OBJECT_TYPE_FUNCTION, &mysql_db, &percent, false, false);
+    /* Disable sp by default in myblockchain. */
+    insert_setup_object(OBJECT_TYPE_FUNCTION, &myblockchain_db, &percent, false, false);
     /* Disable sp in performance/information schema. */
     insert_setup_object(OBJECT_TYPE_FUNCTION, &PS_db, &percent, false, false);
     insert_setup_object(OBJECT_TYPE_FUNCTION, &IS_db, &percent, false, false);
     /* Enable every other sp. */
     insert_setup_object(OBJECT_TYPE_FUNCTION, &percent, &percent, true, true);
 
-    /* Disable sp by default in mysql. */
-    insert_setup_object(OBJECT_TYPE_PROCEDURE, &mysql_db, &percent, false, false);
+    /* Disable sp by default in myblockchain. */
+    insert_setup_object(OBJECT_TYPE_PROCEDURE, &myblockchain_db, &percent, false, false);
     /* Disable sp in performance/information schema. */
     insert_setup_object(OBJECT_TYPE_PROCEDURE, &PS_db, &percent, false, false);
     insert_setup_object(OBJECT_TYPE_PROCEDURE, &IS_db, &percent, false, false);
@@ -78,15 +78,15 @@ void install_default_setup(PSI_bootstrap *boot)
     insert_setup_object(OBJECT_TYPE_PROCEDURE, &percent, &percent, true, true);
 
     /* Disable system tables by default */
-    insert_setup_object(OBJECT_TYPE_TABLE, &mysql_db, &percent, false, false);
+    insert_setup_object(OBJECT_TYPE_TABLE, &myblockchain_db, &percent, false, false);
     /* Disable performance/information schema tables. */
     insert_setup_object(OBJECT_TYPE_TABLE, &PS_db, &percent, false, false);
     insert_setup_object(OBJECT_TYPE_TABLE, &IS_db, &percent, false, false);
     /* Enable every other tables */
     insert_setup_object(OBJECT_TYPE_TABLE, &percent, &percent, true, true);
 
-    /* Disable sp by default in mysql. */
-    insert_setup_object(OBJECT_TYPE_TRIGGER, &mysql_db, &percent, false, false);
+    /* Disable sp by default in myblockchain. */
+    insert_setup_object(OBJECT_TYPE_TRIGGER, &myblockchain_db, &percent, false, false);
     /* Disable sp in performance/information schema. */
     insert_setup_object(OBJECT_TYPE_TRIGGER, &PS_db, &percent, false, false);
     insert_setup_object(OBJECT_TYPE_TRIGGER, &IS_db, &percent, false, false);

@@ -14,10 +14,10 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 
-MYSQL_ADD_EXECUTABLE(ndb_print_sys_file
+MYBLOCKCHAIN_ADD_EXECUTABLE(ndb_print_sys_file
   printSysfile.cpp
   COMPONENT ClusterTools)
-MYSQL_ADD_EXECUTABLE(ndb_print_frag_file
+MYBLOCKCHAIN_ADD_EXECUTABLE(ndb_print_frag_file
   printFragfile.cpp
   COMPONENT ClusterTools)
 TARGET_LINK_LIBRARIES(ndb_print_frag_file

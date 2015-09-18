@@ -17,7 +17,7 @@
    Shared, independent copyright: (C) 2001 Jan Pazdziora.
 
    Development of this software was supported by Neocortex, s.r.o.
-   MySQL AB expresses its gratitude to Jan for for giving us this software.
+   MyBlockchain AB expresses its gratitude to Jan for for giving us this software.
 
    Bug reports and suggestions are always welcome.
 

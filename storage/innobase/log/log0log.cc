@@ -103,7 +103,7 @@ time_t	log_last_margine_warning_time;
 #define LOG_BUF_FLUSH_MARGIN	(LOG_BUF_WRITE_MARGIN + 4 * UNIV_PAGE_SIZE)
 
 /* Margin for the free space in the smallest log group, before a new query
-step which modifies the database, is started */
+step which modifies the blockchain, is started */
 
 #define LOG_CHECKPOINT_FREE_PER_THREAD	(4 * UNIV_PAGE_SIZE)
 #define LOG_CHECKPOINT_EXTRA_FREE	(8 * UNIV_PAGE_SIZE)
@@ -654,7 +654,7 @@ Calculates the recommended highest values for lsn - last_checkpoint_lsn
 and lsn - buf_get_oldest_modification().
 @retval true on success
 @retval false if the smallest log group is too small to
-accommodate the number of OS threads in the database server */
+accommodate the number of OS threads in the blockchain server */
 static __attribute__((warn_unused_result))
 bool
 log_calc_max_ages(void)
@@ -689,7 +689,7 @@ log_calc_max_ages(void)
 	/* For each OS thread we must reserve so much free space in the
 	smallest log group that it can accommodate the log entries produced
 	by single query steps: running out of free log space is a serious
-	system error which requires rebooting the database. */
+	system error which requires rebooting the blockchain. */
 
 	free = LOG_CHECKPOINT_FREE_PER_THREAD * (10 + srv_thread_concurrency)
 		+ LOG_CHECKPOINT_EXTRA_FREE;
@@ -722,10 +722,10 @@ failure:
 			" small for innodb_thread_concurrency "
 			<< srv_thread_concurrency << ". The combined size of"
 			" ib_logfiles should be bigger than"
-			" 200 kB * innodb_thread_concurrency. To get mysqld"
+			" 200 kB * innodb_thread_concurrency. To get myblockchaind"
 			" to start up, set innodb_thread_concurrency in"
 			" my.cnf to a lower value, for example, to 8. After"
-			" an ERROR-FREE shutdown of mysqld you can adjust"
+			" an ERROR-FREE shutdown of myblockchaind you can adjust"
 			" the size of ib_logfiles. " << INNODB_PARAMETERS_MSG;
 	}
 
@@ -949,7 +949,7 @@ log_group_file_header_flush(
 	mach_write_to_4(buf + LOG_GROUP_ID, group->id);
 	mach_write_to_8(buf + LOG_FILE_START_LSN, start_lsn);
 
-	/* Wipe over possible label of mysqlbackup --restore */
+	/* Wipe over possible label of myblockchainbackup --restore */
 	memset(buf + LOG_FILE_WAS_CREATED_BY_HOT_BACKUP, 0x20, 4);
 
 	dest_offset = nth_file * group->file_size;
@@ -1420,7 +1420,7 @@ log_preflush_pool_modified_pages(
 		right modify lsn values to these pages: otherwise, there
 		might be pages on disk which are not yet recovered to the
 		current lsn, and even after calling this function, we could
-		not know how up-to-date the disk version of the database is,
+		not know how up-to-date the disk version of the blockchain is,
 		and we could not make a new checkpoint on the basis of the
 		info on the buffer pool only. */
 
@@ -1656,7 +1656,7 @@ log_reset_first_header_and_checkpoint(
 
 	lsn = start + LOG_BLOCK_HDR_SIZE;
 
-	/* Write the label of mysqlbackup --restore */
+	/* Write the label of myblockchainbackup --restore */
 	strcpy((char*) hdr_buf + LOG_FILE_WAS_CREATED_BY_HOT_BACKUP,
 	       "ibbackup ");
 	ut_sprintf_timestamp((char*) hdr_buf
@@ -2050,8 +2050,8 @@ log_check_margins(void)
 
 /****************************************************************//**
 Makes a checkpoint at the latest lsn and writes it to first page of each
-data file in the database, so that we know that the file spaces contain
-all modifications up to that lsn. This can only be called at database
+data file in the blockchain, so that we know that the file spaces contain
+all modifications up to that lsn. This can only be called at blockchain
 shutdown. This function also writes all log in log files to the log archive. */
 void
 logs_empty_and_mark_files_at_shutdown(void)
@@ -2207,9 +2207,9 @@ loop:
 
 	if (srv_fast_shutdown == 2) {
 		if (!srv_read_only_mode) {
-			ib::info() << "MySQL has requested a very fast"
+			ib::info() << "MyBlockchain has requested a very fast"
 				" shutdown without flushing the InnoDB buffer"
-				" pool to data files. At the next mysqld"
+				" pool to data files. At the next myblockchaind"
 				" startup InnoDB will do a crash recovery!";
 
 			/* In this fastest shutdown we do not flush the

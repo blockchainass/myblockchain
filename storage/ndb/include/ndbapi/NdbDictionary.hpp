@@ -33,13 +33,13 @@ class NdbRecord;
  * 
  * The preferred and supported way to create and drop tables and indexes
  * in ndb is through the 
- * MySQL Server (see MySQL reference Manual, section MySQL Cluster).
+ * MyBlockchain Server (see MyBlockchain reference Manual, section MyBlockchain Cluster).
  *
  * Tables and indexes that are created directly through the 
  * NdbDictionary class
- * can not be viewed from the MySQL Server.
+ * can not be viewed from the MyBlockchain Server.
  * Dropping indexes directly via the NdbApi will cause inconsistencies
- * if they were originally created from a MySQL Cluster.
+ * if they were originally created from a MyBlockchain Cluster.
  * 
  * This class supports schema data enquiries such as:
  * -# Enquiries about tables
@@ -68,7 +68,7 @@ public:
   NdbDictionary() {}                          /* Remove gcc warning */
   /**
    * @class Object
-   * @brief Meta information about a database object (a table, index, etc)
+   * @brief Meta information about a blockchain object (a table, index, etc)
    */
   class Object {
   public:
@@ -221,8 +221,8 @@ public:
    * - Character set for string types
    * - Inline and part sizes for blobs
    *
-   * Types in general correspond to MySQL types and their variants.
-   * Data formats are same as in MySQL.  NDB API provides no support for
+   * Types in general correspond to MyBlockchain types and their variants.
+   * Data formats are same as in MyBlockchain.  NDB API provides no support for
    * constructing such formats.  NDB kernel checks them however.
    */
   class Column {
@@ -244,9 +244,9 @@ public:
       Bigunsigned = NDB_TYPE_BIGUNSIGNED,   ///< 64 Bit. 8 byte signed integer, can be used in array
       Float = NDB_TYPE_FLOAT,         ///< 32-bit float. 4 bytes float, can be used in array
       Double = NDB_TYPE_DOUBLE,        ///< 64-bit float. 8 byte float, can be used in array
-      Olddecimal = NDB_TYPE_OLDDECIMAL,    ///< MySQL < 5.0 signed decimal,  Precision, Scale
+      Olddecimal = NDB_TYPE_OLDDECIMAL,    ///< MyBlockchain < 5.0 signed decimal,  Precision, Scale
       Olddecimalunsigned = NDB_TYPE_OLDDECIMALUNSIGNED,
-      Decimal = NDB_TYPE_DECIMAL,    ///< MySQL >= 5.0 signed decimal,  Precision, Scale
+      Decimal = NDB_TYPE_DECIMAL,    ///< MyBlockchain >= 5.0 signed decimal,  Precision, Scale
       Decimalunsigned = NDB_TYPE_DECIMALUNSIGNED,
       Char = NDB_TYPE_CHAR,          ///< Len. A fixed array of 1-byte chars
       Varchar = NDB_TYPE_VARCHAR,       ///< Length bytes: 1, Max: 255
@@ -263,9 +263,9 @@ public:
       Year = NDB_TYPE_YEAR,   ///< Year 1901-2155 (1 byte)
       Timestamp = NDB_TYPE_TIMESTAMP, ///< Unix time
       /**
-       * Time types in MySQL 5.6 add microsecond fraction.
+       * Time types in MyBlockchain 5.6 add microsecond fraction.
        * One should use setPrecision(x) to set number of fractional
-       * digits (x = 0-6, default 0).  Data formats are as in MySQL
+       * digits (x = 0-6, default 0).  Data formats are as in MyBlockchain
        * and must use correct byte length.  NDB does not check data
        * itself since any values can be compared as binary strings.
        */
@@ -355,7 +355,7 @@ public:
     /**
      * Get precision of column.
      * @note Only applicable for decimal types
-     * @note Also applicable for Time2 etc in mysql 5.6
+     * @note Also applicable for Time2 etc in myblockchain 5.6
      */
     int getPrecision() const;
 
@@ -372,14 +372,14 @@ public:
     int getLength() const;
 
     /**
-     * For Char or Varchar or Text, get MySQL CHARSET_INFO.  This
+     * For Char or Varchar or Text, get MyBlockchain CHARSET_INFO.  This
      * specifies both character set and collation.  See get_charset()
-     * etc in MySQL.  (The cs is not "const" in MySQL).
+     * etc in MyBlockchain.  (The cs is not "const" in MyBlockchain).
      */
     CHARSET_INFO* getCharset() const;
 
     /**
-     * Returns mysql's internal number for the column's character set.
+     * Returns myblockchain's internal number for the column's character set.
      */
     int getCharsetNumber() const;
 
@@ -417,7 +417,7 @@ public:
      * An example where this is useful is TPC-C where it might be
      * good to use the warehouse id and district id as the partition key. 
      * This would place all data for a specific district and warehouse 
-     * in the same database node.
+     * in the same blockchain node.
      *
      * Locally in the fragments the full primary key 
      * will still be used with the hashing algorithm.
@@ -452,7 +452,7 @@ public:
      * @{
      *
      * These operations should normally not be performed in an NbdApi program
-     * as results will not be visable in the MySQL Server
+     * as results will not be visable in the MyBlockchain Server
      * 
      */
 
@@ -497,7 +497,7 @@ public:
     /**
      * Set precision of column.
      * @note Only applicable for decimal types
-     * @note Also applicable for Time2 etc in mysql 5.6
+     * @note Also applicable for Time2 etc in myblockchain 5.6
      */
     void setPrecision(int);
 
@@ -514,9 +514,9 @@ public:
     void setLength(int length);
 
     /**
-     * For Char or Varchar or Text, get MySQL CHARSET_INFO.  This
+     * For Char or Varchar or Text, get MyBlockchain CHARSET_INFO.  This
      * specifies both character set and collation.  See get_charset()
-     * etc in MySQL.  (The cs is not "const" in MySQL).
+     * etc in MyBlockchain.  (The cs is not "const" in MyBlockchain).
      */
     void setCharset(CHARSET_INFO* cs);
 
@@ -826,7 +826,7 @@ public:
      * @{
      *
      * These methods should normally not be used in an application as
-     * the result is not accessible from the MySQL Server
+     * the result is not accessible from the MyBlockchain Server
      *
      */
 
@@ -1249,7 +1249,7 @@ public:
      * @{
      *
      * These methods should normally not be used in an application as
-     * the result will not be visible from the MySQL Server
+     * the result will not be visible from the MyBlockchain Server
      *
      */
 
@@ -1418,7 +1418,7 @@ public:
   class Event : public Object  {
   public:
     /**
-     * Specifies the type of database operations an Event listens to
+     * Specifies the type of blockchain operations an Event listens to
      */
 #ifndef DOXYGEN_SHOULD_SKIP_INTERNAL
     /** TableEvent must match 1 << TriggerEvent */
@@ -1669,11 +1669,11 @@ public:
   /* Flags for createRecord(). */
   enum NdbRecordFlags {
     /*
-      Use special mysqld varchar format in index keys, used only from
-      inside mysqld.
+      Use special myblockchaind varchar format in index keys, used only from
+      inside myblockchaind.
     */
     RecMysqldShrinkVarchar= 0x1,
-    /* Use the mysqld record format for bitfields, only used inside mysqld. */
+    /* Use the myblockchaind record format for bitfields, only used inside myblockchaind. */
     RecMysqldBitfield= 0x2,
     /* Use the column specific flags from RecordSpecification. */
     RecPerColumnFlags= 0x4
@@ -1724,7 +1724,7 @@ public:
     {
       /*
         Skip reading/writing overflow bits in bitmap
-        Used for MySQLD char(0) column
+        Used for MyBlockchainD char(0) column
         Used only with RecMysqldBitfield flag
       */
       BitColMapsNullBitOnly= 0x1
@@ -2206,7 +2206,7 @@ public:
         Object::State state;    ///< State of object
         Object::Store store;    ///< How object is logged
         Uint32 temp;            ///< Temporary status of object
-	char * database;        ///< In what database the object resides 
+	char * blockchain;        ///< In what blockchain the object resides 
 	char * schema;          ///< What schema the object is defined in
 	char * name;            ///< Name of object
         Element() :
@@ -2215,7 +2215,7 @@ public:
           state(Object::StateUndefined),
           store(Object::StoreUndefined),
           temp(NDB_TEMP_TAB_PERMANENT),
-	  database(0),
+	  blockchain(0),
 	  schema(0),
           name(0) {
         }
@@ -2226,7 +2226,7 @@ public:
       ~List() {
         if (elements != 0) {
           for (unsigned i = 0; i < count; i++) {
-            delete[] elements[i].database;
+            delete[] elements[i].blockchain;
             delete[] elements[i].schema;
             delete[] elements[i].name;
             elements[i].name = 0;
@@ -2388,7 +2388,7 @@ public:
      * @{
      *
      * These methods should normally not be used in an application as
-     * the result will not be visible from the MySQL Server
+     * the result will not be visible from the MyBlockchain Server
      */
 
     /**
@@ -2485,7 +2485,7 @@ public:
      * @{
      *
      * These methods should normally not be used in an application as
-     * the result will not be visible from the MySQL Server
+     * the result will not be visible from the MyBlockchain Server
      *
      */
     
@@ -2510,7 +2510,7 @@ public:
      * Force update of ordered index stats.  Scans an assigned fragment
      * in the kernel and updates result in stats tables.  This one-time
      * update is independent of IndexStatAuto settings.  Common use case
-     * is mysql "analyze table".
+     * is myblockchain "analyze table".
      */
     int updateIndexStat(const Index&, const Table&);
 
@@ -2597,7 +2597,7 @@ public:
      */
 
     /**
-     * Create a HashMap in database
+     * Create a HashMap in blockchain
      */
     int createHashMap(const HashMap&, ObjectId* = 0);
 
@@ -2650,7 +2650,7 @@ public:
     };
 
     /**
-     * Create a ForeignKey in database
+     * Create a ForeignKey in blockchain
      */
     int createForeignKey(const ForeignKey&, ObjectId* = 0, int flags = 0);
 
@@ -2779,7 +2779,7 @@ public:
 
       /*
        * Drop any referring foreign keys within same DB
-       *   used when dropping database
+       *   used when dropping blockchain
        */
       ,DropTableCascadeConstraintsDropDB = 0x2
     };
@@ -2811,7 +2811,7 @@ public:
     /*
       Create an NdbRecord for use in index operations.
       This variant assumes that the index is for a table in 
-      the current database and schema
+      the current blockchain and schema
     */
     NdbRecord *createRecord(const Index *index,
                             const RecordSpecification *recSpec,

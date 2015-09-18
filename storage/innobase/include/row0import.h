@@ -39,11 +39,11 @@ Imports a tablespace. The space id in the .ibd file must match the space id
 of the table in the data dictionary.
 @return error code or DB_SUCCESS */
 dberr_t
-row_import_for_mysql(
+row_import_for_myblockchain(
 /*=================*/
 	dict_table_t*	table,		/*!< in/out: table */
 	row_prebuilt_t*	prebuilt)	/*!< in: prebuilt struct
-						in MySQL */
+						in MyBlockchain */
 	__attribute__((nonnull, warn_unused_result));
 
 /*****************************************************************//**

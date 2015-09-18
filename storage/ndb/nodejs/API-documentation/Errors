@@ -1,4 +1,4 @@
-/* Errors returned by mysql-js are JavaScript Error objects.
+/* Errors returned by myblockchain-js are JavaScript Error objects.
    They contain:
      message: a string with a description of the problem
      stack: the locus of the error
@@ -7,7 +7,7 @@
 */
 
 var DatabaseError = {
-  code           : null,   // MySQL Error Code number (number)
+  code           : null,   // MyBlockchain Error Code number (number)
   sqlstate       : null,   // SQLSTATE (string)
   message        : null,   // Error message (string)
   cause          : null,   // The underlying cause of this error

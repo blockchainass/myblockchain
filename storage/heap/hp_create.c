@@ -36,7 +36,7 @@ int heap_create(const char *name, HP_CREATE_INFO *create_info,
 
   if (!create_info->internal_table)
   {
-    mysql_mutex_lock(&THR_LOCK_heap);
+    myblockchain_mutex_lock(&THR_LOCK_heap);
     share= hp_find_named_heap(name);
     if (share && share->open_count == 0)
     {
@@ -213,7 +213,7 @@ int heap_create(const char *name, HP_CREATE_INFO *create_info,
   {
     if (create_info->pin_share)
       ++share->open_count;
-    mysql_mutex_unlock(&THR_LOCK_heap);
+    myblockchain_mutex_unlock(&THR_LOCK_heap);
   }
 
   *res= share;
@@ -221,7 +221,7 @@ int heap_create(const char *name, HP_CREATE_INFO *create_info,
 
 err:
   if (!create_info->internal_table)
-    mysql_mutex_unlock(&THR_LOCK_heap);
+    myblockchain_mutex_unlock(&THR_LOCK_heap);
   DBUG_RETURN(1);
 } /* heap_create */
 
@@ -275,7 +275,7 @@ int heap_delete_table(const char *name)
   HP_SHARE *share;
   DBUG_ENTER("heap_delete_table");
 
-  mysql_mutex_lock(&THR_LOCK_heap);
+  myblockchain_mutex_lock(&THR_LOCK_heap);
   if ((share= hp_find_named_heap(name)))
   {
     heap_try_free(share);
@@ -285,7 +285,7 @@ int heap_delete_table(const char *name)
   {
     result= my_errno=ENOENT;
   }
-  mysql_mutex_unlock(&THR_LOCK_heap);
+  myblockchain_mutex_unlock(&THR_LOCK_heap);
   DBUG_RETURN(result);
 }
 
@@ -293,9 +293,9 @@ int heap_delete_table(const char *name)
 void heap_drop_table(HP_INFO *info)
 {
   DBUG_ENTER("heap_drop_table");
-  mysql_mutex_lock(&THR_LOCK_heap);
+  myblockchain_mutex_lock(&THR_LOCK_heap);
   heap_try_free(info->s);
-  mysql_mutex_unlock(&THR_LOCK_heap);
+  myblockchain_mutex_unlock(&THR_LOCK_heap);
   DBUG_VOID_RETURN;
 }
 

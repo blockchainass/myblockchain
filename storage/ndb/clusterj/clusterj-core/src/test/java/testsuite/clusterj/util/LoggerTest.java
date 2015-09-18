@@ -17,9 +17,9 @@
 
 package testsuite.clusterj.util;
 
-import com.mysql.clusterj.core.util.Logger;
-import com.mysql.clusterj.core.util.LoggerFactory;
-import com.mysql.clusterj.core.util.LoggerFactoryService;
+import com.myblockchain.clusterj.core.util.Logger;
+import com.myblockchain.clusterj.core.util.LoggerFactory;
+import com.myblockchain.clusterj.core.util.LoggerFactoryService;
 import java.io.File;
 import testsuite.clusterj.AbstractClusterJCoreTest;
 
@@ -35,9 +35,9 @@ public class LoggerTest extends AbstractClusterJCoreTest {
             fail("File " + loggingPropertiesName + " does not exist");
         }
         LoggerFactory loggerFactory = LoggerFactoryService.getFactory();
-        Logger logger = loggerFactory.getInstance("com.mysql.clusterj.core");
+        Logger logger = loggerFactory.getInstance("com.myblockchain.clusterj.core");
         if (logger == null) {
-            fail("Logger com.mysql.clusterj.core not found.");
+            fail("Logger com.myblockchain.clusterj.core not found.");
         }
         boolean debugEnabled = logger.isDebugEnabled();
         boolean traceEnabled = logger.isTraceEnabled();

@@ -15,16 +15,16 @@
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifndef MYSQL_OBJECT_READER_INCLUDED
-#define MYSQL_OBJECT_READER_INCLUDED
+#ifndef MYBLOCKCHAIN_OBJECT_READER_INCLUDED
+#define MYBLOCKCHAIN_OBJECT_READER_INCLUDED
 
 #include "i_object_reader.h"
 #include "abstract_data_formatter_wrapper.h"
-#include "abstract_mysql_chain_element_extension.h"
-#include "mysql_object_reader_options.h"
+#include "abstract_myblockchain_chain_element_extension.h"
+#include "myblockchain_object_reader_options.h"
 #include "row_group_dump_task.h"
 #include "table_rows_dump_task.h"
-#include "mysql_field.h"
+#include "myblockchain_field.h"
 
 namespace Mysql{
 namespace Tools{
@@ -32,11 +32,11 @@ namespace Dump{
 
 /**
   Parses any DB object(excluding rows and privileges for DB objects) data using
-  connection to MySQL server.
+  connection to MyBlockchain server.
  */
 class Mysql_object_reader
   : public Abstract_data_formatter_wrapper, public I_object_reader,
-  public Abstract_mysql_chain_element_extension
+  public Abstract_myblockchain_chain_element_extension
 {
 public:
   Mysql_object_reader(
@@ -69,7 +69,7 @@ private:
     bool is_all_rows_processed();
 
   private:
-    void acquire_fields_information(MYSQL_RES* mysql_result);
+    void acquire_fields_information(MYBLOCKCHAIN_RES* myblockchain_result);
 
     Mysql_object_reader* m_parent;
     Item_processing_data* m_item_processing;

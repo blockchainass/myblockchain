@@ -1,0 +1,7 @@
+!include ../my.cnf
+
+[myblockchaind.1]
+log-slave-updates
+
+[myblockchaind.2]
+log-slave-updates

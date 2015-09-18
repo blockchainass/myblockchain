@@ -41,7 +41,7 @@ Created 5/30/1994 Heikki Tuuri
 			===========================
 
 The physical record, which is the data type of all the records
-found in index pages of the database, has the following format
+found in index pages of the blockchain, has the following format
 (lower addresses and more significant bits inside a byte are below
 represented on a higher text line):
 
@@ -83,7 +83,7 @@ if the bit is set to 1. */
 			===========================
 
 The physical record, which is the data type of all the records
-found in index pages of the database, has the following format
+found in index pages of the blockchain, has the following format
 (lower addresses and more significant bits inside a byte are below
 represented on a higher text line):
 

@@ -1030,7 +1030,7 @@ vi_histedit(EditLine *el, Int c __attribute__((__unused__)))
 		close(fd);
 		return CC_ERROR;
 	}
-	/* XXXMYSQL: Make static analyzer happy */
+	/* XXXMYBLOCKCHAIN: Make static analyzer happy */
 	line = el_malloc((len+1) * sizeof(*line));
 	if (line == NULL) {
 		el_free(cp);
@@ -1086,7 +1086,7 @@ vi_histedit(EditLine *el, Int c __attribute__((__unused__)))
 	/* return CC_REFRESH; */
 	return ed_newline(el, 0);
 
-/* XXXMYSQL: Avoid compiler warnings. */
+/* XXXMYBLOCKCHAIN: Avoid compiler warnings. */
 error:
         close(fd);
         unlink(tempfile);

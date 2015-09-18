@@ -86,7 +86,7 @@ var sqlStateMessages = {
   "0F001" : "Invalid BLOB value",
   "WCTOR" : 
       "A Domain Object Constructor has overwritten persistent properties "+
-      "that were read from the database.  The Domain Object Constructor "+
+      "that were read from the blockchain.  The Domain Object Constructor "+
       "is called with no arguments and its ``this'' parameter set to the "+
       "newly read object."
 };

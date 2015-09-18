@@ -19,8 +19,8 @@ package testsuite.clusterj;
 
 import java.io.File;
 
-import com.mysql.clusterj.ClusterJHelper;
-import com.mysql.clusterj.Dbug;
+import com.myblockchain.clusterj.ClusterJHelper;
+import com.myblockchain.clusterj.Dbug;
 
 /**
  * Tests dbug methods.

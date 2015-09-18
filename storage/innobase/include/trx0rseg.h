@@ -101,7 +101,7 @@ trx_rseg_get_on_id(
 
 /** Creates a rollback segment header.
 This function is called only when a new rollback segment is created in
-the database.
+the blockchain.
 @param[in]	space		space id
 @param[in]	page_size	page size
 @param[in]	max_size	max size in pages
@@ -118,7 +118,7 @@ trx_rseg_header_create(
 
 /*********************************************************************//**
 Creates the memory copies for rollback segments and initializes the
-rseg array in trx_sys at a database startup. */
+rseg array in trx_sys at a blockchain startup. */
 void
 trx_rseg_array_init(
 /*================*/

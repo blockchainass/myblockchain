@@ -33,7 +33,7 @@ void insert_values(T (&array)[size], L *list)
 }
 
 /*
-  The fixture for testing the MySQL List and List_iterator classes.
+  The fixture for testing the MyBlockchain List and List_iterator classes.
   A fresh instance of this class will be created for each of the
   TEST_F functions below.
 */

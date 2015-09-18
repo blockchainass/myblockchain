@@ -72,7 +72,7 @@ void Mysql::Tools::Base::Options::Help_options::print_usage()
   printf("%s  Ver %s Distrib %s, for %s (%s)\n%s\n%s\n",
     this->m_program->get_name().c_str(),
     this->m_program->get_version().c_str(),
-    MYSQL_SERVER_VERSION, SYSTEM_TYPE, MACHINE_TYPE,
+    MYBLOCKCHAIN_SERVER_VERSION, SYSTEM_TYPE, MACHINE_TYPE,
     copyright.c_str(),
     this->m_program->get_description().c_str());
   /*

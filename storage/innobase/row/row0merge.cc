@@ -666,7 +666,7 @@ row_merge_buf_add(
 			}
 
 			if (field->len != UNIV_SQL_NULL
-			    && col->mtype == DATA_MYSQL
+			    && col->mtype == DATA_MYBLOCKCHAIN
 			    && col->len != field->len) {
 				if (conv_heap != NULL) {
 					row_merge_buf_redundant_convert(
@@ -836,7 +836,7 @@ row_merge_dup_report(
 	if (!dup->n_dup++) {
 		/* Only report the first duplicate record,
 		but count all duplicate records. */
-		innobase_fields_to_mysql(dup->table, dup->index, entry);
+		innobase_fields_to_myblockchain(dup->table, dup->index, entry);
 	}
 }
 
@@ -1589,7 +1589,7 @@ row_geo_field_is_valid(
 /** Reads clustered index of the table and create temporary files
 containing the index entries for the indexes to be built.
 @param[in]	trx		transaction
-@param[in,out]	table		MySQL table object, for reporting erroneous
+@param[in,out]	table		MyBlockchain table object, for reporting erroneous
 records
 @param[in]	old_table	table where rows are read from
 @param[in]	new_table	table where indexes are created; identical to
@@ -1600,7 +1600,7 @@ old_table unless creating a PRIMARY KEY
 @param[in]	psort_info	parallel sort info for fts_sort_idx creation,
 or NULL
 @param[in]	files		temporary files
-@param[in]	key_numbers	MySQL key numbers to create
+@param[in]	key_numbers	MyBlockchain key numbers to create
 @param[in]	n_index		number of indexes to create
 @param[in]	add_cols	default values of added columns, or NULL
 @param[in]	col_map		mapping of old column numbers to new ones, or
@@ -2068,7 +2068,7 @@ end_of_index:
 				err = DB_ERROR;
 				trx->error_key_num = 0;
 
-				ib_errf(trx->mysql_thd, IB_LOG_LEVEL_ERROR,
+				ib_errf(trx->myblockchain_thd, IB_LOG_LEVEL_ERROR,
 					ER_AUTOINC_READ_FAILED, "[NULL]");
 
 				goto func_exit;
@@ -3322,7 +3322,7 @@ row_merge_lock_table(
 		que_fork_get_first_thr(
 			static_cast<que_fork_t*>(que_node_get_parent(thr))));
 
-	que_thr_move_to_run_state_for_mysql(thr, trx);
+	que_thr_move_to_run_state_for_myblockchain(thr, trx);
 
 run_again:
 	thr->run_node = thr;
@@ -3333,14 +3333,14 @@ run_again:
 	trx->error_state = err;
 
 	if (UNIV_LIKELY(err == DB_SUCCESS)) {
-		que_thr_stop_for_mysql_no_error(thr, trx);
+		que_thr_stop_for_myblockchain_no_error(thr, trx);
 	} else {
-		que_thr_stop_for_mysql(thr);
+		que_thr_stop_for_myblockchain(thr);
 
 		if (err != DB_QUE_THR_SUSPENDED) {
 			bool	was_lock_wait;
 
-			was_lock_wait = row_mysql_handle_errors(
+			was_lock_wait = row_myblockchain_handle_errors(
 				&err, trx, thr, NULL);
 
 			if (was_lock_wait) {
@@ -3712,7 +3712,7 @@ row_merge_drop_temp_indexes(void)
 	when accessing the tablename.ibd files. */
 	trx = trx_allocate_for_background();
 	trx->op_info = "dropping partially created indexes";
-	row_mysql_lock_data_dictionary(trx);
+	row_myblockchain_lock_data_dictionary(trx);
 	/* Ensure that this transaction will be rolled back and locks
 	will be released, if the server gets killed before the commit
 	gets written to the redo log. */
@@ -3731,8 +3731,8 @@ row_merge_drop_temp_indexes(void)
 			<< error;
 	}
 
-	trx_commit_for_mysql(trx);
-	row_mysql_unlock_data_dictionary(trx);
+	trx_commit_for_myblockchain(trx);
+	row_myblockchain_unlock_data_dictionary(trx);
 	trx_free_for_background(trx);
 }
 
@@ -3756,7 +3756,7 @@ row_merge_file_create_low(void)
 				     "Innodb Merge Temp File",
 				     __FILE__, __LINE__);
 #endif
-	fd = innobase_mysql_tmpfile();
+	fd = innobase_myblockchain_tmpfile();
 #ifdef UNIV_PFS_IO
 	register_pfs_file_open_end(locker, fd);
 #endif
@@ -4222,7 +4222,7 @@ row_merge_drop_table(
 	/* There must be no open transactions on the table. */
 	ut_a(table->get_ref_count() == 0);
 
-	return(row_drop_table_for_mysql(table->name.m_name,
+	return(row_drop_table_for_myblockchain(table->name.m_name,
 					trx, false, false));
 }
 
@@ -4235,9 +4235,9 @@ sorted index entries to indexes.
 old_table unless creating a PRIMARY KEY
 @param[in]	online		true if creating indexes online
 @param[in]	indexes		indexes to be created
-@param[in]	key_numbers	MySQL key numbers
+@param[in]	key_numbers	MyBlockchain key numbers
 @param[in]	n_indexes	size of indexes[]
-@param[in,out]	table		MySQL table, for reporting erroneous key value
+@param[in,out]	table		MyBlockchain table, for reporting erroneous key value
 if applicable
 @param[in]	add_cols	default values of added columns, or NULL
 @param[in]	col_map		mapping of old column numbers to new ones, or
@@ -4371,7 +4371,7 @@ row_merge_build_indexes(
 		}
 	}
 
-	/* Reset the MySQL row buffer that is used when reporting
+	/* Reset the MyBlockchain row buffer that is used when reporting
 	duplicate keys. */
 	innobase_rec_reset(table);
 

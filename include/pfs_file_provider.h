@@ -22,11 +22,11 @@
 */
 
 #ifdef WITH_PERFSCHEMA_STORAGE_ENGINE
-#ifdef MYSQL_SERVER
+#ifdef MYBLOCKCHAIN_SERVER
 #ifndef EMBEDDED_LIBRARY
-#ifndef MYSQL_DYNAMIC_PLUGIN
+#ifndef MYBLOCKCHAIN_DYNAMIC_PLUGIN
 
-#include "mysql/psi/psi.h"
+#include "myblockchain/psi/psi.h"
 
 #define PSI_FILE_CALL(M) pfs_ ## M ## _v1
 
@@ -78,8 +78,8 @@ void pfs_end_file_close_wait_v1(PSI_file_locker *locker, int rc);
 C_MODE_END
 
 #endif /* EMBEDDED_LIBRARY */
-#endif /* MYSQL_DYNAMIC_PLUGIN */
-#endif /* MYSQL_SERVER */
+#endif /* MYBLOCKCHAIN_DYNAMIC_PLUGIN */
+#endif /* MYBLOCKCHAIN_SERVER */
 #endif /* WITH_PERFSCHEMA_STORAGE_ENGINE */
 
 #endif

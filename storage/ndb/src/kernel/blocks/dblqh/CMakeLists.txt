@@ -14,7 +14,7 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 
-MYSQL_ADD_EXECUTABLE(ndb_redo_log_reader
+MYBLOCKCHAIN_ADD_EXECUTABLE(ndb_redo_log_reader
   redoLogReader/records.cpp
   redoLogReader/reader.cpp
   COMPONENT ClusterTools)

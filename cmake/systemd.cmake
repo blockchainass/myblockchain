@@ -15,7 +15,7 @@
 # related configuration files into the systemd service files directories. To
 # use systemd the system needs to be booted with init as systemd.
 
-MACRO(MYSQL_CHECK_SYSTEMD)
+MACRO(MYBLOCKCHAIN_CHECK_SYSTEMD)
   FIND_PACKAGE(PkgConfig QUIET)
   IF(PKG_CONFIG_FOUND)
     PKG_CHECK_MODULES(SYSTEMD "systemd")
@@ -49,15 +49,15 @@ MACRO(MYSQL_CHECK_SYSTEMD)
   ENDIF()
 
   IF("${SYSTEMD_SERVICE_NAME}" STREQUAL "")
-    SET(SYSTEMD_SERVICE_NAME "mysqld")
+    SET(SYSTEMD_SERVICE_NAME "myblockchaind")
   ENDIF()
   MESSAGE(STATUS "SYSTEMD_SERVICE_NAME ${SYSTEMD_SERVICE_NAME}")
 
   IF("${SYSTEMD_PID_DIR}" STREQUAL "")
-    SET(SYSTEMD_PID_DIR "/var/run/mysqld")
+    SET(SYSTEMD_PID_DIR "/var/run/myblockchaind")
   ENDIF()
   MESSAGE(STATUS "SYSTEMD_PID_DIR ${SYSTEMD_PID_DIR}")
 ENDMACRO()
 
 MESSAGE(STATUS "Enabling installation of systemd support files...")
-MYSQL_CHECK_SYSTEMD()
+MYBLOCKCHAIN_CHECK_SYSTEMD()

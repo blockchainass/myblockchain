@@ -280,7 +280,7 @@ trx_undo_truncate_start(
 	undo_no_t	limit);
 /********************************************************************//**
 Initializes the undo log lists for a rollback segment memory copy.
-This function is only called when the database is started or a new
+This function is only called when the blockchain is started or a new
 rollback segment created.
 @return the combined size of undo log segments in pages */
 ulint

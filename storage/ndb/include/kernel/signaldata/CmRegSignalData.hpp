@@ -40,7 +40,7 @@ private:
   Uint32 blockRef;
   Uint32 nodeId;
   Uint32 version;    // See ndb_version.h
-  Uint32 mysql_version;
+  Uint32 myblockchain_version;
 
   Uint32 start_type; // As specified by cmd-line or mgm, NodeState::StartType
   Uint32 latest_gci; // 0 means no fs
@@ -175,7 +175,7 @@ private:
   Uint32 nodeId;
   Uint32 dynamicId;
   Uint32 version;
-  Uint32 mysql_version;
+  Uint32 myblockchain_version;
   Uint32 lqh_workers;   // added in telco-6.4
 };
 
@@ -210,7 +210,7 @@ private:
   Uint32 nodeId;
   Uint32 dynamicId;
   Uint32 version;
-  Uint32 mysql_version;
+  Uint32 myblockchain_version;
   Uint32 lqh_workers;   // added in telco-6.4
 };
 

@@ -31,7 +31,7 @@
 #include "pfs_atomic.h"
 #include "pfs_program.h"
 #include "pfs_buffer_container.h"
-#include "mysql/psi/mysql_thread.h"
+#include "myblockchain/psi/myblockchain_thread.h"
 #include "lf.h"
 
 #include <string.h>

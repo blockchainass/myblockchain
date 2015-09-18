@@ -76,19 +76,19 @@ table_status_by_thread::create(void)
 int table_status_by_thread::delete_all_rows(void)
 {
   /* Lock required to aggregate to global_status_vars. */
-  mysql_mutex_lock(&LOCK_status);
+  myblockchain_mutex_lock(&LOCK_status);
 
   reset_status_by_thread();
 
-  mysql_mutex_unlock(&LOCK_status);
+  myblockchain_mutex_unlock(&LOCK_status);
   return 0;
 }
 
 ha_rows table_status_by_thread::get_row_count(void)
 {
-  mysql_mutex_lock(&LOCK_status);
+  myblockchain_mutex_lock(&LOCK_status);
   size_t status_var_count= all_status_vars.size();
-  mysql_mutex_unlock(&LOCK_status);
+  myblockchain_mutex_unlock(&LOCK_status);
   return (global_thread_container.get_row_count() * status_var_count);
 }
 

@@ -18,10 +18,10 @@
 
 package testsuite.clusterj.model;
 
-import com.mysql.clusterj.annotation.Index;
-import com.mysql.clusterj.annotation.NotPersistent;
-import com.mysql.clusterj.annotation.PersistenceCapable;
-import com.mysql.clusterj.annotation.PrimaryKey;
+import com.myblockchain.clusterj.annotation.Index;
+import com.myblockchain.clusterj.annotation.NotPersistent;
+import com.myblockchain.clusterj.annotation.PersistenceCapable;
+import com.myblockchain.clusterj.annotation.PrimaryKey;
 import java.util.Collection;
 
 /** This interface is based on Employee but adds not-persistent properties.

@@ -914,7 +914,7 @@ struct ndb_mgm_type_atoi
 static struct ndb_mgm_type_atoi type_values[] = 
 {
   { "NDB", "ndbd", NDB_MGM_NODE_TYPE_NDB},
-  { "API", "mysqld", NDB_MGM_NODE_TYPE_API },
+  { "API", "myblockchaind", NDB_MGM_NODE_TYPE_API },
   { "MGM", "ndb_mgmd", NDB_MGM_NODE_TYPE_MGM }
 };
 
@@ -1031,8 +1031,8 @@ status_ackumulate(struct ndb_mgm_node_state * state,
     state->node_group = atoi(value);
   } else if(strcmp("version", field) == 0){
     state->version = atoi(value);
-  } else if(strcmp("mysql_version", field) == 0){
-    state->mysql_version = atoi(value);
+  } else if(strcmp("myblockchain_version", field) == 0){
+    state->myblockchain_version = atoi(value);
   } else if(strcmp("connect_count", field) == 0){
     state->connect_count = atoi(value);    
   } else if(strcmp("address", field) == 0){
@@ -1408,7 +1408,7 @@ ndb_mgm_stop4(NdbMgmHandle handle, int no_of_nodes, const int * node_list,
   }
 
   /**
-   * A list of database nodes should be stopped
+   * A list of blockchain nodes should be stopped
    */
   Properties args;
 
@@ -2765,8 +2765,8 @@ ndb_mgm_alloc_nodeid(NdbMgmHandle handle, unsigned int version, int nodetype,
   args.put("version", version);
   args.put("nodetype", nodetype);
   args.put("nodeid", nodeid);
-  args.put("user", "mysqld");
-  args.put("password", "mysqld");
+  args.put("user", "myblockchaind");
+  args.put("password", "myblockchaind");
   args.put("public key", "a public key");
   args.put("endian", (endian_check.c[sizeof(long)-1])?"big":"little");
   if (handle->m_name)
@@ -3242,9 +3242,9 @@ int ndb_mgm_get_version(NdbMgmHandle handle,
     MGM_ARG("minor", Int, Mandatory, "Minor"),
     MGM_ARG("build", Int, Optional, "Build"),
     MGM_ARG("string", String, Mandatory, "String"),
-    MGM_ARG("mysql_major", Int, Optional, "MySQL major"),
-    MGM_ARG("mysql_minor", Int, Optional, "MySQL minor"),
-    MGM_ARG("mysql_build", Int, Optional, "MySQL build"),
+    MGM_ARG("myblockchain_major", Int, Optional, "MyBlockchain major"),
+    MGM_ARG("myblockchain_minor", Int, Optional, "MyBlockchain minor"),
+    MGM_ARG("myblockchain_build", Int, Optional, "MyBlockchain build"),
     MGM_END()
   };
 

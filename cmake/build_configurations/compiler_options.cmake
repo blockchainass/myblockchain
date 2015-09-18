@@ -61,8 +61,8 @@ IF(UNIX)
   # Solaris flags
   IF(CMAKE_SYSTEM_NAME MATCHES "SunOS")
     IF(CMAKE_SYSTEM_VERSION VERSION_GREATER "5.9")
-      # Link mysqld with mtmalloc on Solaris 10 and later
-      SET(WITH_MYSQLD_LDFLAGS "-lmtmalloc" CACHE STRING "")
+      # Link myblockchaind with mtmalloc on Solaris 10 and later
+      SET(WITH_MYBLOCKCHAIND_LDFLAGS "-lmtmalloc" CACHE STRING "")
     ENDIF() 
     # Possible changes to the defaults set above for gcc/linux.
     # Vectorized code dumps core in 32bit mode.
@@ -90,7 +90,7 @@ IF(UNIX)
         SET(COMMON_C_FLAGS                   "-g -mt -fsimple=1 -ftrap=%none -nofstore -xbuiltin=%all -xlibmil -xlibmopt -xtarget=generic")
         SET(COMMON_CXX_FLAGS                 "-g0 -mt -fsimple=1 -ftrap=%none -nofstore -xbuiltin=%all -xlibmil -xlibmopt -xtarget=generic -library=${SUNPRO_CXX_LIBRARY}")
         # We have to specify "-xO1" for DEBUG flags here,
-        # see http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6879978
+        # see http://bugs.sun.com/bugblockchain/view_bug.do?bug_id=6879978
         SET(CMAKE_C_FLAGS_DEBUG              "-xO1 ${COMMON_C_FLAGS}")
         SET(CMAKE_CXX_FLAGS_DEBUG            "-xO1 ${COMMON_CXX_FLAGS}")
         IF(32BIT)

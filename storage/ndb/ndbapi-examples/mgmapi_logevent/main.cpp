@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2005-2007 MySQL AB
+   Copyright (C) 2005-2007 MyBlockchain AB
     All rights reserved. Use is subject to license terms.
 
    This program is free software; you can redistribute it and/or modify
@@ -19,7 +19,7 @@
 #ifdef _WIN32
 #include <winsock2.h>
 #endif
-#include <mysql.h>
+#include <myblockchain.h>
 #include <ndbapi/NdbApi.hpp>
 #include <mgmapi.h>
 #include <stdio.h>

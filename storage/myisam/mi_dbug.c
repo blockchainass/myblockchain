@@ -148,7 +148,7 @@ void _mi_print_key(FILE *stream, HA_KEYSEG *keyseg,
       get_key_length(tmp_length,key);
       /*
 	The following command sometimes gives a warning from valgrind.
-	Not yet sure if the bug is in valgrind, glibc or mysqld
+	Not yet sure if the bug is in valgrind, glibc or myblockchaind
       */
       (void) fprintf(stream,"%.*s",(int) tmp_length,key);
       key+=tmp_length;
@@ -183,7 +183,7 @@ my_bool check_table_is_closed(const char *name, const char *where)
   DBUG_ENTER("check_table_is_closed");
 
   (void) fn_format(filename,name,"",MI_NAME_IEXT,4+16+32);
-  mysql_mutex_lock(&THR_LOCK_myisam);
+  myblockchain_mutex_lock(&THR_LOCK_myisam);
   for (pos=myisam_open_list ; pos ; pos=pos->next)
   {
     MI_INFO *info=(MI_INFO*) pos->data;
@@ -192,7 +192,7 @@ my_bool check_table_is_closed(const char *name, const char *where)
     {
       if (share->last_version)
       {
-        mysql_mutex_unlock(&THR_LOCK_myisam);
+        myblockchain_mutex_unlock(&THR_LOCK_myisam);
         my_message_local(WARNING_LEVEL,
                          "Table: %s is open on %s", name,where);
         DBUG_PRINT("warning",("Table: %s is open on %s", name,where));
@@ -200,7 +200,7 @@ my_bool check_table_is_closed(const char *name, const char *where)
       }
     }
   }
-  mysql_mutex_unlock(&THR_LOCK_myisam);
+  myblockchain_mutex_unlock(&THR_LOCK_myisam);
   DBUG_RETURN(0);
 }
 #endif /* EXTRA_DEBUG */

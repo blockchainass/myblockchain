@@ -46,7 +46,7 @@ MACRO (CHANGE_SSL_SETTINGS string)
   SET(WITH_SSL ${string} CACHE STRING ${WITH_SSL_DOC} FORCE)
 ENDMACRO()
 
-MACRO (MYSQL_USE_BUNDLED_SSL)
+MACRO (MYBLOCKCHAIN_USE_BUNDLED_SSL)
   SET(INC_DIRS 
     ${CMAKE_SOURCE_DIR}/extra/yassl/include
     ${CMAKE_SOURCE_DIR}/extra/yassl/taocrypt/include
@@ -72,11 +72,11 @@ MACRO (MYSQL_USE_BUNDLED_SSL)
   ENDFOREACH()
 ENDMACRO()
 
-# MYSQL_CHECK_SSL
+# MYBLOCKCHAIN_CHECK_SSL
 #
 # Provides the following configure options:
 # WITH_SSL=[yes|bundled|system|<path/to/custom/installation>]
-MACRO (MYSQL_CHECK_SSL)
+MACRO (MYBLOCKCHAIN_CHECK_SSL)
   IF(NOT WITH_SSL)
    IF(WIN32)
      CHANGE_SSL_SETTINGS("bundled")
@@ -90,7 +90,7 @@ MACRO (MYSQL_CHECK_SSL)
   ENDIF()
 
   IF(WITH_SSL STREQUAL "bundled")
-    MYSQL_USE_BUNDLED_SSL()
+    MYBLOCKCHAIN_USE_BUNDLED_SSL()
     # Reset some variables, in case we switch from /path/to/ssl to "bundled".
     IF (WITH_SSL_PATH)
       UNSET(WITH_SSL_PATH)

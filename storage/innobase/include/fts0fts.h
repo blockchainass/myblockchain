@@ -41,7 +41,7 @@ Created 2011/09/02 Sunny Bains
 #include "ut0wqueue.h"
 #include "que0types.h"
 #include "ft_global.h"
-#include "mysql/plugin_ftparser.h"
+#include "myblockchain/plugin_ftparser.h"
 
 /** "NULL" value of a document id. */
 #define FTS_NULL_DOC_ID			0
@@ -81,7 +81,7 @@ typedef ib_uint64_t doc_id_t;
 #define fts_bind_doc_id(i, n, v) pars_info_bind_int8_literal(i, n, v)
 
 /** Defines for FTS query mode, they have the same values as
-those defined in mysql file ft_global.h */
+those defined in myblockchain file ft_global.h */
 #define FTS_NL		0
 #define FTS_BOOL	1
 #define FTS_SORTED	2
@@ -251,7 +251,7 @@ struct fts_doc_ids_t {
 };
 
 // FIXME: Get rid of this if possible.
-/** Since MySQL's character set support for Unicode is woefully inadequate
+/** Since MyBlockchain's character set support for Unicode is woefully inadequate
 (it supports basic operations like isalpha etc. only for 8-bit characters),
 we have to implement our own. We use UTF-16 without surrogate processing
 as our in-memory format. This typedef is a single such character. */
@@ -292,7 +292,7 @@ table id and the index id to generate the column specific FTS auxiliary
 table name. */
 struct fts_table_t {
 	const char*	parent;		/*!< Parent table name, this is
-					required only for the database
+					required only for the blockchain
 					name */
 
 	fts_table_type_t
@@ -500,7 +500,7 @@ fts_trx_free(
 
 /******************************************************************//**
 Creates the common ancillary tables needed for supporting an FTS index
-on the given table. row_mysql_lock_data_dictionary must have been
+on the given table. row_myblockchain_lock_data_dictionary must have been
 called before this.
 @return DB_SUCCESS or error code */
 dberr_t
@@ -526,7 +526,7 @@ fts_create_index_tables(
 	__attribute__((warn_unused_result));
 /******************************************************************//**
 Creates the column specific ancillary tables needed for supporting an
-FTS index on the given table. row_mysql_lock_data_dictionary must have
+FTS index on the given table. row_myblockchain_lock_data_dictionary must have
 been called before this.
 @return DB_SUCCESS or error code */
 dberr_t
@@ -549,7 +549,7 @@ fts_add_doc_id_column(
 
 /*********************************************************************//**
 Drops the ancillary tables needed for supporting an FTS index on the
-given table. row_mysql_lock_data_dictionary must have been called before
+given table. row_myblockchain_lock_data_dictionary must have been called before
 this.
 @return DB_SUCCESS or error code */
 dberr_t
@@ -894,7 +894,7 @@ innobase_fts_text_cmp_prefix(
 Get the next token from the given string and store it in *token. */
 extern
 ulint
-innobase_mysql_fts_get_token(
+innobase_myblockchain_fts_get_token(
 /*=========================*/
 	CHARSET_INFO*	charset,		/*!< in: Character set */
 	const byte*	start,			/*!< in: start of text */
@@ -913,12 +913,12 @@ fts_get_token_size(
 	ulint			len);		/*!< in: token length */
 
 /*************************************************************//**
-FULLTEXT tokenizer internal in MYSQL_FTPARSER_SIMPLE_MODE
+FULLTEXT tokenizer internal in MYBLOCKCHAIN_FTPARSER_SIMPLE_MODE
 @return 0 if tokenize sucessfully */
 int
 fts_tokenize_document_internal(
 /*===========================*/
-	MYSQL_FTPARSER_PARAM*	param,	/*!< in: parser parameter */
+	MYBLOCKCHAIN_FTPARSER_PARAM*	param,	/*!< in: parser parameter */
 	char*			doc,	/*!< in: document to tokenize */
 	int			len);	/*!< in: document length */
 

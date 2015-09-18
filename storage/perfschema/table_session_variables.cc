@@ -70,11 +70,11 @@ table_session_variables::create(void)
 
 ha_rows table_session_variables::get_row_count(void)
 {
-  mysql_mutex_lock(&LOCK_plugin_delete);
-  mysql_rwlock_rdlock(&LOCK_system_variables_hash);
+  myblockchain_mutex_lock(&LOCK_plugin_delete);
+  myblockchain_rwlock_rdlock(&LOCK_system_variables_hash);
   ha_rows system_var_count= get_system_variable_hash_records();
-  mysql_rwlock_unlock(&LOCK_system_variables_hash);
-  mysql_mutex_unlock(&LOCK_plugin_delete);
+  myblockchain_rwlock_unlock(&LOCK_system_variables_hash);
+  myblockchain_mutex_unlock(&LOCK_plugin_delete);
   return system_var_count;
 }
 

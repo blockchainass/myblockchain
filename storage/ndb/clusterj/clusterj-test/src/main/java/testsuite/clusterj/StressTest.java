@@ -21,11 +21,11 @@ import java.nio.ByteBuffer;
 
 import org.junit.Ignore;
 
-import com.mysql.clusterj.ClusterJFatalUserException;
-import com.mysql.clusterj.ClusterJHelper;
-import com.mysql.clusterj.ColumnMetadata;
-import com.mysql.clusterj.ColumnType;
-import com.mysql.clusterj.DynamicObject;
+import com.myblockchain.clusterj.ClusterJFatalUserException;
+import com.myblockchain.clusterj.ClusterJHelper;
+import com.myblockchain.clusterj.ColumnMetadata;
+import com.myblockchain.clusterj.ColumnType;
+import com.myblockchain.clusterj.DynamicObject;
 
 import testsuite.clusterj.AbstractClusterJModelTest;
 import testsuite.clusterj.model.IdBase;
@@ -41,7 +41,7 @@ public class StressTest extends AbstractClusterJModelTest {
 
     private static final int ITERATIONS_TO_DROP = 3;
 
-    private static final String STRESS_TEST_TABLE_PROPERTY_NAME = "com.mysql.clusterj.StressTestTable";
+    private static final String STRESS_TEST_TABLE_PROPERTY_NAME = "com.myblockchain.clusterj.StressTestTable";
 
     private static String tableName = ClusterJHelper.getStringProperty(STRESS_TEST_TABLE_PROPERTY_NAME, "stress");
 

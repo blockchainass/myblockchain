@@ -1,0 +1,446 @@
+DROP TABLE IF EXISTS `�ԣ�a`;
+DROP TABLE IF EXISTS `�ԣ�b`;
+DROP TABLE IF EXISTS `�ԣ�a`;
+DROP TABLE IF EXISTS `�ԣ�b`;
+DROP TABLE IF EXISTS `�ԣ�a`;
+DROP TABLE IF EXISTS `�ԣ�b`;
+DROP TABLE IF EXISTS `�ԣ�a`;
+DROP TABLE IF EXISTS `�ԣ�b`;
+DROP TABLE IF EXISTS `�ԣ�a`;
+DROP TABLE IF EXISTS `�ԣ�b`;
+DROP TABLE IF EXISTS `�ԣ�a`;
+DROP TABLE IF EXISTS `�ԣ�b`;
+DROP TABLE IF EXISTS `�ԣ�a`;
+DROP TABLE IF EXISTS `�ԣ�b`;
+DROP TABLE IF EXISTS `�ԣ�a`;
+DROP TABLE IF EXISTS `�ԣ�b`;
+DROP TABLE IF EXISTS `�ԣ�a`;
+DROP TABLE IF EXISTS `�ԣ�b`;
+SET NAMES ujis;
+SET character_set_blockchain = ucs2;
+Warnings:
+Warning	1681	Updating 'character_set_blockchain' is deprecated. It will be made read-only in a future release.
+SET collation_connection = ucs2_general_ci;
+CREATE TABLE `�ԣ�a` (`�ã�` char(1) PRIMARY KEY) DEFAULT CHARSET = ucs2 engine = innodb;
+CREATE TABLE `�ԣ�b` (`�ã�` char(1) PRIMARY KEY) DEFAULT CHARSET = ucs2 engine = innodb;
+CREATE TABLE `�ԣ�a` (`�ã�` char(1) PRIMARY KEY) DEFAULT CHARSET = ucs2 engine = innodb;
+CREATE TABLE `�ԣ�b` (`�ã�` char(1) PRIMARY KEY) DEFAULT CHARSET = ucs2 engine = innodb;
+CREATE TABLE `�ԣ�a` (`�ã�` char(1) PRIMARY KEY) DEFAULT CHARSET = ucs2 engine = innodb;
+CREATE TABLE `�ԣ�b` (`�ã�` char(1) PRIMARY KEY) DEFAULT CHARSET = ucs2 engine = innodb;
+CREATE TABLE `�ԣ�a` (`�ã�` char(1) PRIMARY KEY) DEFAULT CHARSET = ucs2 engine = MyISAM;
+CREATE TABLE `�ԣ�b` (`�ã�` char(1) PRIMARY KEY) DEFAULT CHARSET = ucs2 engine = MyISAM;
+CREATE TABLE `�ԣ�a` (`�ã�` char(1) PRIMARY KEY) DEFAULT CHARSET = ucs2 engine = MyISAM;
+CREATE TABLE `�ԣ�b` (`�ã�` char(1) PRIMARY KEY) DEFAULT CHARSET = ucs2 engine = MyISAM;
+CREATE TABLE `�ԣ�a` (`�ã�` char(1) PRIMARY KEY) DEFAULT CHARSET = ucs2 engine = MyISAM;
+CREATE TABLE `�ԣ�b` (`�ã�` char(1) PRIMARY KEY) DEFAULT CHARSET = ucs2 engine = MyISAM;
+CREATE TABLE `�ԣ�a` (`�ã�` char(1) PRIMARY KEY) DEFAULT CHARSET = ucs2 engine = MEMORY;
+CREATE TABLE `�ԣ�b` (`�ã�` char(1) PRIMARY KEY) DEFAULT CHARSET = ucs2 engine = MEMORY;
+CREATE TABLE `�ԣ�a` (`�ã�` char(1) PRIMARY KEY) DEFAULT CHARSET = ucs2 engine = MEMORY;
+CREATE TABLE `�ԣ�b` (`�ã�` char(1) PRIMARY KEY) DEFAULT CHARSET = ucs2 engine = MEMORY;
+CREATE TABLE `�ԣ�a` (`�ã�` char(1) PRIMARY KEY) DEFAULT CHARSET = ucs2 engine = MEMORY;
+CREATE TABLE `�ԣ�b` (`�ã�` char(1) PRIMARY KEY) DEFAULT CHARSET = ucs2 engine = MEMORY;
+INSERT INTO `�ԣ�a` VALUES ('��'),('��'),('��');
+INSERT INTO `�ԣ�b` VALUES ('��');
+INSERT INTO `�ԣ�a` VALUES ('��'),('��'),('��');
+INSERT INTO `�ԣ�b` VALUES ('��');
+INSERT INTO `�ԣ�a` VALUES ('���'),('���'),('���');
+INSERT INTO `�ԣ�b` VALUES ('���');
+INSERT INTO `�ԣ�a` VALUES ('��'),('��'),('��');
+INSERT INTO `�ԣ�b` VALUES ('��');
+INSERT INTO `�ԣ�a` VALUES ('��'),('��'),('��');
+INSERT INTO `�ԣ�b` VALUES ('��');
+INSERT INTO `�ԣ�a` VALUES ('���'),('���'),('���');
+INSERT INTO `�ԣ�b` VALUES ('���');
+INSERT INTO `�ԣ�a` VALUES ('��'),('��'),('��');
+INSERT INTO `�ԣ�b` VALUES ('��');
+INSERT INTO `�ԣ�a` VALUES ('��'),('��'),('��');
+INSERT INTO `�ԣ�b` VALUES ('��');
+INSERT INTO `�ԣ�a` VALUES ('���'),('���'),('���');
+INSERT INTO `�ԣ�b` VALUES ('���');
+SELECT * FROM `�ԣ�a` JOIN `�ԣ�b`;
+�ã�	�ã�
+��	��
+��	��
+��	��
+SELECT * FROM `�ԣ�a` INNER JOIN `�ԣ�b`;
+�ã�	�ã�
+��	��
+��	��
+��	��
+SELECT * FROM `�ԣ�a` JOIN `�ԣ�b` USING (`�ã�`);
+�ã�
+��
+SELECT * FROM `�ԣ�a` INNER JOIN `�ԣ�b` USING (`�ã�`);
+�ã�
+��
+SELECT * FROM `�ԣ�a` CROSS JOIN `�ԣ�b`;
+�ã�	�ã�
+��	��
+��	��
+��	��
+SELECT * FROM `�ԣ�a` LEFT JOIN `�ԣ�b` USING (`�ã�`);
+�ã�
+��
+��
+��
+SELECT * FROM `�ԣ�a` LEFT JOIN `�ԣ�b` ON (`�ԣ�a`.`�ã�` = `�ԣ�b`.`�ã�`);
+�ã�	�ã�
+��	��
+��	NULL
+��	NULL
+SELECT * FROM `�ԣ�b` RIGHT JOIN `�ԣ�a` USING (`�ã�`);
+�ã�
+��
+��
+��
+SELECT * FROM `�ԣ�b` RIGHT JOIN `�ԣ�a` ON (`�ԣ�a`.`�ã�` = `�ԣ�b`.`�ã�`);
+�ã�	�ã�
+��	��
+NULL	��
+NULL	��
+SELECT * FROM `�ԣ�a` JOIN `�ԣ�b`;
+�ã�	�ã�
+��	��
+��	��
+��	��
+SELECT * FROM `�ԣ�a` INNER JOIN `�ԣ�b`;
+�ã�	�ã�
+��	��
+��	��
+��	��
+SELECT * FROM `�ԣ�a` JOIN `�ԣ�b` USING (`�ã�`);
+�ã�
+��
+SELECT * FROM `�ԣ�a` INNER JOIN `�ԣ�b` USING (`�ã�`);
+�ã�
+��
+SELECT * FROM `�ԣ�a` CROSS JOIN `�ԣ�b`;
+�ã�	�ã�
+��	��
+��	��
+��	��
+SELECT * FROM `�ԣ�a` LEFT JOIN `�ԣ�b` USING (`�ã�`);
+�ã�
+��
+��
+��
+SELECT * FROM `�ԣ�a` LEFT JOIN `�ԣ�b` ON (`�ԣ�a`.`�ã�` = `�ԣ�b`.`�ã�`);
+�ã�	�ã�
+��	��
+��	NULL
+��	NULL
+SELECT * FROM `�ԣ�b` RIGHT JOIN `�ԣ�a` USING (`�ã�`);
+�ã�
+��
+��
+��
+SELECT * FROM `�ԣ�b` RIGHT JOIN `�ԣ�a` ON (`�ԣ�a`.`�ã�` = `�ԣ�b`.`�ã�`);
+�ã�	�ã�
+��	��
+NULL	��
+NULL	��
+SELECT * FROM `�ԣ�a` JOIN `�ԣ�b`;
+�ã�	�ã�
+���	���
+���	���
+���	���
+SELECT * FROM `�ԣ�a` INNER JOIN `�ԣ�b`;
+�ã�	�ã�
+���	���
+���	���
+���	���
+SELECT * FROM `�ԣ�a` JOIN `�ԣ�b` USING (`�ã�`);
+�ã�
+���
+SELECT * FROM `�ԣ�a` INNER JOIN `�ԣ�b` USING (`�ã�`);
+�ã�
+���
+SELECT * FROM `�ԣ�a` CROSS JOIN `�ԣ�b`;
+�ã�	�ã�
+���	���
+���	���
+���	���
+SELECT * FROM `�ԣ�a` LEFT JOIN `�ԣ�b` USING (`�ã�`);
+�ã�
+���
+���
+���
+SELECT * FROM `�ԣ�a` LEFT JOIN `�ԣ�b` ON (`�ԣ�a`.`�ã�` = `�ԣ�b`.`�ã�`);
+�ã�	�ã�
+���	���
+���	NULL
+���	NULL
+SELECT * FROM `�ԣ�b` RIGHT JOIN `�ԣ�a` USING (`�ã�`);
+�ã�
+���
+���
+���
+SELECT * FROM `�ԣ�b` RIGHT JOIN `�ԣ�a` ON (`�ԣ�a`.`�ã�` = `�ԣ�b`.`�ã�`);
+�ã�	�ã�
+���	���
+NULL	���
+NULL	���
+SELECT * FROM `�ԣ�a` JOIN `�ԣ�b`;
+�ã�	�ã�
+��	��
+��	��
+��	��
+SELECT * FROM `�ԣ�a` INNER JOIN `�ԣ�b`;
+�ã�	�ã�
+��	��
+��	��
+��	��
+SELECT * FROM `�ԣ�a` JOIN `�ԣ�b` USING (`�ã�`);
+�ã�
+��
+SELECT * FROM `�ԣ�a` INNER JOIN `�ԣ�b` USING (`�ã�`);
+�ã�
+��
+SELECT * FROM `�ԣ�a` CROSS JOIN `�ԣ�b`;
+�ã�	�ã�
+��	��
+��	��
+��	��
+SELECT * FROM `�ԣ�a` LEFT JOIN `�ԣ�b` USING (`�ã�`);
+�ã�
+��
+��
+��
+SELECT * FROM `�ԣ�a` LEFT JOIN `�ԣ�b` ON (`�ԣ�a`.`�ã�` = `�ԣ�b`.`�ã�`);
+�ã�	�ã�
+��	��
+��	NULL
+��	NULL
+SELECT * FROM `�ԣ�b` RIGHT JOIN `�ԣ�a` USING (`�ã�`);
+�ã�
+��
+��
+��
+SELECT * FROM `�ԣ�b` RIGHT JOIN `�ԣ�a` ON (`�ԣ�a`.`�ã�` = `�ԣ�b`.`�ã�`);
+�ã�	�ã�
+��	��
+NULL	��
+NULL	��
+SELECT * FROM `�ԣ�a` JOIN `�ԣ�b`;
+�ã�	�ã�
+��	��
+��	��
+��	��
+SELECT * FROM `�ԣ�a` INNER JOIN `�ԣ�b`;
+�ã�	�ã�
+��	��
+��	��
+��	��
+SELECT * FROM `�ԣ�a` JOIN `�ԣ�b` USING (`�ã�`);
+�ã�
+��
+SELECT * FROM `�ԣ�a` INNER JOIN `�ԣ�b` USING (`�ã�`);
+�ã�
+��
+SELECT * FROM `�ԣ�a` CROSS JOIN `�ԣ�b`;
+�ã�	�ã�
+��	��
+��	��
+��	��
+SELECT * FROM `�ԣ�a` LEFT JOIN `�ԣ�b` USING (`�ã�`);
+�ã�
+��
+��
+��
+SELECT * FROM `�ԣ�a` LEFT JOIN `�ԣ�b` ON (`�ԣ�a`.`�ã�` = `�ԣ�b`.`�ã�`);
+�ã�	�ã�
+��	��
+��	NULL
+��	NULL
+SELECT * FROM `�ԣ�b` RIGHT JOIN `�ԣ�a` USING (`�ã�`);
+�ã�
+��
+��
+��
+SELECT * FROM `�ԣ�b` RIGHT JOIN `�ԣ�a` ON (`�ԣ�a`.`�ã�` = `�ԣ�b`.`�ã�`);
+�ã�	�ã�
+��	��
+NULL	��
+NULL	��
+SELECT * FROM `�ԣ�a` JOIN `�ԣ�b`;
+�ã�	�ã�
+���	���
+���	���
+���	���
+SELECT * FROM `�ԣ�a` INNER JOIN `�ԣ�b`;
+�ã�	�ã�
+���	���
+���	���
+���	���
+SELECT * FROM `�ԣ�a` JOIN `�ԣ�b` USING (`�ã�`);
+�ã�
+���
+SELECT * FROM `�ԣ�a` INNER JOIN `�ԣ�b` USING (`�ã�`);
+�ã�
+���
+SELECT * FROM `�ԣ�a` CROSS JOIN `�ԣ�b`;
+�ã�	�ã�
+���	���
+���	���
+���	���
+SELECT * FROM `�ԣ�a` LEFT JOIN `�ԣ�b` USING (`�ã�`);
+�ã�
+���
+���
+���
+SELECT * FROM `�ԣ�a` LEFT JOIN `�ԣ�b` ON (`�ԣ�a`.`�ã�` = `�ԣ�b`.`�ã�`);
+�ã�	�ã�
+���	���
+���	NULL
+���	NULL
+SELECT * FROM `�ԣ�b` RIGHT JOIN `�ԣ�a` USING (`�ã�`);
+�ã�
+���
+���
+���
+SELECT * FROM `�ԣ�b` RIGHT JOIN `�ԣ�a` ON (`�ԣ�a`.`�ã�` = `�ԣ�b`.`�ã�`);
+�ã�	�ã�
+���	���
+NULL	���
+NULL	���
+SELECT * FROM `�ԣ�a` JOIN `�ԣ�b`;
+�ã�	�ã�
+��	��
+��	��
+��	��
+SELECT * FROM `�ԣ�a` INNER JOIN `�ԣ�b`;
+�ã�	�ã�
+��	��
+��	��
+��	��
+SELECT * FROM `�ԣ�a` JOIN `�ԣ�b` USING (`�ã�`);
+�ã�
+��
+SELECT * FROM `�ԣ�a` INNER JOIN `�ԣ�b` USING (`�ã�`);
+�ã�
+��
+SELECT * FROM `�ԣ�a` CROSS JOIN `�ԣ�b`;
+�ã�	�ã�
+��	��
+��	��
+��	��
+SELECT * FROM `�ԣ�a` LEFT JOIN `�ԣ�b` USING (`�ã�`);
+�ã�
+��
+��
+��
+SELECT * FROM `�ԣ�a` LEFT JOIN `�ԣ�b` ON (`�ԣ�a`.`�ã�` = `�ԣ�b`.`�ã�`);
+�ã�	�ã�
+��	��
+��	NULL
+��	NULL
+SELECT * FROM `�ԣ�b` RIGHT JOIN `�ԣ�a` USING (`�ã�`);
+�ã�
+��
+��
+��
+SELECT * FROM `�ԣ�b` RIGHT JOIN `�ԣ�a` ON (`�ԣ�a`.`�ã�` = `�ԣ�b`.`�ã�`);
+�ã�	�ã�
+��	��
+NULL	��
+NULL	��
+SELECT * FROM `�ԣ�a` JOIN `�ԣ�b`;
+�ã�	�ã�
+��	��
+��	��
+��	��
+SELECT * FROM `�ԣ�a` INNER JOIN `�ԣ�b`;
+�ã�	�ã�
+��	��
+��	��
+��	��
+SELECT * FROM `�ԣ�a` JOIN `�ԣ�b` USING (`�ã�`);
+�ã�
+��
+SELECT * FROM `�ԣ�a` INNER JOIN `�ԣ�b` USING (`�ã�`);
+�ã�
+��
+SELECT * FROM `�ԣ�a` CROSS JOIN `�ԣ�b`;
+�ã�	�ã�
+��	��
+��	��
+��	��
+SELECT * FROM `�ԣ�a` LEFT JOIN `�ԣ�b` USING (`�ã�`);
+�ã�
+��
+��
+��
+SELECT * FROM `�ԣ�a` LEFT JOIN `�ԣ�b` ON (`�ԣ�a`.`�ã�` = `�ԣ�b`.`�ã�`);
+�ã�	�ã�
+��	��
+��	NULL
+��	NULL
+SELECT * FROM `�ԣ�b` RIGHT JOIN `�ԣ�a` USING (`�ã�`);
+�ã�
+��
+��
+��
+SELECT * FROM `�ԣ�b` RIGHT JOIN `�ԣ�a` ON (`�ԣ�a`.`�ã�` = `�ԣ�b`.`�ã�`);
+�ã�	�ã�
+��	��
+NULL	��
+NULL	��
+SELECT * FROM `�ԣ�a` JOIN `�ԣ�b`;
+�ã�	�ã�
+���	���
+���	���
+���	���
+SELECT * FROM `�ԣ�a` INNER JOIN `�ԣ�b`;
+�ã�	�ã�
+���	���
+���	���
+���	���
+SELECT * FROM `�ԣ�a` JOIN `�ԣ�b` USING (`�ã�`);
+�ã�
+���
+SELECT * FROM `�ԣ�a` INNER JOIN `�ԣ�b` USING (`�ã�`);
+�ã�
+���
+SELECT * FROM `�ԣ�a` CROSS JOIN `�ԣ�b`;
+�ã�	�ã�
+���	���
+���	���
+���	���
+SELECT * FROM `�ԣ�a` LEFT JOIN `�ԣ�b` USING (`�ã�`);
+�ã�
+���
+���
+���
+SELECT * FROM `�ԣ�a` LEFT JOIN `�ԣ�b` ON (`�ԣ�a`.`�ã�` = `�ԣ�b`.`�ã�`);
+�ã�	�ã�
+���	���
+���	NULL
+���	NULL
+SELECT * FROM `�ԣ�b` RIGHT JOIN `�ԣ�a` USING (`�ã�`);
+�ã�
+���
+���
+���
+SELECT * FROM `�ԣ�b` RIGHT JOIN `�ԣ�a` ON (`�ԣ�a`.`�ã�` = `�ԣ�b`.`�ã�`);
+�ã�	�ã�
+���	���
+NULL	���
+NULL	���
+DROP TABLE `�ԣ�a`;
+DROP TABLE `�ԣ�b`;
+DROP TABLE `�ԣ�a`;
+DROP TABLE `�ԣ�b`;
+DROP TABLE `�ԣ�a`;
+DROP TABLE `�ԣ�b`;
+DROP TABLE `�ԣ�a`;
+DROP TABLE `�ԣ�b`;
+DROP TABLE `�ԣ�a`;
+DROP TABLE `�ԣ�b`;
+DROP TABLE `�ԣ�a`;
+DROP TABLE `�ԣ�b`;
+DROP TABLE `�ԣ�a`;
+DROP TABLE `�ԣ�b`;
+DROP TABLE `�ԣ�a`;
+DROP TABLE `�ԣ�b`;
+DROP TABLE `�ԣ�a`;
+DROP TABLE `�ԣ�b`;

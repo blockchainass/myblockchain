@@ -1,5 +1,5 @@
-#ifndef MYSQL_SERVICE_PARSER_INCLUDED
-#define MYSQL_SERVICE_PARSER_INCLUDED
+#ifndef MYBLOCKCHAIN_SERVICE_PARSER_INCLUDED
+#define MYBLOCKCHAIN_SERVICE_PARSER_INCLUDED
 /*  Copyright (c) 2015, Oracle and/or its affiliates. All rights reserved.
 
     This program is free software; you can redistribute it and/or
@@ -17,20 +17,20 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA */
 
 #include "my_md5_size.h"
-#include <mysql/mysql_lex_string.h>
+#include <myblockchain/myblockchain_lex_string.h>
 
-#ifndef MYSQL_ABI_CHECK
+#ifndef MYBLOCKCHAIN_ABI_CHECK
 #include <stdlib.h>
 #endif
 
 #ifdef __cplusplus
 class THD;
 class Item;
-#define MYSQL_THD THD*
-typedef Item* MYSQL_ITEM;
+#define MYBLOCKCHAIN_THD THD*
+typedef Item* MYBLOCKCHAIN_ITEM;
 #else
-#define MYSQL_THD void*
-typedef void* MYSQL_ITEM;
+#define MYBLOCKCHAIN_THD void*
+typedef void* MYBLOCKCHAIN_ITEM;
 #endif /* __cplusplus */
 
 #ifdef __cplusplus
@@ -50,7 +50,7 @@ extern "C" {
 #define STATEMENT_TYPE_OTHER 2
 
 typedef
-int (*parse_node_visit_function)(MYSQL_ITEM item, unsigned char* arg);
+int (*parse_node_visit_function)(MYBLOCKCHAIN_ITEM item, unsigned char* arg);
 
 
 typedef
@@ -61,19 +61,19 @@ int (*sql_condition_handler_function)(int sql_errno,
 
 struct st_my_thread_handle;
 
-extern struct mysql_parser_service_st {
+extern struct myblockchain_parser_service_st {
 
-  MYSQL_THD (*mysql_current_session)();
+  MYBLOCKCHAIN_THD (*myblockchain_current_session)();
 
-  MYSQL_THD (*mysql_open_session)();
+  MYBLOCKCHAIN_THD (*myblockchain_open_session)();
 
-  void (*mysql_start_thread)(MYSQL_THD thd, void *(*callback_fun)(void*),
+  void (*myblockchain_start_thread)(MYBLOCKCHAIN_THD thd, void *(*callback_fun)(void*),
                              void *arg,
                              struct st_my_thread_handle *thread_handle);
 
-  void (*mysql_join_thread)(struct st_my_thread_handle *thread_handle);
+  void (*myblockchain_join_thread)(struct st_my_thread_handle *thread_handle);
 
-  void (*mysql_set_current_database)(MYSQL_THD thd, const MYSQL_LEX_STRING db);
+  void (*myblockchain_set_current_blockchain)(MYBLOCKCHAIN_THD thd, const MYBLOCKCHAIN_LEX_STRING db);
 
   /**
     Parses the query.
@@ -96,12 +96,12 @@ extern struct mysql_parser_service_st {
     @retval 0 Success.
     @retval 1 Parse error.
   */
-  int (*mysql_parse)(MYSQL_THD thd, const MYSQL_LEX_STRING query,
+  int (*myblockchain_parse)(MYBLOCKCHAIN_THD thd, const MYBLOCKCHAIN_LEX_STRING query,
                      unsigned char is_prepared,
                      sql_condition_handler_function handle_condition,
                      void *condition_handler_state);
 
-  int (*mysql_get_statement_type)(MYSQL_THD thd);
+  int (*myblockchain_get_statement_type)(MYBLOCKCHAIN_THD thd);
 
   /**
     Returns the digest of the last parsed statement in the session.
@@ -114,7 +114,7 @@ extern struct mysql_parser_service_st {
     @retval 0 Success.
     @retval 1 Parse error.
   */
-  int (*mysql_get_statement_digest)(MYSQL_THD thd, unsigned char *digest);
+  int (*myblockchain_get_statement_digest)(MYBLOCKCHAIN_THD thd, unsigned char *digest);
 
 
   /**
@@ -125,24 +125,24 @@ extern struct mysql_parser_service_st {
 
     @return The number of parameter markers.
   */
-  int (*mysql_get_number_params)(MYSQL_THD thd);
+  int (*myblockchain_get_number_params)(MYBLOCKCHAIN_THD thd);
 
 
   /**
     Stores in 'positions' the positions in the last parsed query of each
     parameter marker('?'). Positions must be an already allocated array of at
-    least mysql_parser_service_st::mysql_get_number_params() size. This works
+    least myblockchain_parser_service_st::myblockchain_get_number_params() size. This works
     only if the last query was parsed as a prepared statement.
 
     @param thd The session in which the query was parsed.
 
     @param positions An already allocated array of at least
-    mysql_parser_service_st::mysql_get_number_params() size.
+    myblockchain_parser_service_st::myblockchain_get_number_params() size.
 
     @return The number of parameter markers and hence number of written
     positions.
   */
-  int (*mysql_extract_prepared_params)(MYSQL_THD thd, int *positions);
+  int (*myblockchain_extract_prepared_params)(MYBLOCKCHAIN_THD thd, int *positions);
 
 
   /**
@@ -155,22 +155,22 @@ extern struct mysql_parser_service_st {
 
     @param arg Will be passed as argument to each call to 'processor'.
   */
-  int (*mysql_visit_tree)(MYSQL_THD thd, parse_node_visit_function processor,
+  int (*myblockchain_visit_tree)(MYBLOCKCHAIN_THD thd, parse_node_visit_function processor,
                           unsigned char* arg);
 
 
   /**
-    Renders the MYSQL_ITEM as a string and returns a reference in the form of
-    a MYSQL_LEX_STRING. The string buffer is allocated by the server and must
-    be freed by mysql_free_string().
+    Renders the MYBLOCKCHAIN_ITEM as a string and returns a reference in the form of
+    a MYBLOCKCHAIN_LEX_STRING. The string buffer is allocated by the server and must
+    be freed by myblockchain_free_string().
 
     @param item The literal to print.
 
     @return The result of printing the literal.
 
-    @see mysql_parser_service_st::mysql_free_string().
+    @see myblockchain_parser_service_st::myblockchain_free_string().
   */
-  MYSQL_LEX_STRING (*mysql_item_string)(MYSQL_ITEM item);
+  MYBLOCKCHAIN_LEX_STRING (*myblockchain_item_string)(MYBLOCKCHAIN_ITEM item);
 
 
   /**
@@ -178,7 +178,7 @@ extern struct mysql_parser_service_st {
 
     @param The string whose buffer will be freed.
   */
-  void (*mysql_free_string)(MYSQL_LEX_STRING string);
+  void (*myblockchain_free_string)(MYBLOCKCHAIN_LEX_STRING string);
 
 
   /**
@@ -189,7 +189,7 @@ extern struct mysql_parser_service_st {
 
     @return The query string.
   */
-  MYSQL_LEX_STRING (*mysql_get_query)(MYSQL_THD thd);
+  MYBLOCKCHAIN_LEX_STRING (*myblockchain_get_query)(MYBLOCKCHAIN_THD thd);
 
 
   /**
@@ -200,87 +200,87 @@ extern struct mysql_parser_service_st {
 
     @return The query string normalized.
   */
-  MYSQL_LEX_STRING (*mysql_get_normalized_query)(MYSQL_THD thd);
-} *mysql_parser_service;
+  MYBLOCKCHAIN_LEX_STRING (*myblockchain_get_normalized_query)(MYBLOCKCHAIN_THD thd);
+} *myblockchain_parser_service;
 
-#ifdef MYSQL_DYNAMIC_PLUGIN
+#ifdef MYBLOCKCHAIN_DYNAMIC_PLUGIN
 
-#define mysql_parser_current_session() \
-   mysql_parser_service->mysql_current_session()
+#define myblockchain_parser_current_session() \
+   myblockchain_parser_service->myblockchain_current_session()
 
-#define mysql_parser_open_session() \
-  mysql_parser_service->mysql_open_session()
+#define myblockchain_parser_open_session() \
+  myblockchain_parser_service->myblockchain_open_session()
 
-#define mysql_parser_start_thread(thd, func, arg, thread_handle) \
-  mysql_parser_service->mysql_start_thread(thd, func, arg, thread_handle)
+#define myblockchain_parser_start_thread(thd, func, arg, thread_handle) \
+  myblockchain_parser_service->myblockchain_start_thread(thd, func, arg, thread_handle)
 
-#define mysql_parser_join_thread(thread_handle) \
-  mysql_parser_service->mysql_join_thread(thread_handle)
+#define myblockchain_parser_join_thread(thread_handle) \
+  myblockchain_parser_service->myblockchain_join_thread(thread_handle)
 
-#define mysql_parser_set_current_database(thd, db) \
-  mysql_parser_service->mysql_set_current_database(thd, db)
+#define myblockchain_parser_set_current_blockchain(thd, db) \
+  myblockchain_parser_service->myblockchain_set_current_blockchain(thd, db)
 
-#define mysql_parser_parse(thd, query, is_prepared, \
+#define myblockchain_parser_parse(thd, query, is_prepared, \
                            condition_handler, condition_handler_state)  \
-  mysql_parser_service->mysql_parse(thd, query, is_prepared, \
+  myblockchain_parser_service->myblockchain_parse(thd, query, is_prepared, \
                                     condition_handler, \
                                     condition_handler_state)
 
-#define mysql_parser_get_statement_type(thd) \
-  mysql_parser_service->mysql_get_statement_type(thd)
+#define myblockchain_parser_get_statement_type(thd) \
+  myblockchain_parser_service->myblockchain_get_statement_type(thd)
 
-#define mysql_parser_get_statement_digest(thd, digest) \
-  mysql_parser_service->mysql_get_statement_digest(thd, digest)
+#define myblockchain_parser_get_statement_digest(thd, digest) \
+  myblockchain_parser_service->myblockchain_get_statement_digest(thd, digest)
 
-#define mysql_parser_get_number_params(thd) \
-  mysql_parser_service->mysql_get_number_params(thd)
+#define myblockchain_parser_get_number_params(thd) \
+  myblockchain_parser_service->myblockchain_get_number_params(thd)
 
-#define mysql_parser_extract_prepared_params(thd, positions) \
-  mysql_parser_service->mysql_extract_prepared_params(thd, positions)
+#define myblockchain_parser_extract_prepared_params(thd, positions) \
+  myblockchain_parser_service->myblockchain_extract_prepared_params(thd, positions)
 
-#define mysql_parser_visit_tree(thd, processor, arg) \
-  mysql_parser_service->mysql_visit_tree(thd, processor, arg)
+#define myblockchain_parser_visit_tree(thd, processor, arg) \
+  myblockchain_parser_service->myblockchain_visit_tree(thd, processor, arg)
 
-#define mysql_parser_item_string(item) \
-  mysql_parser_service->mysql_item_string(item)
+#define myblockchain_parser_item_string(item) \
+  myblockchain_parser_service->myblockchain_item_string(item)
 
-#define mysql_parser_free_string(string) \
-  mysql_parser_service->mysql_free_string(string)
+#define myblockchain_parser_free_string(string) \
+  myblockchain_parser_service->myblockchain_free_string(string)
 
-#define mysql_parser_get_query(thd) \
-  mysql_parser_service->mysql_get_query(thd)
+#define myblockchain_parser_get_query(thd) \
+  myblockchain_parser_service->myblockchain_get_query(thd)
 
-#define mysql_parser_get_normalized_query(thd) \
-  mysql_parser_service->mysql_get_normalized_query(thd)
+#define myblockchain_parser_get_normalized_query(thd) \
+  myblockchain_parser_service->myblockchain_get_normalized_query(thd)
 
 #else
 typedef void *(*callback_function)(void*);
-MYSQL_THD mysql_parser_current_session();
-MYSQL_THD mysql_parser_open_session();
-void mysql_parser_start_thread(MYSQL_THD thd, callback_function fun, void *arg,
+MYBLOCKCHAIN_THD myblockchain_parser_current_session();
+MYBLOCKCHAIN_THD myblockchain_parser_open_session();
+void myblockchain_parser_start_thread(MYBLOCKCHAIN_THD thd, callback_function fun, void *arg,
                                struct st_my_thread_handle *thread_handle);
-void mysql_parser_join_thread(struct st_my_thread_handle *thread_handle);
-void mysql_parser_set_current_database(MYSQL_THD thd,
-                                       const MYSQL_LEX_STRING db);
-int mysql_parser_parse(MYSQL_THD thd, const MYSQL_LEX_STRING query,
+void myblockchain_parser_join_thread(struct st_my_thread_handle *thread_handle);
+void myblockchain_parser_set_current_blockchain(MYBLOCKCHAIN_THD thd,
+                                       const MYBLOCKCHAIN_LEX_STRING db);
+int myblockchain_parser_parse(MYBLOCKCHAIN_THD thd, const MYBLOCKCHAIN_LEX_STRING query,
                        unsigned char is_prepared,
                        sql_condition_handler_function handle_condition,
                        void *condition_handler_state);
-int mysql_parser_get_statement_type(MYSQL_THD thd);
-int mysql_parser_get_statement_digest(MYSQL_THD thd, unsigned char *digest);
-int mysql_parser_get_number_params(MYSQL_THD thd);
-int mysql_parser_extract_prepared_params(MYSQL_THD thd, int *positions);
-int mysql_parser_visit_tree(MYSQL_THD thd, parse_node_visit_function processor,
+int myblockchain_parser_get_statement_type(MYBLOCKCHAIN_THD thd);
+int myblockchain_parser_get_statement_digest(MYBLOCKCHAIN_THD thd, unsigned char *digest);
+int myblockchain_parser_get_number_params(MYBLOCKCHAIN_THD thd);
+int myblockchain_parser_extract_prepared_params(MYBLOCKCHAIN_THD thd, int *positions);
+int myblockchain_parser_visit_tree(MYBLOCKCHAIN_THD thd, parse_node_visit_function processor,
                             unsigned char* arg);
-MYSQL_LEX_STRING mysql_parser_item_string(MYSQL_ITEM item);
-void mysql_parser_free_string(MYSQL_LEX_STRING string);
-MYSQL_LEX_STRING mysql_parser_get_query(MYSQL_THD thd);
-MYSQL_LEX_STRING mysql_parser_get_normalized_query(MYSQL_THD thd);
+MYBLOCKCHAIN_LEX_STRING myblockchain_parser_item_string(MYBLOCKCHAIN_ITEM item);
+void myblockchain_parser_free_string(MYBLOCKCHAIN_LEX_STRING string);
+MYBLOCKCHAIN_LEX_STRING myblockchain_parser_get_query(MYBLOCKCHAIN_THD thd);
+MYBLOCKCHAIN_LEX_STRING myblockchain_parser_get_normalized_query(MYBLOCKCHAIN_THD thd);
 
-#endif /* MYSQL_DYNAMIC_PLUGIN */
+#endif /* MYBLOCKCHAIN_DYNAMIC_PLUGIN */
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* MYSQL_SERVICE_PARSER_INCLUDED */
+#endif /* MYBLOCKCHAIN_SERVICE_PARSER_INCLUDED */

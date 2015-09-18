@@ -245,7 +245,7 @@ bool xid_printable(PSI_xid *xid, size_t offset, size_t length)
   if (xid->is_null())
     return false;
 
-  DBUG_ASSERT(offset + length <= MYSQL_XIDDATASIZE);
+  DBUG_ASSERT(offset + length <= MYBLOCKCHAIN_XIDDATASIZE);
 
   unsigned char *c= (unsigned char*)&xid->data + offset;
 

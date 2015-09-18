@@ -15,9 +15,9 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 
-if [ "$MYSQL_HOME" = "" ] ; then
+if [ "$MYBLOCKCHAIN_HOME" = "" ] ; then
   source ../env.properties
-  echo MYSQL_HOME=$MYSQL_HOME
+  echo MYBLOCKCHAIN_HOME=$MYBLOCKCHAIN_HOME
 fi
 
 #set -x
@@ -26,6 +26,6 @@ fi
 
 echo
 echo show cluster...
-"$MYSQL_BIN/ndb_mgm" -c "$NDB_CONNECT" -e show -t 1
+"$MYBLOCKCHAIN_BIN/ndb_mgm" -c "$NDB_CONNECT" -e show -t 1
 
 #set +x

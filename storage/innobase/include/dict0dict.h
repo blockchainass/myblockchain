@@ -48,8 +48,8 @@ Created 1/8/1996 Heikki Tuuri
 #ifndef UNIV_HOTBACKUP
 # include "sync0rw.h"
 /********************************************************************//**
-Get the database name length in a table name.
-@return database name length */
+Get the blockchain name length in a table name.
+@return blockchain name length */
 ulint
 dict_get_db_name_len(
 /*=================*/
@@ -57,16 +57,16 @@ dict_get_db_name_len(
 				dbname '/' tablename */
 	__attribute__((nonnull, warn_unused_result));
 /*********************************************************************//**
-Open a table from its database and table name, this is currently used by
+Open a table from its blockchain and table name, this is currently used by
 foreign constraint parser to get the referenced table.
-@return complete table name with database and table name, allocated from
+@return complete table name with blockchain and table name, allocated from
 heap memory passed in */
 char*
 dict_get_referenced_table(
 /*======================*/
 	const char*	name,		/*!< in: foreign key table name */
-	const char*	database_name,	/*!< in: table db name */
-	ulint		database_name_len,/*!< in: db name length */
+	const char*	blockchain_name,	/*!< in: table db name */
+	ulint		blockchain_name_len,/*!< in: db name length */
 	const char*	table_name,	/*!< in: table name */
 	ulint		table_name_len,	/*!< in: table name length */
 	dict_table_t**	table,		/*!< out: table object or NULL */
@@ -80,7 +80,7 @@ dict_foreign_free(
 /*********************************************************************//**
 Finds the highest [number] for foreign key constraints of the table. Looks
 only at the >= 4.0.18-format id's, which are of the form
-databasename/tablename_ibfk_[number].
+blockchainname/tablename_ibfk_[number].
 @return highest number, 0 if table has no new format foreign key constraints */
 ulint
 dict_table_get_highest_foreign_id(
@@ -448,7 +448,7 @@ Determines whether a string starts with the specified keyword.
 ibool
 dict_str_starts_with_keyword(
 /*=========================*/
-	THD*		thd,		/*!< in: MySQL thread handle */
+	THD*		thd,		/*!< in: MyBlockchain thread handle */
 	const char*	str,		/*!< in: string to scan for keyword */
 	const char*	keyword)	/*!< in: keyword to look for */
 	__attribute__((nonnull, warn_unused_result));
@@ -463,9 +463,9 @@ fields than mentioned in the constraint.
 @param[in]	sql_string	table create statement where
 				foreign keys are declared like:
 				FOREIGN KEY (a, b) REFERENCES table2(c, d),
-				table2 can be written also with the database
+				table2 can be written also with the blockchain
 				name before it: test.table2; the default
-				database id the database of parameter name
+				blockchain id the blockchain of parameter name
 @param[in]	sql_length	length of sql_string
 @param[in]	name		table full name in normalized form
 @param[in]	reject_fks	if TRUE, fail with error code
@@ -836,10 +836,10 @@ dict_table_n_rows_dec(
 
 /** Get nth virtual column
 @param[in]	table	target table
-@param[in]	col_nr	column number in MySQL Table definition
+@param[in]	col_nr	column number in MyBlockchain Table definition
 @return dict_v_col_t ptr */
 dict_v_col_t*
-dict_table_get_nth_v_col_mysql(
+dict_table_get_nth_v_col_myblockchain(
 	const dict_table_t*	table,
 	ulint			col_nr);
 
@@ -1080,7 +1080,7 @@ dict_table_wait_for_bg_threads_to_exit(
 /**********************************************************************//**
 Looks for an index with the given id. NOTE that we do not reserve
 the dictionary mutex: this function is for emergency purposes like
-printing info of a corrupt database page!
+printing info of a corrupt blockchain page!
 @return index or NULL if not found from cache */
 dict_index_t*
 dict_index_find_on_id_low(
@@ -1499,14 +1499,14 @@ dict_index_calc_min_rec_len(
 	const dict_index_t*	index)	/*!< in: index */
 	__attribute__((nonnull, warn_unused_result));
 /********************************************************************//**
-Reserves the dictionary system mutex for MySQL. */
+Reserves the dictionary system mutex for MyBlockchain. */
 void
-dict_mutex_enter_for_mysql(void);
+dict_mutex_enter_for_myblockchain(void);
 /*============================*/
 /********************************************************************//**
-Releases the dictionary system mutex for MySQL. */
+Releases the dictionary system mutex for MyBlockchain. */
 void
-dict_mutex_exit_for_mysql(void);
+dict_mutex_exit_for_myblockchain(void);
 /*===========================*/
 
 /** Create a dict_table_t's stats latch or delay for lazy creation.
@@ -1545,7 +1545,7 @@ dict_table_stats_unlock(
 	ulint		latch_mode);
 
 /********************************************************************//**
-Checks if the database name in two table names is the same.
+Checks if the blockchain name in two table names is the same.
 @return TRUE if same db name */
 ibool
 dict_tables_have_same_db(
@@ -1629,7 +1629,7 @@ dict_move_to_mru(
 	dict_table_t*	table)	/*!< in: table to move to MRU */
 	__attribute__((nonnull));
 
-/** Maximum number of columns in a foreign key constraint. Please Note MySQL
+/** Maximum number of columns in a foreign key constraint. Please Note MyBlockchain
 has a much lower limit on the number of columns allowed in a foreign key
 constraint */
 #define MAX_NUM_FK_COLUMNS		500
@@ -1749,16 +1749,16 @@ dict_table_schema_check(
 /* @} */
 
 /*********************************************************************//**
-Converts a database and table name from filesystem encoding
+Converts a blockchain and table name from filesystem encoding
 (e.g. d@i1b/a@q1b@1Kc, same format as used in dict_table_t::name) in two
 strings in UTF8 encoding (e.g. dцb and aюbØc). The output buffers must be
 at least MAX_DB_UTF8_LEN and MAX_TABLE_UTF8_LEN bytes. */
 void
 dict_fs2utf8(
 /*=========*/
-	const char*	db_and_table,	/*!< in: database and table names,
+	const char*	db_and_table,	/*!< in: blockchain and table names,
 					e.g. d@i1b/a@q1b@1Kc */
-	char*		db_utf8,	/*!< out: database name, e.g. dцb */
+	char*		db_utf8,	/*!< out: blockchain name, e.g. dцb */
 	size_t		db_utf8_size,	/*!< in: dbname_utf8 size */
 	char*		table_utf8,	/*!< out: table name, e.g. aюbØc */
 	size_t		table_utf8_size)/*!< in: table_utf8 size */
@@ -1880,7 +1880,7 @@ dict_table_is_temporary(
 
 /** Check whether the table is intrinsic.
 An intrinsic table is a special kind of temporary table that
-is invisible to the end user.  It is created internally by the MySQL server
+is invisible to the end user.  It is created internally by the MyBlockchain server
 layer or other module connected to InnoDB in order to gather and use data
 as part of a larger task.  Since access to it must be as fast as possible,
 it does not need UNDO semantics, system fields DB_TRX_ID & DB_ROLL_PTR,

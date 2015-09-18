@@ -16,7 +16,7 @@
 Testing plugin services
 -----------------------
 
-Plugin services are usually APIs provided by the mysqld server. Theses APIs can be tested with 
+Plugin services are usually APIs provided by the myblockchaind server. Theses APIs can be tested with 
 unit test frameworks like "googletest" by developers. In QA it is preferable to test plugin 
 services closer to reality with the help of plugins due to following reasons:
 
@@ -41,7 +41,7 @@ The plugin shall write its test results into one or more files. These files can 
 into the result file of the mtr test with the normal mtr commands like "cat_file".
 
 With the help of the log_message service the test plugin can easily write messages into 
-"mysqld.1.err". These messages can be made visible in the result file or checked as follows:
+"myblockchaind.1.err". These messages can be made visible in the result file or checked as follows:
 Load this log into a table with 2 columns (date, info). The column "date" is ignored as not 
 deterministic. The column "info" will be selected by removing "\r" to be compatible to windows
 (The err log file on windows contains CR,LF as newline). Select the messages so they will be 
@@ -63,7 +63,7 @@ There exist test plugins of type "daemon", which can be taken as examples or fra
 calling mtr tests:
 
   - "plugin/test_services" for the test plugin written in C++,
-  - "mysql-test/suite/test_services" for the corresponding mtr tests.
+  - "myblockchain-test/suite/test_services" for the corresponding mtr tests.
 
 Test plugins:
 
@@ -73,10 +73,10 @@ Test plugins:
      "my_snprintf" and "my_plugin_log_message". For each of the services there is a function 
      implemented containing the test cases. Instead of using the standard I/O of C++ it is much 
      more comfortable to used "my_open", "my_write", etc. as it covers all platforms. The output 
-     of "my_snprintf" can be found in "var/mysqld.1/data/test_services.log". 
-     "my_plugin_log_message" writes into "mysqld.1.err". The (selected) contents of these files 
+     of "my_snprintf" can be found in "var/myblockchaind.1/data/test_services.log". 
+     "my_plugin_log_message" writes into "myblockchaind.1.err". The (selected) contents of these files 
      can be seen in the result file of "test_services.test". "test_services.test" didn't create 
-     a thread. The effect is that the test (mysqld) is waiting until the plugin completes its work.
+     a thread. The effect is that the test (myblockchaind) is waiting until the plugin completes its work.
      A waiting condition to synchronize execution of plugin and mtr test is not necessary.
 
   -  "test_service_threaded.cc" 
@@ -98,12 +98,12 @@ for long running plugins, testing complex APIs. Plugins needing a short run time
     To create the plugins and run the test do the following:
         - modify "CmakeLists.txt" if you want to add a new test plugin,
         - rebuild ALL or only make test_services by running make in the test_services directory,
-        - in mysql-test: "./mtr --suite=test_services test_services" or 
+        - in myblockchain-test: "./mtr --suite=test_services test_services" or 
           "./mtr --suite=test_services test_services_threaded"
 
     If a test case in plugin "test_services" shall be switched off run the test as follows:
 
-        ./mtr --mysqld=--loose-test-services-with-log-message=0 t/test_services.test
+        ./mtr --myblockchaind=--loose-test-services-with-log-message=0 t/test_services.test
 
 That shows a simple way of control test execution with system variables. 
 
@@ -113,7 +113,7 @@ Steps to create a new test plugin
 The following is an example of steps to create a test plugin for a plugin service relying on
 the daemon type:
 
-  - Create test_<plugin name>.cc file under mysql/plugin/test_plugins deciding if threading
+  - Create test_<plugin name>.cc file under myblockchain/plugin/test_plugins deciding if threading
     is needed or not.
       - Put the test cases for plugin service to be tested in the init function (preferred) and
         the clean up in the deinit function.

@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2007, 2008 MySQL AB, 2008, 2009 Sun Microsystems, Inc.
+   Copyright (C) 2007, 2008 MyBlockchain AB, 2008, 2009 Sun Microsystems, Inc.
     All rights reserved. Use is subject to license terms.
 
    This program is free software; you can redistribute it and/or modify
@@ -16,7 +16,7 @@
    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-/* DbUtil.cpp: implementation of the database utilities class.*/
+/* DbUtil.cpp: implementation of the blockchain utilities class.*/
 
 #include "DbUtil.hpp"
 #include <NdbSleep.h>
@@ -26,15 +26,15 @@
 
 DbUtil::DbUtil(const char* _dbname,
                const char* _suffix):
-  m_mysql(NULL),
-  m_free_mysql(true),
+  m_myblockchain(NULL),
+  m_free_myblockchain(true),
   m_connected(false),
   m_user("root"),
   m_pass(""),
   m_dbname(_dbname),
   m_silent(false)
 {
-  const char* env= getenv("MYSQL_HOME");
+  const char* env= getenv("MYBLOCKCHAIN_HOME");
   if (env && strlen(env))
   {
     m_default_file.assfmt("%s/my.cnf", env);
@@ -53,9 +53,9 @@ DbUtil::DbUtil(const char* _dbname,
 
 
 
-DbUtil::DbUtil(MYSQL* mysql):
-  m_mysql(mysql),
-  m_free_mysql(false),
+DbUtil::DbUtil(MYBLOCKCHAIN* myblockchain):
+  m_myblockchain(myblockchain),
+  m_free_myblockchain(false),
   m_connected(true)
 {
 }
@@ -65,7 +65,7 @@ bool
 DbUtil::isConnected(){
   if (m_connected == true)
   {
-    require(m_mysql);
+    require(m_myblockchain);
     return true;
   }
   return connect();
@@ -86,10 +86,10 @@ DbUtil::waitConnected(int timeout) {
 
 void
 DbUtil::disconnect(){
-  if (m_mysql != NULL){
-    if (m_free_mysql)
-      mysql_close(m_mysql);
-    m_mysql= NULL;
+  if (m_myblockchain != NULL){
+    if (m_free_myblockchain)
+      myblockchain_close(m_myblockchain);
+    m_myblockchain= NULL;
   }
   m_connected = false;
 }
@@ -105,13 +105,13 @@ DbUtil::~DbUtil()
 /* Database Login */
 
 bool
-DbUtil::databaseLogin(const char* system, const char* usr,
+DbUtil::blockchainLogin(const char* system, const char* usr,
                            const char* password, unsigned int portIn,
                            const char* sockIn, bool transactional)
 {
-  if (!(m_mysql = mysql_init(NULL)))
+  if (!(m_myblockchain = myblockchain_init(NULL)))
   {
-    myerror("DB Login-> mysql_init() failed");
+    myerror("DB Login-> myblockchain_init() failed");
     return false;
   }
   setUser(usr);
@@ -121,7 +121,7 @@ DbUtil::databaseLogin(const char* system, const char* usr,
   setSocket(sockIn);
   m_dbname.assign("test");
 
-  if (!(mysql_real_connect(m_mysql, 
+  if (!(myblockchain_real_connect(m_myblockchain, 
                            m_host.c_str(), 
                            m_user.c_str(), 
                            m_pass.c_str(), 
@@ -134,18 +134,18 @@ DbUtil::databaseLogin(const char* system, const char* usr,
     return false;
   }
 
-  m_mysql->reconnect = TRUE;
+  m_myblockchain->reconnect = TRUE;
 
   /* set AUTOCOMMIT */
   if(!transactional)
-    mysql_autocommit(m_mysql, TRUE);
+    myblockchain_autocommit(m_myblockchain, TRUE);
   else
-    mysql_autocommit(m_mysql, FALSE);
+    myblockchain_autocommit(m_myblockchain, FALSE);
 
   #ifdef DEBUG
-    printf("\n\tConnected to MySQL server version: %s (%lu)\n\n", 
-           mysql_get_server_info(m_mysql),
-           (unsigned long) mysql_get_server_version(m_mysql));
+    printf("\n\tConnected to MyBlockchain server version: %s (%lu)\n\n", 
+           myblockchain_get_server_info(m_myblockchain),
+           (unsigned long) myblockchain_get_server_version(m_myblockchain));
   #endif
   selectDb();
   m_connected= true;
@@ -157,17 +157,17 @@ DbUtil::databaseLogin(const char* system, const char* usr,
 bool
 DbUtil::connect()
 {
-  if (!(m_mysql = mysql_init(NULL)))
+  if (!(m_myblockchain = myblockchain_init(NULL)))
   {
-    myerror("DB connect-> mysql_init() failed");
+    myerror("DB connect-> myblockchain_init() failed");
     return false;
   }
 
   /* Load connection parameters file and group */
-  if (mysql_options(m_mysql, MYSQL_READ_DEFAULT_FILE, m_default_file.c_str()) ||
-      mysql_options(m_mysql, MYSQL_READ_DEFAULT_GROUP, m_default_group.c_str()))
+  if (myblockchain_options(m_myblockchain, MYBLOCKCHAIN_READ_DEFAULT_FILE, m_default_file.c_str()) ||
+      myblockchain_options(m_myblockchain, MYBLOCKCHAIN_READ_DEFAULT_GROUP, m_default_group.c_str()))
   {
-    myerror("DB Connect -> mysql_options failed");
+    myerror("DB Connect -> myblockchain_options failed");
     disconnect();
     return false;
   }
@@ -176,7 +176,7 @@ DbUtil::connect()
     Connect, read settings from my.cnf
     NOTE! user and password can be stored there as well
   */
-  if (mysql_real_connect(m_mysql, NULL,
+  if (myblockchain_real_connect(m_myblockchain, NULL,
                          m_user.c_str(),
                          m_pass.c_str(),
                          m_dbname.c_str(),
@@ -188,7 +188,7 @@ DbUtil::connect()
   }
   selectDb();
   m_connected= true;
-  require(m_mysql);
+  require(m_myblockchain);
   return true;
 }
 
@@ -196,39 +196,39 @@ DbUtil::connect()
 /* Database Logout */
 
 void
-DbUtil::databaseLogout()
+DbUtil::blockchainLogout()
 {
-  if (m_mysql){
+  if (m_myblockchain){
     #ifdef DEBUG
-      printf("\n\tClosing the MySQL database connection ...\n\n");
+      printf("\n\tClosing the MyBlockchain blockchain connection ...\n\n");
     #endif
-    mysql_close(m_mysql);
+    myblockchain_close(m_myblockchain);
   }
 }
 
-/* Prepare MySQL Statements Cont */
+/* Prepare MyBlockchain Statements Cont */
 
-MYSQL_STMT *STDCALL 
-DbUtil::mysqlSimplePrepare(const char *query)
+MYBLOCKCHAIN_STMT *STDCALL 
+DbUtil::myblockchainSimplePrepare(const char *query)
 {
   #ifdef DEBUG
-    printf("Inside DbUtil::mysqlSimplePrepare\n");
+    printf("Inside DbUtil::myblockchainSimplePrepare\n");
   #endif
-  MYSQL_STMT *my_stmt= mysql_stmt_init(this->getMysql());
-  if (my_stmt && mysql_stmt_prepare(my_stmt, query, (unsigned long)strlen(query))){
+  MYBLOCKCHAIN_STMT *my_stmt= myblockchain_stmt_init(this->getMysql());
+  if (my_stmt && myblockchain_stmt_prepare(my_stmt, query, (unsigned long)strlen(query))){
     this->printStError(my_stmt,"Prepare Statement Failed");
-    mysql_stmt_close(my_stmt);
+    myblockchain_stmt_close(my_stmt);
     return NULL;
   }
   return my_stmt;
 }
 
-/* Close MySQL Statements Handle */
+/* Close MyBlockchain Statements Handle */
 
 void 
-DbUtil::mysqlCloseStmHandle(MYSQL_STMT *my_stmt)
+DbUtil::myblockchainCloseStmHandle(MYBLOCKCHAIN_STMT *my_stmt)
 {
-  mysql_stmt_close(my_stmt);
+  myblockchain_stmt_close(my_stmt);
 }
  
 /* Error Printing */
@@ -236,45 +236,45 @@ DbUtil::mysqlCloseStmHandle(MYSQL_STMT *my_stmt)
 void
 DbUtil::printError(const char *msg)
 {
-  if (m_mysql && mysql_errno(m_mysql))
+  if (m_myblockchain && myblockchain_errno(m_myblockchain))
   {
-    if (m_mysql->server_version)
-      printf("\n [MySQL-%s]", m_mysql->server_version);
+    if (m_myblockchain->server_version)
+      printf("\n [MyBlockchain-%s]", m_myblockchain->server_version);
     else
-      printf("\n [MySQL]");
+      printf("\n [MyBlockchain]");
       printf("[%d] %s\n", getErrorNumber(), getError());
   }
   else if (msg)
-    printf(" [MySQL] %s\n", msg);
+    printf(" [MyBlockchain] %s\n", msg);
 }
 
 void
-DbUtil::printStError(MYSQL_STMT *stmt, const char *msg)
+DbUtil::printStError(MYBLOCKCHAIN_STMT *stmt, const char *msg)
 {
-  if (stmt && mysql_stmt_errno(stmt))
+  if (stmt && myblockchain_stmt_errno(stmt))
   {
-    if (m_mysql && m_mysql->server_version)
-      printf("\n [MySQL-%s]", m_mysql->server_version);
+    if (m_myblockchain && m_myblockchain->server_version)
+      printf("\n [MyBlockchain-%s]", m_myblockchain->server_version);
     else
-      printf("\n [MySQL]");
+      printf("\n [MyBlockchain]");
 
-    printf("[%d] %s\n", mysql_stmt_errno(stmt),
-    mysql_stmt_error(stmt));
+    printf("[%d] %s\n", myblockchain_stmt_errno(stmt),
+    myblockchain_stmt_error(stmt));
   }
   else if (msg)
-    printf("[MySQL] %s\n", msg);
+    printf("[MyBlockchain] %s\n", msg);
 }
 
-/* Select which database to use */
+/* Select which blockchain to use */
 
 bool
 DbUtil::selectDb()
 {
   if ((getDbName()) != NULL)
   {
-    if(mysql_select_db(m_mysql, this->getDbName()))
+    if(myblockchain_select_db(m_myblockchain, this->getDbName()))
     {
-      //printError("mysql_select_db failed");
+      //printError("myblockchain_select_db failed");
       return false;
     }
     return true;   
@@ -287,9 +287,9 @@ bool
 DbUtil::selectDb(const char * m_db)
 {
   {
-    if(mysql_select_db(m_mysql, m_db))
+    if(myblockchain_select_db(m_myblockchain, m_db))
     {
-      printError("mysql_select_db failed");
+      printError("myblockchain_select_db failed");
       return false;
     }
     return true;
@@ -346,26 +346,26 @@ DbUtil::runQuery(const char* sql,
   rows.clear();
   if (!isConnected())
     return false;
-  require(m_mysql);
+  require(m_myblockchain);
 
   g_debug << "runQuery: " << endl
           << " sql: '" << sql << "'" << endl;
 
 
-  MYSQL_STMT *stmt= mysql_stmt_init(m_mysql);
-  if (mysql_stmt_prepare(stmt, sql, (unsigned long)strlen(sql)))
+  MYBLOCKCHAIN_STMT *stmt= myblockchain_stmt_init(m_myblockchain);
+  if (myblockchain_stmt_prepare(stmt, sql, (unsigned long)strlen(sql)))
   {
-    report_error("Failed to prepare: ", m_mysql);
+    report_error("Failed to prepare: ", m_myblockchain);
     return false;
   }
 
-  uint params= mysql_stmt_param_count(stmt);
-  MYSQL_BIND *bind_param = new MYSQL_BIND[params];
-  NdbAutoObjArrayPtr<MYSQL_BIND> _guard(bind_param);
+  uint params= myblockchain_stmt_param_count(stmt);
+  MYBLOCKCHAIN_BIND *bind_param = new MYBLOCKCHAIN_BIND[params];
+  NdbAutoObjArrayPtr<MYBLOCKCHAIN_BIND> _guard(bind_param);
 
-  memset(bind_param, 0, params * sizeof(MYSQL_BIND));
+  memset(bind_param, 0, params * sizeof(MYBLOCKCHAIN_BIND));
 
-  for(uint i= 0; i < mysql_stmt_param_count(stmt); i++)
+  for(uint i= 0; i < myblockchain_stmt_param_count(stmt); i++)
   {
     BaseString name;
     name.assfmt("%d", i);
@@ -382,13 +382,13 @@ DbUtil::runQuery(const char* sql,
     switch(t) {
     case PropertiesType_Uint32:
       args.get(name.c_str(), &val_i);
-      bind_param[i].buffer_type= MYSQL_TYPE_LONG;
+      bind_param[i].buffer_type= MYBLOCKCHAIN_TYPE_LONG;
       bind_param[i].buffer= (char*)&val_i;
       g_debug << " param" << name.c_str() << ": " << val_i << endl;
       break;
     case PropertiesType_char:
       args.get(name.c_str(), &val_s);
-      bind_param[i].buffer_type= MYSQL_TYPE_STRING;
+      bind_param[i].buffer_type= MYBLOCKCHAIN_TYPE_STRING;
       bind_param[i].buffer= (char*)val_s;
       bind_param[i].buffer_length= (unsigned long)strlen(val_s);
       g_debug << " param" << name.c_str() << ": " << val_s << endl;
@@ -398,17 +398,17 @@ DbUtil::runQuery(const char* sql,
       break;
     }
   }
-  if (mysql_stmt_bind_param(stmt, bind_param))
+  if (myblockchain_stmt_bind_param(stmt, bind_param))
   {
-    report_error("Failed to bind param: ", m_mysql);
-    mysql_stmt_close(stmt);
+    report_error("Failed to bind param: ", m_myblockchain);
+    myblockchain_stmt_close(stmt);
     return false;
   }
 
-  if (mysql_stmt_execute(stmt))
+  if (myblockchain_stmt_execute(stmt))
   {
-    report_error("Failed to execute: ", m_mysql);
-    mysql_stmt_close(stmt);
+    report_error("Failed to execute: ", m_myblockchain);
+    myblockchain_stmt_close(stmt);
     return false;
   }
 
@@ -417,41 +417,41 @@ DbUtil::runQuery(const char* sql,
     buffers to allocate
   */
   my_bool one= 1;
-  mysql_stmt_attr_set(stmt, STMT_ATTR_UPDATE_MAX_LENGTH, (void*) &one);
+  myblockchain_stmt_attr_set(stmt, STMT_ATTR_UPDATE_MAX_LENGTH, (void*) &one);
 
-  if (mysql_stmt_store_result(stmt))
+  if (myblockchain_stmt_store_result(stmt))
   {
-    report_error("Failed to store result: ", m_mysql);
-    mysql_stmt_close(stmt);
+    report_error("Failed to store result: ", m_myblockchain);
+    myblockchain_stmt_close(stmt);
     return false;
   }
 
   uint row= 0;
-  MYSQL_RES* res= mysql_stmt_result_metadata(stmt);
+  MYBLOCKCHAIN_RES* res= myblockchain_stmt_result_metadata(stmt);
   if (res != NULL)
   {
-    MYSQL_FIELD *fields= mysql_fetch_fields(res);
-    uint num_fields= mysql_num_fields(res);
-    MYSQL_BIND *bind_result = new MYSQL_BIND[num_fields];
-    NdbAutoObjArrayPtr<MYSQL_BIND> _guard1(bind_result);
-    memset(bind_result, 0, num_fields * sizeof(MYSQL_BIND));
+    MYBLOCKCHAIN_FIELD *fields= myblockchain_fetch_fields(res);
+    uint num_fields= myblockchain_num_fields(res);
+    MYBLOCKCHAIN_BIND *bind_result = new MYBLOCKCHAIN_BIND[num_fields];
+    NdbAutoObjArrayPtr<MYBLOCKCHAIN_BIND> _guard1(bind_result);
+    memset(bind_result, 0, num_fields * sizeof(MYBLOCKCHAIN_BIND));
 
     for (uint i= 0; i < num_fields; i++)
     {
       unsigned long buf_len= sizeof(int);
 
       switch(fields[i].type){
-      case MYSQL_TYPE_STRING:
+      case MYBLOCKCHAIN_TYPE_STRING:
         buf_len = fields[i].length + 1;
         break;
-      case MYSQL_TYPE_VARCHAR:
-      case MYSQL_TYPE_VAR_STRING:
+      case MYBLOCKCHAIN_TYPE_VARCHAR:
+      case MYBLOCKCHAIN_TYPE_VAR_STRING:
         buf_len= fields[i].max_length + 1;
         break;
-      case MYSQL_TYPE_LONGLONG:
+      case MYBLOCKCHAIN_TYPE_LONGLONG:
         buf_len= sizeof(long long);
         break;
-      case MYSQL_TYPE_LONG:
+      case MYBLOCKCHAIN_TYPE_LONG:
         buf_len = sizeof(long);
         break;
       default:
@@ -465,27 +465,27 @@ DbUtil::runQuery(const char* sql,
       * bind_result[i].is_null = 0;
     }
 
-    if (mysql_stmt_bind_result(stmt, bind_result)){
-      report_error("Failed to bind result: ", m_mysql);
-      mysql_stmt_close(stmt);
+    if (myblockchain_stmt_bind_result(stmt, bind_result)){
+      report_error("Failed to bind result: ", m_myblockchain);
+      myblockchain_stmt_close(stmt);
       return false;
     }
 
-    while (mysql_stmt_fetch(stmt) != MYSQL_NO_DATA)
+    while (myblockchain_stmt_fetch(stmt) != MYBLOCKCHAIN_NO_DATA)
     {
       Properties curr(true);
       for (uint i= 0; i < num_fields; i++){
         if (* bind_result[i].is_null)
           continue;
         switch(fields[i].type){
-        case MYSQL_TYPE_STRING:
+        case MYBLOCKCHAIN_TYPE_STRING:
 	  ((char*)bind_result[i].buffer)[fields[i].max_length] = 0;
-        case MYSQL_TYPE_VARCHAR:
-        case MYSQL_TYPE_VAR_STRING:
+        case MYBLOCKCHAIN_TYPE_VARCHAR:
+        case MYBLOCKCHAIN_TYPE_VAR_STRING:
           curr.put(fields[i].name, (char*)bind_result[i].buffer);
           break;
 
-        case MYSQL_TYPE_LONGLONG:
+        case MYBLOCKCHAIN_TYPE_LONGLONG:
           curr.put64(fields[i].name,
                      *(unsigned long long*)bind_result[i].buffer);
           break;
@@ -498,7 +498,7 @@ DbUtil::runQuery(const char* sql,
       rows.put("row", row++, &curr);
     }
 
-    mysql_free_result(res);
+    myblockchain_free_result(res);
 
     for (uint i= 0; i < num_fields; i++)
     {
@@ -509,13 +509,13 @@ DbUtil::runQuery(const char* sql,
 
   // Save stats in result set
   rows.put("rows", row);
-  rows.put64("affected_rows", mysql_affected_rows(m_mysql));
-  rows.put("mysql_errno", mysql_errno(m_mysql));
-  rows.put("mysql_error", mysql_error(m_mysql));
-  rows.put("mysql_sqlstate", mysql_sqlstate(m_mysql));
-  rows.put64("insert_id", mysql_insert_id(m_mysql));
+  rows.put64("affected_rows", myblockchain_affected_rows(m_myblockchain));
+  rows.put("myblockchain_errno", myblockchain_errno(m_myblockchain));
+  rows.put("myblockchain_error", myblockchain_error(m_myblockchain));
+  rows.put("myblockchain_sqlstate", myblockchain_sqlstate(m_myblockchain));
+  rows.put64("insert_id", myblockchain_insert_id(m_myblockchain));
 
-  mysql_stmt_close(stmt);
+  myblockchain_stmt_close(stmt);
   return true;
 }
 
@@ -576,27 +576,27 @@ DbUtil::doQuery(BaseString& str, const Properties& args){
 }
 
 
-/* Return MySQL Error String */
+/* Return MyBlockchain Error String */
 
 const char *
 DbUtil::getError()
 {
-  return mysql_error(this->getMysql());
+  return myblockchain_error(this->getMysql());
 }
 
-/* Return MySQL Error Number */
+/* Return MyBlockchain Error Number */
 
 int
 DbUtil::getErrorNumber()
 {
-  return mysql_errno(this->getMysql());
+  return myblockchain_errno(this->getMysql());
 }
 
 void
-DbUtil::report_error(const char* message, MYSQL* mysql)
+DbUtil::report_error(const char* message, MYBLOCKCHAIN* myblockchain)
 {
-  m_last_errno= mysql_errno(mysql);
-  m_last_error.assfmt("%d: %s", m_last_errno, mysql_error(mysql));
+  m_last_errno= myblockchain_errno(myblockchain);
+  m_last_error.assfmt("%d: %s", m_last_errno, myblockchain_error(myblockchain));
 
   if (!m_silent)
     g_err << message << m_last_error << endl;
@@ -715,18 +715,18 @@ uint SqlResultSet::numRows(void){
 }
 
 
-uint SqlResultSet::mysqlErrno(void){
-  return get_int("mysql_errno");
+uint SqlResultSet::myblockchainErrno(void){
+  return get_int("myblockchain_errno");
 }
 
 
-const char* SqlResultSet::mysqlError(void){
-  return get_string("mysql_error");
+const char* SqlResultSet::myblockchainError(void){
+  return get_string("myblockchain_error");
 }
 
 
-const char* SqlResultSet::mysqlSqlstate(void){
-  return get_string("mysql_sqlstate");
+const char* SqlResultSet::myblockchainSqlstate(void){
+  return get_string("myblockchain_sqlstate");
 }
 
 

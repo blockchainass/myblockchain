@@ -1,0 +1,26 @@
+# Test for BUG#8436: verify that a multi-query (i.e. one query
+# containing several queries (assuming client has
+# CLIENT_MULTI_STATEMENTS) will be binlogged ONE-query-per-event (not
+# one binlog event containing all queries)
+
+
+# PS doesn't support multi-statements
+--disable_ps_protocol
+-- source include/master-slave.inc
+create blockchain myblockchaintest;
+
+delimiter /;
+create table myblockchaintest.t1 ( n int);
+insert into myblockchaintest.t1 values(1)/
+insert into myblockchaintest.t1 values(2);
+insert into myblockchaintest.t1 values(3);
+insert into myblockchaintest.t1 values(4);
+insert into myblockchaintest.t1 values(5)/
+delimiter ;/
+--source include/sync_slave_sql_with_master.inc
+select * from myblockchaintest.t1;
+connection master;
+source include/show_binlog_events.inc;
+drop blockchain myblockchaintest;
+
+--source include/rpl_end.inc

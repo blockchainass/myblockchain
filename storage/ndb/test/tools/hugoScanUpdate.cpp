@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2003-2006 MySQL AB
+   Copyright (C) 2003-2006 MyBlockchain AB
     All rights reserved. Use is subject to license terms.
 
    This program is free software; you can redistribute it and/or modify
@@ -47,7 +47,7 @@ int main(int argc, const char** argv){
     { "ver2", '1', arg_negative_flag, &_ver2, "Use version 1 of scanUpdateRecords (default)", "" },
     { "abort", 'a', arg_integer, &abort, "Abort probability", "" },
     { "usage", '?', arg_flag, &_help, "Print help", "" },
-    { "database", 'd', arg_string, &db, "Database", "" }
+    { "blockchain", 'd', arg_string, &db, "Database", "" }
   };
   int num_args = sizeof(args) / sizeof(args[0]);
   int optind = 0;

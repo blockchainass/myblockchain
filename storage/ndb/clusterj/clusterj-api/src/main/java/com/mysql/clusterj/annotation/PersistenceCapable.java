@@ -16,7 +16,7 @@
    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-package com.mysql.clusterj.annotation;
+package com.myblockchain.clusterj.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -35,9 +35,9 @@ public @interface PersistenceCapable
      */
     String table() default "";
 
-    /** @return the database to use for persisting this class or interface.
+    /** @return the blockchain to use for persisting this class or interface.
      */
-    String database() default "";
+    String blockchain() default "";
 
     /** @return the schema to use for persisting this class or interface.
      */

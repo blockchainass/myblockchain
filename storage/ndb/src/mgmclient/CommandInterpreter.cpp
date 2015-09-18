@@ -255,13 +255,13 @@ static const char* helpTextBackup =
 "---------------------------------------------------------------------------\n"
 " NDB Cluster -- Management Client -- Help for BACKUP command\n"
 "---------------------------------------------------------------------------\n"
-"BACKUP  A backup is a snapshot of the database at a given time. \n"
+"BACKUP  A backup is a snapshot of the blockchain at a given time. \n"
 "        The backup consists of three main parts:\n\n"
-"        Metadata: the names and definitions of all database tables. \n"
-"        Table records: the data actually stored in the database tables \n"
+"        Metadata: the names and definitions of all blockchain tables. \n"
+"        Table records: the data actually stored in the blockchain tables \n"
 "        at the time that the backup was made.\n"
 "        Transaction log: a sequential record telling how \n"
-"        and when data was stored in the database.\n\n"
+"        and when data was stored in the blockchain.\n\n"
 "        Backups are stored on each data node in the cluster that \n"
 "        participates in the backup.\n\n"
 "        The cluster log records backup related events (such as \n"
@@ -319,7 +319,7 @@ static const char* helpTextShutdown =
 "---------------------------------------------------------------------------\n"
 "SHUTDOWN  Shutdown the cluster\n\n"
 "SHUTDOWN           Shutdown the data nodes and management nodes.\n"
-"                   MySQL Servers and NDBAPI nodes are currently not \n"
+"                   MyBlockchain Servers and NDBAPI nodes are currently not \n"
 "                   shut down by issuing this command.\n"
 ;
 
@@ -427,8 +427,8 @@ static const char* helpTextEnterSingleUserMode =
 "---------------------------------------------------------------------------\n"
 "ENTER SINGLE USER MODE  Enter single user mode\n\n"
 "ENTER SINGLE USER MODE <id> \n"
-"                   Enters single-user mode, whereby only the MySQL Server or NDBAPI\n" 
-"                   node identified by <id> is allowed to access the database. \n"
+"                   Enters single-user mode, whereby only the MyBlockchain Server or NDBAPI\n" 
+"                   node identified by <id> is allowed to access the blockchain. \n"
 ;
 
 static const char* helpTextExitSingleUserMode =
@@ -438,7 +438,7 @@ static const char* helpTextExitSingleUserMode =
 "EXIT SINGLE USER MODE  Exit single user mode\n\n"
 "EXIT SINGLE USER MODE \n"
 "                   Exits single-user mode, allowing all SQL nodes \n"
-"                   (that is, all running mysqld processes) to access the database. \n" 
+"                   (that is, all running myblockchaind processes) to access the blockchain. \n" 
 ;
 
 static const char* helpTextStatus =
@@ -563,7 +563,7 @@ static const char* helpTextDebug =
 "<id> TESTOFF                          Stop signal logging\n"
 "<id> DUMP <arg>                       Dump system state to cluster.log\n"
 "\n"
-"<id>       = ALL | Any database node id\n"
+"<id>       = ALL | Any blockchain node id\n"
 ;
 #endif
 
@@ -1161,7 +1161,7 @@ CommandInterpreter::execute_impl(const char *_line, bool interactive)
     {
       DBUG_RETURN(true);
     }
-    // for mysql client compatability remove trailing ';'
+    // for myblockchain client compatability remove trailing ';'
     {
       unsigned last= (unsigned)(strlen(line)-1);
       if (line[last] == ';')
@@ -1577,7 +1577,7 @@ CommandInterpreter::executeHelp(char* parameters)
     helpTextReportTypeOptionFn();
 
     ndbout << "<level>    = " << "0 - 15" << endl;
-    ndbout << "<id>       = " << "ALL | Any database node id" << endl;
+    ndbout << "<id>       = " << "ALL | Any blockchain node id" << endl;
     ndbout << endl;
     ndbout << "For detailed help on COMMAND, use HELP COMMAND." << endl;
   } else {
@@ -1689,7 +1689,7 @@ print_nodes(ndb_mgm_cluster_state *state, ndb_mgm_configuration_iterator *it,
 
 	char tmp[100];
 	ndbout << "  (" << ndbGetVersionString(node_state->version,
-                                               node_state->mysql_version,
+                                               node_state->myblockchain_version,
                                                0,
                                                tmp, sizeof(tmp));
 	if (type == NDB_MGM_NODE_TYPE_NDB) {
@@ -1837,7 +1837,7 @@ CommandInterpreter::executeShow(char* parameters)
 	   << "---------------------" << endl;
     print_nodes(state, it, "ndbd",     ndb_nodes, NDB_MGM_NODE_TYPE_NDB, master_id);
     print_nodes(state, it, "ndb_mgmd", mgm_nodes, NDB_MGM_NODE_TYPE_MGM, 0);
-    print_nodes(state, it, "mysqld",   api_nodes, NDB_MGM_NODE_TYPE_API, 0);
+    print_nodes(state, it, "myblockchaind",   api_nodes, NDB_MGM_NODE_TYPE_API, 0);
     ndb_mgm_destroy_configuration(conf);
     return 0;
   } else {
@@ -2365,7 +2365,7 @@ print_status(const ndb_mgm_node_state * state)
   {
     char tmp[100];
     ndbout_c(" (%s)", ndbGetVersionString(version, 
-                                          state->mysql_version, 0, 
+                                          state->myblockchain_version, 0, 
 					  tmp, sizeof(tmp))); 
   }
   else

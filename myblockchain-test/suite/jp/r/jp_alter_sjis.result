@@ -1,0 +1,496 @@
+SET NAMES sjis;
+SET character_set_blockchain = sjis;
+Warnings:
+Warning	1681	Updating 'character_set_blockchain' is deprecated. It will be made read-only in a future release.
+DROP TABLE IF EXISTS `���`;
+DROP TABLE IF EXISTS `���`;
+DROP TABLE IF EXISTS `������`;
+DROP TABLE IF EXISTS `������`;
+DROP TABLE IF EXISTS `�\�\�\`;
+DROP TABLE IF EXISTS `�\�\�\`;
+CREATE TABLE `���`(`���` char(5)) DEFAULT CHARSET = sjis engine=INNODB;
+CREATE TABLE `���`(`���` char(5)) DEFAULT CHARSET = sjis engine=INNODB;
+CREATE TABLE `������`(`������` char(5)) DEFAULT CHARSET = sjis engine=INNODB;
+CREATE TABLE `������`(`������` char(5)) DEFAULT CHARSET = sjis engine=INNODB;
+CREATE TABLE `�\�\�\`(`�\�\�\` char(5)) DEFAULT CHARSET = sjis engine=INNODB;
+CREATE TABLE `�\�\�\`(`�\�\�\` char(5)) DEFAULT CHARSET = sjis engine=INNODB;
+INSERT INTO `���` VALUES ('�����'),('�����'),('�����');
+INSERT INTO `������` VALUES ('����������'),('����������'),('����������');
+INSERT INTO `�\�\�\` VALUES ('�\�\�\�\�\'),('�\�\�\�\�\'),('�\�\�\�\�\');
+ALTER TABLE `���` ADD `���` char(1) FIRST;
+ALTER TABLE `���` ADD `���` char(1) AFTER `���`;
+ALTER TABLE `���` ADD `���` char(1);
+ALTER TABLE `���` ADD INDEX (`���`);
+ALTER TABLE `���` ADD PRIMARY KEY (`���`);
+ALTER TABLE `���` ADD UNIQUE (`���`);
+ALTER TABLE `���` CHANGE `���` `��` char(1);
+ALTER TABLE `���` MODIFY `���` char(6);
+SELECT * FROM `���`;
+��	���	���	���
+NULL	�����	NULL	NULL
+NULL	�����	NULL	NULL
+NULL	�����	NULL	NULL
+DESC `���`;
+Field	Type	Null	Key	Default	Extra
+��	char(1)	YES	MUL	NULL	
+���	char(6)	NO	PRI	NULL	
+���	char(1)	YES	UNI	NULL	
+���	char(1)	YES		NULL	
+SHOW CREATE TABLE `���`;
+Table	Create Table
+���	CREATE TABLE `���` (
+  `��` char(1) DEFAULT NULL,
+  `���` char(6) NOT NULL,
+  `���` char(1) DEFAULT NULL,
+  `���` char(1) DEFAULT NULL,
+  PRIMARY KEY (`���`),
+  UNIQUE KEY `���` (`���`),
+  KEY `���` (`��`)
+) ENGINE=InnoDB DEFAULT CHARSET=sjis
+ALTER TABLE `���` DROP INDEX `���`;
+ALTER TABLE `���` DROP PRIMARY KEY;
+ALTER TABLE `���` DROP INDEX `���`;
+ALTER TABLE `���` DROP `��`;
+ALTER TABLE `���` DROP `���`;
+ALTER TABLE `���` DROP `���`;
+SELECT * FROM `���`;
+���
+�����
+�����
+�����
+DESC `���`;
+Field	Type	Null	Key	Default	Extra
+���	char(6)	NO		NULL	
+SHOW CREATE TABLE `���`;
+Table	Create Table
+���	CREATE TABLE `���` (
+  `���` char(6) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=sjis
+ALTER TABLE `������` ADD `������` char(1) FIRST;
+ALTER TABLE `������` ADD `������` char(1) AFTER `������`;
+ALTER TABLE `������` ADD `������` char(1);
+ALTER TABLE `������` ADD INDEX (`������`);
+ALTER TABLE `������` ADD PRIMARY KEY (`������`);
+ALTER TABLE `������` ADD UNIQUE (`������`);
+ALTER TABLE `������` CHANGE `������` `����` char(1);
+ALTER TABLE `������` MODIFY `������` char(6);
+SELECT * FROM `������`;
+����	������	������	������
+NULL	����������	NULL	NULL
+NULL	����������	NULL	NULL
+NULL	����������	NULL	NULL
+DESC `������`;
+Field	Type	Null	Key	Default	Extra
+����	char(1)	YES	MUL	NULL	
+������	char(6)	NO	PRI	NULL	
+������	char(1)	YES	UNI	NULL	
+������	char(1)	YES		NULL	
+SHOW CREATE TABLE `������`;
+Table	Create Table
+������	CREATE TABLE `������` (
+  `����` char(1) DEFAULT NULL,
+  `������` char(6) NOT NULL,
+  `������` char(1) DEFAULT NULL,
+  `������` char(1) DEFAULT NULL,
+  PRIMARY KEY (`������`),
+  UNIQUE KEY `������` (`������`),
+  KEY `������` (`����`)
+) ENGINE=InnoDB DEFAULT CHARSET=sjis
+ALTER TABLE `������` DROP INDEX `������`;
+ALTER TABLE `������` DROP PRIMARY KEY;
+ALTER TABLE `������` DROP INDEX `������`;
+ALTER TABLE `������` DROP `����`;
+ALTER TABLE `������` DROP `������`;
+ALTER TABLE `������` DROP `������`;
+SELECT * FROM `������`;
+������
+����������
+����������
+����������
+DESC `������`;
+Field	Type	Null	Key	Default	Extra
+������	char(6)	NO		NULL	
+SHOW CREATE TABLE `������`;
+Table	Create Table
+������	CREATE TABLE `������` (
+  `������` char(6) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=sjis
+ALTER TABLE `�\�\�\` ADD `�\�\�\` char(1) FIRST;
+ALTER TABLE `�\�\�\` ADD `�\�\�\` char(1) AFTER `�\�\�\`;
+ALTER TABLE `�\�\�\` ADD `�\�\�\` char(1);
+ALTER TABLE `�\�\�\` ADD INDEX (`�\�\�\`);
+ALTER TABLE `�\�\�\` ADD PRIMARY KEY (`�\�\�\`);
+ALTER TABLE `�\�\�\` ADD UNIQUE (`�\�\�\`);
+ALTER TABLE `�\�\�\` CHANGE `�\�\�\` `�\�\` char(1);
+ALTER TABLE `�\�\�\` MODIFY `�\�\�\` char(6);
+SELECT * FROM `�\�\�\`;
+�\�\	�\�\�\	�\�\�\	�\�\�\
+NULL	�\�\�\�\�\	NULL	NULL
+NULL	�\�\�\�\�\	NULL	NULL
+NULL	�\�\�\�\�\	NULL	NULL
+DESC `�\�\�\`;
+Field	Type	Null	Key	Default	Extra
+�\�\	char(1)	YES	MUL	NULL	
+�\�\�\	char(6)	NO	PRI	NULL	
+�\�\�\	char(1)	YES	UNI	NULL	
+�\�\�\	char(1)	YES		NULL	
+SHOW CREATE TABLE `�\�\�\`;
+Table	Create Table
+�\�\�\	CREATE TABLE `�\�\�\` (
+  `�\�\` char(1) DEFAULT NULL,
+  `�\�\�\` char(6) NOT NULL,
+  `�\�\�\` char(1) DEFAULT NULL,
+  `�\�\�\` char(1) DEFAULT NULL,
+  PRIMARY KEY (`�\�\�\`),
+  UNIQUE KEY `�\�\�\` (`�\�\�\`),
+  KEY `�\�\�\` (`�\�\`)
+) ENGINE=InnoDB DEFAULT CHARSET=sjis
+ALTER TABLE `�\�\�\` DROP INDEX `�\�\�\`;
+ALTER TABLE `�\�\�\` DROP PRIMARY KEY;
+ALTER TABLE `�\�\�\` DROP INDEX `�\�\�\`;
+ALTER TABLE `�\�\�\` DROP `�\�\`;
+ALTER TABLE `�\�\�\` DROP `�\�\�\`;
+ALTER TABLE `�\�\�\` DROP `�\�\�\`;
+SELECT * FROM `�\�\�\`;
+�\�\�\
+�\�\�\�\�\
+�\�\�\�\�\
+�\�\�\�\�\
+DESC `�\�\�\`;
+Field	Type	Null	Key	Default	Extra
+�\�\�\	char(6)	NO		NULL	
+SHOW CREATE TABLE `�\�\�\`;
+Table	Create Table
+�\�\�\	CREATE TABLE `�\�\�\` (
+  `�\�\�\` char(6) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=sjis
+DROP TABLE `���`;
+DROP TABLE `���`;
+DROP TABLE `������`;
+DROP TABLE `������`;
+DROP TABLE `�\�\�\`;
+DROP TABLE `�\�\�\`;
+CREATE TABLE `���`(`���` char(5)) DEFAULT CHARSET = sjis engine=MYISAM;
+CREATE TABLE `���`(`���` char(5)) DEFAULT CHARSET = sjis engine=MYISAM;
+CREATE TABLE `������`(`������` char(5)) DEFAULT CHARSET = sjis engine=MYISAM;
+CREATE TABLE `������`(`������` char(5)) DEFAULT CHARSET = sjis engine=MYISAM;
+CREATE TABLE `�\�\�\`(`�\�\�\` char(5)) DEFAULT CHARSET = sjis engine=MYISAM;
+CREATE TABLE `�\�\�\`(`�\�\�\` char(5)) DEFAULT CHARSET = sjis engine=MYISAM;
+INSERT INTO `���` VALUES ('�����'),('�����'),('�����');
+INSERT INTO `������` VALUES ('����������'),('����������'),('����������');
+INSERT INTO `�\�\�\` VALUES ('�\�\�\�\�\'),('�\�\�\�\�\'),('�\�\�\�\�\');
+ALTER TABLE `���` ADD `���` char(1) FIRST;
+ALTER TABLE `���` ADD `���` char(1) AFTER `���`;
+ALTER TABLE `���` ADD `���` char(1);
+ALTER TABLE `���` ADD INDEX (`���`);
+ALTER TABLE `���` ADD PRIMARY KEY (`���`);
+ALTER TABLE `���` ADD UNIQUE (`���`);
+ALTER TABLE `���` CHANGE `���` `��` char(1);
+ALTER TABLE `���` MODIFY `���` char(6);
+SELECT * FROM `���`;
+��	���	���	���
+NULL	�����	NULL	NULL
+NULL	�����	NULL	NULL
+NULL	�����	NULL	NULL
+DESC `���`;
+Field	Type	Null	Key	Default	Extra
+��	char(1)	YES	MUL	NULL	
+���	char(6)	NO	PRI	NULL	
+���	char(1)	YES	UNI	NULL	
+���	char(1)	YES		NULL	
+SHOW CREATE TABLE `���`;
+Table	Create Table
+���	CREATE TABLE `���` (
+  `��` char(1) DEFAULT NULL,
+  `���` char(6) NOT NULL,
+  `���` char(1) DEFAULT NULL,
+  `���` char(1) DEFAULT NULL,
+  PRIMARY KEY (`���`),
+  UNIQUE KEY `���` (`���`),
+  KEY `���` (`��`)
+) ENGINE=MyISAM DEFAULT CHARSET=sjis
+ALTER TABLE `���` DROP INDEX `���`;
+ALTER TABLE `���` DROP PRIMARY KEY;
+ALTER TABLE `���` DROP INDEX `���`;
+ALTER TABLE `���` DROP `��`;
+ALTER TABLE `���` DROP `���`;
+ALTER TABLE `���` DROP `���`;
+SELECT * FROM `���`;
+���
+�����
+�����
+�����
+DESC `���`;
+Field	Type	Null	Key	Default	Extra
+���	char(6)	NO		NULL	
+SHOW CREATE TABLE `���`;
+Table	Create Table
+���	CREATE TABLE `���` (
+  `���` char(6) NOT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=sjis
+ALTER TABLE `������` ADD `������` char(1) FIRST;
+ALTER TABLE `������` ADD `������` char(1) AFTER `������`;
+ALTER TABLE `������` ADD `������` char(1);
+ALTER TABLE `������` ADD INDEX (`������`);
+ALTER TABLE `������` ADD PRIMARY KEY (`������`);
+ALTER TABLE `������` ADD UNIQUE (`������`);
+ALTER TABLE `������` CHANGE `������` `����` char(1);
+ALTER TABLE `������` MODIFY `������` char(6);
+SELECT * FROM `������`;
+����	������	������	������
+NULL	����������	NULL	NULL
+NULL	����������	NULL	NULL
+NULL	����������	NULL	NULL
+DESC `������`;
+Field	Type	Null	Key	Default	Extra
+����	char(1)	YES	MUL	NULL	
+������	char(6)	NO	PRI	NULL	
+������	char(1)	YES	UNI	NULL	
+������	char(1)	YES		NULL	
+SHOW CREATE TABLE `������`;
+Table	Create Table
+������	CREATE TABLE `������` (
+  `����` char(1) DEFAULT NULL,
+  `������` char(6) NOT NULL,
+  `������` char(1) DEFAULT NULL,
+  `������` char(1) DEFAULT NULL,
+  PRIMARY KEY (`������`),
+  UNIQUE KEY `������` (`������`),
+  KEY `������` (`����`)
+) ENGINE=MyISAM DEFAULT CHARSET=sjis
+ALTER TABLE `������` DROP INDEX `������`;
+ALTER TABLE `������` DROP PRIMARY KEY;
+ALTER TABLE `������` DROP INDEX `������`;
+ALTER TABLE `������` DROP `����`;
+ALTER TABLE `������` DROP `������`;
+ALTER TABLE `������` DROP `������`;
+SELECT * FROM `������`;
+������
+����������
+����������
+����������
+DESC `������`;
+Field	Type	Null	Key	Default	Extra
+������	char(6)	NO		NULL	
+SHOW CREATE TABLE `������`;
+Table	Create Table
+������	CREATE TABLE `������` (
+  `������` char(6) NOT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=sjis
+ALTER TABLE `�\�\�\` ADD `�\�\�\` char(1) FIRST;
+ALTER TABLE `�\�\�\` ADD `�\�\�\` char(1) AFTER `�\�\�\`;
+ALTER TABLE `�\�\�\` ADD `�\�\�\` char(1);
+ALTER TABLE `�\�\�\` ADD INDEX (`�\�\�\`);
+ALTER TABLE `�\�\�\` ADD PRIMARY KEY (`�\�\�\`);
+ALTER TABLE `�\�\�\` ADD UNIQUE (`�\�\�\`);
+ALTER TABLE `�\�\�\` CHANGE `�\�\�\` `�\�\` char(1);
+ALTER TABLE `�\�\�\` MODIFY `�\�\�\` char(6);
+SELECT * FROM `�\�\�\`;
+�\�\	�\�\�\	�\�\�\	�\�\�\
+NULL	�\�\�\�\�\	NULL	NULL
+NULL	�\�\�\�\�\	NULL	NULL
+NULL	�\�\�\�\�\	NULL	NULL
+DESC `�\�\�\`;
+Field	Type	Null	Key	Default	Extra
+�\�\	char(1)	YES	MUL	NULL	
+�\�\�\	char(6)	NO	PRI	NULL	
+�\�\�\	char(1)	YES	UNI	NULL	
+�\�\�\	char(1)	YES		NULL	
+SHOW CREATE TABLE `�\�\�\`;
+Table	Create Table
+�\�\�\	CREATE TABLE `�\�\�\` (
+  `�\�\` char(1) DEFAULT NULL,
+  `�\�\�\` char(6) NOT NULL,
+  `�\�\�\` char(1) DEFAULT NULL,
+  `�\�\�\` char(1) DEFAULT NULL,
+  PRIMARY KEY (`�\�\�\`),
+  UNIQUE KEY `�\�\�\` (`�\�\�\`),
+  KEY `�\�\�\` (`�\�\`)
+) ENGINE=MyISAM DEFAULT CHARSET=sjis
+ALTER TABLE `�\�\�\` DROP INDEX `�\�\�\`;
+ALTER TABLE `�\�\�\` DROP PRIMARY KEY;
+ALTER TABLE `�\�\�\` DROP INDEX `�\�\�\`;
+ALTER TABLE `�\�\�\` DROP `�\�\`;
+ALTER TABLE `�\�\�\` DROP `�\�\�\`;
+ALTER TABLE `�\�\�\` DROP `�\�\�\`;
+SELECT * FROM `�\�\�\`;
+�\�\�\
+�\�\�\�\�\
+�\�\�\�\�\
+�\�\�\�\�\
+DESC `�\�\�\`;
+Field	Type	Null	Key	Default	Extra
+�\�\�\	char(6)	NO		NULL	
+SHOW CREATE TABLE `�\�\�\`;
+Table	Create Table
+�\�\�\	CREATE TABLE `�\�\�\` (
+  `�\�\�\` char(6) NOT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=sjis
+DROP TABLE `���`;
+DROP TABLE `���`;
+DROP TABLE `������`;
+DROP TABLE `������`;
+DROP TABLE `�\�\�\`;
+DROP TABLE `�\�\�\`;
+CREATE TABLE `���`(`���` char(5)) DEFAULT CHARSET = sjis engine=MEMORY;
+CREATE TABLE `���`(`���` char(5)) DEFAULT CHARSET = sjis engine=MEMORY;
+CREATE TABLE `������`(`������` char(5)) DEFAULT CHARSET = sjis engine=MEMORY;
+CREATE TABLE `������`(`������` char(5)) DEFAULT CHARSET = sjis engine=MEMORY;
+CREATE TABLE `�\�\�\`(`�\�\�\` char(5)) DEFAULT CHARSET = sjis engine=MEMORY;
+CREATE TABLE `�\�\�\`(`�\�\�\` char(5)) DEFAULT CHARSET = sjis engine=MEMORY;
+INSERT INTO `���` VALUES ('�����'),('�����'),('�����');
+INSERT INTO `������` VALUES ('����������'),('����������'),('����������');
+INSERT INTO `�\�\�\` VALUES ('�\�\�\�\�\'),('�\�\�\�\�\'),('�\�\�\�\�\');
+ALTER TABLE `���` ADD `���` char(1) FIRST;
+ALTER TABLE `���` ADD `���` char(1) AFTER `���`;
+ALTER TABLE `���` ADD `���` char(1);
+ALTER TABLE `���` ADD INDEX (`���`);
+ALTER TABLE `���` ADD PRIMARY KEY (`���`);
+ALTER TABLE `���` ADD UNIQUE (`���`);
+ALTER TABLE `���` CHANGE `���` `��` char(1);
+ALTER TABLE `���` MODIFY `���` char(6);
+SELECT * FROM `���`;
+��	���	���	���
+NULL	�����	NULL	NULL
+NULL	�����	NULL	NULL
+NULL	�����	NULL	NULL
+DESC `���`;
+Field	Type	Null	Key	Default	Extra
+��	char(1)	YES	MUL	NULL	
+���	char(6)	NO	PRI	NULL	
+���	char(1)	YES	UNI	NULL	
+���	char(1)	YES		NULL	
+SHOW CREATE TABLE `���`;
+Table	Create Table
+���	CREATE TABLE `���` (
+  `��` char(1) DEFAULT NULL,
+  `���` char(6) NOT NULL,
+  `���` char(1) DEFAULT NULL,
+  `���` char(1) DEFAULT NULL,
+  PRIMARY KEY (`���`),
+  UNIQUE KEY `���` (`���`),
+  KEY `���` (`��`)
+) ENGINE=MEMORY DEFAULT CHARSET=sjis
+ALTER TABLE `���` DROP INDEX `���`;
+ALTER TABLE `���` DROP PRIMARY KEY;
+ALTER TABLE `���` DROP INDEX `���`;
+ALTER TABLE `���` DROP `��`;
+ALTER TABLE `���` DROP `���`;
+ALTER TABLE `���` DROP `���`;
+SELECT * FROM `���`;
+���
+�����
+�����
+�����
+DESC `���`;
+Field	Type	Null	Key	Default	Extra
+���	char(6)	NO		NULL	
+SHOW CREATE TABLE `���`;
+Table	Create Table
+���	CREATE TABLE `���` (
+  `���` char(6) NOT NULL
+) ENGINE=MEMORY DEFAULT CHARSET=sjis
+ALTER TABLE `������` ADD `������` char(1) FIRST;
+ALTER TABLE `������` ADD `������` char(1) AFTER `������`;
+ALTER TABLE `������` ADD `������` char(1);
+ALTER TABLE `������` ADD INDEX (`������`);
+ALTER TABLE `������` ADD PRIMARY KEY (`������`);
+ALTER TABLE `������` ADD UNIQUE (`������`);
+ALTER TABLE `������` CHANGE `������` `����` char(1);
+ALTER TABLE `������` MODIFY `������` char(6);
+SELECT * FROM `������`;
+����	������	������	������
+NULL	����������	NULL	NULL
+NULL	����������	NULL	NULL
+NULL	����������	NULL	NULL
+DESC `������`;
+Field	Type	Null	Key	Default	Extra
+����	char(1)	YES	MUL	NULL	
+������	char(6)	NO	PRI	NULL	
+������	char(1)	YES	UNI	NULL	
+������	char(1)	YES		NULL	
+SHOW CREATE TABLE `������`;
+Table	Create Table
+������	CREATE TABLE `������` (
+  `����` char(1) DEFAULT NULL,
+  `������` char(6) NOT NULL,
+  `������` char(1) DEFAULT NULL,
+  `������` char(1) DEFAULT NULL,
+  PRIMARY KEY (`������`),
+  UNIQUE KEY `������` (`������`),
+  KEY `������` (`����`)
+) ENGINE=MEMORY DEFAULT CHARSET=sjis
+ALTER TABLE `������` DROP INDEX `������`;
+ALTER TABLE `������` DROP PRIMARY KEY;
+ALTER TABLE `������` DROP INDEX `������`;
+ALTER TABLE `������` DROP `����`;
+ALTER TABLE `������` DROP `������`;
+ALTER TABLE `������` DROP `������`;
+SELECT * FROM `������`;
+������
+����������
+����������
+����������
+DESC `������`;
+Field	Type	Null	Key	Default	Extra
+������	char(6)	NO		NULL	
+SHOW CREATE TABLE `������`;
+Table	Create Table
+������	CREATE TABLE `������` (
+  `������` char(6) NOT NULL
+) ENGINE=MEMORY DEFAULT CHARSET=sjis
+ALTER TABLE `�\�\�\` ADD `�\�\�\` char(1) FIRST;
+ALTER TABLE `�\�\�\` ADD `�\�\�\` char(1) AFTER `�\�\�\`;
+ALTER TABLE `�\�\�\` ADD `�\�\�\` char(1);
+ALTER TABLE `�\�\�\` ADD INDEX (`�\�\�\`);
+ALTER TABLE `�\�\�\` ADD PRIMARY KEY (`�\�\�\`);
+ALTER TABLE `�\�\�\` ADD UNIQUE (`�\�\�\`);
+ALTER TABLE `�\�\�\` CHANGE `�\�\�\` `�\�\` char(1);
+ALTER TABLE `�\�\�\` MODIFY `�\�\�\` char(6);
+SELECT * FROM `�\�\�\`;
+�\�\	�\�\�\	�\�\�\	�\�\�\
+NULL	�\�\�\�\�\	NULL	NULL
+NULL	�\�\�\�\�\	NULL	NULL
+NULL	�\�\�\�\�\	NULL	NULL
+DESC `�\�\�\`;
+Field	Type	Null	Key	Default	Extra
+�\�\	char(1)	YES	MUL	NULL	
+�\�\�\	char(6)	NO	PRI	NULL	
+�\�\�\	char(1)	YES	UNI	NULL	
+�\�\�\	char(1)	YES		NULL	
+SHOW CREATE TABLE `�\�\�\`;
+Table	Create Table
+�\�\�\	CREATE TABLE `�\�\�\` (
+  `�\�\` char(1) DEFAULT NULL,
+  `�\�\�\` char(6) NOT NULL,
+  `�\�\�\` char(1) DEFAULT NULL,
+  `�\�\�\` char(1) DEFAULT NULL,
+  PRIMARY KEY (`�\�\�\`),
+  UNIQUE KEY `�\�\�\` (`�\�\�\`),
+  KEY `�\�\�\` (`�\�\`)
+) ENGINE=MEMORY DEFAULT CHARSET=sjis
+ALTER TABLE `�\�\�\` DROP INDEX `�\�\�\`;
+ALTER TABLE `�\�\�\` DROP PRIMARY KEY;
+ALTER TABLE `�\�\�\` DROP INDEX `�\�\�\`;
+ALTER TABLE `�\�\�\` DROP `�\�\`;
+ALTER TABLE `�\�\�\` DROP `�\�\�\`;
+ALTER TABLE `�\�\�\` DROP `�\�\�\`;
+SELECT * FROM `�\�\�\`;
+�\�\�\
+�\�\�\�\�\
+�\�\�\�\�\
+�\�\�\�\�\
+DESC `�\�\�\`;
+Field	Type	Null	Key	Default	Extra
+�\�\�\	char(6)	NO		NULL	
+SHOW CREATE TABLE `�\�\�\`;
+Table	Create Table
+�\�\�\	CREATE TABLE `�\�\�\` (
+  `�\�\�\` char(6) NOT NULL
+) ENGINE=MEMORY DEFAULT CHARSET=sjis
+DROP TABLE `���`;
+DROP TABLE `���`;
+DROP TABLE `������`;
+DROP TABLE `������`;
+DROP TABLE `�\�\�\`;
+DROP TABLE `�\�\�\`;

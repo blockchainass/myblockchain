@@ -14,7 +14,7 @@
    51 Franklin Street, Suite 500, Boston, MA 02110-1335 USA */
 
 // First include (the generated) my_config.h, to get correct platform defines,
-// then gtest.h (before any other MySQL headers), to avoid min() macros etc ...
+// then gtest.h (before any other MyBlockchain headers), to avoid min() macros etc ...
 #include "my_config.h"
 #include <gtest/gtest.h>
 
@@ -54,8 +54,8 @@ protected:
  */
 TEST_F(SqlTableTest, PromoteFirstTimestampColumn1)
 {
-  Mock_create_field column_1_definition(MYSQL_TYPE_TIMESTAMP, NULL, NULL);
-  Mock_create_field column_2_definition(MYSQL_TYPE_TIMESTAMP, NULL, NULL);
+  Mock_create_field column_1_definition(MYBLOCKCHAIN_TYPE_TIMESTAMP, NULL, NULL);
+  Mock_create_field column_2_definition(MYBLOCKCHAIN_TYPE_TIMESTAMP, NULL, NULL);
   column_1_definition.flags|= NOT_NULL_FLAG;
   column_2_definition.flags|= NOT_NULL_FLAG;
   List<Create_field> definitions;
@@ -76,8 +76,8 @@ TEST_F(SqlTableTest, PromoteFirstTimestampColumn1)
  */
 TEST_F(SqlTableTest, PromoteFirstTimestampColumn2)
 {
-  Mock_create_field column_1_definition(MYSQL_TYPE_TIMESTAMP2, NULL, NULL);
-  Mock_create_field column_2_definition(MYSQL_TYPE_TIMESTAMP2, NULL, NULL);
+  Mock_create_field column_1_definition(MYBLOCKCHAIN_TYPE_TIMESTAMP2, NULL, NULL);
+  Mock_create_field column_2_definition(MYBLOCKCHAIN_TYPE_TIMESTAMP2, NULL, NULL);
   column_1_definition.flags|= NOT_NULL_FLAG;
   column_2_definition.flags|= NOT_NULL_FLAG;
   List<Create_field> definitions;
@@ -97,8 +97,8 @@ TEST_F(SqlTableTest, PromoteFirstTimestampColumn2)
 TEST_F(SqlTableTest, PromoteFirstTimestampColumn3)
 {
   Item_string  *item_str= new Item_string("1", 1, &my_charset_latin1);
-  Mock_create_field column_1_definition(MYSQL_TYPE_TIMESTAMP, item_str, NULL);
-  Mock_create_field column_2_definition(MYSQL_TYPE_TIMESTAMP, NULL, NULL);
+  Mock_create_field column_1_definition(MYBLOCKCHAIN_TYPE_TIMESTAMP, item_str, NULL);
+  Mock_create_field column_2_definition(MYBLOCKCHAIN_TYPE_TIMESTAMP, NULL, NULL);
   column_2_definition.flags|= NOT_NULL_FLAG;
   List<Create_field> definitions;
   definitions.push_front(&column_1_definition);
@@ -128,8 +128,8 @@ TEST_F(SqlTableTest, FileNameToTableName)
 
   const char test_filename[] = "-@";
   char       test_tablename[sizeof test_filename
-                            + sizeof("#mysql50#") - 1];
-  //#mysql50# is prefix used by MySQL to indicate pre-5.1 table name encoding.
+                            + sizeof("#myblockchain50#") - 1];
+  //#myblockchain50# is prefix used by MyBlockchain to indicate pre-5.1 table name encoding.
 
 
   // This one used to fail with AddressSanitizer

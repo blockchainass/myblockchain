@@ -18,7 +18,7 @@ this program; if not, write to the Free Software Foundation, Inc.,
 
 /**************************************************//**
 @file handler_api.h
-Interface to MySQL Handler functions, currently used
+Interface to MyBlockchain Handler functions, currently used
 for binlogging
 
 Created 3/14/2011 Jimmy Yang
@@ -27,7 +27,7 @@ Created 3/14/2011 Jimmy Yang
 #ifndef HANDLER_API_H
 #define HANDLER_API_H
 
-#define MYSQL_SERVER 1
+#define MYBLOCKCHAIN_SERVER 1
 
 /** Defines for handler_unlock_table()'s mode field */
 #define HDL_READ	0x1
@@ -53,13 +53,13 @@ handler_create_thd(
 	bool	enable_binlog);		/*!< in: whether to enable binlog */
 
 /**********************************************************************//**
-Creates a MySQL TABLE object with specified database name and table name.
+Creates a MyBlockchain TABLE object with specified blockchain name and table name.
 @return a pointer to the TABLE object, NULL if does not exist */
 void*
 handler_open_table(
 /*===============*/
 	void*		my_thd,		/*!< in: THD* */
-	const char*	db_name,	/*!< in: database name */
+	const char*	db_name,	/*!< in: blockchain name */
 	const char*	table_name,	/*!< in: table name */
 	int		lock_mode);	/*!< in: lock mode */
 
@@ -182,7 +182,7 @@ handler_binlog_truncate(
 #endif
 
 /**********************************************************************
-Following APIs  can perform DMLs through MySQL handler interface. They
+Following APIs  can perform DMLs through MyBlockchain handler interface. They
 are currently disabled and under HANDLER_API_MEMCACHED define
 **********************************************************************/
 
@@ -257,7 +257,7 @@ handler_delete_rec(
 /**********************************************************************//**
 Lock a table
 return A lock structure pointer on success, NULL on error */
-MYSQL_LOCK *
+MYBLOCKCHAIN_LOCK *
 handler_lock_table(
 /*===============*/
 	THD*			my_thd,		/*!< in: thread */

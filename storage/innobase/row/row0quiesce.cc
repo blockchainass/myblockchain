@@ -30,7 +30,7 @@ Created 2012-02-08 by Sunny Bains.
 #include "row0quiesce.ic"
 #endif
 
-#include "row0mysql.h"
+#include "row0myblockchain.h"
 #include "ibuf0ibuf.h"
 #include "srv0start.h"
 #include "trx0purge.h"
@@ -487,7 +487,7 @@ row_quiesce_table_has_fts_index(
 {
 	bool			exists = false;
 
-	dict_mutex_enter_for_mysql();
+	dict_mutex_enter_for_myblockchain();
 
 	for (const dict_index_t* index = UT_LIST_GET_FIRST(table->indexes);
 	     index != 0;
@@ -499,7 +499,7 @@ row_quiesce_table_has_fts_index(
 		}
 	}
 
-	dict_mutex_exit_for_mysql();
+	dict_mutex_exit_for_myblockchain();
 
 	return(exists);
 }
@@ -512,11 +512,11 @@ row_quiesce_table_start(
 	dict_table_t*	table,		/*!< in: quiesce this table */
 	trx_t*		trx)		/*!< in/out: transaction/session */
 {
-	ut_a(trx->mysql_thd != 0);
+	ut_a(trx->myblockchain_thd != 0);
 	ut_a(srv_n_purge_threads > 0);
 	ut_ad(!srv_read_only_mode);
 
-	ut_a(trx->mysql_thd != 0);
+	ut_a(trx->myblockchain_thd != 0);
 
 	ib::info() << "Sync to disk of " << table->name << " started.";
 
@@ -542,7 +542,7 @@ row_quiesce_table_start(
 
 			ib::warn() << "Quiesce aborted!";
 
-		} else if (row_quiesce_write_cfg(table, trx->mysql_thd)
+		} else if (row_quiesce_write_cfg(table, trx->myblockchain_thd)
 			   != DB_SUCCESS) {
 
 			ib::warn() << "There was an error writing to the"
@@ -569,7 +569,7 @@ row_quiesce_table_complete(
 {
 	ulint		count = 0;
 
-	ut_a(trx->mysql_thd != 0);
+	ut_a(trx->myblockchain_thd != 0);
 
 	/* We need to wait for the operation to complete if the
 	transaction has been killed. */
@@ -590,7 +590,7 @@ row_quiesce_table_complete(
 
 	/* Remove the .cfg file now that the user has resumed
 	normal operations. Otherwise it will cause problems when
-	the user tries to drop the database (remove directory). */
+	the user tries to drop the blockchain (remove directory). */
 	char		cfg_name[OS_FILE_MAX_PATH];
 
 	srv_get_meta_data_filename(table, cfg_name, sizeof(cfg_name));
@@ -621,14 +621,14 @@ row_quiesce_set_state(
 
 	if (srv_read_only_mode) {
 
-		ib_senderrf(trx->mysql_thd,
+		ib_senderrf(trx->myblockchain_thd,
 			    IB_LOG_LEVEL_WARN, ER_READ_ONLY_MODE);
 
 		return(DB_UNSUPPORTED);
 
 	} else if (dict_table_is_temporary(table)) {
 
-		ib_senderrf(trx->mysql_thd, IB_LOG_LEVEL_WARN,
+		ib_senderrf(trx->myblockchain_thd, IB_LOG_LEVEL_WARN,
 			    ER_CANNOT_DISCARD_TEMPORARY_TABLE);
 
 		return(DB_UNSUPPORTED);
@@ -640,7 +640,7 @@ row_quiesce_set_state(
 			table_name, sizeof(table_name),
 			table->name.m_name);
 
-		ib_senderrf(trx->mysql_thd, IB_LOG_LEVEL_WARN,
+		ib_senderrf(trx->myblockchain_thd, IB_LOG_LEVEL_WARN,
 			    ER_TABLE_IN_SYSTEM_TABLESPACE, table_name);
 
 		return(DB_UNSUPPORTED);
@@ -649,13 +649,13 @@ row_quiesce_set_state(
 		std::ostringstream err_msg;
 		err_msg << "FLUSH TABLES FOR EXPORT on table " << table->name
 			<< " in a general tablespace.";
-		ib_senderrf(trx->mysql_thd, IB_LOG_LEVEL_WARN,
+		ib_senderrf(trx->myblockchain_thd, IB_LOG_LEVEL_WARN,
 			    ER_NOT_SUPPORTED_YET, err_msg.str().c_str());
 
 		return(DB_UNSUPPORTED);
 	} else if (row_quiesce_table_has_fts_index(table)) {
 
-		ib_senderrf(trx->mysql_thd, IB_LOG_LEVEL_WARN,
+		ib_senderrf(trx->myblockchain_thd, IB_LOG_LEVEL_WARN,
 			    ER_NOT_SUPPORTED_YET,
 			    "FLUSH TABLES on tables that have an FTS index."
 			    " FTS auxiliary tables will not be flushed.");
@@ -664,7 +664,7 @@ row_quiesce_set_state(
 		/* If this flag is set then the table may not have any active
 		FTS indexes but it will still have the auxiliary tables. */
 
-		ib_senderrf(trx->mysql_thd, IB_LOG_LEVEL_WARN,
+		ib_senderrf(trx->myblockchain_thd, IB_LOG_LEVEL_WARN,
 			    ER_NOT_SUPPORTED_YET,
 			    "FLUSH TABLES on a table that had an FTS index,"
 			    " created on a hidden column, the"
@@ -672,7 +672,7 @@ row_quiesce_set_state(
 			    " FTS auxiliary tables will not be flushed.");
 	}
 
-	row_mysql_lock_data_dictionary(trx);
+	row_myblockchain_lock_data_dictionary(trx);
 
 	dict_table_x_lock_indexes(table);
 
@@ -693,7 +693,7 @@ row_quiesce_set_state(
 
 	dict_table_x_unlock_indexes(table);
 
-	row_mysql_unlock_data_dictionary(trx);
+	row_myblockchain_unlock_data_dictionary(trx);
 
 	return(DB_SUCCESS);
 }

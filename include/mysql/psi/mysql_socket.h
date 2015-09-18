@@ -16,8 +16,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 02110-1301  USA
 */
 
-#ifndef MYSQL_SOCKET_H
-#define MYSQL_SOCKET_H
+#ifndef MYBLOCKCHAIN_SOCKET_H
+#define MYBLOCKCHAIN_SOCKET_H
 
 /* For strlen() */
 #include <string.h>
@@ -36,11 +36,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
   #define SOCKBUF_T void
 #endif
 /**
-  @file mysql/psi/mysql_socket.h
+  @file myblockchain/psi/myblockchain_socket.h
 [...]
 */
 
-#include "mysql/psi/psi.h"
+#include "myblockchain/psi/psi.h"
 
 #ifndef PSI_SOCKET_CALL
 #define PSI_SOCKET_CALL(M) PSI_DYNAMIC_CALL(M)
@@ -53,19 +53,19 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 */
 
 /**
-  @def mysql_socket_register(P1, P2, P3)
+  @def myblockchain_socket_register(P1, P2, P3)
   Socket registration.
 */
 #ifdef HAVE_PSI_SOCKET_INTERFACE
-  #define mysql_socket_register(P1, P2, P3) \
-    inline_mysql_socket_register(P1, P2, P3)
+  #define myblockchain_socket_register(P1, P2, P3) \
+    inline_myblockchain_socket_register(P1, P2, P3)
 #else
-  #define mysql_socket_register(P1, P2, P3) \
+  #define myblockchain_socket_register(P1, P2, P3) \
     do {} while (0)
 #endif
 
 /** An instrumented socket. */
-struct st_mysql_socket
+struct st_myblockchain_socket
 {
   /** The real socket descriptor. */
   my_socket fd;
@@ -73,35 +73,35 @@ struct st_mysql_socket
   /**
     The instrumentation hook.
     Note that this hook is not conditionally defined,
-    for binary compatibility of the @c MYSQL_SOCKET interface.
+    for binary compatibility of the @c MYBLOCKCHAIN_SOCKET interface.
   */
   struct PSI_socket *m_psi;
 };
 
 /**
   An instrumented socket.
-  @c MYSQL_SOCKET is a replacement for @c my_socket.
+  @c MYBLOCKCHAIN_SOCKET is a replacement for @c my_socket.
 */
-typedef struct st_mysql_socket MYSQL_SOCKET;
+typedef struct st_myblockchain_socket MYBLOCKCHAIN_SOCKET;
 
 
 /**
-  @def MYSQL_INVALID_SOCKET
-  MYSQL_SOCKET initial value.
+  @def MYBLOCKCHAIN_INVALID_SOCKET
+  MYBLOCKCHAIN_SOCKET initial value.
 */
-//MYSQL_SOCKET MYSQL_INVALID_SOCKET= {INVALID_SOCKET, NULL};
-#define MYSQL_INVALID_SOCKET mysql_socket_invalid()
+//MYBLOCKCHAIN_SOCKET MYBLOCKCHAIN_INVALID_SOCKET= {INVALID_SOCKET, NULL};
+#define MYBLOCKCHAIN_INVALID_SOCKET myblockchain_socket_invalid()
 
 /**
-  MYSQL_SOCKET helper. Initialize instrumented socket.
-  @sa mysql_socket_getfd
-  @sa mysql_socket_setfd
+  MYBLOCKCHAIN_SOCKET helper. Initialize instrumented socket.
+  @sa myblockchain_socket_getfd
+  @sa myblockchain_socket_setfd
 */
-static inline MYSQL_SOCKET
-mysql_socket_invalid()
+static inline MYBLOCKCHAIN_SOCKET
+myblockchain_socket_invalid()
 {
-  MYSQL_SOCKET mysql_socket= {INVALID_SOCKET, NULL};
-  return mysql_socket;
+  MYBLOCKCHAIN_SOCKET myblockchain_socket= {INVALID_SOCKET, NULL};
+  return myblockchain_socket;
 }
 
 /**
@@ -112,13 +112,13 @@ mysql_socket_invalid()
 */
 
 static inline void
-mysql_socket_set_address(
+myblockchain_socket_set_address(
 #ifdef HAVE_PSI_SOCKET_INTERFACE
-  MYSQL_SOCKET socket,
+  MYBLOCKCHAIN_SOCKET socket,
   const struct sockaddr *addr,
   socklen_t addr_len
 #else
-  MYSQL_SOCKET socket __attribute__ ((unused)),
+  MYBLOCKCHAIN_SOCKET socket __attribute__ ((unused)),
   const struct sockaddr *addr __attribute__ ((unused)),
   socklen_t addr_len __attribute__ ((unused))
 #endif
@@ -135,11 +135,11 @@ mysql_socket_set_address(
   @param socket instrumented socket
 */
 static inline void
-mysql_socket_set_thread_owner(
+myblockchain_socket_set_thread_owner(
 #ifdef HAVE_PSI_SOCKET_INTERFACE
-MYSQL_SOCKET socket
+MYBLOCKCHAIN_SOCKET socket
 #else
-MYSQL_SOCKET socket __attribute__ ((unused))
+MYBLOCKCHAIN_SOCKET socket __attribute__ ((unused))
 #endif
 )
 {
@@ -150,49 +150,49 @@ MYSQL_SOCKET socket __attribute__ ((unused))
 }
 
 /**
-  MYSQL_SOCKET helper. Get socket descriptor.
-  @param mysql_socket Instrumented socket
-  @sa mysql_socket_setfd
+  MYBLOCKCHAIN_SOCKET helper. Get socket descriptor.
+  @param myblockchain_socket Instrumented socket
+  @sa myblockchain_socket_setfd
 */
 static inline my_socket
-mysql_socket_getfd(MYSQL_SOCKET mysql_socket)
+myblockchain_socket_getfd(MYBLOCKCHAIN_SOCKET myblockchain_socket)
 {
-  return mysql_socket.fd;
+  return myblockchain_socket.fd;
 }
 
 /**
-  MYSQL_SOCKET helper. Set socket descriptor.
-  @param mysql_socket Instrumented socket
+  MYBLOCKCHAIN_SOCKET helper. Set socket descriptor.
+  @param myblockchain_socket Instrumented socket
   @param fd Socket descriptor
-  @sa mysql_socket_getfd
+  @sa myblockchain_socket_getfd
 */
 static inline void
-mysql_socket_setfd(MYSQL_SOCKET *mysql_socket, my_socket fd)
+myblockchain_socket_setfd(MYBLOCKCHAIN_SOCKET *myblockchain_socket, my_socket fd)
 {
-  if (likely(mysql_socket != NULL))
-    mysql_socket->fd= fd;
+  if (likely(myblockchain_socket != NULL))
+    myblockchain_socket->fd= fd;
 }
 
 /**
-  @def MYSQL_SOCKET_WAIT_VARIABLES
+  @def MYBLOCKCHAIN_SOCKET_WAIT_VARIABLES
   Instrumentation helper for socket waits.
   This instrumentation declares local variables.
   Do not use a ';' after this macro
   @param LOCKER locker
   @param STATE locker state
-  @sa MYSQL_START_SOCKET_WAIT.
-  @sa MYSQL_END_SOCKET_WAIT.
+  @sa MYBLOCKCHAIN_START_SOCKET_WAIT.
+  @sa MYBLOCKCHAIN_END_SOCKET_WAIT.
 */
 #ifdef HAVE_PSI_SOCKET_INTERFACE
-  #define MYSQL_SOCKET_WAIT_VARIABLES(LOCKER, STATE) \
+  #define MYBLOCKCHAIN_SOCKET_WAIT_VARIABLES(LOCKER, STATE) \
     struct PSI_socket_locker* LOCKER; \
     PSI_socket_locker_state STATE;
 #else
-  #define MYSQL_SOCKET_WAIT_VARIABLES(LOCKER, STATE)
+  #define MYBLOCKCHAIN_SOCKET_WAIT_VARIABLES(LOCKER, STATE)
 #endif
 
 /**
-  @def MYSQL_START_SOCKET_WAIT
+  @def MYBLOCKCHAIN_START_SOCKET_WAIT
   Instrumentation helper for socket waits.
   This instrumentation marks the start of a wait event.
   @param LOCKER locker
@@ -200,65 +200,65 @@ mysql_socket_setfd(MYSQL_SOCKET *mysql_socket, my_socket fd)
   @param SOCKET instrumented socket
   @param OP The socket operation to be performed
   @param COUNT bytes to be written/read
-  @sa MYSQL_END_SOCKET_WAIT.
+  @sa MYBLOCKCHAIN_END_SOCKET_WAIT.
 */
 #ifdef HAVE_PSI_SOCKET_INTERFACE
-  #define MYSQL_START_SOCKET_WAIT(LOCKER, STATE, SOCKET, OP, COUNT) \
-    LOCKER= inline_mysql_start_socket_wait(STATE, SOCKET, OP, COUNT,\
+  #define MYBLOCKCHAIN_START_SOCKET_WAIT(LOCKER, STATE, SOCKET, OP, COUNT) \
+    LOCKER= inline_myblockchain_start_socket_wait(STATE, SOCKET, OP, COUNT,\
                                            __FILE__, __LINE__)
 #else
-  #define MYSQL_START_SOCKET_WAIT(LOCKER, STATE, SOCKET, OP, COUNT) \
+  #define MYBLOCKCHAIN_START_SOCKET_WAIT(LOCKER, STATE, SOCKET, OP, COUNT) \
     do {} while (0)
 #endif
 
 /**
-  @def MYSQL_END_SOCKET_WAIT
+  @def MYBLOCKCHAIN_END_SOCKET_WAIT
   Instrumentation helper for socket waits.
   This instrumentation marks the end of a wait event.
   @param LOCKER locker
   @param COUNT actual bytes written/read, or -1
-  @sa MYSQL_START_SOCKET_WAIT.
+  @sa MYBLOCKCHAIN_START_SOCKET_WAIT.
 */
 #ifdef HAVE_PSI_SOCKET_INTERFACE
-  #define MYSQL_END_SOCKET_WAIT(LOCKER, COUNT) \
-    inline_mysql_end_socket_wait(LOCKER, COUNT)
+  #define MYBLOCKCHAIN_END_SOCKET_WAIT(LOCKER, COUNT) \
+    inline_myblockchain_end_socket_wait(LOCKER, COUNT)
 #else
-  #define MYSQL_END_SOCKET_WAIT(LOCKER, COUNT) \
+  #define MYBLOCKCHAIN_END_SOCKET_WAIT(LOCKER, COUNT) \
     do {} while (0)
 #endif
 
 /**
-  @def MYSQL_SOCKET_SET_STATE
+  @def MYBLOCKCHAIN_SOCKET_SET_STATE
   Set the state (IDLE, ACTIVE) of an instrumented socket.
   @param SOCKET the instrumented socket
   @param STATE the new state
   @sa PSI_socket_state
 */
 #ifdef HAVE_PSI_SOCKET_INTERFACE
-  #define MYSQL_SOCKET_SET_STATE(SOCKET, STATE) \
-    inline_mysql_socket_set_state(SOCKET, STATE)
+  #define MYBLOCKCHAIN_SOCKET_SET_STATE(SOCKET, STATE) \
+    inline_myblockchain_socket_set_state(SOCKET, STATE)
 #else
-  #define MYSQL_SOCKET_SET_STATE(SOCKET, STATE) \
+  #define MYBLOCKCHAIN_SOCKET_SET_STATE(SOCKET, STATE) \
     do {} while (0)
 #endif
 
 #ifdef HAVE_PSI_SOCKET_INTERFACE
 /**
-  Instrumentation calls for MYSQL_START_SOCKET_WAIT.
-  @sa MYSQL_START_SOCKET_WAIT.
+  Instrumentation calls for MYBLOCKCHAIN_START_SOCKET_WAIT.
+  @sa MYBLOCKCHAIN_START_SOCKET_WAIT.
 */
 static inline struct PSI_socket_locker*
-inline_mysql_start_socket_wait(PSI_socket_locker_state *state,
-                               MYSQL_SOCKET mysql_socket,
+inline_myblockchain_start_socket_wait(PSI_socket_locker_state *state,
+                               MYBLOCKCHAIN_SOCKET myblockchain_socket,
                                enum PSI_socket_operation op,
                                size_t byte_count,
                                const char *src_file, int src_line)
 {
   struct PSI_socket_locker *locker;
-  if (mysql_socket.m_psi != NULL)
+  if (myblockchain_socket.m_psi != NULL)
   {
     locker= PSI_SOCKET_CALL(start_socket_wait)
-      (state, mysql_socket.m_psi, op, byte_count, src_file, src_line);
+      (state, myblockchain_socket.m_psi, op, byte_count, src_file, src_line);
   }
   else
     locker= NULL;
@@ -266,11 +266,11 @@ inline_mysql_start_socket_wait(PSI_socket_locker_state *state,
 }
 
 /**
-  Instrumentation calls for MYSQL_END_SOCKET_WAIT.
-  @sa MYSQL_END_SOCKET_WAIT.
+  Instrumentation calls for MYBLOCKCHAIN_END_SOCKET_WAIT.
+  @sa MYBLOCKCHAIN_END_SOCKET_WAIT.
 */
 static inline void
-inline_mysql_end_socket_wait(struct PSI_socket_locker *locker, size_t byte_count)
+inline_myblockchain_end_socket_wait(struct PSI_socket_locker *locker, size_t byte_count)
 {
   if (locker != NULL)
     PSI_SOCKET_CALL(end_socket_wait)(locker, byte_count);
@@ -283,7 +283,7 @@ inline_mysql_end_socket_wait(struct PSI_socket_locker *locker, size_t byte_count
   @sa PSI_socket_state
 */
 static inline void
-inline_mysql_socket_set_state(MYSQL_SOCKET socket, enum PSI_socket_state state)
+inline_myblockchain_socket_set_state(MYBLOCKCHAIN_SOCKET socket, enum PSI_socket_state state)
 {
   if (socket.m_psi != NULL)
     PSI_SOCKET_CALL(set_socket_state)(socket.m_psi, state);
@@ -291,9 +291,9 @@ inline_mysql_socket_set_state(MYSQL_SOCKET socket, enum PSI_socket_state state)
 #endif /* HAVE_PSI_SOCKET_INTERFACE */
 
 /**
-  @def mysql_socket_socket(K, D, T, P)
+  @def myblockchain_socket_socket(K, D, T, P)
   Create a socket.
-  @c mysql_socket_socket is a replacement for @c socket.
+  @c myblockchain_socket_socket is a replacement for @c socket.
   @param K PSI_socket_key for this instrumented socket
   @param D Socket domain
   @param T Protocol type
@@ -301,115 +301,115 @@ inline_mysql_socket_set_state(MYSQL_SOCKET socket, enum PSI_socket_state state)
 */
 
 #ifdef HAVE_PSI_SOCKET_INTERFACE
-  #define mysql_socket_socket(K, D, T, P) \
-    inline_mysql_socket_socket(K, D, T, P)
+  #define myblockchain_socket_socket(K, D, T, P) \
+    inline_myblockchain_socket_socket(K, D, T, P)
 #else
-  #define mysql_socket_socket(K, D, T, P) \
-    inline_mysql_socket_socket(D, T, P)
+  #define myblockchain_socket_socket(K, D, T, P) \
+    inline_myblockchain_socket_socket(D, T, P)
 #endif
 
 /**
-  @def mysql_socket_bind(FD, AP, L)
+  @def myblockchain_socket_bind(FD, AP, L)
   Bind a socket to a local port number and IP address
-  @c mysql_socket_bind is a replacement for @c bind.
+  @c myblockchain_socket_bind is a replacement for @c bind.
   @param FD Instrumented socket descriptor returned by socket()
   @param AP Pointer to local port number and IP address in sockaddr structure
   @param L  Length of sockaddr structure
 */
 #ifdef HAVE_PSI_SOCKET_INTERFACE
-  #define mysql_socket_bind(FD, AP, L) \
-    inline_mysql_socket_bind(__FILE__, __LINE__, FD, AP, L)
+  #define myblockchain_socket_bind(FD, AP, L) \
+    inline_myblockchain_socket_bind(__FILE__, __LINE__, FD, AP, L)
 #else
-  #define mysql_socket_bind(FD, AP, L) \
-    inline_mysql_socket_bind(FD, AP, L)
+  #define myblockchain_socket_bind(FD, AP, L) \
+    inline_myblockchain_socket_bind(FD, AP, L)
 #endif
 
 /**
-  @def mysql_socket_getsockname(FD, AP, LP)
+  @def myblockchain_socket_getsockname(FD, AP, LP)
   Return port number and IP address of the local host
-  @c mysql_socket_getsockname is a replacement for @c getsockname.
+  @c myblockchain_socket_getsockname is a replacement for @c getsockname.
   @param FD Instrumented socket descriptor returned by socket()
   @param AP  Pointer to returned address of local host in @c sockaddr structure
   @param LP  Pointer to length of @c sockaddr structure
 */
 #ifdef HAVE_PSI_SOCKET_INTERFACE
-  #define mysql_socket_getsockname(FD, AP, LP) \
-    inline_mysql_socket_getsockname(__FILE__, __LINE__, FD, AP, LP)
+  #define myblockchain_socket_getsockname(FD, AP, LP) \
+    inline_myblockchain_socket_getsockname(__FILE__, __LINE__, FD, AP, LP)
 #else
-  #define mysql_socket_getsockname(FD, AP, LP) \
-    inline_mysql_socket_getsockname(FD, AP, LP)
+  #define myblockchain_socket_getsockname(FD, AP, LP) \
+    inline_myblockchain_socket_getsockname(FD, AP, LP)
 #endif
 
 /**
-  @def mysql_socket_connect(FD, AP, L)
+  @def myblockchain_socket_connect(FD, AP, L)
   Establish a connection to a remote host.
-  @c mysql_socket_connect is a replacement for @c connect.
+  @c myblockchain_socket_connect is a replacement for @c connect.
   @param FD Instrumented socket descriptor returned by socket()
   @param AP Pointer to target address in sockaddr structure
   @param L  Length of sockaddr structure
 */
 #ifdef HAVE_PSI_SOCKET_INTERFACE
-  #define mysql_socket_connect(FD, AP, L) \
-    inline_mysql_socket_connect(__FILE__, __LINE__, FD, AP, L)
+  #define myblockchain_socket_connect(FD, AP, L) \
+    inline_myblockchain_socket_connect(__FILE__, __LINE__, FD, AP, L)
 #else
-  #define mysql_socket_connect(FD, AP, L) \
-    inline_mysql_socket_connect(FD, AP, L)
+  #define myblockchain_socket_connect(FD, AP, L) \
+    inline_myblockchain_socket_connect(FD, AP, L)
 #endif
 
 /**
-  @def mysql_socket_getpeername(FD, AP, LP)
+  @def myblockchain_socket_getpeername(FD, AP, LP)
   Get port number and IP address of remote host that a socket is connected to.
-  @c mysql_socket_getpeername is a replacement for @c getpeername.
+  @c myblockchain_socket_getpeername is a replacement for @c getpeername.
   @param FD Instrumented socket descriptor returned by socket() or accept()
   @param AP Pointer to returned address of remote host in sockaddr structure
   @param LP Pointer to length of sockaddr structure
 */
 #ifdef HAVE_PSI_SOCKET_INTERFACE
-  #define mysql_socket_getpeername(FD, AP, LP) \
-    inline_mysql_socket_getpeername(__FILE__, __LINE__, FD, AP, LP)
+  #define myblockchain_socket_getpeername(FD, AP, LP) \
+    inline_myblockchain_socket_getpeername(__FILE__, __LINE__, FD, AP, LP)
 #else
-  #define mysql_socket_getpeername(FD, AP, LP) \
-    inline_mysql_socket_getpeername(FD, AP, LP)
+  #define myblockchain_socket_getpeername(FD, AP, LP) \
+    inline_myblockchain_socket_getpeername(FD, AP, LP)
 #endif
 
 /**
-  @def mysql_socket_send(FD, B, N, FL)
+  @def myblockchain_socket_send(FD, B, N, FL)
   Send data from the buffer, B, to a connected socket.
-  @c mysql_socket_send is a replacement for @c send.
+  @c myblockchain_socket_send is a replacement for @c send.
   @param FD Instrumented socket descriptor returned by socket() or accept()
   @param B  Buffer to send
   @param N  Number of bytes to send
   @param FL Control flags
 */
 #ifdef HAVE_PSI_SOCKET_INTERFACE
-  #define mysql_socket_send(FD, B, N, FL) \
-    inline_mysql_socket_send(__FILE__, __LINE__, FD, B, N, FL)
+  #define myblockchain_socket_send(FD, B, N, FL) \
+    inline_myblockchain_socket_send(__FILE__, __LINE__, FD, B, N, FL)
 #else
-  #define mysql_socket_send(FD, B, N, FL) \
-    inline_mysql_socket_send(FD, B, N, FL)
+  #define myblockchain_socket_send(FD, B, N, FL) \
+    inline_myblockchain_socket_send(FD, B, N, FL)
 #endif
 
 /**
-  @def mysql_socket_recv(FD, B, N, FL)
+  @def myblockchain_socket_recv(FD, B, N, FL)
   Receive data from a connected socket.
-  @c mysql_socket_recv is a replacement for @c recv.
+  @c myblockchain_socket_recv is a replacement for @c recv.
   @param FD Instrumented socket descriptor returned by socket() or accept()
   @param B  Buffer to receive to
   @param N  Maximum bytes to receive
   @param FL Control flags
 */
 #ifdef HAVE_PSI_SOCKET_INTERFACE
-  #define mysql_socket_recv(FD, B, N, FL) \
-    inline_mysql_socket_recv(__FILE__, __LINE__, FD, B, N, FL)
+  #define myblockchain_socket_recv(FD, B, N, FL) \
+    inline_myblockchain_socket_recv(__FILE__, __LINE__, FD, B, N, FL)
 #else
-  #define mysql_socket_recv(FD, B, N, FL) \
-    inline_mysql_socket_recv(FD, B, N, FL)
+  #define myblockchain_socket_recv(FD, B, N, FL) \
+    inline_myblockchain_socket_recv(FD, B, N, FL)
 #endif
 
 /**
-  @def mysql_socket_sendto(FD, B, N, FL, AP, L)
+  @def myblockchain_socket_sendto(FD, B, N, FL, AP, L)
   Send data to a socket at the specified address.
-  @c mysql_socket_sendto is a replacement for @c sendto.
+  @c myblockchain_socket_sendto is a replacement for @c sendto.
   @param FD Instrumented socket descriptor returned by socket()
   @param B  Buffer to send
   @param N  Number of bytes to send
@@ -418,17 +418,17 @@ inline_mysql_socket_set_state(MYSQL_SOCKET socket, enum PSI_socket_state state)
   @param L  Size of sockaddr structure
 */
 #ifdef HAVE_PSI_SOCKET_INTERFACE
-  #define mysql_socket_sendto(FD, B, N, FL, AP, L) \
-    inline_mysql_socket_sendto(__FILE__, __LINE__, FD, B, N, FL, AP, L)
+  #define myblockchain_socket_sendto(FD, B, N, FL, AP, L) \
+    inline_myblockchain_socket_sendto(__FILE__, __LINE__, FD, B, N, FL, AP, L)
 #else
-  #define mysql_socket_sendto(FD, B, N, FL, AP, L) \
-    inline_mysql_socket_sendto(FD, B, N, FL, AP, L)
+  #define myblockchain_socket_sendto(FD, B, N, FL, AP, L) \
+    inline_myblockchain_socket_sendto(FD, B, N, FL, AP, L)
 #endif
 
 /**
-  @def mysql_socket_recvfrom(FD, B, N, FL, AP, L)
+  @def myblockchain_socket_recvfrom(FD, B, N, FL, AP, L)
   Receive data from a socket and return source address information
-  @c mysql_socket_recvfrom is a replacement for @c recvfrom.
+  @c myblockchain_socket_recvfrom is a replacement for @c recvfrom.
   @param FD Instrumented socket descriptor returned by socket()
   @param B  Buffer to receive to
   @param N  Maximum bytes to receive
@@ -437,17 +437,17 @@ inline_mysql_socket_set_state(MYSQL_SOCKET socket, enum PSI_socket_state state)
   @param LP Size of sockaddr_storage structure
 */
 #ifdef HAVE_PSI_SOCKET_INTERFACE
-  #define mysql_socket_recvfrom(FD, B, N, FL, AP, LP) \
-    inline_mysql_socket_recvfrom(__FILE__, __LINE__, FD, B, N, FL, AP, LP)
+  #define myblockchain_socket_recvfrom(FD, B, N, FL, AP, LP) \
+    inline_myblockchain_socket_recvfrom(__FILE__, __LINE__, FD, B, N, FL, AP, LP)
 #else
-  #define mysql_socket_recvfrom(FD, B, N, FL, AP, LP) \
-    inline_mysql_socket_recvfrom(FD, B, N, FL, AP, LP)
+  #define myblockchain_socket_recvfrom(FD, B, N, FL, AP, LP) \
+    inline_myblockchain_socket_recvfrom(FD, B, N, FL, AP, LP)
 #endif
 
 /**
-  @def mysql_socket_getsockopt(FD, LV, ON, OP, OL)
+  @def myblockchain_socket_getsockopt(FD, LV, ON, OP, OL)
   Get a socket option for the specified socket.
-  @c mysql_socket_getsockopt is a replacement for @c getsockopt.
+  @c myblockchain_socket_getsockopt is a replacement for @c getsockopt.
   @param FD Instrumented socket descriptor returned by socket()
   @param LV Protocol level
   @param ON Option to query
@@ -455,17 +455,17 @@ inline_mysql_socket_set_state(MYSQL_SOCKET socket, enum PSI_socket_state state)
   @param OL Pointer to length of OP
 */
 #ifdef HAVE_PSI_SOCKET_INTERFACE
-  #define mysql_socket_getsockopt(FD, LV, ON, OP, OL) \
-    inline_mysql_socket_getsockopt(__FILE__, __LINE__, FD, LV, ON, OP, OL)
+  #define myblockchain_socket_getsockopt(FD, LV, ON, OP, OL) \
+    inline_myblockchain_socket_getsockopt(__FILE__, __LINE__, FD, LV, ON, OP, OL)
 #else
-  #define mysql_socket_getsockopt(FD, LV, ON, OP, OL) \
-    inline_mysql_socket_getsockopt(FD, LV, ON, OP, OL)
+  #define myblockchain_socket_getsockopt(FD, LV, ON, OP, OL) \
+    inline_myblockchain_socket_getsockopt(FD, LV, ON, OP, OL)
 #endif
 
 /**
-  @def mysql_socket_setsockopt(FD, LV, ON, OP, OL)
+  @def myblockchain_socket_setsockopt(FD, LV, ON, OP, OL)
   Set a socket option for the specified socket.
-  @c mysql_socket_setsockopt is a replacement for @c setsockopt.
+  @c myblockchain_socket_setsockopt is a replacement for @c setsockopt.
   @param FD Instrumented socket descriptor returned by socket()
   @param LV Protocol level
   @param ON Option to modify
@@ -473,89 +473,89 @@ inline_mysql_socket_set_state(MYSQL_SOCKET socket, enum PSI_socket_state state)
   @param OL Pointer to length of OP
 */
 #ifdef HAVE_PSI_SOCKET_INTERFACE
-  #define mysql_socket_setsockopt(FD, LV, ON, OP, OL) \
-    inline_mysql_socket_setsockopt(__FILE__, __LINE__, FD, LV, ON, OP, OL)
+  #define myblockchain_socket_setsockopt(FD, LV, ON, OP, OL) \
+    inline_myblockchain_socket_setsockopt(__FILE__, __LINE__, FD, LV, ON, OP, OL)
 #else
-  #define mysql_socket_setsockopt(FD, LV, ON, OP, OL) \
-    inline_mysql_socket_setsockopt(FD, LV, ON, OP, OL)
+  #define myblockchain_socket_setsockopt(FD, LV, ON, OP, OL) \
+    inline_myblockchain_socket_setsockopt(FD, LV, ON, OP, OL)
 #endif
 
 /**
-  @def mysql_sock_set_nonblocking
+  @def myblockchain_sock_set_nonblocking
   Set socket to non-blocking.
   @param FD instrumented socket descriptor
 */
 #ifdef HAVE_PSI_SOCKET_INTERFACE
-  #define mysql_sock_set_nonblocking(FD) \
-    inline_mysql_sock_set_nonblocking(__FILE__, __LINE__, FD)
+  #define myblockchain_sock_set_nonblocking(FD) \
+    inline_myblockchain_sock_set_nonblocking(__FILE__, __LINE__, FD)
 #else
-  #define mysql_sock_set_nonblocking(FD) \
-    inline_mysql_sock_set_nonblocking(FD)
+  #define myblockchain_sock_set_nonblocking(FD) \
+    inline_myblockchain_sock_set_nonblocking(FD)
 #endif
 
 /**
-  @def mysql_socket_listen(FD, N)
+  @def myblockchain_socket_listen(FD, N)
   Set socket state to listen for an incoming connection.
-  @c mysql_socket_listen is a replacement for @c listen.
+  @c myblockchain_socket_listen is a replacement for @c listen.
   @param FD Instrumented socket descriptor, bound and connected
   @param N  Maximum number of pending connections allowed.
 */
 #ifdef HAVE_PSI_SOCKET_INTERFACE
-  #define mysql_socket_listen(FD, N) \
-    inline_mysql_socket_listen(__FILE__, __LINE__, FD, N)
+  #define myblockchain_socket_listen(FD, N) \
+    inline_myblockchain_socket_listen(__FILE__, __LINE__, FD, N)
 #else
-  #define mysql_socket_listen(FD, N) \
-    inline_mysql_socket_listen(FD, N)
+  #define myblockchain_socket_listen(FD, N) \
+    inline_myblockchain_socket_listen(FD, N)
 #endif
 
 /**
-  @def mysql_socket_accept(K, FD, AP, LP)
+  @def myblockchain_socket_accept(K, FD, AP, LP)
   Accept a connection from any remote host; TCP only.
-  @c mysql_socket_accept is a replacement for @c accept.
+  @c myblockchain_socket_accept is a replacement for @c accept.
   @param K PSI_socket_key for this instrumented socket
   @param FD Instrumented socket descriptor, bound and placed in a listen state
   @param AP Pointer to sockaddr structure with returned IP address and port of connected host
   @param LP Pointer to length of valid information in AP
 */
 #ifdef HAVE_PSI_SOCKET_INTERFACE
-  #define mysql_socket_accept(K, FD, AP, LP) \
-    inline_mysql_socket_accept(__FILE__, __LINE__, K, FD, AP, LP)
+  #define myblockchain_socket_accept(K, FD, AP, LP) \
+    inline_myblockchain_socket_accept(__FILE__, __LINE__, K, FD, AP, LP)
 #else
-  #define mysql_socket_accept(K, FD, AP, LP) \
-    inline_mysql_socket_accept(FD, AP, LP)
+  #define myblockchain_socket_accept(K, FD, AP, LP) \
+    inline_myblockchain_socket_accept(FD, AP, LP)
 #endif
 
 /**
-  @def mysql_socket_close(FD)
+  @def myblockchain_socket_close(FD)
   Close a socket and sever any connections.
-  @c mysql_socket_close is a replacement for @c close.
+  @c myblockchain_socket_close is a replacement for @c close.
   @param FD Instrumented socket descriptor returned by socket() or accept()
 */
 #ifdef HAVE_PSI_SOCKET_INTERFACE
-  #define mysql_socket_close(FD) \
-    inline_mysql_socket_close(__FILE__, __LINE__, FD)
+  #define myblockchain_socket_close(FD) \
+    inline_myblockchain_socket_close(__FILE__, __LINE__, FD)
 #else
-  #define mysql_socket_close(FD) \
-    inline_mysql_socket_close(FD)
+  #define myblockchain_socket_close(FD) \
+    inline_myblockchain_socket_close(FD)
 #endif
 
 /**
-  @def mysql_socket_shutdown(FD, H)
+  @def myblockchain_socket_shutdown(FD, H)
   Disable receives and/or sends on a socket.
-  @c mysql_socket_shutdown is a replacement for @c shutdown.
+  @c myblockchain_socket_shutdown is a replacement for @c shutdown.
   @param FD Instrumented socket descriptor returned by socket() or accept()
   @param H  Specifies which operations to shutdown
 */
 #ifdef HAVE_PSI_SOCKET_INTERFACE
-  #define mysql_socket_shutdown(FD, H) \
-    inline_mysql_socket_shutdown(__FILE__, __LINE__, FD, H)
+  #define myblockchain_socket_shutdown(FD, H) \
+    inline_myblockchain_socket_shutdown(__FILE__, __LINE__, FD, H)
 #else
-  #define mysql_socket_shutdown(FD, H) \
-    inline_mysql_socket_shutdown(FD, H)
+  #define myblockchain_socket_shutdown(FD, H) \
+    inline_myblockchain_socket_shutdown(FD, H)
 #endif
 
 #ifdef HAVE_PSI_SOCKET_INTERFACE
-static inline void inline_mysql_socket_register(
+static inline void inline_myblockchain_socket_register(
   const char *category,
   PSI_socket_info *info,
   int count)
@@ -564,56 +564,56 @@ static inline void inline_mysql_socket_register(
 }
 #endif
 
-/** mysql_socket_socket */
+/** myblockchain_socket_socket */
 
-static inline MYSQL_SOCKET
-inline_mysql_socket_socket
+static inline MYBLOCKCHAIN_SOCKET
+inline_myblockchain_socket_socket
 (
 #ifdef HAVE_PSI_SOCKET_INTERFACE
   PSI_socket_key key,
 #endif
   int domain, int type, int protocol)
 {
-  MYSQL_SOCKET mysql_socket= MYSQL_INVALID_SOCKET;
-  mysql_socket.fd= socket(domain, type, protocol);
+  MYBLOCKCHAIN_SOCKET myblockchain_socket= MYBLOCKCHAIN_INVALID_SOCKET;
+  myblockchain_socket.fd= socket(domain, type, protocol);
 
 #ifdef HAVE_PSI_SOCKET_INTERFACE
-  if (likely(mysql_socket.fd != INVALID_SOCKET))
+  if (likely(myblockchain_socket.fd != INVALID_SOCKET))
   {
-    mysql_socket.m_psi= PSI_SOCKET_CALL(init_socket)
-      (key, (const my_socket*)&mysql_socket.fd, NULL, 0);
+    myblockchain_socket.m_psi= PSI_SOCKET_CALL(init_socket)
+      (key, (const my_socket*)&myblockchain_socket.fd, NULL, 0);
   }
 #endif
-  return mysql_socket;
+  return myblockchain_socket;
 }
 
-/** mysql_socket_bind */
+/** myblockchain_socket_bind */
 
 static inline int
-inline_mysql_socket_bind
+inline_myblockchain_socket_bind
 (
 #ifdef HAVE_PSI_SOCKET_INTERFACE
   const char *src_file, uint src_line,
 #endif
-  MYSQL_SOCKET mysql_socket, const struct sockaddr *addr, socklen_t len)
+  MYBLOCKCHAIN_SOCKET myblockchain_socket, const struct sockaddr *addr, socklen_t len)
 {
   int result;
 
 #ifdef HAVE_PSI_SOCKET_INTERFACE
-  if (mysql_socket.m_psi != NULL)
+  if (myblockchain_socket.m_psi != NULL)
   {
     /* Instrumentation start */
     PSI_socket_locker_state state;
     PSI_socket_locker *locker;
     locker= PSI_SOCKET_CALL(start_socket_wait)
-      (&state, mysql_socket.m_psi, PSI_SOCKET_BIND, (size_t)0, src_file, src_line);
+      (&state, myblockchain_socket.m_psi, PSI_SOCKET_BIND, (size_t)0, src_file, src_line);
 
     /* Instrumented code */
-    result= bind(mysql_socket.fd, addr, len);
+    result= bind(myblockchain_socket.fd, addr, len);
 
     /* Instrumentation end */
     if (result == 0)
-      PSI_SOCKET_CALL(set_socket_info)(mysql_socket.m_psi, NULL, addr, len);
+      PSI_SOCKET_CALL(set_socket_info)(myblockchain_socket.m_psi, NULL, addr, len);
 
     if (locker != NULL)
       PSI_SOCKET_CALL(end_socket_wait)(locker, (size_t)0);
@@ -623,33 +623,33 @@ inline_mysql_socket_bind
 #endif
 
   /* Non instrumented code */
-  result= bind(mysql_socket.fd, addr, len);
+  result= bind(myblockchain_socket.fd, addr, len);
   return result;
 }
 
-/** mysql_socket_getsockname */
+/** myblockchain_socket_getsockname */
 
 static inline int
-inline_mysql_socket_getsockname
+inline_myblockchain_socket_getsockname
 (
 #ifdef HAVE_PSI_SOCKET_INTERFACE
   const char *src_file, uint src_line,
 #endif
- MYSQL_SOCKET mysql_socket, struct sockaddr *addr, socklen_t *len)
+ MYBLOCKCHAIN_SOCKET myblockchain_socket, struct sockaddr *addr, socklen_t *len)
 {
   int result;
 
 #ifdef HAVE_PSI_SOCKET_INTERFACE
-  if (mysql_socket.m_psi != NULL)
+  if (myblockchain_socket.m_psi != NULL)
   {
     /* Instrumentation start */
     PSI_socket_locker *locker;
     PSI_socket_locker_state state;
     locker= PSI_SOCKET_CALL(start_socket_wait)
-      (&state, mysql_socket.m_psi, PSI_SOCKET_BIND, (size_t)0, src_file, src_line);
+      (&state, myblockchain_socket.m_psi, PSI_SOCKET_BIND, (size_t)0, src_file, src_line);
 
     /* Instrumented code */
-    result= getsockname(mysql_socket.fd, addr, len);
+    result= getsockname(myblockchain_socket.fd, addr, len);
 
     /* Instrumentation end */
     if (locker != NULL)
@@ -660,34 +660,34 @@ inline_mysql_socket_getsockname
 #endif
 
   /* Non instrumented code */
-  result= getsockname(mysql_socket.fd, addr, len);
+  result= getsockname(myblockchain_socket.fd, addr, len);
 
   return result;
 }
 
-/** mysql_socket_connect */
+/** myblockchain_socket_connect */
 
 static inline int
-inline_mysql_socket_connect
+inline_myblockchain_socket_connect
 (
 #ifdef HAVE_PSI_SOCKET_INTERFACE
   const char *src_file, uint src_line,
 #endif
- MYSQL_SOCKET mysql_socket, const struct sockaddr *addr, socklen_t len)
+ MYBLOCKCHAIN_SOCKET myblockchain_socket, const struct sockaddr *addr, socklen_t len)
 {
   int result;
 
 #ifdef HAVE_PSI_SOCKET_INTERFACE
-  if (mysql_socket.m_psi != NULL)
+  if (myblockchain_socket.m_psi != NULL)
   {
     /* Instrumentation start */
     PSI_socket_locker *locker;
     PSI_socket_locker_state state;
     locker= PSI_SOCKET_CALL(start_socket_wait)
-      (&state, mysql_socket.m_psi, PSI_SOCKET_CONNECT, (size_t)0, src_file, src_line);
+      (&state, myblockchain_socket.m_psi, PSI_SOCKET_CONNECT, (size_t)0, src_file, src_line);
 
     /* Instrumented code */
-    result= connect(mysql_socket.fd, addr, len);
+    result= connect(myblockchain_socket.fd, addr, len);
 
     /* Instrumentation end */
     if (locker != NULL)
@@ -698,34 +698,34 @@ inline_mysql_socket_connect
 #endif
 
   /* Non instrumented code */
-  result= connect(mysql_socket.fd, addr, len);
+  result= connect(myblockchain_socket.fd, addr, len);
 
   return result;
 }
 
-/** mysql_socket_getpeername */
+/** myblockchain_socket_getpeername */
 
 static inline int
-inline_mysql_socket_getpeername
+inline_myblockchain_socket_getpeername
 (
 #ifdef HAVE_PSI_SOCKET_INTERFACE
   const char *src_file, uint src_line,
 #endif
- MYSQL_SOCKET mysql_socket, struct sockaddr *addr, socklen_t *len)
+ MYBLOCKCHAIN_SOCKET myblockchain_socket, struct sockaddr *addr, socklen_t *len)
 {
   int result;
 
 #ifdef HAVE_PSI_SOCKET_INTERFACE
-  if (mysql_socket.m_psi != NULL)
+  if (myblockchain_socket.m_psi != NULL)
   {
     /* Instrumentation start */
     PSI_socket_locker *locker;
     PSI_socket_locker_state state;
     locker= PSI_SOCKET_CALL(start_socket_wait)
-      (&state, mysql_socket.m_psi, PSI_SOCKET_BIND, (size_t)0, src_file, src_line);
+      (&state, myblockchain_socket.m_psi, PSI_SOCKET_BIND, (size_t)0, src_file, src_line);
 
     /* Instrumented code */
-    result= getpeername(mysql_socket.fd, addr, len);
+    result= getpeername(myblockchain_socket.fd, addr, len);
 
     /* Instrumentation end */
     if (locker != NULL)
@@ -736,34 +736,34 @@ inline_mysql_socket_getpeername
 #endif
 
   /* Non instrumented code */
-  result= getpeername(mysql_socket.fd, addr, len);
+  result= getpeername(myblockchain_socket.fd, addr, len);
 
   return result;
 }
 
-/** mysql_socket_send */
+/** myblockchain_socket_send */
 
 static inline ssize_t
-inline_mysql_socket_send
+inline_myblockchain_socket_send
 (
 #ifdef HAVE_PSI_SOCKET_INTERFACE
   const char *src_file, uint src_line,
 #endif
- MYSQL_SOCKET mysql_socket, const SOCKBUF_T *buf, size_t n, int flags)
+ MYBLOCKCHAIN_SOCKET myblockchain_socket, const SOCKBUF_T *buf, size_t n, int flags)
 {
   ssize_t result;
 
 #ifdef HAVE_PSI_SOCKET_INTERFACE
-  if (mysql_socket.m_psi != NULL)
+  if (myblockchain_socket.m_psi != NULL)
   {
     /* Instrumentation start */
     PSI_socket_locker *locker;
     PSI_socket_locker_state state;
     locker= PSI_SOCKET_CALL(start_socket_wait)
-      (&state, mysql_socket.m_psi, PSI_SOCKET_SEND, n, src_file, src_line);
+      (&state, myblockchain_socket.m_psi, PSI_SOCKET_SEND, n, src_file, src_line);
 
     /* Instrumented code */
-    result= send(mysql_socket.fd, buf, IF_WIN((int),) n, flags);
+    result= send(myblockchain_socket.fd, buf, IF_WIN((int),) n, flags);
 
     /* Instrumentation end */
     if (locker != NULL)
@@ -778,34 +778,34 @@ inline_mysql_socket_send
 #endif
 
   /* Non instrumented code */
-  result= send(mysql_socket.fd, buf, IF_WIN((int),) n, flags);
+  result= send(myblockchain_socket.fd, buf, IF_WIN((int),) n, flags);
 
   return result;
 }
 
-/** mysql_socket_recv */
+/** myblockchain_socket_recv */
 
 static inline ssize_t
-inline_mysql_socket_recv
+inline_myblockchain_socket_recv
 (
 #ifdef HAVE_PSI_SOCKET_INTERFACE
   const char *src_file, uint src_line,
 #endif
- MYSQL_SOCKET mysql_socket,  SOCKBUF_T *buf, size_t n, int flags)
+ MYBLOCKCHAIN_SOCKET myblockchain_socket,  SOCKBUF_T *buf, size_t n, int flags)
 {
   ssize_t result;
 
 #ifdef HAVE_PSI_SOCKET_INTERFACE
-  if (mysql_socket.m_psi != NULL)
+  if (myblockchain_socket.m_psi != NULL)
   {
     /* Instrumentation start */
     PSI_socket_locker *locker;
     PSI_socket_locker_state state;
     locker= PSI_SOCKET_CALL(start_socket_wait)
-      (&state, mysql_socket.m_psi, PSI_SOCKET_RECV, (size_t)0, src_file, src_line);
+      (&state, myblockchain_socket.m_psi, PSI_SOCKET_RECV, (size_t)0, src_file, src_line);
 
     /* Instrumented code */
-    result= recv(mysql_socket.fd, buf, IF_WIN((int),) n, flags);
+    result= recv(myblockchain_socket.fd, buf, IF_WIN((int),) n, flags);
 
     /* Instrumentation end */
     if (locker != NULL)
@@ -820,34 +820,34 @@ inline_mysql_socket_recv
 #endif
 
   /* Non instrumented code */
-  result= recv(mysql_socket.fd, buf, IF_WIN((int),) n, flags);
+  result= recv(myblockchain_socket.fd, buf, IF_WIN((int),) n, flags);
 
   return result;
 }
 
-/** mysql_socket_sendto */
+/** myblockchain_socket_sendto */
 
 static inline ssize_t
-inline_mysql_socket_sendto
+inline_myblockchain_socket_sendto
 (
 #ifdef HAVE_PSI_SOCKET_INTERFACE
   const char *src_file, uint src_line,
 #endif
- MYSQL_SOCKET mysql_socket, const SOCKBUF_T *buf, size_t n, int flags, const struct sockaddr *addr, socklen_t addr_len)
+ MYBLOCKCHAIN_SOCKET myblockchain_socket, const SOCKBUF_T *buf, size_t n, int flags, const struct sockaddr *addr, socklen_t addr_len)
 {
   ssize_t result;
 
 #ifdef HAVE_PSI_SOCKET_INTERFACE
-  if (mysql_socket.m_psi != NULL)
+  if (myblockchain_socket.m_psi != NULL)
   {
     /* Instrumentation start */
     PSI_socket_locker *locker;
     PSI_socket_locker_state state;
     locker= PSI_SOCKET_CALL(start_socket_wait)
-      (&state, mysql_socket.m_psi, PSI_SOCKET_SEND, n, src_file, src_line);
+      (&state, myblockchain_socket.m_psi, PSI_SOCKET_SEND, n, src_file, src_line);
 
     /* Instrumented code */
-    result= sendto(mysql_socket.fd, buf, IF_WIN((int),) n, flags, addr, addr_len);
+    result= sendto(myblockchain_socket.fd, buf, IF_WIN((int),) n, flags, addr, addr_len);
 
     /* Instrumentation end */
     if (locker != NULL)
@@ -862,35 +862,35 @@ inline_mysql_socket_sendto
 #endif
 
   /* Non instrumented code */
-  result= sendto(mysql_socket.fd, buf, IF_WIN((int),) n, flags, addr, addr_len);
+  result= sendto(myblockchain_socket.fd, buf, IF_WIN((int),) n, flags, addr, addr_len);
 
   return result;
 }
 
-/** mysql_socket_recvfrom */
+/** myblockchain_socket_recvfrom */
 
 static inline ssize_t
-inline_mysql_socket_recvfrom
+inline_myblockchain_socket_recvfrom
 (
 #ifdef HAVE_PSI_SOCKET_INTERFACE
   const char *src_file, uint src_line,
 #endif
- MYSQL_SOCKET mysql_socket, SOCKBUF_T *buf, size_t n, int flags,
+ MYBLOCKCHAIN_SOCKET myblockchain_socket, SOCKBUF_T *buf, size_t n, int flags,
  struct sockaddr *addr, socklen_t *addr_len)
 {
   ssize_t result;
 
 #ifdef HAVE_PSI_SOCKET_INTERFACE
-  if (mysql_socket.m_psi != NULL)
+  if (myblockchain_socket.m_psi != NULL)
   {
     /* Instrumentation start */
     PSI_socket_locker *locker;
     PSI_socket_locker_state state;
     locker= PSI_SOCKET_CALL(start_socket_wait)
-      (&state, mysql_socket.m_psi, PSI_SOCKET_RECV, (size_t)0, src_file, src_line);
+      (&state, myblockchain_socket.m_psi, PSI_SOCKET_RECV, (size_t)0, src_file, src_line);
 
     /* Instrumented code */
-    result= recvfrom(mysql_socket.fd, buf, IF_WIN((int),) n, flags, addr, addr_len);
+    result= recvfrom(myblockchain_socket.fd, buf, IF_WIN((int),) n, flags, addr, addr_len);
 
     /* Instrumentation end */
     if (locker != NULL)
@@ -905,34 +905,34 @@ inline_mysql_socket_recvfrom
 #endif
 
   /* Non instrumented code */
-  result= recvfrom(mysql_socket.fd, buf, IF_WIN((int),) n, flags, addr, addr_len);
+  result= recvfrom(myblockchain_socket.fd, buf, IF_WIN((int),) n, flags, addr, addr_len);
 
   return result;
 }
 
-/** mysql_socket_getsockopt */
+/** myblockchain_socket_getsockopt */
 
 static inline int
-inline_mysql_socket_getsockopt
+inline_myblockchain_socket_getsockopt
 (
 #ifdef HAVE_PSI_SOCKET_INTERFACE
   const char *src_file, uint src_line,
 #endif
- MYSQL_SOCKET mysql_socket, int level, int optname, SOCKBUF_T *optval, socklen_t *optlen)
+ MYBLOCKCHAIN_SOCKET myblockchain_socket, int level, int optname, SOCKBUF_T *optval, socklen_t *optlen)
 {
   int result;
 
 #ifdef HAVE_PSI_SOCKET_INTERFACE
-  if (mysql_socket.m_psi != NULL)
+  if (myblockchain_socket.m_psi != NULL)
   {
     /* Instrumentation start */
     PSI_socket_locker *locker;
     PSI_socket_locker_state state;
     locker= PSI_SOCKET_CALL(start_socket_wait)
-      (&state, mysql_socket.m_psi, PSI_SOCKET_OPT, (size_t)0, src_file, src_line);
+      (&state, myblockchain_socket.m_psi, PSI_SOCKET_OPT, (size_t)0, src_file, src_line);
 
     /* Instrumented code */
-    result= getsockopt(mysql_socket.fd, level, optname, optval, optlen);
+    result= getsockopt(myblockchain_socket.fd, level, optname, optval, optlen);
 
     /* Instrumentation end */
     if (locker != NULL)
@@ -943,35 +943,35 @@ inline_mysql_socket_getsockopt
 #endif
 
   /* Non instrumented code */
-  result= getsockopt(mysql_socket.fd, level, optname, optval, optlen);
+  result= getsockopt(myblockchain_socket.fd, level, optname, optval, optlen);
 
   return result;
 }
 
-/** mysql_socket_setsockopt */
+/** myblockchain_socket_setsockopt */
 
 static inline int
-inline_mysql_socket_setsockopt
+inline_myblockchain_socket_setsockopt
 (
 #ifdef HAVE_PSI_SOCKET_INTERFACE
   const char *src_file, uint src_line,
 #endif
- MYSQL_SOCKET mysql_socket, int level, int optname, const SOCKBUF_T *optval,
+ MYBLOCKCHAIN_SOCKET myblockchain_socket, int level, int optname, const SOCKBUF_T *optval,
  socklen_t optlen)
 {
   int result;
 
 #ifdef HAVE_PSI_SOCKET_INTERFACE
-  if (mysql_socket.m_psi)
+  if (myblockchain_socket.m_psi)
   {
     /* Instrumentation start */
     PSI_socket_locker *locker;
     PSI_socket_locker_state state;
     locker= PSI_SOCKET_CALL(start_socket_wait)
-      (&state, mysql_socket.m_psi, PSI_SOCKET_OPT, (size_t)0, src_file, src_line);
+      (&state, myblockchain_socket.m_psi, PSI_SOCKET_OPT, (size_t)0, src_file, src_line);
 
     /* Instrumented code */
-    result= setsockopt(mysql_socket.fd, level, optname, optval, optlen);
+    result= setsockopt(myblockchain_socket.fd, level, optname, optval, optlen);
 
     /* Instrumentation end */
     if (locker != NULL)
@@ -982,7 +982,7 @@ inline_mysql_socket_setsockopt
 #endif
 
   /* Non instrumented code */
-  result= setsockopt(mysql_socket.fd, level, optname, optval, optlen);
+  result= setsockopt(myblockchain_socket.fd, level, optname, optval, optlen);
 
   return result;
 }
@@ -1019,31 +1019,31 @@ set_socket_nonblock(my_socket fd)
   return ret;
 }
 
-/** mysql_socket_set_nonblocking */
+/** myblockchain_socket_set_nonblocking */
 
 static inline int
-inline_mysql_sock_set_nonblocking
+inline_myblockchain_sock_set_nonblocking
 (
 #ifdef HAVE_PSI_SOCKET_INTERFACE
   const char *src_file, uint src_line,
 #endif
-  MYSQL_SOCKET mysql_socket
+  MYBLOCKCHAIN_SOCKET myblockchain_socket
 )
 {
   int result= 0;
 
 #ifdef HAVE_PSI_SOCKET_INTERFACE
-  if (mysql_socket.m_psi)
+  if (myblockchain_socket.m_psi)
   {
     /* Instrumentation start */
     PSI_socket_locker *locker;
     PSI_socket_locker_state state;
     locker= PSI_SOCKET_CALL(start_socket_wait)
-        (&state, mysql_socket.m_psi, PSI_SOCKET_OPT,
+        (&state, myblockchain_socket.m_psi, PSI_SOCKET_OPT,
          (size_t)0, src_file, src_line);
 
     /* Instrumented code */
-    result= set_socket_nonblock(mysql_socket.fd);
+    result= set_socket_nonblock(myblockchain_socket.fd);
 
     /* Instrumentation end */
     if (locker != NULL)
@@ -1054,34 +1054,34 @@ inline_mysql_sock_set_nonblocking
 #endif
 
   /* Non instrumented code */
-  result= set_socket_nonblock(mysql_socket.fd);
+  result= set_socket_nonblock(myblockchain_socket.fd);
 
   return result;
 }
 
-/** mysql_socket_listen */
+/** myblockchain_socket_listen */
 
 static inline int
-inline_mysql_socket_listen
+inline_myblockchain_socket_listen
 (
 #ifdef HAVE_PSI_SOCKET_INTERFACE
   const char *src_file, uint src_line,
 #endif
- MYSQL_SOCKET mysql_socket, int backlog)
+ MYBLOCKCHAIN_SOCKET myblockchain_socket, int backlog)
 {
   int result;
 
 #ifdef HAVE_PSI_SOCKET_INTERFACE
-  if (mysql_socket.m_psi != NULL)
+  if (myblockchain_socket.m_psi != NULL)
   {
     /* Instrumentation start */
     PSI_socket_locker *locker;
     PSI_socket_locker_state state;
     locker= PSI_SOCKET_CALL(start_socket_wait)
-      (&state, mysql_socket.m_psi, PSI_SOCKET_CONNECT, (size_t)0, src_file, src_line);
+      (&state, myblockchain_socket.m_psi, PSI_SOCKET_CONNECT, (size_t)0, src_file, src_line);
 
     /* Instrumented code */
-    result= listen(mysql_socket.fd, backlog);
+    result= listen(myblockchain_socket.fd, backlog);
 
     /* Instrumentation end */
     if (locker != NULL)
@@ -1092,22 +1092,22 @@ inline_mysql_socket_listen
 #endif
 
   /* Non instrumented code */
-  result= listen(mysql_socket.fd, backlog);
+  result= listen(myblockchain_socket.fd, backlog);
 
   return result;
 }
 
-/** mysql_socket_accept */
+/** myblockchain_socket_accept */
 
-static inline MYSQL_SOCKET
-inline_mysql_socket_accept
+static inline MYBLOCKCHAIN_SOCKET
+inline_myblockchain_socket_accept
 (
 #ifdef HAVE_PSI_SOCKET_INTERFACE
   const char *src_file, uint src_line, PSI_socket_key key,
 #endif
-  MYSQL_SOCKET socket_listen, struct sockaddr *addr, socklen_t *addr_len)
+  MYBLOCKCHAIN_SOCKET socket_listen, struct sockaddr *addr, socklen_t *addr_len)
 {
-  MYSQL_SOCKET socket_accept= MYSQL_INVALID_SOCKET;
+  MYBLOCKCHAIN_SOCKET socket_accept= MYBLOCKCHAIN_INVALID_SOCKET;
   socklen_t addr_length= (addr_len != NULL) ? *addr_len : 0;
 
 #ifdef HAVE_PSI_SOCKET_INTERFACE
@@ -1145,56 +1145,56 @@ inline_mysql_socket_accept
   return socket_accept;
 }
 
-/** mysql_socket_close */
+/** myblockchain_socket_close */
 
 static inline int
-inline_mysql_socket_close
+inline_myblockchain_socket_close
 (
 #ifdef HAVE_PSI_SOCKET_INTERFACE
   const char *src_file, uint src_line,
 #endif
-  MYSQL_SOCKET mysql_socket)
+  MYBLOCKCHAIN_SOCKET myblockchain_socket)
 {
   int result;
 
 #ifdef HAVE_PSI_SOCKET_INTERFACE
-  if (mysql_socket.m_psi != NULL)
+  if (myblockchain_socket.m_psi != NULL)
   {
     /* Instrumentation start */
     PSI_socket_locker *locker;
     PSI_socket_locker_state state;
     locker= PSI_SOCKET_CALL(start_socket_wait)
-      (&state, mysql_socket.m_psi, PSI_SOCKET_CLOSE, (size_t)0, src_file, src_line);
+      (&state, myblockchain_socket.m_psi, PSI_SOCKET_CLOSE, (size_t)0, src_file, src_line);
 
     /* Instrumented code */
-    result= closesocket(mysql_socket.fd);
+    result= closesocket(myblockchain_socket.fd);
 
     /* Instrumentation end */
     if (locker != NULL)
       PSI_SOCKET_CALL(end_socket_wait)(locker, (size_t)0);
     /* Remove the instrumentation for this socket. */
-    if (mysql_socket.m_psi != NULL)
-      PSI_SOCKET_CALL(destroy_socket)(mysql_socket.m_psi);
+    if (myblockchain_socket.m_psi != NULL)
+      PSI_SOCKET_CALL(destroy_socket)(myblockchain_socket.m_psi);
 
     return result;
   }
 #endif
 
   /* Non instrumented code */
-  result= closesocket(mysql_socket.fd);
+  result= closesocket(myblockchain_socket.fd);
 
   return result;
 }
 
-/** mysql_socket_shutdown */
+/** myblockchain_socket_shutdown */
 
 static inline int
-inline_mysql_socket_shutdown
+inline_myblockchain_socket_shutdown
 (
 #ifdef HAVE_PSI_SOCKET_INTERFACE
   const char *src_file, uint src_line,
 #endif
-  MYSQL_SOCKET mysql_socket, int how)
+  MYBLOCKCHAIN_SOCKET myblockchain_socket, int how)
 {
   int result;
 
@@ -1204,7 +1204,7 @@ inline_mysql_socket_shutdown
   {
     DWORD dwBytesReturned;
     GUID guidDisconnectEx = WSAID_DISCONNECTEX;
-    WSAIoctl(mysql_socket.fd, SIO_GET_EXTENSION_FUNCTION_POINTER,
+    WSAIoctl(myblockchain_socket.fd, SIO_GET_EXTENSION_FUNCTION_POINTER,
              &guidDisconnectEx, sizeof(GUID),
              &DisconnectEx, sizeof(DisconnectEx), 
              &dwBytesReturned, NULL, NULL);
@@ -1213,21 +1213,21 @@ inline_mysql_socket_shutdown
 
 /* Instrumentation start */
 #ifdef HAVE_PSI_SOCKET_INTERFACE
-  if (mysql_socket.m_psi != NULL)
+  if (myblockchain_socket.m_psi != NULL)
   {
     PSI_socket_locker *locker;
     PSI_socket_locker_state state;
     locker= PSI_SOCKET_CALL(start_socket_wait)
-      (&state, mysql_socket.m_psi, PSI_SOCKET_SHUTDOWN, (size_t)0, src_file, src_line);
+      (&state, myblockchain_socket.m_psi, PSI_SOCKET_SHUTDOWN, (size_t)0, src_file, src_line);
 
     /* Instrumented code */
 #ifdef _WIN32
     if (DisconnectEx)
-      result= (DisconnectEx(mysql_socket.fd, (LPOVERLAPPED) NULL,
+      result= (DisconnectEx(myblockchain_socket.fd, (LPOVERLAPPED) NULL,
                             (DWORD) 0, (DWORD) 0) == TRUE) ? 0 : -1;
     else
 #endif
-      result= shutdown(mysql_socket.fd, how);
+      result= shutdown(myblockchain_socket.fd, how);
 
     /* Instrumentation end */
     if (locker != NULL)
@@ -1240,11 +1240,11 @@ inline_mysql_socket_shutdown
   /* Non instrumented code */
 #ifdef _WIN32
   if (DisconnectEx)
-    result= (DisconnectEx(mysql_socket.fd, (LPOVERLAPPED) NULL,
+    result= (DisconnectEx(myblockchain_socket.fd, (LPOVERLAPPED) NULL,
                           (DWORD) 0, (DWORD) 0) == TRUE) ? 0 : -1;
   else
 #endif
-    result= shutdown(mysql_socket.fd, how);
+    result= shutdown(myblockchain_socket.fd, how);
 
   return result;
 }

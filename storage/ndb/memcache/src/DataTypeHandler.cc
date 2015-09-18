@@ -1083,7 +1083,7 @@ int dth_encode_date(const NdbDictionary::Column *, size_t len,
   /* Factor out the Year/Month/Day */
   factor_YYYYMMDD(& tm, int_date);
 
-  /* Encode for MySQL */
+  /* Encode for MyBlockchain */
   encoded_date = (tm.year << 9) | (tm.month << 5) | tm.day;
 
   /* Store the encoded value as an UNSIGNED MEDIUM */
@@ -1169,7 +1169,7 @@ int dth_encode_datetime(const NdbDictionary::Column *, size_t len,
   return 1;
 }
 
-/***** wl#946 MySQL 5.6: sub-second temporal types ******/
+/***** wl#946 MyBlockchain 5.6: sub-second temporal types ******/
 
 /* readFraction() returns value in microseconds
 */
@@ -1439,7 +1439,7 @@ int dth_encode_datetime2(const NdbDictionary::Column *col,
 
 /***** FLOAT and DOUBLE *****/
 
-/* mysqld might know a desired display width for the number, but we don't.
+/* myblockchaind might know a desired display width for the number, but we don't.
    We use the printf("%G") defaults for float.  For double, we try to find a 
    compromise between revealing intrinsic error and losing actual precision.
    To get the length, actually print the number into a scratch buffer.

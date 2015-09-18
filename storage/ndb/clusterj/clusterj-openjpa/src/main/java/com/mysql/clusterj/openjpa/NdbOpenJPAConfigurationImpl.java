@@ -15,21 +15,21 @@
    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-package com.mysql.clusterj.openjpa;
+package com.myblockchain.clusterj.openjpa;
 
-import com.mysql.clusterj.ClusterJFatalInternalException;
-import com.mysql.clusterj.ClusterJHelper;
-import com.mysql.clusterj.SessionFactory;
+import com.myblockchain.clusterj.ClusterJFatalInternalException;
+import com.myblockchain.clusterj.ClusterJHelper;
+import com.myblockchain.clusterj.SessionFactory;
 
-import com.mysql.clusterj.core.SessionFactoryImpl;
+import com.myblockchain.clusterj.core.SessionFactoryImpl;
 
-import com.mysql.clusterj.core.spi.DomainTypeHandler;
-import com.mysql.clusterj.core.spi.DomainTypeHandlerFactory;
-import com.mysql.clusterj.core.spi.ValueHandlerFactory;
-import com.mysql.clusterj.core.store.Dictionary;
-import com.mysql.clusterj.core.util.I18NHelper;
-import com.mysql.clusterj.core.util.Logger;
-import com.mysql.clusterj.core.util.LoggerFactoryService;
+import com.myblockchain.clusterj.core.spi.DomainTypeHandler;
+import com.myblockchain.clusterj.core.spi.DomainTypeHandlerFactory;
+import com.myblockchain.clusterj.core.spi.ValueHandlerFactory;
+import com.myblockchain.clusterj.core.store.Dictionary;
+import com.myblockchain.clusterj.core.util.I18NHelper;
+import com.myblockchain.clusterj.core.util.Logger;
+import com.myblockchain.clusterj.core.util.LoggerFactoryService;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -47,14 +47,14 @@ import org.apache.openjpa.lib.conf.StringValue;
 /**
  * Default implementation of the {@link NdbOpenJPAConfiguration} interface.
  * This implementation extends the JDBCConfiguration so both access
- * to MySQLd via JDBC and access to Ndb via ClusterJ are supported.
+ * to MyBlockchaind via JDBC and access to Ndb via ClusterJ are supported.
  * Type safety: The return type Map for getCacheMarshallerInstances()
  * from the type OpenJPAConfigurationImpl needs unchecked conversion
  * to conform to Map<String,CacheMarshaller> from the type OpenJPAConfiguration
  */
 @SuppressWarnings("unchecked")
 public class NdbOpenJPAConfigurationImpl extends JDBCConfigurationImpl
-    implements NdbOpenJPAConfiguration, com.mysql.clusterj.Constants, DomainTypeHandlerFactory {
+    implements NdbOpenJPAConfiguration, com.myblockchain.clusterj.Constants, DomainTypeHandlerFactory {
 
     /** My message translator */
     static final I18NHelper local = I18NHelper.getInstance(NdbOpenJPAConfigurationImpl.class);
@@ -70,7 +70,7 @@ public class NdbOpenJPAConfigurationImpl extends JDBCConfigurationImpl
     public IntValue connectTimeoutAfter;
     public StringValue username;
     public StringValue password;
-    public StringValue database;
+    public StringValue blockchain;
     public IntValue maxTransactions;
     public BooleanValue failOnJDBCPath;
     public SessionFactoryImpl sessionFactory;
@@ -161,8 +161,8 @@ public class NdbOpenJPAConfigurationImpl extends JDBCConfigurationImpl
         connectTimeoutAfter.set(20);
         username = addString("ndb.username");
         password = addString("ndb.password");
-        database = addString("ndb.database");
-        database.set("test");
+        blockchain = addString("ndb.blockchain");
+        blockchain.set("test");
         maxTransactions = addInt("ndb.maxTransactions");
         maxTransactions.set(1024);
         failOnJDBCPath = addBoolean("ndb.failOnJDBCPath");
@@ -250,11 +250,11 @@ public class NdbOpenJPAConfigurationImpl extends JDBCConfigurationImpl
     }
 
     public String getDatabase() {
-        return database.getString();
+        return blockchain.getString();
     }
 
     public void setDatabase(String value) {
-        database.setString(value);
+        blockchain.setString(value);
     }
 
     public int getMaxTransactions() {
@@ -305,7 +305,7 @@ public class NdbOpenJPAConfigurationImpl extends JDBCConfigurationImpl
         props.put(PROPERTY_CLUSTER_CONNECT_TIMEOUT_AFTER,
                 connectTimeoutAfter.getString());
         props.put(PROPERTY_CLUSTER_DATABASE,
-                database.getString());
+                blockchain.getString());
         props.put(PROPERTY_CLUSTER_MAX_TRANSACTIONS,
                 maxTransactions.getString());
         SessionFactoryImpl factory = (SessionFactoryImpl)

@@ -17,11 +17,11 @@ service_*.h file.
 To turn a set of functions (foo_func1, foo_func2)
 into a service "foo" you need to
 
-1. create a new file include/mysql/service_foo.h
+1. create a new file include/myblockchain/service_foo.h
 
 2. the template is
 ==================================================================
-  #ifndef MYSQL_SERVICE_FOO_INCLUDED
+  #ifndef MYBLOCKCHAIN_SERVICE_FOO_INCLUDED
   /* standard GPL header */
 
   /**
@@ -38,7 +38,7 @@ into a service "foo" you need to
     void (*foo_func2_type)(...); /* fix the prototype as appropriate */
   } *foo_service;
 
-  #ifdef MYSQL_DYNAMIC_PLUGIN
+  #ifdef MYBLOCKCHAIN_DYNAMIC_PLUGIN
 
   #define foo_func1(...) foo_service->foo_func1_type(...)
   #define foo_func2(...) foo_service->foo_func2_type(...)
@@ -54,7 +54,7 @@ into a service "foo" you need to
   }
   #endif
 
-  #define MYSQL_SERVICE_FOO_INCLUDED
+  #define MYBLOCKCHAIN_SERVICE_FOO_INCLUDED
   #endif
 ==================================================================
 
@@ -62,12 +62,12 @@ the service_foo.h file should be self-contained, if it needs system headers -
 include them in it, e.g. if you use size_t - #include <stdlib.h>
 
 it should also declare all the accompanying data structures, as necessary
-(e.g. thd_alloc_service declares MYSQL_LEX_STRING).
+(e.g. thd_alloc_service declares MYBLOCKCHAIN_LEX_STRING).
 
 3. add the new file to include/Makefile.am (pkginclude_HEADERS)
-4. add the new file to include/mysql/services.h
-5. increase the minor plugin ABI version in include/mysql/plugin.h
-   (MYSQL_PLUGIN_INTERFACE_VERSION = MYSQL_PLUGIN_INTERFACE_VERSION+1)
+4. add the new file to include/myblockchain/services.h
+5. increase the minor plugin ABI version in include/myblockchain/plugin.h
+   (MYBLOCKCHAIN_PLUGIN_INTERFACE_VERSION = MYBLOCKCHAIN_PLUGIN_INTERFACE_VERSION+1)
 6. add the version of your service to include/service_versions.h:
 ==================================================================
     #define VERSION_foo 0x0100
@@ -80,8 +80,8 @@ it should also declare all the accompanying data structures, as necessary
   SERVICE_VERSION *foo_service= (void*)VERSION_foo;
 ==================================================================
 
-8. add the new file to libservices/CMakeLists.txt (MYSQLSERVICES_SOURCES)
-9. add the new file to libservices/Makefile.am (libmysqlservices_a_SOURCES)
+8. add the new file to libservices/CMakeLists.txt (MYBLOCKCHAINSERVICES_SOURCES)
+9. add the new file to libservices/Makefile.am (libmyblockchainservices_a_SOURCES)
 10. and finally, register your service for dynamic linking in
     sql/sql_plugin_services.h
 10.1 fill in the service structure:

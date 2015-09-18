@@ -17,7 +17,7 @@
 
 #include "client_priv.h"
 #include "my_default.h"
-#include "mysqld_error.h"
+#include "myblockchaind_error.h"
 #include <welcome_copyright_notice.h> // ORACLE_WELCOME_COPYRIGHT_NOTICE
 
 using namespace std;
@@ -28,7 +28,7 @@ static char *opt_user= 0;
 static uint opt_port= 0;
 static uint opt_protocol= 0;
 static char *opt_socket= 0;
-static MYSQL mysql;
+static MYBLOCKCHAIN myblockchain;
 static char *password= 0;
 static my_bool password_provided= FALSE;
 static my_bool g_expire_password_on_exit= FALSE;
@@ -40,7 +40,7 @@ static char *shared_memory_base_name= default_shared_memory_base_name;
 
 #include "sslopt-vars.h"
 
-static const char *load_default_groups[]= { "mysql_secure_installation", "mysql", "client", 0 };
+static const char *load_default_groups[]= { "myblockchain_secure_installation", "myblockchain", "client", 0 };
 
 static struct my_option my_connection_options[]=
 {
@@ -57,13 +57,13 @@ static struct my_option my_connection_options[]=
    NO_ARG, 0, 0, 0, 0, 0, 0},
 #endif
   {"port", 'P', "Port number to use for connection or 0 for default to, in "
-   "order of preference, my.cnf, $MYSQL_TCP_PORT, "
-#if MYSQL_PORT_DEFAULT == 0
+   "order of preference, my.cnf, $MYBLOCKCHAIN_TCP_PORT, "
+#if MYBLOCKCHAIN_PORT_DEFAULT == 0
    "/etc/services, "
 #endif
-   "built-in default (" STRINGIFY_ARG(MYSQL_PORT) ").", &opt_port,
+   "built-in default (" STRINGIFY_ARG(MYBLOCKCHAIN_PORT) ").", &opt_port,
    &opt_port, 0, GET_UINT, REQUIRED_ARG, 0, 0, 0, 0, 0, 0},
-  {"protocol", OPT_MYSQL_PROTOCOL,
+  {"protocol", OPT_MYBLOCKCHAIN_PROTOCOL,
    "The protocol to use for connection (tcp, socket, pipe, memory).",
    0, 0, 0, GET_STR,  REQUIRED_ARG, 0, 0, 0, 0, 0, 0},
 #if defined (_WIN32) && !defined (EMBEDDED_LIBRARY)
@@ -89,14 +89,14 @@ my_bool find_temporary_password(char **p);
 static void print_version(void)
 {
   fprintf(stdout, "%s Ver %s, for %s on %s\n", my_progname,
-	  MYSQL_SERVER_VERSION, SYSTEM_TYPE, MACHINE_TYPE);
+	  MYBLOCKCHAIN_SERVER_VERSION, SYSTEM_TYPE, MACHINE_TYPE);
 }
 
 static void usage()
 {
   print_version();
   fprintf(stdout, ORACLE_WELCOME_COPYRIGHT_NOTICE("2013"));
-  fprintf(stdout, "\nMySQL Configuration Utility.");
+  fprintf(stdout, "\nMyBlockchain Configuration Utility.");
   fprintf(stdout, "Usage: %s [OPTIONS]\n", my_progname);
   my_print_help(my_connection_options);
   print_defaults("my", load_default_groups);
@@ -113,7 +113,7 @@ static void free_resources()
     my_free(opt_user);
   if (password)
     my_free(password);
-  mysql_close(&mysql);
+  myblockchain_close(&myblockchain);
   if (defaults_argv && *defaults_argv)
     free_defaults(defaults_argv);
 }
@@ -147,7 +147,7 @@ my_arguments_get_one_option(int optid,
     break;
 
 #include <sslopt-case.h>
-  case OPT_MYSQL_PROTOCOL:
+  case OPT_MYBLOCKCHAIN_PROTOCOL:
 #ifndef EMBEDDED_LIBRARY
     opt_protocol= find_type_or_exit(argument, &sql_protocol_typelib,
 				    opt->name);
@@ -155,7 +155,7 @@ my_arguments_get_one_option(int optid,
     break;
   case 'W':
 #ifdef __WIN__
-    opt_protocol = MYSQL_PROTOCOL_PIPE;
+    opt_protocol = MYBLOCKCHAIN_PROTOCOL_PIPE;
 #endif
     break;
   }
@@ -165,16 +165,16 @@ my_arguments_get_one_option(int optid,
 
 /* Initialize options for the given connection handle. */
 static void
-init_connection_options(MYSQL *mysql)
+init_connection_options(MYBLOCKCHAIN *myblockchain)
 {
-  SSL_SET_OPTIONS(mysql);
+  SSL_SET_OPTIONS(myblockchain);
 
   if (opt_protocol)
-    mysql_options(mysql, MYSQL_OPT_PROTOCOL, (char*) &opt_protocol);
+    myblockchain_options(myblockchain, MYBLOCKCHAIN_OPT_PROTOCOL, (char*) &opt_protocol);
 
 #if defined (_WIN32) && !defined (EMBEDDED_LIBRARY)
   if (shared_memory_base_name)
-    mysql_options(mysql, MYSQL_SHARED_MEMORY_BASE_NAME, shared_memory_base_name);
+    myblockchain_options(myblockchain, MYBLOCKCHAIN_SHARED_MEMORY_BASE_NAME, shared_memory_base_name);
 #endif
 }
 
@@ -213,13 +213,13 @@ int get_response(const char *opt_message, int default_answer= -1)
 }
 
 /**
-  Takes a mysql query and an optional message as arguments.
+  Takes a myblockchain query and an optional message as arguments.
   It displays the message if provided one and then runs the query.
   If the query is run successfully, the success message is displayed.
   Else, the failure message along with the actual failure is displayed.
   If the server is not found running, the program is exited.
 
-  @param1  query        The mysql query which is to be executed.
+  @param1  query        The myblockchain query which is to be executed.
   @param2  opt_message  The optional message to be displayed.
 */
 void execute_query_with_message(const char *query, const char *opt_message)
@@ -227,21 +227,21 @@ void execute_query_with_message(const char *query, const char *opt_message)
   if (opt_message)
     fprintf(stdout, "%s", opt_message);
 
-  if (!mysql_query(&mysql, query))
+  if (!myblockchain_query(&myblockchain, query))
     fprintf(stdout, "Success.\n\n");
-  else if ((mysql_errno(&mysql) == ER_PROCACCESS_DENIED_ERROR) ||
-           (mysql_errno(&mysql) == ER_TABLEACCESS_DENIED_ERROR) ||
-           (mysql_errno(&mysql) == ER_COLUMNACCESS_DENIED_ERROR))
+  else if ((myblockchain_errno(&myblockchain) == ER_PROCACCESS_DENIED_ERROR) ||
+           (myblockchain_errno(&myblockchain) == ER_TABLEACCESS_DENIED_ERROR) ||
+           (myblockchain_errno(&myblockchain) == ER_COLUMNACCESS_DENIED_ERROR))
   {
     fprintf(stdout, "The user provided does not have enough permissions "
-	            "to continue.\nmysql_secure_installation is exiting.\n");
+	            "to continue.\nmyblockchain_secure_installation is exiting.\n");
     free_resources();
     exit(1);
   }
   else
-    fprintf(stdout, " ... Failed! Error: %s\n", mysql_error(&mysql));
+    fprintf(stdout, " ... Failed! Error: %s\n", myblockchain_error(&myblockchain));
 
-  if (mysql_errno(&mysql) == CR_SERVER_GONE_ERROR)
+  if (myblockchain_errno(&myblockchain) == CR_SERVER_GONE_ERROR)
   {
     free_resources();
     exit(1);
@@ -249,11 +249,11 @@ void execute_query_with_message(const char *query, const char *opt_message)
 }
 
 /**
-  Takes a mysql query and the length of the query in bytes
+  Takes a myblockchain query and the length of the query in bytes
   as the input. If the query fails on running, a message
   along with the failure details is displayed.
 
-  @param1   query        The mysql query which is to be executed.
+  @param1   query        The myblockchain query which is to be executed.
   @param2   length       Length of the query in bytes.
 
   return    FALSE in case of success
@@ -261,20 +261,20 @@ void execute_query_with_message(const char *query, const char *opt_message)
 */
 bool execute_query(const char **query, size_t length)
 {
-  if (!mysql_real_query(&mysql, (const char *) *query, length))
+  if (!myblockchain_real_query(&myblockchain, (const char *) *query, length))
     return FALSE;
-  else if (mysql_errno(&mysql) == CR_SERVER_GONE_ERROR)
+  else if (myblockchain_errno(&myblockchain) == CR_SERVER_GONE_ERROR)
   {
-    fprintf(stdout, " ... Failed! Error: %s\n", mysql_error(&mysql));
+    fprintf(stdout, " ... Failed! Error: %s\n", myblockchain_error(&myblockchain));
     free_resources();
     exit(1);
   }
-  if ((mysql_errno(&mysql) == ER_PROCACCESS_DENIED_ERROR) ||
-      (mysql_errno(&mysql) == ER_TABLEACCESS_DENIED_ERROR) ||
-      (mysql_errno(&mysql) == ER_COLUMNACCESS_DENIED_ERROR))
+  if ((myblockchain_errno(&myblockchain) == ER_PROCACCESS_DENIED_ERROR) ||
+      (myblockchain_errno(&myblockchain) == ER_TABLEACCESS_DENIED_ERROR) ||
+      (myblockchain_errno(&myblockchain) == ER_COLUMNACCESS_DENIED_ERROR))
   {
     fprintf(stdout, "The user provided does not have enough permissions "
-	            "to continue.\nmysql_secure_installation is exiting.\n");
+	            "to continue.\nmyblockchain_secure_installation is exiting.\n");
     free_resources();
     exit(1);
   }
@@ -286,18 +286,18 @@ bool execute_query(const char **query, size_t length)
 */
 bool validate_password_exists()
 {
-  MYSQL_ROW row;
+  MYBLOCKCHAIN_ROW row;
   bool res= TRUE;
-  const char *query= "SELECT NAME FROM mysql.plugin WHERE NAME "
+  const char *query= "SELECT NAME FROM myblockchain.plugin WHERE NAME "
                      "= \'validate_password\'";
   if (!execute_query(&query, strlen(query)))
     DBUG_PRINT("info", ("query success!"));
-  MYSQL_RES *result= mysql_store_result(&mysql);
-  row= mysql_fetch_row(result);
+  MYBLOCKCHAIN_RES *result= myblockchain_store_result(&myblockchain);
+  row= myblockchain_fetch_row(result);
   if (!row)
     res= FALSE;
 
-  mysql_free_result(result);
+  myblockchain_free_result(result);
   return res;
 }
 
@@ -374,7 +374,7 @@ int install_password_validation_plugin()
 	                       MYF(MY_WME));
       end= my_stpcpy(query, "SET GLOBAL validate_password_policy = ");
       *end++ = '\'';
-      end+= mysql_real_escape_string_quote(&mysql, end, strength, strength_length, '\'');
+      end+= myblockchain_real_escape_string_quote(&myblockchain, end, strength, strength_length, '\'');
       *end++ = '\'';
       if (!execute_query((const char **) &query,(unsigned int) (end-query)))
 	DBUG_PRINT("info", ("query success!"));
@@ -407,15 +407,15 @@ void estimate_password_strength(char *password_string)
                            MYF(MY_WME));
   end= my_stpcpy(query, "SELECT validate_password_strength(");
   *end++ = '\'';
-  end+= mysql_real_escape_string_quote(&mysql, end, password_string, password_length, '\'');
+  end+= myblockchain_real_escape_string_quote(&myblockchain, end, password_string, password_length, '\'');
   *end++ = '\'';
   *end++ = ')';
   if (!execute_query((const char **) &query,(unsigned int) (end-query)))
   {
-    MYSQL_RES *result= mysql_store_result(&mysql);
-    MYSQL_ROW row= mysql_fetch_row(result);
+    MYBLOCKCHAIN_RES *result= myblockchain_store_result(&myblockchain);
+    MYBLOCKCHAIN_ROW row= myblockchain_fetch_row(result);
     printf("\nEstimated strength of the password: %s \n", row[0]);
-    mysql_free_result(result);
+    myblockchain_free_result(result);
   }
   my_free(query);
 }
@@ -426,27 +426,27 @@ void estimate_password_strength(char *password_string)
   renewed before the DBA can set the final password. This helper subroutine
   will use an active connection to set a password.
 
-  @param mysql The MYSQL handle
+  @param myblockchain The MYBLOCKCHAIN handle
   @param password A password character string
 
   Function might fail with an error message which can be retrieved using
-  mysql_error(mysql)
+  myblockchain_error(myblockchain)
 
   @return Success or failure
     @retval TRUE success
     @retval FALSE failure
 */
 
-my_bool mysql_set_password(MYSQL *mysql, char *password)
+my_bool myblockchain_set_password(MYBLOCKCHAIN *myblockchain, char *password)
 {
   size_t password_len= strlen(password);
   char *query, *end;
   query= (char *)my_malloc(PSI_NOT_INSTRUMENTED, password_len+50, MYF(MY_WME));
   end= my_stpmov(query, "SET PASSWORD=");
   *end++ = '\'';
-  end+= mysql_real_escape_string_quote(mysql, end, password, password_len, '\'');
+  end+= myblockchain_real_escape_string_quote(myblockchain, end, password, password_len, '\'');
   *end++ = '\'';
-  if (mysql_real_query(mysql, query, (unsigned int) (end - query)))
+  if (myblockchain_real_query(myblockchain, query, (unsigned int) (end - query)))
   {
     my_free(query);
     return FALSE;
@@ -462,23 +462,23 @@ my_bool mysql_set_password(MYSQL *mysql, char *password)
   privileges. This is primarily used as a helper function during rpm
   deployments.
 
-  @param mysql The MYSQL handle
+  @param myblockchain The MYBLOCKCHAIN handle
   @param user The user name of the expired account
   @param host The host name of the expired account
 
   Function might fail with an error message which can be retrieved using
-  mysql_error(mysql)
+  myblockchain_error(myblockchain)
 
   @return Success or failure
     @retval TRUE success
     @retval FALSE failure
 */
 
-my_bool mysql_expire_password(MYSQL *mysql)
+my_bool myblockchain_expire_password(MYBLOCKCHAIN *myblockchain)
 {
-  char sql[]= "UPDATE mysql.user SET password_expired= 'Y'";
+  char sql[]= "UPDATE myblockchain.user SET password_expired= 'Y'";
   size_t sql_len= strlen(sql);
-  if (mysql_real_query(mysql, sql, sql_len))
+  if (myblockchain_real_query(myblockchain, sql, sql_len))
     return FALSE;
 
   return TRUE;
@@ -552,7 +552,7 @@ static void set_opt_user_password(int plugin_set)
 	                       (pass_length*2 + tmp)*sizeof(char), MYF(MY_WME));
       end= my_stpcpy(query, "SET PASSWORD=");
       *end++ = '\'';
-      end+= mysql_real_escape_string_quote(&mysql, end, password1, pass_length, '\'');
+      end+= myblockchain_real_escape_string_quote(&myblockchain, end, password1, pass_length, '\'');
       *end++ = '\'';
       my_free(password1);
       my_free(password2);
@@ -564,7 +564,7 @@ static void set_opt_user_password(int plugin_set)
         break;
       }
       else
-	fprintf(stdout, " ... Failed! Error: %s\n", mysql_error(&mysql));
+	fprintf(stdout, " ... Failed! Error: %s\n", myblockchain_error(&myblockchain));
     }
   }
 }
@@ -587,14 +587,14 @@ int get_opt_user_password()
       No password is provided on the command line. Attempt to connect using
       a blank password.
     */
-    MYSQL *con= mysql_real_connect(&mysql, opt_host, opt_user, "", "",
+    MYBLOCKCHAIN *con= myblockchain_real_connect(&myblockchain, opt_host, opt_user, "", "",
                             opt_port, opt_socket, 0);
-    if (con != NULL || mysql_errno(&mysql) == ER_MUST_CHANGE_PASSWORD_LOGIN)
+    if (con != NULL || myblockchain_errno(&myblockchain) == ER_MUST_CHANGE_PASSWORD_LOGIN)
     {
-      fprintf(stdout,"Connecting to MySQL using a blank password.\n");
+      fprintf(stdout,"Connecting to MyBlockchain using a blank password.\n");
       my_free(password);
       password= 0;
-      mysql_close(con);
+      myblockchain_close(con);
     }
     else
     {
@@ -619,24 +619,24 @@ int get_opt_user_password()
         password= get_tty_password(prompt);
       }
     }
-    init_connection_options(&mysql);
+    init_connection_options(&myblockchain);
   } // if !password_provided
 
   /*
     A password candidate is identified. Use it to establish a connection.
   */
-  if (!mysql_real_connect(&mysql, opt_host, opt_user,
+  if (!myblockchain_real_connect(&myblockchain, opt_host, opt_user,
 			  password, "", opt_port, opt_socket, 0))
   {
-    if (mysql_errno(&mysql) == ER_MUST_CHANGE_PASSWORD_LOGIN)
+    if (myblockchain_errno(&myblockchain) == ER_MUST_CHANGE_PASSWORD_LOGIN)
     {
       bool can= TRUE;
-      init_connection_options(&mysql);
-      mysql_options(&mysql, MYSQL_OPT_CAN_HANDLE_EXPIRED_PASSWORDS, &can);
-      if (!mysql_real_connect(&mysql, opt_host, opt_user,
+      init_connection_options(&myblockchain);
+      myblockchain_options(&myblockchain, MYBLOCKCHAIN_OPT_CAN_HANDLE_EXPIRED_PASSWORDS, &can);
+      if (!myblockchain_real_connect(&myblockchain, opt_host, opt_user,
                               password, "", opt_port, opt_socket, 0))
       {
-	fprintf(stdout, "Error: %s\n", mysql_error(&mysql));
+	fprintf(stdout, "Error: %s\n", myblockchain_error(&myblockchain));
 	free_resources();
 	exit(1);
       }
@@ -649,10 +649,10 @@ int get_opt_user_password()
       */
       if (using_temporary_password)
       {
-        if (!mysql_set_password(&mysql, password))
+        if (!myblockchain_set_password(&myblockchain, password))
         {
           fprintf(stdout, "... Failed! Error: %s\n",
-                  mysql_error(&mysql));
+                  myblockchain_error(&myblockchain));
           free_resources();
           exit(1);
         }
@@ -672,7 +672,7 @@ int get_opt_user_password()
     }
     else
     {
-      fprintf(stdout, "Error: %s\n", mysql_error(&mysql));
+      fprintf(stdout, "Error: %s\n", myblockchain_error(&myblockchain));
       free_resources();
       exit(1);
     }
@@ -687,11 +687,11 @@ int get_opt_user_password()
 
   @param result    The result set from which rows are to be fetched.
 */
-void drop_users(MYSQL_RES *result)
+void drop_users(MYBLOCKCHAIN_RES *result)
 {
-  MYSQL_ROW row;
+  MYBLOCKCHAIN_ROW row;
   char *user_tmp, *host_tmp;
-  while ((row= mysql_fetch_row(result)))
+  while ((row= myblockchain_fetch_row(result)))
   {
     char *query, *end;
     size_t user_length, host_length;
@@ -709,11 +709,11 @@ void drop_users(MYSQL_RES *result)
 	                     sizeof(char), MYF(MY_WME));
     end= my_stpcpy(query, "DROP USER ");
     *end++ = '\'';
-    end+= mysql_real_escape_string_quote(&mysql, end, user_tmp, user_length, '\'');
+    end+= myblockchain_real_escape_string_quote(&myblockchain, end, user_tmp, user_length, '\'');
     *end++ = '\'';
     *end++ = '@';
     *end++ = '\'';
-    end+= mysql_real_escape_string_quote(&mysql, end, host_tmp, host_length, '\'');
+    end+= myblockchain_real_escape_string_quote(&myblockchain, end, host_tmp, host_length, '\'');
     *end++ = '\'';
     if (!execute_query((const char **) &query, (unsigned int) (end-query)))
       DBUG_PRINT("info", ("query success!"));
@@ -727,9 +727,9 @@ void drop_users(MYSQL_RES *result)
 void remove_anonymous_users()
 {
   int reply;
-  reply= get_response((const char *) "By default, a MySQL installation has an "
+  reply= get_response((const char *) "By default, a MyBlockchain installation has an "
 				     "anonymous user,\nallowing anyone to log "
-				     "into MySQL without having to have\na user "
+				     "into MyBlockchain without having to have\na user "
 				     "account created for them. This is intended "
 				     "only for\ntesting, and to make the "
 				     "installation go a bit smoother.\nYou should "
@@ -740,13 +740,13 @@ void remove_anonymous_users()
   if (reply == (int) 'y' || reply == (int) 'Y')
   {
     const char *query;
-    query= "SELECT USER, HOST FROM mysql.user WHERE USER=''";
+    query= "SELECT USER, HOST FROM myblockchain.user WHERE USER=''";
     if (!execute_query(&query, strlen(query)))
       DBUG_PRINT("info", ("query success!"));
-    MYSQL_RES *result= mysql_store_result(&mysql);
+    MYBLOCKCHAIN_RES *result= myblockchain_store_result(&myblockchain);
     if (result)
       drop_users(result);
-    mysql_free_result(result);
+    myblockchain_free_result(result);
     fprintf(stdout, "Success.\n\n");
   }
   else
@@ -769,14 +769,14 @@ void remove_remote_root()
   if (reply == (int) 'y' || reply == (int) 'Y')
   {
     const char *query;
-    query= "SELECT USER, HOST FROM mysql.user WHERE USER='root' "
+    query= "SELECT USER, HOST FROM myblockchain.user WHERE USER='root' "
 	   "AND HOST NOT IN ('localhost', '127.0.0.1', '::1')";
     if (!execute_query(&query, strlen(query)))
       DBUG_PRINT("info", ("query success!"));
-    MYSQL_RES *result= mysql_store_result(&mysql);
+    MYBLOCKCHAIN_RES *result= myblockchain_store_result(&myblockchain);
     if (result)
       drop_users(result);
-    mysql_free_result(result);
+    myblockchain_free_result(result);
     fprintf(stdout, "Success.\n\n");
   }
   else
@@ -784,28 +784,28 @@ void remove_remote_root()
 }
 
 /**
-  Removes test database and deletes the rows corresponding to them
-  from mysql.db table.
+  Removes test blockchain and deletes the rows corresponding to them
+  from myblockchain.db table.
 */
-void remove_test_database()
+void remove_test_blockchain()
 {
   int reply;
-  reply= get_response((const char *) "By default, MySQL comes with a database "
+  reply= get_response((const char *) "By default, MyBlockchain comes with a blockchain "
                                      "named 'test' that\nanyone can access. "
 				     "This is also intended only for testing,\n"
 				     "and should be removed before moving into "
 				     "a production\nenvironment.\n\n\nRemove "
-				     "test database and access to it? (Press "
+				     "test blockchain and access to it? (Press "
 				     "y|Y for Yes, any other key for No) : ", 'y');
   if (reply == (int) 'y' || reply == (int) 'Y')
   {
     execute_query_with_message((const char *) "DROP DATABASE IF EXISTS test",
-			       (const char *) " - Dropping test database...\n");
+			       (const char *) " - Dropping test blockchain...\n");
 
-    execute_query_with_message((const char *) "DELETE FROM mysql.db WHERE "
+    execute_query_with_message((const char *) "DELETE FROM myblockchain.db WHERE "
 	                                      "Db='test' OR Db='test\\_%'",
 			       (const char *) " - Removing privileges on test "
-			                      "database...\n");
+			                      "blockchain...\n");
   }
   else
     fprintf(stdout, "\n ... skipping.\n");
@@ -834,7 +834,7 @@ void reload_privilege_tables()
 
 /**
   Attempt to retrieve a password from the temporary password file
-  '.mysql_secret'.
+  '.myblockchain_secret'.
  @param p[out] A pointer to a password in a newly allocated buffer or null
  @returns true if the password was successfully retrieved.
 */
@@ -842,7 +842,7 @@ void reload_privilege_tables()
 my_bool find_temporary_password(char **p)
 {
   const char *root_path= "/root";
-  const char *password_file_name= "/.mysql_secret";
+  const char *password_file_name= "/.myblockchain_secret";
   *p= NULL;
   const char *home= getenv("HOME");
   if (home == NULL)
@@ -884,7 +884,7 @@ my_bool find_temporary_password(char **p)
 
   *p= my_strdup(PSI_NOT_INSTRUMENTED,
 		&password[0], MYF(MY_FAE));
-  fprintf(stdout, "Connecting to MySQL server using password in '%s'\n",path);
+  fprintf(stdout, "Connecting to MyBlockchain server using password in '%s'\n",path);
   
   free(path);
   return TRUE;
@@ -906,9 +906,9 @@ int main(int argc,char *argv[])
   MY_INIT(argv[0]);
   DBUG_ENTER("main");
   DBUG_PROCESS(argv[0]);
-  if (mysql_init(&mysql) == NULL)
+  if (myblockchain_init(&myblockchain) == NULL)
   {
-    printf("... Failed to initialize the MySQL client framework.\n");
+    printf("... Failed to initialize the MyBlockchain client framework.\n");
     exit(1);
   }
 
@@ -934,9 +934,9 @@ int main(int argc,char *argv[])
     DBUG_ASSERT(0);
   }
 
-  init_connection_options(&mysql);
+  init_connection_options(&myblockchain);
 
-  fprintf(stdout, "\nSecuring the MySQL server deployment.\n\n");
+  fprintf(stdout, "\nSecuring the MyBlockchain server deployment.\n\n");
 
   hadpass= get_opt_user_password();
 
@@ -981,24 +981,24 @@ int main(int argc,char *argv[])
   //Disallow remote root login
   remove_remote_root();
 
-  //Remove test database
-  remove_test_database();
+  //Remove test blockchain
+  remove_test_blockchain();
 
   /*
     During an unattended rpm deployment a temporary password is created and
-    stored in a file by mysql_install_db. This program use this password to
+    stored in a file by myblockchain_install_db. This program use this password to
     perform security configurations after the bootstrap phase but it needs to
     be marked for expiration upon exit so the DBA will remember to set a new
     one.
   */
   if (g_expire_password_on_exit == TRUE)
   {
-    if (mysql_expire_password(&mysql) == FALSE)
+    if (myblockchain_expire_password(&myblockchain) == FALSE)
     {
       fprintf(stdout, "... Failed to expire password!\n"
-                      "** Please consult the MySQL server documentation. **\n"
+                      "** Please consult the MyBlockchain server documentation. **\n"
                       "Error: %s\n",
-              mysql_error(&mysql));
+              myblockchain_error(&myblockchain));
       // Reload privilege tables before exiting
       reload_privilege_tables();
       free_resources();

@@ -55,14 +55,14 @@ struct ConfigFactory
 
   static Properties create(unsigned mgmds = 1,
                            unsigned ndbds = 1,
-                           unsigned mysqlds = 1,
+                           unsigned myblockchainds = 1,
                            unsigned mgmd_nodeids[] = 0,
                            unsigned ndbd_nodeids[] = 0,
-                           unsigned mysqld_nodeids[] = 0)
+                           unsigned myblockchaind_nodeids[] = 0)
   {
-    Uint32 base_port = get_ndbt_base_port() + /* mysqld */ 1;
+    Uint32 base_port = get_ndbt_base_port() + /* myblockchaind */ 1;
     Properties config;
-    require(mgmds >= 1 && ndbds >= 1 && mysqlds >= 1);
+    require(mgmds >= 1 && ndbds >= 1 && myblockchainds >= 1);
     NodeBitmask mask;
     mask.set();
     mask.clear(Uint32(0));
@@ -89,12 +89,12 @@ struct ConfigFactory
       config.put("ndbd", nodeId, &node_settings);
     }
 
-    for (unsigned i = 0; i < mysqlds; i++)
+    for (unsigned i = 0; i < myblockchainds; i++)
     {
-      Uint32 nodeId = getNodeId(mask, mysqld_nodeids, i);
+      Uint32 nodeId = getNodeId(mask, myblockchaind_nodeids, i);
       Properties node_settings;
       node_settings.put("NodeId", nodeId);
-      config.put("mysqld", nodeId, &node_settings);
+      config.put("myblockchaind", nodeId, &node_settings);
     }
 
     return config;

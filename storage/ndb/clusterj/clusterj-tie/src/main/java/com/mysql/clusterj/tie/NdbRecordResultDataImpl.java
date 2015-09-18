@@ -15,20 +15,20 @@
    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
  */
 
-package com.mysql.clusterj.tie;
+package com.myblockchain.clusterj.tie;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
-import com.mysql.clusterj.ClusterJFatalInternalException;
+import com.myblockchain.clusterj.ClusterJFatalInternalException;
 
-import com.mysql.clusterj.core.store.Blob;
-import com.mysql.clusterj.core.store.Column;
-import com.mysql.clusterj.core.store.ResultData;
+import com.myblockchain.clusterj.core.store.Blob;
+import com.myblockchain.clusterj.core.store.Column;
+import com.myblockchain.clusterj.core.store.ResultData;
 
-import com.mysql.clusterj.core.util.I18NHelper;
-import com.mysql.clusterj.core.util.Logger;
-import com.mysql.clusterj.core.util.LoggerFactoryService;
+import com.myblockchain.clusterj.core.util.I18NHelper;
+import com.myblockchain.clusterj.core.util.Logger;
+import com.myblockchain.clusterj.core.util.LoggerFactoryService;
 
 /**
  * Handle the results of an operation using NdbRecord. 

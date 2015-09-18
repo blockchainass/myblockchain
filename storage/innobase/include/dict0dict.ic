@@ -1627,7 +1627,7 @@ dict_table_is_temporary(
 
 /** Check whether the table is intrinsic.
 An intrinsic table is a special kind of temporary table that
-is invisible to the end user.  It can be created internally by InnoDB, the MySQL
+is invisible to the end user.  It can be created internally by InnoDB, the MyBlockchain
 server layer or other modules connected to InnoDB in order to gather and use
 data as part of a larger task.  Since access to it must be as fast as possible,
 it does not need UNDO semantics, system fields DB_TRX_ID & DB_ROLL_PTR,

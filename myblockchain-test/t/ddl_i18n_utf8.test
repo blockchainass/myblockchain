@@ -1,0 +1,1154 @@
+# The include statement below is a temp one for tests that are yet to
+#be ported to run with InnoDB,
+#but needs to be kept for tests that would need MyISAM in future.
+--source include/force_myisam_default.inc
+
+# Objects to test:
+#   - stored procedures/functions;
+#   - triggers;
+#   - events;
+#   - views;
+#
+# For stored routines:
+#   - create a blockchain with collation utf8_unicode_ci;
+#   - create an object, which
+#     - contains SP-var with explicit CHARSET-clause;
+#     - contains SP-var without CHARSET-clause;
+#     - contains text constant;
+#     - has localized routine/parameter names;
+#   - check:
+#     - execute;
+#     - SHOW CREATE output;
+#     - SHOW output;
+#     - SELECT FROM INFORMATION_SCHEMA output;
+#   - alter blockchain character set;
+#   - change connection collation;
+#   - check again;
+#   - dump definition using myblockchaindump;
+#   - drop object;
+#   - restore object;
+# 
+
+###########################################################################
+#
+# NOTE: this file contains text in UTF8 and KOI8-R encodings.
+#
+###########################################################################
+
+# Test requires server to accept client connections (for myblockchaindump portions)
+--source include/not_embedded.inc
+--source include/have_utf8.inc
+--source include/have_cp866.inc
+--source include/have_cp1251.inc
+--source include/have_koi8r.inc
+
+###########################################################################
+
+set names utf8;
+delimiter |;
+
+###########################################################################
+#
+# * Views.
+#
+###########################################################################
+
+--echo
+--echo -------------------------------------------------------------------
+--echo Views
+--echo -------------------------------------------------------------------
+--echo
+
+#
+# Preparation:
+#
+
+#   - Create blockchain with fixed, pre-defined character set.
+
+--disable_warnings
+DROP DATABASE IF EXISTS myblockchaintest1|
+--enable_warnings
+
+CREATE DATABASE myblockchaintest1 DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_unicode_ci|
+
+use myblockchaintest1|
+
+CREATE TABLE t1(кол INT)|
+INSERT INTO t1 VALUES(1)|
+
+#   - Create views;
+
+--echo
+
+CREATE VIEW v1 AS
+  SELECT 'тест' AS c1, кол AS c2
+  FROM t1|
+
+--echo
+
+CREATE VIEW v2 AS SELECT _koi8r'����' as c1|
+
+--echo
+
+CREATE VIEW v3 AS SELECT _koi8r'����'|
+
+--echo
+
+#
+# First-round checks.
+#
+
+--source include/ddl_i18n.check_views.inc
+
+#
+# Change running environment (alter blockchain character set, change session
+# variables).
+#
+
+--echo
+--echo
+
+ALTER DATABASE myblockchaintest1 COLLATE cp866_general_ci|
+
+#
+# Second-round checks:
+#
+
+#   - Change connection to flush cache;
+
+--connect (con2,localhost,root,,)
+--echo
+--echo ---> connection: con2
+
+#   - Switch environment variables and trigger loading views;
+
+SET @@character_set_client= cp1251|
+SET @@character_set_results= cp1251|
+SET @@collation_connection= cp1251_general_ci|
+
+--disable_result_log
+SELECT * FROM myblockchaintest1.v1|
+SELECT * FROM myblockchaintest1.v2|
+SELECT * FROM myblockchaintest1.v3|
+--enable_result_log
+
+use myblockchaintest1|
+
+#   - Restore environment;
+
+set names utf8|
+
+#   - Check!
+
+--source include/ddl_i18n.check_views.inc
+
+#
+# Check myblockchaindump.
+#
+
+#  - Dump myblockchaintest1;
+
+--let $views_dump1 = $MYBLOCKCHAINTEST_VARDIR/tmp/ddl_i18n_utf8views.myblockchaintest1.sql
+
+--echo
+--echo ---> Dumping myblockchaintest1 to ddl_i18n_utf8views.myblockchaintest1.sql
+
+--exec $MYBLOCKCHAIN_DUMP --character-sets-dir=$MYBLOCKCHAIN_SHAREDIR/charsets --blockchains myblockchaintest1 > $views_dump1
+
+#   - Clean myblockchaintest1;
+
+--echo
+--echo
+
+DROP DATABASE myblockchaintest1|
+
+#   - Restore myblockchaintest1;
+
+--echo
+--echo
+
+--echo ---> Restoring myblockchaintest1...
+--exec $MYBLOCKCHAIN test < $views_dump1
+
+--remove_file $views_dump1
+
+#
+# Third-round checks.
+#
+
+#   - Change connection to flush cache;
+
+--connect (con3,localhost,root,,)
+--echo
+--echo ---> connection: con3
+
+#   - Switch environment variables and trigger loading views;
+
+SET @@character_set_client= cp1251|
+SET @@character_set_results= cp1251|
+SET @@collation_connection= cp1251_general_ci|
+
+--disable_result_log
+SELECT * FROM myblockchaintest1.v1|
+SELECT * FROM myblockchaintest1.v2|
+SELECT * FROM myblockchaintest1.v3|
+--enable_result_log
+
+use myblockchaintest1|
+
+#   - Restore environment;
+
+set names utf8|
+
+#   - Check!
+
+--source include/ddl_i18n.check_views.inc
+
+#
+# Cleanup.
+#
+
+--connection default
+--echo
+--echo ---> connection: default
+
+--disconnect con2
+--disconnect con3
+
+use test|
+
+DROP DATABASE myblockchaintest1|
+
+###########################################################################
+#
+# * Stored procedures/functions.
+#
+###########################################################################
+
+--echo
+--echo -------------------------------------------------------------------
+--echo Stored procedures/functions
+--echo -------------------------------------------------------------------
+--echo
+
+#
+# Preparation:
+#
+
+#   - Create blockchain with fixed, pre-defined character set.
+
+--disable_warnings
+DROP DATABASE IF EXISTS myblockchaintest1|
+DROP DATABASE IF EXISTS myblockchaintest2|
+--enable_warnings
+
+CREATE DATABASE myblockchaintest1 DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_unicode_ci|
+CREATE DATABASE myblockchaintest2 DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_unicode_ci|
+
+use myblockchaintest1|
+
+#   - Create two stored routines -- with and without explicit
+#     CHARSET-clause for SP-variable;
+#
+
+--echo
+
+#     - Procedure p1
+
+CREATE PROCEDURE p1(
+  INOUT парам1 CHAR(10),
+  OUT парам2 CHAR(10))
+BEGIN
+  DECLARE перем1 CHAR(10);
+
+  SELECT
+    COLLATION(перем1) AS c1,
+    COLLATION(парам1) AS c2,
+    COLLATION(парам2) AS c3;
+
+  SELECT
+    COLLATION('текст') AS c4,
+    COLLATION(_utf8 'текст') AS c5,
+    COLLATION(_koi8r    '�����') AS c6,
+    @@collation_connection AS c7,
+    @@character_set_client AS c8;
+
+  SET парам1 = 'a';
+  SET парам2 = 'b';
+END|
+
+--echo
+
+#     - Procedure p2
+
+CREATE PROCEDURE p2(
+  INOUT парам1 CHAR(10) CHARACTER SET utf8,
+  OUT парам2 CHAR(10) CHARACTER SET utf8)
+BEGIN
+  DECLARE перем1 CHAR(10) CHARACTER SET utf8;
+
+  SELECT
+    COLLATION(перем1) AS c1,
+    COLLATION(парам1) AS c2,
+    COLLATION(парам2) AS c3;
+
+  SELECT
+    COLLATION('текст') AS c4,
+    COLLATION(_utf8 'текст') AS c5,
+    COLLATION(_koi8r    '�����') AS c6,
+    @@collation_connection AS c7,
+    @@character_set_client AS c8;
+
+  SET парам1 = 'a';
+  SET парам2 = 'b';
+END|
+
+--echo
+
+#     - Procedure p3
+
+CREATE PROCEDURE myblockchaintest2.p3(
+  INOUT парам1 CHAR(10),
+  OUT парам2 CHAR(10))
+BEGIN
+  DECLARE перем1 CHAR(10);
+
+  SELECT
+    COLLATION(перем1) AS c1,
+    COLLATION(парам1) AS c2,
+    COLLATION(парам2) AS c3;
+
+  SELECT
+    COLLATION('текст') AS c4,
+    COLLATION(_utf8 'текст') AS c5,
+    COLLATION(_koi8r    '�����') AS c6,
+    @@collation_connection AS c7,
+    @@character_set_client AS c8;
+
+  SET парам1 = 'a';
+  SET парам2 = 'b';
+END|
+
+--echo
+
+#     - Procedure p4
+
+CREATE PROCEDURE myblockchaintest2.p4(
+  INOUT парам1 CHAR(10) CHARACTER SET utf8,
+  OUT парам2 CHAR(10) CHARACTER SET utf8)
+BEGIN
+  DECLARE перем1 CHAR(10) CHARACTER SET utf8;
+
+  SELECT
+    COLLATION(перем1) AS c1,
+    COLLATION(парам1) AS c2,
+    COLLATION(парам2) AS c3;
+
+  SELECT
+    COLLATION('текст') AS c4,
+    COLLATION(_utf8 'текст') AS c5,
+    COLLATION(_koi8r    '�����') AS c6,
+    @@collation_connection AS c7,
+    @@character_set_client AS c8;
+
+  SET парам1 = 'a';
+  SET парам2 = 'b';
+END|
+
+#
+# First-round checks.
+#
+
+--source include/ddl_i18n.check_sp.inc
+
+#
+# Change running environment (alter blockchain character set, change session
+# variables).
+#
+
+--echo
+--echo
+
+ALTER DATABASE myblockchaintest1 COLLATE cp866_general_ci|
+ALTER DATABASE myblockchaintest2 COLLATE cp866_general_ci|
+
+#
+# Second-round checks:
+#
+
+#   - Change connection to flush SP-cache;
+
+--connect (con2,localhost,root,,myblockchaintest1)
+--echo
+--echo ---> connection: con2
+
+#   - Switch environment variables and trigger loading stored procedures;
+
+SET @@character_set_client= cp1251|
+SET @@character_set_results= cp1251|
+SET @@collation_connection= cp1251_general_ci|
+
+CALL p1(@a, @b)|
+CALL p2(@a, @b)|
+CALL myblockchaintest2.p3(@a, @b)|
+CALL myblockchaintest2.p4(@a, @b)|
+
+#   - Restore environment;
+
+set names utf8|
+
+#   - Check!
+
+--source include/ddl_i18n.check_sp.inc
+
+#
+# Check myblockchaindump.
+#
+
+#  - Dump myblockchaintest1, myblockchaintest2;
+
+--let $sp_dump1 = $MYBLOCKCHAINTEST_VARDIR/tmp/ddl_i18n_utf8sp.myblockchaintest1.sql
+--let $sp_dump2 = $MYBLOCKCHAINTEST_VARDIR/tmp/ddl_i18n_utf8sp.myblockchaintest2.sql
+
+--echo
+--echo ---> Dump of myblockchaintest1
+
+--exec $MYBLOCKCHAIN_DUMP --character-sets-dir=$MYBLOCKCHAIN_SHAREDIR/charsets --compact --routines --blockchains myblockchaintest1
+
+--echo
+--echo ---> Dumping myblockchaintest1 to ddl_i18n_utf8sp.myblockchaintest1.sql
+
+--exec $MYBLOCKCHAIN_DUMP --character-sets-dir=$MYBLOCKCHAIN_SHAREDIR/charsets --compact --routines --blockchains myblockchaintest1 > $sp_dump1
+
+--echo
+--echo ---> Dump of myblockchaintest2
+
+--exec $MYBLOCKCHAIN_DUMP --character-sets-dir=$MYBLOCKCHAIN_SHAREDIR/charsets --compact --routines --blockchains myblockchaintest2
+
+--echo
+--echo ---> Dumping myblockchaintest2 to ddl_i18n_utf8sp.myblockchaintest2.sql
+
+--exec $MYBLOCKCHAIN_DUMP --character-sets-dir=$MYBLOCKCHAIN_SHAREDIR/charsets --compact --routines --blockchains myblockchaintest2 > $sp_dump2
+
+#   - Clean myblockchaintest1, myblockchaintest2;
+
+--echo
+--echo
+
+DROP DATABASE myblockchaintest1|
+DROP DATABASE myblockchaintest2|
+
+#   - Restore myblockchaintest1;
+
+--echo
+--echo
+
+--echo ---> Restoring myblockchaintest1...
+--exec $MYBLOCKCHAIN test < $sp_dump1
+
+--echo ---> Restoring myblockchaintest2...
+--exec $MYBLOCKCHAIN test < $sp_dump2
+
+--remove_file $sp_dump1
+--remove_file $sp_dump2
+
+#
+# Third-round checks.
+#
+
+#   - Change connection to flush SP-cache;
+
+--connect (con3,localhost,root,,myblockchaintest1)
+--echo
+--echo ---> connection: con3
+
+#   - Switch environment variables and trigger loading stored procedures;
+
+SET @@character_set_client= cp1251|
+SET @@character_set_results= cp1251|
+SET @@collation_connection= cp1251_general_ci|
+
+CALL p1(@a, @b)|
+CALL p2(@a, @b)|
+CALL myblockchaintest2.p3(@a, @b)|
+CALL myblockchaintest2.p4(@a, @b)|
+
+#   - Restore environment;
+
+set names utf8|
+
+#   - Check!
+
+--source include/ddl_i18n.check_sp.inc
+
+#
+# Cleanup.
+#
+
+--connection default
+--echo
+--echo ---> connection: default
+
+--disconnect con2
+--disconnect con3
+
+use test|
+
+DROP DATABASE myblockchaintest1|
+DROP DATABASE myblockchaintest2|
+
+###########################################################################
+#
+# * Triggers.
+#
+###########################################################################
+
+--echo
+--echo -------------------------------------------------------------------
+--echo Triggers
+--echo -------------------------------------------------------------------
+--echo
+
+#
+# Preparation:
+#
+
+#   - Create blockchain with fixed, pre-defined character set;
+
+--disable_warnings
+DROP DATABASE IF EXISTS myblockchaintest1|
+DROP DATABASE IF EXISTS myblockchaintest2|
+--enable_warnings
+
+CREATE DATABASE myblockchaintest1 DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_unicode_ci|
+CREATE DATABASE myblockchaintest2 DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_unicode_ci|
+
+use myblockchaintest1|
+
+#   - Create tables for triggers;
+
+CREATE TABLE t1(c INT)|
+CREATE TABLE myblockchaintest2.t1(c INT)|
+
+#   - Create log tables;
+
+CREATE TABLE log(msg VARCHAR(255))|
+CREATE TABLE myblockchaintest2.log(msg VARCHAR(255))|
+
+
+#   - Create triggers -- with and without explicit CHARSET-clause for
+#     SP-variable;
+#
+
+--echo
+
+#     - Trigger trg1
+
+CREATE TRIGGER trg1 BEFORE INSERT ON t1 FOR EACH ROW
+BEGIN
+  DECLARE перем1 CHAR(10);
+
+  INSERT INTO log VALUES(COLLATION(перем1));
+  INSERT INTO log VALUES(COLLATION('текст'));
+  INSERT INTO log VALUES(COLLATION(_utf8 'текст'));
+  INSERT INTO log VALUES(COLLATION(_koi8r    '�����'));
+  INSERT INTO log VALUES(@@collation_connection);
+  INSERT INTO log VALUES(@@character_set_client);
+
+  SET @a1 = 'текст';
+  SET @a2 = _utf8 'текст';
+  SET @a3 = _koi8r    '�����';
+END|
+
+--echo
+
+#     - Trigger trg2
+
+CREATE TRIGGER trg2 AFTER INSERT ON t1 FOR EACH ROW
+BEGIN
+  DECLARE перем1 CHAR(10) CHARACTER SET utf8;
+
+  INSERT INTO log VALUES(COLLATION(перем1));
+  INSERT INTO log VALUES(COLLATION('текст'));
+  INSERT INTO log VALUES(COLLATION(_utf8 'текст'));
+  INSERT INTO log VALUES(COLLATION(_koi8r    '�����'));
+  INSERT INTO log VALUES(@@collation_connection);
+  INSERT INTO log VALUES(@@character_set_client);
+
+  SET @b1 = 'текст';
+  SET @b2 = _utf8 'текст';
+  SET @b3 = _koi8r    '�����';
+END|
+
+--echo
+
+#     - Trigger trg3
+
+CREATE TRIGGER myblockchaintest2.trg3 BEFORE INSERT ON myblockchaintest2.t1 FOR EACH ROW
+BEGIN
+  DECLARE перем1 CHAR(10);
+
+  INSERT INTO log VALUES(COLLATION(перем1));
+  INSERT INTO log VALUES(COLLATION('текст'));
+  INSERT INTO log VALUES(COLLATION(_utf8 'текст'));
+  INSERT INTO log VALUES(COLLATION(_koi8r    '�����'));
+  INSERT INTO log VALUES(@@collation_connection);
+  INSERT INTO log VALUES(@@character_set_client);
+
+  SET @a1 = 'текст';
+  SET @a2 = _utf8 'текст';
+  SET @a3 = _koi8r    '�����';
+END|
+
+--echo
+
+#     - Trigger trg4
+
+CREATE TRIGGER myblockchaintest2.trg4 AFTER INSERT ON myblockchaintest2.t1 FOR EACH ROW
+BEGIN
+  DECLARE перем1 CHAR(10) CHARACTER SET utf8;
+
+  INSERT INTO log VALUES(COLLATION(перем1));
+  INSERT INTO log VALUES(COLLATION('текст'));
+  INSERT INTO log VALUES(COLLATION(_utf8 'текст'));
+  INSERT INTO log VALUES(COLLATION(_koi8r    '�����'));
+  INSERT INTO log VALUES(@@collation_connection);
+  INSERT INTO log VALUES(@@character_set_client);
+
+  SET @b1 = 'текст';
+  SET @b2 = _utf8 'текст';
+  SET @b3 = _koi8r    '�����';
+END|
+
+--echo
+
+#
+# First-round checks.
+#
+
+--source include/ddl_i18n.check_triggers.inc
+
+#
+# Change running environment (alter blockchain character set, change session
+# variables).
+#
+
+--echo
+--echo
+
+ALTER DATABASE myblockchaintest1 COLLATE cp866_general_ci|
+ALTER DATABASE myblockchaintest2 COLLATE cp866_general_ci|
+
+#
+# Second-round checks:
+#
+
+#  - Flush table cache;
+
+ALTER TABLE t1 ADD COLUMN fake INT|
+ALTER TABLE t1 DROP COLUMN fake|
+
+ALTER TABLE myblockchaintest2.t1 ADD COLUMN fake INT|
+ALTER TABLE myblockchaintest2.t1 DROP COLUMN fake|
+
+#   - Switch environment variables and initiate loading of triggers
+#     (connect using NULL blockchain);
+
+--connect (con2,localhost,root,,)
+--echo
+--echo ---> connection: con2
+
+SET @@character_set_client= cp1251|
+SET @@character_set_results= cp1251|
+SET @@collation_connection= cp1251_general_ci|
+
+INSERT INTO myblockchaintest1.t1 VALUES(0)|
+INSERT INTO myblockchaintest2.t1 VALUES(0)|
+
+DELETE FROM myblockchaintest1.log|
+DELETE FROM myblockchaintest2.log|
+
+#   - Restore environment;
+
+set names utf8|
+
+use myblockchaintest1|
+
+#   - Check!
+
+--source include/ddl_i18n.check_triggers.inc
+
+#
+# Check myblockchaindump.
+#
+
+#  - Dump myblockchaintest1, myblockchaintest2;
+
+--let $triggers_dump1 = $MYBLOCKCHAINTEST_VARDIR/tmp/ddl_i18n_utf8triggers.myblockchaintest1.sql
+--let $triggers_dump2 = $MYBLOCKCHAINTEST_VARDIR/tmp/ddl_i18n_utf8triggers.myblockchaintest2.sql
+
+--echo
+--echo ---> Dump of myblockchaintest1
+
+--exec $MYBLOCKCHAIN_DUMP --character-sets-dir=$MYBLOCKCHAIN_SHAREDIR/charsets --compact --triggers --blockchains myblockchaintest1
+
+--echo
+--echo ---> Dumping myblockchaintest1 to ddl_i18n_utf8triggers.myblockchaintest1.sql
+
+--exec $MYBLOCKCHAIN_DUMP --character-sets-dir=$MYBLOCKCHAIN_SHAREDIR/charsets --compact --triggers --blockchains myblockchaintest1 > $triggers_dump1
+
+--echo
+--echo ---> Dump of myblockchaintest2
+
+--exec $MYBLOCKCHAIN_DUMP --character-sets-dir=$MYBLOCKCHAIN_SHAREDIR/charsets --compact --triggers --blockchains myblockchaintest2
+
+--echo
+--echo ---> Dumping myblockchaintest2 to ddl_i18n_utf8triggers.myblockchaintest2.sql
+
+--exec $MYBLOCKCHAIN_DUMP --character-sets-dir=$MYBLOCKCHAIN_SHAREDIR/charsets --compact --triggers --blockchains myblockchaintest2 > $triggers_dump2
+
+#   - Clean myblockchaintest1, myblockchaintest2;
+
+--echo
+--echo
+
+DROP DATABASE myblockchaintest1|
+DROP DATABASE myblockchaintest2|
+
+#   - Restore myblockchaintest1;
+
+--echo
+--echo
+
+--echo ---> Restoring myblockchaintest1...
+--exec $MYBLOCKCHAIN test < $triggers_dump1
+
+--echo ---> Restoring myblockchaintest2...
+--exec $MYBLOCKCHAIN test < $triggers_dump2
+
+--remove_file $triggers_dump1
+--remove_file $triggers_dump2
+
+#
+# Third-round checks.
+#
+
+#   - Flush table cache;
+
+ALTER TABLE myblockchaintest1.t1 ADD COLUMN fake INT|
+ALTER TABLE myblockchaintest1.t1 DROP COLUMN fake|
+
+ALTER TABLE myblockchaintest2.t1 ADD COLUMN fake INT|
+ALTER TABLE myblockchaintest2.t1 DROP COLUMN fake|
+
+#   - Switch environment variables and initiate loading of triggers
+#     (connect using NULL blockchain);
+
+--connect (con3,localhost,root,,)
+--echo
+--echo ---> connection: con3
+
+SET @@character_set_client= cp1251|
+SET @@character_set_results= cp1251|
+SET @@collation_connection= cp1251_general_ci|
+
+INSERT INTO myblockchaintest1.t1 VALUES(0)|
+INSERT INTO myblockchaintest2.t1 VALUES(0)|
+
+DELETE FROM myblockchaintest1.log|
+DELETE FROM myblockchaintest2.log|
+
+#   - Restore environment;
+
+set names utf8|
+
+use myblockchaintest1|
+
+#   - Check!
+
+--source include/ddl_i18n.check_triggers.inc
+
+#
+# Cleanup.
+#
+
+--connection default
+--echo
+--echo ---> connection: default
+
+--disconnect con2
+--disconnect con3
+
+use test|
+
+DROP DATABASE myblockchaintest1|
+DROP DATABASE myblockchaintest2|
+
+###########################################################################
+#
+# * Events
+#
+# We don't have EXECUTE EVENT so far, so this test is limited. It checks that
+# event with non-latin1 symbols can be created, dumped, restored and SHOW
+# statements work properly.
+#
+###########################################################################
+
+--echo
+--echo -------------------------------------------------------------------
+--echo Events
+--echo -------------------------------------------------------------------
+--echo
+
+#
+# Preparation:
+#
+
+#   - Create blockchain with fixed, pre-defined character set.
+
+--disable_warnings
+DROP DATABASE IF EXISTS myblockchaintest1|
+DROP DATABASE IF EXISTS myblockchaintest2|
+--enable_warnings
+
+CREATE DATABASE myblockchaintest1 DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_unicode_ci|
+CREATE DATABASE myblockchaintest2 DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_unicode_ci|
+
+use myblockchaintest1|
+
+#   - Create two stored routines -- with and without explicit
+#     CHARSET-clause for SP-variable;
+#
+
+--echo
+
+#     - Event ev1
+
+CREATE EVENT ev1 ON SCHEDULE AT '2030-01-01 00:00:00' DO
+BEGIN
+  DECLARE перем1 CHAR(10);
+
+  SELECT
+    COLLATION(перем1) AS c1,
+    COLLATION('текст') AS c2,
+    COLLATION(_utf8 'текст') AS c3,
+    COLLATION(_koi8r    '�����') AS c4,
+    @@collation_connection AS c5,
+    @@character_set_client AS c6;
+END|
+
+--echo
+
+#     - Event ev2
+
+CREATE EVENT ev2 ON SCHEDULE AT '2030-01-01 00:00:00' DO
+BEGIN
+  DECLARE перем1 CHAR(10) CHARACTER SET utf8;
+
+  SELECT
+    COLLATION(перем1) AS c1,
+    COLLATION('текст') AS c2,
+    COLLATION(_utf8 'текст') AS c3,
+    COLLATION(_koi8r    '�����') AS c4,
+    @@collation_connection AS c5,
+    @@character_set_client AS c6;
+END|
+
+--echo
+
+#     - Event ev3
+
+CREATE EVENT myblockchaintest2.ev3 ON SCHEDULE AT '2030-01-01 00:00:00' DO
+BEGIN
+  DECLARE перем1 CHAR(10) CHARACTER SET utf8;
+
+  SELECT
+    COLLATION(перем1) AS c1,
+    COLLATION('текст') AS c2,
+    COLLATION(_utf8 'текст') AS c3,
+    COLLATION(_koi8r    '�����') AS c4,
+    @@collation_connection AS c5,
+    @@character_set_client AS c6;
+END|
+
+--echo
+
+#     - Event ev4
+
+CREATE EVENT myblockchaintest2.ev4 ON SCHEDULE AT '2030-01-01 00:00:00' DO
+BEGIN
+  DECLARE перем1 CHAR(10) CHARACTER SET utf8;
+
+  SELECT
+    COLLATION(перем1) AS c1,
+    COLLATION('текст') AS c2,
+    COLLATION(_utf8 'текст') AS c3,
+    COLLATION(_koi8r    '�����') AS c4,
+    @@collation_connection AS c5,
+    @@character_set_client AS c6;
+END|
+
+--echo
+
+
+#
+# First-round checks.
+#
+
+--source include/ddl_i18n.check_events.inc
+
+#
+# Change running environment (alter blockchain character set, change session
+# variables).
+#
+
+--echo
+--echo
+
+ALTER DATABASE myblockchaintest1 COLLATE cp866_general_ci|
+ALTER DATABASE myblockchaintest2 COLLATE cp866_general_ci|
+
+#
+# Second-round checks:
+#
+
+#   - Change connection to flush cache;
+
+--connect (con2,localhost,root,,myblockchaintest1)
+--echo
+--echo ---> connection: con2
+
+#   - Switch environment variables and trigger loading stored procedures;
+
+SET @@character_set_client= cp1251|
+SET @@character_set_results= cp1251|
+SET @@collation_connection= cp1251_general_ci|
+
+--disable_result_log
+SHOW CREATE EVENT ev1|
+SHOW CREATE EVENT ev2|
+SHOW CREATE EVENT myblockchaintest2.ev3|
+SHOW CREATE EVENT myblockchaintest2.ev4|
+--enable_result_log
+
+#   - Restore environment;
+
+set names utf8|
+
+#   - Check!
+
+--source include/ddl_i18n.check_events.inc
+
+#
+# Check myblockchaindump.
+#
+
+#  - Dump myblockchaintest1, myblockchaintest2;
+
+--let $events_dump1 = $MYBLOCKCHAINTEST_VARDIR/tmp/ddl_i18n_utf8events.myblockchaintest1.sql
+--let $events_dump2 = $MYBLOCKCHAINTEST_VARDIR/tmp/ddl_i18n_utf8events.myblockchaintest2.sql
+
+--echo
+--echo ---> Dump of myblockchaintest1
+
+--exec $MYBLOCKCHAIN_DUMP --character-sets-dir=$MYBLOCKCHAIN_SHAREDIR/charsets --compact --events --blockchains myblockchaintest1
+
+--echo
+--echo ---> Dumping myblockchaintest1 to ddl_i18n_utf8events.myblockchaintest1.sql
+
+--exec $MYBLOCKCHAIN_DUMP --character-sets-dir=$MYBLOCKCHAIN_SHAREDIR/charsets --compact --events --blockchains myblockchaintest1 > $events_dump1
+
+--echo
+--echo ---> Dump of myblockchaintest2
+
+--exec $MYBLOCKCHAIN_DUMP --character-sets-dir=$MYBLOCKCHAIN_SHAREDIR/charsets --compact --events --blockchains myblockchaintest2
+
+--echo
+--echo ---> Dumping myblockchaintest2 to ddl_i18n_utf8events.myblockchaintest2.sql
+
+--exec $MYBLOCKCHAIN_DUMP --character-sets-dir=$MYBLOCKCHAIN_SHAREDIR/charsets --compact --events --blockchains myblockchaintest2 > $events_dump2
+
+#   - Clean myblockchaintest1, myblockchaintest2;
+
+--echo
+--echo
+
+DROP DATABASE myblockchaintest1|
+DROP DATABASE myblockchaintest2|
+
+#   - Restore myblockchaintest1;
+
+--echo
+--echo
+
+--echo ---> Restoring myblockchaintest1...
+--exec $MYBLOCKCHAIN test < $events_dump1
+
+--echo ---> Restoring myblockchaintest2...
+--exec $MYBLOCKCHAIN test < $events_dump2
+
+--remove_file $events_dump1
+--remove_file $events_dump2
+
+#
+# Third-round checks.
+#
+
+#   - Change connection to flush cache;
+
+--connect (con3,localhost,root,,myblockchaintest1)
+--echo
+--echo ---> connection: con3
+
+#   - Switch environment variables and trigger loading stored procedures;
+
+SET @@character_set_client= cp1251|
+SET @@character_set_results= cp1251|
+SET @@collation_connection= cp1251_general_ci|
+
+--disable_result_log
+SHOW CREATE EVENT ev1|
+SHOW CREATE EVENT ev2|
+SHOW CREATE EVENT myblockchaintest2.ev3|
+SHOW CREATE EVENT myblockchaintest2.ev4|
+--enable_result_log
+
+#   - Restore environment;
+
+set names utf8|
+
+#   - Check!
+
+--source include/ddl_i18n.check_events.inc
+
+###########################################################################
+#
+# * DDL statements inside stored routine.
+#
+# Here we check that DDL statements use actual blockchain collation even if they
+# are called from stored routine.
+#
+###########################################################################
+
+--echo
+--echo -------------------------------------------------------------------
+--echo DDL statements within stored routine.
+--echo -------------------------------------------------------------------
+--echo
+
+#
+# Preparation:
+#
+
+#   - Create blockchain with fixed, pre-defined character set.
+
+--disable_warnings
+DROP DATABASE IF EXISTS myblockchaintest1|
+DROP DATABASE IF EXISTS myblockchaintest2|
+--enable_warnings
+
+CREATE DATABASE myblockchaintest1 DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_unicode_ci|
+CREATE DATABASE myblockchaintest2 DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_unicode_ci|
+
+use myblockchaintest1|
+
+#   - Create procedures;
+
+--echo
+
+CREATE PROCEDURE p1()
+BEGIN
+  CREATE TABLE t1(col1 VARCHAR(10));
+  SHOW CREATE TABLE t1;
+END|
+
+--echo
+
+CREATE PROCEDURE myblockchaintest2.p2()
+BEGIN
+  CREATE TABLE t2(col1 VARCHAR(10));
+  SHOW CREATE TABLE t2;
+END|
+
+--echo
+
+#
+# First-round checks.
+#
+
+CALL p1()|
+
+--echo
+
+SHOW CREATE TABLE t1|
+
+--echo
+--echo
+
+CALL myblockchaintest2.p2()|
+
+--echo
+
+SHOW CREATE TABLE myblockchaintest2.t2|
+
+#
+# Alter blockchain.
+#
+
+--echo
+
+ALTER DATABASE myblockchaintest1 COLLATE cp1251_general_cs|
+ALTER DATABASE myblockchaintest2 COLLATE cp1251_general_cs|
+
+DROP TABLE t1|
+DROP TABLE myblockchaintest2.t2|
+
+--echo
+
+#
+# Second-round checks.
+#
+
+CALL p1()|
+
+--echo
+
+SHOW CREATE TABLE t1|
+
+--echo
+--echo
+
+CALL myblockchaintest2.p2()|
+
+--echo
+
+SHOW CREATE TABLE myblockchaintest2.t2|
+
+###########################################################################
+#
+# That's it.
+#
+###########################################################################
+
+#
+# Cleanup.
+#
+delimiter ;|
+
+--connection con2
+--echo
+--echo ---> connection: con2
+--disconnect con2
+--source include/wait_until_disconnected.inc
+--connection con3
+--echo
+--echo ---> connection: con3
+--disconnect con3
+--source include/wait_until_disconnected.inc
+--connection default
+--echo
+--echo ---> connection: default
+USE test;
+DROP DATABASE myblockchaintest1;
+DROP DATABASE myblockchaintest2;
+

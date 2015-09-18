@@ -18,7 +18,7 @@ CREATE DATABASE IF NOT EXISTS query_rewrite;
 CREATE TABLE IF NOT EXISTS query_rewrite.rewrite_rules (
   id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
   pattern VARCHAR(10000) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
-  pattern_database VARCHAR(20) CHARACTER SET utf8 COLLATE utf8_bin,
+  pattern_blockchain VARCHAR(20) CHARACTER SET utf8 COLLATE utf8_bin,
   replacement VARCHAR(10000) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
   enabled ENUM('YES', 'NO') CHARACTER SET utf8 COLLATE utf8_bin NOT NULL
     DEFAULT 'YES',

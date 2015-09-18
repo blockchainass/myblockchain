@@ -25,7 +25,7 @@ this program; if not, write to the Free Software Foundation, Inc.,
 
 /**************************************************//**
 @file buf/buf0buf.cc
-The database buffer buf_pool
+The blockchain buffer buf_pool
 
 Created 11/5/1995 Heikki Tuuri
 *******************************************************/
@@ -87,7 +87,7 @@ waiting jobs, and let the OS thread do something useful while the i/o
 is processed. In this way we could remove most OS thread switches in
 an i/o-intensive benchmark like TPC-C.
 
-A possibility is to put a user space thread library between the database
+A possibility is to put a user space thread library between the blockchain
 and NT. User space thread libraries might be very fast.
 
 SQL Server 7.0 can be configured to use 'fibers' which are lightweight
@@ -136,11 +136,11 @@ address of a frame is divisible by the universal page size, which
 is a power of two.
 
 We intend to make the buffer buf_pool size on-line reconfigurable,
-that is, the buf_pool size can be changed without closing the database.
-Then the database administarator may adjust it to be bigger
+that is, the buf_pool size can be changed without closing the blockchain.
+Then the blockchain administarator may adjust it to be bigger
 at night, for example. The control block array must
 contain enough control blocks for the maximum buffer buf_pool size
-which is used in the particular database.
+which is used in the particular blockchain.
 If the buf_pool size is cut, we exploit the virtual memory mechanism of
 the OS, and just refrain from using frames at high addresses. Then the OS
 can swap them to disk.
@@ -157,7 +157,7 @@ and at the time of reading of a page update the pointers accordingly.
 Drawbacks of this solution are added complexity and,
 possibly, extra space required on non-leaf pages for memory pointers.
 A simpler solution is just to speed up the hash table mechanism
-in the database, using tables whose size is a power of 2.
+in the blockchain, using tables whose size is a power of 2.
 
 		Lists of blocks
 		---------------
@@ -230,7 +230,7 @@ The lock is granted when the io-handler releases the x-lock.
 		----------
 
 The read-ahead mechanism is intended to be intelligent and
-isolated from the semantically higher levels of the database
+isolated from the semantically higher levels of the blockchain
 index management. From the higher level we only need the
 information if a file page has a natural successor or
 predecessor page. On the leaf level of a B-tree index,
@@ -274,7 +274,7 @@ static const ulint	BUF_READ_AHEAD_PAGES = 64;
 read-ahead buffer.  (Divide buf_pool size by this amount) */
 static const ulint	BUF_READ_AHEAD_PORTION = 32;
 
-/** The buffer pools of the database */
+/** The buffer pools of the blockchain */
 buf_pool_t*	buf_pool_ptr;
 
 /** true when resizing buffer pool is in the critical path. */
@@ -522,7 +522,7 @@ buf_block_alloc(
 #endif /* !UNIV_HOTBACKUP && !UNIV_INNOCHECKSUM */
 
 /** Checks if a page contains only zeroes.
-@param[in]	read_buf	database page
+@param[in]	read_buf	blockchain page
 @param[in]	page_size	page size
 @return true if page is filled with zeroes */
 bool
@@ -539,7 +539,7 @@ buf_page_is_zeroes(
 }
 
 /** Checks if the page is in crc32 checksum format.
-@param[in]	read_buf	database page
+@param[in]	read_buf	blockchain page
 @param[in]	checksum_field1	new checksum field
 @param[in]	checksum_field2	old checksum field
 @param[in]	page_no		page number of given read_buf
@@ -592,7 +592,7 @@ buf_page_is_checksum_valid_crc32(
 }
 
 /** Checks if the page is in innodb checksum format.
-@param[in]	read_buf	database page
+@param[in]	read_buf	blockchain page
 @param[in]	checksum_field1	new checksum field
 @param[in]	checksum_field2	old checksum field
 @param[in]	page_no		page number of given read_buf
@@ -675,7 +675,7 @@ buf_page_is_checksum_valid_innodb(
 }
 
 /** Checks if the page is in none checksum format.
-@param[in]	read_buf	database page
+@param[in]	read_buf	blockchain page
 @param[in]	checksum_field1	new checksum field
 @param[in]	checksum_field2	old checksum field
 @param[in]	page_no		page number of given read_buf
@@ -717,7 +717,7 @@ buf_page_is_checksum_valid_none(
 /** Checks if a page is corrupt.
 @param[in]	check_lsn	true if we need to check and complain about
 the LSN
-@param[in]	read_buf	database page
+@param[in]	read_buf	blockchain page
 @param[in]	page_size	page size
 @param[in]	skip_checksum	if true, skip checksum
 @param[in]	page_no		page number of given read_buf
@@ -775,7 +775,7 @@ buf_page_is_corrupted(
 				<< " log sequence number "
 				<< current_lsn << ".";
 
-			ib::error() << "Your database may be corrupt or"
+			ib::error() << "Your blockchain may be corrupt or"
 				" you may have copied the InnoDB"
 				" tablespace but not the InnoDB"
 				" log files. "
@@ -1071,7 +1071,7 @@ buf_page_is_corrupted(
 #ifndef UNIV_INNOCHECKSUM
 
 /** Prints a page to stderr.
-@param[in]	read_buf	a database page
+@param[in]	read_buf	a blockchain page
 @param[in]	page_size	page size
 @param[in]	flags		0 or BUF_PAGE_PRINT_NO_CRASH or
 BUF_PAGE_PRINT_NO_FULL */
@@ -1180,7 +1180,7 @@ buf_page_print(
 					    - FIL_PAGE_END_LSN_OLD_CHKSUM + 4)
 			<< ", page number (if stored to page already) "
 			<< mach_read_from_4(read_buf + FIL_PAGE_OFFSET)
-			<< ", space id (if created with >= MySQL-4.1.1"
+			<< ", space id (if created with >= MyBlockchain-4.1.1"
 			   " and stored already) "
 			<< mach_read_from_4(
 				read_buf + FIL_PAGE_ARCH_LOG_NO_OR_SPACE_ID);
@@ -1266,7 +1266,7 @@ buf_page_print(
 #ifndef UNIV_HOTBACKUP
 
 # ifdef PFS_GROUP_BUFFER_SYNC
-extern mysql_pfs_key_t	buffer_block_mutex_key;
+extern myblockchain_pfs_key_t	buffer_block_mutex_key;
 
 /********************************************************************//**
 This function registers mutexes and rwlocks in buffer blocks with
@@ -2037,7 +2037,7 @@ buf_page_realloc(
 	return(true); /* free_list was enough */
 }
 
-/** Sets the global variable that feeds MySQL's innodb_buffer_pool_resize_status
+/** Sets the global variable that feeds MyBlockchain's innodb_buffer_pool_resize_status
 to the specified string. The format and the following parameters are the
 same as the ones used for printf(3).
 @param[in]	fmt	format
@@ -2537,11 +2537,11 @@ withdraw_retry:
 		lock_mutex_enter();
 		trx_sys_mutex_enter();
 		bool	found = false;
-		for (trx_t* trx = UT_LIST_GET_FIRST(trx_sys->mysql_trx_list);
+		for (trx_t* trx = UT_LIST_GET_FIRST(trx_sys->myblockchain_trx_list);
 		     trx != NULL;
-		     trx = UT_LIST_GET_NEXT(mysql_trx_list, trx)) {
+		     trx = UT_LIST_GET_NEXT(myblockchain_trx_list, trx)) {
 			if (trx->state != TRX_STATE_NOT_STARTED
-			    && trx->mysql_thd != NULL
+			    && trx->myblockchain_thd != NULL
 			    && ut_difftime(withdraw_started,
 					   trx->start_time) > 0) {
 				if (!found) {
@@ -3994,7 +3994,7 @@ buf_wait_for_read(
 	}
 }
 
-/** This is the general function used to get access to a database page.
+/** This is the general function used to get access to a blockchain page.
 @param[in]	page_id		page id
 @param[in]	rw_latch	RW_S_LATCH, RW_X_LATCH, RW_NO_LATCH
 @param[in]	guess		guessed block or NULL
@@ -4621,7 +4621,7 @@ got_block:
 }
 
 /********************************************************************//**
-This is the general function used to get optimistic access to a database
+This is the general function used to get optimistic access to a blockchain
 page.
 @return TRUE if success */
 ibool
@@ -4740,7 +4740,7 @@ buf_page_optimistic_get(
 }
 
 /********************************************************************//**
-This is used to get access to a known database page, when no waiting can be
+This is used to get access to a known blockchain page, when no waiting can be
 done. For example, if a search in an adaptive hash index leads us to this
 frame.
 @return TRUE if success */
@@ -5661,7 +5661,7 @@ buf_page_io_complete(
 			   || bpage->id.page_no() != read_page_no) {
 			/* We did not compare space_id to read_space_id
 			if bpage->space == 0, because the field on the
-			page may contain garbage in MySQL < 4.1.1,
+			page may contain garbage in MyBlockchain < 4.1.1,
 			which only supported bpage->space == 0. */
 
 			ib::error() << "Space id and page no stored in "
@@ -5752,7 +5752,7 @@ corrupt:
 				} else {
 					ib::fatal()
 						<< "Aborting because of a"
-						" corrupt database page in"
+						" corrupt blockchain page in"
 						" the system tablespace. Or, "
 						" there was a failure in"
 						" tagging the tablespace "
@@ -6475,7 +6475,7 @@ buf_get_n_pending_read_ios(void)
 
 /*********************************************************************//**
 Returns the ratio in percents of modified pages in the buffer pool /
-database pages in the buffer pool.
+blockchain pages in the buffer pool.
 @return modified page percentage ratio */
 double
 buf_get_modified_ratio_pct(void)
@@ -6702,7 +6702,7 @@ buf_print_io_instance(
 		"Buffer pool size   %lu\n"
 		"Free buffers       %lu\n"
 		"Database pages     %lu\n"
-		"Old database pages %lu\n"
+		"Old blockchain pages %lu\n"
 		"Modified db pages  %lu\n"
 		"Pending reads %lu\n"
 		"Pending writes: LRU %lu, flush list %lu, single page %lu\n",
@@ -6928,7 +6928,7 @@ buf_get_free_list_len(void)
 
 #else /* !UNIV_HOTBACKUP */
 
-/** Inits a page to the buffer buf_pool, for use in mysqlbackup --restore.
+/** Inits a page to the buffer buf_pool, for use in myblockchainbackup --restore.
 @param[in]	page_id		page id
 @param[in]	page_size	page size
 @param[in,out]	block		block to init */
@@ -6981,9 +6981,9 @@ operator<<(
 {
 	out << "[buffer pool instance: "
 		<< "buf_pool size=" << buf_pool.curr_size
-		<< ", database pages=" << UT_LIST_GET_LEN(buf_pool.LRU)
+		<< ", blockchain pages=" << UT_LIST_GET_LEN(buf_pool.LRU)
 		<< ", free pages=" << UT_LIST_GET_LEN(buf_pool.free)
-		<< ", modified database pages="
+		<< ", modified blockchain pages="
 		<< UT_LIST_GET_LEN(buf_pool.flush_list)
 		<< ", n pending decompressions=" << buf_pool.n_pend_unzip
 		<< ", n pending reads=" << buf_pool.n_pend_reads

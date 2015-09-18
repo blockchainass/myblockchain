@@ -47,7 +47,7 @@ ENDIF(HAVE_OPENJPA)
     ADD_SUBDIRECTORY(clusterj-jpatest)
   ENDIF(HAVE_OPENJPA)
 
-SET(CLUSTERJ_EXPORTS com.mysql.clusterj,com.mysql.clusterj.query,com.mysql.clusterj.annotation,com.mysql.clusterj.metadata,com.mysql.clusterj.spi,com.mysql.clusterj.store,com.mysql.clusterj.util,com.mysql.clusterj.tie)
+SET(CLUSTERJ_EXPORTS com.myblockchain.clusterj,com.myblockchain.clusterj.query,com.myblockchain.clusterj.annotation,com.myblockchain.clusterj.metadata,com.myblockchain.clusterj.spi,com.myblockchain.clusterj.store,com.myblockchain.clusterj.util,com.myblockchain.clusterj.tie)
 CREATE_MANIFEST(clusterj_manifest.mf ${CLUSTERJ_EXPORTS} clusterj)
 
 CREATE_JAR(clusterj
@@ -56,7 +56,7 @@ CREATE_JAR(clusterj
   DEPENDENCIES ${DEP} )
 
 INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/clusterj-${JAVA_NDB_VERSION}.jar
-        DESTINATION ${INSTALL_MYSQLSHAREDIR}/java COMPONENT ClusterJ)
+        DESTINATION ${INSTALL_MYBLOCKCHAINSHAREDIR}/java COMPONENT ClusterJ)
 
 # create maven pom.xml in all subdirectories
 SET(CLUSTERJ_PROJECTS api core jdbc jpatest openjpa test tie unit)

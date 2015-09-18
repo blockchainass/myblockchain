@@ -16,7 +16,7 @@
    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#include "probes_mysql.h"
+#include "probes_myblockchain.h"
 #include "sql_class.h"                          // SSV
 #include "sql_table.h"
 #include <myisam.h>
@@ -24,8 +24,8 @@
 #include "ha_archive.h"
 #include <my_dir.h>
 
-#include <mysql/plugin.h>
-#include "mysql/psi/mysql_file.h"
+#include <myblockchain/plugin.h>
+#include "myblockchain/psi/myblockchain_file.h"
 
 /*
   First, if you want to understand storage engines you should look at 
@@ -181,13 +181,13 @@ static void init_archive_psi_keys(void)
   int count;
 
   count= array_elements(all_archive_mutexes);
-  mysql_mutex_register(category, all_archive_mutexes, count);
+  myblockchain_mutex_register(category, all_archive_mutexes, count);
 
   count= array_elements(all_archive_files);
-  mysql_file_register(category, all_archive_files, count);
+  myblockchain_file_register(category, all_archive_files, count);
 
   count= array_elements(all_archive_memory);
-  mysql_memory_register(category, all_archive_memory, count);
+  myblockchain_memory_register(category, all_archive_memory, count);
 }
 
 
@@ -237,7 +237,7 @@ Archive_share::Archive_share()
   /*
     We will use this lock for rows.
   */
-  mysql_mutex_init(az_key_mutex_Archive_share_mutex,
+  myblockchain_mutex_init(az_key_mutex_Archive_share_mutex,
                    &mutex, MY_MUTEX_INIT_FAST);
 }
 
@@ -267,7 +267,7 @@ int archive_discover(handlerton *hton, THD* thd, const char *db,
 
   build_table_filename(az_file, sizeof(az_file) - 1, db, name, ARZ, 0);
 
-  if (!(mysql_file_stat(arch_key_file_data, az_file, &file_stat, MYF(0))))
+  if (!(myblockchain_file_stat(arch_key_file_data, az_file, &file_stat, MYF(0))))
     goto err;
 
   if (!(azopen(&frm_stream, az_file, O_RDONLY|O_BINARY)))
@@ -320,18 +320,18 @@ int Archive_share::read_v1_metafile()
   DBUG_ENTER("Archive_share::read_v1_metafile");
 
   fn_format(file_name, data_file_name, "", ARM, MY_REPLACE_EXT);
-  if ((fd= mysql_file_open(arch_key_file_metadata, file_name, O_RDONLY, MYF(0))) == -1)
+  if ((fd= myblockchain_file_open(arch_key_file_metadata, file_name, O_RDONLY, MYF(0))) == -1)
     DBUG_RETURN(-1);
 
-  if (mysql_file_read(fd, buf, sizeof(buf), MYF(0)) != sizeof(buf))
+  if (myblockchain_file_read(fd, buf, sizeof(buf), MYF(0)) != sizeof(buf))
   {
-    mysql_file_close(fd, MYF(0));
+    myblockchain_file_close(fd, MYF(0));
     DBUG_RETURN(-1);
   }
   
   rows_recorded= uint8korr(buf + META_V1_OFFSET_ROWS_RECORDED);
   crashed= buf[META_V1_OFFSET_CRASHED];
-  mysql_file_close(fd, MYF(0));
+  myblockchain_file_close(fd, MYF(0));
   DBUG_RETURN(0);
 }
 
@@ -358,16 +358,16 @@ int Archive_share::write_v1_metafile()
   buf[META_V1_OFFSET_CRASHED]= crashed;
 
   fn_format(file_name, data_file_name, "", ARM, MY_REPLACE_EXT);
-  if ((fd= mysql_file_open(arch_key_file_metadata, file_name, O_WRONLY, MYF(0))) == -1)
+  if ((fd= myblockchain_file_open(arch_key_file_metadata, file_name, O_WRONLY, MYF(0))) == -1)
     DBUG_RETURN(-1);
 
-  if (mysql_file_write(fd, buf, sizeof(buf), MYF(0)) != sizeof(buf))
+  if (myblockchain_file_write(fd, buf, sizeof(buf), MYF(0)) != sizeof(buf))
   {
-    mysql_file_close(fd, MYF(0));
+    myblockchain_file_close(fd, MYF(0));
     DBUG_RETURN(-1);
   }
   
-  mysql_file_close(fd, MYF(0));
+  myblockchain_file_close(fd, MYF(0));
   DBUG_RETURN(0);
 }
 
@@ -539,7 +539,7 @@ int Archive_share::init_archive_writer()
 
 void Archive_share::close_archive_writer()
 {
-  mysql_mutex_assert_owner(&mutex);
+  myblockchain_mutex_assert_owner(&mutex);
   if (archive_write_open)
   {
     if (archive_write.version == 1)
@@ -685,21 +685,21 @@ void ha_archive::frm_load(const char *name, azio_stream *dst)
   fn_format(name_buff, name, "", ".frm", MY_REPLACE_EXT | MY_UNPACK_FILENAME);
 
   /* Here is where we open up the frm and pass it to archive to store */
-  if ((frm_file= mysql_file_open(arch_key_file_frm, name_buff, O_RDONLY, MYF(0))) >= 0)
+  if ((frm_file= myblockchain_file_open(arch_key_file_frm, name_buff, O_RDONLY, MYF(0))) >= 0)
   {
-    if (!mysql_file_fstat(frm_file, &file_stat, MYF(MY_WME)))
+    if (!myblockchain_file_fstat(frm_file, &file_stat, MYF(MY_WME)))
     {
       frm_ptr= (uchar *) my_malloc(az_key_memory_frm,
                                    sizeof(uchar) * (size_t) file_stat.st_size, MYF(0));
       if (frm_ptr)
       {
-        if (mysql_file_read(frm_file, frm_ptr, (size_t) file_stat.st_size, MYF(0)) ==
+        if (myblockchain_file_read(frm_file, frm_ptr, (size_t) file_stat.st_size, MYF(0)) ==
             (size_t) file_stat.st_size)
           azwrite_frm(dst, (char *) frm_ptr, (size_t) file_stat.st_size);
         my_free(frm_ptr);
       }
     }
-    mysql_file_close(frm_file, MYF(0));
+    myblockchain_file_close(frm_file, MYF(0));
   }
   DBUG_VOID_RETURN;
 }
@@ -826,7 +826,7 @@ int ha_archive::create(const char *name, TABLE *table_arg,
     There is a chance that the file was "discovered". In this case
     just use whatever file is there.
   */
-  if (!(mysql_file_stat(arch_key_file_data, name_buff, &file_stat, MYF(0))))
+  if (!(myblockchain_file_stat(arch_key_file_data, name_buff, &file_stat, MYF(0))))
   {
     my_errno= 0;
     if (!(azopen(&create_stream, name_buff, O_CREAT|O_RDWR|O_BINARY)))
@@ -978,7 +978,7 @@ int ha_archive::write_row(uchar *buf)
     DBUG_RETURN(HA_ERR_CRASHED_ON_USAGE);
 
   ha_statistic_increment(&SSV::ha_write_count);
-  mysql_mutex_lock(&share->mutex);
+  myblockchain_mutex_lock(&share->mutex);
 
   if (!share->archive_write_open && share->init_archive_writer())
   {
@@ -1019,7 +1019,7 @@ int ha_archive::write_row(uchar *buf)
   share->rows_recorded++;
   rc= real_write_row(buf,  &(share->archive_write));
 error:
-  mysql_mutex_unlock(&share->mutex);
+  myblockchain_mutex_unlock(&share->mutex);
   if (read_buf)
     my_free(read_buf);
   DBUG_RETURN(rc);
@@ -1053,9 +1053,9 @@ int ha_archive::index_read(uchar *buf, const uchar *key,
 {
   int rc;
   DBUG_ENTER("ha_archive::index_read");
-  MYSQL_INDEX_READ_ROW_START(table_share->db.str, table_share->table_name.str);
+  MYBLOCKCHAIN_INDEX_READ_ROW_START(table_share->db.str, table_share->table_name.str);
   rc= index_read_idx(buf, active_index, key, key_len, find_flag);
-  MYSQL_INDEX_READ_ROW_DONE(rc);
+  MYBLOCKCHAIN_INDEX_READ_ROW_DONE(rc);
   DBUG_RETURN(rc);
 }
 
@@ -1105,7 +1105,7 @@ int ha_archive::index_next(uchar * buf)
   int rc;
 
   DBUG_ENTER("ha_archive::index_next");
-  MYSQL_INDEX_READ_ROW_START(table_share->db.str, table_share->table_name.str);
+  MYBLOCKCHAIN_INDEX_READ_ROW_START(table_share->db.str, table_share->table_name.str);
 
   while (!(get_row(&archive, buf)))
   {
@@ -1117,7 +1117,7 @@ int ha_archive::index_next(uchar * buf)
   }
 
   rc= found ? 0 : HA_ERR_END_OF_FILE;
-  MYSQL_INDEX_READ_ROW_DONE(rc);
+  MYBLOCKCHAIN_INDEX_READ_ROW_DONE(rc);
   DBUG_RETURN(rc);
 }
 
@@ -1354,7 +1354,7 @@ int ha_archive::rnd_next(uchar *buf)
 {
   int rc;
   DBUG_ENTER("ha_archive::rnd_next");
-  MYSQL_READ_ROW_START(table_share->db.str,
+  MYBLOCKCHAIN_READ_ROW_START(table_share->db.str,
                        table_share->table_name.str, TRUE);
 
   if (share->crashed)
@@ -1374,7 +1374,7 @@ int ha_archive::rnd_next(uchar *buf)
   table->status=rc ? STATUS_NOT_FOUND: 0;
 
 end:
-  MYSQL_READ_ROW_DONE(rc);
+  MYBLOCKCHAIN_READ_ROW_DONE(rc);
   DBUG_RETURN(rc);
 }
 
@@ -1404,7 +1404,7 @@ int ha_archive::rnd_pos(uchar * buf, uchar *pos)
 {
   int rc;
   DBUG_ENTER("ha_archive::rnd_pos");
-  MYSQL_READ_ROW_START(table_share->db.str,
+  MYBLOCKCHAIN_READ_ROW_START(table_share->db.str,
                        table_share->table_name.str, FALSE);
   ha_statistic_increment(&SSV::ha_read_rnd_next_count);
   current_position= (my_off_t)my_get_ptr(pos, ref_length);
@@ -1415,7 +1415,7 @@ int ha_archive::rnd_pos(uchar * buf, uchar *pos)
   }
   rc= get_row(&archive, buf);
 end:
-  MYSQL_READ_ROW_DONE(rc);
+  MYBLOCKCHAIN_READ_ROW_DONE(rc);
   DBUG_RETURN(rc);
 }
 
@@ -1449,10 +1449,10 @@ int ha_archive::optimize(THD* thd, HA_CHECK_OPT* check_opt)
   char writer_filename[FN_REFLEN];
   DBUG_ENTER("ha_archive::optimize");
 
-  mysql_mutex_lock(&share->mutex);
+  myblockchain_mutex_lock(&share->mutex);
   if (share->in_optimize)
   {
-    mysql_mutex_unlock(&share->mutex);
+    myblockchain_mutex_unlock(&share->mutex);
     DBUG_RETURN(HA_ADMIN_FAILED);
   }
   share->in_optimize= true;
@@ -1460,7 +1460,7 @@ int ha_archive::optimize(THD* thd, HA_CHECK_OPT* check_opt)
   count= share->rows_recorded;
   if (share->archive_write_open)
     azflush(&share->archive_write, Z_SYNC_FLUSH);
-  mysql_mutex_unlock(&share->mutex);
+  myblockchain_mutex_unlock(&share->mutex);
 
   init_archive_reader();
 
@@ -1515,7 +1515,7 @@ int ha_archive::optimize(THD* thd, HA_CHECK_OPT* check_opt)
       save_auto_increment(table, &stats.auto_increment_value);
   }
 
-  mysql_mutex_lock(&share->mutex);
+  myblockchain_mutex_lock(&share->mutex);
 
   share->close_archive_writer();
   if (!rc)
@@ -1550,7 +1550,7 @@ int ha_archive::optimize(THD* thd, HA_CHECK_OPT* check_opt)
   if (rc && rc != HA_ERR_END_OF_FILE && !(check_opt->flags & T_EXTEND))
   {
     share->in_optimize= false;
-    mysql_mutex_unlock(&share->mutex);
+    myblockchain_mutex_unlock(&share->mutex);
     goto error;
   }
 
@@ -1562,7 +1562,7 @@ int ha_archive::optimize(THD* thd, HA_CHECK_OPT* check_opt)
   // make the file we just wrote be our data file
   rc= my_rename(writer_filename, share->data_file_name, MYF(0));
   share->in_optimize= false;
-  mysql_mutex_unlock(&share->mutex);
+  myblockchain_mutex_unlock(&share->mutex);
 
   DBUG_RETURN(rc);
 error:
@@ -1595,7 +1595,7 @@ THR_LOCK_DATA **ha_archive::store_lock(THD *thd,
 
     /* 
       In queries of type INSERT INTO t1 SELECT ... FROM t2 ...
-      MySQL would use the lock TL_READ_NO_INSERT on t2, and that
+      MyBlockchain would use the lock TL_READ_NO_INSERT on t2, and that
       would conflict with TL_WRITE_ALLOW_WRITE, blocking all inserts
       to t2. Convert the lock to a normal read lock to allow
       concurrent inserts to t2. 
@@ -1637,7 +1637,7 @@ int ha_archive::info(uint flag)
 {
   DBUG_ENTER("ha_archive::info");
 
-  mysql_mutex_lock(&share->mutex);
+  myblockchain_mutex_lock(&share->mutex);
   if (share->dirty)
   {
     DBUG_PRINT("ha_archive", ("archive flushing out rows for scan"));
@@ -1651,7 +1651,7 @@ int ha_archive::info(uint flag)
     cause the number to be inaccurate.
   */
   stats.records= share->rows_recorded;
-  mysql_mutex_unlock(&share->mutex);
+  myblockchain_mutex_unlock(&share->mutex);
 
   stats.deleted= 0;
 
@@ -1661,7 +1661,7 @@ int ha_archive::info(uint flag)
   {
     MY_STAT file_stat;  // Stat information for the data file
 
-    (void) mysql_file_stat(arch_key_file_data, share->data_file_name, &file_stat, MYF(MY_WME));
+    (void) myblockchain_file_stat(arch_key_file_data, share->data_file_name, &file_stat, MYF(MY_WME));
 
     if (flag & HA_STATUS_TIME)
       stats.update_time= (ulong) file_stat.st_mtime;
@@ -1685,9 +1685,9 @@ int ha_archive::info(uint flag)
   {
     /* TODO: Use the shared writer instead during the lock above. */
     init_archive_reader();
-    mysql_mutex_lock(&share->mutex);
+    myblockchain_mutex_lock(&share->mutex);
     azflush(&archive, Z_SYNC_FLUSH);
-    mysql_mutex_unlock(&share->mutex);
+    myblockchain_mutex_unlock(&share->mutex);
     stats.auto_increment_value= archive.auto_increment + 1;
   }
 
@@ -1721,9 +1721,9 @@ int ha_archive::extra(enum ha_extra_function operation)
       ret= azclose(&archive);
       archive_reader_open= false;
     }
-    mysql_mutex_lock(&share->mutex);
+    myblockchain_mutex_lock(&share->mutex);
     share->close_archive_writer();
-    mysql_mutex_unlock(&share->mutex);
+    myblockchain_mutex_unlock(&share->mutex);
     break;
   default:
     /* Nothing to do. */
@@ -1757,10 +1757,10 @@ int ha_archive::end_bulk_insert()
 {
   DBUG_ENTER("ha_archive::end_bulk_insert");
   bulk_insert= FALSE;
-  mysql_mutex_lock(&share->mutex);
+  myblockchain_mutex_lock(&share->mutex);
   if (share->archive_write_open)
     share->dirty= true;
-  mysql_mutex_unlock(&share->mutex);
+  myblockchain_mutex_unlock(&share->mutex);
   DBUG_RETURN(0);
 }
 
@@ -1819,12 +1819,12 @@ int ha_archive::check(THD* thd, HA_CHECK_OPT* check_opt)
   DBUG_ENTER("ha_archive::check");
 
   old_proc_info= thd_proc_info(thd, "Checking table");
-  mysql_mutex_lock(&share->mutex);
+  myblockchain_mutex_lock(&share->mutex);
   count= share->rows_recorded;
   /* Flush any waiting data */
   if (share->archive_write_open)
     azflush(&(share->archive_write), Z_SYNC_FLUSH);
-  mysql_mutex_unlock(&share->mutex);
+  myblockchain_mutex_unlock(&share->mutex);
 
   if (init_archive_reader())
     DBUG_RETURN(HA_ADMIN_CORRUPT);
@@ -1843,13 +1843,13 @@ int ha_archive::check(THD* thd, HA_CHECK_OPT* check_opt)
     Acquire share->mutex so tail of the table is not modified by
     concurrent writers.
   */
-  mysql_mutex_lock(&share->mutex);
+  myblockchain_mutex_lock(&share->mutex);
   count= share->rows_recorded - count;
   if (share->archive_write_open)
     azflush(&(share->archive_write), Z_SYNC_FLUSH);
   while (!(rc= get_row(&archive, table->record[0])))
     count--;
-  mysql_mutex_unlock(&share->mutex);
+  myblockchain_mutex_unlock(&share->mutex);
 
   if ((rc && rc != HA_ERR_END_OF_FILE) || count)  
     goto error;
@@ -1922,15 +1922,15 @@ bool ha_archive::check_if_incompatible_data(HA_CREATE_INFO *info,
 }
 
 
-struct st_mysql_storage_engine archive_storage_engine=
-{ MYSQL_HANDLERTON_INTERFACE_VERSION };
+struct st_myblockchain_storage_engine archive_storage_engine=
+{ MYBLOCKCHAIN_HANDLERTON_INTERFACE_VERSION };
 
-mysql_declare_plugin(archive)
+myblockchain_declare_plugin(archive)
 {
-  MYSQL_STORAGE_ENGINE_PLUGIN,
+  MYBLOCKCHAIN_STORAGE_ENGINE_PLUGIN,
   &archive_storage_engine,
   "ARCHIVE",
-  "Brian Aker, MySQL AB",
+  "Brian Aker, MyBlockchain AB",
   "Archive storage engine",
   PLUGIN_LICENSE_GPL,
   archive_db_init, /* Plugin Init */
@@ -1941,5 +1941,5 @@ mysql_declare_plugin(archive)
   NULL,                       /* config options                  */
   0,                          /* flags                           */
 }
-mysql_declare_plugin_end;
+myblockchain_declare_plugin_end;
 

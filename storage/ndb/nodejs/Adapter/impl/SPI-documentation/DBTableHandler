@@ -84,7 +84,7 @@
    
    Returns an array containing the properties of domainObject in field order
    Calls into fieldValueDefinedListener to indicate whether each field is defined.
-   Calls into databaseTypeConverter for adapter if needed.
+   Calls into blockchainTypeConverter for adapter if needed.
 */
   getFieldsWithListener(obj, adapter, fieldValueDefinedListener);
 

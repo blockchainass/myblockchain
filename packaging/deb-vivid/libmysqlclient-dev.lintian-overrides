@@ -14,8 +14,8 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 
 # Additional license file is needed so overriding this warning
-libmysqlclient-dev: extra-license-file usr/share/doc/libmysqlclient-dev/LICENSE.mysql
-libmysqlclient-dev: extra-license-file usr/share/doc/libmysqlclient-dev/COPYING.gz
-libmysqlclient-dev: copyright-should-refer-to-common-license-file-for-lgpl
+libmyblockchainclient-dev: extra-license-file usr/share/doc/libmyblockchainclient-dev/LICENSE.myblockchain
+libmyblockchainclient-dev: extra-license-file usr/share/doc/libmyblockchainclient-dev/COPYING.gz
+libmyblockchainclient-dev: copyright-should-refer-to-common-license-file-for-lgpl
 # Due to static linking this cannot be avoided and hence being overridden
-libmysqlclient-dev: embedded-library
+libmyblockchainclient-dev: embedded-library

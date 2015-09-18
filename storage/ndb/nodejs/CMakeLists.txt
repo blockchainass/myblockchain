@@ -17,7 +17,7 @@
 
 INSTALL(
   DIRECTORY . 
-  DESTINATION ${INSTALL_MYSQLSHAREDIR}/nodejs
+  DESTINATION ${INSTALL_MYBLOCKCHAINSHAREDIR}/nodejs
   COMPONENT nodejs)
 
 
@@ -26,14 +26,14 @@ INSTALL(
 # The build environment depends on NDB_NODEJS_PATH and NDB_NODEJS_EXTRAS_PATH
 
 IF(NOT NDB_NODEJS_PATH)
-  MESSAGE(STATUS "Skipping mysql-js (No NDB_NODEJS_PATH)")
+  MESSAGE(STATUS "Skipping myblockchain-js (No NDB_NODEJS_PATH)")
   RETURN()
 ENDIF()
 
 IF(NDB_NODEJS_EXTRAS_PATH)
-  MESSAGE(STATUS "Building mysql-js using " ${NDB_NODEJS_EXTRAS_PATH})
+  MESSAGE(STATUS "Building myblockchain-js using " ${NDB_NODEJS_EXTRAS_PATH})
 ELSE()
-  MESSAGE(STATUS "Skipping mysql-js (NO NDB_NODEJS_EXTRAS_PATH)")
+  MESSAGE(STATUS "Skipping myblockchain-js (NO NDB_NODEJS_EXTRAS_PATH)")
   RETURN()
 ENDIF()
 
@@ -47,7 +47,7 @@ include_directories(Adapter/impl/ndb/include)
 
 link_directories(
   ${NDB_SOURCE_DIR}/src
-  ${MYSQL_HOME}/lib)
+  ${MYBLOCKCHAIN_HOME}/lib)
 
 add_definitions(-D_BUILDING_V8_SHARED=1 -DBUILDING_UV_SHARED=1)
 add_definitions(-D_BUILDING_NODE_EXTENSION)
@@ -91,7 +91,7 @@ set(ADAPTER_SOURCE_FILES
 
 
 if(WIN32) 
-  set(ADAPTER_REQUIRED_LIBS ndbclient_static mysqlclient node)
+  set(ADAPTER_REQUIRED_LIBS ndbclient_static myblockchainclient node)
   add_definitions(-DWIN32)
   add_definitions(-D_CRT_SECURE_NO_DEPRECATE -D_CRT_NONSTDC_NO_DEPRECATE)
   if(CMAKE_CL_64)
@@ -100,7 +100,7 @@ if(WIN32)
     link_directories(${NODE_GYP}/ia32) 
   endif()
 else()
-  set(ADAPTER_REQUIRED_LIBS ndbclient_so mysqlclient)
+  set(ADAPTER_REQUIRED_LIBS ndbclient_so myblockchainclient)
   add_definitions(-D_GNU_SOURCE -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64)
 endif()
  

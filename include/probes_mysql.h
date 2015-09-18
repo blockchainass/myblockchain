@@ -14,16 +14,16 @@
    along with this program; if not, write to the Free Software
    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA */
 
-#ifndef PROBES_MYSQL_H
+#ifndef PROBES_MYBLOCKCHAIN_H
 
-#define PROBES_MYSQL_H
+#define PROBES_MYBLOCKCHAIN_H
 
 #include <my_global.h>
 
 #if defined(HAVE_DTRACE) && !defined(DISABLE_DTRACE)
-#include "probes_mysql_dtrace.h"
+#include "probes_myblockchain_dtrace.h"
 #else
-#include "probes_mysql_nodtrace.h"
+#include "probes_myblockchain_nodtrace.h"
 #endif
 
-#endif /* PROBES_MYSQL_H */
+#endif /* PROBES_MYBLOCKCHAIN_H */

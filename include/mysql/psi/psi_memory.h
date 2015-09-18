@@ -13,8 +13,8 @@
   along with this program; if not, write to the Free Software Foundation,
   51 Franklin Street, Suite 500, Boston, MA 02110-1335 USA */
 
-#ifndef MYSQL_PSI_MEMORY_H
-#define MYSQL_PSI_MEMORY_H
+#ifndef MYBLOCKCHAIN_PSI_MEMORY_H
+#define MYBLOCKCHAIN_PSI_MEMORY_H
 
 #include "psi_base.h"
 
@@ -23,7 +23,7 @@ extern "C" {
 #endif
 
 /**
-  @file mysql/psi/psi_memory.h
+  @file myblockchain/psi/psi_memory.h
   Performance schema instrumentation interface.
 
   @defgroup Instrumentation_interface Instrumentation Interface
@@ -151,5 +151,5 @@ typedef struct PSI_memory_info_v2 PSI_memory_info;
 #endif
 
 
-#endif /* MYSQL_PSI_MEMORY_H */
+#endif /* MYBLOCKCHAIN_PSI_MEMORY_H */
 

@@ -26,7 +26,7 @@ Created 1/8/1996 Heikki Tuuri
 
 #ifndef UNIV_HOTBACKUP
 #include "ha_prototypes.h"
-#include <mysql_com.h>
+#include <myblockchain_com.h>
 #endif /* !UNIV_HOTBACKUP */
 
 #include "dict0mem.h"
@@ -733,7 +733,7 @@ dict_mem_index_add_field(
 	dict_index_t*	index,		/*!< in: index */
 	const char*	name,		/*!< in: column name */
 	ulint		prefix_len)	/*!< in: 0 or the column prefix length
-					in a MySQL index like
+					in a MyBlockchain index like
 					INDEX (textcol(25)) */
 {
 	dict_field_t*	field;
@@ -789,7 +789,7 @@ digits, and is initialized at startup to a randomly distributed number.
 It is hoped that the combination of these two numbers will provide a
 reasonably unique temporary file name.
 @param[in]	heap	A memory heap
-@param[in]	dbtab	Table name in the form database/table name
+@param[in]	dbtab	Table name in the form blockchain/table name
 @param[in]	id	Table id
 @return A unique temporary tablename suitable for InnoDB use */
 char*

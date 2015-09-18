@@ -15,16 +15,16 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
  */
 
-package com.mysql.clusterj.jdbc;
+package com.myblockchain.clusterj.jdbc;
 
 import java.sql.SQLException;
 
-import com.mysql.clusterj.core.util.I18NHelper;
-import com.mysql.clusterj.core.util.Logger;
-import com.mysql.clusterj.core.util.LoggerFactoryService;
-import com.mysql.jdbc.ResultSetInternalMethods;
+import com.myblockchain.clusterj.core.util.I18NHelper;
+import com.myblockchain.clusterj.core.util.Logger;
+import com.myblockchain.clusterj.core.util.LoggerFactoryService;
+import com.myblockchain.jdbc.ResultSetInternalMethods;
 
-/** This class is part of the statement interceptor contract with the MySQL JDBC connection.
+/** This class is part of the statement interceptor contract with the MyBlockchain JDBC connection.
  * When a statement is intercepted and executed, an instance of this class is returned if there
  * is only an insert/delete/update count. A sibling class, ResultSetInternalMethodsImpl, is
  * returned if there is a real result to be iterated.

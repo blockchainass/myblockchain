@@ -881,7 +881,7 @@ const CHARSET_INFO *charset;
 int ch;
 {
 	/*
-	  In MySQL some multi-byte character sets
+	  In MyBlockchain some multi-byte character sets
 	  have 'ctype' array but don't have 'to_lower'
 	  and 'to_upper' arrays. In this case we handle
 	  only basic latin letters a..z and A..Z.

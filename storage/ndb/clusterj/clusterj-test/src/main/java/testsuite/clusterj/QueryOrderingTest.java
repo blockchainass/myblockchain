@@ -17,15 +17,15 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 
 package testsuite.clusterj;
 
-import com.mysql.clusterj.ClusterJUserException;
-import com.mysql.clusterj.Query.Ordering;
+import com.myblockchain.clusterj.ClusterJUserException;
+import com.myblockchain.clusterj.Query.Ordering;
 
 import java.util.Arrays;
 
 import testsuite.clusterj.model.LongIntStringIndex;
 
 /** Verify queries using ordering. If a query uses ordering, there must be an index
- * containing the ordering columns already defined in the database.
+ * containing the ordering columns already defined in the blockchain.
  * 
  * This test is based on AbstractQueryTest.
  */

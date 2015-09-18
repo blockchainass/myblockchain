@@ -17,7 +17,7 @@
 -- 02110-1301  USA
 
 -- Upgrade from configuration version 1.2 to version 1.2a
--- Introduced in MySQL Cluster releases 7.2.12 and 7.3
+-- Introduced in MyBlockchain Cluster releases 7.2.12 and 7.3
 
 -- This upgrade ensures that Memcache flags are correctly supported in the 
 -- demo tables, which allows certain clients to work better in an 

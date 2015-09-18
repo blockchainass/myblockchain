@@ -26,7 +26,7 @@ Created Apr 25, 2012 Vasil Dimov
 #include "dict0dict.h"
 #include "dict0stats.h"
 #include "dict0stats_bg.h"
-#include "row0mysql.h"
+#include "row0myblockchain.h"
 #include "srv0start.h"
 #include "ut0new.h"
 
@@ -194,7 +194,7 @@ dict_stats_recalc_pool_del(
 /*****************************************************************//**
 Wait until background stats thread has stopped using the specified table.
 The caller must have locked the data dictionary using
-row_mysql_lock_data_dictionary() and this function may unlock it temporarily
+row_myblockchain_lock_data_dictionary() and this function may unlock it temporarily
 and restore the lock before it exits.
 The background stats thread is guaranteed not to start using the specified
 table after this function returns and before the caller unlocks the data
@@ -232,7 +232,7 @@ dict_stats_thread_init()
 	   that dict_sys->mutex (SYNC_DICT) is not acquired when
 	   row_update_statistics_if_needed() is called and it may be acquired
 	   inside that function (thus a level <=SYNC_DICT would do).
-	3) from row_drop_table_for_mysql() after dict_sys->mutex (SYNC_DICT)
+	3) from row_drop_table_for_myblockchain() after dict_sys->mutex (SYNC_DICT)
 	   and dict_operation_lock (SYNC_DICT_OPERATION) have been locked
 	   (thus a level <SYNC_DICT && <SYNC_DICT_OPERATION would do)
 	So we choose SYNC_STATS_AUTO_RECALC to be about below SYNC_DICT. */

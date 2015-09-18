@@ -35,7 +35,7 @@ import java.util.Set;
 import java.util.TimeZone;
 import java.util.TreeSet;
 
-import com.mysql.clusterj.Session;
+import com.myblockchain.clusterj.Session;
 
 import testsuite.clusterj.model.AllPrimitives;
 import testsuite.clusterj.model.Dn2id;
@@ -177,7 +177,7 @@ public abstract class AbstractClusterJModelTest extends AbstractClusterJTest {
     }
 
     /** Reset the local system default time zone to the time zone used
-     * by the MySQL server. This guarantees that there is no time zone
+     * by the MyBlockchain server. This guarantees that there is no time zone
      * offset between the time zone in the client and the time zone
      * in the server.
      * @param connection 

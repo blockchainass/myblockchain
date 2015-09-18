@@ -13,15 +13,15 @@
   along with this program; if not, write to the Free Software Foundation,
   51 Franklin Street, Suite 500, Boston, MA 02110-1335 USA */
 
-#ifndef MYSQL_PSI_BASE_H
-#define MYSQL_PSI_BASE_H
+#ifndef MYBLOCKCHAIN_PSI_BASE_H
+#define MYBLOCKCHAIN_PSI_BASE_H
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 /**
-  @file mysql/psi/psi_base.h
+  @file myblockchain/psi/psi_base.h
   Performance schema instrumentation interface.
 
   @defgroup Instrumentation_interface Instrumentation Interface
@@ -143,5 +143,5 @@ extern "C" {
 }
 #endif
 
-#endif /* MYSQL_PSI_BASE_H */
+#endif /* MYBLOCKCHAIN_PSI_BASE_H */
 

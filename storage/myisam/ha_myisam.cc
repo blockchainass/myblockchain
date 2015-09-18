@@ -15,8 +15,8 @@
    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA */
 
 
-#define MYSQL_SERVER 1
-#include "probes_mysql.h"
+#define MYBLOCKCHAIN_SERVER 1
+#include "probes_myblockchain.h"
 #include "key.h"                                // key_copy
 #include "sql_plugin.h"
 #include <m_ctype.h>
@@ -38,7 +38,7 @@ using std::max;
 ulonglong myisam_recover_options;
 static ulong opt_myisam_block_size;
 
-/* Interface to mysqld, to check system tables supported by SE */
+/* Interface to myblockchaind, to check system tables supported by SE */
 static bool myisam_is_supported_system_table(const char *db,
                                       const char *table_name,
                                       bool is_sql_layer_system_table);
@@ -55,48 +55,48 @@ TYPELIB myisam_stats_method_typelib= {
   array_elements(myisam_stats_method_names) - 1, "",
   myisam_stats_method_names, NULL};
 
-static MYSQL_SYSVAR_ULONG(block_size, opt_myisam_block_size,
+static MYBLOCKCHAIN_SYSVAR_ULONG(block_size, opt_myisam_block_size,
   PLUGIN_VAR_NOSYSVAR | PLUGIN_VAR_RQCMDARG,
   "Block size to be used for MyISAM index pages", NULL, NULL,
   MI_KEY_BLOCK_LENGTH, MI_MIN_KEY_BLOCK_LENGTH, MI_MAX_KEY_BLOCK_LENGTH,
   MI_MIN_KEY_BLOCK_LENGTH);
 
-static MYSQL_SYSVAR_ULONG(data_pointer_size, myisam_data_pointer_size,
+static MYBLOCKCHAIN_SYSVAR_ULONG(data_pointer_size, myisam_data_pointer_size,
   PLUGIN_VAR_RQCMDARG, "Default pointer size to be used for MyISAM tables",
   NULL, NULL, 6, 2, 7, 1);
 
 #define MB (1024*1024)
-static MYSQL_SYSVAR_ULONGLONG(max_sort_file_size, myisam_max_temp_length,
+static MYBLOCKCHAIN_SYSVAR_ULONGLONG(max_sort_file_size, myisam_max_temp_length,
   PLUGIN_VAR_RQCMDARG, "Don't use the fast sort index method to created "
   "index if the temporary file would get bigger than this", NULL, NULL,
   LONG_MAX/MB*MB, 0, MAX_FILE_SIZE, MB);
 
-static MYSQL_SYSVAR_SET(recover_options, myisam_recover_options,
+static MYBLOCKCHAIN_SYSVAR_SET(recover_options, myisam_recover_options,
   PLUGIN_VAR_OPCMDARG|PLUGIN_VAR_READONLY,
   "Syntax: myisam-recover-options[=option[,option...]], where option can be "
   "DEFAULT, BACKUP, FORCE, QUICK, or OFF",
   NULL, NULL, 0, &myisam_recover_typelib);
 
-static MYSQL_THDVAR_ULONG(repair_threads, PLUGIN_VAR_RQCMDARG,
+static MYBLOCKCHAIN_THDVAR_ULONG(repair_threads, PLUGIN_VAR_RQCMDARG,
   "If larger than 1, when repairing a MyISAM table all indexes will be "
   "created in parallel, with one thread per index. The value of 1 "
   "disables parallel repair", NULL, NULL,
   1, 1, ULONG_MAX, 1);
 
-static MYSQL_THDVAR_ULONGLONG(sort_buffer_size, PLUGIN_VAR_RQCMDARG,
+static MYBLOCKCHAIN_THDVAR_ULONGLONG(sort_buffer_size, PLUGIN_VAR_RQCMDARG,
   "The buffer that is allocated when sorting the index when doing "
   "a REPAIR or when creating indexes with CREATE INDEX or ALTER TABLE", NULL, NULL,
   8192 * 1024, (long) (MIN_SORT_BUFFER + MALLOC_OVERHEAD), SIZE_T_MAX, 1);
 
-static MYSQL_SYSVAR_BOOL(use_mmap, opt_myisam_use_mmap, PLUGIN_VAR_NOCMDARG,
+static MYBLOCKCHAIN_SYSVAR_BOOL(use_mmap, opt_myisam_use_mmap, PLUGIN_VAR_NOCMDARG,
   "Use memory mapping for reading and writing MyISAM tables", NULL, NULL, FALSE);
 
-static MYSQL_SYSVAR_ULONGLONG(mmap_size, myisam_mmap_size,
+static MYBLOCKCHAIN_SYSVAR_ULONGLONG(mmap_size, myisam_mmap_size,
   PLUGIN_VAR_RQCMDARG|PLUGIN_VAR_READONLY, "Restricts the total memory "
-  "used for memory mapping of MySQL tables", NULL, NULL,
+  "used for memory mapping of MyBlockchain tables", NULL, NULL,
   SIZE_T_MAX, MEMMAP_EXTRA_MARGIN, SIZE_T_MAX, 1);
 
-static MYSQL_THDVAR_ENUM(stats_method, PLUGIN_VAR_RQCMDARG,
+static MYBLOCKCHAIN_THDVAR_ENUM(stats_method, PLUGIN_VAR_RQCMDARG,
   "Specifies how MyISAM index statistics collection code should "
   "treat NULLs. Possible values of name are NULLS_UNEQUAL (default "
   "behavior for 4.1 and later), NULLS_EQUAL (emulate 4.0 behavior), "
@@ -176,7 +176,7 @@ static void mi_check_print_msg(MI_CHECK *param,	const char* msg_type,
     push_warning).
   */
   if (param->need_print_msg_lock)
-    mysql_mutex_lock(&param->print_msg_mutex);
+    myblockchain_mutex_lock(&param->print_msg_mutex);
 
   protocol->start_row();
   protocol->store(name, length, system_charset_info);
@@ -188,7 +188,7 @@ static void mi_check_print_msg(MI_CHECK *param,	const char* msg_type,
 		    msgbuf);
 
   if (param->need_print_msg_lock)
-    mysql_mutex_unlock(&param->print_msg_mutex);
+    myblockchain_mutex_unlock(&param->print_msg_mutex);
 
   return;
 }
@@ -270,8 +270,8 @@ int table2myisam(TABLE *table_arg, MI_KEYDEF **keydef_out,
           if (j == 0)
             keydef[i].flag|= HA_PACK_KEY;
           if (!(field->flags & ZEROFILL_FLAG) &&
-              (field->type() == MYSQL_TYPE_STRING ||
-               field->type() == MYSQL_TYPE_VAR_STRING ||
+              (field->type() == MYBLOCKCHAIN_TYPE_STRING ||
+               field->type() == MYBLOCKCHAIN_TYPE_VAR_STRING ||
                ((int) (pos->key_part[j].length - field->decimals())) >= 4))
             keydef[i].seg[j].flag|= HA_SPACE_PACK;
         }
@@ -296,15 +296,15 @@ int table2myisam(TABLE *table_arg, MI_KEYDEF **keydef_out,
         keydef[i].seg[j].null_bit= 0;
         keydef[i].seg[j].null_pos= 0;
       }
-      if (field->type() == MYSQL_TYPE_BLOB ||
-          field->type() == MYSQL_TYPE_GEOMETRY)
+      if (field->type() == MYBLOCKCHAIN_TYPE_BLOB ||
+          field->type() == MYBLOCKCHAIN_TYPE_GEOMETRY)
       {
         keydef[i].seg[j].flag|= HA_BLOB_PART;
         /* save number of bytes used to pack length */
         keydef[i].seg[j].bit_start= (uint) (field->pack_length() -
                                             portable_sizeof_char_ptr);
       }
-      else if (field->type() == MYSQL_TYPE_BIT)
+      else if (field->type() == MYBLOCKCHAIN_TYPE_BIT)
       {
         keydef[i].seg[j].bit_length= ((Field_bit *) field)->bit_len;
         keydef[i].seg[j].bit_start= ((Field_bit *) field)->bit_ofs;
@@ -355,7 +355,7 @@ int table2myisam(TABLE *table_arg, MI_KEYDEF **keydef_out,
 
     if (found->flags & BLOB_FLAG)
       recinfo_pos->type= (int) FIELD_BLOB;
-    else if (found->type() == MYSQL_TYPE_VARCHAR)
+    else if (found->type() == MYBLOCKCHAIN_TYPE_VARCHAR)
       recinfo_pos->type= FIELD_VARCHAR;
     else if (!(options & HA_OPTION_PACK_RECORD))
       recinfo_pos->type= (int) FIELD_NORMAL;
@@ -365,8 +365,8 @@ int table2myisam(TABLE *table_arg, MI_KEYDEF **keydef_out,
       recinfo_pos->type= (int) ((length <= 3 ||
                                  (found->flags & ZEROFILL_FLAG)) ?
                                   FIELD_NORMAL :
-                                  found->type() == MYSQL_TYPE_STRING ||
-                                  found->type() == MYSQL_TYPE_VAR_STRING ?
+                                  found->type() == MYBLOCKCHAIN_TYPE_STRING ||
+                                  found->type() == MYBLOCKCHAIN_TYPE_VAR_STRING ?
                                   FIELD_SKIP_ENDSPACE :
                                   FIELD_SKIP_PRESPACE);
     if (found->real_maybe_null())
@@ -441,7 +441,7 @@ int check_definition(MI_KEYDEF *t1_keyinfo, MI_COLUMNDEF *t1_recinfo,
 {
   uint i, j;
   DBUG_ENTER("check_definition");
-  my_bool mysql_40_compat= table_arg && table_arg->s->frm_version < FRM_VER_TRUE_VARCHAR;
+  my_bool myblockchain_40_compat= table_arg && table_arg->s->frm_version < FRM_VER_TRUE_VARCHAR;
   if ((strict ? t1_keys != t2_keys : t1_keys > t2_keys))
   {
     DBUG_PRINT("error", ("Number of keys differs: t1_keys=%u, t2_keys=%u",
@@ -480,7 +480,7 @@ int check_definition(MI_KEYDEF *t1_keyinfo, MI_COLUMNDEF *t1_recinfo,
                             MY_TEST(t2_keyinfo[i].flag & HA_SPATIAL)));
        DBUG_RETURN(1);
     }
-    if ((!mysql_40_compat &&
+    if ((!myblockchain_40_compat &&
         t1_keyinfo[i].key_alg != t2_keyinfo[i].key_alg) ||
         t1_keyinfo[i].keysegs != t2_keyinfo[i].keysegs)
     {
@@ -512,7 +512,7 @@ int check_definition(MI_KEYDEF *t1_keyinfo, MI_COLUMNDEF *t1_recinfo,
           t1_keysegs_j__type= HA_KEYTYPE_VARBINARY1; /* purecov: inspected */
       }
 
-      if ((!mysql_40_compat &&
+      if ((!myblockchain_40_compat &&
           t1_keysegs[j].language != t2_keysegs[j].language) ||
           t1_keysegs_j__type != t2_keysegs[j].type ||
           t1_keysegs[j].null_bit != t2_keysegs[j].null_bit ||
@@ -619,7 +619,7 @@ void _mi_report_crashed(MI_INFO *file, const char *message,
   THD *cur_thd;
   LIST *element;
   char buf[1024];
-  mysql_mutex_lock(&file->s->intern_lock);
+  myblockchain_mutex_lock(&file->s->intern_lock);
   if ((cur_thd= (THD*) file->in_use.data))
     sql_print_error("Got an error from thread_id=%u, %s:%d",
                     cur_thd->thread_id(), sfile, sline);
@@ -633,7 +633,7 @@ void _mi_report_crashed(MI_INFO *file, const char *message,
     sql_print_error("%s", thd ? thd_security_context(thd, buf, sizeof(buf), 0)
                               : "Unknown thread accessing table");
   }
-  mysql_mutex_unlock(&file->s->intern_lock);
+  myblockchain_mutex_unlock(&file->s->intern_lock);
 }
 
 }
@@ -686,7 +686,7 @@ const char **ha_myisam::bas_ext() const
         is_sql_layer_system_table is set.
 
   @note In case there is a need to define MYISAM specific system
-        database, then please see reference implementation in
+        blockchain, then please see reference implementation in
         ha_example.cc.
 
   @return
@@ -788,7 +788,7 @@ int ha_myisam::open(const char *name, int mode, uint test_if_locked)
     plugin_ref parser= table->key_info[i].parser;
     if (table->key_info[i].flags & HA_USES_PARSER)
       file->s->keyinfo[i].parser=
-        (struct st_mysql_ftparser *)plugin_decl(parser)->info;
+        (struct st_myblockchain_ftparser *)plugin_decl(parser)->info;
     table->key_info[i].block_size= file->s->keyinfo[i].block_length;
   }
   my_errno= 0;
@@ -894,13 +894,13 @@ int ha_myisam::check(THD* thd, HA_CHECK_OPT* check_opt)
 	mi_is_crashed(file))
     {
       file->update|=HA_STATE_CHANGED | HA_STATE_ROW_CHANGED;
-      mysql_mutex_lock(&share->intern_lock);
+      myblockchain_mutex_lock(&share->intern_lock);
       share->state.changed&= ~(STATE_CHANGED | STATE_CRASHED |
 			       STATE_CRASHED_ON_REPAIR);
       if (!(table->db_stat & HA_READ_ONLY))
 	error=update_state_info(&param,file,UPDATE_TIME | UPDATE_OPEN_COUNT |
 				UPDATE_STAT);
-      mysql_mutex_unlock(&share->intern_lock);
+      myblockchain_mutex_unlock(&share->intern_lock);
       info(HA_STATUS_NO_LOCK | HA_STATUS_TIME | HA_STATUS_VARIABLE |
 	   HA_STATUS_CONST);
     }
@@ -944,9 +944,9 @@ int ha_myisam::analyze(THD *thd, HA_CHECK_OPT* check_opt)
   error = chk_key(&param, file);
   if (!error)
   {
-    mysql_mutex_lock(&share->intern_lock);
+    myblockchain_mutex_lock(&share->intern_lock);
     error=update_state_info(&param,file,UPDATE_STAT);
-    mysql_mutex_unlock(&share->intern_lock);
+    myblockchain_mutex_unlock(&share->intern_lock);
   }
   else if (!mi_is_crashed(file) && !thd->killed)
     mi_mark_crashed(file);
@@ -1042,7 +1042,7 @@ int ha_myisam::repair(THD *thd, MI_CHECK &param, bool do_optimize)
   param.table_name= table->alias;
   param.using_global_keycache = 1;
   param.thd= thd;
-  param.tmpdir= &mysql_tmpdir_list;
+  param.tmpdir= &myblockchain_tmpdir_list;
   param.out_flag= 0;
   my_stpcpy(fixed_name,file->filename);
 
@@ -1051,7 +1051,7 @@ int ha_myisam::repair(THD *thd, MI_CHECK &param, bool do_optimize)
 
   // Don't lock tables if we have used LOCK TABLE or already locked.
   if (!has_old_locks &&
-      mi_lock_database(file, table->s->tmp_table ? F_EXTRA_LCK : F_WRLCK))
+      mi_lock_blockchain(file, table->s->tmp_table ? F_EXTRA_LCK : F_WRLCK))
   {
     char errbuf[MYSYS_STRERROR_SIZE];
     mi_check_print_error(&param, ER(ER_CANT_LOCK), my_errno,
@@ -1175,7 +1175,7 @@ int ha_myisam::repair(THD *thd, MI_CHECK &param, bool do_optimize)
   }
   thd_proc_info(thd, old_proc_info);
   if (!has_old_locks)
-    mi_lock_database(file,F_UNLCK);
+    mi_lock_blockchain(file,F_UNLCK);
   DBUG_RETURN(error ? HA_ADMIN_FAILED :
 	      !optimize_done ? HA_ADMIN_ALREADY_DONE : HA_ADMIN_OK);
 }
@@ -1239,7 +1239,7 @@ int ha_myisam::preload_keys(THD* thd, HA_CHECK_OPT *check_opt)
   ulonglong map;
   TABLE_LIST *table_list= table->pos_in_table_list;
   my_bool ignore_leaves= table_list->ignore_leaves;
-  char buf[MYSQL_ERRMSG_SIZE];
+  char buf[MYBLOCKCHAIN_ERRMSG_SIZE];
 
   DBUG_ENTER("ha_myisam::preload_keys");
 
@@ -1399,7 +1399,7 @@ int ha_myisam::enable_indexes(uint mode)
     param.myf_rw&= ~MY_WAIT_IF_FULL;
     param.sort_buffer_length=  THDVAR(thd, sort_buffer_size);
     param.stats_method= (enum_mi_stats_method)THDVAR(thd, stats_method);
-    param.tmpdir=&mysql_tmpdir_list;
+    param.tmpdir=&myblockchain_tmpdir_list;
     if ((error= (repair(thd,param,0) != HA_ADMIN_OK)) && param.retry_repair)
     {
       sql_print_warning("Warning: Enabling keys got errno %d on %s.%s, retrying",
@@ -1637,12 +1637,12 @@ int ha_myisam::index_read_map(uchar *buf, const uchar *key,
                               key_part_map keypart_map,
                               enum ha_rkey_function find_flag)
 {
-  MYSQL_INDEX_READ_ROW_START(table_share->db.str, table_share->table_name.str);
+  MYBLOCKCHAIN_INDEX_READ_ROW_START(table_share->db.str, table_share->table_name.str);
   DBUG_ASSERT(inited==INDEX);
   ha_statistic_increment(&SSV::ha_read_key_count);
   int error=mi_rkey(file, buf, active_index, key, keypart_map, find_flag);
   table->status=error ? STATUS_NOT_FOUND: 0;
-  MYSQL_INDEX_READ_ROW_DONE(error);
+  MYBLOCKCHAIN_INDEX_READ_ROW_DONE(error);
   return error;
 }
 
@@ -1652,69 +1652,69 @@ int ha_myisam::index_read_idx_map(uchar *buf, uint index, const uchar *key,
 {
   DBUG_ASSERT(pushed_idx_cond == NULL);
   DBUG_ASSERT(pushed_idx_cond_keyno == MAX_KEY);
-  MYSQL_INDEX_READ_ROW_START(table_share->db.str, table_share->table_name.str);
+  MYBLOCKCHAIN_INDEX_READ_ROW_START(table_share->db.str, table_share->table_name.str);
   ha_statistic_increment(&SSV::ha_read_key_count);
   int error=mi_rkey(file, buf, index, key, keypart_map, find_flag);
   table->status=error ? STATUS_NOT_FOUND: 0;
-  MYSQL_INDEX_READ_ROW_DONE(error);
+  MYBLOCKCHAIN_INDEX_READ_ROW_DONE(error);
   return error;
 }
 
 int ha_myisam::index_read_last_map(uchar *buf, const uchar *key,
                                    key_part_map keypart_map)
 {
-  MYSQL_INDEX_READ_ROW_START(table_share->db.str, table_share->table_name.str);
+  MYBLOCKCHAIN_INDEX_READ_ROW_START(table_share->db.str, table_share->table_name.str);
   DBUG_ENTER("ha_myisam::index_read_last");
   DBUG_ASSERT(inited==INDEX);
   ha_statistic_increment(&SSV::ha_read_key_count);
   int error=mi_rkey(file, buf, active_index, key, keypart_map,
                     HA_READ_PREFIX_LAST);
   table->status=error ? STATUS_NOT_FOUND: 0;
-  MYSQL_INDEX_READ_ROW_DONE(error);
+  MYBLOCKCHAIN_INDEX_READ_ROW_DONE(error);
   DBUG_RETURN(error);
 }
 
 int ha_myisam::index_next(uchar *buf)
 {
-  MYSQL_INDEX_READ_ROW_START(table_share->db.str, table_share->table_name.str);
+  MYBLOCKCHAIN_INDEX_READ_ROW_START(table_share->db.str, table_share->table_name.str);
   DBUG_ASSERT(inited==INDEX);
   ha_statistic_increment(&SSV::ha_read_next_count);
   int error=mi_rnext(file,buf,active_index);
   table->status=error ? STATUS_NOT_FOUND: 0;
-  MYSQL_INDEX_READ_ROW_DONE(error);
+  MYBLOCKCHAIN_INDEX_READ_ROW_DONE(error);
   return error;
 }
 
 int ha_myisam::index_prev(uchar *buf)
 {
-  MYSQL_INDEX_READ_ROW_START(table_share->db.str, table_share->table_name.str);
+  MYBLOCKCHAIN_INDEX_READ_ROW_START(table_share->db.str, table_share->table_name.str);
   DBUG_ASSERT(inited==INDEX);
   ha_statistic_increment(&SSV::ha_read_prev_count);
   int error=mi_rprev(file,buf, active_index);
   table->status=error ? STATUS_NOT_FOUND: 0;
-  MYSQL_INDEX_READ_ROW_DONE(error);
+  MYBLOCKCHAIN_INDEX_READ_ROW_DONE(error);
   return error;
 }
 
 int ha_myisam::index_first(uchar *buf)
 {
-  MYSQL_INDEX_READ_ROW_START(table_share->db.str, table_share->table_name.str);
+  MYBLOCKCHAIN_INDEX_READ_ROW_START(table_share->db.str, table_share->table_name.str);
   DBUG_ASSERT(inited==INDEX);
   ha_statistic_increment(&SSV::ha_read_first_count);
   int error=mi_rfirst(file, buf, active_index);
   table->status=error ? STATUS_NOT_FOUND: 0;
-  MYSQL_INDEX_READ_ROW_DONE(error);
+  MYBLOCKCHAIN_INDEX_READ_ROW_DONE(error);
   return error;
 }
 
 int ha_myisam::index_last(uchar *buf)
 {
-  MYSQL_INDEX_READ_ROW_START(table_share->db.str, table_share->table_name.str);
+  MYBLOCKCHAIN_INDEX_READ_ROW_START(table_share->db.str, table_share->table_name.str);
   DBUG_ASSERT(inited==INDEX);
   ha_statistic_increment(&SSV::ha_read_last_count);
   int error=mi_rlast(file, buf, active_index);
   table->status=error ? STATUS_NOT_FOUND: 0;
-  MYSQL_INDEX_READ_ROW_DONE(error);
+  MYBLOCKCHAIN_INDEX_READ_ROW_DONE(error);
   return error;
 }
 
@@ -1724,14 +1724,14 @@ int ha_myisam::index_next_same(uchar *buf,
 {
   int error;
   DBUG_ASSERT(inited==INDEX);
-  MYSQL_INDEX_READ_ROW_START(table_share->db.str, table_share->table_name.str);
+  MYBLOCKCHAIN_INDEX_READ_ROW_START(table_share->db.str, table_share->table_name.str);
   ha_statistic_increment(&SSV::ha_read_next_count);
   do
   {
     error= mi_rnext_same(file,buf);
   } while (error == HA_ERR_RECORD_DELETED);
   table->status=error ? STATUS_NOT_FOUND: 0;
-  MYSQL_INDEX_READ_ROW_DONE(error);
+  MYBLOCKCHAIN_INDEX_READ_ROW_DONE(error);
   return error;
 }
 
@@ -1745,23 +1745,23 @@ int ha_myisam::rnd_init(bool scan)
 
 int ha_myisam::rnd_next(uchar *buf)
 {
-  MYSQL_READ_ROW_START(table_share->db.str, table_share->table_name.str,
+  MYBLOCKCHAIN_READ_ROW_START(table_share->db.str, table_share->table_name.str,
                        TRUE);
   ha_statistic_increment(&SSV::ha_read_rnd_next_count);
   int error=mi_scan(file, buf);
   table->status=error ? STATUS_NOT_FOUND: 0;
-  MYSQL_READ_ROW_DONE(error);
+  MYBLOCKCHAIN_READ_ROW_DONE(error);
   return error;
 }
 
 int ha_myisam::rnd_pos(uchar *buf, uchar *pos)
 {
-  MYSQL_READ_ROW_START(table_share->db.str, table_share->table_name.str,
+  MYBLOCKCHAIN_READ_ROW_START(table_share->db.str, table_share->table_name.str,
                        FALSE);
   ha_statistic_increment(&SSV::ha_read_rnd_count);
   int error=mi_rrnd(file, buf, my_get_ptr(pos,ref_length));
   table->status=error ? STATUS_NOT_FOUND: 0;
-  MYSQL_READ_ROW_DONE(error);
+  MYBLOCKCHAIN_READ_ROW_DONE(error);
   return error;
 }
 
@@ -1907,7 +1907,7 @@ int ha_myisam::delete_table(const char *name)
 int ha_myisam::external_lock(THD *thd, int lock_type)
 {
   file->in_use.data= thd;
-  return mi_lock_database(file, !table->s->tmp_table ?
+  return mi_lock_blockchain(file, !table->s->tmp_table ?
 			  lock_type : ((lock_type == F_UNLCK) ?
 				       F_UNLCK : F_EXTRA_LCK));
 }
@@ -2054,7 +2054,7 @@ void ha_myisam::get_auto_increment(ulonglong offset, ulonglong increment,
   extra(HA_EXTRA_NO_KEYREAD);
   *first_value= nr;
   /*
-    MySQL needs to call us for next row: assume we are inserting ("a",null)
+    MyBlockchain needs to call us for next row: assume we are inserting ("a",null)
     here, we return 3, and next this statement will want to insert ("b",null):
     there is no reason why ("b",3+1) would be the good row to insert: maybe it
     already exists, maybe 3+1 is too large...
@@ -2245,28 +2245,28 @@ Item *ha_myisam::idx_cond_push(uint keyno_arg, Item* idx_cond_arg)
 }
 
 
-static struct st_mysql_sys_var* myisam_sysvars[]= {
-  MYSQL_SYSVAR(block_size),
-  MYSQL_SYSVAR(data_pointer_size),
-  MYSQL_SYSVAR(max_sort_file_size),
-  MYSQL_SYSVAR(recover_options),
-  MYSQL_SYSVAR(repair_threads),
-  MYSQL_SYSVAR(sort_buffer_size),
-  MYSQL_SYSVAR(use_mmap),
-  MYSQL_SYSVAR(mmap_size),
-  MYSQL_SYSVAR(stats_method),
+static struct st_myblockchain_sys_var* myisam_sysvars[]= {
+  MYBLOCKCHAIN_SYSVAR(block_size),
+  MYBLOCKCHAIN_SYSVAR(data_pointer_size),
+  MYBLOCKCHAIN_SYSVAR(max_sort_file_size),
+  MYBLOCKCHAIN_SYSVAR(recover_options),
+  MYBLOCKCHAIN_SYSVAR(repair_threads),
+  MYBLOCKCHAIN_SYSVAR(sort_buffer_size),
+  MYBLOCKCHAIN_SYSVAR(use_mmap),
+  MYBLOCKCHAIN_SYSVAR(mmap_size),
+  MYBLOCKCHAIN_SYSVAR(stats_method),
   0
 };
 
-struct st_mysql_storage_engine myisam_storage_engine=
-{ MYSQL_HANDLERTON_INTERFACE_VERSION };
+struct st_myblockchain_storage_engine myisam_storage_engine=
+{ MYBLOCKCHAIN_HANDLERTON_INTERFACE_VERSION };
 
-mysql_declare_plugin(myisam)
+myblockchain_declare_plugin(myisam)
 {
-  MYSQL_STORAGE_ENGINE_PLUGIN,
+  MYBLOCKCHAIN_STORAGE_ENGINE_PLUGIN,
   &myisam_storage_engine,
   "MyISAM",
-  "MySQL AB",
+  "MyBlockchain AB",
   "MyISAM storage engine",
   PLUGIN_LICENSE_GPL,
   myisam_init, /* Plugin Init */
@@ -2277,7 +2277,7 @@ mysql_declare_plugin(myisam)
   NULL,
   0,
 }
-mysql_declare_plugin_end;
+myblockchain_declare_plugin_end;
 
 
 /**

@@ -217,7 +217,7 @@ int vio_shutdown_shared_memory(Vio * vio)
   }
 
   vio->inactive= TRUE;
-  vio->mysql_socket= MYSQL_INVALID_SOCKET;
+  vio->myblockchain_socket= MYBLOCKCHAIN_INVALID_SOCKET;
 
   DBUG_RETURN(0);
 }

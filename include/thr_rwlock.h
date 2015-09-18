@@ -17,20 +17,20 @@
    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA */
 
 /**
-  MySQL rwlock implementation.
+  MyBlockchain rwlock implementation.
 
   There are two "layers":
   1) native_rw_*()
        Functions that map directly down to OS primitives.
        Windows    - SRWLock
        Other OSes - pthread
-  2) mysql_rw*()
+  2) myblockchain_rw*()
        Functions that include Performance Schema instrumentation.
-       See include/mysql/psi/mysql_thread.h
+       See include/myblockchain/psi/myblockchain_thread.h
 
   This file also includes rw_pr_*(), which implements a special
   version of rwlocks that prefer readers. The P_S version of these
-  are mysql_prlock_*() - see include/mysql/psi/mysql_thread.h
+  are myblockchain_prlock_*() - see include/myblockchain/psi/myblockchain_thread.h
 */
 
 #include "my_global.h"
@@ -56,7 +56,7 @@ static inline int native_rw_init(native_rw_lock_t *rwp)
   rwp->have_exclusive_srwlock = FALSE;
   return 0;
 #else
-  /* pthread_rwlockattr_t is not used in MySQL */
+  /* pthread_rwlockattr_t is not used in MyBlockchain */
   return pthread_rwlock_init(rwp, NULL);
 #endif
 }

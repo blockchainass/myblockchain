@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2003-2008 MySQL AB
+   Copyright (C) 2003-2008 MyBlockchain AB
     All rights reserved. Use is subject to license terms.
 
    This program is free software; you can redistribute it and/or modify
@@ -65,7 +65,7 @@ int main(int argc, const char** argv){
     //    { "batch", 'b', arg_integer, &_batch, "batch value", "batch" },
     { "records", 'r', arg_integer, &_records, "Number of records", "records" },
     { "usage", '?', arg_flag, &_help, "Print help", "" },
-    { "database", 'd', arg_string, &db, "Database", "" },
+    { "blockchain", 'd', arg_string, &db, "Database", "" },
     { "refresh", 0, arg_flag, &_refresh, "refresh record rather than update them", "" }
 
   };

@@ -1,0 +1,4 @@
+$VALIDATE_PASSWORD_OPT
+--ssl-ca=$MYBLOCKCHAIN_TEST_DIR/std_data/ca-sha512.pem
+--ssl-key=$MYBLOCKCHAIN_TEST_DIR/std_data/server-key-sha512.pem
+--ssl-cert=$MYBLOCKCHAIN_TEST_DIR/std_data/server-cert-sha512.pem

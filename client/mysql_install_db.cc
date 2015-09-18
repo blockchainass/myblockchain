@@ -28,12 +28,12 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 
-// MySQL headers
+// MyBlockchain headers
 #include "my_global.h"
 #include "my_default.h"
 #include "my_getopt.h"
 #include "welcome_copyright_notice.h"
-#include "mysql_version.h"
+#include "myblockchain_version.h"
 #include "auth_utils.h"
 #include "path.h"
 #include "logger.h"
@@ -59,12 +59,12 @@ using namespace std;
 #include "../scripts/sql_commands_help_data.h"
 #include "../scripts/sql_commands_sys_schema.h"
 
-#define PROGRAM_NAME "mysql_install_db"
-#define MYSQLD_EXECUTABLE "mysqld"
+#define PROGRAM_NAME "myblockchain_install_db"
+#define MYBLOCKCHAIND_EXECUTABLE "myblockchaind"
 #if defined(HAVE_YASSL)
-#define MYSQL_CERT_SETUP_EXECUTABLE "mysql_ssl_rsa_setup"
+#define MYBLOCKCHAIN_CERT_SETUP_EXECUTABLE "myblockchain_ssl_rsa_setup"
 #endif /* HAVE_YASSL */
-#define MAX_MYSQLD_ARGUMENTS 10
+#define MAX_MYBLOCKCHAIND_ARGUMENTS 10
 #define MAX_USER_NAME_LEN 32
 
 char *opt_euid= 0;
@@ -78,15 +78,15 @@ char default_adminuser[]= "root";
 char *opt_adminuser= 0;
 char default_adminhost[]= "localhost";
 char *opt_adminhost= 0;
-char default_authplugin[]= "mysql_native_password";
+char default_authplugin[]= "myblockchain_native_password";
 char *opt_authplugin= 0;
-char *opt_mysqldfile= 0;
+char *opt_myblockchaindfile= 0;
 #if defined (HAVE_YASSL)
-char *opt_mysql_cert_setup_file= 0;
-char default_mysql_cert_setup_file[]= MYSQL_CERT_SETUP_EXECUTABLE;
+char *opt_myblockchain_cert_setup_file= 0;
+char default_myblockchain_cert_setup_file[]= MYBLOCKCHAIN_CERT_SETUP_EXECUTABLE;
 #endif
 char *opt_randpwdfile= 0;
-char default_randpwfile[]= ".mysql_secret";
+char default_randpwfile[]= ".myblockchain_secret";
 char *opt_langpath= 0;
 char *opt_lang= 0;
 char default_lang[]= "en_US";
@@ -116,19 +116,19 @@ static struct my_option my_connection_options[]=
     "the location of the directory where the built files reside.",
     &opt_builddir, 0, 0, GET_STR_ALLOC, REQUIRED_ARG, 0, 0, 0, 0, 0, 0},
   {"srcdir", 0, "For internal use. This option specifies the directory under"
-    " which mysql_install_db looks for support files such as the error"
+    " which myblockchain_install_db looks for support files such as the error"
     " message file and the file for populating the help tables.", &opt_srcdir,
     0, 0, GET_STR_ALLOC, REQUIRED_ARG, 0, 0, 0, 0, 0, 0},
-  {"basedir", 0, "The path to the MySQL installation directory.",
+  {"basedir", 0, "The path to the MyBlockchain installation directory.",
     &opt_basedir, 0, 0, GET_STR_ALLOC, REQUIRED_ARG, 0, 0, 0, 0, 0, 0},
-  {"datadir", 0, "The path to the MySQL data directory.", &opt_datadir,
+  {"datadir", 0, "The path to the MyBlockchain data directory.", &opt_datadir,
     0, 0, GET_STR_ALLOC, REQUIRED_ARG, 0, 0, 0, 0, 0, 0},
-  {"login-path", 0, "Set the credential category to use with the MySQL password"
+  {"login-path", 0, "Set the credential category to use with the MyBlockchain password"
   " store when setting default credentials. This option takes precedence over "
   "admin-user, admin-host options.",
     &opt_loginpath, 0, 0, GET_STR_ALLOC, REQUIRED_ARG,
     (longlong)&default_loginpath, 0, 0, 0, 0, 0},
-   {"login-file", 0, "Use the MySQL password store at the specified location "
+   {"login-file", 0, "Use the MyBlockchain password store at the specified location "
   " to set the default password. This option takes precedence over admin-user, "
   "admin-host options. Use the login-path option to change the default "
   "credential category (default is 'client').",
@@ -146,14 +146,14 @@ static struct my_option my_connection_options[]=
     (longlong)&default_authplugin, 0, 0, 0, 0, 0},
   {"admin-require-ssl", 0, "Require SSL/TLS for the default admin account.",
    &opt_ssl, 0, 0, GET_BOOL, NO_ARG, 0, 0, 0, 0, 0, 0},
-  {"mysqld-file", 0, "Qualified path to the mysqld binary.", &opt_mysqldfile,
+  {"myblockchaind-file", 0, "Qualified path to the myblockchaind binary.", &opt_myblockchaindfile,
    0, 0, GET_STR_ALLOC, REQUIRED_ARG, 0, 0, 0, 0, 0, 0},
 #if defined(HAVE_YASSL)
-  {"ssl-setup-file", 0, "Qualified path to the mysql_ssl_setup binary", &opt_mysql_cert_setup_file,
+  {"ssl-setup-file", 0, "Qualified path to the myblockchain_ssl_setup binary", &opt_myblockchain_cert_setup_file,
    0, 0, GET_STR_ALLOC, REQUIRED_ARG, 0, 0, 0, 0, 0, 0},
 #endif
   {"random-password-file", 0, "Specifies the qualified path to the "
-     ".mysql_secret temporary password file.", &opt_randpwdfile,
+     ".myblockchain_secret temporary password file.", &opt_randpwdfile,
    0, 0, GET_STR_ALLOC, REQUIRED_ARG, 0,
    0, 0, 0, 0, 0},
   {"insecure", 0, "Disables random passwords for the default admin account.",
@@ -180,7 +180,7 @@ Log warning(cout, "WARNING");
 /**
   Escapes quotes and backslash.
   @param str The string which needs to be quoted
-  @note This is not a replacement for the mysql_real_escape_string() function
+  @note This is not a replacement for the myblockchain_real_escape_string() function
   as it only does what is necessary for this application.
   @return A quoted copy of the original string.
 */
@@ -222,7 +222,7 @@ struct Proxy_user
 };
 
 /**
-  A trivial container for attributes associated with the creation of a MySQL
+  A trivial container for attributes associated with the creation of a MyBlockchain
   user.
 */
 struct Sql_user
@@ -280,7 +280,7 @@ struct Sql_user
   void to_sql(string *cmdstr)
   {
     stringstream set_passcmd,ss, flush_priv;
-    ss << "INSERT INTO mysql.user VALUES ("
+    ss << "INSERT INTO myblockchain.user VALUES ("
        << "'" << escape_string(host) << "','" << escape_string(user) << "',";
 
     uint64_t acl= priv.to_int();
@@ -325,7 +325,7 @@ static const char *load_default_groups[]= { PROGRAM_NAME, 0 };
 void print_version(const string &p)
 {
   cout << p
-       << " Ver " << MYSQL_SERVER_VERSION << ", for "
+       << " Ver " << MYBLOCKCHAIN_SERVER_VERSION << ", for "
        << SYSTEM_TYPE << " on "
        << MACHINE_TYPE << "\n";
 }
@@ -334,7 +334,7 @@ void usage(const string &p)
 {
   print_version(p);
   cout << ORACLE_WELCOME_COPYRIGHT_NOTICE("2015") << endl
-       << "MySQL Database Deployment Utility." << endl
+       << "MyBlockchain Database Deployment Utility." << endl
        << "Usage: "
        << p
        << " [OPTIONS]" << endl;
@@ -449,7 +449,7 @@ bool assert_valid_root_account(const string &username, const string &host,
           << endl;
     return false;
   }
-  if (plugin != "mysql_native_password" && plugin != "sha256_password")
+  if (plugin != "myblockchain_native_password" && plugin != "sha256_password")
   {
     error << "Unsupported authentication plugin specified."
           << endl;
@@ -550,7 +550,7 @@ void add_standard_search_paths(vector<Path > *spaths)
   spaths->push_back(Path(p).append("/bin"));
   spaths->push_back(Path("/usr/bin"));
   spaths->push_back(Path("/usr/local/bin"));
-  spaths->push_back(Path("/opt/mysql/bin"));
+  spaths->push_back(Path("/opt/myblockchain/bin"));
 #ifdef INSTALL_SBINDIR
   spaths->push_back(Path(INSTALL_SBINDIR));
 #endif
@@ -561,35 +561,35 @@ void add_standard_search_paths(vector<Path > *spaths)
 }
 
 /**
- Attempts to locate the mysqld file.
- If opt_mysqldfile is specified then the this assumed to be a correct qualified
- path to the mysqld executable.
+ Attempts to locate the myblockchaind file.
+ If opt_myblockchaindfile is specified then the this assumed to be a correct qualified
+ path to the myblockchaind executable.
  If opt_basedir is specified then opt_basedir+"/bin" is assumed to be a
- candidate path for the mysqld executable.
+ candidate path for the myblockchaind executable.
  If opt_srcdir is set then opt_srcdir+"/bin" is assumed to be a
- candidate path for the mysqld executable.
+ candidate path for the myblockchaind executable.
  If opt_builddir is set then opt_builddir+"/sql" is assumed to be a
- candidate path for the mysqld executable.
+ candidate path for the myblockchaind executable.
 
  If the executable isn't found in any of these locations,
  attempt to search the local directory and "bin" and "sbin" subdirectories.
  Finally check "/usr/bin","/usr/sbin", "/usr/local/bin","/usr/local/sbin",
- "/opt/mysql/bin","/opt/mysql/sbin"
+ "/opt/myblockchain/bin","/opt/myblockchain/sbin"
 
 */
-bool assert_mysqld_exists(const string &opt_mysqldfile,
+bool assert_myblockchaind_exists(const string &opt_myblockchaindfile,
                             const string &opt_basedir,
                             const string &opt_builddir,
                             const string &opt_srcdir,
                             Path *qpath)
 {
   vector<Path > spaths;
-  if (opt_mysqldfile.length() > 0)
+  if (opt_myblockchaindfile.length() > 0)
   {
-    /* Use explicit option to file mysqld */
-    if (!locate_file(opt_mysqldfile, 0, qpath))
+    /* Use explicit option to file myblockchaind */
+    if (!locate_file(opt_myblockchaindfile, 0, qpath))
     {
-      error << "No such file: " << opt_mysqldfile << endl;
+      error << "No such file: " << opt_myblockchaindfile << endl;
       return false;
     }
   }
@@ -599,7 +599,7 @@ bool assert_mysqld_exists(const string &opt_mysqldfile,
     {
       spaths.push_back(Path(opt_basedir).
         append("bin"));
-      /* cater for RPM installs : mysqld in sbin */
+      /* cater for RPM installs : myblockchaind in sbin */
       spaths.push_back(Path(opt_basedir).
         append("sbin"));
     }
@@ -611,9 +611,9 @@ bool assert_mysqld_exists(const string &opt_mysqldfile,
 
     add_standard_search_paths(&spaths);
 
-    if (!locate_file(MYSQLD_EXECUTABLE, &spaths, qpath))
+    if (!locate_file(MYBLOCKCHAIND_EXECUTABLE, &spaths, qpath))
     {
-      error << "Can't locate the server executable (mysqld)." << endl;
+      error << "Can't locate the server executable (myblockchaind)." << endl;
       info << "The following paths were searched: ";
       copy(spaths.begin(), spaths.end(),
            infix_ostream_iterator<Path >(info, ", "));
@@ -626,35 +626,35 @@ bool assert_mysqld_exists(const string &opt_mysqldfile,
 
 #if defined(HAVE_YASSL)
 /**
- Attempts to locate the mysql_ssl_rsa_setup file.
- If opt_mysql_cert_setup_file is specified then the this assumed to be a
- correct qualified path to the mysql_ssl_rsa_setup executable.
+ Attempts to locate the myblockchain_ssl_rsa_setup file.
+ If opt_myblockchain_cert_setup_file is specified then the this assumed to be a
+ correct qualified path to the myblockchain_ssl_rsa_setup executable.
  If opt_basedir is specified then opt_basedir+"/bin" is assumed to be a
- candidate path for the mysql_ssl_rsa_setup executable.
+ candidate path for the myblockchain_ssl_rsa_setup executable.
  If opt_srcdir is set then opt_srcdir+"/bin" is assumed to be a
- candidate path for the mysql_ssl_rsa_setup executable.
+ candidate path for the myblockchain_ssl_rsa_setup executable.
  If opt_builddir is set then opt_builddir+"/client" is assumed to be a
- candidate path for the mysql_system_tables executable.
+ candidate path for the myblockchain_system_tables executable.
 
  If the executable isn't found in any of these locations,
  attempt to search the local directory and "bin" subdirectory.
  Finally check "/usr/bin","/usr/sbin", "/usr/local/bin","/usr/local/sbin",
- "/opt/mysql/bin","/opt/mysql/sbin"
+ "/opt/myblockchain/bin","/opt/myblockchain/sbin"
 
 */
-bool assert_cert_generator_exists(const string &opt_mysql_cert_setup_file,
+bool assert_cert_generator_exists(const string &opt_myblockchain_cert_setup_file,
                                   const string &opt_basedir,
                                   const string &opt_builddir,
                                   const string &opt_srcdir,
                                   Path *qpath)
 {
   vector<Path > spaths;
-  if (opt_mysql_cert_setup_file.length() > 0)
+  if (opt_myblockchain_cert_setup_file.length() > 0)
   {
-    /* Use explicit option to file mysql_ssl_rsa_setup */
-    if (!locate_file(opt_mysql_cert_setup_file, 0, qpath))
+    /* Use explicit option to file myblockchain_ssl_rsa_setup */
+    if (!locate_file(opt_myblockchain_cert_setup_file, 0, qpath))
     {
-      error << "No such file: " << opt_mysql_cert_setup_file << endl;
+      error << "No such file: " << opt_myblockchain_cert_setup_file << endl;
       return false;
     }
   }
@@ -673,9 +673,9 @@ bool assert_cert_generator_exists(const string &opt_mysql_cert_setup_file,
 
     add_standard_search_paths(&spaths);
 
-    if (!locate_file(MYSQL_CERT_SETUP_EXECUTABLE, &spaths, qpath))
+    if (!locate_file(MYBLOCKCHAIN_CERT_SETUP_EXECUTABLE, &spaths, qpath))
     {
-      error << "Can't locate the server executable (mysql_ssl_rsa_setup)."
+      error << "Can't locate the server executable (myblockchain_ssl_rsa_setup)."
             << endl;
       info << "The following paths were searched: ";
       copy(spaths.begin(), spaths.end(),
@@ -711,7 +711,7 @@ bool assert_valid_language_directory(const string &opt_langpath,
 
       /* cater for RPMs */
       Path ld2(opt_basedir);
-      ld2.append("/share/mysql/english");
+      ld2.append("/share/myblockchain/english");
       search_paths.push_back(ld2);
     }
     if (opt_builddir.length() > 0)
@@ -726,10 +726,10 @@ bool assert_valid_language_directory(const string &opt_langpath,
       ld.append("/sql/share/english");
       search_paths.push_back(ld);
     }
-    search_paths.push_back(Path("/usr/share/mysql/english"));
-    search_paths.push_back(Path("/opt/mysql/share/english"));
-#ifdef INSTALL_MYSQLSHAREDIR
-    search_paths.push_back(Path(INSTALL_MYSQLSHAREDIR).append("/english"));
+    search_paths.push_back(Path("/usr/share/myblockchain/english"));
+    search_paths.push_back(Path("/opt/myblockchain/share/english"));
+#ifdef INSTALL_MYBLOCKCHAINSHAREDIR
+    search_paths.push_back(Path(INSTALL_MYBLOCKCHAINSHAREDIR).append("/english"));
 #endif
     found_subdir= true;
   }
@@ -983,8 +983,8 @@ public:
     errno= 0;
     info << "Creating system tables...";
 
-    string create_db("CREATE DATABASE mysql;\n");
-    string use_db("USE mysql;\n");
+    string create_db("CREATE DATABASE myblockchain;\n");
+    string use_db("USE myblockchain;\n");
     // ssize_t write() may be declared with attribute warn_unused_result
     size_t w1= write(fh, create_db.c_str(), create_db.length());
     size_t w2= write(fh, use_db.c_str(), use_db.length());
@@ -995,12 +995,12 @@ public:
     }
 
     unsigned s= 0;
-    s= sizeof(mysql_system_tables)/sizeof(*mysql_system_tables);
+    s= sizeof(myblockchain_system_tables)/sizeof(*myblockchain_system_tables);
     for(unsigned i=0, n= 1; i< s && errno != EPIPE && n != 0 &&
-        mysql_system_tables[i] != NULL; ++i)
+        myblockchain_system_tables[i] != NULL; ++i)
     {
-      n= write(fh, mysql_system_tables[i],
-               strlen(mysql_system_tables[i]));
+      n= write(fh, myblockchain_system_tables[i],
+               strlen(myblockchain_system_tables[i]));
     }
     if (errno != 0)
     {
@@ -1011,12 +1011,12 @@ public:
       info << "done." << endl;
 
     info << "Filling system tables with data...";
-    s= sizeof(mysql_system_data)/sizeof(*mysql_system_data);
+    s= sizeof(myblockchain_system_data)/sizeof(*myblockchain_system_data);
     for(unsigned i=0, n= 1; i< s && errno != EPIPE && n != 0 &&
-        mysql_system_data[i] != NULL; ++i)
+        myblockchain_system_data[i] != NULL; ++i)
     {
-      n= write(fh, mysql_system_data[i],
-               strlen(mysql_system_data[i]));
+      n= write(fh, myblockchain_system_data[i],
+               strlen(myblockchain_system_data[i]));
     }
     if (errno != 0)
     {
@@ -1063,12 +1063,12 @@ public:
     if (!opt_skipsys)
     {
       info << "Creating sys schema" << endl;
-      s= sizeof(mysql_sys_schema)/sizeof(*mysql_sys_schema);
+      s= sizeof(myblockchain_sys_schema)/sizeof(*myblockchain_sys_schema);
       for(unsigned i=0, n= 1; i< s && errno != EPIPE && n != 0 &&
-          mysql_sys_schema[i] != NULL; ++i)
+          myblockchain_sys_schema[i] != NULL; ++i)
       {
-         n= write(fh, mysql_sys_schema[i],
-                  strlen(mysql_sys_schema[i]));
+         n= write(fh, myblockchain_sys_schema[i],
+                  strlen(myblockchain_sys_schema[i]));
       }
       if (errno != 0)
       {
@@ -1146,7 +1146,7 @@ bool process_execute(const string &exec, Fwd_iterator begin,
   int read_pipe[2];
   int write_pipe[2];
   posix_spawn_file_actions_t spawn_action;
-  char *execve_args[MAX_MYSQLD_ARGUMENTS];
+  char *execve_args[MAX_MYBLOCKCHAIND_ARGUMENTS];
 
   /*
     Disable any signal handler for broken pipes and check for EPIPE during
@@ -1182,7 +1182,7 @@ bool process_execute(const string &exec, Fwd_iterator begin,
   execve_args[0]= local_filename;
   int i= 1;
   for(Fwd_iterator it= begin;
-      it!= end && i < MAX_MYSQLD_ARGUMENTS-1;)
+      it!= end && i < MAX_MYBLOCKCHAIND_ARGUMENTS-1;)
   {
     execve_args[i]= strdup(const_cast<char *>((*it).c_str()));
     ++it;
@@ -1368,8 +1368,8 @@ int main(int argc,char *argv[])
   */
   MY_INIT(argv[0]);
 
-  char *dummy= 0; // ignore group suffix when transferring to mysqld
-  /* Remember the defaults argument so we later can pass these to mysqld */
+  char *dummy= 0; // ignore group suffix when transferring to myblockchaind
+  /* Remember the defaults argument so we later can pass these to myblockchaind */
   int default_opt_used= real_get_defaults_options(argc, argv,
                                            &opt_no_defaults,
                                            &opt_defaults_file,
@@ -1403,8 +1403,8 @@ int main(int argc,char *argv[])
     return 1;
   }
 
-  warning << "mysql_install_db is deprecated. ";
-  warning << "Please consider switching to mysqld --initialize" << endl;
+  warning << "myblockchain_install_db is deprecated. ";
+  warning << "Please consider switching to myblockchaind --initialize" << endl;
 
   bool expire_password= !opt_insecure;
   string adminuser(create_string(opt_adminuser));
@@ -1440,8 +1440,8 @@ int main(int argc,char *argv[])
   /*
    1. Verify all option parameters
    2. Create missing directories
-   3. Compose mysqld start string
-   4. Execute mysqld
+   3. Compose myblockchaind start string
+   4. Execute myblockchaind
    5. Exit
   */
 
@@ -1518,25 +1518,25 @@ int main(int argc,char *argv[])
     return 1;
   }
 
-  Path mysqld_exec;
-  if( !assert_mysqld_exists(create_string(opt_mysqldfile),
+  Path myblockchaind_exec;
+  if( !assert_myblockchaind_exists(create_string(opt_myblockchaindfile),
                             basedir,
                             builddir,
                             srcdir,
-                            &mysqld_exec))
+                            &myblockchaind_exec))
   {
     /* Subroutine reported error */
     return 1;
   }
 
 #if defined(HAVE_YASSL)
-  Path mysql_cert_setup;
+  Path myblockchain_cert_setup;
   if( !opt_insecure &&
-      !assert_cert_generator_exists(create_string(opt_mysql_cert_setup_file),
+      !assert_cert_generator_exists(create_string(opt_myblockchain_cert_setup_file),
                                     basedir,
                                     builddir,
                                     srcdir,
-                                    &mysql_cert_setup))
+                                    &myblockchain_cert_setup))
   {
     /* Subroutine reported error */
     return 1;
@@ -1682,12 +1682,12 @@ int main(int argc,char *argv[])
     cert_setup_command_line.push_back(string("--datadir=")
       .append(data_directory.to_str()));
     cert_setup_command_line.push_back(string("--suffix=")
-      .append(MYSQL_SERVER_VERSION));
+      .append(MYBLOCKCHAIN_SERVER_VERSION));
   }
 #endif /* HAVE_YASSL */
 
   // DEBUG
-  //mysqld_exec.append("\"").insert(0, "gnome-terminal -e \"gdb --args ");
+  //myblockchaind_exec.append("\"").insert(0, "gnome-terminal -e \"gdb --args ");
 
   string ssl_type;
   string ssl_cipher;
@@ -1695,7 +1695,7 @@ int main(int argc,char *argv[])
   string x509_subject;
   if (opt_ssl == true)
     create_ssl_policy(&ssl_type, &ssl_cipher, &x509_issuer, &x509_subject);
-  info << "Executing " << mysqld_exec.to_str() << " ";
+  info << "Executing " << myblockchaind_exec.to_str() << " ";
   copy(command_line.begin(), command_line.end(),
        infix_ostream_iterator<Path>(info, " "));
   info << endl;
@@ -1716,14 +1716,14 @@ int main(int argc,char *argv[])
                 expire_password,
                 0);
   string output;
-  bool success= process_execute(mysqld_exec.to_str(),
+  bool success= process_execute(myblockchaind_exec.to_str(),
                   command_line.begin(),
                   command_line.end(),
                   Process_reader(&output),
                   Process_writer(&user,create_string(opt_sqlfile)));
   if (!success)
   {
-    error << "Failed to execute " << mysqld_exec.to_str() << " ";
+    error << "Failed to execute " << myblockchaind_exec.to_str() << " ";
     copy(command_line.begin(), command_line.end(),
          infix_ostream_iterator<Path>(error, " "));
     error << endl;
@@ -1758,14 +1758,14 @@ int main(int argc,char *argv[])
   {
     string ssl_output;
     info << "Generating SSL Certificates" << endl;
-    success= process_execute(mysql_cert_setup.to_str(),
+    success= process_execute(myblockchain_cert_setup.to_str(),
                              cert_setup_command_line.begin(),
                              cert_setup_command_line.end(),
                              Process_reader(&ssl_output),
                              SSL_generator_writer());
     if (!success)
     {
-      warning << "failed to execute " << mysql_cert_setup.to_str() << " ";
+      warning << "failed to execute " << myblockchain_cert_setup.to_str() << " ";
       copy(cert_setup_command_line.begin(), cert_setup_command_line.end(),
            infix_ostream_iterator<Path>(error, " "));
       warning << endl;

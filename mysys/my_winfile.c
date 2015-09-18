@@ -58,7 +58,7 @@ File my_open_osfhandle(HANDLE handle, int oflag)
   uint i;
   DBUG_ENTER("my_open_osfhandle");
 
-  mysql_mutex_lock(&THR_LOCK_open);
+  myblockchain_mutex_lock(&THR_LOCK_open);
   for(i= MY_FILE_MIN; i < my_file_limit;i++)
   {
     if(my_file_info[i].fhandle == 0)
@@ -71,7 +71,7 @@ File my_open_osfhandle(HANDLE handle, int oflag)
       break;
     }
   }
-  mysql_mutex_unlock(&THR_LOCK_open);
+  myblockchain_mutex_unlock(&THR_LOCK_open);
   if(offset == -1)
     errno= EMFILE; /* to many file handles open */
   DBUG_RETURN(offset);

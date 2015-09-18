@@ -15,15 +15,15 @@
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#include "mysql_object_reader.h"
+#include "myblockchain_object_reader.h"
 
 using namespace Mysql::Tools::Dump;
 
 void Mysql_object_reader::Rows_fetching_context::acquire_fields_information(
-  MYSQL_RES* mysql_result)
+  MYBLOCKCHAIN_RES* myblockchain_result)
 {
-  MYSQL_FIELD* fields= mysql_fetch_fields(mysql_result);
-  uint field_count= mysql_num_fields(mysql_result);
+  MYBLOCKCHAIN_FIELD* fields= myblockchain_fetch_fields(myblockchain_result);
+  uint field_count= myblockchain_num_fields(myblockchain_result);
   for (uint i= 0; i < field_count; ++i)
     m_fields.push_back(Mysql_field(&fields[i]));
 }
@@ -43,7 +43,7 @@ int64 Mysql_object_reader::Rows_fetching_context::result_callback(
   if (unlikely(m_fields.size() == 0))
   {
     this->acquire_fields_information(
-      row_data.get_mysql_result_info());
+      row_data.get_myblockchain_result_info());
   }
   m_row_group.m_rows.push_back(new Row(row_data));
 
@@ -119,7 +119,7 @@ Mysql_object_reader::Mysql_object_reader(
     message_handler, Simple_id_generator* object_id_generator,
   const Mysql_object_reader_options* options)
   : Abstract_data_formatter_wrapper(message_handler, object_id_generator),
-  Abstract_mysql_chain_element_extension(connection_provider,
-  message_handler, options->m_mysql_chain_element_options),
+  Abstract_myblockchain_chain_element_extension(connection_provider,
+  message_handler, options->m_myblockchain_chain_element_options),
   m_options(options)
 {}

@@ -37,14 +37,14 @@ static int _partinfo = 0;
 static int _blobinfo = 0;
 static int _nodeinfo = 0;
 
-const char *load_default_groups[]= { "mysql_cluster",0 };
+const char *load_default_groups[]= { "myblockchain_cluster",0 };
 
 static int _retries = 0;
 
 static struct my_option my_long_options[] =
 {
   NDB_STD_OPTS("ndb_desc"),
-  { "database", 'd', "Name of database table is in",
+  { "blockchain", 'd', "Name of blockchain table is in",
     (uchar**) &_dbname, (uchar**) &_dbname, 0,
     GET_STR, REQUIRED_ARG, 0, 0, 0, 0, 0, 0 },
   { "unqualified", 'u', "Use unqualified table names",

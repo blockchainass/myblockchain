@@ -1,0 +1,3 @@
+SELECT INSTR(@@general_log_file, 'MYBLOCKCHAINTEST_VARDIR/run');;
+INSTR(@@general_log_file, 'MYBLOCKCHAINTEST_VARDIR/run')
+0

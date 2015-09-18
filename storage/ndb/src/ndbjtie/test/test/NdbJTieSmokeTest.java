@@ -20,9 +20,9 @@
 
 package test;
 
-import com.mysql.ndbjtie.ndbapi.Ndb_cluster_connection;
-import com.mysql.ndbjtie.ndbapi.Ndb;
-import com.mysql.ndbjtie.ndbapi.NdbError;
+import com.myblockchain.ndbjtie.ndbapi.Ndb_cluster_connection;
+import com.myblockchain.ndbjtie.ndbapi.Ndb;
+import com.myblockchain.ndbjtie.ndbapi.NdbError;
 
 /**
  * Tests loading the NdbJTie libary and connecting to a cluster if running.
@@ -89,9 +89,9 @@ public class NdbJTieSmokeTest extends JTieTestBase {
         }
         out.println("    ... [ok]");
 
-        // connect to database
+        // connect to blockchain
         out.println();
-        out.println("    connecting to database...");
+        out.println("    connecting to blockchain...");
         ndb = Ndb.create(mgmd, catalog, schema);
         assert ndb != null;
         final int max_no_tx = 10; // maximum number of parallel tx (<=1024)
@@ -106,7 +106,7 @@ public class NdbJTieSmokeTest extends JTieTestBase {
     protected void closeConnection() {
         assert ndb != null;
         out.println();
-        out.println("    closing database conn ...");
+        out.println("    closing blockchain conn ...");
         Ndb.delete(ndb);
         ndb = null;
         out.println("    ... [ok]");

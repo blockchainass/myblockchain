@@ -15,19 +15,19 @@
 
 INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/include)
 
-SET(MYSQLSERVICES_SOURCES
+SET(MYBLOCKCHAINSERVICES_SOURCES
   locking_service.c
   my_snprintf_service.c
   thd_alloc_service.c
   thd_wait_service.c
   my_plugin_log_service.c
   my_thread_scheduler_service.c
-  mysql_string_service.c
-  mysql_malloc_service.c
-  mysql_password_policy_service.c
+  myblockchain_string_service.c
+  myblockchain_malloc_service.c
+  myblockchain_password_policy_service.c
   parser_service.c
   rpl_transaction_ctx_service.c
   rpl_transaction_write_set_service.c)
 
-ADD_LIBRARY(mysqlservices ${MYSQLSERVICES_SOURCES})
-INSTALL(TARGETS mysqlservices DESTINATION ${INSTALL_LIBDIR} COMPONENT Development)
+ADD_LIBRARY(myblockchainservices ${MYBLOCKCHAINSERVICES_SOURCES})
+INSTALL(TARGETS myblockchainservices DESTINATION ${INSTALL_LIBDIR} COMPONENT Development)

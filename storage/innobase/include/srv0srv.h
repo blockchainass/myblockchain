@@ -43,8 +43,8 @@ Created 10/10/1995 Heikki Tuuri
 
 #include "my_global.h"
 
-#include "mysql/psi/mysql_stage.h"
-#include "mysql/psi/psi.h"
+#include "myblockchain/psi/myblockchain_stage.h"
+#include "myblockchain/psi/psi.h"
 
 #include "univ.i"
 #ifndef UNIV_HOTBACKUP
@@ -113,13 +113,13 @@ struct srv_stats_t {
 	/** Number of data read in total (in bytes) */
 	ulint_ctr_1_t		data_read;
 
-	/** Wait time of database locks */
+	/** Wait time of blockchain locks */
 	int64_ctr_1_t		n_lock_wait_time;
 
-	/** Number of database lock waits */
+	/** Number of blockchain lock waits */
 	ulint_ctr_1_t		n_lock_wait_count;
 
-	/** Number of threads currently waiting on database locks */
+	/** Number of threads currently waiting on blockchain locks */
 	lint_ctr_1_t		n_lock_wait_current_count;
 
 	/** Number of rows read. */
@@ -137,8 +137,8 @@ struct srv_stats_t {
 
 extern const char*	srv_main_thread_op_info;
 
-/** Prefix used by MySQL to indicate pre-5.1 table name encoding */
-extern const char	srv_mysql50_table_name_prefix[10];
+/** Prefix used by MyBlockchain to indicate pre-5.1 table name encoding */
+extern const char	srv_myblockchain50_table_name_prefix[10];
 
 /* The monitor thread waits on this event. */
 extern os_event_t	srv_monitor_event;
@@ -432,12 +432,12 @@ extern ulong srv_purge_batch_size;
 /* the number of sync wait arrays */
 extern ulong srv_sync_array_size;
 
-/* print all user-level transactions deadlocks to mysqld stderr */
+/* print all user-level transactions deadlocks to myblockchaind stderr */
 extern my_bool srv_print_all_deadlocks;
 
 extern my_bool	srv_cmp_per_index_enabled;
 
-/** Status variables to be passed to MySQL */
+/** Status variables to be passed to MyBlockchain */
 extern struct export_var_t export_vars;
 
 /** Global counters */
@@ -445,21 +445,21 @@ extern srv_stats_t	srv_stats;
 
 # ifdef UNIV_PFS_THREAD
 /* Keys to register InnoDB threads with performance schema */
-extern mysql_pfs_key_t	buf_dump_thread_key;
-extern mysql_pfs_key_t	dict_stats_thread_key;
-extern mysql_pfs_key_t	io_handler_thread_key;
-extern mysql_pfs_key_t	io_ibuf_thread_key;
-extern mysql_pfs_key_t	io_log_thread_key;
-extern mysql_pfs_key_t	io_read_thread_key;
-extern mysql_pfs_key_t	io_write_thread_key;
-extern mysql_pfs_key_t	page_cleaner_thread_key;
-extern mysql_pfs_key_t	recv_writer_thread_key;
-extern mysql_pfs_key_t	srv_error_monitor_thread_key;
-extern mysql_pfs_key_t	srv_lock_timeout_thread_key;
-extern mysql_pfs_key_t	srv_master_thread_key;
-extern mysql_pfs_key_t	srv_monitor_thread_key;
-extern mysql_pfs_key_t	srv_purge_thread_key;
-extern mysql_pfs_key_t	trx_rollback_clean_thread_key;
+extern myblockchain_pfs_key_t	buf_dump_thread_key;
+extern myblockchain_pfs_key_t	dict_stats_thread_key;
+extern myblockchain_pfs_key_t	io_handler_thread_key;
+extern myblockchain_pfs_key_t	io_ibuf_thread_key;
+extern myblockchain_pfs_key_t	io_log_thread_key;
+extern myblockchain_pfs_key_t	io_read_thread_key;
+extern myblockchain_pfs_key_t	io_write_thread_key;
+extern myblockchain_pfs_key_t	page_cleaner_thread_key;
+extern myblockchain_pfs_key_t	recv_writer_thread_key;
+extern myblockchain_pfs_key_t	srv_error_monitor_thread_key;
+extern myblockchain_pfs_key_t	srv_lock_timeout_thread_key;
+extern myblockchain_pfs_key_t	srv_master_thread_key;
+extern myblockchain_pfs_key_t	srv_monitor_thread_key;
+extern myblockchain_pfs_key_t	srv_purge_thread_key;
+extern myblockchain_pfs_key_t	trx_rollback_clean_thread_key;
 
 /* This macro register the current thread and its key with performance
 schema */
@@ -546,8 +546,8 @@ extern enum srv_win_flush_t	srv_win_file_flush_method;
 #endif /* _WIN32 */
 
 /** Alternatives for srv_force_recovery. Non-zero values are intended
-to help the user get a damaged database up so that he can dump intact
-tables and rows with SELECT INTO OUTFILE. The database must not otherwise
+to help the user get a damaged blockchain up so that he can dump intact
+tables and rows with SELECT INTO OUTFILE. The blockchain must not otherwise
 be used with these options! A bigger number below means that all precautions
 of lower numbers are included. */
 enum {
@@ -562,7 +562,7 @@ enum {
 					if they would cause a crash, better
 					not do them */
 	SRV_FORCE_NO_UNDO_LOG_SCAN = 5,	/*!< do not look at undo logs when
-					starting the database: InnoDB will
+					starting the blockchain: InnoDB will
 					treat even incomplete transactions
 					as committed */
 	SRV_FORCE_NO_LOG_REDO = 6	/*!< do not do the log roll-forward
@@ -634,7 +634,7 @@ void
 srv_reset_io_thread_op_info();
 /*=========================*/
 /*******************************************************************//**
-Tells the purge thread that there has been activity in the database
+Tells the purge thread that there has been activity in the blockchain
 and wakes up the purge thread if it is suspended (not sleeping).  Note
 that there is a small chance that the purge thread stays suspended
 (we do not protect our operation with the srv_sys_t:mutex, for
@@ -643,9 +643,9 @@ void
 srv_wake_purge_thread_if_not_active(void);
 /*=====================================*/
 /*******************************************************************//**
-Tells the Innobase server that there has been activity in the database
+Tells the Innobase server that there has been activity in the blockchain
 and wakes up the master thread if it is suspended (not sleeping). Used
-in the MySQL interface. Note that there is a small chance that the master
+in the MyBlockchain interface. Note that there is a small chance that the master
 thread stays suspended (we do not protect our operation with the kernel
 mutex, for performace reasons). */
 void
@@ -678,7 +678,7 @@ srv_printf_innodb_monitor(
 				the list of active transactions */
 
 /******************************************************************//**
-Function to pass InnoDB status variables to MySQL */
+Function to pass InnoDB status variables to MyBlockchain */
 void
 srv_export_innodb_status(void);
 /*==========================*/
@@ -821,7 +821,7 @@ MLOG_TRUNCATE REDO log record. */
 bool
 srv_was_tablespace_truncated(ulint space_id);
 
-/** Status variables to be passed to MySQL */
+/** Status variables to be passed to MyBlockchain */
 struct export_var_t{
 	ulint innodb_data_pending_reads;	/*!< Pending reads */
 	ulint innodb_data_pending_writes;	/*!< Pending writes */

@@ -18,15 +18,15 @@
 /**
    @mainpage                            NDB API Programmers' Guide
 
-   This guide assumes a basic familiarity with MySQL Cluster concepts found
-   in the MySQL Cluster documentation.
+   This guide assumes a basic familiarity with MyBlockchain Cluster concepts found
+   in the MyBlockchain Cluster documentation.
    Some of the fundamental ones are also described in section @ref secConcepts.
 
-   The NDB API is a MySQL Cluster application interface 
+   The NDB API is a MyBlockchain Cluster application interface 
    that implements transactions.
    The NDB API consists of the following fundamental classes:
    - Ndb_cluster_connection, representing a connection to a cluster, 
-   - Ndb is the main class, representing a connection to a database, 
+   - Ndb is the main class, representing a connection to a blockchain, 
    - NdbTransaction represents a transaction, 
    - NdbOperation represents an operation using a primary key,
    - NdbScanOperation represents an operation performing a full table scan.
@@ -40,7 +40,7 @@
    In addition, the NDB API defines a structure NdbError, which contains the 
    specification for an error.
 
-   It is also possible to receive "events" triggered when data in the database in changed.
+   It is also possible to receive "events" triggered when data in the blockchain in changed.
    This is done through the NdbEventOperation class.
 
    There are also some auxiliary classes, which are listed in the class hierarchy.
@@ -48,7 +48,7 @@
    The main structure of an application program is as follows:
    -# Connect to a cluster using the Ndb_cluster_connection
       object.
-   -# Initiate a database connection by constructing and initialising one or more Ndb objects.
+   -# Initiate a blockchain connection by constructing and initialising one or more Ndb objects.
    -# Define and execute transactions using the NdbTransaction class.
    -# Delete Ndb objects.
    -# Terminate the connection to the cluster (terminate instance of Ndb_cluster_connection).
@@ -501,7 +501,7 @@
    actually be transferred to the NDB kernel.
   
    The NDB API is designed as a multi-threaded interface and so
-   it is often desirable to transfer database operations from more than 
+   it is often desirable to transfer blockchain operations from more than 
    one thread at a time. 
    The NDB API keeps track of which Ndb objects are active in transferring
    information to the NDB kernel and the expected amount of threads to 
@@ -509,12 +509,12 @@
    Note that a given instance of Ndb should be used in at most one thread; 
    different threads should <em>not</em> use the same Ndb object.
   
-   There are four conditions leading to the transfer of database 
+   There are four conditions leading to the transfer of blockchain 
    operations from Ndb object buffers to the NDB kernel:
    -# The NDB Transporter (TCP/IP, SCI or shared memory)
       decides that a buffer is full and sends it off. 
       The buffer size is implementation-dependent and
-      may change between MySQL Cluster releases.
+      may change between MyBlockchain Cluster releases.
       On TCP/IP the buffer size is usually around 64 KB;
       Since each Ndb object provides a single buffer per storage node, 
       the notion of a "full" buffer is local to this storage node.
@@ -523,10 +523,10 @@
    -# Every 10 ms, a special transmission thread checks whether or not
       any send activity has occurred. If not, then the thread will 
       force transmission to all nodes. 
-      This means that 20 ms is the maximum time database operations 
+      This means that 20 ms is the maximum time blockchain operations 
       are kept waiting before being sent off. The 10-millisecond limit 
       is likely to become a configuration parameter in
-      future releases of MySQL Cluster; however, for checks that
+      future releases of MyBlockchain Cluster; however, for checks that
       are more frequent than each 10 ms, 
       additional support from the operating system is required.
    -# For methods that are affected by the adaptive send alorithm
@@ -537,7 +537,7 @@
       listings for more information.
 
    @note The conditions listed above are subject to change in future releases 
-   of MySQL Cluster.
+   of MyBlockchain Cluster.
 */
 
 #ifndef DOXYGEN_SHOULD_SKIP_INTERNAL
@@ -563,10 +563,10 @@
 #endif
 
 /**
-   @page secConcepts  MySQL Cluster Concepts
+   @page secConcepts  MyBlockchain Cluster Concepts
 
    The <em>NDB Kernel</em> is the collection of storage nodes
-   belonging to a MySQL Cluster.
+   belonging to a MyBlockchain Cluster.
    The application programmer can for most purposes view the
    set of all storage nodes as a single entity.
    Each storage node is made up of three main components:
@@ -583,7 +583,7 @@
    automatically take over the work.)
 
    Every storage node has an ACC and a TUP which store 
-   the indexes and data portions of the database table fragment.
+   the indexes and data portions of the blockchain table fragment.
    Even though one TC is responsible for the transaction,
    several ACCs and TUPs on other storage nodes might be involved in the 
    execution of the transaction.
@@ -621,12 +621,12 @@
 
 
    @section secRecordStruct          NDB Record Structure 
-   The NDB Cluster engine used by MySQL Cluster is a relational database engine
+   The NDB Cluster engine used by MyBlockchain Cluster is a relational blockchain engine
    storing records in tables just as with any other RDBMS.
    Table rows represent records as tuples of relational data.
    When a new table is created, its attribute schema is specified for the table as a whole,
    and thus each record of the table has the same structure. Again, this is typical
-   of relational databases, and NDB is no different in this regard.
+   of relational blockchains, and NDB is no different in this regard.
    
 
    @subsection secKeys               Primary Keys
@@ -647,7 +647,7 @@
 
    @subsection secConcur                Concurrency Control
    NDB Cluster uses pessimistic concurrency control based on locking.
-   If a requested lock (implicit and depending on database operation)
+   If a requested lock (implicit and depending on blockchain operation)
    cannot be attained within a specified time, 
    then a timeout error occurs.
 
@@ -682,7 +682,7 @@
    whereas for SCI systems this figure is closer to 5-10%. 
    Thus, employing SCI for data transport means that less care from the NDB API 
    programmer is required and greater scalability can be achieved, even for 
-   applications using data from many different parts of the database.
+   applications using data from many different parts of the blockchain.
 
    A simple example is an application that uses many simple updates where
    a transaction needs to update one record. 
@@ -917,7 +917,7 @@
    send the transaction to the NDB kernel.  When using 
    NdbTransaction::executeAsynchPrepare, you either have to call 
    Ndb::sendPreparedTransactions or Ndb::sendPollNdb to send the 
-   database operations.
+   blockchain operations.
    (Ndb::sendPollNdb also polls Ndb for completed transactions.)
   
    The methods Ndb::pollNdb and Ndb::sendPollNdb checks if any 
@@ -1085,12 +1085,12 @@ public:
    * @{
    */
   /**
-   * The Ndb object represents a connection to a database.
+   * The Ndb object represents a connection to a blockchain.
    *
    * @note The init() method must be called before the Ndb object may actually be used.
    *
    * @param ndb_cluster_connection is a connection to the cluster containing
-   *        the database to be used
+   *        the blockchain to be used
    * @param aCatalogName is the name of the catalog to be used.
    * @note The catalog name provides a namespace for the tables and
    *       indexes created in any connection from the Ndb object.
@@ -1167,38 +1167,38 @@ public:
   int setNdbObjectName(const char *name);
 
   /**
-   * The current database name can be fetched by getDatabaseName.
+   * The current blockchain name can be fetched by getDatabaseName.
    *
-   * @return the current database name
+   * @return the current blockchain name
    */
   const char * getDatabaseName() const;
 
   /**
-   * The current database name can be set by setDatabaseName.
+   * The current blockchain name can be set by setDatabaseName.
    *
-   * @param aDatabaseName is the new name of the current database
+   * @param aDatabaseName is the new name of the current blockchain
    */
   int setDatabaseName(const char * aDatabaseName);
 
   /**
-   * The current database schema name can be fetched by getDatabaseSchemaName.
+   * The current blockchain schema name can be fetched by getDatabaseSchemaName.
    *
-   * @return the current database schema name
+   * @return the current blockchain schema name
    */
   const char * getDatabaseSchemaName() const;
 
   /**
-   * The current database schema name can be set by setDatabaseSchemaName.
+   * The current blockchain schema name can be set by setDatabaseSchemaName.
    *
-   * @param aDatabaseSchemaName is the new name of the current database schema
+   * @param aDatabaseSchemaName is the new name of the current blockchain schema
    */
   int setDatabaseSchemaName(const char * aDatabaseSchemaName);
 
 #ifndef DOXYGEN_SHOULD_SKIP_INTERNAL
-  /** Set database and schema name to match previously retrieved table
+  /** Set blockchain and schema name to match previously retrieved table
    *
    * Returns non-zero if table internal name does not contain
-   * non-empty database and schema names
+   * non-empty blockchain and schema names
    */
   int setDatabaseAndSchemaName(const NdbDictionary::Table* t);
 #endif
@@ -1282,7 +1282,7 @@ public:
    */
 
   /**
-   * Get an object for retrieving or manipulating database schema information 
+   * Get an object for retrieving or manipulating blockchain schema information 
    *
    * @note this object operates outside any transaction
    *
@@ -1300,7 +1300,7 @@ public:
    */
 
   /**
-   * Create a subcription to an event defined in the database
+   * Create a subcription to an event defined in the blockchain
    *
    * @param eventName
    *        unique identifier of the event
@@ -1731,7 +1731,7 @@ public:
 	      int minNoOfEventsToWakeup = 1);
 
   /**
-   * This send method will send all prepared database operations. 
+   * This send method will send all prepared blockchain operations. 
    * The default method is to do it non-force and instead
    * use the adaptive algorithm.  (See Section @ref secAdapt.)
    * The second option is to force the sending and 
@@ -1842,7 +1842,7 @@ public:
    * Return a unique tuple id for a table.  The id sequence is
    * ascending but may contain gaps.  Methods which have no
    * TupleIdRange argument use NDB API dict cache.  They may
-   * not be called from mysqld.
+   * not be called from myblockchaind.
    *
    * @param aTableName table name
    *

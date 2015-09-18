@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2007 MySQL AB
+   Copyright (C) 2007 MyBlockchain AB
     All rights reserved. Use is subject to license terms.
 
    This program is free software; you can redistribute it and/or modify
@@ -27,7 +27,7 @@
 //  Successful insert.
 //  Successful insert.
 
-#include <mysql.h>
+#include <myblockchain.h>
 #include <NdbApi.hpp>
 
 // Used for cout
@@ -77,7 +77,7 @@ int main()
   }
 
   Ndb* myNdb = new Ndb( cluster_connection,
-			"TEST_DB_2" );  // Object representing the database
+			"TEST_DB_2" );  // Object representing the blockchain
 
   NdbTransaction*  myNdbTransaction[2];   // For transactions
   NdbOperation*   myNdbOperation;       // For operations

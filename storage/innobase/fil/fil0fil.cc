@@ -41,7 +41,7 @@ Created 10/25/1995 Heikki Tuuri
 #include "mtr0log.h"
 #include "os0file.h"
 #include "page0zip.h"
-#include "row0mysql.h"
+#include "row0myblockchain.h"
 #include "row0trunc.h"
 #include "srv0start.h"
 #include "trx0purge.h"
@@ -60,11 +60,11 @@ Created 10/25/1995 Heikki Tuuri
 		=============================================
 
 The tablespace cache is responsible for providing fast read/write access to
-tablespaces and logs of the database. File creation and deletion is done
+tablespaces and logs of the blockchain. File creation and deletion is done
 in other modules which know more of the logic of the operation, however.
 
 A tablespace consists of a chain of files. The size of the files does not
-have to be divisible by the database block size, because we may just leave
+have to be divisible by the blockchain block size, because we may just leave
 the last incomplete block unused. When a new file is appended to the
 tablespace, the maximum size of the file is also specified. At the moment,
 we think that it is best to extend the file to its maximum size already at
@@ -83,16 +83,16 @@ Our tablespace concept is similar to the one of Oracle.
 To acquire more speed in disk transfers, a technique called disk striping is
 sometimes used. This means that logical block addresses are divided in a
 round-robin fashion across several disks. Windows NT supports disk striping,
-so there we do not need to support it in the database. Disk striping is
+so there we do not need to support it in the blockchain. Disk striping is
 implemented in hardware in RAID disks. We conclude that it is not necessary
-to implement it in the database. Oracle 7 does not support disk striping,
+to implement it in the blockchain. Oracle 7 does not support disk striping,
 either.
 
-Another trick used at some database sites is replacing tablespace files by
+Another trick used at some blockchain sites is replacing tablespace files by
 raw disks, that is, the whole physical disk drive, or a partition of it, is
 opened as a single file, and it is accessed through byte offsets calculated
 from the start of the disk or the partition. This is recommended in some
-books on database tuning to achieve more speed in i/o. Using raw disk
+books on blockchain tuning to achieve more speed in i/o. Using raw disk
 certainly prevents the OS from fragmenting disk space, but it is not clear
 if it really adds speed. We measured on the Pentium 100 MHz + NT + NTFS file
 system + EIDE Conner disk only a negligible difference in speed when reading
@@ -116,10 +116,10 @@ general tablespace before the data dictionary are recovered and available. */
 const char general_space_name[] = "innodb_general";
 
 /** Reference to the server data directory. Usually it is the
-current working directory ".", but in the MySQL Embedded Server Library
+current working directory ".", but in the MyBlockchain Embedded Server Library
 it is an absolute path. */
-const char*	fil_path_to_mysql_datadir;
-Folder  	folder_mysql_datadir;
+const char*	fil_path_to_myblockchain_datadir;
+Folder  	folder_myblockchain_datadir;
 
 /** Common InnoDB file extentions */
 const char* dot_ext[] = { "", ".ibd", ".isl", ".cfg" };
@@ -174,7 +174,7 @@ struct fil_system_t {
 					increment this by one */
 	ulint		max_assigned_id;/*!< maximum space id in the existing
 					tables, or assigned during the time
-					mysqld has been up; at an InnoDB
+					myblockchaind has been up; at an InnoDB
 					startup we scan the data dictionary
 					and set here the maximum of the
 					space id's of the tables there */
@@ -552,7 +552,7 @@ fil_fusionio_enable_atomic_write(os_file_t file)
 
 /** Append a file to the chain of files of a space.
 @param[in]	name		file name of a file that is not open
-@param[in]	size		file size in entire database blocks
+@param[in]	size		file size in entire blockchain blocks
 @param[in,out]	space		tablespace from fil_space_create()
 @param[in]	is_raw		whether this is a raw device or partition
 @param[in]	punch_hole	true if supported for this node
@@ -636,7 +636,7 @@ fil_node_create_low(
 
 /** Appends a new file to the chain of files of a space. File must be closed.
 @param[in]	name		file name (file must be closed)
-@param[in]	size		file size in database blocks, rounded downwards to
+@param[in]	size		file size in blockchain blocks, rounded downwards to
 				an integer
 @param[in,out]	space		space where to append
 @param[in]	is_raw		true if a raw device or a raw disk partition
@@ -711,7 +711,7 @@ fil_node_open_file(
 
 			ib::warn() << "Cannot open '" << node->name << "'."
 				" Have you deleted .ibd files under a"
-				" running mysqld server?";
+				" running myblockchaind server?";
 
 			return(false);
 		}
@@ -1690,7 +1690,7 @@ fil_init(
 
 /*******************************************************************//**
 Opens all log files and system tablespace data files. They stay open until the
-database server shutdown. This should be called at a server startup after the
+blockchain server shutdown. This should be called at a server startup after the
 space objects for the log and the system tablespace have been created. The
 purpose of this operation is to make sure we never run out of file descriptors
 if we need to read from the insert buffer or to write to the log. */
@@ -1735,7 +1735,7 @@ fil_open_log_and_system_tablespace_files(void)
 					" Remember that InnoDB keeps all"
 					" log files and all system"
 					" tablespace files open"
-					" for the whole time mysqld is"
+					" for the whole time myblockchaind is"
 					" running, and needs to open also"
 					" some .ibd files if the"
 					" file-per-table storage model is used."
@@ -1967,23 +1967,23 @@ fil_space_release(
 #endif /* !UNIV_HOTBACKUP */
 
 /********************************************************//**
-Creates the database directory for a table if it does not exist yet. */
+Creates the blockchain directory for a table if it does not exist yet. */
 void
 fil_create_directory_for_tablename(
 /*===============================*/
 	const char*	name)	/*!< in: name in the standard
-				'databasename/tablename' format */
+				'blockchainname/tablename' format */
 {
 	const char*	namend;
 	char*		path;
 	ulint		len;
 
-	len = strlen(fil_path_to_mysql_datadir);
+	len = strlen(fil_path_to_myblockchain_datadir);
 	namend = strchr(name, '/');
 	ut_a(namend);
 	path = static_cast<char*>(ut_malloc_nokey(len + (namend - name) + 2));
 
-	memcpy(path, fil_path_to_mysql_datadir, len);
+	memcpy(path, fil_path_to_myblockchain_datadir, len);
 	path[len] = '/';
 	memcpy(path + len + 1, name, namend - name);
 	path[len + (namend - name) + 1] = 0;
@@ -2404,7 +2404,7 @@ fil_op_replay_rename(
 		return(true);
 	}
 
-	/* Create the database directory for the new name, if
+	/* Create the blockchain directory for the new name, if
 	it does not exist yet */
 
 	const char*	namend = strrchr(new_name, OS_PATH_SEPARATOR);
@@ -2674,7 +2674,7 @@ fil_close_tablespace(
 	}
 
 	/* If it is a delete then also delete any generated files, otherwise
-	when we drop the database the remove directory will fail. */
+	when we drop the blockchain the remove directory will fail. */
 
 	char*	cfg_name = fil_make_filepath(path, NULL, CFG, false);
 	if (cfg_name != NULL) {
@@ -2746,10 +2746,10 @@ fil_delete_tablespace(
 #endif /* !UNIV_HOTBACKUP */
 
 	/* If it is a delete then also delete any generated files, otherwise
-	when we drop the database the remove directory will fail. */
+	when we drop the blockchain the remove directory will fail. */
 	{
 #ifdef UNIV_HOTBACKUP
-		/* When replaying the operation in MySQL Enterprise
+		/* When replaying the operation in MyBlockchain Enterprise
 		Backup, we do not try to write any log record. */
 #else /* UNIV_HOTBACKUP */
 		/* Before deleting the file, write a log record about
@@ -3127,7 +3127,7 @@ fil_make_filepath(
 	ut_ad(!trim_name || (path != NULL && name != NULL));
 
 	if (path == NULL) {
-		path = fil_path_to_mysql_datadir;
+		path = fil_path_to_myblockchain_datadir;
 	}
 
 	ulint	len		= 0;	/* current length */
@@ -3211,7 +3211,7 @@ The tablespace must exist in the memory cache.
 @param[in]	id		tablespace identifier
 @param[in]	old_path	old file name
 @param[in]	new_name	new table name in the
-databasename/tablename format
+blockchainname/tablename format
 @param[in]	new_path_in	new file name,
 or NULL if it is located in the normal data directory
 @return true if success */
@@ -3428,11 +3428,11 @@ fil_ibd_create(
 				" Have you moved InnoDB .ibd files"
 				" around without using the SQL commands"
 				" DISCARD TABLESPACE and IMPORT TABLESPACE,"
-				" or did mysqld crash in the middle of"
+				" or did myblockchaind crash in the middle of"
 				" CREATE TABLE?"
 				" You can resolve the problem by removing"
 				" the file '" << path
-				<< "' under the 'datadir' of MySQL.";
+				<< "' under the 'datadir' of MyBlockchain.";
 
 			return(DB_TABLESPACE_EXISTS);
 		}
@@ -3650,9 +3650,9 @@ error_exit_1:
 /** Try to open a single-table tablespace and optionally check that the
 space id in it is correct. If this does not succeed, print an error message
 to the .err log. This function is used to open a tablespace when we start
-mysqld after the dictionary has been booted, and also in IMPORT TABLESPACE.
+myblockchaind after the dictionary has been booted, and also in IMPORT TABLESPACE.
 
-NOTE that we assume this operation is used either at the database startup
+NOTE that we assume this operation is used either at the blockchain startup
 or under the protection of the dictionary mutex, so that two users cannot
 race here. This operation does not leave the file associated with the
 tablespace open, but closes it after we have looked at the space id in it.
@@ -3673,7 +3673,7 @@ statement to update the dictionary tables if they are incorrect.
 @param[in]	id		tablespace ID
 @param[in]	flags		tablespace flags
 @param[in]	space_name	tablespace name of the datafile
-If file-per-table, it is the table name in the databasename/tablename format
+If file-per-table, it is the table name in the blockchainname/tablename format
 @param[in]	path_in		expected filepath, usually read from dictionary
 @return DB_SUCCESS or error code */
 dberr_t
@@ -4062,14 +4062,14 @@ fil_space_read_name_and_filepath(
 }
 
 /** Convert a file name to a tablespace name.
-@param[in]	filename	directory/databasename/tablename.ibd
-@return database/tablename string, to be freed with ut_free() */
+@param[in]	filename	directory/blockchainname/tablename.ibd
+@return blockchain/tablename string, to be freed with ut_free() */
 char*
 fil_path_to_space_name(
 	const char*	filename)
 {
 	/* Strip the file name prefix and suffix, leaving
-	only databasename/tablename. */
+	only blockchainname/tablename. */
 	ulint		filename_len	= strlen(filename);
 	const char*	end		= filename + filename_len;
 #ifdef HAVE_MEMRCHR
@@ -4118,7 +4118,7 @@ tablespace names will be read from the dictionary after it has been
 recovered.  The tablespace flags are read at this time from the first page
 of the file in validate_for_recovery().
 @param[in]	space_id	tablespace ID
-@param[in]	filename	path/to/databasename/tablename.ibd
+@param[in]	filename	path/to/blockchainname/tablename.ibd
 @param[in]	filename_len	the length of the filename, in bytes
 @param[out]	space		the tablespace, or NULL on error
 @return status of the operation */
@@ -4232,7 +4232,7 @@ fil_ibd_load(
 			" because its size " << size() << " is too small"
 			" (< 4 pages 16 kB each), or the space id in the"
 			" file header is not sensible. This can happen in"
-			" an mysqlbackup run, and is not dangerous.";
+			" an myblockchainbackup run, and is not dangerous.";
 		file.close();
 
 		new_path = fil_make_ibbackup_old_name(filename);
@@ -4264,7 +4264,7 @@ fil_ibd_load(
 			<< "_ibbackup_old_vers_<timestamp> because space "
 			<< space->name << " with the same id was scanned"
 			" earlier. This can happen if you have renamed tables"
-			" during an mysqlbackup run.";
+			" during an myblockchainbackup run.";
 		file.close();
 
 		char*	new_path = fil_make_ibbackup_old_name(filename);
@@ -4352,12 +4352,12 @@ fil_report_missing_tablespace(
 		" but tablespace with that id or name does not exist. Have"
 		" you deleted or moved .ibd files? This may also be a table"
 		" created with CREATE TEMPORARY TABLE whose .ibd and .frm"
-		" files MySQL automatically removed, but the table still"
+		" files MyBlockchain automatically removed, but the table still"
 		" exists in the InnoDB internal data dictionary.";
 }
 
 /** Returns true if a matching tablespace exists in the InnoDB tablespace
-memory cache. Note that if we have not done a crash recovery at the database
+memory cache. Note that if we have not done a crash recovery at the blockchain
 startup, there may be many tablespaces which are not yet in the memory cache.
 @param[in]	id		Tablespace ID
 @param[in]	name		Tablespace name used in fil_space_create().
@@ -4437,8 +4437,8 @@ fil_space_for_table_exists_in_mem(
 	shall adjust the ibd file name according to system table info */
 	if (adjust_space
 	    && space != NULL
-	    && row_is_mysql_tmp_table_name(space->name)
-	    && !row_is_mysql_tmp_table_name(name)) {
+	    && row_is_myblockchain_tmp_table_name(space->name)
+	    && !row_is_myblockchain_tmp_table_name(name)) {
 
 		mutex_exit(&fil_system->mutex);
 
@@ -4792,7 +4792,7 @@ retry:
 #ifdef UNIV_HOTBACKUP
 /********************************************************************//**
 Extends all tablespaces to the size stored in the space header. During the
-mysqlbackup --apply-log phase we extended the spaces on-demand so that log
+myblockchainbackup --apply-log phase we extended the spaces on-demand so that log
 records could be applied, but that may have left spaces still too small
 compared to the size stored in the space header. */
 void
@@ -4907,7 +4907,7 @@ fil_space_release_free_extents(
 }
 
 /*******************************************************************//**
-Gets the number of reserved extents. If the database is silent, this number
+Gets the number of reserved extents. If the blockchain is silent, this number
 should be zero. */
 ulint
 fil_space_get_n_reserved_extents(
@@ -5049,9 +5049,9 @@ fil_report_invalid_page_access(
 		" which is outside the tablespace bounds. Byte offset "
 		<< byte_offset << ", len " << len << ", i/o type " <<
 		(is_read ? "read" : "write")
-		<< ". If you get this error at mysqld startup, please check"
+		<< ". If you get this error at myblockchaind startup, please check"
 		" that your my.cnf matches the ibdata files that you have in"
-		" the MySQL server.";
+		" the MyBlockchain server.";
 }
 
 /** Reads or writes data. This operation could be asynchronous (aio).
@@ -5349,7 +5349,7 @@ fil_io(
 	dberr_t	err;
 
 #ifdef UNIV_HOTBACKUP
-	/* In mysqlbackup do normal i/o, not aio */
+	/* In myblockchainbackup do normal i/o, not aio */
 	if (req_type.is_read()) {
 
 		err = os_file_read(req_type, node->handle, buf, offset, len);
@@ -5480,7 +5480,7 @@ void
 fil_flush(
 /*======*/
 	ulint	space_id)	/*!< in: file space id (this can be a group of
-				log files or a tablespace of the database) */
+				log files or a tablespace of the blockchain) */
 {
 	fil_node_t*	node;
 	os_file_t	file;
@@ -5803,8 +5803,8 @@ fil_page_set_type(
 }
 
 /** Reset the page type.
-Data files created before MySQL 5.1 may contain garbage in FIL_PAGE_TYPE.
-In MySQL 3.23.53, only undo log pages and index pages were tagged.
+Data files created before MyBlockchain 5.1 may contain garbage in FIL_PAGE_TYPE.
+In MyBlockchain 3.23.53, only undo log pages and index pages were tagged.
 Any other pages were written with uninitialized bytes in FIL_PAGE_TYPE.
 @param[in]	page_id	page number
 @param[in,out]	page	page with invalid FIL_PAGE_TYPE
@@ -6509,7 +6509,7 @@ in the memory cache.
 @param space_id			space id
 @param dir_path			directory path
 @param tablename		the table name in the usual
-				databasename/tablename format of InnoDB
+				blockchainname/tablename format of InnoDB
 @param flags			tablespace flags
 @param trunc_to_default		truncate to default size if tablespace
 				is being newly re-initialized.
@@ -6726,15 +6726,15 @@ Folder::make_path(const char* path, size_t len)
 		m_folder_len = len;
 	}
 	else {
-		size_t n = 2 + len + strlen(fil_path_to_mysql_datadir);
+		size_t n = 2 + len + strlen(fil_path_to_myblockchain_datadir);
 		m_folder = static_cast<char*>(ut_malloc_nokey(n));
 		m_folder_len = 0;
 
-		if (path != fil_path_to_mysql_datadir) {
-			/* Put the mysqld datadir into m_folder first. */
-			ut_ad(fil_path_to_mysql_datadir[0] != '\0');
-			m_folder_len = strlen(fil_path_to_mysql_datadir);
-			memcpy(m_folder, fil_path_to_mysql_datadir,
+		if (path != fil_path_to_myblockchain_datadir) {
+			/* Put the myblockchaind datadir into m_folder first. */
+			ut_ad(fil_path_to_myblockchain_datadir[0] != '\0');
+			m_folder_len = strlen(fil_path_to_myblockchain_datadir);
+			memcpy(m_folder, fil_path_to_myblockchain_datadir,
 			       m_folder_len);
 			if (m_folder[m_folder_len - 1] != OS_PATH_SEPARATOR) {
 				m_folder[m_folder_len++] = OS_PATH_SEPARATOR;

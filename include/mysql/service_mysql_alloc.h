@@ -13,15 +13,15 @@
    along with this program; if not, write to the Free Software
    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA */
 
-#ifndef MYSQL_SERVICE_MYSQL_ALLOC_INCLUDED
-#define MYSQL_SERVICE_MYSQL_ALLOC_INCLUDED
+#ifndef MYBLOCKCHAIN_SERVICE_MYBLOCKCHAIN_ALLOC_INCLUDED
+#define MYBLOCKCHAIN_SERVICE_MYBLOCKCHAIN_ALLOC_INCLUDED
 
-#ifndef MYSQL_ABI_CHECK
+#ifndef MYBLOCKCHAIN_ABI_CHECK
 #include <stdlib.h>
 #endif
 
 /* PSI_memory_key */
-#include "mysql/psi/psi_memory.h"
+#include "myblockchain/psi/psi_memory.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -30,36 +30,36 @@ extern "C" {
 /* myf */
 typedef int myf_t;
 
-typedef void * (*mysql_malloc_t)(PSI_memory_key key, size_t size, myf_t flags);
-typedef void * (*mysql_realloc_t)(PSI_memory_key key, void *ptr, size_t size, myf_t flags);
-typedef void (*mysql_claim_t)(void *ptr);
-typedef void (*mysql_free_t)(void *ptr);
+typedef void * (*myblockchain_malloc_t)(PSI_memory_key key, size_t size, myf_t flags);
+typedef void * (*myblockchain_realloc_t)(PSI_memory_key key, void *ptr, size_t size, myf_t flags);
+typedef void (*myblockchain_claim_t)(void *ptr);
+typedef void (*myblockchain_free_t)(void *ptr);
 typedef void * (*my_memdup_t)(PSI_memory_key key, const void *from, size_t length, myf_t flags);
 typedef char * (*my_strdup_t)(PSI_memory_key key, const char *from, myf_t flags);
 typedef char * (*my_strndup_t)(PSI_memory_key key, const char *from, size_t length, myf_t flags);
 
-struct mysql_malloc_service_st
+struct myblockchain_malloc_service_st
 {
-  mysql_malloc_t mysql_malloc;
-  mysql_realloc_t mysql_realloc;
-  mysql_claim_t mysql_claim;
-  mysql_free_t mysql_free;
+  myblockchain_malloc_t myblockchain_malloc;
+  myblockchain_realloc_t myblockchain_realloc;
+  myblockchain_claim_t myblockchain_claim;
+  myblockchain_free_t myblockchain_free;
   my_memdup_t my_memdup;
   my_strdup_t my_strdup;
   my_strndup_t my_strndup;
 };
 
-extern struct mysql_malloc_service_st *mysql_malloc_service;
+extern struct myblockchain_malloc_service_st *myblockchain_malloc_service;
 
-#ifdef MYSQL_DYNAMIC_PLUGIN
+#ifdef MYBLOCKCHAIN_DYNAMIC_PLUGIN
 
-#define my_malloc mysql_malloc_service->mysql_malloc
-#define my_realloc mysql_malloc_service->mysql_realloc
-#define my_claim mysql_malloc_service->mysql_claim
-#define my_free mysql_malloc_service->mysql_free
-#define my_memdup mysql_malloc_service->my_memdup
-#define my_strdup mysql_malloc_service->my_strdup
-#define my_strndup mysql_malloc_service->my_strndup
+#define my_malloc myblockchain_malloc_service->myblockchain_malloc
+#define my_realloc myblockchain_malloc_service->myblockchain_realloc
+#define my_claim myblockchain_malloc_service->myblockchain_claim
+#define my_free myblockchain_malloc_service->myblockchain_free
+#define my_memdup myblockchain_malloc_service->my_memdup
+#define my_strdup myblockchain_malloc_service->my_strdup
+#define my_strndup myblockchain_malloc_service->my_strndup
 
 #else
 

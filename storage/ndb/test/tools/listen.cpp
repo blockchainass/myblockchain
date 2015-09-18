@@ -197,7 +197,7 @@ main(int argc, const char** argv){
       arg_string, &connectstring1, "connectstring1", "" },
     { "connectstring2", 'C',
       arg_string, &connectstring2, "connectstring2", "" },
-    { "database", 'd', arg_string, &db, "Database", "" },
+    { "blockchain", 'd', arg_string, &db, "Database", "" },
     { "usage", '?', arg_flag, &_help, "Print help", "" }
   };
   int num_args = sizeof(args) / sizeof(args[0]);

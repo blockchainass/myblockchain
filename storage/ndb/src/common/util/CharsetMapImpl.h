@@ -45,12 +45,12 @@ public:
      http://www.iana.org/assignments/character-sets and will be recognized 
      and usable by Java (e.g. java.nio, java.io, and java.lang).  
      However it may return "binary" if a column is BLOB / BINARY / VARBINARY,
-     or it may return the name of an uncommon, rarely-used MySQL character set
+     or it may return the name of an uncommon, rarely-used MyBlockchain character set
      such as "keybcs2" or "dec8".
      */
     const char * getName(int);
             
-    const char * mysql_charset_name[256];
+    const char * myblockchain_charset_name[256];
 
     int UTF16Charset;
     int UTF8Charset;

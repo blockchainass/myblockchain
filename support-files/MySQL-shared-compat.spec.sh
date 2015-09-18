@@ -1,12 +1,12 @@
 # Copyright (c) 2003, 2013, Oracle and/or its affiliates. All rights reserved.
 #
-# MySQL-shared-compat.spec
+# MyBlockchain-shared-compat.spec
 #
 # RPM build instructions to create a "meta" package that includes two
-# versions of the MySQL shared libraries (for compatibility with
-# distributions that ship older versions of MySQL and do not provide a
-# separate "MySQL-shared" package. This spec file simply repackages two
-# already existing MySQL-shared RPMs into a single package.
+# versions of the MyBlockchain shared libraries (for compatibility with
+# distributions that ship older versions of MyBlockchain and do not provide a
+# separate "MyBlockchain-shared" package. This spec file simply repackages two
+# already existing MyBlockchain-shared RPMs into a single package.
 # 
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by the Free
@@ -27,30 +27,30 @@
 #
 # Change this to match the version of the shared libs you want to include
 #
-%define version_cur @MYSQL_RPM_VERSION@
+%define version_cur @MYBLOCKCHAIN_RPM_VERSION@
 %define version41 4.1.17
 %define version40 4.0.26
 %define version3 3.23.58
 
-Name:         MySQL-shared-compat
-Packager:     Sun Microsystems, Inc. Product Engineering Team <build@mysql.com>
+Name:         MyBlockchain-shared-compat
+Packager:     Sun Microsystems, Inc. Product Engineering Team <build@myblockchain.com>
 Vendor:       Sun Microsystems, Inc.
 License:      GPL
 Group:        Applications/Databases
-URL:          http://www.mysql.com/
+URL:          http://www.myblockchain.com/
 Autoreqprov:  on
 Version:      %{version_cur}
 Release:      1
 BuildRoot:    %{_tmppath}/%{name}-%{version}-build
-Obsoletes:    mysql-shared
-Provides:     MySQL-shared
-Summary:      MySQL shared client libraries for MySQL %{version}, %{version41}, %{version40} and %{version3}
-# We simply use the "MySQL-shared" subpackages as input sources instead of
+Obsoletes:    myblockchain-shared
+Provides:     MyBlockchain-shared
+Summary:      MyBlockchain shared client libraries for MyBlockchain %{version}, %{version41}, %{version40} and %{version3}
+# We simply use the "MyBlockchain-shared" subpackages as input sources instead of
 # rebuilding all from source
-Source0:      MySQL-shared-%{version_cur}-1.%{_arch}.rpm
-Source1:      MySQL-shared-%{version41}-1.%{_arch}.rpm
-Source2:      MySQL-shared-%{version40}-0.%{_arch}.rpm
-Source3:      MySQL-shared-%{version3}-1.%{_arch}.rpm
+Source0:      MyBlockchain-shared-%{version_cur}-1.%{_arch}.rpm
+Source1:      MyBlockchain-shared-%{version41}-1.%{_arch}.rpm
+Source2:      MyBlockchain-shared-%{version40}-0.%{_arch}.rpm
+Source3:      MyBlockchain-shared-%{version3}-1.%{_arch}.rpm
 # No need to include the RPMs once more - they can be downloaded seperately
 # if you want to rebuild this package
 NoSource:     0
@@ -60,11 +60,11 @@ NoSource:     3
 BuildRoot:    %{_tmppath}/%{name}-%{version}-build
 
 %description
-This package includes the shared libraries for MySQL %{version3},
-MySQL %{version40}, %{version41} as well as MySQL %{version_cur}.
-Install this package instead of "MySQL-shared", if you have applications
-installed that are dynamically linked against older versions of the MySQL
-client library but you want to upgrade to MySQL %{version} without breaking the
+This package includes the shared libraries for MyBlockchain %{version3},
+MyBlockchain %{version40}, %{version41} as well as MyBlockchain %{version_cur}.
+Install this package instead of "MyBlockchain-shared", if you have applications
+installed that are dynamically linked against older versions of the MyBlockchain
+client library but you want to upgrade to MyBlockchain %{version} without breaking the
 library dependencies.
 
 %install
@@ -82,7 +82,7 @@ rpm2cpio %{SOURCE3} | cpio -iv --make-directories
 
 %files
 %defattr(-, root, root)
-%{_libdir}/libmysqlclient*
+%{_libdir}/libmyblockchainclient*
 
 # The spec file changelog only includes changes made to the spec file
 # itself - note that they must be ordered by date (important when

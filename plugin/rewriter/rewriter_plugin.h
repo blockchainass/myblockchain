@@ -22,10 +22,10 @@
 
 #include "my_config.h"
 #include <my_global.h>
-#include <mysql/plugin_audit.h>
+#include <myblockchain/plugin_audit.h>
 
 bool refresh_rules_table();
 
-MYSQL_PLUGIN get_rewriter_plugin_info();
+MYBLOCKCHAIN_PLUGIN get_rewriter_plugin_info();
 
 #endif // REWRITER_PLUGIN_INCLUDED

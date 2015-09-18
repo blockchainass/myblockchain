@@ -15,17 +15,17 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
  */
 
-package com.mysql.clusterj.tie;
+package com.myblockchain.clusterj.tie;
 
 import java.nio.ByteBuffer;
 
-import com.mysql.clusterj.Dbug;
+import com.myblockchain.clusterj.Dbug;
 
-import com.mysql.clusterj.core.util.I18NHelper;
-import com.mysql.clusterj.core.util.Logger;
-import com.mysql.clusterj.core.util.LoggerFactoryService;
+import com.myblockchain.clusterj.core.util.I18NHelper;
+import com.myblockchain.clusterj.core.util.Logger;
+import com.myblockchain.clusterj.core.util.LoggerFactoryService;
 
-import com.mysql.ndbjtie.mysql.Utils;
+import com.myblockchain.ndbjtie.myblockchain.Utils;
 
 /**
  * This class encapsulates Utils dbug methods to manage dbug settings. 

@@ -1,0 +1,41 @@
+--source include/not_embedded.inc
+--source include/have_ndb.inc
+
+--source ndbinfo_create.inc
+
+USE ndbinfo;
+
+#
+# Bug#20031425 NDBINFO NAMESPACE FREE CHECK FAILURE
+# - The SQL commands in scripts/myblockchain_system_tables.sql
+#   mistakenly detects that someone uses the ndbinfo namespace
+#   and skip to upgrade the schema of ndbinfo
+#
+
+# Supress the warning which occurs on second myblockchaind when it
+# tries to create the performance_schema blockchain although
+# it already exists(since the DROP DATABASE was not allowed
+# due to local tables)
+connect (myblockchaind2,127.0.0.1,root,,test,$MASTER_MYPORT1,);
+connection myblockchaind2;
+call mtr.add_suppression("Can\'t create blockchain \'performance_schema\'; blockchain exists");
+connection default;
+
+SELECT COUNT(*) FROM nodes;
+
+# Drop table ndbinfo.ndb$nodes to be able to detect if
+# upgrade has been run or not
+DROP TABLE ndbinfo.ndb$nodes;
+
+# Now it should not be possible to read from the nodes view
+--error ER_VIEW_INVALID
+SELECT COUNT(*) FROM nodes;
+
+let $log_file = $MYBLOCKCHAINTEST_VARDIR/tmp/ndbinfo_upgrade_check.log;
+--exec $MYBLOCKCHAIN_UPGRADE --skip-verbose > $log_file 2>&1
+
+# The underlying table should have been created and nodes view be readable
+SELECT COUNT(*) FROM nodes;
+
+
+--source ndbinfo_drop.inc

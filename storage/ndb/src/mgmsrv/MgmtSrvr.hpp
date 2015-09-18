@@ -98,7 +98,7 @@ public:
     int print_full_config;
     const char* configdir;
     int verbose;
-    MgmtOpts() : configdir(MYSQLCLUSTERDIR) {};
+    MgmtOpts() : configdir(MYBLOCKCHAINCLUSTERDIR) {};
     int reload;
     int initial;
     NodeBitmask nowait_nodes;
@@ -144,7 +144,7 @@ public:
   int status(int nodeId,
 	     ndb_mgm_node_status * status,
 	     Uint32 * version,
-	     Uint32 * mysql_version,
+	     Uint32 * myblockchain_version,
 	     Uint32 * phase,
 	     bool * systemShutdown,
 	     Uint32 * dynamicId,
@@ -347,15 +347,15 @@ private:
 
   void status_api(int nodeId,
                   ndb_mgm_node_status& node_status,
-                  Uint32& version, Uint32& mysql_version,
+                  Uint32& version, Uint32& myblockchain_version,
                   const char **address);
   void status_mgmd(NodeId node_id,
                    ndb_mgm_node_status& node_status,
-                   Uint32& version, Uint32& mysql_version,
+                   Uint32& version, Uint32& myblockchain_version,
                    const char **address);
 
   int sendVersionReq(int processId, Uint32 &version,
-                     Uint32& mysql_version, const char **address);
+                     Uint32& myblockchain_version, const char **address);
 
   int sendStopMgmd(NodeId nodeId,
                    bool abort,

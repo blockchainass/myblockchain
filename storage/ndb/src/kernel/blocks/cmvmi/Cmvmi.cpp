@@ -162,7 +162,7 @@ Cmvmi::Cmvmi(Block_context& ctx) :
 
   setNodeInfo(getOwnNodeId()).m_connected = true;
   setNodeInfo(getOwnNodeId()).m_version = ndbGetOwnVersion();
-  setNodeInfo(getOwnNodeId()).m_mysql_version = NDB_MYSQL_VERSION_D;
+  setNodeInfo(getOwnNodeId()).m_myblockchain_version = NDB_MYBLOCKCHAIN_VERSION_D;
 
   c_memusage_report_frequency = 0;
 
@@ -2266,7 +2266,7 @@ Cmvmi::testFragmentedCleanup(Signal* signal, SectionHandle* handle, Uint32 testT
     ndbrequire(debugPrintFragmentCounts() == 0);
 
     /* Now use ReceiverGroup to multicast a fragmented signal to
-     * all database nodes
+     * all blockchain nodes
      */
     DEBUG("Starting to send fragmented continueB to all nodes inc. self : ");
     NodeReceiverGroup allNodes(CMVMI, c_dbNodes);

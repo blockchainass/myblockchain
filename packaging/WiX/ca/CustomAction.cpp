@@ -49,13 +49,13 @@ int remove_service(TCHAR *installdir, int check_only) {
 		} else if(servicecount == 1) {
 			TCHAR buf[256];
 			swprintf_s(buf, sizeof(buf), TEXT("There is a service called '%ls' set up to run from this installation. Do you wish me to stop and remove that service?"), last_service_name);
-			int rc = MessageBox(NULL, buf, TEXT("Removing MySQL Server"), MB_ICONQUESTION|MB_YESNOCANCEL|MB_SYSTEMMODAL);
+			int rc = MessageBox(NULL, buf, TEXT("Removing MyBlockchain Server"), MB_ICONQUESTION|MB_YESNOCANCEL|MB_SYSTEMMODAL);
 			if(rc == IDCANCEL) return -1;
 			if(rc != IDYES) return 0;
 		} else if(servicecount > 0) {
 			TCHAR buf[256];
 			swprintf_s(buf, sizeof(buf), TEXT("There appear to be %d services set up to run from this installation. Do you wish me to stop and remove those services?"), servicecount);
-			int rc = MessageBox(NULL, buf, TEXT("Removing MySQL Server"), MB_ICONQUESTION|MB_YESNOCANCEL|MB_SYSTEMMODAL);
+			int rc = MessageBox(NULL, buf, TEXT("Removing MyBlockchain Server"), MB_ICONQUESTION|MB_YESNOCANCEL|MB_SYSTEMMODAL);
 			if(rc == IDCANCEL) return -1;
 			if(rc != IDYES) return 0;
 		}
@@ -185,7 +185,7 @@ UINT mccPostInstall(MSIHANDLE hInstall) {
 	
 		WcaLog(LOGMSG_STANDARD, "INSTALLDIR = %ls", INSTALLDIR);
 		
-		// C:\Program Files (x86)\MySQL\MySQL Cluster 7.2\share\mcc
+		// C:\Program Files (x86)\MyBlockchain\MyBlockchain Cluster 7.2\share\mcc
 		wcscpy_s(path, MAX_PATH * 2, INSTALLDIR);
 		wcscat_s(path, MAX_PATH * 2, TEXT("\\share\\mcc\\Python\\python.exe"));
 

@@ -15,14 +15,14 @@
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#include "abstract_mysql_chain_element_extension.h"
+#include "abstract_myblockchain_chain_element_extension.h"
 #include <boost/algorithm/string.hpp>
 #include <boost/bind.hpp>
 #include <sstream>
 
 using namespace Mysql::Tools::Dump;
 
-Abstract_mysql_chain_element_extension::Abstract_mysql_chain_element_extension(
+Abstract_myblockchain_chain_element_extension::Abstract_myblockchain_chain_element_extension(
   I_connection_provider* connection_provider,
   Mysql::I_callable<bool, const Mysql::Tools::Base::Message_data&>*
     message_handler, const Mysql_chain_element_options* options)
@@ -32,28 +32,28 @@ Abstract_mysql_chain_element_extension::Abstract_mysql_chain_element_extension(
   m_charset(options->get_program()->get_current_charset() != NULL
     ? options->get_program()->get_current_charset()
     : get_charset_by_csname(
-      MYSQL_UNIVERSAL_CLIENT_CHARSET, MY_CS_PRIMARY, MYF(MY_WME)))
+      MYBLOCKCHAIN_UNIVERSAL_CLIENT_CHARSET, MY_CS_PRIMARY, MYF(MY_WME)))
 {}
 
 Mysql::Tools::Base::Mysql_query_runner*
-  Abstract_mysql_chain_element_extension::get_runner() const
+  Abstract_myblockchain_chain_element_extension::get_runner() const
 {
   return m_connection_provider->get_runner(m_message_handler);
 }
 
 I_connection_provider*
-  Abstract_mysql_chain_element_extension::get_connection_provider() const
+  Abstract_myblockchain_chain_element_extension::get_connection_provider() const
 {
   return m_connection_provider;
 }
 
-uint64 Abstract_mysql_chain_element_extension::get_server_version()
+uint64 Abstract_myblockchain_chain_element_extension::get_server_version()
 {
-  return mysql_get_server_version(
+  return myblockchain_get_server_version(
     this->get_runner()->get_low_level_connection());
 }
 
-std::string Abstract_mysql_chain_element_extension::get_server_version_string()
+std::string Abstract_myblockchain_chain_element_extension::get_server_version_string()
 {
   uint64 version= this->get_server_version();
   std::ostringstream result;
@@ -64,7 +64,7 @@ std::string Abstract_mysql_chain_element_extension::get_server_version_string()
 }
 
 int
-  Abstract_mysql_chain_element_extension::compare_no_case_latin_with_db_string(
+  Abstract_myblockchain_chain_element_extension::compare_no_case_latin_with_db_string(
     const std::string& latin_name, const std::string& db_name)
 {
   return my_strcasecmp(&my_charset_latin1, latin_name.c_str(),
@@ -72,15 +72,15 @@ int
 }
 
 Mysql::Nullable<std::string>
-  Abstract_mysql_chain_element_extension::get_create_statement(
+  Abstract_myblockchain_chain_element_extension::get_create_statement(
     Mysql::Tools::Base::Mysql_query_runner* runner,
-    const std::string& database_name, const std::string& object_name,
+    const std::string& blockchain_name, const std::string& object_name,
     const std::string& object_type, uint field_id/*= 1*/)
 {
   std::vector<const Mysql::Tools::Base::Mysql_query_runner::Row*> result;
 
   runner->run_query_store("SHOW CREATE " + object_type + " "
-    + this->get_quoted_object_full_name(database_name, object_name),
+    + this->get_quoted_object_full_name(blockchain_name, object_name),
     &result);
 
   Mysql::Nullable<std::string> res;
@@ -99,11 +99,11 @@ Mysql::Nullable<std::string>
            and triggers. Once fix is done from server below hack will
            be removed.
     */
-    if (database_name.size() > 0)
+    if (blockchain_name.size() > 0)
     {
-      std::string obj_name_without_quote= this->quote_name(database_name)
+      std::string obj_name_without_quote= this->quote_name(blockchain_name)
            + "." + object_name;
-      std::string obj_name_with_quote= this->quote_name(database_name)
+      std::string obj_name_with_quote= this->quote_name(blockchain_name)
            + "." + this->quote_name(object_name);
       size_t pos1= res.value().find(obj_name_without_quote);
       size_t pos2= res.value().find(obj_name_with_quote);
@@ -115,7 +115,7 @@ Mysql::Nullable<std::string>
         if (pos != std::string::npos)
         {
           pos= pos + object_type.size() + 1;
-          res= res.value().substr(0, pos) + this->quote_name(database_name)
+          res= res.value().substr(0, pos) + this->quote_name(blockchain_name)
               + "." + res.value().substr(pos);
         }
       }
@@ -125,20 +125,20 @@ Mysql::Nullable<std::string>
   return res;
 }
 
-std::string Abstract_mysql_chain_element_extension::quote_name(
+std::string Abstract_myblockchain_chain_element_extension::quote_name(
   const std::string& name)
 {
   char buff[MAX_NAME_LEN * 2 + 3]= { 0 };
   const char* name_str= name.c_str();
   buff[0]= '`';
-  int len= mysql_real_escape_string_quote(this->get_runner()
+  int len= myblockchain_real_escape_string_quote(this->get_runner()
          ->get_low_level_connection(), buff+1, name_str, name.size(), '`');
   buff[len+1]= '`';
   return std::string(buff);
 }
 
 std::string
-  Abstract_mysql_chain_element_extension::get_quoted_object_full_name(
+  Abstract_myblockchain_chain_element_extension::get_quoted_object_full_name(
     const Abstract_data_object* object)
 {
   return this->get_quoted_object_full_name(
@@ -146,23 +146,23 @@ std::string
 }
 
 std::string
-  Abstract_mysql_chain_element_extension::get_quoted_object_full_name(
-    const std::string& database_name, const std::string& object_name)
+  Abstract_myblockchain_chain_element_extension::get_quoted_object_full_name(
+    const std::string& blockchain_name, const std::string& object_name)
 {
-  if (database_name != "")
-    return this->quote_name(database_name) + "."
+  if (blockchain_name != "")
+    return this->quote_name(blockchain_name) + "."
     + this->quote_name(object_name);
   return this->quote_name(object_name);
 }
 
 const Mysql_chain_element_options*
-  Abstract_mysql_chain_element_extension::get_mysql_chain_element_options()
+  Abstract_myblockchain_chain_element_extension::get_myblockchain_chain_element_options()
   const
 {
   return m_options;
 }
 
-CHARSET_INFO* Abstract_mysql_chain_element_extension::get_charset() const
+CHARSET_INFO* Abstract_myblockchain_chain_element_extension::get_charset() const
 {
   return m_charset;
 }

@@ -628,7 +628,7 @@ static int examine_log(char * file_name, char **table_names)
 		   command_name[command],lock_command,result);
       if (update && curr_file_info && !curr_file_info->closed)
       {
-	if (mi_lock_database(curr_file_info->isam,lock_command) !=
+	if (mi_lock_blockchain(curr_file_info->isam,lock_command) !=
 	    (int) result)
 	  goto com_err;
       }

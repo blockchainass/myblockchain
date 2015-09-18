@@ -149,7 +149,7 @@ enum mlog_id_t {
 	/** log record about an .ibd file creation */
 	//MLOG_FILE_CREATE = 33,
 
-	/** rename databasename/tablename (no .ibd file name suffix) */
+	/** rename blockchainname/tablename (no .ibd file name suffix) */
 	//MLOG_FILE_RENAME = 34,
 
 	/** delete a tablespace file that starts with (space_id,page_no) */

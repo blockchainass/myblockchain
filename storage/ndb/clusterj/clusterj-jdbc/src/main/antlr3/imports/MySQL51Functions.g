@@ -15,7 +15,7 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
  */
 
-parser grammar MySQL51Functions;
+parser grammar MyBlockchain51Functions;
 
 options {
 	output=AST;

@@ -511,12 +511,12 @@ TEST_F(GroupTest, Group_containers)
   // from a unittest).
   global_system_variables.log_error_verbosity= 1;
 
-  mysql_bin_log.server_uuid_sidno= 1;
+  myblockchain_bin_log.server_uuid_sidno= 1;
 
   // Create Sid_maps.
-  Checkable_rwlock &lock= mysql_bin_log.sid_lock;
+  Checkable_rwlock &lock= myblockchain_bin_log.sid_lock;
   Sid_map **sid_maps= new Sid_map*[2];
-  sid_maps[0]= &mysql_bin_log.sid_map;
+  sid_maps[0]= &myblockchain_bin_log.sid_map;
   sid_maps[1]= new Sid_map(&lock);
 
   lock.rdlock();
@@ -951,5 +951,5 @@ TEST_F(GroupTest, Group_containers)
   delete sid_maps;
   free(thd);
 
-  mysql_bin_log.sid_lock.assert_no_lock();
+  myblockchain_bin_log.sid_lock.assert_no_lock();
 }

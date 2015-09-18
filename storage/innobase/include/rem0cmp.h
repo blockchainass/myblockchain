@@ -172,7 +172,7 @@ cmp_rec_rec_simple(
 	const ulint*		offsets1,/*!< in: rec_get_offsets(rec1, ...) */
 	const ulint*		offsets2,/*!< in: rec_get_offsets(rec2, ...) */
 	const dict_index_t*	index,	/*!< in: data dictionary index */
-	struct TABLE*		table)	/*!< in: MySQL table, for reporting
+	struct TABLE*		table)	/*!< in: MyBlockchain table, for reporting
 					duplicate key value if applicable,
 					or NULL */
 	__attribute__((nonnull(1,2,3,4), warn_unused_result));

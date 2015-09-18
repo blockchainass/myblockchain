@@ -14,21 +14,21 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 
 IF(WIN32)
-  SET(localstatedir "C:\\\\mysql\\\\data\\\\")
+  SET(localstatedir "C:\\\\myblockchain\\\\data\\\\")
   SET(ini_file_extension "ini")
   SET(CNF_SOCKET_LINE "")
 ELSE()
-  SET(localstatedir "${MYSQL_DATADIR}")
+  SET(localstatedir "${MYBLOCKCHAIN_DATADIR}")
   SET(prefix "${CMAKE_INSTALL_PREFIX}")
   SET(libexecdir "${CMAKE_INSTALL_PREFIX}/${INSTALL_SBINDIR}")
   SET(bindir "${CMAKE_INSTALL_PREFIX}/${INSTALL_BINDIR}" )
   SET(sbindir "${libexecdir}")
-  SET(datadir "${MYSQL_DATADIR}")
+  SET(datadir "${MYBLOCKCHAIN_DATADIR}")
   SET(CC ${CMAKE_C_COMPILER})
   SET(CXX ${CMAKE_CXX_COMPILER})
   SET(CFLAGS ${CMAKE_C_FLAGS})
   SET(CXXFLAGS ${CMAKE_CXX_FLAGS})
-  SET(MYSQLD_USER "mysql")
+  SET(MYBLOCKCHAIND_USER "myblockchain")
   SET(ini_file_extension "cnf")
   SET(HOSTNAME "hostname")
   SET(CNF_SOCKET_LINE "# socket = .....")
@@ -52,7 +52,7 @@ INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/${inifile}.${ini_file_extension}
 
 IF(UNIX)
   SET(prefix ${CMAKE_INSTALL_PREFIX})
-  FOREACH(script  mysqld_multi.server mysql-log-rotate)
+  FOREACH(script  myblockchaind_multi.server myblockchain-log-rotate)
     CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/${script}.sh 
                    ${CMAKE_CURRENT_BINARY_DIR}/${script} @ONLY )
 
@@ -69,17 +69,17 @@ IF(UNIX)
     INSTALL(FILES magic DESTINATION ${inst_location} COMPONENT SupportFiles)
   ENDIF()
 
-  INSTALL(FILES mysql.m4 DESTINATION ${INSTALL_SHAREDIR}/aclocal COMPONENT Development)
-  CONFIGURE_FILE(MySQL-shared-compat.spec.sh ${CMAKE_CURRENT_BINARY_DIR}/MySQL-shared-compat.spec @ONLY)
+  INSTALL(FILES myblockchain.m4 DESTINATION ${INSTALL_SHAREDIR}/aclocal COMPONENT Development)
+  CONFIGURE_FILE(MyBlockchain-shared-compat.spec.sh ${CMAKE_CURRENT_BINARY_DIR}/MyBlockchain-shared-compat.spec @ONLY)
   
   SET(bindir ${prefix}/${INSTALL_BINDIR})
   SET(sbindir ${prefix}/${INSTALL_SBINDIR})
   SET(scriptdir ${prefix}/${INSTALL_SCRIPTDIR})
   SET(libexecdir ${prefix}/${INSTALL_SBINDIR})
-  SET(pkgdatadir ${prefix}/${INSTALL_MYSQLSHAREDIR})
-  CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/mysql.server.sh 
-                 ${CMAKE_CURRENT_BINARY_DIR}/mysql.server @ONLY)
-  INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/mysql.server 
+  SET(pkgdatadir ${prefix}/${INSTALL_MYBLOCKCHAINSHAREDIR})
+  CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/myblockchain.server.sh 
+                 ${CMAKE_CURRENT_BINARY_DIR}/myblockchain.server @ONLY)
+  INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/myblockchain.server 
     DESTINATION ${inst_location} COMPONENT SupportFiles
     PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ 
     GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)

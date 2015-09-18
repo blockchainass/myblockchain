@@ -13,11 +13,11 @@
    along with this program; if not, write to the Free Software
    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA */
 
-#ifndef MYSQL_SERVICE_MYSQL_PLUGIN_AUTH_INCLUDED
-#define MYSQL_SERVICE_MYSQL_PLUGIN_AUTH_INCLUDED
+#ifndef MYBLOCKCHAIN_SERVICE_MYBLOCKCHAIN_PLUGIN_AUTH_INCLUDED
+#define MYBLOCKCHAIN_SERVICE_MYBLOCKCHAIN_PLUGIN_AUTH_INCLUDED
 
 /**
-  @file include/mysql/service_mysql_plugin_auth.h
+  @file include/myblockchain/service_myblockchain_plugin_auth.h
   This service provides functions to validatete password, check for strength
   of password based on common policy.
 
@@ -40,17 +40,17 @@
 extern "C" {
 #endif
 
-extern struct mysql_password_policy_service_st {
+extern struct myblockchain_password_policy_service_st {
   int (*my_validate_password_policy_func)(const char *, unsigned int);
   int (*my_calculate_password_strength_func)(const char *, unsigned int);
-} *mysql_password_policy_service;
+} *myblockchain_password_policy_service;
 
-#ifdef MYSQL_DYNAMIC_PLUGIN
+#ifdef MYBLOCKCHAIN_DYNAMIC_PLUGIN
 
 #define my_validate_password_policy(buffer, length) \
-  mysql_password_policy_service->my_validate_password_policy_func(buffer, length)
+  myblockchain_password_policy_service->my_validate_password_policy_func(buffer, length)
 #define my_calculate_password_strength(buffer, length) \
-  mysql_password_policy_service->my_calculate_password_strength_func(buffer, length)
+  myblockchain_password_policy_service->my_calculate_password_strength_func(buffer, length)
 
 #else
 

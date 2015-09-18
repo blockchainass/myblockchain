@@ -42,7 +42,7 @@ ENGINE = ndbcluster;
 -- ------------------------------------------------------------------------
 -- Table `ndb_clusters`
 --
--- Each record in this table represents a MySQL Cluster.  
+-- Each record in this table represents a MyBlockchain Cluster.  
 -- The record with cluster_id 0 is the primary cluster, which stores this
 -- metadata schema.  Additional clusters, storing application data only, may
 -- also be defined.  

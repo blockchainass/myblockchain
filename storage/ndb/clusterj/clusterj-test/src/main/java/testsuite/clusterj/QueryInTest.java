@@ -20,7 +20,7 @@ package testsuite.clusterj;
 import java.util.Arrays;
 import java.util.HashSet;
 
-import com.mysql.clusterj.ClusterJUserException;
+import com.myblockchain.clusterj.ClusterJUserException;
 
 import testsuite.clusterj.model.AllPrimitives;
 

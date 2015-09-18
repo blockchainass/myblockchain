@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2003-2006 MySQL AB, 2009 Sun Microsystems, Inc.
+   Copyright (C) 2003-2006 MyBlockchain AB, 2009 Sun Microsystems, Inc.
     All rights reserved. Use is subject to license terms.
 
    This program is free software; you can redistribute it and/or modify
@@ -32,11 +32,11 @@
 int main(int argc, const char** argv){
   ndb_init();
   int _help = 0;
-  const char * _database="BANK";
+  const char * _blockchain="BANK";
   
   struct getargs args[] = {
     { "usage", '?', arg_flag, &_help, "Print help", "" },
-    { "database", 'd', arg_string, &_database, "Database name", ""} 
+    { "blockchain", 'd', arg_string, &_blockchain, "Database name", ""} 
   };
   int num_args = sizeof(args) / sizeof(args[0]);
   int optind = 0;
@@ -54,7 +54,7 @@ int main(int argc, const char** argv){
     return NDBT_ProgramExit(NDBT_FAILED);
   }
 
-  Bank bank(con,_database);
+  Bank bank(con,_blockchain);
 
   if (bank.performValidateAllGLs() != 0)
     return NDBT_ProgramExit(NDBT_FAILED);

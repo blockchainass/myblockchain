@@ -16,7 +16,7 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 
 get_pcount () {
-	PSCOUNT=$(ps -ef | grep "/usr/sbin/mysqld" | wc -l)
+	PSCOUNT=$(ps -ef | grep "/usr/sbin/myblockchaind" | wc -l)
 	echo "${PSCOUNT}"
 }
 
@@ -50,56 +50,56 @@ case "$1" in
 
 		set -e
 
-		if [ -x "/etc/init.d/mysql" ];
+		if [ -x "/etc/init.d/myblockchain" ];
 		then
-			invoke-rc.d mysql stop || exit $?
+			invoke-rc.d myblockchain stop || exit $?
 			server_stop
 		fi
 
-		MYSQLDATA=/var/lib/mysql
-		MYSQLFILES=/var/lib/mysql-files
-		MYSQLLOG=/var/log/mysql
-		MYSQLRUN=/var/run/mysqld
+		MYBLOCKCHAINDATA=/var/lib/myblockchain
+		MYBLOCKCHAINFILES=/var/lib/myblockchain-files
+		MYBLOCKCHAINLOG=/var/log/myblockchain
+		MYBLOCKCHAINRUN=/var/run/myblockchaind
 
-		if ! getent group mysql >/dev/null;
+		if ! getent group myblockchain >/dev/null;
 		then
-			addgroup --system mysql >/dev/null
+			addgroup --system myblockchain >/dev/null
 		fi
 
-		if ! getent passwd mysql >/dev/null;
+		if ! getent passwd myblockchain >/dev/null;
 		then
-			adduser --ingroup mysql --system --disabled-login --no-create-home --home ${MYSQLDATA} --shell /bin/false --gecos "MySQL Server" mysql >/dev/null
+			adduser --ingroup myblockchain --system --disabled-login --no-create-home --home ${MYBLOCKCHAINDATA} --shell /bin/false --gecos "MyBlockchain Server" myblockchain >/dev/null
 		fi
 
-		if [ ! -d ${MYSQLDATA} -a ! -L ${MYSQLDATA} ];
+		if [ ! -d ${MYBLOCKCHAINDATA} -a ! -L ${MYBLOCKCHAINDATA} ];
 		then
-			mkdir ${MYSQLDATA}
-			chown mysql:mysql ${MYSQLDATA}
-			chmod 750 ${MYSQLDATA}
+			mkdir ${MYBLOCKCHAINDATA}
+			chown myblockchain:myblockchain ${MYBLOCKCHAINDATA}
+			chmod 750 ${MYBLOCKCHAINDATA}
 		fi
 
-		if [ ! -d ${MYSQLFILES} -a ! -L ${MYSQLFILES} ];
+		if [ ! -d ${MYBLOCKCHAINFILES} -a ! -L ${MYBLOCKCHAINFILES} ];
 		then
-			mkdir ${MYSQLFILES}
-			chown mysql:mysql ${MYSQLFILES}
-			chmod 770 ${MYSQLFILES}
+			mkdir ${MYBLOCKCHAINFILES}
+			chown myblockchain:myblockchain ${MYBLOCKCHAINFILES}
+			chmod 770 ${MYBLOCKCHAINFILES}
 		fi
 
-		if [ ! -d ${MYSQLLOG} -a ! -L ${MYSQLLOG} ];
+		if [ ! -d ${MYBLOCKCHAINLOG} -a ! -L ${MYBLOCKCHAINLOG} ];
 		then
-			mkdir ${MYSQLLOG}
-			chown mysql:adm ${MYSQLLOG}
-			chmod 750 ${MYSQLLOG}
-			touch ${MYSQLLOG}/error.log
-			chmod 640 ${MYSQLLOG}/error.log
-			chown mysql:adm ${MYSQLLOG}/error.log
+			mkdir ${MYBLOCKCHAINLOG}
+			chown myblockchain:adm ${MYBLOCKCHAINLOG}
+			chmod 750 ${MYBLOCKCHAINLOG}
+			touch ${MYBLOCKCHAINLOG}/error.log
+			chmod 640 ${MYBLOCKCHAINLOG}/error.log
+			chown myblockchain:adm ${MYBLOCKCHAINLOG}/error.log
 		fi
 
-		if [ ! -d ${MYSQLRUN} -a ! -L ${MYSQLRUN} ];
+		if [ ! -d ${MYBLOCKCHAINRUN} -a ! -L ${MYBLOCKCHAINRUN} ];
 		then
-			mkdir ${MYSQLRUN}
-			chown mysql:mysql ${MYSQLRUN}
-			chmod 755 ${MYSQLRUN}
+			mkdir ${MYBLOCKCHAINRUN}
+			chown myblockchain:myblockchain ${MYBLOCKCHAINRUN}
+			chmod 755 ${MYBLOCKCHAINRUN}
 		fi
 
 		set +e

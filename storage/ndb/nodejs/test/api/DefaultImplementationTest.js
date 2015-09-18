@@ -26,7 +26,7 @@ t1.run = function() {
       t1.failOnError();
       sessionFactory.close();
     } else {
-      t1.fail('could not obtain sessionFactory using adapter name ' + global.adapter + ' in mysql.connect');
+      t1.fail('could not obtain sessionFactory using adapter name ' + global.adapter + ' in myblockchain.connect');
     }
   });
 };

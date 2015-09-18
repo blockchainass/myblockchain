@@ -19,30 +19,30 @@
 #
 
 #if [ /usr/man/bin/makewhatis ] ; then
-#  /usr/man/bin/makewhatis "$BASEDIR/mysql/man"
+#  /usr/man/bin/makewhatis "$BASEDIR/myblockchain/man"
 #fi
 
-mygroup=mysql
-myuser=mysql
-mydatadir=/var/lib/mysql
+mygroup=myblockchain
+myuser=myblockchain
+mydatadir=/var/lib/myblockchain
 basedir=@@basedir@@
-mysecurefiledir=/var/lib/mysql-files
+mysecurefiledir=/var/lib/myblockchain-files
 
 if [ -n "$BASEDIR" ] ; then
   basedir="$BASEDIR"
 fi
 
-# What MySQL calls "basedir" and what pkgadd tools calls "basedir"
-# is not the same thing. The default pkgadd base directory is /opt/mysql,
-# the MySQL one "/opt/mysql/mysql".
+# What MyBlockchain calls "basedir" and what pkgadd tools calls "basedir"
+# is not the same thing. The default pkgadd base directory is /opt/myblockchain,
+# the MyBlockchain one "/opt/myblockchain/myblockchain".
 
 mybasedir="$basedir/@@instdir@@"
-mystart1="$mybasedir/support-files/mysql.server"
-mystart=/etc/init.d/mysql
+mystart1="$mybasedir/support-files/myblockchain.server"
+mystart=/etc/init.d/myblockchain
 
 # Check: Is this a first installation, or an upgrade ?
 
-if [ -d "$mydatadir/mysql" ] ; then
+if [ -d "$mydatadir/myblockchain" ] ; then
   :   # If the directory for system table files exists, we assume an upgrade.
 else
   INSTALL=new  # This is a new installation, the directory will soon be created.
@@ -63,16 +63,16 @@ chown -R $myuser:$mygroup $mysecurefiledir
 
 # Solaris patch 119255 (somewhere around revision 42) changes the behaviour
 # of pkgadd to set TMPDIR internally to a root-owned install directory.  This
-# has the unfortunate side effect of breaking running mysqld --initialize with
-# the --user=mysql argument as mysqld uses TMPDIR if set, and is unable to
+# has the unfortunate side effect of breaking running myblockchaind --initialize with
+# the --user=myblockchain argument as myblockchaind uses TMPDIR if set, and is unable to
 # write temporary tables to that directory.  To work around this issue, we
-# create a subdirectory inside TMPDIR (if set) for mysqld to write to.
+# create a subdirectory inside TMPDIR (if set) for myblockchaind to write to.
 #
 # Idea from Ben Hekster <heksterb@gmail.com> in bug#31164
 
 if [ -n "$TMPDIR" ] ; then
   savetmpdir="$TMPDIR"
-  TMPDIR="$TMPDIR/mysql.$$"
+  TMPDIR="$TMPDIR/myblockchain.$$"
   export TMPDIR
   mkdir "$TMPDIR"
   chown $myuser:$mygroup "$TMPDIR"
@@ -82,8 +82,8 @@ if [ -n "$INSTALL" ] ; then
   # We install/update the system tables
   (
     cd "$mybasedir"
-    bin/mysqld --initialize \
-	  --user=mysql \
+    bin/myblockchaind --initialize \
+	  --user=myblockchain \
 	  --basedir="$mybasedir" \
 	  --datadir=$mydatadir
   )

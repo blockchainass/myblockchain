@@ -15,11 +15,11 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
  */
 
-package com.mysql.clusterj.tie;
+package com.myblockchain.clusterj.tie;
 
-import com.mysql.ndbjtie.ndbapi.NdbIndexOperation;
-import com.mysql.clusterj.core.store.IndexOperation;
-import com.mysql.clusterj.core.store.Table;
+import com.myblockchain.ndbjtie.ndbapi.NdbIndexOperation;
+import com.myblockchain.clusterj.core.store.IndexOperation;
+import com.myblockchain.clusterj.core.store.Table;
 
 /**
  *

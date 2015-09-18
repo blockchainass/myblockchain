@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Copyright (C) 2003, 2005 MySQL AB
+# Copyright (C) 2003, 2005 MyBlockchain AB
 # Use is subject to license terms
 #
 # This program is free software; you can redistribute it and/or modify
@@ -58,15 +58,15 @@ add_proc (){
                 echo "HostName: $2"  >> $config_file
 		node_id=`expr $node_id + 1`
 		;;
-	mysqld)
-		echo "$proc_no.mysqld" >> $dir_file
-                echo "[mysqld]"      >> $config_file
+	myblockchaind)
+		echo "$proc_no.myblockchaind" >> $dir_file
+                echo "[myblockchaind]"      >> $config_file
                 echo "Id: $node_id"    >> $config_file
                 echo "HostName: $2"    >> $config_file
 		node_id=`expr $node_id + 1`
 		;;
-	mysql)
-		echo "$proc_no.mysql" >> $dir_file
+	myblockchain)
+		echo "$proc_no.myblockchain" >> $dir_file
 		;;
 	esac
 	proc_no=`expr $proc_no + 1`
@@ -82,8 +82,8 @@ do
 	mgm:*) add_procs mgm `echo $line | sed 's/mgm[ ]*:[ ]*//g'`;;
 	api:*) add_procs api `echo $line | sed 's/api[ ]*:[ ]*//g'`;;
 	ndb:*) add_procs ndb `echo $line | sed 's/ndb[ ]*:[ ]*//g'`;;
-	mysqld:*) add_procs mysqld `echo $line | sed 's/mysqld[ ]*:[ ]*//g'`;;
-	mysql:*) add_procs mysql `echo $line | sed 's/mysql[ ]*:[ ]*//g'`;;
+	myblockchaind:*) add_procs myblockchaind `echo $line | sed 's/myblockchaind[ ]*:[ ]*//g'`;;
+	myblockchain:*) add_procs myblockchain `echo $line | sed 's/myblockchain[ ]*:[ ]*//g'`;;
 	"-- cluster config") 
 		if [ "$cnf" = "/dev/null" ]
 		    then

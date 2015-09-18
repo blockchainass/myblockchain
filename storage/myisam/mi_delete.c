@@ -52,7 +52,7 @@ int mi_delete(MI_INFO *info,const uchar *record)
                   DBUG_RETURN(my_errno= INT_MAX););
   if (!(info->update & HA_STATE_AKTIV))
   {
-    DBUG_RETURN(my_errno=HA_ERR_KEY_NOT_FOUND);	/* No database read */
+    DBUG_RETURN(my_errno=HA_ERR_KEY_NOT_FOUND);	/* No blockchain read */
   }
   if (share->options & HA_OPTION_READ_ONLY_DATA)
   {
@@ -91,7 +91,7 @@ int mi_delete(MI_INFO *info,const uchar *record)
   }
 
   if ((*share->delete_record)(info))
-    goto err;				/* Remove record from database */
+    goto err;				/* Remove record from blockchain */
   info->state->checksum-=info->checksum;
 
   info->update= HA_STATE_CHANGED+HA_STATE_DELETED+HA_STATE_ROW_CHANGED;

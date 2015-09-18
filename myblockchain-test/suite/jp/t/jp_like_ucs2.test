@@ -1,0 +1,209 @@
+--source include/have_ucs2.inc
+--source include/have_innodb.inc
+
+--disable_warnings
+drop table if exists `�ԣ�`;
+drop table if exists `�ԣ�`;
+drop table if exists `�ԣ�`;
+drop table if exists `�ԣ�`;
+drop table if exists `�ԣ�`;
+drop table if exists `�ԣ�`;
+drop table if exists `�ԣ�`;
+drop table if exists `�ԣ�`;
+drop table if exists `�ԣ�`;
+--enable_warnings
+
+#
+# Test LIKE pattern matching using Japanese characters in ucs2 encoding
+#
+
+SET NAMES ujis;
+SET character_set_blockchain = ucs2;
+SET collation_connection = ucs2_general_ci;
+
+CREATE TABLE `�ԣ�` (`�ã�` char(20), INDEX(`�ã�`)) DEFAULT CHARSET = ucs2 engine = innodb;
+CREATE TABLE `�ԣ�` (`�ã�` char(20), INDEX(`�ã�`)) DEFAULT CHARSET = ucs2 engine = innodb;
+CREATE TABLE `�ԣ�` (`�ã�` char(20), INDEX(`�ã�`)) DEFAULT CHARSET = ucs2 engine = innodb;
+CREATE TABLE `�ԣ�` (`�ã�` char(20), INDEX(`�ã�`)) DEFAULT CHARSET = ucs2 engine = myisam;
+CREATE TABLE `�ԣ�` (`�ã�` char(20), INDEX(`�ã�`)) DEFAULT CHARSET = ucs2 engine = myisam;
+CREATE TABLE `�ԣ�` (`�ã�` char(20), INDEX(`�ã�`)) DEFAULT CHARSET = ucs2 engine = myisam;
+CREATE TABLE `�ԣ�` (`�ã�` char(20), INDEX(`�ã�`)) DEFAULT CHARSET = ucs2 engine = MEMORY;
+CREATE TABLE `�ԣ�` (`�ã�` char(20), INDEX(`�ã�`)) DEFAULT CHARSET = ucs2 engine = MEMORY;
+CREATE TABLE `�ԣ�` (`�ã�` char(20), INDEX(`�ã�`)) DEFAULT CHARSET = ucs2 engine = MEMORY;
+
+#Insert the following data in each table
+# jisx0201 hankaku-katakana data
+# jisx0208 data
+# jisx0212 supplemental character data
+
+INSERT INTO `�ԣ�` VALUES
+ ('PQRSTUVWXYZ[\\]^_')
+,(' ������������������������������')
+,('��������������������������������')
+,('�����ÎĎŎƎǎȎɎʎˎ͎̎Ύ�')
+,('�ЎюҎӎԎՎ֎׎؎َڎێ܎ݎގ�');
+
+INSERT INTO `�ԣ�` VALUES
+ ('����������������������������������������')
+,('�����������������������������¡áġšơ�')
+,('�ȡɡʡˡ̡͡ΡϡСѡҡӡԡա֡סء١ڡ�')
+,('����������������������������������������')
+,('�Ȥɤʤˤ̤ͤΤϤФѤҤӤԤդ֤פؤ٤ڤ�')
+,('�ܤݤޤߤ�������������������������������')
+,('����������������������������������������')
+,('����������������������������������������')
+,('��СТУФХЦЧШЩЪЫЬЭЮЯабвг')
+,('����������������������������������������');
+
+INSERT INTO `�ԣ�` VALUES
+ ('������������������������������������Ï�ġ�����')
+,('���������������������������������������������Ï�ď�ŏ�Ə��')
+,('��ȏ�ɏ�ʏ�ˏ�̏�͏�Ώ�Ϗ�Џ�я�ҏ�ӏ�ԏ�Տ�֏�׏�؏�ُ�ڏ��')
+,('��܏�ݏ�ޏ�ߏ����Ᏸ⏰㏰䏰台揰珰菰鏰ꏰ돰쏰폰�')
+,('�����������������􃰏����')
+,('���������������������Ï�ď�ŏ�Ə��')
+,('��ȏ�ɏ�ʏ�ˏ�̏�͏�Ώ�Ϗ�Џ�я�ҏ�ӏ�ԏ�Տ�֏�׏�؏�ُ�ڏ��');
+
+INSERT INTO `�ԣ�` VALUES
+ ('PQRSTUVWXYZ[\\]^_')
+,(' ������������������������������')
+,('��������������������������������')
+,('�����ÎĎŎƎǎȎɎʎˎ͎̎Ύ�')
+,('�ЎюҎӎԎՎ֎׎؎َڎێ܎ݎގ�');
+
+INSERT INTO `�ԣ�` VALUES
+ ('����������������������������������������')
+,('�����������������������������¡áġšơ�')
+,('�ȡɡʡˡ̡͡ΡϡСѡҡӡԡա֡סء١ڡ�')
+,('����������������������������������������')
+,('�Ȥɤʤˤ̤ͤΤϤФѤҤӤԤդ֤פؤ٤ڤ�')
+,('�ܤݤޤߤ�������������������������������')
+,('����������������������������������������')
+,('����������������������������������������')
+,('��СТУФХЦЧШЩЪЫЬЭЮЯабвг')
+,('����������������������������������������');
+
+INSERT INTO `�ԣ�` VALUES
+ ('������������������������������������Ï�ġ�����')
+,('���������������������������������������������Ï�ď�ŏ�Ə��')
+,('��ȏ�ɏ�ʏ�ˏ�̏�͏�Ώ�Ϗ�Џ�я�ҏ�ӏ�ԏ�Տ�֏�׏�؏�ُ�ڏ��')
+,('��܏�ݏ�ޏ�ߏ����Ᏸ⏰㏰䏰台揰珰菰鏰ꏰ돰쏰폰�')
+,('�����������������􃰏����')
+,('���������������������Ï�ď�ŏ�Ə��')
+,('��ȏ�ɏ�ʏ�ˏ�̏�͏�Ώ�Ϗ�Џ�я�ҏ�ӏ�ԏ�Տ�֏�׏�؏�ُ�ڏ��');
+
+INSERT INTO `�ԣ�` VALUES
+ ('PQRSTUVWXYZ[\\]^_')
+,(' ������������������������������')
+,('��������������������������������')
+,('�����ÎĎŎƎǎȎɎʎˎ͎̎Ύ�')
+,('�ЎюҎӎԎՎ֎׎؎َڎێ܎ݎގ�');
+
+INSERT INTO `�ԣ�` VALUES
+ ('����������������������������������������')
+,('�����������������������������¡áġšơ�')
+,('�ȡɡʡˡ̡͡ΡϡСѡҡӡԡա֡סء١ڡ�')
+,('����������������������������������������')
+,('�Ȥɤʤˤ̤ͤΤϤФѤҤӤԤդ֤פؤ٤ڤ�')
+,('�ܤݤޤߤ�������������������������������')
+,('����������������������������������������')
+,('����������������������������������������')
+,('��СТУФХЦЧШЩЪЫЬЭЮЯабвг')
+,('����������������������������������������');
+
+INSERT INTO `�ԣ�` VALUES
+ ('������������������������������������Ï�ġ�����')
+,('���������������������������������������������Ï�ď�ŏ�Ə��')
+,('��ȏ�ɏ�ʏ�ˏ�̏�͏�Ώ�Ϗ�Џ�я�ҏ�ӏ�ԏ�Տ�֏�׏�؏�ُ�ڏ��')
+,('��܏�ݏ�ޏ�ߏ����Ᏸ⏰㏰䏰台揰珰菰鏰ꏰ돰쏰폰�')
+,('�����������������􃰏����')
+,('���������������������Ï�ď�ŏ�Ə��')
+,('��ȏ�ɏ�ʏ�ˏ�̏�͏�Ώ�Ϗ�Џ�я�ҏ�ӏ�ԏ�Տ�֏�׏�؏�ُ�ڏ��');
+
+#INNODB
+SELECT * FROM `�ԣ�` WHERE `�ã�` LIKE ' %';
+SELECT * FROM `�ԣ�` WHERE `�ã�` LIKE '% %';
+SELECT * FROM `�ԣ�` WHERE `�ã�` LIKE '% ';
+SELECT * FROM `�ԣ�` WHERE `�ã�` LIKE '��%';
+SELECT * FROM `�ԣ�` WHERE `�ã�` LIKE '%�׎�%';
+SELECT * FROM `�ԣ�` WHERE `�ã�` LIKE '%��';
+SELECT * FROM `�ԣ�` WHERE `�ã�` LIKE '��������������������������������%';
+SELECT * FROM `�ԣ�` WHERE `�ã�` LIKE '%��������������������������������%';
+SELECT * FROM `�ԣ�` WHERE `�ã�` LIKE '%��������������������������������';
+SELECT * FROM `�ԣ�` WHERE `�ã�` LIKE '��%';
+SELECT * FROM `�ԣ�` WHERE `�ã�` LIKE '%��%';
+SELECT * FROM `�ԣ�` WHERE `�ã�` LIKE '%��';
+SELECT * FROM `�ԣ�` WHERE `�ã�` LIKE '��%';
+SELECT * FROM `�ԣ�` WHERE `�ã�` LIKE '%��%';
+SELECT * FROM `�ԣ�` WHERE `�ã�` LIKE '%��';
+SELECT * FROM `�ԣ�` WHERE `�ã�` LIKE '����������������������������������������%';
+SELECT * FROM `�ԣ�` WHERE `�ã�` LIKE '%����������������������������������������%';
+SELECT * FROM `�ԣ�` WHERE `�ã�` LIKE '%����������������������������������������';
+SELECT * FROM `�ԣ�` WHERE `�ã�` LIKE '���%';
+SELECT * FROM `�ԣ�` WHERE `�ã�` LIKE '%���%';
+SELECT * FROM `�ԣ�` WHERE `�ã�` LIKE '%���';
+SELECT * FROM `�ԣ�` WHERE `�ã�` LIKE '���������������������Ï�ď�ŏ�Ə��%';
+SELECT * FROM `�ԣ�` WHERE `�ã�` LIKE '%���������������������Ï�ď�ŏ�Ə��%';
+SELECT * FROM `�ԣ�` WHERE `�ã�` LIKE '%���������������������Ï�ď�ŏ�Ə��';
+
+#MyISAM
+SELECT * FROM `�ԣ�` WHERE `�ã�` LIKE ' %';
+SELECT * FROM `�ԣ�` WHERE `�ã�` LIKE '% %';
+SELECT * FROM `�ԣ�` WHERE `�ã�` LIKE '% ';
+SELECT * FROM `�ԣ�` WHERE `�ã�` LIKE '��%';
+SELECT * FROM `�ԣ�` WHERE `�ã�` LIKE '%�׎�%';
+SELECT * FROM `�ԣ�` WHERE `�ã�` LIKE '%��';
+SELECT * FROM `�ԣ�` WHERE `�ã�` LIKE '��������������������������������%';
+SELECT * FROM `�ԣ�` WHERE `�ã�` LIKE '%��������������������������������%';
+SELECT * FROM `�ԣ�` WHERE `�ã�` LIKE '%��������������������������������';
+SELECT * FROM `�ԣ�` WHERE `�ã�` LIKE '��%';
+SELECT * FROM `�ԣ�` WHERE `�ã�` LIKE '%��%';
+SELECT * FROM `�ԣ�` WHERE `�ã�` LIKE '%��';
+SELECT * FROM `�ԣ�` WHERE `�ã�` LIKE '��%';
+SELECT * FROM `�ԣ�` WHERE `�ã�` LIKE '%��%';
+SELECT * FROM `�ԣ�` WHERE `�ã�` LIKE '%��';
+SELECT * FROM `�ԣ�` WHERE `�ã�` LIKE '����������������������������������������%';
+SELECT * FROM `�ԣ�` WHERE `�ã�` LIKE '%����������������������������������������%';
+SELECT * FROM `�ԣ�` WHERE `�ã�` LIKE '%����������������������������������������';
+SELECT * FROM `�ԣ�` WHERE `�ã�` LIKE '���%';
+SELECT * FROM `�ԣ�` WHERE `�ã�` LIKE '%���%';
+SELECT * FROM `�ԣ�` WHERE `�ã�` LIKE '%���';
+SELECT * FROM `�ԣ�` WHERE `�ã�` LIKE '���������������������Ï�ď�ŏ�Ə��%';
+SELECT * FROM `�ԣ�` WHERE `�ã�` LIKE '%���������������������Ï�ď�ŏ�Ə��%';
+SELECT * FROM `�ԣ�` WHERE `�ã�` LIKE '%���������������������Ï�ď�ŏ�Ə��';
+
+#MEMORY
+SELECT * FROM `�ԣ�` WHERE `�ã�` LIKE ' %';
+SELECT * FROM `�ԣ�` WHERE `�ã�` LIKE '% %';
+SELECT * FROM `�ԣ�` WHERE `�ã�` LIKE '% ';
+SELECT * FROM `�ԣ�` WHERE `�ã�` LIKE '��%';
+SELECT * FROM `�ԣ�` WHERE `�ã�` LIKE '%�׎�%';
+SELECT * FROM `�ԣ�` WHERE `�ã�` LIKE '%��';
+SELECT * FROM `�ԣ�` WHERE `�ã�` LIKE '��������������������������������%';
+SELECT * FROM `�ԣ�` WHERE `�ã�` LIKE '%��������������������������������%';
+SELECT * FROM `�ԣ�` WHERE `�ã�` LIKE '%��������������������������������';
+SELECT * FROM `�ԣ�` WHERE `�ã�` LIKE '��%';
+SELECT * FROM `�ԣ�` WHERE `�ã�` LIKE '%��%';
+SELECT * FROM `�ԣ�` WHERE `�ã�` LIKE '%��';
+SELECT * FROM `�ԣ�` WHERE `�ã�` LIKE '��%';
+SELECT * FROM `�ԣ�` WHERE `�ã�` LIKE '%��%';
+SELECT * FROM `�ԣ�` WHERE `�ã�` LIKE '%��';
+SELECT * FROM `�ԣ�` WHERE `�ã�` LIKE '����������������������������������������%';
+SELECT * FROM `�ԣ�` WHERE `�ã�` LIKE '%����������������������������������������%';
+SELECT * FROM `�ԣ�` WHERE `�ã�` LIKE '%����������������������������������������';
+SELECT * FROM `�ԣ�` WHERE `�ã�` LIKE '���%';
+SELECT * FROM `�ԣ�` WHERE `�ã�` LIKE '%���%';
+SELECT * FROM `�ԣ�` WHERE `�ã�` LIKE '%���';
+SELECT * FROM `�ԣ�` WHERE `�ã�` LIKE '���������������������Ï�ď�ŏ�Ə��%';
+SELECT * FROM `�ԣ�` WHERE `�ã�` LIKE '%���������������������Ï�ď�ŏ�Ə��%';
+SELECT * FROM `�ԣ�` WHERE `�ã�` LIKE '%���������������������Ï�ď�ŏ�Ə��';
+
+DROP TABLE `�ԣ�`;
+DROP TABLE `�ԣ�`;
+DROP TABLE `�ԣ�`;
+DROP TABLE `�ԣ�`;
+DROP TABLE `�ԣ�`;
+DROP TABLE `�ԣ�`;
+DROP TABLE `�ԣ�`;
+DROP TABLE `�ԣ�`;
+DROP TABLE `�ԣ�`;

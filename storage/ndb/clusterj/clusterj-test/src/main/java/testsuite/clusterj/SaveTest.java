@@ -67,7 +67,7 @@ public class SaveTest extends AbstractClusterJModelTest {
                     e.setAge(NUMBER_TO_INSERT - i);
                 }
             }
-            // send the change to the database
+            // send the change to the blockchain
             session.savePersistent(e);
         }
         tx.commit();
@@ -117,7 +117,7 @@ public class SaveTest extends AbstractClusterJModelTest {
             emps.add(e);
             expectedEmployees.add(e);
         }
-        // send the changes to the database
+        // send the changes to the blockchain
         List<Employee> savedEmployees = (List<Employee>)session.savePersistentAll(emps);
         if (savedEmployees.size() != NUMBER_TO_INSERT) {
             error("Wrong size for saved employees. Expected: " + NUMBER_TO_INSERT

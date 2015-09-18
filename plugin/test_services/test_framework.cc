@@ -16,8 +16,8 @@
 #include <my_global.h>
 //#include <stdlib.h>
 //#include <ctype.h>
-#include <mysql_version.h>
-#include <mysql/plugin.h>
+#include <myblockchain_version.h>
+#include <myblockchain/plugin.h>
 //#include <my_dir.h>
 #include "my_sys.h"                             // my_write, my_malloc
 #include "m_string.h"                           // strlen
@@ -64,16 +64,16 @@ static int test_services_plugin_deinit(void *p)
 }
 
 
-struct st_mysql_daemon test_services_plugin=
-{ MYSQL_DAEMON_INTERFACE_VERSION  };
+struct st_myblockchain_daemon test_services_plugin=
+{ MYBLOCKCHAIN_DAEMON_INTERFACE_VERSION  };
 
 /*
   Plugin library descriptor
 */
 
-mysql_declare_plugin(test_daemon)
+myblockchain_declare_plugin(test_daemon)
 {
-  MYSQL_DAEMON_PLUGIN,
+  MYBLOCKCHAIN_DAEMON_PLUGIN,
   &test_services_plugin,
   "test_framework",
   "Horst Hunger",
@@ -87,4 +87,4 @@ mysql_declare_plugin(test_daemon)
   NULL,                       /* config options                  */
   0,                          /* flags                           */
 }
-mysql_declare_plugin_end;
+myblockchain_declare_plugin_end;

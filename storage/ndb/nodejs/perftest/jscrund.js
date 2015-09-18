@@ -31,7 +31,7 @@ JSCRUND.stats  = require("../Adapter/api/stats");
 JSCRUND.lib    = require("./lib");
 
 // Backends:
-JSCRUND.mysqljs = require('./jscrund_mysqljs');
+JSCRUND.myblockchainjs = require('./jscrund_myblockchainjs');
 JSCRUND.sqlAdapter = require('./jscrund_sql');
 JSCRUND.spiAdapter = require('./jscrund_dbspi');
 JSCRUND.nullAdapter = require('./jscrund_null');
@@ -56,11 +56,11 @@ function usage() {
   "           :  Specify varchar size in B tests (default 10)\n" +
   "   --adapter=ndb\n" +
   "   -n      :  Use ndb adapter (default)\n" +
-  "   --adapter=mysql\n" +
-  "   -m      :  Use mysql adapter\n" +
+  "   --adapter=myblockchain\n" +
+  "   -m      :  Use myblockchain adapter\n" +
   "   --spi   :  Run tests using DBServiceProvider SPI \n" +
   "   --adapter=sql\n" +
-  "   -f      :  Use felix sql driver (not mysql-js api)\n" +
+  "   -f      :  Use felix sql driver (not myblockchain-js api)\n" +
   "   --adapter=null\n" +
   "           :  Use null driver\n" +
   "   --log   :  Write log file\n" +
@@ -104,7 +104,7 @@ function parse_command_line(options) {
       options.adapter = "ndb";
       break;
     case '-m':
-      options.adapter = "mysql";
+      options.adapter = "myblockchain";
       break;
     case '-f':
       options.adapter = "sql";
@@ -350,7 +350,7 @@ function main() {
   var options = {
     'doClass' : 'A',
     'adapter' : 'ndb',
-    'database': 'jscrund',
+    'blockchain': 'jscrund',
     'modes': 'indy,each,bulk',
     'tests': null,
     'iterations': [4000],
@@ -410,7 +410,7 @@ function main() {
   } else if(options.adapter == 'null') {
     JSCRUND.implementation = new JSCRUND.nullAdapter.implementation();
   } else {
-    JSCRUND.implementation = new JSCRUND.mysqljs.implementation();
+    JSCRUND.implementation = new JSCRUND.myblockchainjs.implementation();
   }
 
   /* Get default connection properties */
@@ -426,7 +426,7 @@ function main() {
   }
 
   /* Then mix in properties from the command line */
-  properties.database = options.database;
+  properties.blockchain = options.blockchain;
   for(i in options.setProp) {
     if(options.setProp.hasOwnProperty(i)) {
       properties[i] = options.setProp[i];
@@ -784,14 +784,14 @@ function main() {
     });
   };
 
-  // create database
+  // create blockchain
   JSCRUND.lib.SQL.create('./', properties, function(err) {
     if (err) {
       console.log('Error creating tables.', err);
       process.exit(1);
     }
     
-    // if database create successful, run tests
+    // if blockchain create successful, run tests
     runTests(options);
   });
 

@@ -15,33 +15,33 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
  */
 
-package com.mysql.clusterj.tie;
+package com.myblockchain.clusterj.tie;
 
 import java.nio.ByteBuffer;
 
 import java.util.List;
 
-import com.mysql.clusterj.ClusterJDatastoreException;
-import com.mysql.clusterj.ClusterJFatalInternalException;
-import com.mysql.clusterj.ClusterJUserException;
+import com.myblockchain.clusterj.ClusterJDatastoreException;
+import com.myblockchain.clusterj.ClusterJFatalInternalException;
+import com.myblockchain.clusterj.ClusterJUserException;
 
-import com.mysql.clusterj.core.store.ClusterTransaction;
+import com.myblockchain.clusterj.core.store.ClusterTransaction;
 
-import com.mysql.clusterj.core.util.I18NHelper;
-import com.mysql.clusterj.core.util.Logger;
-import com.mysql.clusterj.core.util.LoggerFactoryService;
+import com.myblockchain.clusterj.core.util.I18NHelper;
+import com.myblockchain.clusterj.core.util.Logger;
+import com.myblockchain.clusterj.core.util.LoggerFactoryService;
 
-import com.mysql.ndbjtie.ndbapi.Ndb;
-import com.mysql.ndbjtie.ndbapi.NdbErrorConst;
-import com.mysql.ndbjtie.ndbapi.NdbTransaction;
-import com.mysql.ndbjtie.ndbapi.NdbDictionary.Dictionary;
+import com.myblockchain.ndbjtie.ndbapi.Ndb;
+import com.myblockchain.ndbjtie.ndbapi.NdbErrorConst;
+import com.myblockchain.ndbjtie.ndbapi.NdbTransaction;
+import com.myblockchain.ndbjtie.ndbapi.NdbDictionary.Dictionary;
 
 /**
  * This class is used to hold the ndb Dictionary used for NdbRecord. It has the minimum
  * implementation needed to implement the life cycle of the Ndb. In particular, it omits the
  * buffer manager and partition key scratch buffer used in the standard DbImpl.
  */
-class DbImplForNdbRecord implements com.mysql.clusterj.core.store.Db {
+class DbImplForNdbRecord implements com.myblockchain.clusterj.core.store.Db {
 
     /** My message translator */
     static final I18NHelper local = I18NHelper.getInstance(DbImplForNdbRecord.class);
@@ -92,7 +92,7 @@ class DbImplForNdbRecord implements com.mysql.clusterj.core.store.Db {
         clusterConnection.close(this);
     }
 
-    public com.mysql.clusterj.core.store.Dictionary getDictionary() {
+    public com.myblockchain.clusterj.core.store.Dictionary getDictionary() {
         throw new ClusterJFatalInternalException(local.message("ERR_Implementation_Should_Not_Occur"));
     }
 

@@ -107,6 +107,6 @@ ENDFOREACH()
 TARGET_LINK_LIBRARIES(testBitfield ndbNDBT ndbclient_static)
 SET(BINS ${BINS} testBitfield)
 
-TARGET_LINK_LIBRARIES(testUpgrade mysqlclient)
+TARGET_LINK_LIBRARIES(testUpgrade myblockchainclient)
 
 INSTALL(TARGETS ${BINS} DESTINATION bin)

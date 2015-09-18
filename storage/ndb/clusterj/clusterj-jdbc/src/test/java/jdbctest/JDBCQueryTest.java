@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import com.mysql.clusterj.Session;
+import com.myblockchain.clusterj.Session;
 
 import testsuite.clusterj.AbstractClusterJModelTest;
 import testsuite.clusterj.model.AllPrimitives;

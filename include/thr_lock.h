@@ -51,7 +51,7 @@ enum thr_lock_type { TL_IGNORE=-1,
 		     TL_READ_NO_INSERT,
 		     /* 
 			Write lock, but allow other threads to read / write.
-			Used by BDB tables in MySQL to mark that someone is
+			Used by BDB tables in MyBlockchain to mark that someone is
 			reading/writing to the table.
 		      */
 		     TL_WRITE_ALLOW_WRITE,
@@ -99,7 +99,7 @@ typedef struct st_thr_lock_data {
   THR_LOCK_INFO *owner;
   struct st_thr_lock_data *next,**prev;
   struct st_thr_lock *lock;
-  mysql_cond_t *cond;
+  myblockchain_cond_t *cond;
   enum thr_lock_type type;
   void *status_param;			/* Param to status functions */
   void *debug_print_param;
@@ -112,7 +112,7 @@ struct st_lock_list {
 
 typedef struct st_thr_lock {
   LIST list;
-  mysql_mutex_t mutex;
+  myblockchain_mutex_t mutex;
   struct st_lock_list read_wait;
   struct st_lock_list read;
   struct st_lock_list write_wait;
@@ -129,7 +129,7 @@ typedef struct st_thr_lock {
 
 
 extern LIST *thr_lock_thread_list;
-extern mysql_mutex_t THR_LOCK_lock;
+extern myblockchain_mutex_t THR_LOCK_lock;
 struct st_my_thread_var;
 
 void thr_lock_info_init(THR_LOCK_INFO *info, my_thread_id thread_id);

@@ -69,7 +69,7 @@ MACRO (RUN_BISON input_yy output_cc output_h name_prefix)
     ELSE()
       # Output files are missing, bail out.
       SET(ERRMSG 
-         "Bison (GNU parser generator) is required to build MySQL." 
+         "Bison (GNU parser generator) is required to build MyBlockchain." 
          "Please install bison."
       )
       IF(WIN32)

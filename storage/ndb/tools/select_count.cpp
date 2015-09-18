@@ -37,12 +37,12 @@ static const char* _dbname = "TEST_DB";
 static int _parallelism = 240;
 static int _lock = 0;
 
-const char *load_default_groups[]= { "mysql_cluster",0 };
+const char *load_default_groups[]= { "myblockchain_cluster",0 };
 
 static struct my_option my_long_options[] =
 {
   NDB_STD_OPTS("ndb_select_count"),
-  { "database", 'd', "Name of database table is in",
+  { "blockchain", 'd', "Name of blockchain table is in",
     (uchar**) &_dbname, (uchar**) &_dbname, 0,
     GET_STR, REQUIRED_ARG, 0, 0, 0, 0, 0, 0 },
   { "parallelism", 'p', "parallelism",

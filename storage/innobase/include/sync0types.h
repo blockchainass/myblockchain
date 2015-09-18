@@ -731,7 +731,7 @@ public:
 	typedef Counter CounterType;
 
 #ifdef UNIV_PFS_MUTEX
-	typedef	mysql_pfs_key_t	pfs_key_t;
+	typedef	myblockchain_pfs_key_t	pfs_key_t;
 #endif /* UNIV_PFS_MUTEX */
 
 	/** Constructor */
@@ -907,7 +907,7 @@ sync_latch_get_level(latch_id_t id)
 @param[in]	id		Latch ID
 @return the PFS key */
 inline
-mysql_pfs_key_t
+myblockchain_pfs_key_t
 sync_latch_get_pfs_key(latch_id_t id)
 {
 	const latch_meta_t&	meta = sync_latch_get_meta(id);

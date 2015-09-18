@@ -13,15 +13,15 @@
   along with this program; if not, write to the Free Software Foundation,
   51 Franklin Street, Suite 500, Boston, MA 02110-1335 USA */
 
-#ifndef MYSQL_TABLE_H
-#define MYSQL_TABLE_H
+#ifndef MYBLOCKCHAIN_TABLE_H
+#define MYBLOCKCHAIN_TABLE_H
 
 /**
-  @file mysql/psi/mysql_table.h
+  @file myblockchain/psi/myblockchain_table.h
   Instrumentation helpers for table io.
 */
 
-#include "mysql/psi/psi.h"
+#include "myblockchain/psi/psi.h"
 
 #ifndef PSI_TABLE_CALL
 #define PSI_TABLE_CALL(M) PSI_DYNAMIC_CALL(M)
@@ -34,27 +34,27 @@
 */
 
 /**
-  @def MYSQL_TABLE_WAIT_VARIABLES
+  @def MYBLOCKCHAIN_TABLE_WAIT_VARIABLES
   Instrumentation helper for table waits.
   This instrumentation declares local variables.
   Do not use a ';' after this macro
   @param LOCKER the locker
   @param STATE the locker state
-  @sa MYSQL_START_TABLE_IO_WAIT.
-  @sa MYSQL_END_TABLE_IO_WAIT.
-  @sa MYSQL_START_TABLE_LOCK_WAIT.
-  @sa MYSQL_END_TABLE_LOCK_WAIT.
+  @sa MYBLOCKCHAIN_START_TABLE_IO_WAIT.
+  @sa MYBLOCKCHAIN_END_TABLE_IO_WAIT.
+  @sa MYBLOCKCHAIN_START_TABLE_LOCK_WAIT.
+  @sa MYBLOCKCHAIN_END_TABLE_LOCK_WAIT.
 */
 #ifdef HAVE_PSI_TABLE_INTERFACE
-  #define MYSQL_TABLE_WAIT_VARIABLES(LOCKER, STATE) \
+  #define MYBLOCKCHAIN_TABLE_WAIT_VARIABLES(LOCKER, STATE) \
     struct PSI_table_locker* LOCKER; \
     PSI_table_locker_state STATE;
 #else
-  #define MYSQL_TABLE_WAIT_VARIABLES(LOCKER, STATE)
+  #define MYBLOCKCHAIN_TABLE_WAIT_VARIABLES(LOCKER, STATE)
 #endif
 
 /**
-  @def MYSQL_START_TABLE_LOCK_WAIT
+  @def MYBLOCKCHAIN_START_TABLE_LOCK_WAIT
   Instrumentation helper for table lock waits.
   This instrumentation marks the start of a wait event.
   @param LOCKER the locker
@@ -62,47 +62,47 @@
   @param PSI the instrumented table
   @param OP the table operation to be performed
   @param FLAGS per table operation flags.
-  @sa MYSQL_END_TABLE_LOCK_WAIT.
+  @sa MYBLOCKCHAIN_END_TABLE_LOCK_WAIT.
 */
 #ifdef HAVE_PSI_TABLE_INTERFACE
-  #define MYSQL_START_TABLE_LOCK_WAIT(LOCKER, STATE, PSI, OP, FLAGS) \
-    LOCKER= inline_mysql_start_table_lock_wait(STATE, PSI, \
+  #define MYBLOCKCHAIN_START_TABLE_LOCK_WAIT(LOCKER, STATE, PSI, OP, FLAGS) \
+    LOCKER= inline_myblockchain_start_table_lock_wait(STATE, PSI, \
                                                OP, FLAGS, __FILE__, __LINE__)
 #else
-  #define MYSQL_START_TABLE_LOCK_WAIT(LOCKER, STATE, PSI, OP, FLAGS) \
+  #define MYBLOCKCHAIN_START_TABLE_LOCK_WAIT(LOCKER, STATE, PSI, OP, FLAGS) \
     do {} while (0)
 #endif
 
 /**
-  @def MYSQL_END_TABLE_LOCK_WAIT
+  @def MYBLOCKCHAIN_END_TABLE_LOCK_WAIT
   Instrumentation helper for table lock waits.
   This instrumentation marks the end of a wait event.
   @param LOCKER the locker
-  @sa MYSQL_START_TABLE_LOCK_WAIT.
+  @sa MYBLOCKCHAIN_START_TABLE_LOCK_WAIT.
 */
 #ifdef HAVE_PSI_TABLE_INTERFACE
-  #define MYSQL_END_TABLE_LOCK_WAIT(LOCKER) \
-    inline_mysql_end_table_lock_wait(LOCKER)
+  #define MYBLOCKCHAIN_END_TABLE_LOCK_WAIT(LOCKER) \
+    inline_myblockchain_end_table_lock_wait(LOCKER)
 #else
-  #define MYSQL_END_TABLE_LOCK_WAIT(LOCKER) \
+  #define MYBLOCKCHAIN_END_TABLE_LOCK_WAIT(LOCKER) \
     do {} while (0)
 #endif
 
 #ifdef HAVE_PSI_TABLE_INTERFACE
-  #define MYSQL_UNLOCK_TABLE(T) \
-    inline_mysql_unlock_table(T)
+  #define MYBLOCKCHAIN_UNLOCK_TABLE(T) \
+    inline_myblockchain_unlock_table(T)
 #else
-  #define MYSQL_UNLOCK_TABLE(T) \
+  #define MYBLOCKCHAIN_UNLOCK_TABLE(T) \
     do {} while (0)
 #endif
 
 #ifdef HAVE_PSI_TABLE_INTERFACE
 /**
-  Instrumentation calls for MYSQL_START_TABLE_LOCK_WAIT.
-  @sa MYSQL_END_TABLE_LOCK_WAIT.
+  Instrumentation calls for MYBLOCKCHAIN_START_TABLE_LOCK_WAIT.
+  @sa MYBLOCKCHAIN_END_TABLE_LOCK_WAIT.
 */
 static inline struct PSI_table_locker *
-inline_mysql_start_table_lock_wait(PSI_table_locker_state *state,
+inline_myblockchain_start_table_lock_wait(PSI_table_locker_state *state,
                                    struct PSI_table *psi,
                                    enum PSI_table_lock_operation op,
                                    ulong flags, const char *src_file, int src_line)
@@ -118,18 +118,18 @@ inline_mysql_start_table_lock_wait(PSI_table_locker_state *state,
 }
 
 /**
-  Instrumentation calls for MYSQL_END_TABLE_LOCK_WAIT.
-  @sa MYSQL_START_TABLE_LOCK_WAIT.
+  Instrumentation calls for MYBLOCKCHAIN_END_TABLE_LOCK_WAIT.
+  @sa MYBLOCKCHAIN_START_TABLE_LOCK_WAIT.
 */
 static inline void
-inline_mysql_end_table_lock_wait(struct PSI_table_locker *locker)
+inline_myblockchain_end_table_lock_wait(struct PSI_table_locker *locker)
 {
   if (locker != NULL)
     PSI_TABLE_CALL(end_table_lock_wait)(locker);
 }
 
 static inline void
-inline_mysql_unlock_table(struct PSI_table *table)
+inline_myblockchain_unlock_table(struct PSI_table *table)
 {
   if (table != NULL)
     PSI_TABLE_CALL(unlock_table)(table);

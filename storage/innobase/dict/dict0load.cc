@@ -18,7 +18,7 @@ this program; if not, write to the Free Software Foundation, Inc.,
 
 /**************************************************//**
 @file dict/dict0load.cc
-Loads to the memory cache database object definitions
+Loads to the memory cache blockchain object definitions
 from dictionary tables
 
 Created 4/24/1996 Heikki Tuuri
@@ -31,7 +31,7 @@ Created 4/24/1996 Heikki Tuuri
 #include "dict0load.ic"
 #endif
 
-#include "mysql_version.h"
+#include "myblockchain_version.h"
 #include "btr0pcur.h"
 #include "btr0btr.h"
 #include "dict0boot.h"
@@ -130,13 +130,13 @@ name_of_col_is(
 #endif /* UNIV_DEBUG */
 
 /********************************************************************//**
-Finds the first table name in the given database.
+Finds the first table name in the given blockchain.
 @return own: table name, NULL if does not exist; the caller must free
 the memory in the string! */
 char*
 dict_get_first_table_name_in_db(
 /*============================*/
-	const char*	name)	/*!< in: database name which ends in '/' */
+	const char*	name)	/*!< in: blockchain name which ends in '/' */
 {
 	dict_table_t*	sys_tables;
 	btr_pcur_t	pcur;
@@ -945,7 +945,7 @@ dict_update_filepath(
 			   " WHERE SPACE = :space;\n"
 			   "END;\n", FALSE, trx);
 
-	trx_commit_for_mysql(trx);
+	trx_commit_for_myblockchain(trx);
 	trx->dict_operation_lock_mode = 0;
 	trx_free_for_background(trx);
 
@@ -1007,7 +1007,7 @@ dict_replace_tablespace_and_filepath(
 	err = dict_replace_tablespace_in_dictionary(
 		space_id, name, fsp_flags, filepath, trx, false);
 
-	trx_commit_for_mysql(trx);
+	trx_commit_for_myblockchain(trx);
 	trx->dict_operation_lock_mode = 0;
 	trx_free_for_background(trx);
 
@@ -1634,14 +1634,14 @@ err_len:
 
 			prtype = dtype_form_prtype(
 				prtype,
-				DATA_MYSQL_BINARY_CHARSET_COLL);
+				DATA_MYBLOCKCHAIN_BINARY_CHARSET_COLL);
 		} else {
 			/* Use the default charset for
 			other than binary columns. */
 
 			prtype = dtype_form_prtype(
 				prtype,
-				data_mysql_default_charset_coll);
+				data_myblockchain_default_charset_coll);
 		}
 	}
 
@@ -1670,7 +1670,7 @@ err_len:
 			dict_mem_table_add_v_col(
 				table, heap, name, mtype,
 				prtype, col_len,
-				dict_get_v_col_mysql_pos(pos), num_base);
+				dict_get_v_col_myblockchain_pos(pos), num_base);
 			ut_ad(vcol->v_pos == dict_get_v_col_pos(pos));
 		} else {
 			ut_ad(num_base == 0);
@@ -2583,7 +2583,7 @@ corrupted:
 				   && !strcmp("ID_IND", index->name)))) {
 
 			/* The index was created in memory already at booting
-			of the database server */
+			of the blockchain server */
 			dict_mem_index_free(index);
 		} else {
 			dict_load_fields(index, heap);
@@ -2672,7 +2672,7 @@ dict_load_table_low(
 
 /********************************************************************//**
 Using the table->heap, copy the null-terminated filepath into
-table->data_dir_path and replace the 'databasename/tablename.ibd'
+table->data_dir_path and replace the 'blockchainname/tablename.ibd'
 portion with 'tablename'.
 This allows SHOW CREATE TABLE to return the correct DATA DIRECTORY path.
 Make this data directory path only if it has not yet been saved. */
@@ -2720,7 +2720,7 @@ dict_get_and_save_data_dir_path(
 		char*	path = fil_space_get_first_path(table->space);
 
 		if (!dict_mutex_own) {
-			dict_mutex_enter_for_mysql();
+			dict_mutex_enter_for_myblockchain();
 		}
 
 		if (path == NULL) {
@@ -2741,7 +2741,7 @@ dict_get_and_save_data_dir_path(
 		}
 
 		if (!dict_mutex_own) {
-			dict_mutex_exit_for_mysql();
+			dict_mutex_exit_for_myblockchain();
 		}
 	}
 }
@@ -2800,14 +2800,14 @@ dict_get_and_save_space_name(
 	/* Read it from the dictionary. */
 	if (srv_sys_tablespaces_open) {
 		if (!dict_mutex_own) {
-			dict_mutex_enter_for_mysql();
+			dict_mutex_enter_for_myblockchain();
 		}
 
 		table->tablespace = dict_get_space_name(
 			table->space, table->heap);
 
 		if (!dict_mutex_own) {
-			dict_mutex_exit_for_mysql();
+			dict_mutex_exit_for_myblockchain();
 		}
 	}
 }
@@ -3307,7 +3307,7 @@ check_rec:
 }
 
 /********************************************************************//**
-This function is called when the database is booted. Loads system table
+This function is called when the blockchain is booted. Loads system table
 index definitions except for the clustered index which is added to the
 dictionary cache at booting before calling this function. */
 void
@@ -3688,9 +3688,9 @@ dict_load_foreigns(
 	sys_foreign = dict_table_get_low("SYS_FOREIGN");
 
 	if (sys_foreign == NULL) {
-		/* No foreign keys defined yet in this database */
+		/* No foreign keys defined yet in this blockchain */
 
-		ib::info() << "No foreign key system tables in the database";
+		ib::info() << "No foreign key system tables in the blockchain";
 		DBUG_RETURN(DB_ERROR);
 	}
 
@@ -3744,7 +3744,7 @@ loop:
 
 	/* Since table names in SYS_FOREIGN are stored in a case-insensitive
 	order, we have to check that the table name matches also in a binary
-	string comparison. On Unix, MySQL allows table names that only differ
+	string comparison. On Unix, MyBlockchain allows table names that only differ
 	in character case.  If lower_case_table_names=2 then what is stored
 	may not be the same case, but the previous comparison showed that they
 	match with no-case.  */

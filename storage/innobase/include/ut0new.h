@@ -127,9 +127,9 @@ InnoDB:
 #include <stdlib.h> /* malloc() */
 #include <string.h> /* strlen(), strrchr(), strncmp() */
 
-#include "my_global.h" /* needed for headers from mysql/psi/ */
-#include "mysql/psi/mysql_memory.h" /* PSI_MEMORY_CALL() */
-#include "mysql/psi/psi_memory.h" /* PSI_memory_key, PSI_memory_info */
+#include "my_global.h" /* needed for headers from myblockchain/psi/ */
+#include "myblockchain/psi/myblockchain_memory.h" /* PSI_MEMORY_CALL() */
+#include "myblockchain/psi/psi_memory.h" /* PSI_memory_key, PSI_memory_info */
 
 #include "univ.i"
 

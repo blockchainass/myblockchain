@@ -15,14 +15,14 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
  */
 
-package com.mysql.clusterj.jdbc.antlr.node;
+package com.myblockchain.clusterj.jdbc.antlr.node;
 
 import org.antlr.runtime.Token;
 import org.antlr.runtime.tree.Tree;
 
-import com.mysql.clusterj.jdbc.antlr.MySQL51Parser;
-import com.mysql.clusterj.query.Predicate;
-import com.mysql.clusterj.query.QueryDomainType;
+import com.myblockchain.clusterj.jdbc.antlr.MyBlockchain51Parser;
+import com.myblockchain.clusterj.query.Predicate;
+import com.myblockchain.clusterj.query.QueryDomainType;
 
 public class BetweenNode extends PredicateNode {
 
@@ -47,7 +47,7 @@ public class BetweenNode extends PredicateNode {
         String propertyName = null;
         String leftParameterName = getParameterName(1);
         String rightParameterName = getParameterName(2);
-        if (getChild(0).getType() == MySQL51Parser.NOT) {
+        if (getChild(0).getType() == MyBlockchain51Parser.NOT) {
                                        // For NOT BETWEEN,
             propertyName = getChild(0) // the BETWEEN NODE's first child is a NOT node
             .getChild(0)               // whose child is a FIELD node

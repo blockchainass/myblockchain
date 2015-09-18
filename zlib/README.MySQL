@@ -12,5 +12,5 @@ Revision history:
  makefile.am
  gzio.c
  zconf.h
- README.mysql
+ README.myblockchain
 

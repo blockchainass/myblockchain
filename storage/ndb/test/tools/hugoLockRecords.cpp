@@ -41,7 +41,7 @@ int main(int argc, const char** argv){
   struct getargs args[] = {
     { "loops", 'l', arg_integer, &_loops, "number of times to run this program(0=infinite loop)", "loops" },
     { "records", 'r', arg_integer, &_records, "Number of records", "recs" },
-    { "database", 'd', arg_string, &_dbname, "Name of database", "dbname" },
+    { "blockchain", 'd', arg_string, &_dbname, "Name of blockchain", "dbname" },
     { "locktime", 't', arg_integer, &_lockTime, "Time in ms to hold lock(default=1000)", "ms" },
     { "percent", 'p', arg_integer, &_percentVal, "Percent of records to lock(default=1%)", "%" },
     { "usage", '?', arg_flag, &_help, "Print help", "" }

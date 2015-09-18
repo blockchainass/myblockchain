@@ -22,7 +22,7 @@
 #include <my_dbug.h>
 #include <string>
 
-#ifndef MYSQL_ABI_CHECK
+#ifndef MYBLOCKCHAIN_ABI_CHECK
 #include <stdlib.h>
 #endif
 
@@ -79,9 +79,9 @@ public:
   {}
 
   column_id pattern_column() const { return m_pattern_column; }
-  column_id pattern_database_column() const
+  column_id pattern_blockchain_column() const
   {
-    return m_pattern_database_column;
+    return m_pattern_blockchain_column;
   }
   column_id replacement_column() const { return m_replacement_column; }
   column_id enabled_column() const { return m_enabled_column; }
@@ -162,7 +162,7 @@ private:
   int field_index(const char *field_name);
 
   int m_pattern_column;
-  int m_pattern_database_column;
+  int m_pattern_blockchain_column;
   int m_replacement_column;
   int m_enabled_column;
   int m_message_column;

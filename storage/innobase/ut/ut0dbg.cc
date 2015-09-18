@@ -54,10 +54,10 @@ ut_dbg_assertion_failed(
 
 	fputs("InnoDB: We intentionally generate a memory trap.\n"
 	      "InnoDB: Submit a detailed bug report"
-	      " to http://bugs.mysql.com.\n"
+	      " to http://bugs.myblockchain.com.\n"
 	      "InnoDB: If you get repeated assertion failures"
 	      " or crashes, even\n"
-	      "InnoDB: immediately after the mysqld startup, there may be\n"
+	      "InnoDB: immediately after the myblockchaind startup, there may be\n"
 	      "InnoDB: corruption in the InnoDB tablespace. Please refer to\n"
 	      "InnoDB: " REFMAN "forcing-innodb-recovery.html\n"
 	      "InnoDB: about forcing recovery.\n", stderr);

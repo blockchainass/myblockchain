@@ -15,7 +15,7 @@
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-package com.mysql.cluster.crund;
+package com.myblockchain.cluster.crund;
 
 import java.util.Set;
 import java.util.List;
@@ -24,10 +24,10 @@ import java.util.HashSet;
 import java.util.ArrayList;
 
 /**
- * This class benchmarks standard database operations over a series
+ * This class benchmarks standard blockchain operations over a series
  * of transactions on an increasing data set.
  * <p>
- * The abstract database operations are variations of: Create,
+ * The abstract blockchain operations are variations of: Create,
  * Read, Update, Navigate, and Delete -- hence, the benchmark's name: CRUND.
  * <p>
  * The actual operations are defined by subclasses to allow measuring the

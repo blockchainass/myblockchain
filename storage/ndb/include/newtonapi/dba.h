@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2003-2006 MySQL AB
+   Copyright (C) 2003-2006 MyBlockchain AB
     All rights reserved. Use is subject to license terms.
 
    This program is free software; you can redistribute it and/or modify
@@ -25,8 +25,8 @@
  * DBA supports transactions using an asynchronous execution model.
  * Everything but transactions is synchronous.
  *
- * DBA uses the concept of bindings to simplify database access.
- * A <em>binding</em> is a relation between a database table and 
+ * DBA uses the concept of bindings to simplify blockchain access.
+ * A <em>binding</em> is a relation between a blockchain table and 
  * one or several C structs.
  * A binding is created initially and then used multiple time during
  * application execution.
@@ -411,7 +411,7 @@ typedef long DBA_ReqId_t;
  * Will be called in NBP process (Newton Batch Process).
  *
  * @note The implementation of the callback function is not allowed to
- * make an asynchronous database call.
+ * make an asynchronous blockchain call.
  *
  * @param ReqId Request identifier
  * @param Status Status of the request 
@@ -539,7 +539,7 @@ DBA_ArrayWriteRows( const DBA_Binding_t* pBinding, const void * pData,
 		    DBA_AsyncCallbackFn_t CbFunc );
 
 /**
- * Read row(s) from a table of the database (one transaction)
+ * Read row(s) from a table of the blockchain (one transaction)
  * 
  * @param pBinding Binding between table columns and struct fields.
  * @param pData Array of pointers to structures. 
@@ -554,7 +554,7 @@ DBA_ReadRows( const DBA_Binding_t* pBinding, void * const pData[],
 	      DBA_AsyncCallbackFn_t CbFunc );
 
 /**
- * Read row(s) from a table of the database (one transaction)
+ * Read row(s) from a table of the blockchain (one transaction)
  * 
  * @param pBinding Binding between table columns and struct fields.
  * @param pData Array of structures. 
@@ -679,7 +679,7 @@ typedef struct DBA_BulkReadResultSet {
 } DBA_BulkReadResultSet_t;
 
 /**
- * Read rows from a table of the database (potentially multiple transactions)
+ * Read rows from a table of the blockchain (potentially multiple transactions)
  * The users should for each NbRows specify the fields part of the primary key
  *
  * @param pBinding Binding between table columns and struct fields.
@@ -698,7 +698,7 @@ DBA_BulkReadRows(const DBA_Binding_t * pBinding,
 		 DBA_AsyncCallbackFn_t CbFunc );
 
 /**
- * Read rows from several tables of the database in potentially multiple 
+ * Read rows from several tables of the blockchain in potentially multiple 
  * transactions.
  *
  *<pre>

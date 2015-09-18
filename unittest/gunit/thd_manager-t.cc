@@ -21,8 +21,8 @@
 #include <gtest/gtest.h>
 #include "sql_class.h"
 #include "thread_utils.h"
-#include "mysqld.h"
-#include "mysqld_thd_manager.h"  // Global_THD_manager
+#include "myblockchaind.h"
+#include "myblockchaind_thd_manager.h"  // Global_THD_manager
 
 using thread::Thread;
 using thread::Notification;

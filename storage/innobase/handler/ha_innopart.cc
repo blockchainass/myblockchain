@@ -40,7 +40,7 @@ Created Nov 22, 2013 Mattias Jonsson */
 #include "lock0lock.h"
 #include "row0import.h"
 #include "row0merge.h"
-#include "row0mysql.h"
+#include "row0myblockchain.h"
 #include "row0quiesce.h"
 #include "row0sel.h"
 #include "row0ins.h"
@@ -134,9 +134,9 @@ Ha_innopart_share::append_sep_and_name(
 	return(ret + sep_len);
 }
 
-/** Copy a cached MySQL row.
+/** Copy a cached MyBlockchain row.
 If requested, also avoids overwriting non-read columns.
-@param[out]	buf		Row in MySQL format.
+@param[out]	buf		Row in MyBlockchain format.
 @param[in]	cached_row	Which row to copy. */
 inline
 void
@@ -145,7 +145,7 @@ ha_innopart::copy_cached_row(
 	const uchar*	cached_row)
 {
 	if (m_prebuilt->keep_other_fields_on_keyread) {
-		row_sel_copy_cached_fields_for_mysql(buf, cached_row,
+		row_sel_copy_cached_fields_for_myblockchain(buf, cached_row,
 			m_prebuilt);
 	} else {
 		memcpy(buf, cached_row, m_rec_length);
@@ -180,7 +180,7 @@ Ha_innopart_share::open_one_table_part(
 			<< "` contains " << dict_table_get_n_user_cols(ib_table)
 			<< " user defined columns in InnoDB, but "
 			<< m_table_share->fields
-			<< " columns in MySQL. Please check"
+			<< " columns in MyBlockchain. Please check"
 			" INFORMATION_SCHEMA.INNODB_SYS_COLUMNS and " REFMAN
 			"innodb-troubleshooting.html for how to resolve the"
 			" issue.";
@@ -202,7 +202,7 @@ Ha_innopart_share::open_one_table_part(
 
 /** Set up the virtual column template for partition table, and points
 all m_table_parts[]->vc_templ to it.
-@param[in]	table		MySQL TABLE object
+@param[in]	table		MyBlockchain TABLE object
 @param[in]	ib_table	InnoDB dict_table_t
 @param[in]	table_name	Table name (db/table_name) */
 void
@@ -213,7 +213,7 @@ Ha_innopart_share::set_v_templ(
 {
 #ifndef DBUG_OFF
 	if (m_table_share->tmp_table == NO_TMP_TABLE) {
-		mysql_mutex_assert_owner(&m_table_share->LOCK_ha_data);
+		myblockchain_mutex_assert_owner(&m_table_share->LOCK_ha_data);
 	}
 #endif /* DBUG_OFF */
 
@@ -245,13 +245,13 @@ Ha_innopart_share::open_table_parts(
 	size_t	table_name_len;
 	size_t	len;
 	uint	ib_num_index;
-	uint	mysql_num_index;
+	uint	myblockchain_num_index;
 	char	partition_name[FN_REFLEN];
 	bool	index_loaded = true;
 
 #ifndef DBUG_OFF
 	if (m_table_share->tmp_table == NO_TMP_TABLE) {
-		mysql_mutex_assert_owner(&m_table_share->LOCK_ha_data);
+		myblockchain_mutex_assert_owner(&m_table_share->LOCK_ha_data);
 	}
 #endif /* DBUG_OFF */
 	m_ref_count++;
@@ -319,48 +319,48 @@ Ha_innopart_share::open_table_parts(
 	}
 	ut_ad(i == m_tot_parts);
 
-	/* Create the mapping of mysql index number to innodb indexes. */
+	/* Create the mapping of myblockchain index number to innodb indexes. */
 
 	ib_num_index = (uint) UT_LIST_GET_LEN(m_table_parts[0]->indexes);
-	mysql_num_index = part_info->table->s->keys;
+	myblockchain_num_index = part_info->table->s->keys;
 
-	/* If there exists inconsistency between MySQL and InnoDB dictionary
-	(metadata) information, the number of index defined in MySQL
+	/* If there exists inconsistency between MyBlockchain and InnoDB dictionary
+	(metadata) information, the number of index defined in MyBlockchain
 	could exceed that in InnoDB, do not build index translation
 	table in such case. */
 
-	if (ib_num_index < mysql_num_index) {
+	if (ib_num_index < myblockchain_num_index) {
 		ut_ad(0);
 		goto err;
 	}
 
-	if (mysql_num_index != 0) {
-		size_t	alloc_size = mysql_num_index * m_tot_parts
+	if (myblockchain_num_index != 0) {
+		size_t	alloc_size = myblockchain_num_index * m_tot_parts
 			* sizeof(*m_index_mapping);
 		m_index_mapping = static_cast<dict_index_t**>(
 			ut_zalloc(alloc_size, mem_key_partitioning));
 		if (m_index_mapping == NULL) {
 
 			/* Report an error if index_mapping continues to be
-			NULL and mysql_num_index is a non-zero value. */
+			NULL and myblockchain_num_index is a non-zero value. */
 
 			ib::error() << "Failed to allocate memory for"
 				" index translation table. Number of"
-				" Index:" << mysql_num_index;
+				" Index:" << myblockchain_num_index;
 			goto err;
 		}
 	}
 
-	/* For each index in the mysql key_info array, fetch its
+	/* For each index in the myblockchain key_info array, fetch its
 	corresponding InnoDB index pointer into index_mapping
 	array. */
 
-	for (ulint idx = 0; idx < mysql_num_index; idx++) {
+	for (ulint idx = 0; idx < myblockchain_num_index; idx++) {
 		for (ulint part = 0; part < m_tot_parts; part++) {
-			ulint	count = part * mysql_num_index + idx;
+			ulint	count = part * myblockchain_num_index + idx;
 
 			/* Fetch index pointers into index_mapping according
-			to mysql index sequence. */
+			to myblockchain index sequence. */
 
 			m_index_mapping[count] = dict_table_get_index_on_name(
 				m_table_parts[part],
@@ -377,7 +377,7 @@ Ha_innopart_share::open_table_parts(
 			}
 
 			/* Double check fetched index has the same
-			column info as those in mysql key_info. */
+			column info as those in myblockchain key_info. */
 
 			if (!innobase_match_index_columns(
 					&part_info->table->key_info[idx],
@@ -385,7 +385,7 @@ Ha_innopart_share::open_table_parts(
 				ib::error() << "Found index `"
 					<< part_info->table->key_info[idx].name
 					<< "` whose column info does not match"
-					" that of MySQL.";
+					" that of MyBlockchain.";
 				index_loaded = false;
 				break;
 			}
@@ -397,7 +397,7 @@ Ha_innopart_share::open_table_parts(
 	}
 
 	/* Successfully built the translation table. */
-	m_index_count = mysql_num_index;
+	m_index_count = myblockchain_num_index;
 
 	return(false);
 err:
@@ -412,7 +412,7 @@ Ha_innopart_share::close_table_parts()
 {
 #ifndef DBUG_OFF
 	if (m_table_share->tmp_table == NO_TMP_TABLE) {
-		mysql_mutex_assert_owner(&m_table_share->LOCK_ha_data);
+		myblockchain_mutex_assert_owner(&m_table_share->LOCK_ha_data);
 	}
 #endif /* DBUG_OFF */
 	m_ref_count--;
@@ -484,8 +484,8 @@ Ha_innopart_share::get_index(
 	return(m_index_mapping[m_index_count * part_id + keynr]);
 }
 
-/** Get MySQL key number corresponding to InnoDB index.
-Calculates the key number used inside MySQL for an Innobase index. We will
+/** Get MyBlockchain key number corresponding to InnoDB index.
+Calculates the key number used inside MyBlockchain for an Innobase index. We will
 first check the "index translation table" for a match of the index to get
 the index number. If there does not exist an "index translation table",
 or not able to find the index in the translation table, then we will fall back
@@ -493,11 +493,11 @@ to the traditional way of looping through dict_index_t list to find a
 match. In this case, we have to take into account if we generated a
 default clustered index for the table
 @param[in]	part_id	Partition the index belongs to.
-@param[in]	index	Index to return MySQL key number for.
-@return	the key number used inside MySQL or UINT_MAX if key is not found. */
+@param[in]	index	Index to return MyBlockchain key number for.
+@return	the key number used inside MyBlockchain or UINT_MAX if key is not found. */
 inline
 uint
-Ha_innopart_share::get_mysql_key(
+Ha_innopart_share::get_myblockchain_key(
 	uint			part_id,
 	const dict_index_t*	index)
 {
@@ -778,7 +778,7 @@ Altered_partitions::initialize()
 
 /** Construct ha_innopart handler.
 @param[in]	hton		Handlerton.
-@param[in]	table_arg	MySQL Table.
+@param[in]	table_arg	MyBlockchain Table.
 @return	a new ha_innopart handler. */
 ha_innopart::ha_innopart(
 	handlerton*	hton,
@@ -847,14 +847,14 @@ ha_innopart::initialize_auto_increment(
 #ifndef DBUG_OFF
 	if (table_share->tmp_table == NO_TMP_TABLE)
 	{
-		mysql_mutex_assert_owner(m_part_share->auto_inc_mutex);
+		myblockchain_mutex_assert_owner(m_part_share->auto_inc_mutex);
 	}
 #endif
 
 	/* Since a table can already be "open" in InnoDB's internal
 	data dictionary, we only init the autoinc counter once, the
 	first time the table is loaded. We can safely reuse the
-	autoinc value from a previous MySQL open. */
+	autoinc value from a previous MyBlockchain open. */
 
 	if (m_part_share->auto_inc_initialized) {
 		/* Already initialized, nothing to do. */
@@ -926,7 +926,7 @@ ha_innopart::initialize_auto_increment(
 				break;
 			}
 			case DB_RECORD_NOT_FOUND:
-				ib::error() << "MySQL and InnoDB data"
+				ib::error() << "MyBlockchain and InnoDB data"
 					" dictionaries are out of sync. Unable"
 					" to find the AUTOINC column "
 					<< col_name << " in the InnoDB table "
@@ -966,7 +966,7 @@ done:
 
 /** Opens a partitioned InnoDB table.
 Initializes needed data and opens the table which already exists
-in an InnoDB database.
+in an InnoDB blockchain.
 @param[in]	name		Table name (db/tablename)
 @param[in]	mode		Not used
 @param[in]	test_if_locked	Not used
@@ -991,7 +991,7 @@ ha_innopart::open(
 	}
 	thd = ha_thd();
 
-	/* Under some cases MySQL seems to call this function while
+	/* Under some cases MyBlockchain seems to call this function while
 	holding search latch(es). This breaks the latching order as
 	we acquire dict_sys->mutex below and leads to a deadlock. */
 
@@ -1116,13 +1116,13 @@ share_error:
 		unlock_shared_ha_data();
 	}
 
-	/* Looks like MySQL-3.23 sometimes has primary key number != 0. */
+	/* Looks like MyBlockchain-3.23 sometimes has primary key number != 0. */
 	m_primary_key = table->s->primary_key;
 	key_used_on_scan = m_primary_key;
 
 	/* Allocate a buffer for a 'row reference'. A row reference is
 	a string of bytes of length ref_length which uniquely specifies
-	a row in our table. Note that MySQL may also compare two row
+	a row in our table. Note that MyBlockchain may also compare two row
 	references for equality by doing a simple memcmp on the strings
 	of length ref_length! */
 
@@ -1135,7 +1135,7 @@ share_error:
 			table_name.m_name = const_cast<char*>(name);
 			ib::error() << "Table " << table_name
 				<< " has a primary key in InnoDB data"
-				" dictionary, but not in MySQL!";
+				" dictionary, but not in MyBlockchain!";
 
 			/* This mismatch could cause further problems
 			if not attended, bring this to the user's attention
@@ -1147,13 +1147,13 @@ share_error:
 					    "Table %s has a"
 					    " primary key in InnoDB data"
 					    " dictionary, but not in"
-					    " MySQL!", name);
+					    " MyBlockchain!", name);
 
 			/* If m_primary_key >= MAX_KEY, its (m_primary_key)
 			value could be out of bound if continue to index
 			into key_info[] array. Find InnoDB primary index,
 			and assign its key_length to ref_length.
-			In addition, since MySQL indexes are sorted starting
+			In addition, since MyBlockchain indexes are sorted starting
 			with primary index, unique index etc., initialize
 			ref_length to the first index key length in
 			case we fail to find InnoDB cluster index.
@@ -1174,7 +1174,7 @@ share_error:
 			}
 
 			/* Find corresponding cluster index
-			key length in MySQL's key_info[] array. */
+			key length in MyBlockchain's key_info[] array. */
 
 			for (uint i = 0; i < table->s->keys; i++) {
 				dict_index_t*	index;
@@ -1187,7 +1187,7 @@ share_error:
 			ut_a(ref_length);
 			ref_length += PARTITION_BYTES_IN_POS;
 		} else {
-			/* MySQL allocates the buffer for ref.
+			/* MyBlockchain allocates the buffer for ref.
 			key_info->key_length includes space for all key
 			columns + one byte for each column that may be
 			NULL. ref_length must be as exact as possible to
@@ -1203,11 +1203,11 @@ share_error:
 			table_name.m_name = const_cast<char*>(name);
 			ib::error() << "Table " << table_name
 				<< " has no primary key in InnoDB data"
-				" dictionary, but has one in MySQL! If you"
-				" created the table with a MySQL version <"
+				" dictionary, but has one in MyBlockchain! If you"
+				" created the table with a MyBlockchain version <"
 				" 3.23.54 and did not define a primary key,"
 				" but defined a unique key with all non-NULL"
-				" columns, then MySQL internally treats that"
+				" columns, then MyBlockchain internally treats that"
 				" key as the primary key. You can fix this"
 				" error by dump + DROP + CREATE + reimport"
 				" of the table.";
@@ -1222,7 +1222,7 @@ share_error:
 					    "InnoDB: Table %s has no"
 					    " primary key in InnoDB data"
 					    " dictionary, but has one in"
-					    " MySQL!", name);
+					    " MyBlockchain!", name);
 		}
 
 		m_prebuilt->clust_index_was_generated = TRUE;
@@ -1231,7 +1231,7 @@ share_error:
 		ref_length += PARTITION_BYTES_IN_POS;
 
 		/* If we automatically created the clustered index, then
-		MySQL does not know about it, and MySQL must NOT be aware
+		MyBlockchain does not know about it, and MyBlockchain must NOT be aware
 		of the index used on scan, to make it avoid checking if we
 		update the column of the index. That is why we assert below
 		that key_used_on_scan is the undefined value MAX_KEY.
@@ -1248,7 +1248,7 @@ share_error:
 		}
 	}
 
-	/* Index block size in InnoDB: used by MySQL in query optimization. */
+	/* Index block size in InnoDB: used by MyBlockchain in query optimization. */
 	stats.block_size = UNIV_PAGE_SIZE;
 
 	if (m_prebuilt->table != NULL) {
@@ -1270,7 +1270,7 @@ share_error:
 		data dictionary, we only init the autoinc counter once, the
 		first time the table is loaded,
 		see ha_innopart::initialize_auto_increment.
-		We can safely reuse the autoinc value from a previous MySQL
+		We can safely reuse the autoinc value from a previous MyBlockchain
 		open. */
 
 		lock_auto_increment();
@@ -1291,7 +1291,7 @@ share_error:
 
 			ut_ad(index->type & DICT_FTS);
 			index->parser =
-				static_cast<st_mysql_ftparser *>(
+				static_cast<st_myblockchain_ftparser *>(
 					plugin_decl(parser)->info);
 
 			DBUG_EXECUTE_IF("fts_instrument_use_default_parser",
@@ -1337,7 +1337,7 @@ share_error:
 
 /** Get a cloned ha_innopart handler.
 @param[in]	name		Table name.
-@param[in]	mem_root	MySQL mem_root to use.
+@param[in]	mem_root	MyBlockchain mem_root to use.
 @return	new ha_innopart handler. */
 handler*
 ha_innopart::clone(
@@ -1392,9 +1392,9 @@ void ha_innopart::clear_ins_upd_nodes()
 					upd->cascade_top = false;
 					upd->cascade_heap = NULL;
 				}
-				if (upd->in_mysql_interface) {
-					btr_pcur_free_for_mysql(upd->pcur);
-					upd->in_mysql_interface = FALSE;
+				if (upd->in_myblockchain_interface) {
+					btr_pcur_free_for_myblockchain(upd->pcur);
+					upd->in_myblockchain_interface = FALSE;
 				}
 
 				if (upd->select != NULL) {
@@ -1587,14 +1587,14 @@ ha_innopart::save_auto_increment(
 In an UPDATE or DELETE, if the row under the cursor was locked by
 another transaction, and the engine used an optimistic read of the last
 committed row value under the cursor, then the engine returns 1 from
-this function. MySQL must NOT try to update this optimistic value. If
-the optimistic value does not match the WHERE condition, MySQL can
+this function. MyBlockchain must NOT try to update this optimistic value. If
+the optimistic value does not match the WHERE condition, MyBlockchain can
 decide to skip over this row. This can be used to avoid unnecessary
 lock waits.
 
 If this method returns true, it will also signal the storage
 engine that the next read will be a locking re-read of the row.
-@see handler.h and row0mysql.h
+@see handler.h and row0myblockchain.h
 @return	true if last read was semi consistent else false. */
 bool
 ha_innopart::was_semi_consistent_read()
@@ -1608,7 +1608,7 @@ Tell the engine whether it should avoid unnecessary lock waits.
 If yes, in an UPDATE or DELETE, if the row under the cursor was locked
 by another transaction, the engine may try an optimistic read of
 the last committed row value under the cursor.
-@see handler.h and row0mysql.h
+@see handler.h and row0myblockchain.h
 @param[in]	yes	Should semi-consistent read be used. */
 void
 ha_innopart::try_semi_consistent_read(
@@ -1637,10 +1637,10 @@ ha_innopart::unlock_row()
 }
 
 /** Write a row in partition.
-Stores a row in an InnoDB database, to the table specified in this
+Stores a row in an InnoDB blockchain, to the table specified in this
 handle.
 @param[in]	part_id	Partition to write to.
-@param[in]	record	A row in MySQL format.
+@param[in]	record	A row in MyBlockchain format.
 @return	0 or error code. */
 int
 ha_innopart::write_row_in_part(
@@ -1670,8 +1670,8 @@ ha_innopart::write_row_in_part(
 /** Update a row in partition.
 Updates a row given as a parameter to a new value.
 @param[in]	part_id	Partition to update row in.
-@param[in]	old_row	Old row in MySQL format.
-@param[in]	new_row	New row in MySQL format.
+@param[in]	old_row	Old row in MyBlockchain format.
+@param[in]	new_row	New row in MyBlockchain format.
 @return	0 or error number. */
 int
 ha_innopart::update_row_in_part(
@@ -1690,7 +1690,7 @@ ha_innopart::update_row_in_part(
 
 /** Deletes a row in partition.
 @param[in]	part_id	Partition to delete from.
-@param[in]	record	Row to delete in MySQL format.
+@param[in]	record	Row to delete in MyBlockchain format.
 @return	0 or error number. */
 int
 ha_innopart::delete_row_in_part(
@@ -1875,7 +1875,7 @@ ha_innopart::destroy_record_priority_queue_for_parts()
 }
 
 /** Print error information.
-@param[in]	error	Error code (MySQL).
+@param[in]	error	Error code (MyBlockchain).
 @param[in]	errflag	Flags. */
 void
 ha_innopart::print_error(
@@ -1907,7 +1907,7 @@ ha_innopart::is_ignorable_error(
 }
 
 /** Get the index for the current partition
-@param[in]	keynr	MySQL index number.
+@param[in]	keynr	MyBlockchain index number.
 @return	InnoDB index or NULL. */
 inline
 dict_index_t*
@@ -2031,7 +2031,7 @@ ha_innopart::change_active_index(
 		}
 
 		/* The caller seems to ignore this. Thus, we must check
-		this again in row_search_for_mysql(). */
+		this again in row_search_for_myblockchain(). */
 
 		DBUG_RETURN(HA_ERR_TABLE_DEF_CHANGED);
 	}
@@ -2047,11 +2047,11 @@ ha_innopart::change_active_index(
 	dict_index_copy_types(m_prebuilt->search_tuple, m_prebuilt->index,
 			m_prebuilt->index->n_fields);
 
-	/* MySQL changes the active index for a handle also during some
+	/* MyBlockchain changes the active index for a handle also during some
 	queries, for example SELECT MAX(a), SUM(a) first retrieves the
 	MAX() and then calculates the sum. Previously we played safe
-	and used the flag ROW_MYSQL_WHOLE_ROW below, but that caused
-	unnecessary copying. Starting from MySQL-4.1 we use a more
+	and used the flag ROW_MYBLOCKCHAIN_WHOLE_ROW below, but that caused
+	unnecessary copying. Starting from MyBlockchain-4.1 we use a more
 	efficient flag here. */
 
 	/* TODO: Is this really needed?
@@ -2393,7 +2393,7 @@ ha_innopart::rnd_end_in_part(
 Reads the next row in a table scan (also used to read the FIRST row
 in a table scan).
 @param[in]	part_id	Partition to end table scan in.
-@param[out]	buf	Returns the row in this buffer, in MySQL format.
+@param[out]	buf	Returns the row in this buffer, in MyBlockchain format.
 @return	0, HA_ERR_END_OF_FILE or error number. */
 int
 ha_innopart::rnd_next_in_part(
@@ -2423,9 +2423,9 @@ ha_innopart::rnd_next_in_part(
 
 /** Get a row from a position.
 Fetches a row from the table based on a row reference.
-@param[out]	buf	Returns the row in this buffer, in MySQL format.
+@param[out]	buf	Returns the row in this buffer, in MyBlockchain format.
 @param[in]	pos	Position, given as primary key value or DB_ROW_ID
-(if no primary key) of the row in MySQL format.  The length of data in pos has
+(if no primary key) of the row in MyBlockchain format.  The length of data in pos has
 to be ref_length.
 @return	0, HA_ERR_KEY_NOT_FOUND or error code. */
 int
@@ -2481,7 +2481,7 @@ ha_innopart::position_in_last_part(
 		/* No primary key was defined for the table and we
 		generated the clustered index from row id: the
 		row reference will be the row id, not any key value
-		that MySQL knows of. */
+		that MyBlockchain knows of. */
 
 		memcpy(ref_arg, m_prebuilt->row_id, DATA_ROW_ID_LEN);
 	} else {
@@ -2567,7 +2567,7 @@ ha_innopart::update_create_info(
 	create_info->index_file_name = NULL;
 
 	/* Since update_create_info() can be called from
-	mysql_prepare_alter_table() when not all partitions are set up,
+	myblockchain_prepare_alter_table() when not all partitions are set up,
 	we look for that condition first.
 	If all partitions are not available then simply return,
 	since it does not need any updated partitioning info. */
@@ -2668,9 +2668,9 @@ create_table_info_t::set_remote_path_flags()
 	}
 }
 
-/** Creates a new table to an InnoDB database.
+/** Creates a new table to an InnoDB blockchain.
 @param[in]	name		Table name (in filesystem charset).
-@param[in]	form		MySQL Table containing information of
+@param[in]	form		MyBlockchain Table containing information of
 partitions, columns and indexes etc.
 @param[in]	create_info	Additional create information, like
 create statement string.
@@ -2682,7 +2682,7 @@ ha_innopart::create(
 	HA_CREATE_INFO*	create_info)
 {
 	int		error;
-	/** {database}/{tablename} */
+	/** {blockchain}/{tablename} */
 	char		table_name[FN_REFLEN];
 	/** absolute path of temp frm */
 	char		temp_path[FN_REFLEN];
@@ -2760,9 +2760,9 @@ ha_innopart::create(
 
 	/* Latch the InnoDB data dictionary exclusively so that no deadlocks
 	or lock waits can happen in it during a table create operation.
-	Drop table etc. do this latching in row0mysql.cc. */
+	Drop table etc. do this latching in row0myblockchain.cc. */
 
-	row_mysql_lock_data_dictionary(info.trx());
+	row_myblockchain_lock_data_dictionary(info.trx());
 
 	/* TODO: use the new DD tables instead to decrease duplicate info. */
 	List_iterator_fast <partition_element>
@@ -2853,7 +2853,7 @@ ha_innopart::create(
 
 	innobase_commit_low(info.trx());
 
-	row_mysql_unlock_data_dictionary(info.trx());
+	row_myblockchain_unlock_data_dictionary(info.trx());
 
 	/* Flush the log to reduce probability that the .frm files and
 	the InnoDB data dictionary get out-of-sync if the user runs
@@ -2905,16 +2905,16 @@ end:
 
 	srv_active_wake_master_thread();
 
-	trx_free_for_mysql(info.trx());
+	trx_free_for_myblockchain(info.trx());
 
 	DBUG_RETURN(error);
 
 cleanup:
-	trx_rollback_for_mysql(info.trx());
+	trx_rollback_for_myblockchain(info.trx());
 
-	row_mysql_unlock_data_dictionary(info.trx());
+	row_myblockchain_unlock_data_dictionary(info.trx());
 
-	trx_free_for_mysql(info.trx());
+	trx_free_for_myblockchain(info.trx());
 
 	DBUG_RETURN(error);
 }
@@ -2986,7 +2986,7 @@ ha_innopart::key_and_rowid_cmp(
 		DATA_ROW_ID_LEN));
 }
 
-/** Extra hints from MySQL.
+/** Extra hints from MyBlockchain.
 @param[in]	operation	Operation hint.
 @return	0 or error number. */
 int
@@ -3065,7 +3065,7 @@ ha_innopart::truncate()
 	     i = m_part_info->get_next_used_partition(i)) {
 
 		set_partition(i);
-		err = row_truncate_table_for_mysql(m_prebuilt->table,
+		err = row_truncate_table_for_myblockchain(m_prebuilt->table,
 				m_prebuilt->trx);
 		update_partition(i);
 		if (err != DB_SUCCESS) {
@@ -3078,7 +3078,7 @@ ha_innopart::truncate()
 	case DB_TABLESPACE_DELETED:
 	case DB_TABLESPACE_NOT_FOUND:
 		ib_senderrf(
-			m_prebuilt->trx->mysql_thd, IB_LOG_LEVEL_ERROR,
+			m_prebuilt->trx->myblockchain_thd, IB_LOG_LEVEL_ERROR,
 			(err == DB_TABLESPACE_DELETED ?
 			ER_TABLESPACE_DISCARDED : ER_TABLESPACE_MISSING),
 			table->s->table_name.str);
@@ -3087,9 +3087,9 @@ ha_innopart::truncate()
 		break;
 
 	default:
-		error = convert_error_code_to_mysql(
+		error = convert_error_code_to_myblockchain(
 			err, m_prebuilt->table->flags,
-			m_prebuilt->trx->mysql_thd);
+			m_prebuilt->trx->myblockchain_thd);
 		table->status = STATUS_NOT_FOUND;
 		break;
 	}
@@ -3159,7 +3159,7 @@ ha_innopart::records_in_range(
 
 	m_prebuilt->trx->op_info = (char*)"estimating records in index range";
 
-	/* In case MySQL calls this in the middle of a SELECT query, release
+	/* In case MyBlockchain calls this in the middle of a SELECT query, release
 	possible adaptive hash latch to avoid deadlocks of threads. */
 
 	trx_search_latch_release_if_reserved(m_prebuilt->trx);
@@ -3179,7 +3179,7 @@ ha_innopart::records_in_range(
 	/* Only validate the first partition, to avoid too much overhead. */
 
 	/* There exists possibility of not being able to find requested
-	index due to inconsistency between MySQL and InoDB dictionary info.
+	index due to inconsistency between MyBlockchain and InoDB dictionary info.
 	Necessary message should have been printed in innopart_get_index(). */
 	if (index == NULL
 	    || dict_table_is_discarded(m_prebuilt->table)
@@ -3199,7 +3199,7 @@ ha_innopart::records_in_range(
 	range_end = dtuple_create(heap, key->actual_key_parts);
 	dict_index_copy_types(range_end, index, key->actual_key_parts);
 
-	row_sel_convert_mysql_key_to_innobase(
+	row_sel_convert_myblockchain_key_to_innobase(
 		range_start,
 		m_prebuilt->srch_key_val1,
 		m_prebuilt->srch_key_val_len,
@@ -3212,7 +3212,7 @@ ha_innopart::records_in_range(
 	      ? range_start->n_fields > 0
 	      : range_start->n_fields == 0);
 
-	row_sel_convert_mysql_key_to_innobase(
+	row_sel_convert_myblockchain_key_to_innobase(
 		range_end,
 		m_prebuilt->srch_key_val2,
 		m_prebuilt->srch_key_val_len,
@@ -3264,11 +3264,11 @@ func_exit:
 
 	m_prebuilt->trx->op_info = (char*)"";
 
-	/* The MySQL optimizer seems to believe an estimate of 0 rows is
+	/* The MyBlockchain optimizer seems to believe an estimate of 0 rows is
 	always accurate and may return the result 'Empty set' based on that.
 	The accuracy is not guaranteed, and even if it were, for a locking
 	read we should anyway perform the search to set the next-key lock.
-	Add 1 to the value to make sure MySQL does not make the assumption! */
+	Add 1 to the value to make sure MyBlockchain does not make the assumption! */
 
 	if (n_rows == 0) {
 		n_rows = 1;
@@ -3290,7 +3290,7 @@ ha_innopart::estimate_rows_upper_bound()
 
 	DBUG_ENTER("ha_innopart::estimate_rows_upper_bound");
 
-	/* We do not know if MySQL can call this function before calling
+	/* We do not know if MyBlockchain can call this function before calling
 	external_lock(). To be safe, update the thd of the current table
 	handle. */
 
@@ -3298,7 +3298,7 @@ ha_innopart::estimate_rows_upper_bound()
 
 	m_prebuilt->trx->op_info = "calculating upper bound for table rows";
 
-	/* In case MySQL calls this in the middle of a SELECT query, release
+	/* In case MyBlockchain calls this in the middle of a SELECT query, release
 	possible adaptive hash latch to avoid deadlocks of threads. */
 
 	trx_search_latch_release_if_reserved(m_prebuilt->trx);
@@ -3319,7 +3319,7 @@ ha_innopart::estimate_rows_upper_bound()
 
 		/* Calculate a minimum length for a clustered index record
 		and from that an upper bound for the number of rows.
-		Since we only calculate new statistics in row0mysql.cc when a
+		Since we only calculate new statistics in row0myblockchain.cc when a
 		table has grown by a threshold factor,
 		we must add a safety factor 2 in front of the formula below. */
 
@@ -3387,7 +3387,7 @@ update_table_stats(
 }
 
 /** Updates and return statistics.
-Returns statistics information of the table to the MySQL interpreter,
+Returns statistics information of the table to the MyBlockchain interpreter,
 in various fields of the handle object.
 @param[in]	flag		Flags for what to update and return.
 @param[in]	is_analyze	True if called from ::analyze().
@@ -3408,16 +3408,16 @@ ha_innopart::info_low(
 	statistics calculation on tables, because that may crash the
 	server if an index is badly corrupted. */
 
-	/* We do not know if MySQL can call this function before calling
+	/* We do not know if MyBlockchain can call this function before calling
 	external_lock(). To be safe, update the thd of the current table
 	handle. */
 
 	update_thd(ha_thd());
 
-	/* In case MySQL calls this in the middle of a SELECT query, release
+	/* In case MyBlockchain calls this in the middle of a SELECT query, release
 	possible adaptive hash latch to avoid deadlocks of threads. */
 
-	m_prebuilt->trx->op_info = (char*)"returning various info to MySQL";
+	m_prebuilt->trx->op_info = (char*)"returning various info to MyBlockchain";
 
 	trx_search_latch_release_if_reserved(m_prebuilt->trx);
 
@@ -3430,7 +3430,7 @@ ha_innopart::info_low(
 			/* Only analyze the given partitions. */
 			int	error = set_altered_partitions();
 			if (error != 0) {
-				/* Already checked in mysql_admin_table! */
+				/* Already checked in myblockchain_admin_table! */
 				ut_ad(0);
 				DBUG_RETURN(error);
 			}
@@ -3459,7 +3459,7 @@ ha_innopart::info_low(
 
 		if (is_analyze || innobase_stats_on_metadata) {
 			m_prebuilt->trx->op_info =
-				"returning various info to MySQL";
+				"returning various info to MyBlockchain";
 		}
 	}
 
@@ -3532,7 +3532,7 @@ ha_innopart::info_low(
 		}
 
 		/*
-		The MySQL optimizer seems to assume in a left join that n_rows
+		The MyBlockchain optimizer seems to assume in a left join that n_rows
 		is an accurate estimate if it is zero. Of course, it is not,
 		since we do not have any locks on the rows yet at this phase.
 		Since SHOW TABLE STATUS seems to call this function with the
@@ -3639,7 +3639,7 @@ ha_innopart::info_low(
 			}
 		}
 		ib_table = m_part_share->get_table_part(biggest_partition);
-		/* Verify the number of index in InnoDB and MySQL
+		/* Verify the number of index in InnoDB and MyBlockchain
 		matches up. If m_prebuilt->clust_index_was_generated
 		holds, InnoDB defines GEN_CLUST_INDEX internally. */
 		ulint	num_innodb_index = UT_LIST_GET_LEN(ib_table->indexes)
@@ -3647,7 +3647,7 @@ ha_innopart::info_low(
 		if (table->s->keys < num_innodb_index) {
 			/* If there are too many indexes defined
 			inside InnoDB, ignore those that are being
-			created, because MySQL will only consider
+			created, because MyBlockchain will only consider
 			the fully built indexes here. */
 
 			for (const dict_index_t* index =
@@ -3657,7 +3657,7 @@ ha_innopart::info_low(
 
 				/* First, online index creation is
 				completed inside InnoDB, and then
-				MySQL attempts to upgrade the
+				MyBlockchain attempts to upgrade the
 				meta-data lock so that it can rebuild
 				the .frm file. If we get here in that
 				time frame, dict_index_is_online_ddl()
@@ -3683,7 +3683,7 @@ ha_innopart::info_low(
 				<< " indexes inside InnoDB, which"
 				" is different from the number of"
 				" indexes " << table->s->keys
-				<< " defined in the MySQL";
+				<< " defined in the MyBlockchain";
 		}
 
 		if ((flag & HA_STATUS_NO_LOCK) == 0) {
@@ -3706,7 +3706,7 @@ ha_innopart::info_low(
 				ib::error() << "Table "
 					<< ib_table->name << " contains fewer"
 					" indexes inside InnoDB than"
-					" are defined in the MySQL"
+					" are defined in the MyBlockchain"
 					" .frm file. Have you mixed up"
 					" .frm files from different"
 					" installations? "
@@ -3731,7 +3731,7 @@ ha_innopart::info_low(
 						<< " of " << ib_table->name
 						<< " has " << index->n_uniq
 						<< " columns unique inside"
-						" InnoDB, but MySQL is"
+						" InnoDB, but MyBlockchain is"
 						" asking statistics for "
 						<< j + 1 << " columns. Have"
 						" you mixed up .frm files"
@@ -3771,7 +3771,7 @@ ha_innopart::info_low(
 					innodb_rec_per_key(index, j,
 							   max_rows));
 
-				/* Since MySQL seems to favor table scans
+				/* Since MyBlockchain seems to favor table scans
 				too much over index searches, we pretend
 				index selectivity is 2 times better than
 				our estimate: */
@@ -3795,7 +3795,7 @@ ha_innopart::info_low(
 		/* Use the first partition for create time until new DD. */
 		ib_table = m_part_share->get_table_part(0);
 		my_snprintf(path, sizeof(path), "%s/%s%s",
-			    mysql_data_home,
+			    myblockchain_data_home,
 			    table->s->normalized_path.str,
 			    reg_ext);
 
@@ -3820,7 +3820,7 @@ ha_innopart::info_low(
 		err_index = trx_get_error_info(m_prebuilt->trx);
 
 		if (err_index != NULL) {
-			errkey = m_part_share->get_mysql_key(m_last_part,
+			errkey = m_part_share->get_myblockchain_key(m_last_part,
 							err_index);
 		} else {
 			errkey = (unsigned int) (
@@ -3865,7 +3865,7 @@ func_exit:
 
 /** Optimize table.
 This is mapped to "ALTER TABLE tablename ENGINE=InnoDB", which rebuilds
-the table in MySQL.
+the table in MyBlockchain.
 @param[in]	thd		Connection thread handle.
 @param[in]	check_opt	Currently ignored.
 @return	0 for success else error code. */
@@ -3882,7 +3882,7 @@ Tries to check that an InnoDB table is not corrupted. If corruption is
 noticed, prints to stderr information about it. In case of corruption
 may also assert a failure and crash the server. Also checks for records
 in wrong partition.
-@param[in]	thd		MySQL THD object/thread handle.
+@param[in]	thd		MyBlockchain THD object/thread handle.
 @param[in]	check_opt	Check options.
 @return	HA_ADMIN_CORRUPT or HA_ADMIN_OK. */
 int
@@ -3939,7 +3939,7 @@ ha_innopart::check(
 /** Repair a partitioned table.
 Only repairs records in wrong partitions (moves them to the correct
 partition or deletes them if not in any partition).
-@param[in]	thd		MySQL THD object/thread handle.
+@param[in]	thd		MyBlockchain THD object/thread handle.
 @param[in]	repair_opt	Repair options.
 @return	0 or error code. */
 int
@@ -4012,7 +4012,7 @@ ha_innopart::can_switch_engines()
 }
 
 /** Checks if a table is referenced by a foreign key.
-The MySQL manual states that a REPLACE is either equivalent to an INSERT,
+The MyBlockchain manual states that a REPLACE is either equivalent to an INSERT,
 or DELETE(s) + INSERT. Only a delete is then allowed internally to resolve
 a duplicate key conflict in REPLACE, not an update.
 @return	> 0 if referenced by a FOREIGN KEY. */
@@ -4031,13 +4031,13 @@ ha_innopart::referenced_by_foreign_key()
 }
 
 /** Start statement.
-MySQL calls this function at the start of each SQL statement inside LOCK
+MyBlockchain calls this function at the start of each SQL statement inside LOCK
 TABLES. Inside LOCK TABLES the ::external_lock method does not work to
 mark SQL statement borders. Note also a special case: if a temporary table
-is created inside LOCK TABLES, MySQL has not called external_lock() at all
+is created inside LOCK TABLES, MyBlockchain has not called external_lock() at all
 on that table.
-MySQL-5.0 also calls this before each statement in an execution of a stored
-procedure. To make the execution more deterministic for binlogging, MySQL-5.0
+MyBlockchain-5.0 also calls this before each statement in an execution of a stored
+procedure. To make the execution more deterministic for binlogging, MyBlockchain-5.0
 locks all tables involved in a stored procedure with full explicit table
 locks (thd_in_lock_tables(thd) holds in store_lock()) before executing the
 procedure.
@@ -4068,8 +4068,8 @@ ha_innopart::start_stmt(
 }
 
 /** Lock/prepare to lock table.
-As MySQL will execute an external lock for every new table it uses when it
-starts to process an SQL statement (an exception is when MySQL calls
+As MyBlockchain will execute an external lock for every new table it uses when it
+starts to process an SQL statement (an exception is when MyBlockchain calls
 start_stmt for the handle) we can use this function to store the pointer to
 the THD in the handle. We will also use this function to communicate
 to InnoDB that a new SQL statement has started and that we must store a
@@ -4088,14 +4088,14 @@ ha_innopart::external_lock(
 	bool	is_quiesce_start = false;
 
 	if (m_part_info->get_first_used_partition() == MY_BIT_NONE
-		&& !(m_mysql_has_locked
+		&& !(m_myblockchain_has_locked
 		     && lock_type == F_UNLCK)) {
 
 		/* All partitions pruned away, do nothing! */
-		ut_ad(!m_mysql_has_locked);
+		ut_ad(!m_myblockchain_has_locked);
 		return(error);
 	}
-	ut_ad(m_mysql_has_locked || lock_type != F_UNLCK);
+	ut_ad(m_myblockchain_has_locked || lock_type != F_UNLCK);
 
 	m_prebuilt->table = m_part_share->get_table_part(0);
 	switch (m_prebuilt->table->quiesce) {
@@ -4203,7 +4203,7 @@ A 'ref' is the (internal) primary key value of the row.
 If there is no explicitly declared non-null unique key or a primary key, then
 InnoDB internally uses the row id as the primary key.
 It will use the partition id as secondary compare.
-@param[in]	ref1	An (internal) primary key value in the MySQL key value
+@param[in]	ref1	An (internal) primary key value in the MyBlockchain key value
 format.
 @param[in]	ref2	Reference to compare with (same type as ref1).
 @return	< 0 if ref1 < ref2, 0 if equal, else > 0. */

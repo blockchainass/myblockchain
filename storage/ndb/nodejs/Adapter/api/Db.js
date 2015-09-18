@@ -35,7 +35,7 @@ var session     = require("./Session.js"),
  */
 function DbImpl(sessionFactory, db_name) {
   this.sessionFactory = sessionFactory;
-  this.db_name = db_name || sessionFactory.properties.database;
+  this.db_name = db_name || sessionFactory.properties.blockchain;
 }
 
 /** Table for db object implements insert and find

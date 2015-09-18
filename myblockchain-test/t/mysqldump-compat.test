@@ -1,0 +1,18 @@
+
+# Embedded server doesn't support external clients
+--source include/not_embedded.inc
+
+#
+# Bug #30126: semicolon before closing */ in /*!... CREATE DATABASE ;*/
+#
+
+--let $file = $MYBLOCKCHAINTEST_VARDIR/tmp/bug30126.sql
+
+CREATE DATABASE myblockchaindump_30126;
+USE myblockchaindump_30126;
+CREATE TABLE t1 (c1 int);
+--exec $MYBLOCKCHAIN_DUMP --add-drop-blockchain myblockchaindump_30126 > $file
+--exec $MYBLOCKCHAIN myblockchaindump_30126 < $file
+DROP DATABASE myblockchaindump_30126;
+
+--remove_file $file

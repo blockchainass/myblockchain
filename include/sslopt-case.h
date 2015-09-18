@@ -14,7 +14,7 @@
    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA */
 
 #if defined(HAVE_OPENSSL) && !defined(EMBEDDED_LIBRARY)
-#ifdef MYSQL_CLIENT
+#ifdef MYBLOCKCHAIN_CLIENT
     case OPT_SSL_SSL:
       /*
         A client side --ssl option handling.

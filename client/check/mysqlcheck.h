@@ -15,8 +15,8 @@
    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#ifndef MYSQLCHECK_INCLUDED
-#define MYSQLCHECK_INCLUDED
+#ifndef MYBLOCKCHAINCHECK_INCLUDED
+#define MYBLOCKCHAINCHECK_INCLUDED
 
 #include <string>
 #include <vector>
@@ -27,21 +27,21 @@ namespace Check{
 
 enum operations { DO_CHECK=1, DO_REPAIR, DO_ANALYZE, DO_OPTIMIZE, DO_UPGRADE };
 
-extern void mysql_check(MYSQL* connection, int what_to_do, my_bool opt_alldbs,
+extern void myblockchain_check(MYBLOCKCHAIN* connection, int what_to_do, my_bool opt_alldbs,
                 my_bool opt_check_only_changed, my_bool opt_extended,
-                my_bool opt_databases, my_bool opt_fast,
+                my_bool opt_blockchains, my_bool opt_fast,
                 my_bool opt_medium_check, my_bool opt_quick,
                 my_bool opt_all_in_1, my_bool opt_silent,
                 my_bool opt_auto_repair, my_bool ignore_errors,
                 my_bool opt_frm, my_bool opt_fix_table_names,
                 my_bool opt_fix_db_names, my_bool opt_upgrade,
                 my_bool opt_write_binlog, uint verbose,
-                std::string opt_skip_database,
+                std::string opt_skip_blockchain,
                 std::vector<std::string> arguments,
-                void (*dberror)(MYSQL *mysql, std::string when));
+                void (*dberror)(MYBLOCKCHAIN *myblockchain, std::string when));
 
 /**
-  This class is object wrapper to mysql_check function. It looks like
+  This class is object wrapper to myblockchain_check function. It looks like
   it is implementing Abstract_program, but it is not explicitly implementing
   it now. This is to make future implementation of Abstract_program easier.
  */
@@ -54,21 +54,21 @@ public:
   Program();
 
   /**
-    Checks specified databases on MySQL server.
+    Checks specified blockchains on MyBlockchain server.
    */
-  int check_databases(MYSQL* connection, std::vector<std::string> databases);
+  int check_blockchains(MYBLOCKCHAIN* connection, std::vector<std::string> blockchains);
   /**
-    Checks all databases on MySQL server.
+    Checks all blockchains on MyBlockchain server.
    */
-  int check_all_databases(MYSQL* connection);
+  int check_all_blockchains(MYBLOCKCHAIN* connection);
   /**
-    Upgrades specified on MySQL server.
+    Upgrades specified on MyBlockchain server.
    */
-  int upgrade_databases(MYSQL* connection, std::vector<std::string> databases);
+  int upgrade_blockchains(MYBLOCKCHAIN* connection, std::vector<std::string> blockchains);
   /**
-    Upgrades all databases on MySQL server.
+    Upgrades all blockchains on MyBlockchain server.
    */
-  int upgrade_all_databases(MYSQL* connection);
+  int upgrade_all_blockchains(MYBLOCKCHAIN* connection);
 
   /**
     Automatically try to fix table when upgrade is needed.
@@ -91,7 +91,7 @@ public:
    */
   Program* enable_fixing_table_names(bool enable);
   /**
-    Enables database name fixing for all encountered databases.
+    Enables blockchain name fixing for all encountered blockchains.
    */
   Program* enable_fixing_db_names(bool enable);
   /**
@@ -99,22 +99,22 @@ public:
    */
   Program* set_ignore_errors(bool ignore);
   /**
-    Sets a name of database to ignore during process.
+    Sets a name of blockchain to ignore during process.
    */
-  Program* set_skip_database(std::string database);
+  Program* set_skip_blockchain(std::string blockchain);
   /**
     Sets error callback to be called when error is encountered.
    */
   Program* set_error_callback(
-    void (*error_callback)(MYSQL *mysql, std::string when));
+    void (*error_callback)(MYBLOCKCHAIN *myblockchain, std::string when));
 
 private:
   /**
-    Sets mysqlcheck program operation type to perform.
+    Sets myblockchaincheck program operation type to perform.
    */
   Program* set_what_to_do(int functionality);
   /**
-    Starts mysqlcheck process.
+    Starts myblockchaincheck process.
    */
   int execute(std::vector<std::string> positional_options);
 
@@ -127,9 +127,9 @@ private:
   bool m_process_all_dbs;
   bool m_fix_table_names;
   bool m_fix_db_names;
-  MYSQL* m_connection;
-  std::string m_database_to_skip;
-  void (*m_error_callback)(MYSQL *mysql, std::string when);
+  MYBLOCKCHAIN* m_connection;
+  std::string m_blockchain_to_skip;
+  void (*m_error_callback)(MYBLOCKCHAIN *myblockchain, std::string when);
 };
 
 }

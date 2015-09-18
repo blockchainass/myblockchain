@@ -123,13 +123,13 @@ enum sym_tab_entry {
 	SYM_IMPLICIT_VAR,	/*!< storage for a intermediate result
 				of a calculation */
 	SYM_LIT,		/*!< literal */
-	SYM_TABLE_REF_COUNTED,	/*!< database table name, ref counted. Must
+	SYM_TABLE_REF_COUNTED,	/*!< blockchain table name, ref counted. Must
 				be closed explicitly. */
-	SYM_TABLE,		/*!< database table name */
-	SYM_COLUMN,		/*!< database table name */
+	SYM_TABLE,		/*!< blockchain table name */
+	SYM_COLUMN,		/*!< blockchain table name */
 	SYM_CURSOR,		/*!< named cursor */
 	SYM_PROCEDURE_NAME,	/*!< stored procedure name */
-	SYM_INDEX,		/*!< database index name */
+	SYM_INDEX,		/*!< blockchain index name */
 	SYM_FUNCTION		/*!< user function name */
 };
 

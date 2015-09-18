@@ -17,19 +17,19 @@
   locking of isam-tables.
   reads info from a isam-table. Must be first request before doing any furter
   calls to any isamfunktion.  Is used to allow many process use the same
-  isamdatabase.
+  isamblockchain.
 */
 
 #include "ftdefs.h"
 
 	/* lock table by F_UNLCK, F_RDLCK or F_WRLCK */
 
-int mi_lock_database(MI_INFO *info, int lock_type)
+int mi_lock_blockchain(MI_INFO *info, int lock_type)
 {
   int error;
   uint count;
   MYISAM_SHARE *share=info->s;
-  DBUG_ENTER("mi_lock_database");
+  DBUG_ENTER("mi_lock_blockchain");
   DBUG_PRINT("enter",("lock_type: %d  old lock %d  r_locks: %u  w_locks: %u "
                       "global_changed:  %d  open_count: %u  name: '%s'",
                       lock_type, info->lock_type, share->r_locks,
@@ -49,7 +49,7 @@ int mi_lock_database(MI_INFO *info, int lock_type)
   }
 
   error= 0;
-  mysql_mutex_lock(&share->intern_lock);
+  myblockchain_mutex_lock(&share->intern_lock);
   if (share->kfile >= 0)		/* May only be false on windows */
   {
     switch (lock_type) {
@@ -87,11 +87,11 @@ int mi_lock_database(MI_INFO *info, int lock_type)
               (info->s->nonmmaped_inserts > MAX_NONMAPPED_INSERTS))
           {
             if (info->s->concurrent_insert)
-              mysql_rwlock_wrlock(&info->s->mmap_lock);
+              myblockchain_rwlock_wrlock(&info->s->mmap_lock);
             mi_remap_file(info, info->s->state.state.data_file_length);
             info->s->nonmmaped_inserts= 0;
             if (info->s->concurrent_insert)
-              mysql_rwlock_unlock(&info->s->mmap_lock);
+              myblockchain_rwlock_unlock(&info->s->mmap_lock);
           }
 	  share->state.process= share->last_process=share->this_process;
 	  share->state.unique=   info->last_unique=  info->this_unique;
@@ -101,9 +101,9 @@ int mi_lock_database(MI_INFO *info, int lock_type)
 	  share->changed=0;
 	  if (myisam_flush)
 	  {
-            if (mysql_file_sync(share->kfile, MYF(0)))
+            if (myblockchain_file_sync(share->kfile, MYF(0)))
 	      error= my_errno;
-            if (mysql_file_sync(info->dfile, MYF(0)))
+            if (myblockchain_file_sync(info->dfile, MYF(0)))
 	      error= my_errno;
 	  }
 	  else
@@ -140,8 +140,8 @@ int mi_lock_database(MI_INFO *info, int lock_type)
         /*
           Change RW to READONLY
 
-          mysqld does not turn write locks to read locks,
-          so we're never here in mysqld.
+          myblockchaind does not turn write locks to read locks,
+          so we're never here in myblockchaind.
         */
 	if (share->w_locks == 1)
 	{
@@ -246,9 +246,9 @@ int mi_lock_database(MI_INFO *info, int lock_type)
     }
   }
 #endif
-  mysql_mutex_unlock(&share->intern_lock);
+  myblockchain_mutex_unlock(&share->intern_lock);
   DBUG_RETURN(error);
-} /* mi_lock_database */
+} /* mi_lock_blockchain */
 
 
 /****************************************************************************
@@ -317,7 +317,7 @@ void mi_update_status(void* param)
 
   /*
     We have to flush the write cache here as other threads may start
-    reading the table before mi_lock_database() is called
+    reading the table before mi_lock_blockchain() is called
   */
   if (info->opt_flag & WRITE_CACHE_USED)
   {
@@ -422,7 +422,7 @@ int _mi_readinfo(MI_INFO *info, int lock_type, int check_keybuffer)
 
 
 /*
-  Every isam-function that uppdates the isam-database MUST end with this
+  Every isam-function that uppdates the isam-blockchain MUST end with this
   request
 */
 
@@ -448,8 +448,8 @@ int _mi_writeinfo(MI_INFO *info, uint operation)
 #ifdef _WIN32
       if (myisam_flush)
       {
-        mysql_file_sync(share->kfile, 0);
-        mysql_file_sync(info->dfile, 0);
+        myblockchain_file_sync(share->kfile, 0);
+        myblockchain_file_sync(info->dfile, 0);
       }
 #endif
     }
@@ -465,7 +465,7 @@ int _mi_writeinfo(MI_INFO *info, uint operation)
 } /* _mi_writeinfo */
 
 
-	/* Test if someone has changed the database */
+	/* Test if someone has changed the blockchain */
 	/* (Should be called after readinfo) */
 
 int _mi_test_if_changed(MI_INFO *info)
@@ -529,7 +529,7 @@ int _mi_mark_file_changed(MI_INFO *info)
     {
       mi_int2store(buff,share->state.open_count);
       buff[2]=1;				/* Mark that it's changed */
-      DBUG_RETURN(mysql_file_pwrite(share->kfile, buff, sizeof(buff),
+      DBUG_RETURN(myblockchain_file_pwrite(share->kfile, buff, sizeof(buff),
                                     sizeof(share->state.header),
                                     MYF(MY_NABP)));
     }
@@ -552,18 +552,18 @@ int _mi_decrement_open_count(MI_INFO *info)
   {
     uint old_lock=info->lock_type;
     share->global_changed=0;
-    lock_error=mi_lock_database(info,F_WRLCK);
+    lock_error=mi_lock_blockchain(info,F_WRLCK);
     /* Its not fatal even if we couldn't get the lock ! */
     if (share->state.open_count > 0)
     {
       share->state.open_count--;
       mi_int2store(buff,share->state.open_count);
-      write_error= mysql_file_pwrite(share->kfile, buff, sizeof(buff),
+      write_error= myblockchain_file_pwrite(share->kfile, buff, sizeof(buff),
                                      sizeof(share->state.header),
                                      MYF(MY_NABP));
     }
     if (!lock_error)
-      lock_error=mi_lock_database(info,old_lock);
+      lock_error=mi_lock_blockchain(info,old_lock);
   }
   return MY_TEST(lock_error || write_error);
 }

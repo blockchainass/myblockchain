@@ -18,7 +18,7 @@ this program; if not, write to the Free Software Foundation, Inc.,
 
 /**************************************************//**
 @file include/db0err.h
-Global error codes for the database
+Global error codes for the blockchain
 
 Created 5/24/1996 Heikki Tuuri
 *******************************************************/
@@ -48,7 +48,7 @@ enum dberr_t {
 					rollback segment */
 	DB_CLUSTER_NOT_FOUND = 30,
 	DB_TABLE_NOT_FOUND,
-	DB_MUST_GET_MORE_FILE_SPACE,	/*!< the database has to be stopped
+	DB_MUST_GET_MORE_FILE_SPACE,	/*!< the blockchain has to be stopped
 					and restarted with more file space */
 	DB_TABLE_IS_BEING_USED,
 	DB_TOO_BIG_RECORD,		/*!< a record in an index would not fit

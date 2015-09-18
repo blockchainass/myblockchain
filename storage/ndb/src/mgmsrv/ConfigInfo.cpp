@@ -44,7 +44,7 @@
 
 #define DB_TOKEN_PRINT  "ndbd(DB)"
 #define MGM_TOKEN_PRINT "ndb_mgmd(MGM)"
-#define API_TOKEN_PRINT "mysqld(API)"
+#define API_TOKEN_PRINT "myblockchaind(API)"
 
 #define DB_TOKEN "DB"
 #define MGM_TOKEN "MGM"
@@ -52,7 +52,7 @@
 
 const ConfigInfo::AliasPair
 ConfigInfo::m_sectionNameAliases[]={
-  {API_TOKEN, "MYSQLD"},
+  {API_TOKEN, "MYBLOCKCHAIND"},
   {DB_TOKEN,  "NDBD"},
   {MGM_TOKEN, "NDB_MGMD"},
   {0, 0}
@@ -308,7 +308,7 @@ const ConfigInfo::ParamInfo ConfigInfo::m_ParamInfo[] = {
     KEY_INTERNAL,
     "HostName",
     "COMPUTER",
-    "Hostname of computer (e.g. mysql.com)",
+    "Hostname of computer (e.g. myblockchain.com)",
     ConfigInfo::CI_USED,
     false,
     ConfigInfo::CI_STRING,
@@ -481,7 +481,7 @@ const ConfigInfo::ParamInfo ConfigInfo::m_ParamInfo[] = {
     CFG_NODE_ID,
     "NodeId",
     DB_TOKEN,
-    "Number identifying the database node ("DB_TOKEN_PRINT")",
+    "Number identifying the blockchain node ("DB_TOKEN_PRINT")",
     ConfigInfo::CI_USED,
     false,
     ConfigInfo::CI_INT,
@@ -505,7 +505,7 @@ const ConfigInfo::ParamInfo ConfigInfo::m_ParamInfo[] = {
     CFG_DB_NO_REPLICAS,
     "NoOfReplicas",
     DB_TOKEN,
-    "Number of copies of all data in the database (1-4)",
+    "Number of copies of all data in the blockchain (1-4)",
     ConfigInfo::CI_USED,
     CI_RESTART_SYSTEM | CI_RESTART_INITIAL,
     ConfigInfo::CI_INT,
@@ -517,7 +517,7 @@ const ConfigInfo::ParamInfo ConfigInfo::m_ParamInfo[] = {
     CFG_DB_NO_ATTRIBUTES,
     "MaxNoOfAttributes",
     DB_TOKEN,
-    "Total number of attributes stored in database. I.e. sum over all tables",
+    "Total number of attributes stored in blockchain. I.e. sum over all tables",
     ConfigInfo::CI_USED,
     false,
     ConfigInfo::CI_INT,
@@ -529,7 +529,7 @@ const ConfigInfo::ParamInfo ConfigInfo::m_ParamInfo[] = {
     CFG_DB_NO_TABLES,
     "MaxNoOfTables",
     DB_TOKEN,
-    "Total number of tables stored in the database",
+    "Total number of tables stored in the blockchain",
     ConfigInfo::CI_USED,
     false,
     ConfigInfo::CI_INT,
@@ -687,7 +687,7 @@ const ConfigInfo::ParamInfo ConfigInfo::m_ParamInfo[] = {
     CFG_DB_WATCHDOG_INTERVAL,
     "TimeBetweenWatchDogCheck",
     DB_TOKEN,
-    "Time between execution checks inside a database node",
+    "Time between execution checks inside a blockchain node",
     ConfigInfo::CI_USED,
     0,
     ConfigInfo::CI_INT,
@@ -735,7 +735,7 @@ const ConfigInfo::ParamInfo ConfigInfo::m_ParamInfo[] = {
     CFG_DB_WATCHDOG_INTERVAL_INITIAL,
     "TimeBetweenWatchDogCheckInitial",
     DB_TOKEN,
-    "Time between execution checks inside a database node in the early start phases when memory is allocated",
+    "Time between execution checks inside a blockchain node in the early start phases when memory is allocated",
     ConfigInfo::CI_USED,
     0,
     ConfigInfo::CI_INT,
@@ -1056,7 +1056,7 @@ const ConfigInfo::ParamInfo ConfigInfo::m_ParamInfo[] = {
     CFG_DB_LCP_INTERVAL,
     "TimeBetweenLocalCheckpoints",
     DB_TOKEN,
-    "Time between taking snapshots of the database (expressed in 2log of bytes)",
+    "Time between taking snapshots of the blockchain (expressed in 2log of bytes)",
     ConfigInfo::CI_USED,
     0,
     ConfigInfo::CI_INT,
@@ -1261,8 +1261,8 @@ const ConfigInfo::ParamInfo ConfigInfo::m_ParamInfo[] = {
     "TransactionDeadlockDetectionTimeout",
     DB_TOKEN,
     "Time transaction can be executing in a DB node (ms).\n"
-    "This is the time the transaction coordinator waits for each database node\n"
-    "of the transaction to execute a request. If the database node takes too\n"
+    "This is the time the transaction coordinator waits for each blockchain node\n"
+    "of the transaction to execute a request. If the blockchain node takes too\n"
     "long time, the transaction gets aborted.",
     ConfigInfo::CI_USED,
     0,
@@ -1350,7 +1350,7 @@ const ConfigInfo::ParamInfo ConfigInfo::m_ParamInfo[] = {
     CFG_DB_ARBIT_TIMEOUT,
     "ArbitrationTimeout",
     DB_TOKEN,
-    "Max time (milliseconds) database partion waits for arbitration signal",
+    "Max time (milliseconds) blockchain partion waits for arbitration signal",
     ConfigInfo::CI_USED,
     false,
     ConfigInfo::CI_INT,
@@ -2185,7 +2185,7 @@ const ConfigInfo::ParamInfo ConfigInfo::m_ParamInfo[] = {
     " At least 1 sample is produced regardless of size limit."
     " The size is scaled up by a factor from IndexStatSaveScale."
     " The value affects size of stats saved in NDB system tables"
-    " and in mysqld memory cache",
+    " and in myblockchaind memory cache",
     ConfigInfo::CI_USED,
     0,
     ConfigInfo::CI_INT,
@@ -2277,7 +2277,7 @@ const ConfigInfo::ParamInfo ConfigInfo::m_ParamInfo[] = {
     CFG_DB_FREE_PCT,
     "MinFreePct",
     DB_TOKEN,
-    "Keep 5% of database free to ensure that we don't get out of memory during restart",
+    "Keep 5% of blockchain free to ensure that we don't get out of memory during restart",
     ConfigInfo::CI_USED,
     false,
     ConfigInfo::CI_INT,
@@ -2324,7 +2324,7 @@ const ConfigInfo::ParamInfo ConfigInfo::m_ParamInfo[] = {
     DB_TOKEN,
     "Ignore all index and foreign key info on the node "
     "at (non-initial) restart.  "
-    "This is a one-time recovery option for a non-startable database.  "
+    "This is a one-time recovery option for a non-startable blockchain.  "
     "Carefully consult documentation before using.",
     ConfigInfo::CI_USED,
     0,
@@ -2340,7 +2340,7 @@ const ConfigInfo::ParamInfo ConfigInfo::m_ParamInfo[] = {
     DB_TOKEN,
     "Ignore all foreign key info on the node "
     "at (non-initial) restart.  "
-    "This is a one-time recovery option for a non-startable database.  "
+    "This is a one-time recovery option for a non-startable blockchain.  "
     "Carefully consult documentation before using.",
     ConfigInfo::CI_USED,
     0,
@@ -5668,7 +5668,7 @@ sanity_checks(Vector<ConfigInfo::ConfigRuleSection>&sections,
   Uint32 mgm_nodes = 0;
   Uint32 api_nodes = 0;
   if (!ctx.m_userProperties.get("DB", &db_nodes)) {
-    ctx.reportError("At least one database node (ndbd) should be defined in config file");
+    ctx.reportError("At least one blockchain node (ndbd) should be defined in config file");
     return false;
   }
   if (!ctx.m_userProperties.get("MGM", &mgm_nodes)) {
@@ -5676,7 +5676,7 @@ sanity_checks(Vector<ConfigInfo::ConfigRuleSection>&sections,
     return false;
   }
   if (!ctx.m_userProperties.get("API", &api_nodes)) {
-    ctx.reportError("At least one application node (for the mysqld) should be defined in config file");
+    ctx.reportError("At least one application node (for the myblockchaind) should be defined in config file");
     return false;
   }
   return true;
@@ -6107,7 +6107,7 @@ check_node_vs_replicas(Vector<ConfigInfo::ConfigRuleSection>&sections,
     }
     if (db_host_count > 1 && arbitration_warning.length() > 0)
       ctx.reportWarning("Cluster configuration warning:%s%s",arbitration_warning.c_str(),
-	       "\n  Running arbitrator on the same host as a database node may"
+	       "\n  Running arbitrator on the same host as a blockchain node may"
 	       "\n  cause complete cluster shutdown in case of host failure.");
   }
   return true;

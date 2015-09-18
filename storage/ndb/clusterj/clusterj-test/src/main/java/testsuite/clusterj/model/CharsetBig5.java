@@ -18,9 +18,9 @@
 
 package testsuite.clusterj.model;
 
-import com.mysql.clusterj.annotation.Lob;
-import com.mysql.clusterj.annotation.PersistenceCapable;
-import com.mysql.clusterj.annotation.PrimaryKey;
+import com.myblockchain.clusterj.annotation.Lob;
+import com.myblockchain.clusterj.annotation.PersistenceCapable;
+import com.myblockchain.clusterj.annotation.PrimaryKey;
 
 @PersistenceCapable(table="charsetbig5")
 public interface CharsetBig5 extends CharsetModel {

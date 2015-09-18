@@ -32,7 +32,7 @@ extern struct my_thread_scheduler_service {
 } *my_thread_scheduler_service;
 
 
-#ifdef MYSQL_DYNAMIC_PLUGIN
+#ifdef MYBLOCKCHAIN_DYNAMIC_PLUGIN
 
 #define my_connection_handler_set(F, M) \
   my_thread_scheduler_service->connection_handler_set((F), (M))
@@ -76,7 +76,7 @@ int my_connection_handler_set(struct Connection_handler_functions *chf,
 */
 int my_connection_handler_reset();
 
-#endif /* MYSQL_DYNAMIC_PLUGIN */
+#endif /* MYBLOCKCHAIN_DYNAMIC_PLUGIN */
 
 #ifdef __cplusplus
 }

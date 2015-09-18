@@ -22,12 +22,12 @@ mt = 2
 
 [ndb_mgmd]
 
-[mysqld]
+[myblockchaind]
 default-storage-engine=myisam
 innodb
 loose-skip-bdb
 skip-grant-tables
-socket=mysql.sock
+socket=myblockchain.sock
 
 [client]
 protocol=tcp
@@ -36,7 +36,7 @@ protocol=tcp
 ndb_mgmd = CHOOSE_host1
 ndbd = CHOOSE_host2,CHOOSE_host3
 ndbapi= CHOOSE_host1,CHOOSE_host1,CHOOSE_host1
-mysqld = CHOOSE_host1
+myblockchaind = CHOOSE_host1
 
 NoOfReplicas = 2
 IndexMemory = 100M 

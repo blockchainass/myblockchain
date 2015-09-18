@@ -15,16 +15,16 @@
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-#include "abstract_database_dump_task.h"
+#include "abstract_blockchain_dump_task.h"
 
 using namespace Mysql::Tools::Dump;
 
-Database* Abstract_database_dump_task::get_related_database()
+Database* Abstract_blockchain_dump_task::get_related_blockchain()
 {
   return (Database*)this->get_related_db_object();
 }
 
-Abstract_database_dump_task::Abstract_database_dump_task(
-  Database* related_database)
-  : Abstract_dump_task(related_database)
+Abstract_blockchain_dump_task::Abstract_blockchain_dump_task(
+  Database* related_blockchain)
+  : Abstract_dump_task(related_blockchain)
 {}

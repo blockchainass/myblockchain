@@ -41,9 +41,9 @@ Created 1/20/1994 Heikki Tuuri
 
 #include <time.h>
 
-#ifndef MYSQL_SERVER
+#ifndef MYBLOCKCHAIN_SERVER
 #include <ctype.h>
-#endif /* MYSQL_SERVER */
+#endif /* MYBLOCKCHAIN_SERVER */
 
 #include <stdarg.h>
 
@@ -360,7 +360,7 @@ struct trx_t;
 /** Get a fixed-length string, quoted as an SQL identifier.
 If the string contains a slash '/', the string will be
 output as two identifiers separated by a period (.),
-as in SQL database_name.identifier.
+as in SQL blockchain_name.identifier.
  @param		[in]	trx		transaction (NULL=no quotes).
  @param		[in]	name		table name.
  @retval	String quoted as an SQL identifier.
@@ -374,7 +374,7 @@ ut_get_name(
 Outputs a fixed-length string, quoted as an SQL identifier.
 If the string contains a slash '/', the string will be
 output as two identifiers separated by a period (.),
-as in SQL database_name.identifier. */
+as in SQL blockchain_name.identifier. */
 void
 ut_print_name(
 /*==========*/
@@ -385,7 +385,7 @@ ut_print_name(
 /** Format a table name, quoted as an SQL identifier.
 If the name contains a slash '/', the result will contain two
 identifiers separated by a period (.), as in SQL
-database_name.table_name.
+blockchain_name.table_name.
 @see table_name_t
 @param[in]	name		table or index name
 @param[out]	formatted	formatted result, will be NUL-terminated
@@ -584,7 +584,7 @@ public:
 };
 
 /** The class fatal is used to emit an error message and stop the server
-by crashing it.  Use this class when MySQL server needs to be stopped
+by crashing it.  Use this class when MyBlockchain server needs to be stopped
 immediately.  Refer to the documentation of class info for usage details. */
 class fatal : public logger {
 public:

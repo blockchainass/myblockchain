@@ -25,7 +25,7 @@ this program; if not, write to the Free Software Foundation, Inc.,
 
 /**************************************************//**
 @file include/buf0buf.ic
-The database buffer buf_pool
+The blockchain buffer buf_pool
 
 Created 11/5/1995 Heikki Tuuri
 *******************************************************/

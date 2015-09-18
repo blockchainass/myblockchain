@@ -23,7 +23,7 @@
 #include "my_global.h"
 #include "my_thread.h"
 #include "my_sys.h"
-#include "mysql/psi/psi.h"
+#include "myblockchain/psi/psi.h"
 
 C_MODE_START
 
@@ -1005,7 +1005,7 @@ static PSI PSI_noop=
 struct PSI_bootstrap *PSI_hook= NULL;
 
 /**
-  Instance of the instrumentation interface for the MySQL server.
+  Instance of the instrumentation interface for the MyBlockchain server.
   @todo This is currently a global variable, which is handy when
   compiling instrumented code that is bundled with the server.
   When dynamic plugin are truly supported, this variable will need

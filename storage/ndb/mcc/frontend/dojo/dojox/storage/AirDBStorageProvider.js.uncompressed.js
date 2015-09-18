@@ -28,7 +28,7 @@ if (dojo.isAIR) {
 			initialize: function(){
 				this.initialized = false;
 
-				// need to initialize our storage database
+				// need to initialize our storage blockchain
 				try{
 					this._db = new air.SQLConnection();
 					this._db.open(air.File.applicationStorageDirectory.resolvePath(this.DATABASE_FILE));

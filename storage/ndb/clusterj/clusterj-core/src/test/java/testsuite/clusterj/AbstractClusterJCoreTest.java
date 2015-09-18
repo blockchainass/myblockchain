@@ -17,13 +17,13 @@
 
 package testsuite.clusterj;
 
-import com.mysql.clusterj.ClusterJException;
-import com.mysql.clusterj.ClusterJHelper;
+import com.myblockchain.clusterj.ClusterJException;
+import com.myblockchain.clusterj.ClusterJHelper;
 
-import com.mysql.clusterj.Constants;
-import com.mysql.clusterj.Session;
-import com.mysql.clusterj.SessionFactory;
-import com.mysql.clusterj.Transaction;
+import com.myblockchain.clusterj.Constants;
+import com.myblockchain.clusterj.Session;
+import com.myblockchain.clusterj.SessionFactory;
+import com.myblockchain.clusterj.Transaction;
 
 import java.io.BufferedReader;
 import java.io.File;

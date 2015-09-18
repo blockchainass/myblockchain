@@ -19,10 +19,10 @@ package testsuite.clusterj;
 
 import java.util.Map;
 
-import com.mysql.clusterj.ClusterJUserException;
-import com.mysql.clusterj.Query;
-import com.mysql.clusterj.query.QueryBuilder;
-import com.mysql.clusterj.query.QueryDomainType;
+import com.myblockchain.clusterj.ClusterJUserException;
+import com.myblockchain.clusterj.Query;
+import com.myblockchain.clusterj.query.QueryBuilder;
+import com.myblockchain.clusterj.query.QueryDomainType;
 
 import testsuite.clusterj.model.AllPrimitives;
 

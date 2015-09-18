@@ -16,8 +16,8 @@
    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-package com.mysql.clusterj.openjpatest;
+package com.myblockchain.clusterj.openjpatest;
 
-public class DateAsUtilDateTest extends com.mysql.clusterj.jpatest.DateAsUtilDateTest {
+public class DateAsUtilDateTest extends com.myblockchain.clusterj.jpatest.DateAsUtilDateTest {
 
 }

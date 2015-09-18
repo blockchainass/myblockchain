@@ -1,0 +1,318 @@
+--source include/have_sjis.inc
+--character_set sjis
+SET NAMES sjis;
+SET character_set_blockchain = sjis;
+--source include/have_innodb.inc
+--disable_warnings
+DROP TABLE IF EXISTS `���`;
+DROP TABLE IF EXISTS `���`;
+DROP TABLE IF EXISTS `������`;
+DROP TABLE IF EXISTS `������`;
+DROP TABLE IF EXISTS `�\�\�\`;
+DROP TABLE IF EXISTS `�\�\�\`;
+--enable_warnings
+
+#
+# Test altering table with Japanese characters in sjis encoding
+#
+
+#
+# Test InnoDB
+#
+CREATE TABLE `���`(`���` char(5)) DEFAULT CHARSET = sjis engine=INNODB;
+CREATE TABLE `���`(`���` char(5)) DEFAULT CHARSET = sjis engine=INNODB;
+CREATE TABLE `������`(`������` char(5)) DEFAULT CHARSET = sjis engine=INNODB;
+CREATE TABLE `������`(`������` char(5)) DEFAULT CHARSET = sjis engine=INNODB;
+CREATE TABLE `�\�\�\`(`�\�\�\` char(5)) DEFAULT CHARSET = sjis engine=INNODB;
+CREATE TABLE `�\�\�\`(`�\�\�\` char(5)) DEFAULT CHARSET = sjis engine=INNODB;
+
+INSERT INTO `���` VALUES ('�����'),('�����'),('�����');
+INSERT INTO `������` VALUES ('����������'),('����������'),('����������');
+INSERT INTO `�\�\�\` VALUES ('�\�\�\�\�\'),('�\�\�\�\�\'),('�\�\�\�\�\');
+
+# Test basic alter operation
+
+ALTER TABLE `���` ADD `���` char(1) FIRST;
+ALTER TABLE `���` ADD `���` char(1) AFTER `���`;
+ALTER TABLE `���` ADD `���` char(1);
+ALTER TABLE `���` ADD INDEX (`���`);
+ALTER TABLE `���` ADD PRIMARY KEY (`���`);
+ALTER TABLE `���` ADD UNIQUE (`���`);
+#Multi-byte field name is not allowed for FOREIGN KEY As of 4.1.4
+#ALTER TABLE `���` ADD FOREIGN KEY (`���`) REFERENCES `���`(`���`);
+ALTER TABLE `���` CHANGE `���` `��` char(1);
+ALTER TABLE `���` MODIFY `���` char(6);
+
+SELECT * FROM `���`;
+DESC `���`;
+SHOW CREATE TABLE `���`;
+
+ALTER TABLE `���` DROP INDEX `���`;
+ALTER TABLE `���` DROP PRIMARY KEY;
+ALTER TABLE `���` DROP INDEX `���`;
+#ALTER TABLE `���` DROP FOREIGN KEY `���`;
+ALTER TABLE `���` DROP `��`;
+ALTER TABLE `���` DROP `���`;
+ALTER TABLE `���` DROP `���`;
+SELECT * FROM `���`;
+DESC `���`;
+SHOW CREATE TABLE `���`;
+
+ALTER TABLE `������` ADD `������` char(1) FIRST;
+ALTER TABLE `������` ADD `������` char(1) AFTER `������`;
+ALTER TABLE `������` ADD `������` char(1);
+ALTER TABLE `������` ADD INDEX (`������`);
+ALTER TABLE `������` ADD PRIMARY KEY (`������`);
+ALTER TABLE `������` ADD UNIQUE (`������`);
+#Multi-byte field name is not allowed for FOREIGN KEY As of 4.1.4
+#ALTER TABLE `������` ADD FOREIGN KEY (`������`) REFERENCES `������`(`������`);
+ALTER TABLE `������` CHANGE `������` `����` char(1);
+ALTER TABLE `������` MODIFY `������` char(6);
+
+SELECT * FROM `������`;
+DESC `������`;
+SHOW CREATE TABLE `������`;
+
+ALTER TABLE `������` DROP INDEX `������`;
+ALTER TABLE `������` DROP PRIMARY KEY;
+ALTER TABLE `������` DROP INDEX `������`;
+#ALTER TABLE `������` DROP FOREIGN KEY `������`;
+ALTER TABLE `������` DROP `����`;
+ALTER TABLE `������` DROP `������`;
+ALTER TABLE `������` DROP `������`;
+
+SELECT * FROM `������`;
+DESC `������`;
+SHOW CREATE TABLE `������`;
+
+ALTER TABLE `�\�\�\` ADD `�\�\�\` char(1) FIRST;
+ALTER TABLE `�\�\�\` ADD `�\�\�\` char(1) AFTER `�\�\�\`;
+ALTER TABLE `�\�\�\` ADD `�\�\�\` char(1);
+ALTER TABLE `�\�\�\` ADD INDEX (`�\�\�\`);
+ALTER TABLE `�\�\�\` ADD PRIMARY KEY (`�\�\�\`);
+ALTER TABLE `�\�\�\` ADD UNIQUE (`�\�\�\`);
+#Multi-byte field name is not allowed for FOREIGN KEY As of 4.1.4
+#ALTER TABLE `�\�\�\` ADD FOREIGN KEY (`�\�\�\`) REFERENCES `�\�\�\`(`�\�\�\`);
+ALTER TABLE `�\�\�\` CHANGE `�\�\�\` `�\�\` char(1);
+ALTER TABLE `�\�\�\` MODIFY `�\�\�\` char(6);
+
+SELECT * FROM `�\�\�\`;
+DESC `�\�\�\`;
+SHOW CREATE TABLE `�\�\�\`;
+
+ALTER TABLE `�\�\�\` DROP INDEX `�\�\�\`;
+ALTER TABLE `�\�\�\` DROP PRIMARY KEY;
+ALTER TABLE `�\�\�\` DROP INDEX `�\�\�\`;
+#ALTER TABLE `�\�\�\` DROP FOREIGN KEY `�\�\�\`;
+ALTER TABLE `�\�\�\` DROP `�\�\`;
+ALTER TABLE `�\�\�\` DROP `�\�\�\`;
+ALTER TABLE `�\�\�\` DROP `�\�\�\`;
+
+SELECT * FROM `�\�\�\`;
+DESC `�\�\�\`;
+SHOW CREATE TABLE `�\�\�\`;
+
+DROP TABLE `���`;
+DROP TABLE `���`;
+DROP TABLE `������`;
+DROP TABLE `������`;
+DROP TABLE `�\�\�\`;
+DROP TABLE `�\�\�\`;
+
+#
+# Test MyISAM
+#
+
+CREATE TABLE `���`(`���` char(5)) DEFAULT CHARSET = sjis engine=MYISAM;
+CREATE TABLE `���`(`���` char(5)) DEFAULT CHARSET = sjis engine=MYISAM;
+CREATE TABLE `������`(`������` char(5)) DEFAULT CHARSET = sjis engine=MYISAM;
+CREATE TABLE `������`(`������` char(5)) DEFAULT CHARSET = sjis engine=MYISAM;
+CREATE TABLE `�\�\�\`(`�\�\�\` char(5)) DEFAULT CHARSET = sjis engine=MYISAM;
+CREATE TABLE `�\�\�\`(`�\�\�\` char(5)) DEFAULT CHARSET = sjis engine=MYISAM;
+
+INSERT INTO `���` VALUES ('�����'),('�����'),('�����');
+INSERT INTO `������` VALUES ('����������'),('����������'),('����������');
+INSERT INTO `�\�\�\` VALUES ('�\�\�\�\�\'),('�\�\�\�\�\'),('�\�\�\�\�\');
+
+ALTER TABLE `���` ADD `���` char(1) FIRST;
+ALTER TABLE `���` ADD `���` char(1) AFTER `���`;
+ALTER TABLE `���` ADD `���` char(1);
+ALTER TABLE `���` ADD INDEX (`���`);
+ALTER TABLE `���` ADD PRIMARY KEY (`���`);
+ALTER TABLE `���` ADD UNIQUE (`���`);
+#ALTER TABLE `���` ADD FOREIGN KEY (`���`) REFERENCES `���`(`���`);
+ALTER TABLE `���` CHANGE `���` `��` char(1);
+ALTER TABLE `���` MODIFY `���` char(6);
+
+SELECT * FROM `���`;
+DESC `���`;
+SHOW CREATE TABLE `���`;
+
+ALTER TABLE `���` DROP INDEX `���`;
+ALTER TABLE `���` DROP PRIMARY KEY;
+ALTER TABLE `���` DROP INDEX `���`;
+#ALTER TABLE `���` DROP FOREIGN KEY `���`;
+ALTER TABLE `���` DROP `��`;
+ALTER TABLE `���` DROP `���`;
+ALTER TABLE `���` DROP `���`;
+SELECT * FROM `���`;
+DESC `���`;
+SHOW CREATE TABLE `���`;
+
+ALTER TABLE `������` ADD `������` char(1) FIRST;
+ALTER TABLE `������` ADD `������` char(1) AFTER `������`;
+ALTER TABLE `������` ADD `������` char(1);
+ALTER TABLE `������` ADD INDEX (`������`);
+ALTER TABLE `������` ADD PRIMARY KEY (`������`);
+ALTER TABLE `������` ADD UNIQUE (`������`);
+#ALTER TABLE `������` ADD FOREIGN KEY (`������`) REFERENCES `������`(`������`);
+ALTER TABLE `������` CHANGE `������` `����` char(1);
+ALTER TABLE `������` MODIFY `������` char(6);
+
+SELECT * FROM `������`;
+DESC `������`;
+SHOW CREATE TABLE `������`;
+
+ALTER TABLE `������` DROP INDEX `������`;
+ALTER TABLE `������` DROP PRIMARY KEY;
+ALTER TABLE `������` DROP INDEX `������`;
+#ALTER TABLE `������` DROP FOREIGN KEY `������`;
+ALTER TABLE `������` DROP `����`;
+ALTER TABLE `������` DROP `������`;
+ALTER TABLE `������` DROP `������`;
+
+SELECT * FROM `������`;
+DESC `������`;
+SHOW CREATE TABLE `������`;
+
+ALTER TABLE `�\�\�\` ADD `�\�\�\` char(1) FIRST;
+ALTER TABLE `�\�\�\` ADD `�\�\�\` char(1) AFTER `�\�\�\`;
+ALTER TABLE `�\�\�\` ADD `�\�\�\` char(1);
+ALTER TABLE `�\�\�\` ADD INDEX (`�\�\�\`);
+ALTER TABLE `�\�\�\` ADD PRIMARY KEY (`�\�\�\`);
+ALTER TABLE `�\�\�\` ADD UNIQUE (`�\�\�\`);
+#ALTER TABLE `�\�\�\` ADD FOREIGN KEY (`�\�\�\`) REFERENCES `�\�\�\`(`�\�\�\`);
+ALTER TABLE `�\�\�\` CHANGE `�\�\�\` `�\�\` char(1);
+ALTER TABLE `�\�\�\` MODIFY `�\�\�\` char(6);
+
+SELECT * FROM `�\�\�\`;
+DESC `�\�\�\`;
+SHOW CREATE TABLE `�\�\�\`;
+
+ALTER TABLE `�\�\�\` DROP INDEX `�\�\�\`;
+ALTER TABLE `�\�\�\` DROP PRIMARY KEY;
+ALTER TABLE `�\�\�\` DROP INDEX `�\�\�\`;
+#ALTER TABLE `�\�\�\` DROP FOREIGN KEY `�\�\�\`;
+ALTER TABLE `�\�\�\` DROP `�\�\`;
+ALTER TABLE `�\�\�\` DROP `�\�\�\`;
+ALTER TABLE `�\�\�\` DROP `�\�\�\`;
+
+SELECT * FROM `�\�\�\`;
+DESC `�\�\�\`;
+SHOW CREATE TABLE `�\�\�\`;
+
+DROP TABLE `���`;
+DROP TABLE `���`;
+DROP TABLE `������`;
+DROP TABLE `������`;
+DROP TABLE `�\�\�\`;
+DROP TABLE `�\�\�\`;
+
+#
+# Test MEMORY
+#
+
+CREATE TABLE `���`(`���` char(5)) DEFAULT CHARSET = sjis engine=MEMORY;
+CREATE TABLE `���`(`���` char(5)) DEFAULT CHARSET = sjis engine=MEMORY;
+CREATE TABLE `������`(`������` char(5)) DEFAULT CHARSET = sjis engine=MEMORY;
+CREATE TABLE `������`(`������` char(5)) DEFAULT CHARSET = sjis engine=MEMORY;
+CREATE TABLE `�\�\�\`(`�\�\�\` char(5)) DEFAULT CHARSET = sjis engine=MEMORY;
+CREATE TABLE `�\�\�\`(`�\�\�\` char(5)) DEFAULT CHARSET = sjis engine=MEMORY;
+
+INSERT INTO `���` VALUES ('�����'),('�����'),('�����');
+INSERT INTO `������` VALUES ('����������'),('����������'),('����������');
+INSERT INTO `�\�\�\` VALUES ('�\�\�\�\�\'),('�\�\�\�\�\'),('�\�\�\�\�\');
+
+ALTER TABLE `���` ADD `���` char(1) FIRST;
+ALTER TABLE `���` ADD `���` char(1) AFTER `���`;
+ALTER TABLE `���` ADD `���` char(1);
+ALTER TABLE `���` ADD INDEX (`���`);
+ALTER TABLE `���` ADD PRIMARY KEY (`���`);
+ALTER TABLE `���` ADD UNIQUE (`���`);
+#ALTER TABLE `���` ADD FOREIGN KEY (`���`) REFERENCES `���`(`���`);
+ALTER TABLE `���` CHANGE `���` `��` char(1);
+ALTER TABLE `���` MODIFY `���` char(6);
+
+SELECT * FROM `���`;
+DESC `���`;
+SHOW CREATE TABLE `���`;
+
+ALTER TABLE `���` DROP INDEX `���`;
+ALTER TABLE `���` DROP PRIMARY KEY;
+ALTER TABLE `���` DROP INDEX `���`;
+#ALTER TABLE `���` DROP FOREIGN KEY `���`;
+ALTER TABLE `���` DROP `��`;
+ALTER TABLE `���` DROP `���`;
+ALTER TABLE `���` DROP `���`;
+SELECT * FROM `���`;
+DESC `���`;
+SHOW CREATE TABLE `���`;
+
+ALTER TABLE `������` ADD `������` char(1) FIRST;
+ALTER TABLE `������` ADD `������` char(1) AFTER `������`;
+ALTER TABLE `������` ADD `������` char(1);
+ALTER TABLE `������` ADD INDEX (`������`);
+ALTER TABLE `������` ADD PRIMARY KEY (`������`);
+ALTER TABLE `������` ADD UNIQUE (`������`);
+#ALTER TABLE `������` ADD FOREIGN KEY (`������`) REFERENCES `������`(`������`);
+ALTER TABLE `������` CHANGE `������` `����` char(1);
+ALTER TABLE `������` MODIFY `������` char(6);
+
+SELECT * FROM `������`;
+DESC `������`;
+SHOW CREATE TABLE `������`;
+
+ALTER TABLE `������` DROP INDEX `������`;
+ALTER TABLE `������` DROP PRIMARY KEY;
+ALTER TABLE `������` DROP INDEX `������`;
+#ALTER TABLE `������` DROP FOREIGN KEY `������`;
+ALTER TABLE `������` DROP `����`;
+ALTER TABLE `������` DROP `������`;
+ALTER TABLE `������` DROP `������`;
+
+SELECT * FROM `������`;
+DESC `������`;
+SHOW CREATE TABLE `������`;
+
+ALTER TABLE `�\�\�\` ADD `�\�\�\` char(1) FIRST;
+ALTER TABLE `�\�\�\` ADD `�\�\�\` char(1) AFTER `�\�\�\`;
+ALTER TABLE `�\�\�\` ADD `�\�\�\` char(1);
+ALTER TABLE `�\�\�\` ADD INDEX (`�\�\�\`);
+ALTER TABLE `�\�\�\` ADD PRIMARY KEY (`�\�\�\`);
+ALTER TABLE `�\�\�\` ADD UNIQUE (`�\�\�\`);
+#ALTER TABLE `�\�\�\` ADD FOREIGN KEY (`�\�\�\`) REFERENCES `�\�\�\`(`�\�\�\`);
+ALTER TABLE `�\�\�\` CHANGE `�\�\�\` `�\�\` char(1);
+ALTER TABLE `�\�\�\` MODIFY `�\�\�\` char(6);
+
+SELECT * FROM `�\�\�\`;
+DESC `�\�\�\`;
+SHOW CREATE TABLE `�\�\�\`;
+
+ALTER TABLE `�\�\�\` DROP INDEX `�\�\�\`;
+ALTER TABLE `�\�\�\` DROP PRIMARY KEY;
+ALTER TABLE `�\�\�\` DROP INDEX `�\�\�\`;
+#ALTER TABLE `�\�\�\` DROP FOREIGN KEY `�\�\�\`;
+ALTER TABLE `�\�\�\` DROP `�\�\`;
+ALTER TABLE `�\�\�\` DROP `�\�\�\`;
+ALTER TABLE `�\�\�\` DROP `�\�\�\`;
+
+SELECT * FROM `�\�\�\`;
+DESC `�\�\�\`;
+SHOW CREATE TABLE `�\�\�\`;
+
+DROP TABLE `���`;
+DROP TABLE `���`;
+DROP TABLE `������`;
+DROP TABLE `������`;
+DROP TABLE `�\�\�\`;
+DROP TABLE `�\�\�\`;

@@ -60,7 +60,7 @@ descriptor page, but used only in the first. */
 #define FSP_SPACE_ID		0	/* space id */
 #define FSP_NOT_USED		4	/* this field contained a value up to
 					which we know that the modifications
-					in the database have been flushed to
+					in the blockchain have been flushed to
 					the file space; not used now */
 #define	FSP_SIZE		8	/* Current size of the space in
 					pages */
@@ -457,7 +457,7 @@ in a physical record delete (like in a purge) or other cleaning operation
 which will result in less space usage in the long run. We prefer the latter
 two types of allocation: when space is scarce, FSP_NORMAL allocations
 will not succeed, but the latter two allocations will succeed, if possible.
-The purpose is to avoid dead end where the database is full but the
+The purpose is to avoid dead end where the blockchain is full but the
 user cannot free any space because these freeing operations temporarily
 reserve some space.
 

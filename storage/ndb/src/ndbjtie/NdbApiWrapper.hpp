@@ -29,7 +29,7 @@ struct NdbApiWrapper {
 
 // ---------------------------------------------------------------------------
 
-// mapped by "com_mysql_ndbjtie_ndbapi_NDBAPI.h"
+// mapped by "com_myblockchain_ndbjtie_ndbapi_NDBAPI.h"
 
     static bool
     create_instance
@@ -61,7 +61,7 @@ struct NdbApiWrapper {
 
 // ---------------------------------------------------------------------------
 
-// mapped by "com_mysql_ndbjtie_ndbapi_Ndb.h"
+// mapped by "com_myblockchain_ndbjtie_ndbapi_Ndb.h"
 
     static int 
     Ndb__getAutoIncrementValue
@@ -219,7 +219,7 @@ struct NdbApiWrapper {
 
 // ---------------------------------------------------------------------------
 
-// mapped by "com_mysql_ndbjtie_ndbapi_NdbBlob.h"
+// mapped by "com_myblockchain_ndbjtie_ndbapi_NdbBlob.h"
 
     static const NdbError &
     NdbBlob__getNdbError
@@ -363,7 +363,7 @@ struct NdbApiWrapper {
 
 // ---------------------------------------------------------------------------
 
-// mapped by "com_mysql_ndbjtie_ndbapi_NdbDictionary.h"
+// mapped by "com_myblockchain_ndbjtie_ndbapi_NdbDictionary.h"
 
     static NdbDictionary::RecordType
     NdbDictionary__getRecordType
@@ -444,11 +444,11 @@ struct NdbApiWrapper {
 
 // ---------------------------------------------------------------------------
 
-// mapped by "com_mysql_ndbjtie_ndbapi_NdbDictionary_AutoGrowSpecification.h"
+// mapped by "com_myblockchain_ndbjtie_ndbapi_NdbDictionary_AutoGrowSpecification.h"
 
 // ---------------------------------------------------------------------------
 
-// mapped by "com_mysql_ndbjtie_ndbapi_NdbDictionary_Column.h"
+// mapped by "com_myblockchain_ndbjtie_ndbapi_NdbDictionary_Column.h"
 
     static bool
     NdbDictionary__Column__getAutoIncrement
@@ -690,7 +690,7 @@ struct NdbApiWrapper {
 
 // ---------------------------------------------------------------------------
 
-// mapped by "com_mysql_ndbjtie_ndbapi_NdbDictionary_Datafile.h"
+// mapped by "com_myblockchain_ndbjtie_ndbapi_NdbDictionary_Datafile.h"
 
     static const char *
     NdbDictionary__Datafile__getPath
@@ -778,7 +778,7 @@ struct NdbApiWrapper {
 
 // ---------------------------------------------------------------------------
 
-// mapped by "com_mysql_ndbjtie_ndbapi_NdbDictionary_Dictionary.h"
+// mapped by "com_myblockchain_ndbjtie_ndbapi_NdbDictionary_Dictionary.h"
 
     static int
     NdbDictionary__Dictionary__listObjects__0 // disambiguate overloaded const/non-const function
@@ -1006,15 +1006,15 @@ struct NdbApiWrapper {
 
 // ---------------------------------------------------------------------------
 
-// mapped by "com_mysql_ndbjtie_ndbapi_NdbDictionary_DictionaryConst_List.h"
+// mapped by "com_myblockchain_ndbjtie_ndbapi_NdbDictionary_DictionaryConst_List.h"
 
 // ---------------------------------------------------------------------------
 
-// mapped by "com_mysql_ndbjtie_ndbapi_NdbDictionary_DictionaryConst_ListConst_Element.h"
+// mapped by "com_myblockchain_ndbjtie_ndbapi_NdbDictionary_DictionaryConst_ListConst_Element.h"
 
 // ---------------------------------------------------------------------------
 
-// mapped by "com_mysql_ndbjtie_ndbapi_NdbDictionary_Event.h"
+// mapped by "com_myblockchain_ndbjtie_ndbapi_NdbDictionary_Event.h"
 
     static const char *
     NdbDictionary__Event__getName
@@ -1165,7 +1165,7 @@ struct NdbApiWrapper {
 
 // ---------------------------------------------------------------------------
 
-// mapped by "com_mysql_ndbjtie_ndbapi_NdbDictionary_Index.h"
+// mapped by "com_myblockchain_ndbjtie_ndbapi_NdbDictionary_Index.h"
 
     static const char *
     NdbDictionary__Index__getName
@@ -1288,7 +1288,7 @@ struct NdbApiWrapper {
 
 // ---------------------------------------------------------------------------
 
-// mapped by "com_mysql_ndbjtie_ndbapi_NdbDictionary_LogfileGroup.h"
+// mapped by "com_myblockchain_ndbjtie_ndbapi_NdbDictionary_LogfileGroup.h"
 
     static const char *
     NdbDictionary__LogfileGroup__getName
@@ -1362,11 +1362,11 @@ struct NdbApiWrapper {
 
 // ---------------------------------------------------------------------------
 
-// mapped by "com_mysql_ndbjtie_ndbapi_NdbDictionary_Object.h"
+// mapped by "com_myblockchain_ndbjtie_ndbapi_NdbDictionary_Object.h"
 
 // ---------------------------------------------------------------------------
 
-// mapped by "com_mysql_ndbjtie_ndbapi_NdbDictionary_ObjectId.h"
+// mapped by "com_myblockchain_ndbjtie_ndbapi_NdbDictionary_ObjectId.h"
 
     static NdbDictionary::Object::Status
     NdbDictionary__ObjectId__getObjectStatus
@@ -1391,7 +1391,7 @@ struct NdbApiWrapper {
 
 // ---------------------------------------------------------------------------
 
-// mapped by "com_mysql_ndbjtie_ndbapi_NdbDictionary_OptimizeIndexHandle.h"
+// mapped by "com_myblockchain_ndbjtie_ndbapi_NdbDictionary_OptimizeIndexHandle.h"
 
     static int
     NdbDictionary__OptimizeIndexHandle__next
@@ -1409,7 +1409,7 @@ struct NdbApiWrapper {
 
 // ---------------------------------------------------------------------------
 
-// mapped by "com_mysql_ndbjtie_ndbapi_NdbDictionary_OptimizeTableHandle.h"
+// mapped by "com_myblockchain_ndbjtie_ndbapi_NdbDictionary_OptimizeTableHandle.h"
 
     static int
     NdbDictionary__OptimizeTableHandle__next
@@ -1427,7 +1427,7 @@ struct NdbApiWrapper {
 
 // ---------------------------------------------------------------------------
 
-// mapped by "com_mysql_ndbjtie_ndbapi_NdbDictionary_RecordSpecification.h"
+// mapped by "com_myblockchain_ndbjtie_ndbapi_NdbDictionary_RecordSpecification.h"
 
     static Uint32
     NdbDictionary__RecordSpecification__size
@@ -1438,7 +1438,7 @@ struct NdbApiWrapper {
 
 // ---------------------------------------------------------------------------
 
-// mapped by "com_mysql_ndbjtie_ndbapi_NdbDictionary_Table.h"
+// mapped by "com_myblockchain_ndbjtie_ndbapi_NdbDictionary_Table.h"
 
     static const char *
     NdbDictionary__Table__getName
@@ -1855,7 +1855,7 @@ struct NdbApiWrapper {
 
 // ---------------------------------------------------------------------------
 
-// mapped by "com_mysql_ndbjtie_ndbapi_NdbDictionary_Tablespace.h"
+// mapped by "com_myblockchain_ndbjtie_ndbapi_NdbDictionary_Tablespace.h"
 
     static const char *
     NdbDictionary__Tablespace__getName
@@ -1950,7 +1950,7 @@ struct NdbApiWrapper {
 
 // ---------------------------------------------------------------------------
 
-// mapped by "com_mysql_ndbjtie_ndbapi_NdbDictionary_Undofile.h"
+// mapped by "com_myblockchain_ndbjtie_ndbapi_NdbDictionary_Undofile.h"
 
     static const char *
     NdbDictionary__Undofile__getPath
@@ -2031,11 +2031,11 @@ struct NdbApiWrapper {
 
 // ---------------------------------------------------------------------------
 
-// mapped by "com_mysql_ndbjtie_ndbapi_NdbError.h"
+// mapped by "com_myblockchain_ndbjtie_ndbapi_NdbError.h"
 
 // ---------------------------------------------------------------------------
 
-// mapped by "com_mysql_ndbjtie_ndbapi_NdbEventOperation.h"
+// mapped by "com_myblockchain_ndbjtie_ndbapi_NdbEventOperation.h"
 
     static int
     NdbEventOperation__isOverrun
@@ -2163,7 +2163,7 @@ struct NdbApiWrapper {
 
 // ---------------------------------------------------------------------------
 
-// mapped by "com_mysql_ndbjtie_ndbapi_NdbIndexOperation.h"
+// mapped by "com_myblockchain_ndbjtie_ndbapi_NdbIndexOperation.h"
 
     static const NdbDictionary::Index *
     NdbIndexOperation__getIndex
@@ -2202,7 +2202,7 @@ struct NdbApiWrapper {
 
 // ---------------------------------------------------------------------------
 
-// mapped by "com_mysql_ndbjtie_ndbapi_NdbIndexScanOperation.h"
+// mapped by "com_myblockchain_ndbjtie_ndbapi_NdbIndexScanOperation.h"
 
     static bool
     NdbIndexScanOperation__getSorted
@@ -2262,11 +2262,11 @@ struct NdbApiWrapper {
 
 // ---------------------------------------------------------------------------
 
-// mapped by "com_mysql_ndbjtie_ndbapi_NdbIndexScanOperation_IndexBound.h"
+// mapped by "com_myblockchain_ndbjtie_ndbapi_NdbIndexScanOperation_IndexBound.h"
 
 // ---------------------------------------------------------------------------
 
-// mapped by "com_mysql_ndbjtie_ndbapi_NdbInterpretedCode.h"
+// mapped by "com_myblockchain_ndbjtie_ndbapi_NdbInterpretedCode.h"
 
     static const NdbDictionary::Table *
     NdbInterpretedCode__getTable
@@ -2585,7 +2585,7 @@ struct NdbApiWrapper {
 
 // ---------------------------------------------------------------------------
 
-// mapped by "com_mysql_ndbjtie_ndbapi_NdbOperation.h"
+// mapped by "com_myblockchain_ndbjtie_ndbapi_NdbOperation.h"
 
     static NdbBlob *
     NdbOperation__getBlobHandle__0 // disambiguate overloaded const/non-const function
@@ -2862,11 +2862,11 @@ struct NdbApiWrapper {
 
 // ---------------------------------------------------------------------------
 
-// mapped by "com_mysql_ndbjtie_ndbapi_NdbOperation_GetValueSpec.h"
+// mapped by "com_myblockchain_ndbjtie_ndbapi_NdbOperation_GetValueSpec.h"
 
 // ---------------------------------------------------------------------------
 
-// mapped by "com_mysql_ndbjtie_ndbapi_NdbOperation_OperationOptions.h"
+// mapped by "com_myblockchain_ndbjtie_ndbapi_NdbOperation_OperationOptions.h"
 
     static Uint32
     NdbOperation__OperationOptions__size
@@ -2877,11 +2877,11 @@ struct NdbApiWrapper {
 
 // ---------------------------------------------------------------------------
 
-// mapped by "com_mysql_ndbjtie_ndbapi_NdbOperation_SetValueSpec.h"
+// mapped by "com_myblockchain_ndbjtie_ndbapi_NdbOperation_SetValueSpec.h"
 
 // ---------------------------------------------------------------------------
 
-// mapped by "com_mysql_ndbjtie_ndbapi_NdbRecAttr.h"
+// mapped by "com_myblockchain_ndbjtie_ndbapi_NdbRecAttr.h"
 
     static const NdbDictionary::Column *
     NdbRecAttr__getColumn
@@ -3025,7 +3025,7 @@ struct NdbApiWrapper {
 
 // ---------------------------------------------------------------------------
 
-// mapped by "com_mysql_ndbjtie_ndbapi_NdbScanFilter.h"
+// mapped by "com_myblockchain_ndbjtie_ndbapi_NdbScanFilter.h"
 
     static const NdbError &
     NdbScanFilter__getNdbError
@@ -3183,7 +3183,7 @@ struct NdbApiWrapper {
 
 // ---------------------------------------------------------------------------
 
-// mapped by "com_mysql_ndbjtie_ndbapi_NdbScanOperation.h"
+// mapped by "com_myblockchain_ndbjtie_ndbapi_NdbScanOperation.h"
 
     static NdbTransaction *
     NdbScanOperation__getNdbTransaction
@@ -3285,7 +3285,7 @@ struct NdbApiWrapper {
 
 // ---------------------------------------------------------------------------
 
-// mapped by "com_mysql_ndbjtie_ndbapi_NdbScanOperation_ScanOptions.h"
+// mapped by "com_myblockchain_ndbjtie_ndbapi_NdbScanOperation_ScanOptions.h"
 
     static Uint32
     NdbScanOperation__ScanOptions__size
@@ -3296,7 +3296,7 @@ struct NdbApiWrapper {
 
 // ---------------------------------------------------------------------------
 
-// mapped by "com_mysql_ndbjtie_ndbapi_NdbTransaction.h"
+// mapped by "com_myblockchain_ndbjtie_ndbapi_NdbTransaction.h"
 
     static const NdbError &
     NdbTransaction__getNdbError
@@ -3468,11 +3468,11 @@ struct NdbApiWrapper {
 
 // ---------------------------------------------------------------------------
 
-// mapped by "com_mysql_ndbjtie_ndbapi_Ndb_Key_part_ptr.h"
+// mapped by "com_myblockchain_ndbjtie_ndbapi_Ndb_Key_part_ptr.h"
 
 // ---------------------------------------------------------------------------
 
-// mapped by "com_mysql_ndbjtie_ndbapi_Ndb_PartitionSpec.h"
+// mapped by "com_myblockchain_ndbjtie_ndbapi_Ndb_PartitionSpec.h"
 
     static Uint32
     Ndb__PartitionSpec__size
@@ -3483,7 +3483,7 @@ struct NdbApiWrapper {
 
 // ---------------------------------------------------------------------------
 
-// mapped by "com_mysql_ndbjtie_ndbapi_Ndb_cluster_connection.h"
+// mapped by "com_myblockchain_ndbjtie_ndbapi_Ndb_cluster_connection.h"
 
     static int
     Ndb_cluster_connection__get_latest_error

@@ -1,0 +1,129 @@
+--source include/have_ujis.inc
+--source include/have_innodb.inc
+
+--disable_warnings
+drop table if exists `�ԣ�`;
+drop table if exists `�ԣ�`;
+drop table if exists `�ԣ�`;
+drop table if exists `�ԣ�`;
+drop table if exists `�ԣ�`;
+drop table if exists `�ԣ�`;
+drop table if exists `�ԣ�`;
+drop table if exists `�ԣ�`;
+drop table if exists `�ԣ�`;
+--enable_warnings
+
+#
+# Test RTRIM() function with Japanese characters in ujis encoding
+#
+
+SET NAMES ujis;
+SET character_set_blockchain = ujis;
+
+CREATE TABLE `�ԣ�` (`�ã�` char(8), INDEX(`�ã�`)) DEFAULT CHARSET = ujis engine = innodb;
+CREATE TABLE `�ԣ�` (`�ã�` char(8), INDEX(`�ã�`)) DEFAULT CHARSET = ujis engine = innodb;
+CREATE TABLE `�ԣ�` (`�ã�` char(8), INDEX(`�ã�`)) DEFAULT CHARSET = ujis engine = innodb;
+CREATE TABLE `�ԣ�` (`�ã�` char(8), INDEX(`�ã�`)) DEFAULT CHARSET = ujis engine = myisam;
+CREATE TABLE `�ԣ�` (`�ã�` char(8), INDEX(`�ã�`)) DEFAULT CHARSET = ujis engine = myisam;
+CREATE TABLE `�ԣ�` (`�ã�` char(8), INDEX(`�ã�`)) DEFAULT CHARSET = ujis engine = myisam;
+CREATE TABLE `�ԣ�` (`�ã�` char(8), INDEX(`�ã�`)) DEFAULT CHARSET = ujis engine = MEMORY;
+CREATE TABLE `�ԣ�` (`�ã�` char(8), INDEX(`�ã�`)) DEFAULT CHARSET = ujis engine = MEMORY;
+CREATE TABLE `�ԣ�` (`�ã�` char(8), INDEX(`�ã�`)) DEFAULT CHARSET = ujis engine = MEMORY;
+
+INSERT INTO `�ԣ�` VALUES ('����������');
+INSERT INTO `�ԣ�` VALUES ('���������� ');
+INSERT INTO `�ԣ�` VALUES ('����������  ');
+INSERT INTO `�ԣ�` VALUES ('����������   ');
+# Double byte spaces are not supposed to be trimed
+INSERT INTO `�ԣ�` VALUES ('������������');
+INSERT INTO `�ԣ�` VALUES ('��������������');
+INSERT INTO `�ԣ�` VALUES ('����������������');
+INSERT INTO `�ԣ�` VALUES ('����������');
+INSERT INTO `�ԣ�` VALUES ('���������� ');
+INSERT INTO `�ԣ�` VALUES ('����������  ');
+INSERT INTO `�ԣ�` VALUES ('����������   ');
+# Double byte spaces are not supposed to be trimed
+INSERT INTO `�ԣ�` VALUES ('������������');
+INSERT INTO `�ԣ�` VALUES ('��������������');
+INSERT INTO `�ԣ�` VALUES ('����������������');
+INSERT INTO `�ԣ�` VALUES ('��܏�ݏ�ޏ�ߏ��');
+INSERT INTO `�ԣ�` VALUES ('��܏�ݏ�ޏ�ߏ�� ');
+INSERT INTO `�ԣ�` VALUES ('��܏�ݏ�ޏ�ߏ��  ');
+INSERT INTO `�ԣ�` VALUES ('��܏�ݏ�ޏ�ߏ��   ');
+# Double byte spaces are not supposed to be trimed
+INSERT INTO `�ԣ�` VALUES ('��܏�ݏ�ޏ�ߏ�ࡡ');
+INSERT INTO `�ԣ�` VALUES ('��܏�ݏ�ޏ�ߏ�ࡡ��');
+INSERT INTO `�ԣ�` VALUES ('��܏�ݏ�ޏ�ߏ�ࡡ����');
+INSERT INTO `�ԣ�` VALUES ('����������');
+INSERT INTO `�ԣ�` VALUES ('���������� ');
+INSERT INTO `�ԣ�` VALUES ('����������  ');
+INSERT INTO `�ԣ�` VALUES ('����������   ');
+# Double byte spaces are not supposed to be trimed
+INSERT INTO `�ԣ�` VALUES ('������������');
+INSERT INTO `�ԣ�` VALUES ('��������������');
+INSERT INTO `�ԣ�` VALUES ('����������������');
+INSERT INTO `�ԣ�` VALUES ('����������');
+INSERT INTO `�ԣ�` VALUES ('���������� ');
+INSERT INTO `�ԣ�` VALUES ('����������  ');
+INSERT INTO `�ԣ�` VALUES ('����������   ');
+# Double byte spaces are not supposed to be trimed
+INSERT INTO `�ԣ�` VALUES ('������������');
+INSERT INTO `�ԣ�` VALUES ('��������������');
+INSERT INTO `�ԣ�` VALUES ('����������������');
+INSERT INTO `�ԣ�` VALUES ('��܏�ݏ�ޏ�ߏ��');
+INSERT INTO `�ԣ�` VALUES ('��܏�ݏ�ޏ�ߏ�� ');
+INSERT INTO `�ԣ�` VALUES ('��܏�ݏ�ޏ�ߏ��  ');
+INSERT INTO `�ԣ�` VALUES ('��܏�ݏ�ޏ�ߏ��   ');
+# Double byte spaces are not supposed to be trimed
+INSERT INTO `�ԣ�` VALUES ('��܏�ݏ�ޏ�ߏ�ࡡ');
+INSERT INTO `�ԣ�` VALUES ('��܏�ݏ�ޏ�ߏ�ࡡ��');
+INSERT INTO `�ԣ�` VALUES ('��܏�ݏ�ޏ�ߏ�ࡡ����');
+INSERT INTO `�ԣ�` VALUES ('����������');
+INSERT INTO `�ԣ�` VALUES ('���������� ');
+INSERT INTO `�ԣ�` VALUES ('����������  ');
+INSERT INTO `�ԣ�` VALUES ('����������   ');
+# Double byte spaces are not supposed to be trimed
+INSERT INTO `�ԣ�` VALUES ('������������');
+INSERT INTO `�ԣ�` VALUES ('��������������');
+INSERT INTO `�ԣ�` VALUES ('����������������');
+INSERT INTO `�ԣ�` VALUES ('����������');
+INSERT INTO `�ԣ�` VALUES ('���������� ');
+INSERT INTO `�ԣ�` VALUES ('����������  ');
+INSERT INTO `�ԣ�` VALUES ('����������   ');
+# Double byte spaces are not supposed to be trimed
+INSERT INTO `�ԣ�` VALUES ('������������');
+INSERT INTO `�ԣ�` VALUES ('��������������');
+INSERT INTO `�ԣ�` VALUES ('����������������');
+INSERT INTO `�ԣ�` VALUES ('��܏�ݏ�ޏ�ߏ��');
+INSERT INTO `�ԣ�` VALUES ('��܏�ݏ�ޏ�ߏ�� ');
+INSERT INTO `�ԣ�` VALUES ('��܏�ݏ�ޏ�ߏ��  ');
+INSERT INTO `�ԣ�` VALUES ('��܏�ݏ�ޏ�ߏ��   ');
+# Double byte spaces are not supposed to be trimed
+INSERT INTO `�ԣ�` VALUES ('��܏�ݏ�ޏ�ߏ�ࡡ');
+INSERT INTO `�ԣ�` VALUES ('��܏�ݏ�ޏ�ߏ�ࡡ��');
+INSERT INTO `�ԣ�` VALUES ('��܏�ݏ�ޏ�ߏ�ࡡ����');
+
+#InnoDB
+SELECT RTRIM(`�ã�`) from `�ԣ�`;
+SELECT RTRIM(`�ã�`) from `�ԣ�`;
+SELECT RTRIM(`�ã�`) from `�ԣ�`;
+
+#MyISAM
+SELECT RTRIM(`�ã�`) from `�ԣ�`;
+SELECT RTRIM(`�ã�`) from `�ԣ�`;
+SELECT RTRIM(`�ã�`) from `�ԣ�`;
+
+#MEMORY
+SELECT RTRIM(`�ã�`) from `�ԣ�`;
+SELECT RTRIM(`�ã�`) from `�ԣ�`;
+SELECT RTRIM(`�ã�`) from `�ԣ�`;
+
+DROP TABLE `�ԣ�`;
+DROP TABLE `�ԣ�`;
+DROP TABLE `�ԣ�`;
+DROP TABLE `�ԣ�`;
+DROP TABLE `�ԣ�`;
+DROP TABLE `�ԣ�`;
+DROP TABLE `�ԣ�`;
+DROP TABLE `�ԣ�`;
+DROP TABLE `�ԣ�`;

@@ -18,21 +18,21 @@
 # MA 02110-1301, USA
 
 #
-# postflight - this script will be executed after the MySQL PKG
+# postflight - this script will be executed after the MyBlockchain PKG
 # installation has been performed.
 #
-# This script will install the MySQL privilege tables using the
-# "mysql_install_db" script and will correct the ownerships of these files
+# This script will install the MyBlockchain privilege tables using the
+# "myblockchain_install_db" script and will correct the ownerships of these files
 # afterwards.
 #
 
 if cd @prefix@ ; then
-	if [ ! -f data/mysql/db.frm ] ; then
-		./sbin/mysqld --initialize --datadir=@prefix@/data --basedir=@prefix@
+	if [ ! -f data/myblockchain/db.frm ] ; then
+		./sbin/myblockchaind --initialize --datadir=@prefix@/data --basedir=@prefix@
 	fi
 
 	if [ -d data ] ; then
-		chown -R @MYSQLD_USER@ data
+		chown -R @MYBLOCKCHAIND_USER@ data
 	fi
 else
 	exit $?

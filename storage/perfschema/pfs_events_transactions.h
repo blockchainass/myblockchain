@@ -24,7 +24,7 @@
 #include "pfs_column_types.h"
 #include "pfs_events.h"
 #include "rpl_gtid.h"
-#include "mysql/plugin.h" /* MYSQL_XIDDATASIZE */
+#include "myblockchain/plugin.h" /* MYBLOCKCHAIN_XIDDATASIZE */
 
 struct PFS_thread;
 struct PFS_account;
@@ -41,7 +41,7 @@ struct PFS_host;
   Max length for bqual and gtrid is 64 bytes each.
 
   @see XID in sql/handler.h
-  @see MYSQL_XID in mysql/plugin.h
+  @see MYBLOCKCHAIN_XID in myblockchain/plugin.h
 */
 struct PSI_xid
 {
@@ -52,7 +52,7 @@ struct PSI_xid
   /** BQUAL length, value 1-64. */
   long bqual_length;
   /** XID raw data, not \0-terminated */
-  char data[MYSQL_XIDDATASIZE];
+  char data[MYBLOCKCHAIN_XIDDATASIZE];
 
   PSI_xid() {null();}
   bool is_null() { return formatID == -1; }

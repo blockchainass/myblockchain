@@ -42,7 +42,7 @@ extern const char *load_default_groups[];
 static struct my_option my_long_options[] =
 {
   NDB_STD_OPTS("hugoJoin"),
-  { "database", 'd', "Database",
+  { "blockchain", 'd', "Database",
     (uchar**) &_db, (uchar**) &_db,
     0, GET_STR, REQUIRED_ARG, 0, 0, 0, 0, 0, 0},
   { "options", 'o', "comma separated list of options",

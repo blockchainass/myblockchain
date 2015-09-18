@@ -1,0 +1,167 @@
+DROP TABLE IF EXISTS `�ԣ�a`;
+DROP TABLE IF EXISTS `�ԣ�b`;
+DROP TABLE IF EXISTS `�ԣ�a`;
+DROP TABLE IF EXISTS `�ԣ�b`;
+DROP TABLE IF EXISTS `�ԣ�a`;
+DROP TABLE IF EXISTS `�ԣ�b`;
+DROP TABLE IF EXISTS `�ԣ�a`;
+DROP TABLE IF EXISTS `�ԣ�b`;
+DROP TABLE IF EXISTS `�ԣ�a`;
+DROP TABLE IF EXISTS `�ԣ�b`;
+DROP TABLE IF EXISTS `�ԣ�a`;
+DROP TABLE IF EXISTS `�ԣ�b`;
+DROP TABLE IF EXISTS `�ԣ�a`;
+DROP TABLE IF EXISTS `�ԣ�b`;
+DROP TABLE IF EXISTS `�ԣ�a`;
+DROP TABLE IF EXISTS `�ԣ�b`;
+DROP TABLE IF EXISTS `�ԣ�a`;
+DROP TABLE IF EXISTS `�ԣ�b`;
+SET NAMES ujis;
+SET character_set_blockchain = ucs2;
+Warnings:
+Warning	1681	Updating 'character_set_blockchain' is deprecated. It will be made read-only in a future release.
+SET collation_connection = ucs2_general_ci;
+CREATE TABLE `�ԣ�a` (`�ã�` char(1) PRIMARY KEY) DEFAULT CHARSET = ucs2 engine = innodb;
+CREATE TABLE `�ԣ�b` (`�ã�` char(1) PRIMARY KEY) DEFAULT CHARSET = ucs2 engine = innodb;
+CREATE TABLE `�ԣ�a` (`�ã�` char(1) PRIMARY KEY) DEFAULT CHARSET = ucs2 engine = innodb;
+CREATE TABLE `�ԣ�b` (`�ã�` char(1) PRIMARY KEY) DEFAULT CHARSET = ucs2 engine = innodb;
+CREATE TABLE `�ԣ�a` (`�ã�` char(1) PRIMARY KEY) DEFAULT CHARSET = ucs2 engine = innodb;
+CREATE TABLE `�ԣ�b` (`�ã�` char(1) PRIMARY KEY) DEFAULT CHARSET = ucs2 engine = innodb;
+CREATE TABLE `�ԣ�a` (`�ã�` char(1) PRIMARY KEY) DEFAULT CHARSET = ucs2 engine = myisam;
+CREATE TABLE `�ԣ�b` (`�ã�` char(1) PRIMARY KEY) DEFAULT CHARSET = ucs2 engine = myisam;
+CREATE TABLE `�ԣ�a` (`�ã�` char(1) PRIMARY KEY) DEFAULT CHARSET = ucs2 engine = myisam;
+CREATE TABLE `�ԣ�b` (`�ã�` char(1) PRIMARY KEY) DEFAULT CHARSET = ucs2 engine = myisam;
+CREATE TABLE `�ԣ�a` (`�ã�` char(1) PRIMARY KEY) DEFAULT CHARSET = ucs2 engine = myisam;
+CREATE TABLE `�ԣ�b` (`�ã�` char(1) PRIMARY KEY) DEFAULT CHARSET = ucs2 engine = myisam;
+CREATE TABLE `�ԣ�a` (`�ã�` char(1) PRIMARY KEY) DEFAULT CHARSET = ucs2 engine = MEMORY;
+CREATE TABLE `�ԣ�b` (`�ã�` char(1) PRIMARY KEY) DEFAULT CHARSET = ucs2 engine = MEMORY;
+CREATE TABLE `�ԣ�a` (`�ã�` char(1) PRIMARY KEY) DEFAULT CHARSET = ucs2 engine = MEMORY;
+CREATE TABLE `�ԣ�b` (`�ã�` char(1) PRIMARY KEY) DEFAULT CHARSET = ucs2 engine = MEMORY;
+CREATE TABLE `�ԣ�a` (`�ã�` char(1) PRIMARY KEY) DEFAULT CHARSET = ucs2 engine = MEMORY;
+CREATE TABLE `�ԣ�b` (`�ã�` char(1) PRIMARY KEY) DEFAULT CHARSET = ucs2 engine = MEMORY;
+INSERT INTO `�ԣ�a` VALUES ('��'),('��'),('��');
+INSERT INTO `�ԣ�b` VALUES ('��');
+INSERT INTO `�ԣ�a` VALUES ('��'),('��'),('��');
+INSERT INTO `�ԣ�b` VALUES ('��');
+INSERT INTO `�ԣ�a` VALUES ('���'),('���'),('���');
+INSERT INTO `�ԣ�b` VALUES ('���');
+INSERT INTO `�ԣ�a` VALUES ('��'),('��'),('��');
+INSERT INTO `�ԣ�b` VALUES ('��');
+INSERT INTO `�ԣ�a` VALUES ('��'),('��'),('��');
+INSERT INTO `�ԣ�b` VALUES ('��');
+INSERT INTO `�ԣ�a` VALUES ('���'),('���'),('���');
+INSERT INTO `�ԣ�b` VALUES ('���');
+INSERT INTO `�ԣ�a` VALUES ('��'),('��'),('��');
+INSERT INTO `�ԣ�b` VALUES ('��');
+INSERT INTO `�ԣ�a` VALUES ('��'),('��'),('��');
+INSERT INTO `�ԣ�b` VALUES ('��');
+INSERT INTO `�ԣ�a` VALUES ('���'),('���'),('���');
+INSERT INTO `�ԣ�b` VALUES ('���');
+SELECT `�ã�` FROM `�ԣ�a` WHERE `�ã�` IN (SELECT `�ã�` FROM `�ԣ�b`);
+�ã�
+��
+SELECT `�ã�` FROM `�ԣ�a` WHERE EXISTS (SELECT `�ã�` FROM `�ԣ�b` WHERE `�ԣ�a`.`�ã�` = `�ԣ�b`.`�ã�`);
+�ã�
+��
+SELECT `�ã�` FROM `�ԣ�a` WHERE NOT EXISTS (SELECT `�ã�` FROM `�ԣ�b` WHERE `�ԣ�a`.`�ã�` = `�ԣ�b`.`�ã�`);
+�ã�
+��
+��
+SELECT `�ã�` FROM `�ԣ�a` WHERE `�ã�` IN (SELECT `�ã�` FROM `�ԣ�b`);
+�ã�
+��
+SELECT `�ã�` FROM `�ԣ�a` WHERE EXISTS (SELECT `�ã�` FROM `�ԣ�b` WHERE `�ԣ�a`.`�ã�` = `�ԣ�b`.`�ã�`);
+�ã�
+��
+SELECT `�ã�` FROM `�ԣ�a` WHERE NOT EXISTS (SELECT `�ã�` FROM `�ԣ�b` WHERE `�ԣ�a`.`�ã�` = `�ԣ�b`.`�ã�`);
+�ã�
+��
+��
+SELECT `�ã�` FROM `�ԣ�a` WHERE `�ã�` IN (SELECT `�ã�` FROM `�ԣ�b`);
+�ã�
+���
+SELECT `�ã�` FROM `�ԣ�a` WHERE EXISTS (SELECT `�ã�` FROM `�ԣ�b` WHERE `�ԣ�a`.`�ã�` = `�ԣ�b`.`�ã�`);
+�ã�
+���
+SELECT `�ã�` FROM `�ԣ�a` WHERE NOT EXISTS (SELECT `�ã�` FROM `�ԣ�b` WHERE `�ԣ�a`.`�ã�` = `�ԣ�b`.`�ã�`);
+�ã�
+���
+���
+SELECT `�ã�` FROM `�ԣ�a` WHERE `�ã�` IN (SELECT `�ã�` FROM `�ԣ�b`);
+�ã�
+��
+SELECT `�ã�` FROM `�ԣ�a` WHERE EXISTS (SELECT `�ã�` FROM `�ԣ�b` WHERE `�ԣ�a`.`�ã�` = `�ԣ�b`.`�ã�`);
+�ã�
+��
+SELECT `�ã�` FROM `�ԣ�a` WHERE NOT EXISTS (SELECT `�ã�` FROM `�ԣ�b` WHERE `�ԣ�a`.`�ã�` = `�ԣ�b`.`�ã�`);
+�ã�
+��
+��
+SELECT `�ã�` FROM `�ԣ�a` WHERE `�ã�` IN (SELECT `�ã�` FROM `�ԣ�b`);
+�ã�
+��
+SELECT `�ã�` FROM `�ԣ�a` WHERE EXISTS (SELECT `�ã�` FROM `�ԣ�b` WHERE `�ԣ�a`.`�ã�` = `�ԣ�b`.`�ã�`);
+�ã�
+��
+SELECT `�ã�` FROM `�ԣ�a` WHERE NOT EXISTS (SELECT `�ã�` FROM `�ԣ�b` WHERE `�ԣ�a`.`�ã�` = `�ԣ�b`.`�ã�`);
+�ã�
+��
+��
+SELECT `�ã�` FROM `�ԣ�a` WHERE `�ã�` IN (SELECT `�ã�` FROM `�ԣ�b`);
+�ã�
+���
+SELECT `�ã�` FROM `�ԣ�a` WHERE EXISTS (SELECT `�ã�` FROM `�ԣ�b` WHERE `�ԣ�a`.`�ã�` = `�ԣ�b`.`�ã�`);
+�ã�
+���
+SELECT `�ã�` FROM `�ԣ�a` WHERE NOT EXISTS (SELECT `�ã�` FROM `�ԣ�b` WHERE `�ԣ�a`.`�ã�` = `�ԣ�b`.`�ã�`);
+�ã�
+���
+���
+SELECT `�ã�` FROM `�ԣ�a` WHERE `�ã�` IN (SELECT `�ã�` FROM `�ԣ�b`);
+�ã�
+��
+SELECT `�ã�` FROM `�ԣ�a` WHERE EXISTS (SELECT `�ã�` FROM `�ԣ�b` WHERE `�ԣ�a`.`�ã�` = `�ԣ�b`.`�ã�`);
+�ã�
+��
+SELECT `�ã�` FROM `�ԣ�a` WHERE NOT EXISTS (SELECT `�ã�` FROM `�ԣ�b` WHERE `�ԣ�a`.`�ã�` = `�ԣ�b`.`�ã�`);
+�ã�
+��
+��
+SELECT `�ã�` FROM `�ԣ�a` WHERE `�ã�` IN (SELECT `�ã�` FROM `�ԣ�b`);
+�ã�
+��
+SELECT `�ã�` FROM `�ԣ�a` WHERE EXISTS (SELECT `�ã�` FROM `�ԣ�b` WHERE `�ԣ�a`.`�ã�` = `�ԣ�b`.`�ã�`);
+�ã�
+��
+SELECT `�ã�` FROM `�ԣ�a` WHERE NOT EXISTS (SELECT `�ã�` FROM `�ԣ�b` WHERE `�ԣ�a`.`�ã�` = `�ԣ�b`.`�ã�`);
+�ã�
+��
+��
+SELECT `�ã�` FROM `�ԣ�a` WHERE `�ã�` IN (SELECT `�ã�` FROM `�ԣ�b`);
+�ã�
+���
+SELECT `�ã�` FROM `�ԣ�a` WHERE EXISTS (SELECT `�ã�` FROM `�ԣ�b` WHERE `�ԣ�a`.`�ã�` = `�ԣ�b`.`�ã�`);
+�ã�
+���
+SELECT `�ã�` FROM `�ԣ�a` WHERE NOT EXISTS (SELECT `�ã�` FROM `�ԣ�b` WHERE `�ԣ�a`.`�ã�` = `�ԣ�b`.`�ã�`);
+�ã�
+���
+���
+DROP TABLE `�ԣ�a`;
+DROP TABLE `�ԣ�b`;
+DROP TABLE `�ԣ�a`;
+DROP TABLE `�ԣ�b`;
+DROP TABLE `�ԣ�a`;
+DROP TABLE `�ԣ�b`;
+DROP TABLE `�ԣ�a`;
+DROP TABLE `�ԣ�b`;
+DROP TABLE `�ԣ�a`;
+DROP TABLE `�ԣ�b`;
+DROP TABLE `�ԣ�a`;
+DROP TABLE `�ԣ�b`;
+DROP TABLE `�ԣ�a`;
+DROP TABLE `�ԣ�b`;
+DROP TABLE `�ԣ�a`;
+DROP TABLE `�ԣ�b`;
+DROP TABLE `�ԣ�a`;
+DROP TABLE `�ԣ�b`;

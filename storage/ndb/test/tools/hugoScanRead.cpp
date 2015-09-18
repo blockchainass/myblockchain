@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2003-2006 MySQL AB
+   Copyright (C) 2003-2006 MyBlockchain AB
     All rights reserved. Use is subject to license terms.
 
    This program is free software; you can redistribute it and/or modify
@@ -48,7 +48,7 @@ int main(int argc, const char** argv){
     { "usage", '?', arg_flag, &_help, "Print help", "" },
     { "lock", 'm', arg_integer, &lock, "lock mode", "" },
     { "sorted", 's', arg_flag, &sorted, "sorted", "" },
-    { "database", 'd', arg_string, &db, "Database", "" }
+    { "blockchain", 'd', arg_string, &db, "Database", "" }
   };
   int num_args = sizeof(args) / sizeof(args[0]);
   int optind = 0;

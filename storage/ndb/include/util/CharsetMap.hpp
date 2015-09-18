@@ -25,7 +25,7 @@
 
 /**
  * Handles encoding issues for character data
- * while keeping MySQL's CHARSET_INFO structure hidden.
+ * while keeping MyBlockchain's CHARSET_INFO structure hidden.
  */
 class CharsetMap {
 public:
@@ -58,21 +58,21 @@ public:
      * from http://www.iana.org/assignments/character-sets and will
      * be recognized and usable by Java (e.g. java.nio, java.io, and java.lang).
      * However it may return "binary" if a column is BLOB / BINARY / VARBINARY,
-     * or it may return the name of an obscure MySQL character set such as
+     * or it may return the name of an obscure MyBlockchain character set such as
      * "keybcs2" or "dec8". 
      */
     const char * getName(int cs_number) const;
 
     /**
-     * Returns just the internal mysql name of the charset.
+     * Returns just the internal myblockchain name of the charset.
      */
     const char * getMysqlName(int cs_number) const;
 
     /**
-     * Takes the mysql name (not the standardized name) and returns a
+     * Takes the myblockchain name (not the standardized name) and returns a
      * character set number.
      */
-    int getCharsetNumber(const char *mysql_name) const;
+    int getCharsetNumber(const char *myblockchain_name) const;
 
     /**
      * Convenience function for UTF-8.

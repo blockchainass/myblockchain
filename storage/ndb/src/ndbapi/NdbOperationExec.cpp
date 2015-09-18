@@ -904,7 +904,7 @@ NdbOperation::buildSignalsNdbRecord(Uint32 aTC_ConnectPtr,
       const char *src;
       if (col->flags & NdbRecord::IsMysqldShrinkVarchar)
       {
-        /* Used to support special varchar format for mysqld keys. */
+        /* Used to support special varchar format for myblockchaind keys. */
         len_ok= col->shrink_varchar(key_row, length, buf);
         src= buf;
       }
@@ -1205,7 +1205,7 @@ NdbOperation::buildSignalsNdbRecord(Uint32 aTC_ConnectPtr,
           
           if (col->flags & NdbRecord::IsMysqldShrinkVarchar)
           {
-            /* Used to support special varchar format for mysqld keys. 
+            /* Used to support special varchar format for myblockchaind keys. 
              * Ideally we'd avoid doing this shrink twice...
              */
             len_ok= col->shrink_varchar(key_row, length, buf);
@@ -1223,7 +1223,7 @@ NdbOperation::buildSignalsNdbRecord(Uint32 aTC_ConnectPtr,
       }
       else
       {
-        /* Blob or MySQLD bitfield handling */
+        /* Blob or MyBlockchainD bitfield handling */
         assert(! (col->flags & NdbRecord::IsKey));
         if (likely(col->flags & NdbRecord::IsMysqldBitfield))
         {
@@ -1232,7 +1232,7 @@ NdbOperation::buildSignalsNdbRecord(Uint32 aTC_ConnectPtr,
             length= 0;
           else
           {
-            col->get_mysqld_bitfield(updRow, buf);
+            col->get_myblockchaind_bitfield(updRow, buf);
             data= buf;
             length= col->maxSize;
           }

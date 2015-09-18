@@ -13,15 +13,15 @@
    along with this program; if not, write to the Free Software
    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA */
 
-/* Resolve numeric stack dump produced by mysqld 3.23.30 and later
-   versions into symbolic names. By Sasha Pachev <sasha@mysql.com>
+/* Resolve numeric stack dump produced by myblockchaind 3.23.30 and later
+   versions into symbolic names. By Sasha Pachev <sasha@myblockchain.com>
  */
 
 #include <my_global.h>
 #include <m_ctype.h>
 #include <my_sys.h>
 #include <m_string.h>
-#include <mysql_version.h>
+#include <myblockchain_version.h>
 #include <errno.h>
 #include <my_getopt.h>
 
@@ -67,14 +67,14 @@ static void verify_sort();
 static void print_version(void)
 {
   printf("%s  Ver %s Distrib %s, for %s (%s)\n",my_progname,DUMP_VERSION,
-	 MYSQL_SERVER_VERSION,SYSTEM_TYPE,MACHINE_TYPE);
+	 MYBLOCKCHAIN_SERVER_VERSION,SYSTEM_TYPE,MACHINE_TYPE);
 }
 
 
 static void usage()
 {
   print_version();
-  printf("MySQL AB, by Sasha Pachev\n");
+  printf("MyBlockchain AB, by Sasha Pachev\n");
   printf("This software comes with ABSOLUTELY NO WARRANTY\n\n");
   printf("Resolve numeric stack strace dump into symbols.\n\n");
   printf("Usage: %s [OPTIONS] symbols-file [numeric-dump-file]\n",
@@ -82,8 +82,8 @@ static void usage()
   my_print_help(my_long_options);
   my_print_variables(my_long_options);
   printf("\n\
-The symbols-file should include the output from:  'nm --numeric-sort mysqld'.\n\
-The numeric-dump-file should contain a numeric stack trace from mysqld.\n\
+The symbols-file should include the output from:  'nm --numeric-sort myblockchaind'.\n\
+The numeric-dump-file should contain a numeric stack trace from myblockchaind.\n\
 If the numeric-dump-file is not given, the stack trace is read from stdin.\n");
 }
 
@@ -164,7 +164,7 @@ static void open_files()
   /* if name not given, assume stdin*/
 
   if (!sym_fname)
-    die("Please run nm --numeric-sort on mysqld binary that produced stack \
+    die("Please run nm --numeric-sort on myblockchaind binary that produced stack \
 trace dump and specify the path to it with -s or --symbols-file");
   if (!(fp_sym = my_fopen(sym_fname, O_RDONLY, MYF(MY_WME))))
     die("Could not open %s", sym_fname);

@@ -14,7 +14,7 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #
 # This script is never run by itself. It is appended to 
-# to a modified copy of packaging/WiX/create_msi.cmake to write a wxs suitable for MySQL Cluster.
+# to a modified copy of packaging/WiX/create_msi.cmake to write a wxs suitable for MyBlockchain Cluster.
 
 # Make sure configuration is Release or RelWithDebInfo. Other configurations create different 
 # installation layouts which the wxs-creation scripts don't handle. 
@@ -23,8 +23,8 @@ IF(NOT CMAKE_INSTALL_CONFIG_NAME MATCHES "Rel")
 ENDIF()
 
 # "Unset" variables that are
-# 1) referenced in mysql_server.wxs.in, and 
-# 2) have been assigned a value that either unsuitable for MySQL Cluster 
+# 1) referenced in myblockchain_server.wxs.in, and 
+# 2) have been assigned a value that either unsuitable for MyBlockchain Cluster 
 
 # This includes _VERSION variables (hard-coded to the server version), or WIX_ variables that 
 # contain incorrect xml when Cluster components are added to the install tree.
@@ -32,7 +32,7 @@ FOREACH(v MAJOR_VERSION MINOR_VERSION PATCH_VERSION CPACK_WIX_DIRECTORIES CPACK_
 	SET(${v} "@${v}@")
 ENDFOREACH()
 
-# Write an intermediate wxs.in file specific to MySQL Cluster, 
-# which can be used by ndb_create_wxs.cmake to create a correct wxs for MySQL Cluster.
-CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/mysql_server.wxs.in"
+# Write an intermediate wxs.in file specific to MyBlockchain Cluster, 
+# which can be used by ndb_create_wxs.cmake to create a correct wxs for MyBlockchain Cluster.
+CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/myblockchain_server.wxs.in"
 	"${CMAKE_CURRENT_BINARY_DIR}/${WXS_BASENAME}.wxs.in" @ONLY)

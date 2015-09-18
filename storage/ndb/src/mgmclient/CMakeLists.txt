@@ -22,7 +22,7 @@ IF(WITHOUT_SERVER)
   RETURN()
 ENDIF()
 
-MYSQL_ADD_EXECUTABLE(ndb_mgm
+MYBLOCKCHAIN_ADD_EXECUTABLE(ndb_mgm
   main.cpp
   COMPONENT ClusterManagementClient)
 

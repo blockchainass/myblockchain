@@ -14,7 +14,7 @@
    License along with this library; if not, write to the Free Software
    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA */
 
-/* UCS2 support. Written by Alexander Barkov <bar@mysql.com> */
+/* UCS2 support. Written by Alexander Barkov <bar@myblockchain.com> */
 
 #include <my_global.h>
 #include <my_sys.h>
@@ -3469,12 +3469,12 @@ CHARSET_INFO my_charset_ucs2_general_ci=
 };
 
 
-CHARSET_INFO my_charset_ucs2_general_mysql500_ci=
+CHARSET_INFO my_charset_ucs2_general_myblockchain500_ci=
 {
   159, 0, 0,                                       /* number           */
   MY_CS_COMPILED|MY_CS_STRNXFRM|MY_CS_UNICODE|MY_CS_NONASCII, /* state */
   "ucs2",                                          /* cs name          */
-  "ucs2_general_mysql500_ci",                      /* name             */
+  "ucs2_general_myblockchain500_ci",                      /* name             */
   "",                                              /* comment          */
   NULL,                                            /* tailoring        */
   ctype_ucs2,                                      /* ctype            */
@@ -3484,7 +3484,7 @@ CHARSET_INFO my_charset_ucs2_general_mysql500_ci=
   NULL,                                            /* uca              */
   NULL,                                            /* tab_to_uni       */
   NULL,                                            /* tab_from_uni     */
-  &my_unicase_mysql500,                            /* caseinfo         */
+  &my_unicase_myblockchain500,                            /* caseinfo         */
   NULL,                                            /* state_map        */
   NULL,                                            /* ident_map        */
   1,                                               /* strxfrm_multiply */

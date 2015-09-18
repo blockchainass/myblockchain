@@ -1,0 +1,24 @@
+!include ../my.cnf
+
+[myblockchaind.1]
+log-slave-updates
+server-id= 1
+
+[myblockchaind.2]
+log-slave-updates
+server-id= 2
+
+[myblockchaind.3]
+log-slave-updates
+server-id= 3
+
+[myblockchaind.4]
+log-slave-updates
+server-id= 4
+
+[ENV]
+SERVER_MYPORT_3=		@myblockchaind.3.port
+SERVER_MYSOCK_3=		@myblockchaind.3.socket
+
+SERVER_MYPORT_4=		@myblockchaind.4.port
+SERVER_MYSOCK_4=		@myblockchaind.4.socket

@@ -17,10 +17,10 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-package com.mysql.cluster.benchmark.tws;
+package com.myblockchain.cluster.benchmark.tws;
 
 // reusing this enum from ClusterJ
-import com.mysql.clusterj.LockMode;
+import com.myblockchain.clusterj.LockMode;
 
 
 public class TwsDriver extends Driver {

@@ -422,7 +422,7 @@ private:
 	/** Flags to use for opening the data file */
 	os_file_create_t	m_open_flags;
 
-	/** size in database pages */
+	/** size in blockchain pages */
 	ulint			m_size;
 
 	/** ordinal position of this datafile in the tablespace */
@@ -540,8 +540,8 @@ public:
 	******************************************************************/
 
 	/** Creates a new InnoDB Symbolic Link (ISL) file.  It is always
-	created under the 'datadir' of MySQL. The datadir is the directory
-	of a running mysqld program. We can refer to it by simply using
+	created under the 'datadir' of MyBlockchain. The datadir is the directory
+	of a running myblockchaind program. We can refer to it by simply using
 	the path ".".
 	@param[in]	name		tablespace name
 	@param[in]	filepath	remote filepath of tablespace datafile
@@ -558,10 +558,10 @@ public:
 	static void delete_link_file(const char* name);
 
 	/** Read an InnoDB Symbolic Link (ISL) file by name.
-	It is always created under the datadir of MySQL.
+	It is always created under the datadir of MyBlockchain.
 	For file-per-table tablespaces, the isl file is expected to be
-	in a 'database' directory and called 'tablename.isl'.
-	For general tablespaces, there will be no 'database' directory.
+	in a 'blockchain' directory and called 'tablename.isl'.
+	For general tablespaces, there will be no 'blockchain' directory.
 	The 'basename.isl' will be in the datadir.
 	The caller must free the memory returned if it is not null.
 	@param[in]	link_filepath	filepath of the ISL file

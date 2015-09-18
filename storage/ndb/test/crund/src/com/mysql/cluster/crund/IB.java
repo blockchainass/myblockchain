@@ -15,10 +15,10 @@
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-package com.mysql.cluster.crund;
+package com.myblockchain.cluster.crund;
 
-import com.mysql.clusterj.annotation.Column;
-import com.mysql.clusterj.annotation.PersistenceCapable;
+import com.myblockchain.clusterj.annotation.Column;
+import com.myblockchain.clusterj.annotation.PersistenceCapable;
 
 /**
  * An Entity test interface for ClusterJ.
@@ -46,9 +46,9 @@ public interface IB {
    o.setCvarbinary_def(new byte[0]);
 
      [java] SEVERE: Error executing getInsertOperation on table b.
-     [java] caught com.mysql.clusterj.ClusterJException: Error executing getInsertOperation on table b. Caused by java.lang.NullPointerException:null
-     [java] com.mysql.clusterj.ClusterJException: Error executing getInsertOperation on table b. Caused by java.lang.NullPointerException:null
-     [java] at com.mysql.clusterj.core.SessionImpl.insert(SessionImpl.java:283)
+     [java] caught com.myblockchain.clusterj.ClusterJException: Error executing getInsertOperation on table b. Caused by java.lang.NullPointerException:null
+     [java] com.myblockchain.clusterj.ClusterJException: Error executing getInsertOperation on table b. Caused by java.lang.NullPointerException:null
+     [java] at com.myblockchain.clusterj.core.SessionImpl.insert(SessionImpl.java:283)
 */
     // XXX @javax.persistence.Basic(fetch=javax.persistence.FetchType.LAZY)
     @Column(name="cvarbinary_def",allowsNull="true")

@@ -41,7 +41,7 @@ int mi_rnext(MI_INFO *info, uchar *buf, int inx)
   if (fast_mi_readinfo(info))
     DBUG_RETURN(my_errno);
   if (info->s->concurrent_insert)
-    mysql_rwlock_rdlock(&info->s->key_root_lock[inx]);
+    myblockchain_rwlock_rdlock(&info->s->key_root_lock[inx]);
   changed=_mi_test_if_changed(info);
   if (!flag)
   {
@@ -114,7 +114,7 @@ int mi_rnext(MI_INFO *info, uchar *buf, int inx)
     if (!error && res == 2)
     {
       if (info->s->concurrent_insert)
-        mysql_rwlock_unlock(&info->s->key_root_lock[inx]);
+        myblockchain_rwlock_unlock(&info->s->key_root_lock[inx]);
       info->lastpos= HA_OFFSET_ERROR;
       DBUG_RETURN(my_errno= HA_ERR_END_OF_FILE);
     }
@@ -135,9 +135,9 @@ int mi_rnext(MI_INFO *info, uchar *buf, int inx)
 	  break;
       }
     }
-    mysql_rwlock_unlock(&info->s->key_root_lock[inx]);
+    myblockchain_rwlock_unlock(&info->s->key_root_lock[inx]);
   }
-	/* Don't clear if database-changed */
+	/* Don't clear if blockchain-changed */
   info->update&= (HA_STATE_CHANGED | HA_STATE_ROW_CHANGED);
   info->update|= update_mask;
 

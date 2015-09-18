@@ -39,7 +39,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  *      hwDepParams: Calculate hw dependent data node parameters
  *      ndb_mgmd_setup: ndb_mgmd process specific parameter assignments
  *      ndbd_setup: ndbd process specific parameter assignments
- *      mysqld_setup: mysqld process specific parameter assignments
+ *      myblockchaind_setup: myblockchaind process specific parameter assignments
  *
  *  Internal data: 
  *      None
@@ -164,34 +164,34 @@ function autoConfigure() {
                 });
                 
                 if (hosts.length == 1) {
-                    // One host: 1*mgmd + 3*api + 2*mysqld + 2*ndbd
+                    // One host: 1*mgmd + 3*api + 2*myblockchaind + 2*ndbd
                     newProcess("ndb_mgmd", hosts[0]);
                     for (var i = 0; i < 3; ++i) {
                         newProcess("api", hosts[0]);
                     }
                     for (var i = 0; i < 2; ++i) {
-                        newProcess("mysqld", hosts[0]);
+                        newProcess("myblockchaind", hosts[0]);
                     }
                     for (var i = 0; i < 2; ++i) {
                         newProcess("ndbmtd", hosts[0]);
                     }
                 } else if (hosts.length == 2) {
-                    // Two hosts: 1*mgmd + 2*api + 1*mysqld + 1*ndbd, 
-                    //            2*api + 1*mysqld + 1*ndbd 
+                    // Two hosts: 1*mgmd + 2*api + 1*myblockchaind + 1*ndbd, 
+                    //            2*api + 1*myblockchaind + 1*ndbd 
                     newProcess("ndb_mgmd", hosts[0]);
                     for (var i = 0; i < 2; ++i) {
                         newProcess("api", hosts[0]);
                     }
-                    newProcess("mysqld", hosts[0]);
+                    newProcess("myblockchaind", hosts[0]);
                     newProcess("ndbmtd", hosts[0]);
 
                     for (var i = 0; i < 2; ++i) {
                         newProcess("api", hosts[1]);
                     }
-                    newProcess("mysqld", hosts[1]);
+                    newProcess("myblockchaind", hosts[1]);
                     newProcess("ndbmtd", hosts[1]);
                 } else if (hosts.length == 3) {
-                    // Three hosts: 1*mgmd + 3*api + 2*mysqld, 
+                    // Three hosts: 1*mgmd + 3*api + 2*myblockchaind, 
                     //              1*ndbd, 
                     //              1*ndbd
                     newProcess("ndb_mgmd", hosts[0]);
@@ -199,7 +199,7 @@ function autoConfigure() {
                         newProcess("api", hosts[0]);
                     }
                     for (var i = 0; i < 2; ++i) {
-                        newProcess("mysqld", hosts[0]);
+                        newProcess("myblockchaind", hosts[0]);
                     }
                     for (var i = 0; i < 2; ++i) {
                         newProcess("ndbmtd", hosts[i + 1]);
@@ -231,13 +231,13 @@ function autoConfigure() {
                             newProcess("api", hosts[2]);
                         }
                     }
-                    // Use N - (N DIV 4)*2 hosts for mysqlds, two on each
+                    // Use N - (N DIV 4)*2 hosts for myblockchainds, two on each
                     for (var i = 0; i < nSQL; ++i) {
                         if (otherNodeId <= 255) {
-                            newProcess("mysqld", hosts[i]);
+                            newProcess("myblockchaind", hosts[i]);
                         }
                         if (otherNodeId <= 255) {
-                            newProcess("mysqld", hosts[i]);
+                            newProcess("myblockchaind", hosts[i]);
                         }
                     }
                     // Use (N DIV 4)*2 hosts for data nodes, one on each
@@ -530,7 +530,7 @@ function ndbd_setup(processItem, processFamilyItem, host, waitCondition) {
     mcc.storage.clusterStorage().getItem(0).then(function (cluster) {
         // Get node distribution (deferred)
         mcc.util.getNodeDistribution().then(function(nNodes) {
-            var noOfMysqld= nNodes["mysqld"];
+            var noOfMysqld= nNodes["myblockchaind"];
             var noOfNdbd= nNodes["ndbd"] + nNodes["ndbmtd"];
                         
             // Return overridden value, if defined, otherwise, return predefined
@@ -669,8 +669,8 @@ function ndbd_setup(processItem, processFamilyItem, host, waitCondition) {
     });
 }
 
-// mysqld process specific parameter assignments
-function mysqld_setup(processItem, processFamilyItem, host, waitCondition) {
+// myblockchaind process specific parameter assignments
+function myblockchaind_setup(processItem, processFamilyItem, host, waitCondition) {
     var id = processItem.getId();
     var datadir = host.getValue("datadir");
     var dirSep = mcc.util.dirSep(datadir);
@@ -684,7 +684,7 @@ function mysqld_setup(processItem, processFamilyItem, host, waitCondition) {
     mcc.configuration.setPara(processFamilyName, id, "Socket",
             "defaultValueInstance", datadir +
             processItem.getValue("NodeId") + dirSep + 
-            "mysql.socket");
+            "myblockchain.socket");
 
     // Get colleague nodes, find own index on host
     mcc.util.getColleagueNodes(processItem).then(function (colleagues) {
@@ -735,7 +735,7 @@ function instanceSetup(processFamilyName, processItem) {
             } else if (processFamilyName == "data") {
                 ndbd_setup(processItem, processFamilyItem, host, waitCondition);
             } else if (processFamilyName == "sql") {
-                mysqld_setup(processItem, processFamilyItem, host, waitCondition);
+                myblockchaind_setup(processItem, processFamilyItem, host, waitCondition);
             } else if (processFamilyName == "api") {
                 waitCondition.resolve();
             }            

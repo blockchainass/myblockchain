@@ -1,0 +1,11 @@
+!include ../my.cnf
+
+[myblockchaind.2]
+
+replicate-ignore-table=test.temp_ignore
+
+[myblockchaind.3]
+
+[ENV]
+SERVER_MYPORT_3=		@myblockchaind.3.port
+SERVER_MYSOCK_3=		@myblockchaind.3.socket

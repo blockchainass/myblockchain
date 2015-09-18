@@ -30,7 +30,7 @@ struct MysqlUtilsWrapper {
 
 // ---------------------------------------------------------------------------
 
-// mapped by "com_mysql_ndbjtie_mysql_CharsetMap.h"
+// mapped by "com_myblockchain_ndbjtie_myblockchain_CharsetMap.h"
 
     static const char *
     CharsetMap__getName
@@ -86,7 +86,7 @@ struct MysqlUtilsWrapper {
     
 // ---------------------------------------------------------------------------
 
-// mapped by "com_mysql_ndbjtie_mysql_Utils.h"
+// mapped by "com_myblockchain_ndbjtie_myblockchain_Utils.h"
 
     static int
     decimal_str2bin

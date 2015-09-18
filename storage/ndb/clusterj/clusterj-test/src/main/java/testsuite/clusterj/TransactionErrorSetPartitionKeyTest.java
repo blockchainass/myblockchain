@@ -17,8 +17,8 @@
 
 package testsuite.clusterj;
 
-import com.mysql.clusterj.ClusterJDatastoreException;
-import com.mysql.clusterj.ClusterJException;
+import com.myblockchain.clusterj.ClusterJDatastoreException;
+import com.myblockchain.clusterj.ClusterJException;
 
 import testsuite.clusterj.model.Employee;
 

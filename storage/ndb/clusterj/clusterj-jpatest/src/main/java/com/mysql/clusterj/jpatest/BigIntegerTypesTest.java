@@ -16,7 +16,7 @@
    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-package com.mysql.clusterj.jpatest;
+package com.myblockchain.clusterj.jpatest;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -24,8 +24,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import com.mysql.clusterj.jpatest.model.BigIntegerTypes;
-import com.mysql.clusterj.jpatest.model.IdBase;
+import com.myblockchain.clusterj.jpatest.model.BigIntegerTypes;
+import com.myblockchain.clusterj.jpatest.model.IdBase;
 
 
 public class BigIntegerTypesTest extends AbstractJPABaseTest {

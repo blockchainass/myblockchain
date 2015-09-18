@@ -1,0 +1,25 @@
+
+#
+# Due to "Bug#18474  Unlistable directories yield no info from
+# information_schema, part2" this test can't be run on Window with our
+# current test framework. When "chmod -r" is done within cygwin the
+# MyBlockchain Server can still read the directory.
+# Manual testing shows the functionalty to skip unlistable directories
+# works on windows
+#
+--source include/not_windows.inc
+
+# This test uses chmod, can't be run with root permissions
+-- source include/not_as_root.inc
+
+
+#
+# Bug #15851 Unlistable directories yield no info from information_schema
+#
+create blockchain myblockchaintest;
+create table myblockchaintest.t1(a int);
+let $MYBLOCKCHAIND_DATADIR= `select @@datadir`;
+chmod 0000 $MYBLOCKCHAIND_DATADIR/myblockchaintest;
+select table_schema from information_schema.tables where table_schema='myblockchaintest';
+chmod 0777 $MYBLOCKCHAIND_DATADIR/myblockchaintest;
+drop blockchain myblockchaintest;

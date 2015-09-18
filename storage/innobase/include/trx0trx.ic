@@ -336,11 +336,11 @@ UNIV_INLINE
 bool
 trx_is_high_priority(const trx_t* trx)
 {
-	if (trx->mysql_thd == NULL) {
+	if (trx->myblockchain_thd == NULL) {
 		return(false);
 	}
 
-	return(thd_trx_priority(trx->mysql_thd) > 0);
+	return(thd_trx_priority(trx->myblockchain_thd) > 0);
 }
 
 /**
@@ -355,10 +355,10 @@ trx_arbitrate(const trx_t* requestor, const trx_t* holder)
 	ut_ad(!trx_is_autocommit_non_locking(requestor));
 
 	/* Note: Background stats collection transactions also acquire
-	locks on user tables. They don't have an associated MySQL session
+	locks on user tables. They don't have an associated MyBlockchain session
 	instance. */
 
-	if (requestor->mysql_thd == NULL) {
+	if (requestor->myblockchain_thd == NULL) {
 
 		ut_ad(!trx_is_high_priority(requestor));
 
@@ -368,7 +368,7 @@ trx_arbitrate(const trx_t* requestor, const trx_t* holder)
 			return(NULL);
 		}
 
-	} else if (holder->mysql_thd == NULL) {
+	} else if (holder->myblockchain_thd == NULL) {
 
 		ut_ad(!trx_is_high_priority(holder));
 
@@ -380,14 +380,14 @@ trx_arbitrate(const trx_t* requestor, const trx_t* holder)
 	}
 
 	const THD*	victim = thd_trx_arbitrate(
-		requestor->mysql_thd, holder->mysql_thd);
+		requestor->myblockchain_thd, holder->myblockchain_thd);
 
 	ut_ad(victim == NULL
-	      || victim == requestor->mysql_thd
-	      || victim == holder->mysql_thd);
+	      || victim == requestor->myblockchain_thd
+	      || victim == holder->myblockchain_thd);
 
 	if (victim != NULL) {
-		return(victim == requestor->mysql_thd ? requestor : holder);
+		return(victim == requestor->myblockchain_thd ? requestor : holder);
 	}
 
 	return(NULL);

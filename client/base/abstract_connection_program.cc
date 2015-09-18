@@ -26,7 +26,7 @@ Abstract_connection_program::Abstract_connection_program()
   this->add_provider(&this->m_connection_options);
 }
 
-MYSQL* Abstract_connection_program::create_connection()
+MYBLOCKCHAIN* Abstract_connection_program::create_connection()
 {
   return this->m_connection_options.create_connection();
 }

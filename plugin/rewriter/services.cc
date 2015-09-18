@@ -22,7 +22,7 @@
 #include "my_config.h"
 #include "services.h"
 #include "template_utils.h"
-#include <mysql/service_my_snprintf.h>
+#include <myblockchain/service_my_snprintf.h>
 
 using std::string;
 
@@ -38,14 +38,14 @@ string print_digest(const unsigned char *digest)
   return digest_str;
 }
 
-bool Digest::load(MYSQL_THD thd)
+bool Digest::load(MYBLOCKCHAIN_THD thd)
 {
-  return mysql_parser_get_statement_digest(thd, m_buf) != 0;
+  return myblockchain_parser_get_statement_digest(thd, m_buf) != 0;
 }
 
-Session::Session(MYSQL_THD current_session) :
+Session::Session(MYBLOCKCHAIN_THD current_session) :
   m_previous_session(current_session),
-  m_current_session(mysql_parser_open_session())
+  m_current_session(myblockchain_parser_open_session())
 {}
 
 
@@ -54,7 +54,7 @@ Condition_handler::~Condition_handler() {}
 /**
   Bridge function between the C++ API offered by this module and the C API of
   the parser service. This layer always uses a Condition_handler object that
-  is passed to mysql_parser_parse().
+  is passed to myblockchain_parser_parse().
 */
 int handle(int sql_errno, const char* sqlstate, const char* message,
            void *state)
@@ -65,46 +65,46 @@ int handle(int sql_errno, const char* sqlstate, const char* message,
 
 
 /// Convenience function, to avoid sprinkling the code with const_casts.
-static MYSQL_LEX_STRING make_lex_string(const string &str)
+static MYBLOCKCHAIN_LEX_STRING make_lex_string(const string &str)
 {
-  MYSQL_LEX_STRING lex_str= { const_cast<char*>(str.c_str()), str.length() };
+  MYBLOCKCHAIN_LEX_STRING lex_str= { const_cast<char*>(str.c_str()), str.length() };
   return lex_str;
 }
 
-void set_current_database(MYSQL_THD thd, const string &db)
+void set_current_blockchain(MYBLOCKCHAIN_THD thd, const string &db)
 {
-  MYSQL_LEX_STRING db_str= make_lex_string(db);
-  mysql_parser_set_current_database(thd, db_str);
+  MYBLOCKCHAIN_LEX_STRING db_str= make_lex_string(db);
+  myblockchain_parser_set_current_blockchain(thd, db_str);
 }
 
 
-bool parse(MYSQL_THD thd, const string &query, bool is_prepared,
+bool parse(MYBLOCKCHAIN_THD thd, const string &query, bool is_prepared,
            Condition_handler *handler)
 {
-  MYSQL_LEX_STRING query_str= make_lex_string(query);
-  return mysql_parser_parse(thd, query_str, is_prepared, handle, handler);
+  MYBLOCKCHAIN_LEX_STRING query_str= make_lex_string(query);
+  return myblockchain_parser_parse(thd, query_str, is_prepared, handle, handler);
 }
 
 
-bool parse(MYSQL_THD thd, const string &query, bool is_prepared)
+bool parse(MYBLOCKCHAIN_THD thd, const string &query, bool is_prepared)
 {
-  MYSQL_LEX_STRING query_str= make_lex_string(query);
-  return mysql_parser_parse(thd, query_str, is_prepared, NULL, NULL);
+  MYBLOCKCHAIN_LEX_STRING query_str= make_lex_string(query);
+  return myblockchain_parser_parse(thd, query_str, is_prepared, NULL, NULL);
 }
 
 
-bool is_select_statement(MYSQL_THD thd)
+bool is_select_statement(MYBLOCKCHAIN_THD thd)
 {
-  return mysql_parser_get_statement_type(thd) == STATEMENT_TYPE_SELECT;
+  return myblockchain_parser_get_statement_type(thd) == STATEMENT_TYPE_SELECT;
 }
 
-int get_number_params(MYSQL_THD thd)
+int get_number_params(MYBLOCKCHAIN_THD thd)
 {
-  return mysql_parser_get_number_params(thd);
+  return myblockchain_parser_get_number_params(thd);
 }
 
 
-int process_item(MYSQL_ITEM item, uchar *arg)
+int process_item(MYBLOCKCHAIN_ITEM item, uchar *arg)
 {
   Literal_visitor *visitor= pointer_cast<Literal_visitor*>(arg);
   if (visitor->visit(item))
@@ -113,10 +113,10 @@ int process_item(MYSQL_ITEM item, uchar *arg)
 }
 
 
-bool visit_parse_tree(MYSQL_THD thd, Literal_visitor *visitor)
+bool visit_parse_tree(MYBLOCKCHAIN_THD thd, Literal_visitor *visitor)
 {
   uchar *arg= pointer_cast<uchar*>(visitor);
-  return mysql_parser_visit_tree(thd, process_item, arg) != 0;
+  return myblockchain_parser_visit_tree(thd, process_item, arg) != 0;
 }
 
 
@@ -126,32 +126,32 @@ bool visit_parse_tree(MYSQL_THD thd, Literal_visitor *visitor)
 */
 class Lex_str
 {
-  MYSQL_LEX_STRING m_str;
+  MYBLOCKCHAIN_LEX_STRING m_str;
   Lex_str &operator= (const Lex_str&);
   Lex_str(const Lex_str&);
 
 public:
-  Lex_str(MYSQL_LEX_STRING str) : m_str(str) {}
+  Lex_str(MYBLOCKCHAIN_LEX_STRING str) : m_str(str) {}
 
-  const MYSQL_LEX_STRING get() { return m_str; }
+  const MYBLOCKCHAIN_LEX_STRING get() { return m_str; }
 
-  ~Lex_str() { mysql_parser_free_string(m_str); }
+  ~Lex_str() { myblockchain_parser_free_string(m_str); }
 };
 
 
 /// Prints an Item as an std::string.
-string print_item(MYSQL_ITEM item)
+string print_item(MYBLOCKCHAIN_ITEM item)
 {
-  Lex_str lex_str(mysql_parser_item_string(item));
+  Lex_str lex_str(myblockchain_parser_item_string(item));
   string literal;
   literal.assign(lex_str.get().str, lex_str.get().length);
   return literal;
 }
 
 
-string get_current_query_normalized(MYSQL_THD thd)
+string get_current_query_normalized(MYBLOCKCHAIN_THD thd)
 {
-  MYSQL_LEX_STRING normalized_pattern= mysql_parser_get_normalized_query(thd);
+  MYBLOCKCHAIN_LEX_STRING normalized_pattern= myblockchain_parser_get_normalized_query(thd);
   string s;
   s.assign(normalized_pattern.str, normalized_pattern.length);
   return s;
@@ -176,11 +176,11 @@ public:
 };
 
 
-std::vector<int> get_parameter_positions(MYSQL_THD thd)
+std::vector<int> get_parameter_positions(MYBLOCKCHAIN_THD thd)
 {
   int number_params= get_number_params(thd);
   Array_ptr parameter_positions(new int[number_params]);
-  mysql_parser_extract_prepared_params(thd, parameter_positions.get());
+  myblockchain_parser_extract_prepared_params(thd, parameter_positions.get());
   std::vector<int> positions(parameter_positions.get(),
                              parameter_positions.get() + number_params);
   return positions;

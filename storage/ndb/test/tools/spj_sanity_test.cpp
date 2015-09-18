@@ -16,8 +16,8 @@
 */
 
 #include <new>
-#include <mysql.h>
-#include <mysqld_error.h>
+#include <myblockchain.h>
+#include <myblockchaind_error.h>
 
 #include <ndb_global.h>
 #include <ndb_opts.h>
@@ -308,19 +308,19 @@ namespace SPJSanityTest{
     return names[colNo];
   };
   
-  static void printMySQLError(MYSQL& mysql, const char* before=NULL){
+  static void printMyBlockchainError(MYBLOCKCHAIN& myblockchain, const char* before=NULL){
     if(before!=NULL){
       ndbout << before;
     }
-    ndbout << mysql_error(&mysql) << endl;
+    ndbout << myblockchain_error(&myblockchain) << endl;
     exit(-1);
   }
 
-  static void mySQLExec(MYSQL& mysql, const char* stmt){
+  static void mySQLExec(MYBLOCKCHAIN& myblockchain, const char* stmt){
     ndbout << stmt << ";" << endl;
-    if(mysql_query(&mysql, stmt) != 0){
+    if(myblockchain_query(&myblockchain, stmt) != 0){
       ndbout << "Error executing '" << stmt << "' : ";
-      printMySQLError(mysql);
+      printMyBlockchainError(myblockchain);
     }
   }
 
@@ -1036,11 +1036,11 @@ namespace SPJSanityTest{
   // Misc. functions.
 
   /** Make and populate SQL table.*/
-  void makeTable(MYSQL& mysql, const char* name, int rowCount){
+  void makeTable(MYBLOCKCHAIN& myblockchain, const char* name, int rowCount){
     char cmd[500];
     char piece[500];
     sprintf(cmd, "drop table if exists %s", name);
-    mySQLExec(mysql, cmd);
+    mySQLExec(myblockchain, cmd);
     sprintf(cmd, "create table %s (\n", name);
     for(int i = 0; i<Row::size; i++){
       sprintf(piece, "   %s %s NOT NULL,\n", colName(i), Row::getType(i));
@@ -1065,24 +1065,24 @@ namespace SPJSanityTest{
       }
     }
     strcat(cmd, "ENGINE=NDB");
-    mySQLExec(mysql, cmd);
+    mySQLExec(myblockchain, cmd);
     for(int i = 0; i<rowCount; i++){
       Row::makeSQLValues(piece, i);
       sprintf(cmd, "insert into %s %s", name, piece);
-      mySQLExec(mysql, cmd);
+      mySQLExec(myblockchain, cmd);
     }
   };
 
 
   /* Execute a test for a give operation graph.*/
-  void runCase(MYSQL& mysql, 
+  void runCase(MYBLOCKCHAIN& myblockchain, 
                Ndb& ndb, 
                Query& query,
                const char* tabName, 
                int tabSize,
                int rowCount){
     // Populate test table.
-    makeTable(mysql, tabName, tabSize);
+    makeTable(myblockchain, tabName, tabSize);
     NdbDictionary::Dictionary*  const dict = ndb.getDictionary();
     const NdbDictionary::Table* const tab = dict->getTable(tabName);    
     require(tab!=NULL);
@@ -1109,7 +1109,7 @@ namespace SPJSanityTest{
   }
 
   /** Run a set of test cases.*/
-  void runTestSuite(MYSQL& mysql, Ndb& ndb){
+  void runTestSuite(MYBLOCKCHAIN& myblockchain, Ndb& ndb){
     for(int caseNo = 0; caseNo<7; caseNo++){
       ndbout << endl << "Running test case " << caseNo << endl;
 
@@ -1123,14 +1123,14 @@ namespace SPJSanityTest{
           LookupOperation root(query);
           LookupOperation child(query, &root);
           LookupOperation child2(query, &root);
-          runCase(mysql, ndb, query, tabName, 1, 1);
+          runCase(myblockchain, ndb, query, tabName, 1, 1);
         }
         break;
       case 1:
         {
           IndexLookupOperation root(query, "UIX");
           IndexLookupOperation child(query, "UIX", &root);
-          runCase(mysql, ndb, query, tabName, 5, 1);
+          runCase(myblockchain, ndb, query, tabName, 5, 1);
         }
         break;
       case 2:
@@ -1140,14 +1140,14 @@ namespace SPJSanityTest{
           LookupOperation child(query, &root);
           IndexLookupOperation child2(query, "UIX", &child);
           LookupOperation child3(query, &child);
-          runCase(mysql, ndb, query, tabName, 5, 3);
+          runCase(myblockchain, ndb, query, tabName, 5, 3);
         }
         break;
       case 3:
         {
           TableScanOperation root(query);
           LookupOperation child(query, &root);
-          runCase(mysql, ndb, query, tabName, 5, 5);
+          runCase(myblockchain, ndb, query, tabName, 5, 5);
         }
         break;
       case 4:
@@ -1158,7 +1158,7 @@ namespace SPJSanityTest{
           IndexLookupOperation child3(query, "UIX", &child2);
           LookupOperation child1_2(query, &root);
           LookupOperation child2_2(query, &child1_2);
-          runCase(mysql, ndb, query, tabName, 10, 10);
+          runCase(myblockchain, ndb, query, tabName, 10, 10);
         }
         break;
       case 5:
@@ -1166,14 +1166,14 @@ namespace SPJSanityTest{
           IndexScanOperation root(query, "PRIMARY", 0, 10, 
                                  NdbQueryOptions::ScanOrdering_descending);
           LookupOperation child(query, &root);
-          runCase(mysql, ndb, query, tabName, 10, 10);
+          runCase(myblockchain, ndb, query, tabName, 10, 10);
         }
         break;
       case 6:
         {
           TableScanOperation root(query, 3);
           LookupOperation child(query, &root);
-          runCase(mysql, ndb, query, tabName, 5, 3);
+          runCase(myblockchain, ndb, query, tabName, 5, 3);
         }
         break;
 #if 0
@@ -1183,7 +1183,7 @@ namespace SPJSanityTest{
           IndexScanOperation root(query, "PRIMARY", 0, 1000, 
                                  NdbQueryOptions::ScanOrdering_descending);
           LookupOperation child(query, &root);
-          runCase(mysql, ndb, query, tabName, 10*(caseNo-6), 10*(caseNo-6));
+          runCase(myblockchain, ndb, query, tabName, 10*(caseNo-6), 10*(caseNo-6));
         }
         break;
 #endif
@@ -1199,7 +1199,7 @@ using namespace SPJSanityTest;
 int main(int argc, char* argv[]){
   if(argc!=4){
     ndbout << "Usage: " << argv[0] 
-           << " <mysql IP address> <mysql port> <cluster connect string>" 
+           << " <myblockchain IP address> <myblockchain port> <cluster connect string>" 
            << endl;
     return NDBT_ProgramExit(NDBT_FAILED);
   }
@@ -1208,15 +1208,15 @@ int main(int argc, char* argv[]){
   const char* const connectString = argv[3];
 
   NDB_INIT(argv[0]);
-  MYSQL mysql;
-  require(mysql_init(&mysql));
-  if(!mysql_real_connect(&mysql, host, "root", "", "",
+  MYBLOCKCHAIN myblockchain;
+  require(myblockchain_init(&myblockchain));
+  if(!myblockchain_real_connect(&myblockchain, host, "root", "", "",
                          port, NULL, 0)){
-    printMySQLError(mysql, "mysql_real_connect() failed:");
+    printMyBlockchainError(myblockchain, "myblockchain_real_connect() failed:");
     return NDBT_ProgramExit(NDBT_FAILED);
   }
-  mySQLExec(mysql, "create database if not exists CK_DB");
-  mySQLExec(mysql, "use CK_DB");
+  mySQLExec(myblockchain, "create blockchain if not exists CK_DB");
+  mySQLExec(myblockchain, "use CK_DB");
   {
     Ndb_cluster_connection con(connectString);
     if(con.connect(12, 5, 1) != 0){
@@ -1234,7 +1234,7 @@ int main(int argc, char* argv[]){
       ERR(ndb.getNdbError());
       return NDBT_ProgramExit(NDBT_FAILED);
     }
-    runTestSuite(mysql, ndb);
+    runTestSuite(myblockchain, ndb);
   } // Must call ~Ndb_cluster_connection() before ndb_end().
   ndb_end(0);
   return 0;

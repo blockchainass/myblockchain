@@ -96,7 +96,7 @@ start_helper_thread(void)
     return -1;
   }
 
-  return mysql_thread_create(key_thread_timer_notifier, &timer_notify_thread,
+  return myblockchain_thread_create(key_thread_timer_notifier, &timer_notify_thread,
                              NULL, timer_notify_thread_func, NULL);
 }
 

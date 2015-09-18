@@ -15,16 +15,16 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 
-if [ "$MYSQL_HOME" = "" ] ; then
+if [ "$MYBLOCKCHAIN_HOME" = "" ] ; then
   source ../env.properties
-  echo MYSQL_HOME=$MYSQL_HOME
-  PATH="$MYSQL_LIBEXEC:$MYSQL_BIN:$PATH"
+  echo MYBLOCKCHAIN_HOME=$MYBLOCKCHAIN_HOME
+  PATH="$MYBLOCKCHAIN_LIBEXEC:$MYBLOCKCHAIN_BIN:$PATH"
 fi
 
 #set -x
 
-mysock="/tmp/mysql.sock"
-#mysock="$mylogdir/mysql.sock"
+mysock="/tmp/myblockchain.sock"
+#mysock="$mylogdir/myblockchain.sock"
 
 # 4 bash parameter substitution forms: $*, "$*", $@, "$@" (use last here)
 #echo nArgs=$#
@@ -32,11 +32,11 @@ mysock="/tmp/mysql.sock"
 #for p in "$@"; do echo "    [$p]"; done
 
 #echo
-#"mysql" "$@"
+#"myblockchain" "$@"
 # for localhost connections:
-"mysql" --socket="$mysock" "$@"
+"myblockchain" --socket="$mysock" "$@"
 # for remote connections:
-#"mysql" -h localhost -P 3307 "$@"
-#"mysql" -host=localhost -port=3307 "$@"
+#"myblockchain" -h localhost -P 3307 "$@"
+#"myblockchain" -host=localhost -port=3307 "$@"
 
 #set +x

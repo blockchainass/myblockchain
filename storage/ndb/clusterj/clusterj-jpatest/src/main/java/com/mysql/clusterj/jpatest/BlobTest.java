@@ -15,7 +15,7 @@
    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-package com.mysql.clusterj.jpatest;
+package com.myblockchain.clusterj.jpatest;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -23,7 +23,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.mysql.clusterj.jpatest.model.BlobTypes;
+import com.myblockchain.clusterj.jpatest.model.BlobTypes;
 
 public class BlobTest extends AbstractJPABaseTest {
 

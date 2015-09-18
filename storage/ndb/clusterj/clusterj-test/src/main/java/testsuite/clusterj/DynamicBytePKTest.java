@@ -21,8 +21,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import com.mysql.clusterj.DynamicObject;
-import com.mysql.clusterj.annotation.PersistenceCapable;
+import com.myblockchain.clusterj.DynamicObject;
+import com.myblockchain.clusterj.annotation.PersistenceCapable;
 
 import testsuite.clusterj.model.IdBase;
 

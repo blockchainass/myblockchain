@@ -16,7 +16,7 @@
    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-package com.mysql.clusterj;
+package com.myblockchain.clusterj;
 
 /**
  * ClusterJFatalInternalException represents an implementation error that

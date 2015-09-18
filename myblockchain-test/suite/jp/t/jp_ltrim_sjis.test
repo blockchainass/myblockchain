@@ -1,0 +1,129 @@
+--source include/have_sjis.inc
+--source include/have_innodb.inc
+--character_set sjis
+--disable_warnings
+drop table if exists `�s�P`;
+drop table if exists `�s�Q`;
+drop table if exists `�s�R`;
+drop table if exists `�s�S`;
+drop table if exists `�s�T`;
+drop table if exists `�s�U`;
+drop table if exists `�s�V`;
+drop table if exists `�s�W`;
+drop table if exists `�s�X`;
+--enable_warnings
+
+#
+# Test LTRIM() function with Japanese characters in sjis encoding
+#
+
+SET NAMES sjis;
+SET character_set_blockchain = sjis;
+
+CREATE TABLE `�s�P` (`�b�P` char(8), INDEX(`�b�P`)) DEFAULT CHARSET = sjis engine = innodb;
+CREATE TABLE `�s�Q` (`�b�P` char(8), INDEX(`�b�P`)) DEFAULT CHARSET = sjis engine = innodb;
+CREATE TABLE `�s�R` (`�b�P` char(8), INDEX(`�b�P`)) DEFAULT CHARSET = sjis engine = innodb;
+CREATE TABLE `�s�S` (`�b�P` char(8), INDEX(`�b�P`)) DEFAULT CHARSET = sjis engine = myisam;
+CREATE TABLE `�s�T` (`�b�P` char(8), INDEX(`�b�P`)) DEFAULT CHARSET = sjis engine = myisam;
+CREATE TABLE `�s�U` (`�b�P` char(8), INDEX(`�b�P`)) DEFAULT CHARSET = sjis engine = myisam;
+CREATE TABLE `�s�V` (`�b�P` char(8), INDEX(`�b�P`)) DEFAULT CHARSET = sjis engine = MEMORY;
+CREATE TABLE `�s�W` (`�b�P` char(8), INDEX(`�b�P`)) DEFAULT CHARSET = sjis engine = MEMORY;
+CREATE TABLE `�s�X` (`�b�P` char(8), INDEX(`�b�P`)) DEFAULT CHARSET = sjis engine = MEMORY;
+
+INSERT INTO `�s�P` VALUES ('�����');
+INSERT INTO `�s�P` VALUES (' �����');
+INSERT INTO `�s�P` VALUES ('  �����');
+INSERT INTO `�s�P` VALUES ('   �����');
+# Double byte spaces are not supposed to be trimed
+INSERT INTO `�s�P` VALUES ('�@�����');
+INSERT INTO `�s�P` VALUES ('�@�@�����');
+INSERT INTO `�s�P` VALUES ('�@�@�@�����');
+INSERT INTO `�s�Q` VALUES ('����������');
+INSERT INTO `�s�Q` VALUES (' ����������');
+INSERT INTO `�s�Q` VALUES ('  ����������');
+INSERT INTO `�s�Q` VALUES ('   ����������');
+# Double byte spaces are not supposed to be trimed
+INSERT INTO `�s�Q` VALUES ('�@����������');
+INSERT INTO `�s�Q` VALUES ('�@�@����������');
+INSERT INTO `�s�Q` VALUES ('�@�@�@����������');
+INSERT INTO `�s�R` VALUES ('�\�\�\�\�\');
+INSERT INTO `�s�R` VALUES (' �\�\�\�\�\');
+INSERT INTO `�s�R` VALUES ('  �\�\�\�\�\');
+INSERT INTO `�s�R` VALUES ('   �\�\�\�\�\');
+# Double byte spaces are not supposed to be trimed
+INSERT INTO `�s�R` VALUES ('�@�\�\�\�\�\');
+INSERT INTO `�s�R` VALUES ('�@�@�\�\�\�\�\');
+INSERT INTO `�s�R` VALUES ('�@�@�@�\�\�\�\�\');
+INSERT INTO `�s�S` VALUES ('�����');
+INSERT INTO `�s�S` VALUES (' �����');
+INSERT INTO `�s�S` VALUES ('  �����');
+INSERT INTO `�s�S` VALUES ('   �����');
+# Double byte spaces are not supposed to be trimed
+INSERT INTO `�s�S` VALUES ('�@�����');
+INSERT INTO `�s�S` VALUES ('�@�@�����');
+INSERT INTO `�s�S` VALUES ('�@�@�@�����');
+INSERT INTO `�s�T` VALUES ('����������');
+INSERT INTO `�s�T` VALUES (' ����������');
+INSERT INTO `�s�T` VALUES ('  ����������');
+INSERT INTO `�s�T` VALUES ('   ����������');
+# Double byte spaces are not supposed to be trimed
+INSERT INTO `�s�T` VALUES ('�@����������');
+INSERT INTO `�s�T` VALUES ('�@�@����������');
+INSERT INTO `�s�T` VALUES ('�@�@�@����������');
+INSERT INTO `�s�U` VALUES ('�\�\�\�\�\');
+INSERT INTO `�s�U` VALUES (' �\�\�\�\�\');
+INSERT INTO `�s�U` VALUES ('  �\�\�\�\�\');
+INSERT INTO `�s�U` VALUES ('   �\�\�\�\�\');
+# Double byte spaces are not supposed to be trimed
+INSERT INTO `�s�U` VALUES ('�@�\�\�\�\�\');
+INSERT INTO `�s�U` VALUES ('�@�@�\�\�\�\�\');
+INSERT INTO `�s�U` VALUES ('�@�@�@�\�\�\�\�\');
+INSERT INTO `�s�V` VALUES ('�����');
+INSERT INTO `�s�V` VALUES (' �����');
+INSERT INTO `�s�V` VALUES ('  �����');
+INSERT INTO `�s�V` VALUES ('   �����');
+# Double byte spaces are not supposed to be trimed
+INSERT INTO `�s�V` VALUES ('�@�����');
+INSERT INTO `�s�V` VALUES ('�@�@�����');
+INSERT INTO `�s�V` VALUES ('�@�@�@�����');
+INSERT INTO `�s�W` VALUES ('����������');
+INSERT INTO `�s�W` VALUES (' ����������');
+INSERT INTO `�s�W` VALUES ('  ����������');
+INSERT INTO `�s�W` VALUES ('   ����������');
+# Double byte spaces are not supposed to be trimed
+INSERT INTO `�s�W` VALUES ('�@����������');
+INSERT INTO `�s�W` VALUES ('�@�@����������');
+INSERT INTO `�s�W` VALUES ('�@�@�@����������');
+INSERT INTO `�s�X` VALUES ('�\�\�\�\�\');
+INSERT INTO `�s�X` VALUES (' �\�\�\�\�\');
+INSERT INTO `�s�X` VALUES ('  �\�\�\�\�\');
+INSERT INTO `�s�X` VALUES ('   �\�\�\�\�\');
+# Double byte spaces are not supposed to be trimed
+INSERT INTO `�s�X` VALUES ('�@�\�\�\�\�\');
+INSERT INTO `�s�X` VALUES ('�@�@�\�\�\�\�\');
+INSERT INTO `�s�X` VALUES ('�@�@�@�\�\�\�\�\');
+
+#InnoDB
+SELECT LTRIM(`�b�P`) from `�s�P`;
+SELECT LTRIM(`�b�P`) from `�s�Q`;
+SELECT LTRIM(`�b�P`) from `�s�R`;
+
+#MyISAM
+SELECT LTRIM(`�b�P`) from `�s�S`;
+SELECT LTRIM(`�b�P`) from `�s�T`;
+SELECT LTRIM(`�b�P`) from `�s�U`;
+
+#MEMORY
+SELECT LTRIM(`�b�P`) from `�s�V`;
+SELECT LTRIM(`�b�P`) from `�s�W`;
+SELECT LTRIM(`�b�P`) from `�s�X`;
+
+DROP TABLE `�s�P`;
+DROP TABLE `�s�Q`;
+DROP TABLE `�s�R`;
+DROP TABLE `�s�S`;
+DROP TABLE `�s�T`;
+DROP TABLE `�s�U`;
+DROP TABLE `�s�V`;
+DROP TABLE `�s�W`;
+DROP TABLE `�s�X`;

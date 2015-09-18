@@ -24,7 +24,7 @@ Full Text Search interface
 #include "ha_prototypes.h"
 
 #include "trx0roll.h"
-#include "row0mysql.h"
+#include "row0myblockchain.h"
 #include "row0upd.h"
 #include "dict0types.h"
 #include "row0sel.h"
@@ -288,15 +288,15 @@ CHARSET_INFO*
 fts_get_charset(ulint prtype)
 {
 #ifdef UNIV_DEBUG
-	switch (prtype & DATA_MYSQL_TYPE_MASK) {
-	case MYSQL_TYPE_BIT:
-	case MYSQL_TYPE_STRING:
-	case MYSQL_TYPE_VAR_STRING:
-	case MYSQL_TYPE_TINY_BLOB:
-	case MYSQL_TYPE_MEDIUM_BLOB:
-	case MYSQL_TYPE_BLOB:
-	case MYSQL_TYPE_LONG_BLOB:
-	case MYSQL_TYPE_VARCHAR:
+	switch (prtype & DATA_MYBLOCKCHAIN_TYPE_MASK) {
+	case MYBLOCKCHAIN_TYPE_BIT:
+	case MYBLOCKCHAIN_TYPE_STRING:
+	case MYBLOCKCHAIN_TYPE_VAR_STRING:
+	case MYBLOCKCHAIN_TYPE_TINY_BLOB:
+	case MYBLOCKCHAIN_TYPE_MEDIUM_BLOB:
+	case MYBLOCKCHAIN_TYPE_BLOB:
+	case MYBLOCKCHAIN_TYPE_LONG_BLOB:
+	case MYBLOCKCHAIN_TYPE_VARCHAR:
 		break;
 	default:
 		ut_error;
@@ -1448,7 +1448,7 @@ fts_drop_table(
 		/* Pass nonatomic=false (dont allow data dict unlock),
 		because the transaction may hold locks on SYS_* tables from
 		previous calls to fts_drop_table(). */
-		error = row_drop_table_for_mysql(table_name, trx, true, false);
+		error = row_drop_table_for_myblockchain(table_name, trx, true, false);
 
 		if (error != DB_SUCCESS) {
 			ib::error() << "Unable to drop FTS index aux table "
@@ -1462,7 +1462,7 @@ fts_drop_table(
 }
 
 /****************************************************************//**
-Rename a single auxiliary table due to database name change.
+Rename a single auxiliary table due to blockchain name change.
 @return DB_SUCCESS or error code */
 static __attribute__((nonnull, warn_unused_result))
 dberr_t
@@ -1478,12 +1478,12 @@ fts_rename_one_aux_table(
 	ulint	table_new_name_len = strlen(fts_table_old_name)
 				     + new_db_name_len - old_db_name_len;
 
-	/* Check if the new and old database names are the same, if so,
+	/* Check if the new and old blockchain names are the same, if so,
 	nothing to do */
 	ut_ad((new_db_name_len != old_db_name_len)
 	      || strncmp(new_name, fts_table_old_name, old_db_name_len) != 0);
 
-	/* Get the database name from "new_name", and table name
+	/* Get the blockchain name from "new_name", and table name
 	from the fts_table_old_name */
 	strncpy(fts_table_new_name, new_name, new_db_name_len);
 	strncpy(fts_table_new_name + new_db_name_len,
@@ -1491,13 +1491,13 @@ fts_rename_one_aux_table(
 	       table_new_name_len - new_db_name_len);
 	fts_table_new_name[table_new_name_len] = 0;
 
-	return(row_rename_table_for_mysql(
+	return(row_rename_table_for_myblockchain(
 		fts_table_old_name, fts_table_new_name, trx, false));
 }
 
 /****************************************************************//**
 Rename auxiliary tables for all fts index for a table. This(rename)
-is due to database name change
+is due to blockchain name change
 @return DB_SUCCESS or error code */
 dberr_t
 fts_rename_aux_tables(
@@ -1565,7 +1565,7 @@ fts_rename_aux_tables(
 
 /****************************************************************//**
 Drops the common ancillary tables needed for supporting an FTS index
-on the given table. row_mysql_lock_data_dictionary must have been called
+on the given table. row_myblockchain_lock_data_dictionary must have been called
 before this.
 @return DB_SUCCESS or error code */
 static __attribute__((nonnull, warn_unused_result))
@@ -1684,7 +1684,7 @@ fts_drop_index_tables(
 
 /****************************************************************//**
 Drops FTS ancillary tables needed for supporting an FTS index
-on the given table. row_mysql_lock_data_dictionary must have been called
+on the given table. row_myblockchain_lock_data_dictionary must have been called
 before this.
 @return DB_SUCCESS or error code */
 static __attribute__((nonnull, warn_unused_result))
@@ -1718,7 +1718,7 @@ fts_drop_all_index_tables(
 
 /*********************************************************************//**
 Drops the ancillary tables needed for supporting an FTS index on a
-given table. row_mysql_lock_data_dictionary must have been called before
+given table. row_myblockchain_lock_data_dictionary must have been called before
 this.
 @return DB_SUCCESS or error code */
 dberr_t
@@ -1832,7 +1832,7 @@ fts_create_one_common_table(
 			FTS_CONFIG_TABLE_VALUE_COL_LEN);
 	}
 
-	error = row_create_table_for_mysql(new_table, NULL, trx, false);
+	error = row_create_table_for_myblockchain(new_table, NULL, trx, false);
 
 	if (error == DB_SUCCESS) {
 
@@ -1847,11 +1847,11 @@ fts_create_one_common_table(
 		}
 
 		/* We save and restore trx->dict_operation because
-		row_create_index_for_mysql() changes the operation to
+		row_create_index_for_myblockchain() changes the operation to
 		TRX_DICT_OP_TABLE. */
 		trx_dict_op_t op = trx_get_dict_operation(trx);
 
-		error =	row_create_index_for_mysql(index, trx, NULL, NULL);
+		error =	row_create_index_for_myblockchain(index, trx, NULL, NULL);
 
 		trx->dict_operation = op;
 	}
@@ -1867,7 +1867,7 @@ fts_create_one_common_table(
 }
 
 /** Creates the common auxiliary tables needed for supporting an FTS index
-on the given table. row_mysql_lock_data_dictionary must have been called
+on the given table. row_myblockchain_lock_data_dictionary must have been called
 before this.
 The following tables are created.
 CREATE TABLE $FTS_PREFIX_DELETED
@@ -1968,7 +1968,7 @@ fts_create_common_tables(
 
 	op = trx_get_dict_operation(trx);
 
-	error =	row_create_index_for_mysql(index, trx, NULL, NULL);
+	error =	row_create_index_for_myblockchain(index, trx, NULL, NULL);
 
 	trx->dict_operation = op;
 
@@ -1977,7 +1977,7 @@ func_exit:
 
 		for (it = common_tables.begin(); it != common_tables.end();
 		     ++it) {
-			row_drop_table_for_mysql(
+			row_drop_table_for_myblockchain(
 				(*it)->name.m_name, trx, FALSE);
 		}
 	}
@@ -2020,7 +2020,7 @@ fts_create_one_index_table(
 
 	dict_mem_table_add_col(new_table, heap, "word",
 			       charset == &my_charset_latin1
-			       ? DATA_VARCHAR : DATA_VARMYSQL,
+			       ? DATA_VARCHAR : DATA_VARMYBLOCKCHAIN,
 			       field->col->prtype,
 			       FTS_INDEX_WORD_LEN);
 
@@ -2037,16 +2037,16 @@ fts_create_one_index_table(
 			       FTS_INDEX_DOC_COUNT_LEN);
 
 	/* The precise type calculation is as follows:
-	least signficiant byte: MySQL type code (not applicable for sys cols)
+	least signficiant byte: MyBlockchain type code (not applicable for sys cols)
 	second least : DATA_NOT_NULL | DATA_BINARY_TYPE
-	third least  : the MySQL charset-collation code (DATA_MTYPE_MAX) */
+	third least  : the MyBlockchain charset-collation code (DATA_MTYPE_MAX) */
 
 	dict_mem_table_add_col(
 		new_table, heap, "ilist", DATA_BLOB,
 		(DATA_MTYPE_MAX << 16) | DATA_UNSIGNED | DATA_NOT_NULL,
 		FTS_INDEX_ILIST_LEN);
 
-	error = row_create_table_for_mysql(new_table, NULL, trx, false);
+	error = row_create_table_for_myblockchain(new_table, NULL, trx, false);
 
 	if (error == DB_SUCCESS) {
 		dict_index_t*	index = dict_mem_index_create(
@@ -2057,7 +2057,7 @@ fts_create_one_index_table(
 
 		trx_dict_op_t op = trx_get_dict_operation(trx);
 
-		error =	row_create_index_for_mysql(index, trx, NULL, NULL);
+		error =	row_create_index_for_myblockchain(index, trx, NULL, NULL);
 
 		trx->dict_operation = op;
 	}
@@ -2151,7 +2151,7 @@ fts_create_index_tables_low(
 
 		for (it = aux_idx_tables.begin(); it != aux_idx_tables.end();
 		     ++it) {
-			row_drop_table_for_mysql(
+			row_drop_table_for_myblockchain(
 				(*it)->name.m_name, trx, FALSE);
 		}
 	}
@@ -2163,7 +2163,7 @@ fts_create_index_tables_low(
 }
 
 /** Creates the column specific ancillary tables needed for supporting an
-FTS index on the given table. row_mysql_lock_data_dictionary must have
+FTS index on the given table. row_myblockchain_lock_data_dictionary must have
 been called before this.
 
 All FTS AUX Index tables have the following schema.
@@ -3426,7 +3426,7 @@ fts_fetch_doc_from_rec(
 	ulint			i;
 	ulint			doc_len = 0;
 	ulint			processed_doc = 0;
-	st_mysql_ftparser*	parser;
+	st_myblockchain_ftparser*	parser;
 
 	if (!get_doc) {
 		return;
@@ -4781,7 +4781,7 @@ fts_process_token(
 
 	/* The length of a string in characters is set here only. */
 
-	ret = innobase_mysql_fts_get_token(
+	ret = innobase_myblockchain_fts_get_token(
 		doc->charset, doc->text.f_str + start_pos,
 		doc->text.f_str + doc->text.f_len, &str);
 
@@ -4828,18 +4828,18 @@ fts_get_token_size(
 
 /*************************************************************//**
 FTS plugin parser 'myql_parser' callback function for document tokenize.
-Refer to 'st_mysql_ftparser_param' for more detail.
+Refer to 'st_myblockchain_ftparser_param' for more detail.
 @return always returns 0 */
 int
 fts_tokenize_document_internal(
 /*===========================*/
-	MYSQL_FTPARSER_PARAM*	param,	/*!< in: parser parameter */
+	MYBLOCKCHAIN_FTPARSER_PARAM*	param,	/*!< in: parser parameter */
 	char*			doc,	/*!< in/out: document */
 	int			len)	/*!< in: document length */
 {
 	fts_string_t	str;
 	byte		buf[FTS_MAX_WORD_LEN + 1];
-	MYSQL_FTPARSER_BOOLEAN_INFO bool_info =
+	MYBLOCKCHAIN_FTPARSER_BOOLEAN_INFO bool_info =
 		{ FT_TOKEN_WORD, 0, 0, 0, 0, 0, ' ', 0 };
 
 	ut_ad(len >= 0);
@@ -4847,7 +4847,7 @@ fts_tokenize_document_internal(
 	str.f_str = buf;
 
 	for (ulint i = 0, inc = 0; i < static_cast<ulint>(len); i += inc) {
-		inc = innobase_mysql_fts_get_token(
+		inc = innobase_myblockchain_fts_get_token(
 			const_cast<CHARSET_INFO*>(param->cs),
 			reinterpret_cast<byte*>(doc) + i,
 			reinterpret_cast<byte*>(doc) + len,
@@ -4859,7 +4859,7 @@ fts_tokenize_document_internal(
 			ut_ad(bool_info.position >= 0);
 
 			/* Stop when add word fails */
-			if (param->mysql_add_word(
+			if (param->myblockchain_add_word(
 				param,
 				reinterpret_cast<char*>(str.f_str),
 				static_cast<int>(str.f_len),
@@ -4874,23 +4874,23 @@ fts_tokenize_document_internal(
 
 /******************************************************************//**
 FTS plugin parser 'myql_add_word' callback function for document tokenize.
-Refer to 'st_mysql_ftparser_param' for more detail.
+Refer to 'st_myblockchain_ftparser_param' for more detail.
 @return always returns 0 */
 static
 int
 fts_tokenize_add_word_for_parser(
 /*=============================*/
-	MYSQL_FTPARSER_PARAM*	param,		/* in: parser paramter */
+	MYBLOCKCHAIN_FTPARSER_PARAM*	param,		/* in: parser paramter */
 	char*			word,		/* in: token word */
 	int			word_len,	/* in: word len */
-	MYSQL_FTPARSER_BOOLEAN_INFO* boolean_info) /* in: word boolean info */
+	MYBLOCKCHAIN_FTPARSER_BOOLEAN_INFO* boolean_info) /* in: word boolean info */
 {
 	fts_string_t	str;
 	fts_tokenize_param_t*	fts_param;
 	fts_doc_t*	result_doc;
 	ulint		position;
 
-	fts_param = static_cast<fts_tokenize_param_t*>(param->mysql_ftparam);
+	fts_param = static_cast<fts_tokenize_param_t*>(param->myblockchain_ftparam);
 	result_doc = fts_param->result_doc;
 	ut_ad(result_doc != NULL);
 
@@ -4914,21 +4914,21 @@ void
 fts_tokenize_by_parser(
 /*===================*/
 	fts_doc_t*		doc,	/* in/out: document to tokenize */
-	st_mysql_ftparser*	parser, /* in: plugin fts parser */
+	st_myblockchain_ftparser*	parser, /* in: plugin fts parser */
 	fts_tokenize_param_t*	fts_param) /* in: fts tokenize param */
 {
-	MYSQL_FTPARSER_PARAM	param;
+	MYBLOCKCHAIN_FTPARSER_PARAM	param;
 
 	ut_a(parser);
 
 	/* Set paramters for param */
-	param.mysql_parse = fts_tokenize_document_internal;
-	param.mysql_add_word = fts_tokenize_add_word_for_parser;
-	param.mysql_ftparam = fts_param;
+	param.myblockchain_parse = fts_tokenize_document_internal;
+	param.myblockchain_add_word = fts_tokenize_add_word_for_parser;
+	param.myblockchain_ftparam = fts_param;
 	param.cs = doc->charset;
 	param.doc = reinterpret_cast<char*>(doc->text.f_str);
 	param.length = static_cast<int>(doc->text.f_len);
-	param.mode= MYSQL_FTPARSER_SIMPLE_MODE;
+	param.mode= MYBLOCKCHAIN_FTPARSER_SIMPLE_MODE;
 
 	PARSER_INIT(parser, &param);
 	parser->parse(&param);
@@ -4944,7 +4944,7 @@ fts_tokenize_document(
 					tokenize */
 	fts_doc_t*	result,		/* out: if provided, save
 					the result token here */
-	st_mysql_ftparser*	parser) /* in: plugin fts parser */
+	st_myblockchain_ftparser*	parser) /* in: plugin fts parser */
 {
 	ut_a(!doc->tokens);
 	ut_a(doc->charset);
@@ -4980,7 +4980,7 @@ fts_tokenize_document_next(
 					tokens from this tokenization */
 	fts_doc_t*	result,		/*!< out: if provided, save
 					the result token here */
-	st_mysql_ftparser*	parser) /* in: plugin fts parser */
+	st_myblockchain_ftparser*	parser) /* in: plugin fts parser */
 {
 	ut_a(doc->tokens);
 
@@ -6434,7 +6434,7 @@ fts_rename_one_aux_table_to_hex_format(
 		trx_set_dict_operation(trx, TRX_DICT_OP_INDEX);
 	}
 
-	error = row_rename_table_for_mysql(aux_table->name, new_name, trx,
+	error = row_rename_table_for_myblockchain(aux_table->name, new_name, trx,
 					   FALSE);
 
 	if (error != DB_SUCCESS) {
@@ -6503,7 +6503,7 @@ fts_rename_aux_tables_to_hex_format_low(
 				aux_table, parent_table);
 		/* We will rollback the trx if the error != DB_SUCCESS,
 		so setting the flag here is the same with setting it in
-		row_rename_table_for_mysql */
+		row_rename_table_for_myblockchain */
 		DBUG_EXECUTE_IF("rename_aux_table_fail", error = DB_ERROR;);
 
 		if (error != DB_SUCCESS) {
@@ -6572,7 +6572,7 @@ fts_rename_aux_tables_to_hex_format_low(
 			trx_start_for_ddl(trx_bg, TRX_DICT_OP_TABLE);
 
 			DICT_TF2_FLAG_UNSET(table, DICT_TF2_FTS_AUX_HEX_NAME);
-			err = row_rename_table_for_mysql(table->name.m_name,
+			err = row_rename_table_for_myblockchain(table->name.m_name,
 							 aux_table->name,
 							 trx_bg, FALSE);
 
@@ -6866,7 +6866,7 @@ fts_drop_obsolete_aux_table_from_vector(
 		trx_drop->dict_operation_lock_mode = RW_X_LATCH;
 		trx_start_for_ddl(trx_drop, TRX_DICT_OP_TABLE);
 
-		err = row_drop_table_for_mysql(
+		err = row_drop_table_for_myblockchain(
 			aux_drop_table->name, trx_drop, false, true);
 
 		trx_drop->dict_operation_lock_mode = 0;
@@ -7344,7 +7344,7 @@ fts_drop_orphaned_tables(void)
 
 	trx = trx_allocate_for_background();
 	trx->op_info = "dropping orphaned FTS tables";
-	row_mysql_lock_data_dictionary(trx);
+	row_myblockchain_lock_data_dictionary(trx);
 
 	info = pars_info_create();
 
@@ -7395,7 +7395,7 @@ fts_drop_orphaned_tables(void)
 
 	que_graph_free(graph);
 
-	row_mysql_unlock_data_dictionary(trx);
+	row_myblockchain_unlock_data_dictionary(trx);
 
 	trx_free_for_background(trx);
 
@@ -7452,7 +7452,7 @@ fts_valid_stopword_table(
 		col = dict_table_get_nth_col(table, 0);
 
 		if (col->mtype != DATA_VARCHAR
-		    && col->mtype != DATA_VARMYSQL) {
+		    && col->mtype != DATA_VARMYBLOCKCHAIN) {
 			ib::error() << "Invalid column type for stopword"
 				" table " << stopword_table_name << ". Its"
 				" first column must be of varchar type";
@@ -7651,7 +7651,7 @@ fts_init_recover_doc(
 	sel_node_t*	node = static_cast<sel_node_t*>(row);
 	que_node_t*	exp = node->select_list;
 	fts_cache_t*	cache = get_doc->cache;
-	st_mysql_ftparser*	parser = get_doc->index_cache->index->parser;
+	st_myblockchain_ftparser*	parser = get_doc->index_cache->index->parser;
 
 	fts_doc_init(&doc);
 	doc.found = TRUE;

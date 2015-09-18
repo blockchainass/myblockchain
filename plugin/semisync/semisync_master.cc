@@ -65,7 +65,7 @@ static unsigned long long timespec_to_usec(const struct timespec *ts)
  *
  ******************************************************************************/
 
-ActiveTranx::ActiveTranx(mysql_mutex_t *lock,
+ActiveTranx::ActiveTranx(myblockchain_mutex_t *lock,
 			 unsigned long trace_level)
   : Trace(trace_level), allocator_(max_connections),
     num_entries_(max_connections << 1), /* Transaction hash table size
@@ -175,7 +175,7 @@ int ActiveTranx::insert_tranx_node(const char *log_file_name,
     else
     {
       /* Otherwise, it is an error because the transaction should hold the
-       * mysql_bin_log.LOCK_log when appending events.
+       * myblockchain_bin_log.LOCK_log when appending events.
        */
       sql_print_error("%s: binlog write out-of-order, tail (%s, %lu), "
                       "new node (%s, %lu)", kWho,
@@ -229,7 +229,7 @@ int ActiveTranx::signal_waiting_sessions_all()
   const char *kWho = "ActiveTranx::signal_waiting_sessions_all";
   function_enter(kWho);
   for (TranxNode* entry= trx_front_; entry; entry=entry->next_)
-    mysql_cond_broadcast(&entry->cond);
+    myblockchain_cond_broadcast(&entry->cond);
 
   return function_exit(kWho, 0);
 }
@@ -244,7 +244,7 @@ int ActiveTranx::signal_waiting_sessions_up_to(const char *log_file_name,
   int cmp= ActiveTranx::compare(entry->log_name_, entry->log_pos_, log_file_name, log_file_pos) ;
   while (entry && cmp <= 0)
   {
-    mysql_cond_broadcast(&entry->cond);
+    myblockchain_cond_broadcast(&entry->cond);
     entry= entry->next_;
     if (entry)
       cmp= ActiveTranx::compare(entry->log_name_, entry->log_pos_, log_file_name, log_file_pos) ;
@@ -455,11 +455,11 @@ int ReplSemiSyncMaster::initObject()
   setTraceLevel(rpl_semi_sync_master_trace_level);
 
   /* Mutex initialization can only be done after MY_INIT(). */
-  mysql_mutex_init(key_ss_mutex_LOCK_binlog_,
+  myblockchain_mutex_init(key_ss_mutex_LOCK_binlog_,
                    &LOCK_binlog_, MY_MUTEX_INIT_FAST);
 
   /*
-    rpl_semi_sync_master_wait_for_slave_count may be set through mysqld option.
+    rpl_semi_sync_master_wait_for_slave_count may be set through myblockchaind option.
     So call setWaitSlaveCount to initialize the internal ack container.
   */
   if (setWaitSlaveCount(rpl_semi_sync_master_wait_for_slave_count))
@@ -551,7 +551,7 @@ ReplSemiSyncMaster::~ReplSemiSyncMaster()
 {
   if (init_done_)
   {
-    mysql_mutex_destroy(&LOCK_binlog_);
+    myblockchain_mutex_destroy(&LOCK_binlog_);
   }
 
   delete active_tranxs_;
@@ -559,12 +559,12 @@ ReplSemiSyncMaster::~ReplSemiSyncMaster()
 
 void ReplSemiSyncMaster::lock()
 {
-  mysql_mutex_lock(&LOCK_binlog_);
+  myblockchain_mutex_lock(&LOCK_binlog_);
 }
 
 void ReplSemiSyncMaster::unlock()
 {
-  mysql_mutex_unlock(&LOCK_binlog_);
+  myblockchain_mutex_unlock(&LOCK_binlog_);
 }
 
 void ReplSemiSyncMaster::add_slave()
@@ -626,7 +626,7 @@ void ReplSemiSyncMaster::reportReplyBinlog(const char *log_file_name,
   bool  need_copy_send_pos = true;
 
   function_enter(kWho);
-  mysql_mutex_assert_owner(&LOCK_binlog_);
+  myblockchain_mutex_assert_owner(&LOCK_binlog_);
 
   if (!getMasterEnabled())
     goto l_end;
@@ -719,7 +719,7 @@ int ReplSemiSyncMaster::commitTrx(const char* trx_wait_binlog_name,
   lock();
 
   TranxNode* entry= NULL;
-  mysql_cond_t* thd_cond= NULL;
+  myblockchain_cond_t* thd_cond= NULL;
   if (active_tranxs_ != NULL && trx_wait_binlog_name)
   {
     entry=
@@ -843,7 +843,7 @@ int ReplSemiSyncMaster::commitTrx(const char* trx_wait_binlog_name,
       /* wait for the position to be ACK'ed back */
       assert(entry);
       entry->n_waiters++;
-      wait_result= mysql_cond_timedwait(&entry->cond, &LOCK_binlog_, &abstime);
+      wait_result= myblockchain_cond_timedwait(&entry->cond, &LOCK_binlog_, &abstime);
       entry->n_waiters--;
       rpl_semi_sync_master_wait_sessions--;
       
@@ -929,7 +929,7 @@ void ReplSemiSyncMaster::force_switch_on()
  * What should we do when it is disabled?  The problem is that we want
  * the semi-sync replication enabled again when the slave catches up
  * later.  But, it is not that easy to detect that the slave has caught
- * up.  This is caused by the fact that MySQL's replication protocol is
+ * up.  This is caused by the fact that MyBlockchain's replication protocol is
  * asynchronous, meaning that if the master does not use the semi-sync
  * protocol, the slave would not send anything to the master.
  * Still, if the master is sending (N+1)-th event, we assume that it is

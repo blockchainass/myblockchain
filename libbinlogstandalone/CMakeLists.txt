@@ -17,7 +17,7 @@
 ADD_DEFINITIONS(-DSTANDALONE_BINLOG)
 
 # this will be moved to the top level CMakeLists(outside libbinlogevents)
-# in the independent repo mysql-binlog
+# in the independent repo myblockchain-binlog
 # Options for building
 #OPTION(WITH_SERVER_TESTS
 #       "Build the unit test suite with tests requiring a server" OFF)
@@ -36,7 +36,7 @@ INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/include
                     ${CMAKE_SOURCE_DIR}/libbinlogevents/export
                     ${CMAKE_CURRENT_BINARY_DIR}/libbinlogevents/export
                     # ZLIB_INCLUDE_DIR points to ${CMAKE_SOURCE_DIR}/zlib,
-                    # when compiled with MySQL server version (< 5.7).
+                    # when compiled with MyBlockchain server version (< 5.7).
                     # It is NULL otherwise.
                     ${ZLIB_INCLUDE_DIR})
 

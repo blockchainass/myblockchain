@@ -66,7 +66,7 @@ var udebug     = unified_debug.getLogger("IndexBounds.js");
 
    In some cases, JavaScript simply cannot compare two values at all:
    for instance, it cannot compare two strings according to particular
-   MySQL collation rules.  So, we introduce the concept of an EncodedValue,
+   MyBlockchain collation rules.  So, we introduce the concept of an EncodedValue,
    for values that JavaScript cannot compare and whose comparison is delegated 
    elsewhere.
 */

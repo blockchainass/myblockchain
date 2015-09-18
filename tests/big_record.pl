@@ -16,8 +16,8 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 
 # This is a test with stores big records in a blob.
-# Note that for the default test the mysql server should have been
-# started with at least 'mysqld --max_allowed_packet=30M' and you should have
+# Note that for the default test the myblockchain server should have been
+# started with at least 'myblockchaind --max_allowed_packet=30M' and you should have
 # at least 256M memory in your computer.
 
 use DBI;
@@ -34,12 +34,12 @@ $opt_loop_count=100000; # Change this to make test harder/easier
 GetOptions("host=s","db=s","user=s", "password=s", "table=s", "rows=i",
 	   "compress", "loop-count=i") || die "Aborted";
 
-print "Connection to database $test_db\n";
+print "Connection to blockchain $test_db\n";
 
 $extra_options="";
-$extra_options.=":mysql_compression=1" if ($opt_compress);
+$extra_options.=":myblockchain_compression=1" if ($opt_compress);
 
-$dbh = DBI->connect("DBI:mysql:$opt_db:$host$extra_options",$opt_user,$opt_password) || die "Can't connect: $DBI::errstr\n";
+$dbh = DBI->connect("DBI:myblockchain:$opt_db:$host$extra_options",$opt_user,$opt_password) || die "Can't connect: $DBI::errstr\n";
 
 $dbh->do("drop table if exists $opt_table");
 
@@ -65,7 +65,7 @@ for ($i=0 ; $i < $opt_rows ; $i++)
 
 print "\nReading records\n";
 
-$sth=$dbh->prepare("select * from $opt_table", { "mysql_use_result" => 1}) or die $dbh->errstr;
+$sth=$dbh->prepare("select * from $opt_table", { "myblockchain_use_result" => 1}) or die $dbh->errstr;
 
 $sth->execute() or die $sth->errstr;
 

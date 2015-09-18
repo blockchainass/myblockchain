@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2007, 2008 MySQL AB, 2008, 2009 Sun Microsystems, Inc.
+   Copyright (C) 2007, 2008 MyBlockchain AB, 2008, 2009 Sun Microsystems, Inc.
     All rights reserved. Use is subject to license terms.
 
    This program is free software; you can redistribute it and/or modify
@@ -16,8 +16,8 @@
    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-// dbutil.h: interface for the database utilities class.
-// Supplies a database to the test application
+// dbutil.h: interface for the blockchain utilities class.
+// Supplies a blockchain to the test application
 
 #ifndef DBUTIL_HPP
 #define DBUTIL_HPP
@@ -26,7 +26,7 @@
 #include <BaseString.hpp>
 #include <Properties.hpp>
 #include <Vector.hpp>
-#include <mysql.h>
+#include <myblockchain.h>
 
 //#define DEBUG
 #define  DIE_UNLESS(expr) \
@@ -74,9 +74,9 @@ public:
   unsigned long long insertId();
   unsigned long long affectedRows();
   uint numRows(void);
-  uint mysqlErrno();
-  const char* mysqlError();
-  const char* mysqlSqlstate();
+  uint myblockchainErrno();
+  const char* myblockchainError();
+  const char* myblockchainSqlstate();
 
 private:
   uint get_int(const char* name);
@@ -92,8 +92,8 @@ class DbUtil
 {
 public:
 
-  DbUtil(MYSQL* mysql);
-  DbUtil(const char* dbname = "mysql",
+  DbUtil(MYBLOCKCHAIN* myblockchain);
+  DbUtil(const char* dbname = "myblockchain",
          const char* suffix = NULL);
   ~DbUtil();
 
@@ -109,7 +109,7 @@ public:
 
   bool waitConnected(int timeout = 120);
 
-  bool  databaseLogin(const char * host,
+  bool  blockchainLogin(const char * host,
                       const char * user,
                       const char * password,
                       unsigned int portIn,
@@ -121,14 +121,14 @@ public:
   const char * getPassword(){return m_pass.c_str();};
   const char * getHost()    {return m_host.c_str();};
   const char * getSocket()  {return m_socket.c_str();};
-  const char * getServerType(){return mysql_get_server_info(m_mysql);};
+  const char * getServerType(){return myblockchain_get_server_info(m_myblockchain);};
   const char * getError();
 
-  MYSQL * getMysql(){return m_mysql;};
-  MYSQL_STMT * STDCALL mysqlSimplePrepare(const char *query);
+  MYBLOCKCHAIN * getMysql(){return m_myblockchain;};
+  MYBLOCKCHAIN_STMT * STDCALL myblockchainSimplePrepare(const char *query);
 
-  void databaseLogout();
-  void mysqlCloseStmHandle(MYSQL_STMT *my_stmt);
+  void blockchainLogout();
+  void myblockchainCloseStmHandle(MYBLOCKCHAIN_STMT *my_stmt);
 
   bool connect();
   void disconnect();
@@ -151,29 +151,29 @@ protected:
 
   bool isConnected();
 
-  MYSQL * m_mysql;
-  bool m_free_mysql; /* Don't free mysql* if allocated elsewhere */
+  MYBLOCKCHAIN * m_myblockchain;
+  bool m_free_myblockchain; /* Don't free myblockchain* if allocated elsewhere */
 
 private:
 
   bool m_connected;
 
   BaseString m_host;       // Computer to connect to
-  BaseString m_user;       // MySQL User
-  BaseString m_pass;       // MySQL User Password
+  BaseString m_user;       // MyBlockchain User
+  BaseString m_pass;       // MyBlockchain User Password
   BaseString m_dbname;     // Database to use
-  BaseString m_socket;     // MySQL Server Unix Socket
+  BaseString m_socket;     // MyBlockchain Server Unix Socket
   BaseString m_default_file;
   BaseString m_default_group;
 
-  unsigned int m_port;     // MySQL Server port
+  unsigned int m_port;     // MyBlockchain Server port
 
   int m_last_errno;
   BaseString m_last_error;
 
   bool m_silent;
 
-  void report_error(const char* message, MYSQL* mysql);
+  void report_error(const char* message, MYBLOCKCHAIN* myblockchain);
   void clear_error(void) { m_last_errno= 0; m_last_error.clear(); }
 
   void setDbName(const char * name){m_dbname.assign(name);};
@@ -183,7 +183,7 @@ private:
   void setPort(unsigned int portIn){m_port=portIn;};
   void setSocket(const char * sockIn){m_socket.assign(sockIn);};
   void printError(const char *msg);
-  void printStError(MYSQL_STMT *stmt, const char *msg);
+  void printStError(MYBLOCKCHAIN_STMT *stmt, const char *msg);
   void die(const char *file, int line, const char *expr); // stop program
 
 };

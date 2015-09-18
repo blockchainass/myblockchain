@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# Copyright (C) 2000, 2005 MySQL AB
+# Copyright (C) 2000, 2005 MyBlockchain AB
 # Use is subject to license terms
 # 
 # This program is free software; you can redistribute it and/or modify
@@ -34,7 +34,7 @@ my $base_q= "";
 my $mail_count= 0;
 
 $opt_user= $opt_password= "";
-$opt_socket= "/tmp/mysql.sock";
+$opt_socket= "/tmp/myblockchain.sock";
 $opt_port= 3306;
 $opt_db="mail";
 $opt_table="my_mail";
@@ -57,10 +57,10 @@ if ($opt_help || !$ARGV[0])
 }
 
 ####
-#### Connect and parsing the query to MySQL
+#### Connect and parsing the query to MyBlockchain
 ####
 
-$dbh= DBI->connect("DBI:mysql:$opt_db:$opt_host:port=$opt_port:mysql_socket=$opt_socket", $opt_user,$opt_password, { PrintError => 0})
+$dbh= DBI->connect("DBI:myblockchain:$opt_db:$opt_host:port=$opt_port:myblockchain_socket=$opt_socket", $opt_user,$opt_password, { PrintError => 0})
 || die $DBI::errstr;
 
 main();
@@ -292,12 +292,12 @@ sub usage
   Options:
   --help       show this help
   --count      Shows how many mails matches the query, but not the mails.
-  --db=        database to use (Default: $opt_db)
+  --db=        blockchain to use (Default: $opt_db)
   --host=      Hostname which to connect (Default: $opt_host)
   --socket=    Unix socket to be used for connection (Default: $opt_socket)
-  --password=  Password to use for mysql
-  --user=      User to be used for mysql connection, if not current user
-  --port=      mysql port to be used (Default: $opt_port)
+  --password=  Password to use for myblockchain
+  --user=      User to be used for myblockchain connection, if not current user
+  --port=      myblockchain port to be used (Default: $opt_port)
   --thread     Will search for possible replies to emails found by the search
                criteria. Replies, if found, will be displayed right after the
                original mail.
@@ -314,7 +314,7 @@ sub usage
   - Cc
   - Date
   - Timezone
-  - File (Where from the current mail was loaded into the database)
+  - File (Where from the current mail was loaded into the blockchain)
   - Subject
   - Message text
   The field names that can be used in the where clause are:
@@ -332,7 +332,7 @@ sub usage
   - file        varchar(32)
   - hash        int(11)
   An example of pmail:
-  pmail "txt like '%libmysql.dll%' and sbj like '%delphi%'"
+  pmail "txt like '%libmyblockchain.dll%' and sbj like '%delphi%'"
   NOTE: the txt field is NOT case sensitive!
 EOF
   exit(0);

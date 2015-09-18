@@ -1,5 +1,5 @@
 #
-# MySQL Doxyfile for the performance_schema.
+# MyBlockchain Doxyfile for the performance_schema.
 #
 # To run doxygen:
 # - mkdir -p ./generated/doxygen
@@ -613,7 +613,7 @@ RECURSIVE              = YES
 # excluded from the INPUT source files. This way you can easily exclude a
 # subdirectory from a directory tree whose root is specified with the INPUT tag.
 
-EXCLUDE                = extra libmysql libmysql_r libmysqld mysql-test storage/innodb storage/ndb support-files unittest zlib
+EXCLUDE                = extra libmyblockchain libmyblockchain_r libmyblockchaind myblockchain-test storage/innodb storage/ndb support-files unittest zlib
 
 # The EXCLUDE_SYMLINKS tag can be used select whether or not files or
 # directories that are symbolic links (a Unix filesystem feature) are excluded
@@ -1287,7 +1287,7 @@ SEARCH_INCLUDES        = YES
 # contain include files that are not input files but should be processed by
 # the preprocessor.
 
-INCLUDE_PATH           = . include include/mysql sql
+INCLUDE_PATH           = . include include/myblockchain sql
 
 # You can use the INCLUDE_FILE_PATTERNS tag to specify one or more wildcard
 # patterns (like *.h and *.hpp) to filter out the header-files in the

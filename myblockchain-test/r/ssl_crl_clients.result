@@ -1,0 +1,7 @@
+# Test clients with and without CRL lists
+############ Test myblockchain ##############
+# Test myblockchain connecting to a server with a certificate revoked by -crl
+# Test myblockchain connecting to a server with a certificate revoked by -crlpath
+############ Test myblockchainadmin ##############
+# Test myblockchainadmin connecting to a server with a certificate revoked by -crl
+# Test myblockchainadmin connecting to a server with a certificate revoked by -crlpath

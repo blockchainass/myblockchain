@@ -25,9 +25,9 @@ SET(JARS ${CMAKE_CURRENT_BINARY_DIR}/../../src/ndbjtie/ndbjtie.jar
          ${CMAKE_CURRENT_BINARY_DIR}/../clusterj-core/clusterj-core.jar
          ${CMAKE_CURRENT_BINARY_DIR}/../clusterj-tie/clusterj-tie.jar)
 
-SET(CLUSTERJ_EXPORTS com.mysql.clusterj,com.mysql.clusterj.query,com.mysql.clusterj.annotation,com.mysql.clusterj.metadata,com.mysql.clusterj.spi,com.mysql.clusterj.store,com.mysql.clusterj.util,com.mysql.clusterj.tie)
+SET(CLUSTERJ_EXPORTS com.myblockchain.clusterj,com.myblockchain.clusterj.query,com.myblockchain.clusterj.annotation,com.myblockchain.clusterj.metadata,com.myblockchain.clusterj.spi,com.myblockchain.clusterj.store,com.myblockchain.clusterj.util,com.myblockchain.clusterj.tie)
 
-FILE(GLOB JAVA_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/main/java/com/mysql/clusterj/openjpa/*.java)
+FILE(GLOB JAVA_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/main/java/com/myblockchain/clusterj/openjpa/*.java)
 
 SET(CLASSPATH 
   target/classes
@@ -35,7 +35,7 @@ SET(CLASSPATH
   ${CMAKE_BINARY_DIR}/storage/ndb/clusterj/clusterj-core/target/classes
   ${WITH_CLASSPATH})
 
-SET(CLUSTERJPA_EXPORTS "${CLUSTERJ_EXPORTS},com.mysql.clusterj.openjpa")
+SET(CLUSTERJPA_EXPORTS "${CLUSTERJ_EXPORTS},com.myblockchain.clusterj.openjpa")
 CREATE_MANIFEST(clusterjpa_manifest.mf ${CLUSTERJPA_EXPORTS} clusterjpa)
 CREATE_JAR(clusterjpa ${JAVA_SOURCES}
   CLASSPATH ${CLASSPATH}
@@ -46,4 +46,4 @@ CREATE_JAR(clusterjpa ${JAVA_SOURCES}
   MERGE_JARS ${JARS})
 
 INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/clusterjpa-${JAVA_NDB_VERSION}.jar
-        DESTINATION ${INSTALL_MYSQLSHAREDIR}/java COMPONENT ClusterJ)
+        DESTINATION ${INSTALL_MYBLOCKCHAINSHAREDIR}/java COMPONENT ClusterJ)

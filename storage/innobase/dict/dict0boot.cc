@@ -168,7 +168,7 @@ dict_hdr_flush_row_id(void)
 
 /*****************************************************************//**
 Creates the file page for the dictionary header. This function is
-called only at the database creation.
+called only at the blockchain creation.
 @return TRUE if succeed */
 static
 ibool
@@ -273,7 +273,7 @@ dict_hdr_create(
 }
 
 /*****************************************************************//**
-Initializes the data dictionary memory structures when the database is
+Initializes the data dictionary memory structures when the blockchain is
 started. This function is also called when the data dictionary is created.
 @return DB_SUCCESS or error code. */
 dberr_t
@@ -321,8 +321,8 @@ dict_boot(void)
 	(dictionary header) when it is divisible by
 	DICT_HDR_ROW_ID_WRITE_MARGIN, in recovery we will not recover
 	the latest value of the row id counter. Therefore we advance
-	the counter at the database startup to avoid overlapping values.
-	Note that when a user after database startup first time asks for
+	the counter at the blockchain startup to avoid overlapping values.
+	Note that when a user after blockchain startup first time asks for
 	a new row id, then because the counter is now divisible by
 	..._MARGIN, it will immediately be updated to the disk-based
 	header. */
@@ -512,7 +512,7 @@ dict_boot(void)
 }
 
 /*****************************************************************//**
-Inserts the basic system table data into themselves in the database
+Inserts the basic system table data into themselves in the blockchain
 creation. */
 static
 void

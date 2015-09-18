@@ -1,4 +1,4 @@
-create database if not exists testfk;
+create blockchain if not exists testfk;
 drop table if exists testfk.fkdifferentdb;
 
 use test;

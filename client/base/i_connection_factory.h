@@ -26,15 +26,15 @@ namespace Base{
 
 /**
   Interface for classes that are capable of creating connection to
-  MySQL database server.
+  MyBlockchain blockchain server.
  */
 class I_connection_factory
 {
 public:
   /**
-    Provides new connection to MySQL database server.
+    Provides new connection to MyBlockchain blockchain server.
    */
-  virtual MYSQL* create_connection()= 0;
+  virtual MYBLOCKCHAIN* create_connection()= 0;
 };
 
 }

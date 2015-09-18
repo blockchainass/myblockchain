@@ -19,7 +19,7 @@
 #define COPYRIGHT_NOTICE_CURRENT_YEAR "2015"
 
 /*
-  This define specifies copyright notice which is displayed by every MySQL
+  This define specifies copyright notice which is displayed by every MyBlockchain
   program on start, or on help screen.
 */
 #define ORACLE_WELCOME_COPYRIGHT_NOTICE(first_year) \

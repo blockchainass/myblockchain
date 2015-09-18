@@ -1,0 +1,2 @@
+--lower-case-table-names=1
+--tmpdir=$MYBLOCKCHAINTEST_VARDIR/tmp/MixedCase

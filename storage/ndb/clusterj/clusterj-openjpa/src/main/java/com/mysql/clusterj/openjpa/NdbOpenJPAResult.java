@@ -15,13 +15,13 @@
    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-package com.mysql.clusterj.openjpa;
+package com.myblockchain.clusterj.openjpa;
 
-import com.mysql.clusterj.core.spi.DomainTypeHandler;
-import com.mysql.clusterj.core.store.ResultData;
-import com.mysql.clusterj.core.util.I18NHelper;
-import com.mysql.clusterj.core.util.Logger;
-import com.mysql.clusterj.core.util.LoggerFactoryService;
+import com.myblockchain.clusterj.core.spi.DomainTypeHandler;
+import com.myblockchain.clusterj.core.store.ResultData;
+import com.myblockchain.clusterj.core.util.I18NHelper;
+import com.myblockchain.clusterj.core.util.Logger;
+import com.myblockchain.clusterj.core.util.LoggerFactoryService;
 
 
 
@@ -66,12 +66,12 @@ public class NdbOpenJPAResult extends AbstractResult implements Result {
 //    protected Set<Column> columns = new HashSet<Column>();
 
     /** The Map of column names to columns in this result. */
-    private Map<String, com.mysql.clusterj.core.store.Column> columnMap =
-        new HashMap<String, com.mysql.clusterj.core.store.Column>();
+    private Map<String, com.myblockchain.clusterj.core.store.Column> columnMap =
+        new HashMap<String, com.myblockchain.clusterj.core.store.Column>();
 
     /**
      * Construct the Result with the result of an NDB query.
-     * This encapsulates both the result from the database and the
+     * This encapsulates both the result from the blockchain and the
      * metadata that describes the result.
      */
     public NdbOpenJPAResult(ResultData resultData, DomainTypeHandler<?> domainTypeHandler,
@@ -80,8 +80,8 @@ public class NdbOpenJPAResult extends AbstractResult implements Result {
         this.resultData = resultData;
         this.domainTypeHandler = domainTypeHandler;
         this.fields = fields;
-        Set<com.mysql.clusterj.core.store.Column> storeColumns = domainTypeHandler.getStoreColumns(fields);
-        for (com.mysql.clusterj.core.store.Column storeColumn: storeColumns) {
+        Set<com.myblockchain.clusterj.core.store.Column> storeColumns = domainTypeHandler.getStoreColumns(fields);
+        for (com.myblockchain.clusterj.core.store.Column storeColumn: storeColumns) {
             columnMap.put(storeColumn.getName(), storeColumn);
         }
     }
@@ -98,7 +98,7 @@ public class NdbOpenJPAResult extends AbstractResult implements Result {
     @Override
     protected boolean containsInternal(Object obj, Joins joins) throws SQLException {
         // TODO: support join specifications
-        com.mysql.clusterj.core.store.Column storeColumn = resolve(obj);
+        com.myblockchain.clusterj.core.store.Column storeColumn = resolve(obj);
         return storeColumn != null;
     }
 
@@ -107,7 +107,7 @@ public class NdbOpenJPAResult extends AbstractResult implements Result {
         // TODO: support other object types
         // TODO: support null values for int, double, float, long, and short
         Object result = null;
-        com.mysql.clusterj.core.store.Column columnName = resolve(obj);
+        com.myblockchain.clusterj.core.store.Column columnName = resolve(obj);
         switch (metaType) {
             case JavaTypes.INT_OBJ:
 //                int value = resultData.getInt(columnName);
@@ -201,9 +201,9 @@ public class NdbOpenJPAResult extends AbstractResult implements Result {
         return (val == null) ? 0 : val.longValue();
     }
 
-    protected com.mysql.clusterj.core.store.Column resolve(Object obj) {
+    protected com.myblockchain.clusterj.core.store.Column resolve(Object obj) {
         String key = null;
-        com.mysql.clusterj.core.store.Column result = null;
+        com.myblockchain.clusterj.core.store.Column result = null;
         if (logger.isDetailEnabled()) {
             logger.detail("resolving object of type: " + obj.getClass().getName());
         }

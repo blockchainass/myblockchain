@@ -3133,13 +3133,13 @@ fts_optimize_start_shutdown(void)
 
 	/* If there is an ongoing activity on dictionary, such as
 	srv_master_evict_from_table_cache(), wait for it */
-	dict_mutex_enter_for_mysql();
+	dict_mutex_enter_for_myblockchain();
 
 	/* Tells FTS optimizer system that we are exiting from
 	optimizer thread, message send their after will not be
 	processed */
 	fts_opt_start_shutdown = true;
-	dict_mutex_exit_for_mysql();
+	dict_mutex_exit_for_myblockchain();
 
 	/* We tell the OPTIMIZE thread to switch to state done, we
 	can't delete the work queue here because the add thread needs

@@ -161,22 +161,22 @@ void init_myisam_psi_keys()
   int count;
 
   count= array_elements(all_myisam_mutexes);
-  mysql_mutex_register(category, all_myisam_mutexes, count);
+  myblockchain_mutex_register(category, all_myisam_mutexes, count);
 
   count= array_elements(all_myisam_rwlocks);
-  mysql_rwlock_register(category, all_myisam_rwlocks, count);
+  myblockchain_rwlock_register(category, all_myisam_rwlocks, count);
 
   count= array_elements(all_myisam_conds);
-  mysql_cond_register(category, all_myisam_conds, count);
+  myblockchain_cond_register(category, all_myisam_conds, count);
 
   count= array_elements(all_myisam_files);
-  mysql_file_register(category, all_myisam_files, count);
+  myblockchain_file_register(category, all_myisam_files, count);
 
   count= array_elements(all_myisam_threads);
-  mysql_thread_register(category, all_myisam_threads, count);
+  myblockchain_thread_register(category, all_myisam_threads, count);
 
   count= array_elements(all_myisam_memory);
-  mysql_memory_register(category, all_myisam_memory, count);
+  myblockchain_memory_register(category, all_myisam_memory, count);
 }
 #endif /* HAVE_PSI_INTERFACE */
 

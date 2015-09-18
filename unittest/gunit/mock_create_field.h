@@ -29,8 +29,8 @@ public:
       Only TIMESTAMP is implemented for now.
       Other types would need different parameters (fld_length, etc).
     */
-    DBUG_ASSERT(field_type == MYSQL_TYPE_TIMESTAMP ||
-                field_type == MYSQL_TYPE_TIMESTAMP2);
+    DBUG_ASSERT(field_type == MYBLOCKCHAIN_TYPE_TIMESTAMP ||
+                field_type == MYBLOCKCHAIN_TYPE_TIMESTAMP2);
     init(NULL, // THD *thd
          NULL, // char *fld_name
          field_type,

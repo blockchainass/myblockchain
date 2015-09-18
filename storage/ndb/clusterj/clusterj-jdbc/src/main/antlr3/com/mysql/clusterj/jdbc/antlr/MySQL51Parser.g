@@ -15,15 +15,15 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
  */
 
-parser grammar MySQL51Parser; 
+parser grammar MyBlockchain51Parser; 
 
 options {
 	output=AST;
-	tokenVocab=MySQL51Lexer;
-	superClass=MySQLParser;
+	tokenVocab=MyBlockchain51Lexer;
+	superClass=MyBlockchainParser;
 }
 
-import MySQL51Functions;
+import MyBlockchain51Functions;
 
 tokens {
 SELECT;
@@ -51,7 +51,7 @@ COUNT_STAR;
 }
 
 @header{
-package com.mysql.clusterj.jdbc.antlr;
+package com.myblockchain.clusterj.jdbc.antlr;
 }
 
 statement_list
@@ -193,11 +193,11 @@ select_inner
             limit?
         |   limit
 		)?
-		-> ^(SELECT<com.mysql.clusterj.jdbc.antlr.node.SelectNode>
+		-> ^(SELECT<com.myblockchain.clusterj.jdbc.antlr.node.SelectNode>
 				^(OPTIONS select_options*)?
 				^(COLUMNS $exprs+)
 				^(FROM table_references)?
-				^(WHERE<com.mysql.clusterj.jdbc.antlr.node.WhereNode> $where)?
+				^(WHERE<com.myblockchain.clusterj.jdbc.antlr.node.WhereNode> $where)?
 				group_by?
 				^(HAVING $having)?
 				order_by?
@@ -738,7 +738,7 @@ exprList
 	;
 
 parenExpr
-	:	LPAREN expr RPAREN	-> ^(LPAREN<com.mysql.clusterj.jdbc.antlr.node.ParensNode> expr)
+	:	LPAREN expr RPAREN	-> ^(LPAREN<com.myblockchain.clusterj.jdbc.antlr.node.ParensNode> expr)
 	;
 	
 parenExprList
@@ -754,7 +754,7 @@ expr
 	;
 
 assignOrExpr
-	:	lhs=assignXORExpr ((op+=LOGICAL_OR^ | op+=OR<com.mysql.clusterj.jdbc.antlr.node.OrNode>^) rhs+=assignXORExpr)*
+	:	lhs=assignXORExpr ((op+=LOGICAL_OR^ | op+=OR<com.myblockchain.clusterj.jdbc.antlr.node.OrNode>^) rhs+=assignXORExpr)*
 	;
 
 assignXORExpr
@@ -762,12 +762,12 @@ assignXORExpr
 	;
 
 assignAndExpr
-	:	lhs=assignNotExpr (( op+=LOGICAL_AND^ | op+=AND<com.mysql.clusterj.jdbc.antlr.node.AndNode>^ ) rhs+=assignNotExpr)*
+	:	lhs=assignNotExpr (( op+=LOGICAL_AND^ | op+=AND<com.myblockchain.clusterj.jdbc.antlr.node.AndNode>^ ) rhs+=assignNotExpr)*
 	;
 
 assignNotExpr
 	:	lhs=equalityExpr
-	|	op+=NOT<com.mysql.clusterj.jdbc.antlr.node.NotNode>^ rhs+=equalityExpr
+	|	op+=NOT<com.myblockchain.clusterj.jdbc.antlr.node.NotNode>^ rhs+=equalityExpr
 	;
 
 equalityExpr
@@ -788,12 +788,12 @@ isOperator
 	;
 
 equalityOperator
-	:	(	value=EQUALS<com.mysql.clusterj.jdbc.antlr.node.EqualsNode>
+	:	(	value=EQUALS<com.myblockchain.clusterj.jdbc.antlr.node.EqualsNode>
 		|	value=NOT_EQUAL
-		|	value=LESS_THAN<com.mysql.clusterj.jdbc.antlr.node.LessThanNode>
-		|	value=LESS_THAN_EQUAL<com.mysql.clusterj.jdbc.antlr.node.LessEqualsNode>
-		|	value=GREATER_THAN<com.mysql.clusterj.jdbc.antlr.node.GreaterThanNode>		
-		| 	value=GREATER_THAN_EQUAL<com.mysql.clusterj.jdbc.antlr.node.GreaterEqualsNode>
+		|	value=LESS_THAN<com.myblockchain.clusterj.jdbc.antlr.node.LessThanNode>
+		|	value=LESS_THAN_EQUAL<com.myblockchain.clusterj.jdbc.antlr.node.LessEqualsNode>
+		|	value=GREATER_THAN<com.myblockchain.clusterj.jdbc.antlr.node.GreaterThanNode>		
+		| 	value=GREATER_THAN_EQUAL<com.myblockchain.clusterj.jdbc.antlr.node.GreaterEqualsNode>
 		|	value=NULL_SAFE_NOT_EQUAL
 		| 	value=REGEXP
 		|	value=CASE
@@ -810,7 +810,7 @@ bitwiseOrExpr
     | (((NOT^)? IN^)=>(NOT^)? IN^ (parenExprList | subselect))
     | LIKE^ unaryExpr (ESCAPE STRING)?  // STRING must be empty or one character long (or be "\\" if not in sql_mode NO_BACKSLASH_ESCAPES)
     | isOperator^
-    | ((NOT^)? BETWEEN^)=> (NOT<com.mysql.clusterj.jdbc.antlr.node.NotNode>^)? (BETWEEN<com.mysql.clusterj.jdbc.antlr.node.BetweenNode>^ unaryExpr AND! unaryExpr )
+    | ((NOT^)? BETWEEN^)=> (NOT<com.myblockchain.clusterj.jdbc.antlr.node.NotNode>^)? (BETWEEN<com.myblockchain.clusterj.jdbc.antlr.node.BetweenNode>^ unaryExpr AND! unaryExpr )
     )?
     ;
 
@@ -887,7 +887,7 @@ literal
 	|	value=NUMBER
 	|	value=GLOBAL_VARIABLE
 	|	value=SESSION_VARIABLE
-	|	value=VALUE_PLACEHOLDER<com.mysql.clusterj.jdbc.antlr.node.PlaceholderNode>
+	|	value=VALUE_PLACEHOLDER<com.myblockchain.clusterj.jdbc.antlr.node.PlaceholderNode>
 	|	value=BINARY_VALUE
 	|	value=HEXA_VALUE
 	|	value=NULL
@@ -999,7 +999,7 @@ insert
 		|	select
 		)
 		on_dup_key?
-		-> ^(INSERT<com.mysql.clusterj.jdbc.antlr.node.InsertNode> IGNORE? INTO? $opt? ^(TABLE $table)
+		-> ^(INSERT<com.myblockchain.clusterj.jdbc.antlr.node.InsertNode> IGNORE? INTO? $opt? ^(TABLE $table)
 			/* the following three lines are really alts as they cannot appear at the same time */
 			insert_columns?
 			set_columns?
@@ -1043,7 +1043,7 @@ column_name_list
 
 update
 	:	UPDATE LOW_PRIORITY? IGNORE?
-		table=table_references			// this must be table_references because the mysql parser allows an alias here, even for single table updates (unlike DELETE)
+		table=table_references			// this must be table_references because the myblockchain parser allows an alias here, even for single table updates (unlike DELETE)
 		set=set_columns
 		(WHERE where_condition)?
 		/* these options are only valid if we update one table */
@@ -1051,7 +1051,7 @@ update
 			order_by?
 			(LIMIT NUMBER)?	
 		)?
-		-> ^(UPDATE LOW_PRIORITY? IGNORE? $table $set ^(WHERE<com.mysql.clusterj.jdbc.antlr.node.WhereNode> where_condition)? order_by? ^(LIMIT NUMBER)?)
+		-> ^(UPDATE LOW_PRIORITY? IGNORE? $table $set ^(WHERE<com.myblockchain.clusterj.jdbc.antlr.node.WhereNode> where_condition)? order_by? ^(LIMIT NUMBER)?)
 	;
 
 
@@ -1077,12 +1077,12 @@ boolean multiTableDelete = false;
 				order_by?
 				(LIMIT NUMBER)?
 			)?
-				-> {multiTableDelete}? ^(DELETE<com.mysql.clusterj.jdbc.antlr.node.DeleteNode> ^(OPTIONS $opts+)? ^(TABLE $t)+ ^(USING $tr) ^(WHERE<com.mysql.clusterj.jdbc.antlr.node.WhereNode> where_condition)?)
-				-> ^(DELETE<com.mysql.clusterj.jdbc.antlr.node.DeleteNode> ^(OPTIONS $opts+)? ^(TABLE $t) ^(WHERE<com.mysql.clusterj.jdbc.antlr.node.WhereNode> where_condition)? order_by? ^(LIMIT NUMBER)?)
+				-> {multiTableDelete}? ^(DELETE<com.myblockchain.clusterj.jdbc.antlr.node.DeleteNode> ^(OPTIONS $opts+)? ^(TABLE $t)+ ^(USING $tr) ^(WHERE<com.myblockchain.clusterj.jdbc.antlr.node.WhereNode> where_condition)?)
+				-> ^(DELETE<com.myblockchain.clusterj.jdbc.antlr.node.DeleteNode> ^(OPTIONS $opts+)? ^(TABLE $t) ^(WHERE<com.myblockchain.clusterj.jdbc.antlr.node.WhereNode> where_condition)? order_by? ^(LIMIT NUMBER)?)
 								 
 		|	t+=simple_table_ref_no_alias (DOT MULT)? (COMMA t+=simple_table_ref_no_alias (DOT MULT)?)*
 			FROM tr=table_references
-			(WHERE where_condition)?			-> ^(DELETE ^(OPTIONS $opts+)? ^(TABLE $t)+ ^(FROM $tr) ^(WHERE<com.mysql.clusterj.jdbc.antlr.node.WhereNode> where_condition)?)
+			(WHERE where_condition)?			-> ^(DELETE ^(OPTIONS $opts+)? ^(TABLE $t)+ ^(FROM $tr) ^(WHERE<com.myblockchain.clusterj.jdbc.antlr.node.WhereNode> where_condition)?)
 		)
 	;
 

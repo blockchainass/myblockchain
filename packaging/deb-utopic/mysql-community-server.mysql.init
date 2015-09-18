@@ -1,16 +1,16 @@
 #!/bin/bash
 #
 ### BEGIN INIT INFO
-# Provides:          mysql
+# Provides:          myblockchain
 # Required-Start:    $remote_fs $syslog
 # Required-Stop:     $remote_fs $syslog
 # Should-Start:      $network $time
 # Should-Stop:       $network $time
 # Default-Start:     2 3 4 5
 # Default-Stop:      0 1 6
-# Short-Description: Start/ Stop MySQL Community Server daemon
+# Short-Description: Start/ Stop MyBlockchain Community Server daemon
 # Description:       This service script facilitates startup and shutdown of
-#                    mysqld daemon throught its wrapper script mysqld_safe
+#                    myblockchaind daemon throught its wrapper script myblockchaind_safe
 ### END INIT INFO
 #
 
@@ -38,10 +38,10 @@ umask 077
 STARTTIMEOUT=180
 STOPTIMEOUT=60
 
-VERSION=$(mysqld --version | grep mysqld | cut -d' ' -f4)
+VERSION=$(myblockchaind --version | grep myblockchaind | cut -d' ' -f4)
 
 get_path () {
-	my_print_defaults mysqld | grep ${1} | cut -d= -f2
+	my_print_defaults myblockchaind | grep ${1} | cut -d= -f2
 }
 
 get_pcount () {
@@ -94,68 +94,68 @@ case "$1" in
   'start')
 	if [ "$(get_pcount)" -eq 1 ];
 	then
-		log_action_msg "A MySQL Server is already started"
+		log_action_msg "A MyBlockchain Server is already started"
 	else
-		MYSQLRUN=/var/run/mysqld
-		MYSQLDATA=$(get_path datadir)
-		MYSQLFILES=/var/lib/mysql-files
-		MYSQLLOG=/var/log/mysql
+		MYBLOCKCHAINRUN=/var/run/myblockchaind
+		MYBLOCKCHAINDATA=$(get_path datadir)
+		MYBLOCKCHAINFILES=/var/lib/myblockchain-files
+		MYBLOCKCHAINLOG=/var/log/myblockchain
 
-		if [ ! -d ${MYSQLDATA} -a ! -L ${MYSQLDATA} ];
+		if [ ! -d ${MYBLOCKCHAINDATA} -a ! -L ${MYBLOCKCHAINDATA} ];
 		then
-			mkdir ${MYSQLDATA}
-			chown mysql:mysql ${MYSQLDATA}
-			chmod 750 ${MYSQLDATA}
+			mkdir ${MYBLOCKCHAINDATA}
+			chown myblockchain:myblockchain ${MYBLOCKCHAINDATA}
+			chmod 750 ${MYBLOCKCHAINDATA}
 		fi
 
-		if [ ! -d ${MYSQLFILES} -a ! -L ${MYSQLFILES} ];
+		if [ ! -d ${MYBLOCKCHAINFILES} -a ! -L ${MYBLOCKCHAINFILES} ];
 		then
-			mkdir ${MYSQLFILES}
-			chown mysql:mysql ${MYSQLFILES}
-			chmod 770 ${MYSQLFILES}
+			mkdir ${MYBLOCKCHAINFILES}
+			chown myblockchain:myblockchain ${MYBLOCKCHAINFILES}
+			chmod 770 ${MYBLOCKCHAINFILES}
 		fi
 
-		if [ ! "$(ls -A ${MYSQLDATA})" ] && [ -d ${MYSQLFILES} ];
+		if [ ! "$(ls -A ${MYBLOCKCHAINDATA})" ] && [ -d ${MYBLOCKCHAINFILES} ];
 		then
-			su - mysql -s /bin/bash -c "/usr/sbin/mysqld --initialize-insecure=on 2>&1 > /dev/null"
-			su - mysql -s /bin/bash -c "/usr/sbin/mysqld --log_error_verbosity=2 2>&1 > /dev/null &"
+			su - myblockchain -s /bin/bash -c "/usr/sbin/myblockchaind --initialize-insecure=on 2>&1 > /dev/null"
+			su - myblockchain -s /bin/bash -c "/usr/sbin/myblockchaind --log_error_verbosity=2 2>&1 > /dev/null &"
 			verify_server start no-newline
-			mysql -e "INSTALL PLUGIN auth_socket SONAME 'auth_socket.so'"
-			mysql -e "USE mysql; UPDATE user SET plugin='auth_socket' WHERE user='root'"
-			mysqladmin shutdown
+			myblockchain -e "INSTALL PLUGIN auth_socket SONAME 'auth_socket.so'"
+			myblockchain -e "USE myblockchain; UPDATE user SET plugin='auth_socket' WHERE user='root'"
+			myblockchainadmin shutdown
 		fi
 
-		if [ -x /usr/bin/mysql_ssl_rsa_setup -a ! -e "${MYSQLDATA}/server-key.pem" ];
+		if [ -x /usr/bin/myblockchain_ssl_rsa_setup -a ! -e "${MYBLOCKCHAINDATA}/server-key.pem" ];
 		then
-			/usr/bin/mysql_ssl_rsa_setup --datadir="${MYSQLDATA}" --uid=mysql >/dev/null 2>&1
+			/usr/bin/myblockchain_ssl_rsa_setup --datadir="${MYBLOCKCHAINDATA}" --uid=myblockchain >/dev/null 2>&1
 		fi
 
-		if [ ! -d ${MYSQLLOG} -a ! -L ${MYSQLLOG} ];
+		if [ ! -d ${MYBLOCKCHAINLOG} -a ! -L ${MYBLOCKCHAINLOG} ];
 		then
-			mkdir ${MYSQLLOG}
-			chown mysql:adm ${MYSQLLOG}
-			chmod 750 ${MYSQLLOG}
-			touch ${MYSQLLOG}/error.log
-			chmod 640 ${MYSQLLOG}/error.log
-			chown mysql:adm ${MYSQLLOG}/error.log
+			mkdir ${MYBLOCKCHAINLOG}
+			chown myblockchain:adm ${MYBLOCKCHAINLOG}
+			chmod 750 ${MYBLOCKCHAINLOG}
+			touch ${MYBLOCKCHAINLOG}/error.log
+			chmod 640 ${MYBLOCKCHAINLOG}/error.log
+			chown myblockchain:adm ${MYBLOCKCHAINLOG}/error.log
 		fi
 
-		if [ ! -d "${MYSQLRUN}" -a ! -L "${MYSQLRUN}" ];
+		if [ ! -d "${MYBLOCKCHAINRUN}" -a ! -L "${MYBLOCKCHAINRUN}" ];
 		then
-			mkdir ${MYSQLRUN}
-			chown mysql:mysql ${MYSQLRUN}
-			chmod 755 ${MYSQLRUN}
+			mkdir ${MYBLOCKCHAINRUN}
+			chown myblockchain:myblockchain ${MYBLOCKCHAINRUN}
+			chmod 755 ${MYBLOCKCHAINRUN}
 		fi
 
-		/lib/init/apparmor-profile-load usr.sbin.mysqld
+		/lib/init/apparmor-profile-load usr.sbin.myblockchaind
 
-		su - mysql -s /bin/bash -c "mysqld_safe > /dev/null &"
+		su - myblockchain -s /bin/bash -c "myblockchaind_safe > /dev/null &"
 		verify_server start
 		if [ "$?" -eq 0 ];
 		then
-			log_action_msg "MySQL Community Server ${VERSION} is started"
+			log_action_msg "MyBlockchain Community Server ${VERSION} is started"
 		else
-			log_action_msg "MySQL Community Server ${VERSION} did not start. Please check logs for more details."
+			log_action_msg "MyBlockchain Community Server ${VERSION} did not start. Please check logs for more details."
 		fi
 	fi
 	;;
@@ -163,32 +163,32 @@ case "$1" in
   'stop')
 	if [ "$(get_pcount)" -eq 1 ];
 	then
-		killall -u mysql
+		killall -u myblockchain
 		verify_server stop
 		if [ "$?" -eq 0 ];
 		then
-			log_action_msg "MySQL Community Server ${VERSION} is stopped"
+			log_action_msg "MyBlockchain Community Server ${VERSION} is stopped"
 		else
-			log_action_msg "Attempt to shutdown MySQL Community Server ${VERSION} timed out"
+			log_action_msg "Attempt to shutdown MyBlockchain Community Server ${VERSION} timed out"
 		fi
 	else
-		log_action_msg "MySQL Community Server ${VERSION} is already stopped"
+		log_action_msg "MyBlockchain Community Server ${VERSION} is already stopped"
 	fi
 	;;
 
   'restart'|'reload'|'force-reload')
-	log_action_msg "Stopping MySQL Community Server ${VERSION}"
+	log_action_msg "Stopping MyBlockchain Community Server ${VERSION}"
 	$0 stop
-	log_action_msg "Re-starting MySQL Community Server ${VERSION}"
+	log_action_msg "Re-starting MyBlockchain Community Server ${VERSION}"
 	$0 start
 	;;
 
   'status')
 	if [ "$(get_pcount)" -eq 1 ];
 	then
-		log_action_msg "MySQL Community Server ${VERSION} is running"
+		log_action_msg "MyBlockchain Community Server ${VERSION} is running"
 	else
-		log_action_msg "MySQL Community Server ${VERSION} is not running"
+		log_action_msg "MyBlockchain Community Server ${VERSION} is not running"
 		exit 3
 	fi
 	;;

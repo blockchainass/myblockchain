@@ -34,22 +34,22 @@
  *
  */
 
-#include <mysql.h>
-#include <mysqld_error.h>
+#include <myblockchain.h>
+#include <myblockchaind_error.h>
 #include <NdbApi.hpp>
 #include <stdlib.h>
 // Used for cout
 #include <stdio.h>
 #include <iostream>
 
-static void run_application(MYSQL &, Ndb_cluster_connection &);
+static void run_application(MYBLOCKCHAIN &, Ndb_cluster_connection &);
 
 #define PRINT_ERROR(code,msg) \
   std::cout << "Error in " << __FILE__ << ", line: " << __LINE__ \
             << ", code: " << code \
             << ", msg: " << msg << "." << std::endl
-#define MYSQLERROR(mysql) { \
-  PRINT_ERROR(mysql_errno(&mysql),mysql_error(&mysql)); \
+#define MYBLOCKCHAINERROR(myblockchain) { \
+  PRINT_ERROR(myblockchain_errno(&myblockchain),myblockchain_error(&myblockchain)); \
   exit(-1); }
 #define APIERROR(error) { \
   PRINT_ERROR(error.code,error.message); \
@@ -59,15 +59,15 @@ int main(int argc, char** argv)
 {
   if (argc != 3)
   {
-    std::cout << "Arguments are <socket mysqld> <connect_string cluster>.\n";
+    std::cout << "Arguments are <socket myblockchaind> <connect_string cluster>.\n";
     exit(-1);
   }
   // ndb_init must be called first
   ndb_init();
 
-  // connect to mysql server and cluster and run application
+  // connect to myblockchain server and cluster and run application
   {
-    char * mysqld_sock  = argv[1];
+    char * myblockchaind_sock  = argv[1];
     const char *connectstring = argv[2];
     // Object representing the cluster
     Ndb_cluster_connection cluster_connection(connectstring);
@@ -88,18 +88,18 @@ int main(int argc, char** argv)
       exit(-1);
     }
 
-    // connect to mysql server
-    MYSQL mysql;
-    if ( !mysql_init(&mysql) ) {
-      std::cout << "mysql_init failed\n";
+    // connect to myblockchain server
+    MYBLOCKCHAIN myblockchain;
+    if ( !myblockchain_init(&myblockchain) ) {
+      std::cout << "myblockchain_init failed\n";
       exit(-1);
     }
-    if ( !mysql_real_connect(&mysql, "localhost", "root", "", "",
-			     0, mysqld_sock, 0) )
-      MYSQLERROR(mysql);
+    if ( !myblockchain_real_connect(&myblockchain, "localhost", "root", "", "",
+			     0, myblockchaind_sock, 0) )
+      MYBLOCKCHAINERROR(myblockchain);
     
     // run the application code
-    run_application(mysql, cluster_connection);
+    run_application(myblockchain, cluster_connection);
   }
 
   ndb_end(0);
@@ -107,31 +107,31 @@ int main(int argc, char** argv)
   return 0;
 }
 
-static void create_table(MYSQL &);
+static void create_table(MYBLOCKCHAIN &);
 static void do_insert(Ndb &);
 static void do_update(Ndb &);
 static void do_delete(Ndb &);
 static void do_read(Ndb &);
 
-static void run_application(MYSQL &mysql,
+static void run_application(MYBLOCKCHAIN &myblockchain,
 			    Ndb_cluster_connection &cluster_connection)
 {
   /********************************************
-   * Connect to database via mysql-c          *ndb_examples
+   * Connect to blockchain via myblockchain-c          *ndb_examples
    ********************************************/
-  mysql_query(&mysql, "CREATE DATABASE ndb_examples");
-  if (mysql_query(&mysql, "USE ndb_examples") != 0) MYSQLERROR(mysql);
-  create_table(mysql);
+  myblockchain_query(&myblockchain, "CREATE DATABASE ndb_examples");
+  if (myblockchain_query(&myblockchain, "USE ndb_examples") != 0) MYBLOCKCHAINERROR(myblockchain);
+  create_table(myblockchain);
 
   /********************************************
-   * Connect to database via NdbApi           *
+   * Connect to blockchain via NdbApi           *
    ********************************************/
-  // Object representing the database
+  // Object representing the blockchain
   Ndb myNdb( &cluster_connection, "ndb_examples" );
   if (myNdb.init()) APIERROR(myNdb.getNdbError());
 
   /*
-   * Do different operations on database
+   * Do different operations on blockchain
    */
   do_insert(myNdb);
   do_update(myNdb);
@@ -142,22 +142,22 @@ static void run_application(MYSQL &mysql,
 /*********************************************************
  * Create a table named api_simple if it does not exist *
  *********************************************************/
-static void create_table(MYSQL &mysql)
+static void create_table(MYBLOCKCHAIN &myblockchain)
 {
-  while (mysql_query(&mysql, 
+  while (myblockchain_query(&myblockchain, 
 		  "CREATE TABLE"
 		  "  api_simple"
 		  "    (ATTR1 INT UNSIGNED NOT NULL PRIMARY KEY,"
 		  "     ATTR2 INT UNSIGNED NOT NULL)"
 		  "  ENGINE=NDB"))
   {
-    if (mysql_errno(&mysql) == ER_TABLE_EXISTS_ERROR) 
+    if (myblockchain_errno(&myblockchain) == ER_TABLE_EXISTS_ERROR) 
     {
-      std::cout << "MySQL Cluster already has example table: api_simple. "
+      std::cout << "MyBlockchain Cluster already has example table: api_simple. "
       << "Dropping it..." << std::endl; 
-      mysql_query(&mysql, "DROP TABLE api_simple");
+      myblockchain_query(&myblockchain, "DROP TABLE api_simple");
     }
-    else MYSQLERROR(mysql);
+    else MYBLOCKCHAINERROR(myblockchain);
   }
 }
 

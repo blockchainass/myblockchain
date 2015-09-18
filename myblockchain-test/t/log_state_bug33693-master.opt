@@ -1,0 +1,1 @@
+--pid-file=$MYBLOCKCHAINTEST_VARDIR/run/myblockchaind.1.pid --general-log

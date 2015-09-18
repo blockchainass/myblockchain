@@ -20,8 +20,8 @@
 
 package myjapi;
 
-import com.mysql.jtie.Wrapper;
-import com.mysql.jtie.ArrayWrapper;
+import com.myblockchain.jtie.Wrapper;
+import com.myblockchain.jtie.ArrayWrapper;
 
 public class CI {
     static public interface C0C

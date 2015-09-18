@@ -241,7 +241,7 @@ fts_tokenize_document(
 					tokenize */
 	fts_doc_t*	result,		/*!< out: if provided, save
 					result tokens here */
-	st_mysql_ftparser*	parser);/* in: plugin fts parser */
+	st_myblockchain_ftparser*	parser);/* in: plugin fts parser */
 
 /*******************************************************************//**
 Continue to tokenize a document. */
@@ -254,7 +254,7 @@ fts_tokenize_document_next(
 					tokens from this tokenization */
 	fts_doc_t*	result,		/*!< out: if provided, save
 					result tokens here */
-	st_mysql_ftparser*	parser);/* in: plugin fts parser */
+	st_myblockchain_ftparser*	parser);/* in: plugin fts parser */
 
 /******************************************************************//**
 Initialize a document. */

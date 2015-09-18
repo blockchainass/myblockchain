@@ -96,7 +96,7 @@ fts_ast_create_node_term(
 		fts_string_t	str;
 		ulint		cur_len;
 
-		cur_len = innobase_mysql_fts_get_token(
+		cur_len = innobase_myblockchain_fts_get_token(
 			state->charset,
 			reinterpret_cast<const byte*>(ptr->str) + cur_pos,
 			reinterpret_cast<const byte*>(ptr->str) + len, &str);

@@ -25,27 +25,27 @@ static
 bool
 run_query(atrt_process* proc, const char * query)
 {
-  MYSQL* mysql = &proc->m_mysql;
+  MYBLOCKCHAIN* myblockchain = &proc->m_myblockchain;
   g_logger.debug("'%s@%s' - Running query '%s'",
 		 proc->m_cluster->m_name.c_str(),
 		 proc->m_host->m_hostname.c_str(),
                  query);
 
-  if (mysql_query(mysql, query))
+  if (myblockchain_query(myblockchain, query))
   {
     g_logger.error("'%s@%s' - Failed to run query '%s' %d:%s",
                    proc->m_cluster->m_name.c_str(),
                    proc->m_host->m_hostname.c_str(),
                    query,
-                   mysql_errno(mysql),
-                   mysql_error(mysql));
+                   myblockchain_errno(myblockchain),
+                   myblockchain_error(myblockchain));
     return false;
   }
   return true;
 }
 
 static const char* create_sql[] = {
-"create database atrt",
+"create blockchain atrt",
 
 "use atrt",
 
@@ -67,7 +67,7 @@ static const char* create_sql[] = {
 "  host_id int not null,"
 "  cluster_id int not null,"
 "  node_id int not null,"
-"  type enum ('ndbd', 'ndbapi', 'ndb_mgmd', 'mysqld', 'mysql') not null,"
+"  type enum ('ndbd', 'ndbapi', 'ndb_mgmd', 'myblockchaind', 'myblockchain') not null,"
 "  state enum ('starting', 'started', 'stopping', 'stopped') not null"
 "  ) engine = myisam;",
 
@@ -123,33 +123,33 @@ setup_db(atrt_config& config)
   }    
   
   /**
-   * connect to all mysqld's
+   * connect to all myblockchaind's
    */
 #ifndef _WIN32
   for (size_t i = 0; i<config.m_processes.size(); i++)
   {
     atrt_process * proc = config.m_processes[i];
-    if (proc->m_type == atrt_process::AP_MYSQLD)
+    if (proc->m_type == atrt_process::AP_MYBLOCKCHAIND)
     {
-      if (!connect_mysqld(* config.m_processes[i]))
+      if (!connect_myblockchaind(* config.m_processes[i]))
 	return false;
     }
   }    
   
   if (atrt_client)
   {
-    atrt_process* atrt_mysqld = atrt_client->m_mysqld;
-    require(atrt_mysqld);
+    atrt_process* atrt_myblockchaind = atrt_client->m_myblockchaind;
+    require(atrt_myblockchaind);
 
     // Run the commands to create the db
     for (int i = 0; create_sql[i]; i++)
     {
       const char* query = create_sql[i];
-      if (!run_query(atrt_mysqld, query))
+      if (!run_query(atrt_myblockchaind, query))
         return false;
     }
     
-    if (!populate_db(config, atrt_mysqld))
+    if (!populate_db(config, atrt_myblockchaind))
       return false;
   }
   
@@ -176,11 +176,11 @@ find(atrt_process* proc, const char * key)
 }
 
 bool
-connect_mysqld(atrt_process& proc)
+connect_myblockchaind(atrt_process& proc)
 {
-  if ( !mysql_init(&proc.m_mysql))
+  if ( !myblockchain_init(&proc.m_myblockchain))
   {
-    g_logger.error("Failed to init mysql");
+    g_logger.error("Failed to init myblockchain");
     return false;
   }
 
@@ -188,7 +188,7 @@ connect_mysqld(atrt_process& proc)
   const char * socket = find(&proc, "--socket=");
   if (port == 0 && socket == 0)
   {
-    g_logger.error("Neither socket nor port specified...cant connect to mysql");
+    g_logger.error("Neither socket nor port specified...cant connect to myblockchain");
     return false;
   }
   
@@ -196,10 +196,10 @@ connect_mysqld(atrt_process& proc)
   {
     if (port)
     {
-      mysql_protocol_type val = MYSQL_PROTOCOL_TCP;
-      mysql_options(&proc.m_mysql, MYSQL_OPT_PROTOCOL, &val);
+      myblockchain_protocol_type val = MYBLOCKCHAIN_PROTOCOL_TCP;
+      myblockchain_options(&proc.m_myblockchain, MYBLOCKCHAIN_OPT_PROTOCOL, &val);
     }
-    if (mysql_real_connect(&proc.m_mysql,
+    if (myblockchain_real_connect(&proc.m_myblockchain,
 			   proc.m_host->m_hostname.c_str(),
 			   "root", "", "test",
 			   port ? atoi(port) : 0,
@@ -213,33 +213,33 @@ connect_mysqld(atrt_process& proc)
     NdbSleep_SecSleep(3);
   }
 
-  g_logger.error("Failed to connect to mysqld err: >%s< >%s:%u:%s<",
-		 mysql_error(&proc.m_mysql),
+  g_logger.error("Failed to connect to myblockchaind err: >%s< >%s:%u:%s<",
+		 myblockchain_error(&proc.m_myblockchain),
 		 proc.m_host->m_hostname.c_str(), port ? atoi(port) : 0,
 		 socket ? socket : "<null>");
   return false;
 }
 
 bool
-disconnect_mysqld(atrt_process& proc)
+disconnect_myblockchaind(atrt_process& proc)
 {
-  mysql_close(&proc.m_mysql);
+  myblockchain_close(&proc.m_myblockchain);
   return true;
 }
 
 void
-BINDI(MYSQL_BIND& bind, int * i)
+BINDI(MYBLOCKCHAIN_BIND& bind, int * i)
 {
-  bind.buffer_type= MYSQL_TYPE_LONG;
+  bind.buffer_type= MYBLOCKCHAIN_TYPE_LONG;
   bind.buffer= (char*)i;
   bind.is_unsigned= 0;
   bind.is_null= 0;
 }
 
 void
-BINDS(MYSQL_BIND& bind, const char * s, unsigned long * len)
+BINDS(MYBLOCKCHAIN_BIND& bind, const char * s, unsigned long * len)
 {
-  bind.buffer_type= MYSQL_TYPE_STRING;
+  bind.buffer_type= MYBLOCKCHAIN_TYPE_STRING;
   bind.buffer= (char*)s;
   bind.buffer_length= * len = (unsigned long)strlen(s);
   bind.length= len;
@@ -259,7 +259,7 @@ find(T* obj, Vector<T*>& arr)
 
 static 
 bool 
-populate_options(MYSQL* mysql, MYSQL_STMT* stmt, int* option_id,
+populate_options(MYBLOCKCHAIN* myblockchain, MYBLOCKCHAIN_STMT* stmt, int* option_id,
 		 int process_id, Properties* p)
 {
   int kk = *option_id;
@@ -272,22 +272,22 @@ populate_options(MYSQL* mysql, MYSQL_STMT* stmt, int* option_id,
     unsigned long l0, l1;
     const char * value;
     p->get(name, &value);
-    MYSQL_BIND bind2[4];	
+    MYBLOCKCHAIN_BIND bind2[4];	
     bzero(bind2, sizeof(bind2));
     BINDI(bind2[0], &optid);
     BINDI(bind2[1], &proc_id);
     BINDS(bind2[2], name, &l0);
     BINDS(bind2[3], value, &l1);
     
-    if (mysql_stmt_bind_param(stmt, bind2))
+    if (myblockchain_stmt_bind_param(stmt, bind2))
     {
-      g_logger.error("Failed to bind: %s", mysql_error(mysql));
+      g_logger.error("Failed to bind: %s", myblockchain_error(myblockchain));
       return false;
     }
     
-    if (mysql_stmt_execute(stmt))
+    if (myblockchain_stmt_execute(stmt))
     {
-      g_logger.error("0 Failed to execute: %s", mysql_error(mysql));
+      g_logger.error("0 Failed to execute: %s", myblockchain_error(myblockchain));
       return false;
     }
     kk++;
@@ -298,73 +298,73 @@ populate_options(MYSQL* mysql, MYSQL_STMT* stmt, int* option_id,
 
 static
 bool
-populate_db(atrt_config& config, atrt_process* mysqld)
+populate_db(atrt_config& config, atrt_process* myblockchaind)
 {
   {
     const char * sql = "INSERT INTO host (id, name, port) values (?, ?, ?)";
-    MYSQL_STMT * stmt = mysql_stmt_init(&mysqld->m_mysql);
-    if (mysql_stmt_prepare(stmt, sql, (unsigned long)strlen(sql)))
+    MYBLOCKCHAIN_STMT * stmt = myblockchain_stmt_init(&myblockchaind->m_myblockchain);
+    if (myblockchain_stmt_prepare(stmt, sql, (unsigned long)strlen(sql)))
     {
-      g_logger.error("Failed to prepare: %s", mysql_error(&mysqld->m_mysql));
+      g_logger.error("Failed to prepare: %s", myblockchain_error(&myblockchaind->m_myblockchain));
       return false;
     }
 
     for (unsigned i = 0; i<config.m_hosts.size(); i++)
     {
       unsigned long l0;
-      MYSQL_BIND bind[3];
+      MYBLOCKCHAIN_BIND bind[3];
       bzero(bind, sizeof(bind));
       int id = (int)i;
       int port = config.m_hosts[i]->m_cpcd->getPort();
       BINDI(bind[0], &id);
       BINDS(bind[1], config.m_hosts[i]->m_hostname.c_str(), &l0);
       BINDI(bind[2], &port);
-      if (mysql_stmt_bind_param(stmt, bind))
+      if (myblockchain_stmt_bind_param(stmt, bind))
       {
-	g_logger.error("Failed to bind: %s", mysql_error(&mysqld->m_mysql));
+	g_logger.error("Failed to bind: %s", myblockchain_error(&myblockchaind->m_myblockchain));
 	return false;
       }
       
-      if (mysql_stmt_execute(stmt))
+      if (myblockchain_stmt_execute(stmt))
       {
-	g_logger.error("1 Failed to execute: %s", mysql_error(&mysqld->m_mysql));
+	g_logger.error("1 Failed to execute: %s", myblockchain_error(&myblockchaind->m_myblockchain));
 	return false;
       }
     }
-    mysql_stmt_close(stmt);
+    myblockchain_stmt_close(stmt);
   }
 
   {
     const char * sql = "INSERT INTO cluster (id, name) values (?, ?)";
-    MYSQL_STMT * stmt = mysql_stmt_init(&mysqld->m_mysql);
-    if (mysql_stmt_prepare(stmt, sql, (unsigned long)strlen(sql)))
+    MYBLOCKCHAIN_STMT * stmt = myblockchain_stmt_init(&myblockchaind->m_myblockchain);
+    if (myblockchain_stmt_prepare(stmt, sql, (unsigned long)strlen(sql)))
     {
-      g_logger.error("Failed to prepare: %s", mysql_error(&mysqld->m_mysql));
+      g_logger.error("Failed to prepare: %s", myblockchain_error(&myblockchaind->m_myblockchain));
       return false;
     }
 
     for (unsigned i = 0; i<config.m_clusters.size(); i++)
     {
       unsigned long l0;
-      MYSQL_BIND bind[2];
+      MYBLOCKCHAIN_BIND bind[2];
       bzero(bind, sizeof(bind));
       int id = (int)i;
       BINDI(bind[0], &id);
       BINDS(bind[1], config.m_clusters[i]->m_name.c_str(), &l0);
 
-      if (mysql_stmt_bind_param(stmt, bind))
+      if (myblockchain_stmt_bind_param(stmt, bind))
       {
-	g_logger.error("Failed to bind: %s", mysql_error(&mysqld->m_mysql));
+	g_logger.error("Failed to bind: %s", myblockchain_error(&myblockchaind->m_myblockchain));
 	return false;
       }
       
-      if (mysql_stmt_execute(stmt))
+      if (myblockchain_stmt_execute(stmt))
       {
-	g_logger.error("2 Failed to execute: %s", mysql_error(&mysqld->m_mysql));
+	g_logger.error("2 Failed to execute: %s", myblockchain_error(&myblockchaind->m_myblockchain));
 	return false;
       }
     }
-    mysql_stmt_close(stmt);
+    myblockchain_stmt_close(stmt);
   }
 
   {
@@ -374,17 +374,17 @@ populate_db(atrt_config& config, atrt_process* mysqld)
     const char * sqlopt =
       "INSERT INTO options (id, process_id, name, value) values (?,?,?,?)";
 
-    MYSQL_STMT * stmt = mysql_stmt_init(&mysqld->m_mysql);
-    if (mysql_stmt_prepare(stmt, sql, (unsigned long)strlen(sql)))
+    MYBLOCKCHAIN_STMT * stmt = myblockchain_stmt_init(&myblockchaind->m_myblockchain);
+    if (myblockchain_stmt_prepare(stmt, sql, (unsigned long)strlen(sql)))
     {
-      g_logger.error("Failed to prepare: %s", mysql_error(&mysqld->m_mysql));
+      g_logger.error("Failed to prepare: %s", myblockchain_error(&myblockchaind->m_myblockchain));
       return false;
     }
 
-    MYSQL_STMT * stmtopt = mysql_stmt_init(&mysqld->m_mysql);
-    if (mysql_stmt_prepare(stmtopt, sqlopt, (unsigned long)strlen(sqlopt)))
+    MYBLOCKCHAIN_STMT * stmtopt = myblockchain_stmt_init(&myblockchaind->m_myblockchain);
+    if (myblockchain_stmt_prepare(stmtopt, sqlopt, (unsigned long)strlen(sqlopt)))
     {
-      g_logger.error("Failed to prepare: %s", mysql_error(&mysqld->m_mysql));
+      g_logger.error("Failed to prepare: %s", myblockchain_error(&myblockchaind->m_myblockchain));
       return false;
     }
 
@@ -392,7 +392,7 @@ populate_db(atrt_config& config, atrt_process* mysqld)
     for (unsigned i = 0; i<config.m_processes.size(); i++)
     {
       unsigned long l0, l1;
-      MYSQL_BIND bind[6];
+      MYBLOCKCHAIN_BIND bind[6];
       bzero(bind, sizeof(bind));
       int id = (int)i;
       atrt_process* proc = config.m_processes[i];
@@ -406,8 +406,8 @@ populate_db(atrt_config& config, atrt_process* mysqld)
       case atrt_process::AP_NDBD:     type = "ndbd"; break;
       case atrt_process::AP_NDB_API:  type = "ndbapi"; state = "stopped";break;
       case atrt_process::AP_NDB_MGMD: type = "ndb_mgmd"; break;
-      case atrt_process::AP_MYSQLD:   type = "mysqld"; break;
-      case atrt_process::AP_CLIENT:   type = "mysql"; state = "stopped";break;
+      case atrt_process::AP_MYBLOCKCHAIND:   type = "myblockchaind"; break;
+      case atrt_process::AP_CLIENT:   type = "myblockchain"; state = "stopped";break;
       default:
 	abort();
       }
@@ -419,29 +419,29 @@ populate_db(atrt_config& config, atrt_process* mysqld)
       BINDS(bind[4], state, &l1);
       BINDI(bind[5], &node_id);
 
-      if (mysql_stmt_bind_param(stmt, bind))
+      if (myblockchain_stmt_bind_param(stmt, bind))
       {
-	g_logger.error("Failed to bind: %s", mysql_error(&mysqld->m_mysql));
+	g_logger.error("Failed to bind: %s", myblockchain_error(&myblockchaind->m_myblockchain));
 	return false;
       }
       
-      if (mysql_stmt_execute(stmt))
+      if (myblockchain_stmt_execute(stmt))
       {
-	g_logger.error("3 Failed to execute: %s", mysql_error(&mysqld->m_mysql));
+	g_logger.error("3 Failed to execute: %s", myblockchain_error(&myblockchaind->m_myblockchain));
 	return false;
       }
 
-      if (populate_options(&mysqld->m_mysql, stmtopt, &option_id, id,
+      if (populate_options(&myblockchaind->m_myblockchain, stmtopt, &option_id, id,
 			   &proc->m_options.m_loaded) == false)
 	return false;
       
-      if (populate_options(&mysqld->m_mysql, stmtopt, &option_id, id,
+      if (populate_options(&myblockchaind->m_myblockchain, stmtopt, &option_id, id,
 			   &proc->m_cluster->m_options.m_loaded) == false)
 	return false;
       
     }
-    mysql_stmt_close(stmt);
-    mysql_stmt_close(stmtopt);
+    myblockchain_stmt_close(stmt);
+    myblockchain_stmt_close(stmtopt);
   }
   
   return true;
@@ -454,14 +454,14 @@ setup_repl(atrt_process* dst, atrt_process* src)
   if (!run_query(src, "STOP SLAVE"))
   {
     g_logger.error("Failed to stop slave: %s",
-		   mysql_error(&src->m_mysql));
+		   myblockchain_error(&src->m_myblockchain));
     return false;
   }
 
   if (!run_query(src, "RESET SLAVE"))
   {
     g_logger.error("Failed to reset slave: %s",
-		   mysql_error(&src->m_mysql));
+		   myblockchain_error(&src->m_myblockchain));
     return false;
   }
   
@@ -477,14 +477,14 @@ setup_repl(atrt_process* dst, atrt_process* src)
     g_logger.error("Failed to setup repl from %s to %s: %s",
 		   src->m_host->m_hostname.c_str(),
 		   dst->m_host->m_hostname.c_str(),
-		   mysql_error(&src->m_mysql));
+		   myblockchain_error(&src->m_myblockchain));
     return false;
   }
 
   if (!run_query(src, "START SLAVE"))
   {
     g_logger.error("Failed to start slave: %s",
-		   mysql_error(&src->m_mysql));
+		   myblockchain_error(&src->m_myblockchain));
     return false;
   }
   

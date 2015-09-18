@@ -15,7 +15,7 @@
    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
  */
 
-package com.mysql.clusterj.tie;
+package com.myblockchain.clusterj.tie;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -24,24 +24,24 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.mysql.clusterj.ClusterJFatalInternalException;
+import com.myblockchain.clusterj.ClusterJFatalInternalException;
 
-import com.mysql.clusterj.core.store.Blob;
-import com.mysql.clusterj.core.store.Column;
-import com.mysql.clusterj.core.store.Db;
-import com.mysql.clusterj.core.store.Operation;
-import com.mysql.clusterj.core.store.ResultData;
-import com.mysql.clusterj.core.store.Table;
+import com.myblockchain.clusterj.core.store.Blob;
+import com.myblockchain.clusterj.core.store.Column;
+import com.myblockchain.clusterj.core.store.Db;
+import com.myblockchain.clusterj.core.store.Operation;
+import com.myblockchain.clusterj.core.store.ResultData;
+import com.myblockchain.clusterj.core.store.Table;
 
-import com.mysql.clusterj.core.util.I18NHelper;
-import com.mysql.clusterj.core.util.Logger;
-import com.mysql.clusterj.core.util.LoggerFactoryService;
+import com.myblockchain.clusterj.core.util.I18NHelper;
+import com.myblockchain.clusterj.core.util.Logger;
+import com.myblockchain.clusterj.core.util.LoggerFactoryService;
 
-import com.mysql.clusterj.tie.DbImpl.BufferManager;
+import com.myblockchain.clusterj.tie.DbImpl.BufferManager;
 
-import com.mysql.ndbjtie.ndbapi.NdbBlob;
-import com.mysql.ndbjtie.ndbapi.NdbOperationConst;
-import com.mysql.ndbjtie.ndbapi.NdbDictionary.Dictionary;
+import com.myblockchain.ndbjtie.ndbapi.NdbBlob;
+import com.myblockchain.ndbjtie.ndbapi.NdbOperationConst;
+import com.myblockchain.ndbjtie.ndbapi.NdbDictionary.Dictionary;
 
 /**
  * Implementation of store operation that uses NdbRecord.
@@ -907,7 +907,7 @@ public class NdbRecordOperationImpl implements Operation {
     }
 
     public int getMysqlCode() {
-        return ndbOperation.getNdbError().mysql_code();
+        return ndbOperation.getNdbError().myblockchain_code();
     }
 
     public int getStatus() {

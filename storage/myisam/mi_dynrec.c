@@ -160,7 +160,7 @@ size_t mi_mmap_pread(MI_INFO *info, uchar *Buffer,
 {
   DBUG_PRINT("info", ("mi_read with mmap %d\n", info->dfile));
   if (info->s->concurrent_insert)
-    mysql_rwlock_rdlock(&info->s->mmap_lock);
+    myblockchain_rwlock_rdlock(&info->s->mmap_lock);
 
   /*
     The following test may fail in the following cases:
@@ -173,24 +173,24 @@ size_t mi_mmap_pread(MI_INFO *info, uchar *Buffer,
   {
     memcpy(Buffer, info->s->file_map + offset, Count);
     if (info->s->concurrent_insert)
-      mysql_rwlock_unlock(&info->s->mmap_lock);
+      myblockchain_rwlock_unlock(&info->s->mmap_lock);
     return 0;
   }
   else
   {
     if (info->s->concurrent_insert)
-      mysql_rwlock_unlock(&info->s->mmap_lock);
-    return mysql_file_pread(info->dfile, Buffer, Count, offset, MyFlags);
+      myblockchain_rwlock_unlock(&info->s->mmap_lock);
+    return myblockchain_file_pread(info->dfile, Buffer, Count, offset, MyFlags);
   }
 }
 
 
-        /* wrapper for mysql_file_pread in case if mmap isn't used */
+        /* wrapper for myblockchain_file_pread in case if mmap isn't used */
 
 size_t mi_nommap_pread(MI_INFO *info, uchar *Buffer,
                        size_t Count, my_off_t offset, myf MyFlags)
 {
-  return mysql_file_pread(info->dfile, Buffer, Count, offset, MyFlags);
+  return myblockchain_file_pread(info->dfile, Buffer, Count, offset, MyFlags);
 }
 
 
@@ -215,7 +215,7 @@ size_t mi_mmap_pwrite(MI_INFO *info, const uchar *Buffer,
 {
   DBUG_PRINT("info", ("mi_write with mmap %d\n", info->dfile));
   if (info->s->concurrent_insert)
-    mysql_rwlock_rdlock(&info->s->mmap_lock);
+    myblockchain_rwlock_rdlock(&info->s->mmap_lock);
 
   /*
     The following test may fail in the following cases:
@@ -228,26 +228,26 @@ size_t mi_mmap_pwrite(MI_INFO *info, const uchar *Buffer,
   {
     memcpy(info->s->file_map + offset, Buffer, Count); 
     if (info->s->concurrent_insert)
-      mysql_rwlock_unlock(&info->s->mmap_lock);
+      myblockchain_rwlock_unlock(&info->s->mmap_lock);
     return 0;
   }
   else
   {
     info->s->nonmmaped_inserts++;
     if (info->s->concurrent_insert)
-      mysql_rwlock_unlock(&info->s->mmap_lock);
-    return mysql_file_pwrite(info->dfile, Buffer, Count, offset, MyFlags);
+      myblockchain_rwlock_unlock(&info->s->mmap_lock);
+    return myblockchain_file_pwrite(info->dfile, Buffer, Count, offset, MyFlags);
   }
 
 }
 
 
-        /* wrapper for mysql_file_pwrite in case if mmap isn't used */
+        /* wrapper for myblockchain_file_pwrite in case if mmap isn't used */
 
 size_t mi_nommap_pwrite(MI_INFO *info, const uchar *Buffer,
                       size_t Count, my_off_t offset, myf MyFlags)
 {
-  return mysql_file_pwrite(info->dfile, Buffer, Count, offset, MyFlags);
+  return myblockchain_file_pwrite(info->dfile, Buffer, Count, offset, MyFlags);
 }
 
 
@@ -528,7 +528,7 @@ static int update_backward_delete_link(MI_INFO *info, my_off_t delete_block,
   DBUG_RETURN(0);
 }
 
-	/* Delete datarecord from database */
+	/* Delete datarecord from blockchain */
 	/* info->rec_cache.seek_not_done is updated in cmp_record */
 
 static int delete_dynamic_record(MI_INFO *info, my_off_t filepos,
@@ -1581,7 +1581,7 @@ int _mi_cmp_dynamic_record(MI_INFO *info, const uchar *record)
   }
   info->rec_cache.seek_not_done=1;
 
-	/* If nobody have touched the database we don't have to test rec */
+	/* If nobody have touched the blockchain we don't have to test rec */
 
   buffer=info->rec_buff;
   if ((info->opt_flag & READ_CHECK_USED))
@@ -1656,7 +1656,7 @@ static int _mi_cmp_buffer(File file, const uchar *buff, my_off_t filepos,
 
   while (length > IO_SIZE*2)
   {
-    if (mysql_file_pread(file, temp_buff, next_length, filepos, MYF(MY_NABP)) ||
+    if (myblockchain_file_pread(file, temp_buff, next_length, filepos, MYF(MY_NABP)) ||
 	memcmp(buff, temp_buff, next_length))
       goto err;
     filepos+=next_length;
@@ -1664,7 +1664,7 @@ static int _mi_cmp_buffer(File file, const uchar *buff, my_off_t filepos,
     length-= next_length;
     next_length=IO_SIZE*2;
   }
-  if (mysql_file_pread(file, temp_buff, length, filepos, MYF(MY_NABP)))
+  if (myblockchain_file_pread(file, temp_buff, length, filepos, MYF(MY_NABP)))
     goto err;
   DBUG_RETURN(memcmp(buff,temp_buff,length));
 err:
@@ -1849,8 +1849,8 @@ int _mi_read_rnd_dynamic_record(MI_INFO *info, uchar *buf,
             block_info.filepos + block_info.data_len &&
             flush_io_cache(&info->rec_cache))
           goto err;
-        /* mysql_file_seek(info->dfile, filepos, MY_SEEK_SET, MYF(0)); */
-        if (mysql_file_read(info->dfile, (uchar*) to, block_info.data_len,
+        /* myblockchain_file_seek(info->dfile, filepos, MY_SEEK_SET, MYF(0)); */
+        if (myblockchain_file_read(info->dfile, (uchar*) to, block_info.data_len,
                             MYF(MY_NABP)))
 	{
 	  if (my_errno == -1)
@@ -1899,12 +1899,12 @@ uint _mi_get_block_info(MI_BLOCK_INFO *info, File file, my_off_t filepos)
   if (file >= 0)
   {
     /*
-      We do not use mysql_file_pread() here because we want to have the file
+      We do not use myblockchain_file_pread() here because we want to have the file
       pointer set to the end of the header after this function.
-      mysql_file_pread() may leave the file pointer untouched.
+      myblockchain_file_pread() may leave the file pointer untouched.
     */
-    mysql_file_seek(file, filepos, MY_SEEK_SET, MYF(0));
-    if (mysql_file_read(file, header, sizeof(info->header), MYF(0)) !=
+    myblockchain_file_seek(file, filepos, MY_SEEK_SET, MYF(0));
+    if (myblockchain_file_read(file, header, sizeof(info->header), MYF(0)) !=
 	sizeof(info->header))
       goto err;
   }

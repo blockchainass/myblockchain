@@ -37,7 +37,7 @@
 
   @return              void
 */
-void mysql_sha1_yassl(uint8 *digest, const char *buf, size_t len)
+void myblockchain_sha1_yassl(uint8 *digest, const char *buf, size_t len)
 {
   TaoCrypt::SHA hasher;
   hasher.Update((const TaoCrypt::byte *) buf, (TaoCrypt::word32)len);
@@ -56,7 +56,7 @@ void mysql_sha1_yassl(uint8 *digest, const char *buf, size_t len)
 
   @return              void
 */
-void mysql_sha1_multi_yassl(uint8 *digest, const char *buf1, int len1,
+void myblockchain_sha1_multi_yassl(uint8 *digest, const char *buf1, int len1,
                             const char *buf2, int len2)
 {
   TaoCrypt::SHA hasher;
@@ -68,20 +68,20 @@ void mysql_sha1_multi_yassl(uint8 *digest, const char *buf1, int len1,
 #elif defined(HAVE_OPENSSL)
 #include <openssl/sha.h>
 
-int mysql_sha1_reset(SHA_CTX *context)
+int myblockchain_sha1_reset(SHA_CTX *context)
 {
     return SHA1_Init(context);
 }
 
 
-int mysql_sha1_input(SHA_CTX *context, const uint8 *message_array,
+int myblockchain_sha1_input(SHA_CTX *context, const uint8 *message_array,
                      unsigned length)
 {
     return SHA1_Update(context, message_array, length);
 }
 
 
-int mysql_sha1_result(SHA_CTX *context,
+int myblockchain_sha1_result(SHA_CTX *context,
                       uint8 Message_Digest[SHA1_HASH_SIZE])
 {
     return SHA1_Final(Message_Digest, context);
@@ -101,13 +101,13 @@ int mysql_sha1_result(SHA_CTX *context,
 void compute_sha1_hash(uint8 *digest, const char *buf, size_t len)
 {
 #if defined(HAVE_YASSL)
-  mysql_sha1_yassl(digest, buf, len);
+  myblockchain_sha1_yassl(digest, buf, len);
 #elif defined(HAVE_OPENSSL)
   SHA_CTX sha1_context;
 
-  mysql_sha1_reset(&sha1_context);
-  mysql_sha1_input(&sha1_context, (const uint8 *) buf, len);
-  mysql_sha1_result(&sha1_context, digest);
+  myblockchain_sha1_reset(&sha1_context);
+  myblockchain_sha1_input(&sha1_context, (const uint8 *) buf, len);
+  myblockchain_sha1_result(&sha1_context, digest);
 #endif /* HAVE_YASSL */
 }
 
@@ -128,14 +128,14 @@ void compute_sha1_hash_multi(uint8 *digest, const char *buf1, int len1,
                              const char *buf2, int len2)
 {
 #if defined(HAVE_YASSL)
-  mysql_sha1_multi_yassl(digest, buf1, len1, buf2, len2);
+  myblockchain_sha1_multi_yassl(digest, buf1, len1, buf2, len2);
 #elif defined(HAVE_OPENSSL)
   SHA_CTX sha1_context;
 
-  mysql_sha1_reset(&sha1_context);
-  mysql_sha1_input(&sha1_context, (const uint8 *) buf1, len1);
-  mysql_sha1_input(&sha1_context, (const uint8 *) buf2, len2);
-  mysql_sha1_result(&sha1_context, digest);
+  myblockchain_sha1_reset(&sha1_context);
+  myblockchain_sha1_input(&sha1_context, (const uint8 *) buf1, len1);
+  myblockchain_sha1_input(&sha1_context, (const uint8 *) buf2, len2);
+  myblockchain_sha1_result(&sha1_context, digest);
 #endif /* HAVE_YASSL */
 }
 

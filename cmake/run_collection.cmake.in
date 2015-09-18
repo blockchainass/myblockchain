@@ -30,7 +30,7 @@ FOREACH(command ${commands})
   ENDIF()
  
   IF(command MATCHES "--suite=nist")
-    IF(NOT EXISTS ${CMAKE_SOURCE_DIR}/mysql-test/suite/nist)
+    IF(NOT EXISTS ${CMAKE_SOURCE_DIR}/myblockchain-test/suite/nist)
       MESSAGE(STATUS 
         "Skipping command ${command}, because NIST test suite does not exist")
       SET(SKIP_COMMAND 1)

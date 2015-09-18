@@ -31,7 +31,7 @@ typedef struct charset_info_st CHARSET_INFO;
  * - is used by kernel code
  * - provides non-elementary functions
  * - is not generic, template-based code
- * - has link/library dependencies upon MySQL code
+ * - has link/library dependencies upon MyBlockchain code
  * (in contrast to other type utility classes, like ./NdbTypesUtil).
  */
 class NdbSqlUtil {
@@ -39,7 +39,7 @@ public:
   /**
    * Compare attribute values.  Returns negative, zero, positive for
    * less, equal, greater.  We trust DBTUP to validate all data and
-   * mysql upgrade to not invalidate them.  Bad values (such as NaN)
+   * myblockchain upgrade to not invalidate them.  Bad values (such as NaN)
    * causing undefined results crash here always (require, not assert)
    * since they are likely to cause a more obscure crash in DBTUX.
    * wl4163_todo: API probably should not crash.
@@ -157,7 +157,7 @@ public:
 
   /**
    * Unpack and pack date/time types.  There is no check that the data
-   * is valid for MySQL.  Random input gives equally random output.
+   * is valid for MyBlockchain.  Random input gives equally random output.
    * Fractional seconds wl#946 introduce new formats (type names with
    * suffix 2).  The methods for these take an extra precision argument
    * with range 0-6 which translates to 0-3 bytes.

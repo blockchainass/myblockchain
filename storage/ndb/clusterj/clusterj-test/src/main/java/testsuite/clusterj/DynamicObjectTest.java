@@ -17,14 +17,14 @@
 
 package testsuite.clusterj;
 
-import com.mysql.clusterj.ClusterJUserException;
-import com.mysql.clusterj.ColumnType;
-import com.mysql.clusterj.DynamicObject;
-import com.mysql.clusterj.ColumnMetadata;
-import com.mysql.clusterj.Query;
-import com.mysql.clusterj.annotation.PersistenceCapable;
-import com.mysql.clusterj.query.QueryBuilder;
-import com.mysql.clusterj.query.QueryDomainType;
+import com.myblockchain.clusterj.ClusterJUserException;
+import com.myblockchain.clusterj.ColumnType;
+import com.myblockchain.clusterj.DynamicObject;
+import com.myblockchain.clusterj.ColumnMetadata;
+import com.myblockchain.clusterj.Query;
+import com.myblockchain.clusterj.annotation.PersistenceCapable;
+import com.myblockchain.clusterj.query.QueryBuilder;
+import com.myblockchain.clusterj.query.QueryDomainType;
 
 public class DynamicObjectTest extends AbstractClusterJModelTest {
 

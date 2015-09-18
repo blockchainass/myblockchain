@@ -14,7 +14,7 @@
    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA */
 
 /*
-  open a isam-database
+  open a isam-blockchain
 
   Internal temporary tables
   -------------------------
@@ -51,7 +51,7 @@ if (pos > end_pos)             \
 
 /******************************************************************************
 ** Return the shared struct if the table is already open.
-** In MySQL the server will handle version issues.
+** In MyBlockchain the server will handle version issues.
 ******************************************************************************/
 
 MI_INFO *test_if_reopen(char *filename)
@@ -70,7 +70,7 @@ MI_INFO *test_if_reopen(char *filename)
 
 
 /******************************************************************************
-  open a MyISAM database.
+  open a MyISAM blockchain.
   See my_base.h for the handle_locking argument
   if handle_locking and HA_OPEN_ABORT_IF_CRASHED then abort if the table
   is marked crashed or if we are not using locking and the table doesn't
@@ -111,7 +111,7 @@ MI_INFO *mi_open(const char *name, int mode, uint open_flags)
 
   if (!internal_table)
   {
-    mysql_mutex_lock(&THR_LOCK_myisam);
+    myblockchain_mutex_lock(&THR_LOCK_myisam);
     old_info= test_if_reopen(name_buff);
   }
 
@@ -131,20 +131,20 @@ MI_INFO *mi_open(const char *name, int mode, uint open_flags)
                       my_errno= HA_ERR_CRASHED;
                       goto err;
                     });
-    if ((kfile= mysql_file_open(mi_key_file_kfile,
+    if ((kfile= myblockchain_file_open(mi_key_file_kfile,
                                 name_buff,
                                 (open_mode= O_RDWR) | O_SHARE, MYF(0))) < 0)
     {
       if ((errno != EROFS && errno != EACCES) ||
 	  mode != O_RDONLY ||
-          (kfile= mysql_file_open(mi_key_file_kfile,
+          (kfile= myblockchain_file_open(mi_key_file_kfile,
                                   name_buff,
                                   (open_mode= O_RDONLY) | O_SHARE, MYF(0))) < 0)
 	goto err;
     }
     share->mode=open_mode;
     errpos=1;
-    if (mysql_file_read(kfile, share->state.header.file_version, head_length,
+    if (myblockchain_file_read(kfile, share->state.header.file_version, head_length,
                         MYF(MY_NABP)))
     {
       my_errno= HA_ERR_NOT_A_TABLE;
@@ -196,7 +196,7 @@ MI_INFO *mi_open(const char *name, int mode, uint open_flags)
     end_pos=disk_cache+info_length;
     errpos=2;
 
-    mysql_file_seek(kfile, 0L, MY_SEEK_SET, MYF(0));
+    myblockchain_file_seek(kfile, 0L, MY_SEEK_SET, MYF(0));
     if (!(open_flags & HA_OPEN_TMP_TABLE))
     {
       if ((lock_error=my_lock(kfile,F_RDLCK,0L,F_TO_EOF,
@@ -206,7 +206,7 @@ MI_INFO *mi_open(const char *name, int mode, uint open_flags)
 	goto err;
     }
     errpos=3;
-    if (mysql_file_read(kfile, disk_cache, info_length, MYF(MY_NABP)))
+    if (myblockchain_file_read(kfile, disk_cache, info_length, MYF(MY_NABP)))
     {
       my_errno=HA_ERR_CRASHED;
       goto err;
@@ -306,8 +306,8 @@ MI_INFO *mi_open(const char *name, int mode, uint open_flags)
 			 &share->state.key_root,keys*sizeof(my_off_t),
 			 &share->state.key_del,
 			 (share->state.header.max_block_size_index*sizeof(my_off_t)),
-                         &share->key_root_lock, sizeof(mysql_rwlock_t)*keys,
-                         &share->mmap_lock, sizeof(mysql_rwlock_t),
+                         &share->key_root_lock, sizeof(myblockchain_rwlock_t)*keys,
+                         &share->mmap_lock, sizeof(myblockchain_rwlock_t),
 			 NullS))
       goto err;
     errpos=4;
@@ -517,12 +517,12 @@ MI_INFO *mi_open(const char *name, int mode, uint open_flags)
     mi_setup_functions(share);
     share->is_log_table= FALSE;
     thr_lock_init(&share->lock);
-    mysql_mutex_init(mi_key_mutex_MYISAM_SHARE_intern_lock,
+    myblockchain_mutex_init(mi_key_mutex_MYISAM_SHARE_intern_lock,
                      &share->intern_lock, MY_MUTEX_INIT_FAST);
     for (i=0; i<keys; i++)
-      mysql_rwlock_init(mi_key_rwlock_MYISAM_SHARE_key_root_lock,
+      myblockchain_rwlock_init(mi_key_rwlock_MYISAM_SHARE_key_root_lock,
                         &share->key_root_lock[i]);
-    mysql_rwlock_init(mi_key_rwlock_MYISAM_SHARE_mmap_lock, &share->mmap_lock);
+    myblockchain_rwlock_init(mi_key_rwlock_MYISAM_SHARE_mmap_lock, &share->mmap_lock);
     if (myisam_concurrent_insert)
     {
       share->concurrent_insert=
@@ -609,7 +609,7 @@ MI_INFO *mi_open(const char *name, int mode, uint open_flags)
   info.ft1_to_ft2=0;
   info.errkey= -1;
   info.page_changed=1;
-  mysql_mutex_lock(&share->intern_lock);
+  myblockchain_mutex_lock(&share->intern_lock);
   info.read_record=share->read_record;
   share->reopen++;
   share->write_flag=MYF(MY_NABP | MY_WAIT_IF_FULL);
@@ -633,7 +633,7 @@ MI_INFO *mi_open(const char *name, int mode, uint open_flags)
       myisam_delay_key_write)
     share->delay_key_write=1;
   info.state= &share->state.state;	/* Change global values by default */
-  mysql_mutex_unlock(&share->intern_lock);
+  myblockchain_mutex_unlock(&share->intern_lock);
 
   /* Allocate buffer for one record */
 
@@ -649,7 +649,7 @@ MI_INFO *mi_open(const char *name, int mode, uint open_flags)
   {
     m_info->open_list.data= (void*) m_info;
     myisam_open_list= list_add(myisam_open_list, &m_info->open_list);
-    mysql_mutex_unlock(&THR_LOCK_myisam);
+    myblockchain_mutex_unlock(&THR_LOCK_myisam);
   }
 
   memset(info.buff, 0, share->base.max_key_block_length * 2);
@@ -672,7 +672,7 @@ err:
     my_free(m_info);
     /* fall through */
   case 5:
-    (void) mysql_file_close(info.dfile, MYF(0));
+    (void) myblockchain_file_close(info.dfile, MYF(0));
     if (old_info)
       break;					/* Don't remove open table */
     /* fall through */
@@ -686,14 +686,14 @@ err:
   case 2:
     /* fall through */
   case 1:
-    (void) mysql_file_close(kfile, MYF(0));
+    (void) myblockchain_file_close(kfile, MYF(0));
     /* fall through */
   case 0:
   default:
     break;
   }
   if (!internal_table)
-    mysql_mutex_unlock(&THR_LOCK_myisam);
+    myblockchain_mutex_unlock(&THR_LOCK_myisam);
   my_errno=save_errno;
   DBUG_RETURN (NULL);
 } /* mi_open */
@@ -922,9 +922,9 @@ uint mi_state_info_write(File file, MI_STATE_INFO *state, uint pWrite)
   }
 
   if (pWrite & 1)
-    DBUG_RETURN(mysql_file_pwrite(file, buff, (size_t) (ptr-buff), 0L,
+    DBUG_RETURN(myblockchain_file_pwrite(file, buff, (size_t) (ptr-buff), 0L,
                                   MYF(MY_NABP | MY_THREADSAFE)) != 0);
-  DBUG_RETURN(mysql_file_write(file, buff, (size_t) (ptr-buff),
+  DBUG_RETURN(myblockchain_file_write(file, buff, (size_t) (ptr-buff),
                                MYF(MY_NABP)) != 0);
 }
 
@@ -990,10 +990,10 @@ uint mi_state_info_read_dsk(File file, MI_STATE_INFO *state, my_bool pRead)
   {
     if (pRead)
     {
-      if (mysql_file_pread(file, buff, state->state_length, 0L, MYF(MY_NABP)))
+      if (myblockchain_file_pread(file, buff, state->state_length, 0L, MYF(MY_NABP)))
 	return 1;
     }
-    else if (mysql_file_read(file, buff, state->state_length, MYF(MY_NABP)))
+    else if (myblockchain_file_read(file, buff, state->state_length, MYF(MY_NABP)))
       return 1;
     mi_state_info_read(buff, state);
   }
@@ -1033,7 +1033,7 @@ uint mi_base_info_write(File file, MI_BASE_INFO *base)
   mi_int2store(ptr,base->extra_alloc_bytes);		ptr +=2;
   *ptr++= base->extra_alloc_procent;
   memset(ptr, 0, 13);					ptr +=13; /* extra */
-  return mysql_file_write(file, buff, (size_t) (ptr-buff), MYF(MY_NABP)) != 0;
+  return myblockchain_file_write(file, buff, (size_t) (ptr-buff), MYF(MY_NABP)) != 0;
 }
 
 
@@ -1084,7 +1084,7 @@ uint mi_keydef_write(File file, MI_KEYDEF *keydef)
   mi_int2store(ptr,keydef->keylength);		ptr +=2;
   mi_int2store(ptr,keydef->minlength);		ptr +=2;
   mi_int2store(ptr,keydef->maxlength);		ptr +=2;
-  return mysql_file_write(file, buff, (size_t) (ptr-buff), MYF(MY_NABP)) != 0;
+  return myblockchain_file_write(file, buff, (size_t) (ptr-buff), MYF(MY_NABP)) != 0;
 }
 
 uchar *mi_keydef_read(uchar *ptr, MI_KEYDEF *keydef)
@@ -1128,7 +1128,7 @@ int mi_keyseg_write(File file, const HA_KEYSEG *keyseg)
   mi_int4store(ptr, pos);
   ptr+=4;
   
-  return mysql_file_write(file, buff, (size_t) (ptr-buff), MYF(MY_NABP)) != 0;
+  return myblockchain_file_write(file, buff, (size_t) (ptr-buff), MYF(MY_NABP)) != 0;
 }
 
 
@@ -1170,7 +1170,7 @@ uint mi_uniquedef_write(File file, MI_UNIQUEDEF *def)
   *ptr++=  (uchar) def->key;
   *ptr++ = (uchar) def->null_are_equal;
 
-  return mysql_file_write(file, buff, (size_t) (ptr-buff), MYF(MY_NABP)) != 0;
+  return myblockchain_file_write(file, buff, (size_t) (ptr-buff), MYF(MY_NABP)) != 0;
 }
 
 uchar *mi_uniquedef_read(uchar *ptr, MI_UNIQUEDEF *def)
@@ -1194,7 +1194,7 @@ uint mi_recinfo_write(File file, MI_COLUMNDEF *recinfo)
   mi_int2store(ptr,recinfo->length);	ptr +=2;
   *ptr++ = recinfo->null_bit;
   mi_int2store(ptr,recinfo->null_pos);	ptr+= 2;
-  return mysql_file_write(file, buff, (size_t) (ptr-buff), MYF(MY_NABP)) != 0;
+  return myblockchain_file_write(file, buff, (size_t) (ptr-buff), MYF(MY_NABP)) != 0;
 }
 
 uchar *mi_recinfo_read(uchar *ptr, MI_COLUMNDEF *recinfo)
@@ -1235,7 +1235,7 @@ int mi_open_datafile(MI_INFO *info, MYISAM_SHARE *share, const char *org_name,
       data_name= real_data_name;
     }
   }
-  info->dfile= mysql_file_open(mi_key_file_dfile,
+  info->dfile= myblockchain_file_open(mi_key_file_dfile,
                                data_name, share->mode | O_SHARE, MYF(MY_WME));
   return info->dfile >= 0 ? 0 : 1;
 }
@@ -1243,7 +1243,7 @@ int mi_open_datafile(MI_INFO *info, MYISAM_SHARE *share, const char *org_name,
 
 int mi_open_keyfile(MYISAM_SHARE *share)
 {
-  if ((share->kfile= mysql_file_open(mi_key_file_kfile,
+  if ((share->kfile= myblockchain_file_open(mi_key_file_kfile,
                                      share->unique_file_name,
                                      share->mode | O_SHARE,
                                      MYF(MY_WME))) < 0)

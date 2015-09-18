@@ -27,7 +27,7 @@
 #include "pfs_engine_table.h"
 #include "rpl_mi.h"
 #include "rpl_reporting.h" /* MAX_SLAVE_ERRMSG */
-#include "mysql_com.h"
+#include "myblockchain_com.h"
 #include "rpl_msr.h"
 #include "rpl_info.h"  /*CHANNEL_NAME_LENGTH */
 

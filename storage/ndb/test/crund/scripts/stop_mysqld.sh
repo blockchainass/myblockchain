@@ -15,27 +15,27 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 
-if [ "$MYSQL_HOME" = "" ] ; then
+if [ "$MYBLOCKCHAIN_HOME" = "" ] ; then
   source ../env.properties
-  echo MYSQL_HOME=$MYSQL_HOME
-  PATH="$MYSQL_LIBEXEC:$MYSQL_BIN:$PATH"
+  echo MYBLOCKCHAIN_HOME=$MYBLOCKCHAIN_HOME
+  PATH="$MYBLOCKCHAIN_LIBEXEC:$MYBLOCKCHAIN_BIN:$PATH"
 fi
 
 #set -x
 
 cwd="$(pwd)"
 mylogdir="$cwd/ndblog"
-mysock="/tmp/mysql.sock"
-#mysock="$mylogdir/mysql.sock"
+mysock="/tmp/myblockchain.sock"
+#mysock="$mylogdir/myblockchain.sock"
 
-echo shut down mysqld...
-#"mysqladmin" shutdown
-"mysqladmin" --socket="$mysock" shutdown
+echo shut down myblockchaind...
+#"myblockchainadmin" shutdown
+"myblockchainadmin" --socket="$mysock" shutdown
 
 # need some extra time
 for ((i=0; i<5; i++)) ; do printf "." ; sleep 1 ; done ; echo
 
 #echo
-#ps -efa | grep mysqld
+#ps -efa | grep myblockchaind
 
 #set +x

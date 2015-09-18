@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2003-2006 MySQL AB, 2008, 2009 Sun Microsystems, Inc.
+   Copyright (C) 2003-2006 MyBlockchain AB, 2008, 2009 Sun Microsystems, Inc.
     All rights reserved. Use is subject to license terms.
 
    This program is free software; you can redistribute it and/or modify
@@ -41,7 +41,7 @@ int main(int argc, const char** argv){
     { "records", 'r', arg_integer, &_records, "Number of records", "recs" },
     { "batch", 'b', arg_integer, &_batch, "Number of operations in each transaction", "batch" },
     { "loops", 'l', arg_integer, &_loops, "Number of loops", "" },
-    { "database", 'd', arg_string, &db, "Database", "" },
+    { "blockchain", 'd', arg_string, &db, "Database", "" },
     { "usage", '?', arg_flag, &_help, "Print help", "" },
     { "rnd-rows", 0, arg_flag, &_rand, "Rand number of records", "recs" },
     { "one-trans", 0, arg_flag, &_onetrans, "Insert as 1 trans", "" },

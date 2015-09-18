@@ -1,6 +1,6 @@
 
 use strict;
-use lib "../../../../mysql-test/lib/";
+use lib "../../../../myblockchain-test/lib/";
 use My::Memcache;
 use Getopt::Long;
 

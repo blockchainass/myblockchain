@@ -36,7 +36,7 @@ Created 12/19/1997 Heikki Tuuri
 #include "que0types.h"
 #include "pars0sym.h"
 #include "btr0pcur.h"
-#include "row0mysql.h"
+#include "row0myblockchain.h"
 
 /*********************************************************************//**
 Creates a select node struct.
@@ -110,23 +110,23 @@ row_printf_step(
 /** Copy used fields from cached row.
 Copy cache record field by field, don't touch fields that
 are not covered by current key.
-@param[out]	buf		Where to copy the MySQL row.
-@param[in]	cached_rec	What to copy (in MySQL row format).
+@param[out]	buf		Where to copy the MyBlockchain row.
+@param[in]	cached_rec	What to copy (in MyBlockchain row format).
 @param[in]	prebuilt	prebuilt struct. */
 void
-row_sel_copy_cached_fields_for_mysql(
+row_sel_copy_cached_fields_for_myblockchain(
 	byte*		buf,
 	const byte*	cached_rec,
 	row_prebuilt_t*	prebuilt);
 
 /****************************************************************//**
-Converts a key value stored in MySQL format to an Innobase dtuple. The last
+Converts a key value stored in MyBlockchain format to an Innobase dtuple. The last
 field of the key value may be just a prefix of a fixed length field: hence
 the parameter key_len. But currently we do not allow search keys where the
 last field is only a prefix of the full key field len and print a warning if
 such appears. */
 void
-row_sel_convert_mysql_key_to_innobase(
+row_sel_convert_myblockchain_key_to_innobase(
 /*==================================*/
 	dtuple_t*	tuple,		/*!< in/out: tuple where to build;
 					NOTE: we assume that the type info
@@ -137,22 +137,22 @@ row_sel_convert_mysql_key_to_innobase(
 					may end up pointing inside buf so
 					do not discard that buffer while
 					the tuple is being used. See
-					row_mysql_store_col_in_innobase_format()
+					row_myblockchain_store_col_in_innobase_format()
 					in the case of DATA_INT */
 	ulint		buf_len,	/*!< in: buffer length */
 	dict_index_t*	index,		/*!< in: index of the key value */
-	const byte*	key_ptr,	/*!< in: MySQL key value */
-	ulint		key_len,	/*!< in: MySQL key value length */
+	const byte*	key_ptr,	/*!< in: MyBlockchain key value */
+	ulint		key_len,	/*!< in: MyBlockchain key value length */
 	trx_t*		trx);		/*!< in: transaction */
 
 
-/** Searches for rows in the database. This is used in the interface to
-MySQL. This function opens a cursor, and also implements fetch next
+/** Searches for rows in the blockchain. This is used in the interface to
+MyBlockchain. This function opens a cursor, and also implements fetch next
 and fetch prev. NOTE that if we do a search with a full key value
 from a unique index (ROW_SEL_EXACT), then we will not store the cursor
 position and fetch next or fetch prev must not be tried to the cursor!
 
-@param[out]	buf		buffer for the fetched row in MySQL format
+@param[out]	buf		buffer for the fetched row in MyBlockchain format
 @param[in]	mode		search mode PAGE_CUR_L
 @param[in,out]	prebuilt	prebuilt struct for the table handler;
 				this contains the info to search_tuple,
@@ -168,7 +168,7 @@ position and fetch next or fetch prev must not be tried to the cursor!
 DB_LOCK_TABLE_FULL, DB_CORRUPTION, or DB_TOO_BIG_RECORD */
 UNIV_INLINE
 dberr_t
-row_search_for_mysql(
+row_search_for_myblockchain(
 	byte*		buf,
 	page_cur_mode_t	mode,
 	row_prebuilt_t*	prebuilt,
@@ -176,12 +176,12 @@ row_search_for_mysql(
 	ulint		direction)
 	__attribute__((warn_unused_result));
 
-/** Searches for rows in the database using cursor.
+/** Searches for rows in the blockchain using cursor.
 function is meant for temporary table that are not shared accross connection
 and so lot of complexity is reduced especially locking and transaction related.
 The cursor is an iterator over the table/index.
 
-@param[out]	buf		buffer for the fetched row in MySQL format
+@param[out]	buf		buffer for the fetched row in MyBlockchain format
 @param[in]	mode		search mode PAGE_CUR_L
 @param[in,out]	prebuilt	prebuilt struct for the table handler;
 				this contains the info to search_tuple,
@@ -203,13 +203,13 @@ row_search_no_mvcc(
 	ulint		direction)
 	__attribute__((warn_unused_result));
 
-/** Searches for rows in the database using cursor.
+/** Searches for rows in the blockchain using cursor.
 Function is mainly used for tables that are shared accorss connection and
 so it employs technique that can help re-construct the rows that
 transaction is suppose to see.
 It also has optimization such as pre-caching the rows, using AHI, etc.
 
-@param[out]	buf		buffer for the fetched row in MySQL format
+@param[out]	buf		buffer for the fetched row in MyBlockchain format
 @param[in]	mode		search mode PAGE_CUR_L
 @param[in,out]	prebuilt	prebuilt struct for the table handler;
 				this contains the info to search_tuple,
@@ -224,7 +224,7 @@ It also has optimization such as pre-caching the rows, using AHI, etc.
 @param[in]	ins_sel_stmt	if true, then this statement is
 				insert .... select statement. For normal table
 				this can be detected by checking out locked
-				tables using trx->mysql_n_tables_locked > 0
+				tables using trx->myblockchain_n_tables_locked > 0
 				condition. For intrinsic table
 				external_lock is not invoked and so condition
 				above will not stand valid instead this is
@@ -257,14 +257,14 @@ row_count_rtree_recs(
 					seen in the consistent read */
 
 /*******************************************************************//**
-Checks if MySQL at the moment is allowed for this table to retrieve a
+Checks if MyBlockchain at the moment is allowed for this table to retrieve a
 consistent read result, or store it to the query cache.
 @return TRUE if storing or retrieving from the query cache is permitted */
 ibool
 row_search_check_if_query_cache_permitted(
 /*======================================*/
 	trx_t*		trx,		/*!< in: transaction object */
-	const char*	norm_name);	/*!< in: concatenation of database name,
+	const char*	norm_name);	/*!< in: concatenation of blockchain name,
 					'/' char, table name */
 /*******************************************************************//**
 Read the max AUTOINC value from an index.
@@ -471,13 +471,13 @@ struct row_printf_node_t{
 	sel_node_t*	sel_node;	/*!< select */
 };
 
-/** Search direction for the MySQL interface */
+/** Search direction for the MyBlockchain interface */
 enum row_sel_direction {
 	ROW_SEL_NEXT = 1,	/*!< ascending direction */
 	ROW_SEL_PREV = 2	/*!< descending direction */
 };
 
-/** Match mode for the MySQL interface */
+/** Match mode for the MyBlockchain interface */
 enum row_sel_match_mode {
 	ROW_SEL_EXACT = 1,	/*!< search using a complete key value */
 	ROW_SEL_EXACT_PREFIX	/*!< search using a key prefix which
@@ -488,21 +488,21 @@ enum row_sel_match_mode {
 };
 
 #ifdef UNIV_DEBUG
-/** Convert a non-SQL-NULL field from Innobase format to MySQL format. */
-# define row_sel_field_store_in_mysql_format(dest,templ,idx,field,src,len) \
-        row_sel_field_store_in_mysql_format_func(dest,templ,idx,field,src,len)
+/** Convert a non-SQL-NULL field from Innobase format to MyBlockchain format. */
+# define row_sel_field_store_in_myblockchain_format(dest,templ,idx,field,src,len) \
+        row_sel_field_store_in_myblockchain_format_func(dest,templ,idx,field,src,len)
 #else /* UNIV_DEBUG */
-/** Convert a non-SQL-NULL field from Innobase format to MySQL format. */
-# define row_sel_field_store_in_mysql_format(dest,templ,idx,field,src,len) \
-        row_sel_field_store_in_mysql_format_func(dest,templ,src,len)
+/** Convert a non-SQL-NULL field from Innobase format to MyBlockchain format. */
+# define row_sel_field_store_in_myblockchain_format(dest,templ,idx,field,src,len) \
+        row_sel_field_store_in_myblockchain_format_func(dest,templ,src,len)
 #endif /* UNIV_DEBUG */
 
 /**************************************************************//**
-Stores a non-SQL-NULL field in the MySQL format. The counterpart of this
-function is row_mysql_store_col_in_innobase_format() in row0mysql.cc. */
+Stores a non-SQL-NULL field in the MyBlockchain format. The counterpart of this
+function is row_myblockchain_store_col_in_innobase_format() in row0myblockchain.cc. */
 
 void
-row_sel_field_store_in_mysql_format_func(
+row_sel_field_store_in_myblockchain_format_func(
 /*=====================================*/
         byte*           dest,   /*!< in/out: buffer where to store; NOTE
                                 that BLOBs are not in themselves
@@ -510,10 +510,10 @@ row_sel_field_store_in_mysql_format_func(
                                 and copy the BLOB into buffer before,
                                 and pass the pointer to the BLOB in
                                 'data' */
-        const mysql_row_templ_t* templ,
-                                /*!< in: MySQL column template.
+        const myblockchain_row_templ_t* templ,
+                                /*!< in: MyBlockchain column template.
                                 Its following fields are referenced:
-                                type, is_unsigned, mysql_col_len,
+                                type, is_unsigned, myblockchain_col_len,
                                 mbminlen, mbmaxlen */
 #ifdef UNIV_DEBUG
         const dict_index_t* index,

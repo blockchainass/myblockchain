@@ -23,7 +23,7 @@
 #include "my_handler_errors.h"
 #include "my_thread_local.h"
 
-/* Max length of a error message. Should be kept in sync with MYSQL_ERRMSG_SIZE. */
+/* Max length of a error message. Should be kept in sync with MYBLOCKCHAIN_ERRMSG_SIZE. */
 #define ERRMSGSIZE      (512)
 
 /* Define some external variables for error handling */
@@ -454,7 +454,7 @@ void my_message_local_stderr(enum loglevel ll,
   This goes through local_message_hook, i.e. by default, it calls
   my_message_local_stderr() which prepends an Error/Warning/Note
   label to the string, then prints it to stderr.  More advanced
-  programs can use their own printers; mysqld for instance uses
+  programs can use their own printers; myblockchaind for instance uses
   its own error log facilities which prepend an ISO 8601 / RFC 3339
   compliant timestamp etc.
 

@@ -1,7 +1,7 @@
 #
 # Test of auto_increment
 #
-# run this program with mysql -vvf test < this file
+# run this program with myblockchain -vvf test < this file
 
 drop table if exists auto_incr_test,auto_incr_test2 ;
 

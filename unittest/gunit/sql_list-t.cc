@@ -45,11 +45,11 @@ void insert_values(T (&array)[size], List<T> *list)
 }
 
 /*
-  The fixture for testing the MySQL List and List_iterator classes.
+  The fixture for testing the MyBlockchain List and List_iterator classes.
   A fresh instance of this class will be created for each of the
   TEST_F functions below.
   The functions SetUp(), TearDown(), SetUpTestCase(), TearDownTestCase() are
-  inherited from ::testing::Test (google naming style differs from MySQL).
+  inherited from ::testing::Test (google naming style differs from MyBlockchain).
 */
 class SqlListTest : public ::testing::Test
 {

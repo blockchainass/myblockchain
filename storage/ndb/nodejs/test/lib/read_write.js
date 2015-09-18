@@ -21,12 +21,12 @@
 "use strict";
 
 var udebug = unified_debug.getLogger("lib/read_write.js");
-var mysql = require("mysql");
+var myblockchain = require("myblockchain");
 var util = require("util");
 
 /** This is the test for data conversions. It reads using one implementation
- * (either a mysql-js adapter or a sql driver) and writes using an
- * implementation (either a mysql-js adapter or a sql driver) and
+ * (either a myblockchain-js adapter or a sql driver) and writes using an
+ * implementation (either a myblockchain-js adapter or a sql driver) and
  * then compares the results. 
  */
 
@@ -35,25 +35,25 @@ var util = require("util");
 function SQLDriver(connectionProperties) {
   /* Translate our properties to the driver's */
   this.props = {};
-  if(connectionProperties.mysql_socket) {
-    this.props.SocketPath = connectionProperties.mysql_socket;
+  if(connectionProperties.myblockchain_socket) {
+    this.props.SocketPath = connectionProperties.myblockchain_socket;
   } else {
-    this.props.host = connectionProperties.mysql_host;
-    this.props.port = connectionProperties.mysql_port;
+    this.props.host = connectionProperties.myblockchain_host;
+    this.props.port = connectionProperties.myblockchain_port;
   }
-  if(connectionProperties.mysql_user) {
-    this.props.user = connectionProperties.mysql_user;
+  if(connectionProperties.myblockchain_user) {
+    this.props.user = connectionProperties.myblockchain_user;
   }
-  if(connectionProperties.mysql_password) {
-    this.props.password = connectionProperties.mysql_password;
+  if(connectionProperties.myblockchain_password) {
+    this.props.password = connectionProperties.myblockchain_password;
   }
-  this.props.database = connectionProperties.database;
-  this.props.debug = connectionProperties.mysql_debug;
+  this.props.blockchain = connectionProperties.blockchain;
+  this.props.debug = connectionProperties.myblockchain_debug;
   udebug.log('SQLDriver using properties: ', util.inspect(this.props));
 };
 
 SQLDriver.prototype.connect = function(callback) {
-  this.connection = mysql.createConnection(this.props);
+  this.connection = myblockchain.createConnection(this.props);
   this.connection.connect(callback);
 };
 
@@ -221,7 +221,7 @@ ReadWrite.prototype.setUp = function(callback) {
       rw.testCase.fail();
     } else {
       // get metadata for table
-      rw.session.getTableMetadata(rw.tableMapping.database, rw.tableMapping.table, onTableMetadata);
+      rw.session.getTableMetadata(rw.tableMapping.blockchain, rw.tableMapping.table, onTableMetadata);
     }
   }
 

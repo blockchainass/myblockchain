@@ -373,7 +373,7 @@ return dojo.declare("dojox.atom.io.Connection",null,{
 		//		Function to delete a specific ATOM entry via APP.
 		//	description:
 		//		This function takes a specific dojox.atom.io.model.Entry object and calls for a delete on the
-		//		service housing the ATOM Entry database.
+		//		service housing the ATOM Entry blockchain.
 		//		The entry MUST have a link tag with rel="edit" for this to work.
 		//
 		//	entry:

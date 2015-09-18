@@ -19,11 +19,11 @@
 #include "plugin.h"
 
 /*************************************************************************
-  API for Full-text parser plugin. (MYSQL_FTPARSER_PLUGIN)
+  API for Full-text parser plugin. (MYBLOCKCHAIN_FTPARSER_PLUGIN)
 */
 
 
-/* Parsing modes. Set in  MYSQL_FTPARSER_PARAM::mode */
+/* Parsing modes. Set in  MYBLOCKCHAIN_FTPARSER_PARAM::mode */
 enum enum_ftparser_mode
 {
 /*
@@ -32,9 +32,9 @@ enum enum_ftparser_mode
 
   The parser is expected to return only those words that go into the
   index. Stopwords or too short/long words should not be returned. The
-  'boolean_info' argument of mysql_add_word() does not have to be set.
+  'boolean_info' argument of myblockchain_add_word() does not have to be set.
 */
-  MYSQL_FTPARSER_SIMPLE_MODE= 0,
+  MYBLOCKCHAIN_FTPARSER_SIMPLE_MODE= 0,
 
 /*
   Parse with stopwords mode.  This mode is used in boolean searches for
@@ -42,28 +42,28 @@ enum enum_ftparser_mode
 
   The parser is not allowed to ignore words in this mode.  Every word
   should be returned, including stopwords and words that are too short
-  or long.  The 'boolean_info' argument of mysql_add_word() does not
+  or long.  The 'boolean_info' argument of myblockchain_add_word() does not
   have to be set.
 */
-  MYSQL_FTPARSER_WITH_STOPWORDS= 1,
+  MYBLOCKCHAIN_FTPARSER_WITH_STOPWORDS= 1,
 
 /*
   Parse in boolean mode.  This mode is used to parse a boolean query string.
 
-  The parser should provide a valid MYSQL_FTPARSER_BOOLEAN_INFO
-  structure in the 'boolean_info' argument to mysql_add_word().
+  The parser should provide a valid MYBLOCKCHAIN_FTPARSER_BOOLEAN_INFO
+  structure in the 'boolean_info' argument to myblockchain_add_word().
   Usually that means that the parser should recognize boolean operators
   in the parsing stream and set appropriate fields in
-  MYSQL_FTPARSER_BOOLEAN_INFO structure accordingly.  As for
-  MYSQL_FTPARSER_WITH_STOPWORDS mode, no word should be ignored.
+  MYBLOCKCHAIN_FTPARSER_BOOLEAN_INFO structure accordingly.  As for
+  MYBLOCKCHAIN_FTPARSER_WITH_STOPWORDS mode, no word should be ignored.
   Instead, use FT_TOKEN_STOPWORD for the token type of such a word.
 */
-  MYSQL_FTPARSER_FULL_BOOLEAN_INFO= 2
+  MYBLOCKCHAIN_FTPARSER_FULL_BOOLEAN_INFO= 2
 };
 
 /*
   Token types for boolean mode searching (used for the type member of
-  MYSQL_FTPARSER_BOOLEAN_INFO struct)
+  MYBLOCKCHAIN_FTPARSER_BOOLEAN_INFO struct)
 
   FT_TOKEN_EOF: End of data.
   FT_TOKEN_WORD: Regular word.
@@ -83,10 +83,10 @@ enum enum_ft_token_type
 
 /*
   This structure is used in boolean search mode only. It conveys
-  boolean-mode metadata to the MySQL search engine for every word in
+  boolean-mode metadata to the MyBlockchain search engine for every word in
   the search query. A valid instance of this structure must be filled
   in by the plugin parser and passed as an argument in the call to
-  mysql_add_word (the callback function in the MYSQL_FTPARSER_PARAM
+  myblockchain_add_word (the callback function in the MYBLOCKCHAIN_FTPARSER_PARAM
   structure) when a query is parsed in boolean mode.
 
   type: The token type.  Should be one of the enum_ft_token_type values.
@@ -114,7 +114,7 @@ enum enum_ft_token_type
   position: Start position in bytes of the word in the document, used by InnoDB FTS.
 */
 
-typedef struct st_mysql_ftparser_boolean_info
+typedef struct st_myblockchain_ftparser_boolean_info
 {
   enum enum_ft_token_type type;
   int yesno;
@@ -125,44 +125,44 @@ typedef struct st_mysql_ftparser_boolean_info
   /* These are parser state and must be removed. */
   char prev;
   char *quot;
-} MYSQL_FTPARSER_BOOLEAN_INFO;
+} MYBLOCKCHAIN_FTPARSER_BOOLEAN_INFO;
 
 /*
   The following flag means that buffer with a string (document, word)
   may be overwritten by the caller before the end of the parsing (that is
-  before st_mysql_ftparser::deinit() call). If one needs the string
+  before st_myblockchain_ftparser::deinit() call). If one needs the string
   to survive between two successive calls of the parsing function, she
-  needs to save a copy of it. The flag may be set by MySQL before calling
-  st_mysql_ftparser::parse(), or it may be set by a plugin before calling
-  st_mysql_ftparser_param::mysql_parse() or
-  st_mysql_ftparser_param::mysql_add_word().
+  needs to save a copy of it. The flag may be set by MyBlockchain before calling
+  st_myblockchain_ftparser::parse(), or it may be set by a plugin before calling
+  st_myblockchain_ftparser_param::myblockchain_parse() or
+  st_myblockchain_ftparser_param::myblockchain_add_word().
 */
-#define MYSQL_FTFLAGS_NEED_COPY 1
+#define MYBLOCKCHAIN_FTFLAGS_NEED_COPY 1
 
 /*
   An argument of the full-text parser plugin. This structure is
-  filled in by MySQL server and passed to the parsing function of the
+  filled in by MyBlockchain server and passed to the parsing function of the
   plugin as an in/out parameter.
 
-  mysql_parse: A pointer to the built-in parser implementation of the
+  myblockchain_parse: A pointer to the built-in parser implementation of the
   server. It's set by the server and can be used by the parser plugin
-  to invoke the MySQL default parser.  If plugin's role is to extract
+  to invoke the MyBlockchain default parser.  If plugin's role is to extract
   textual data from .doc, .pdf or .xml content, it might extract
   plaintext from the content, and then pass the text to the default
-  MySQL parser to be parsed.
+  MyBlockchain parser to be parsed.
 
-  mysql_add_word: A server callback to add a new word.  When parsing
+  myblockchain_add_word: A server callback to add a new word.  When parsing
   a document, the server sets this to point at a function that adds
-  the word to MySQL full-text index.  When parsing a search query,
+  the word to MyBlockchain full-text index.  When parsing a search query,
   this function will add the new word to the list of words to search
   for.  The boolean_info argument can be NULL for all cases except
-  when mode is MYSQL_FTPARSER_FULL_BOOLEAN_INFO.
+  when mode is MYBLOCKCHAIN_FTPARSER_FULL_BOOLEAN_INFO.
 
   ftparser_state: A generic pointer. The plugin can set it to point
   to information to be used internally for its own purposes.
 
-  mysql_ftparam: This is set by the server.  It is used by MySQL functions
-  called via mysql_parse() and mysql_add_word() callback.  The plugin
+  myblockchain_ftparam: This is set by the server.  It is used by MyBlockchain functions
+  called via myblockchain_parse() and myblockchain_add_word() callback.  The plugin
   should not modify it.
 
   cs: Information about the character set of the document or query string.
@@ -171,42 +171,42 @@ typedef struct st_mysql_ftparser_boolean_info
 
   length: Length of the document or query string, in bytes.
 
-  flags: See MYSQL_FTFLAGS_* constants above.
+  flags: See MYBLOCKCHAIN_FTFLAGS_* constants above.
 
   mode: The parsing mode.  With boolean operators, with stopwords, or
   nothing.  See  enum_ftparser_mode above.
 */
 
-typedef struct st_mysql_ftparser_param
+typedef struct st_myblockchain_ftparser_param
 {
-  int (*mysql_parse)(struct st_mysql_ftparser_param *,
+  int (*myblockchain_parse)(struct st_myblockchain_ftparser_param *,
                      char *doc, int doc_len);
-  int (*mysql_add_word)(struct st_mysql_ftparser_param *,
+  int (*myblockchain_add_word)(struct st_myblockchain_ftparser_param *,
                         char *word, int word_len,
-                        MYSQL_FTPARSER_BOOLEAN_INFO *boolean_info);
+                        MYBLOCKCHAIN_FTPARSER_BOOLEAN_INFO *boolean_info);
   void *ftparser_state;
-  void *mysql_ftparam;
+  void *myblockchain_ftparam;
   const struct charset_info_st *cs;
   char *doc;
   int length;
   int flags;
   enum enum_ftparser_mode mode;
-} MYSQL_FTPARSER_PARAM;
+} MYBLOCKCHAIN_FTPARSER_PARAM;
 
 /*
   Full-text parser descriptor.
 
-  interface_version is, e.g., MYSQL_FTPARSER_INTERFACE_VERSION.
+  interface_version is, e.g., MYBLOCKCHAIN_FTPARSER_INTERFACE_VERSION.
   The parsing, initialization, and deinitialization functions are
   invoked per SQL statement for which the parser is used.
 */
 
-struct st_mysql_ftparser
+struct st_myblockchain_ftparser
 {
   int interface_version;
-  int (*parse)(MYSQL_FTPARSER_PARAM *param);
-  int (*init)(MYSQL_FTPARSER_PARAM *param);
-  int (*deinit)(MYSQL_FTPARSER_PARAM *param);
+  int (*parse)(MYBLOCKCHAIN_FTPARSER_PARAM *param);
+  int (*init)(MYBLOCKCHAIN_FTPARSER_PARAM *param);
+  int (*deinit)(MYBLOCKCHAIN_FTPARSER_PARAM *param);
 };
 
 

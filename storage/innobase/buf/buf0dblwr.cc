@@ -115,7 +115,7 @@ buf_dblwr_sync_datafiles()
 }
 
 /****************************************************************//**
-Creates or initialializes the doublewrite buffer at a database start. */
+Creates or initialializes the doublewrite buffer at a blockchain start. */
 static
 void
 buf_dblwr_init(
@@ -236,7 +236,7 @@ start_again:
 			" Cannot continue operation.";
 
 		/* We exit without committing the mtr to prevent
-		its modifications to the database getting to disk */
+		its modifications to the blockchain getting to disk */
 
 		return(false);
 	}
@@ -259,7 +259,7 @@ start_again:
 		/* We read the allocated pages to the buffer pool;
 		when they are written to disk in a flush, the space
 		id and page number fields are also written to the
-		pages. When we at database startup read pages
+		pages. When we at blockchain startup read pages
 		from the doublewrite buffer, we know that if the
 		space id and page number in them are the same as
 		the page position in the tablespace, then the page
@@ -339,7 +339,7 @@ start_again:
 }
 
 /**
-At database startup initializes the doublewrite buffer memory structure if
+At blockchain startup initializes the doublewrite buffer memory structure if
 we already have a doublewrite buffer created in the data files. If we are
 upgrading to an InnoDB version which supports multiple tablespaces, then this
 function performs the necessary update operations. If we are in a crash
@@ -627,7 +627,7 @@ buf_dblwr_process(void)
 						" doublewrite buffer is"
 						" corrupt. Cannot continue"
 						" operation. You can try to"
-						" recover the database with"
+						" recover the blockchain with"
 						" innodb_force_recovery=6";
 				}
 			} else if (buf_page_is_zeroes(read_buf, page_size)

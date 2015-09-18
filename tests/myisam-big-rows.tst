@@ -1,6 +1,6 @@
 #
 # Test rows with length above > 16M
-# Note that for this to work, you should start mysqld with
+# Note that for this to work, you should start myblockchaind with
 # --max_allowed_packet=32M
 #
 

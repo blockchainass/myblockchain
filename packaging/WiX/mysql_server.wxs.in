@@ -97,7 +97,7 @@
     <Property Id="INSTALLDIR2">
        <RegistrySearch Id="FindInstallLocation2"
           Root="HKLM"
-          Key="SOFTWARE\MySQL AB\[ProductName]"
+          Key="SOFTWARE\MyBlockchain AB\[ProductName]"
           Name="Location"
           Type="raw" />
     </Property>
@@ -119,10 +119,10 @@
       Value="@CMAKE_CURRENT_SOURCE_DIR@/AdminBackground.jpg" />
     <Icon
       Id="icon.ico"
-      SourceFile="@CMAKE_CURRENT_SOURCE_DIR@/MySQLServer.ico"/>
+      SourceFile="@CMAKE_CURRENT_SOURCE_DIR@/MyBlockchainServer.ico"/>
     <Icon 
       Id="Icon.MysqlCmdShell" 
-      SourceFile='@CMAKE_CURRENT_SOURCE_DIR@/mysqlcommandlineshell.ico' />	  	  
+      SourceFile='@CMAKE_CURRENT_SOURCE_DIR@/myblockchaincommandlineshell.ico' />	  	  
     <Property
       Id="ARPPRODUCTICON"
       Value="icon.ico" />
@@ -167,7 +167,7 @@
     <!-- Installation root-->
     <Directory Id='TARGETDIR' Name='SourceDir'>
       <Directory Id='@PlatformProgramFilesFolder@'>
-        <Directory Id='directory.MySQL' Name='MySQL'>
+        <Directory Id='directory.MyBlockchain' Name='MyBlockchain'>
           <Directory Id='INSTALLDIR' Name='@PRODUCT_NAME@ @MAJOR_VERSION@.@MINOR_VERSION@'>
           </Directory>
         </Directory>

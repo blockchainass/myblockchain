@@ -13,7 +13,7 @@
    along with this program; if not, write to the Free Software
    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA */
 
-#include <mysql.h>
+#include <myblockchain.h>
 #include <stdio.h>
 #include <stdarg.h>
 #include <stdio.h>
@@ -22,25 +22,25 @@
 
 typedef unsigned char uchar;
 static void die(char* fmt, ...);
-static void safe_query(MYSQL* mysql, char* query, int read_ok);
+static void safe_query(MYBLOCKCHAIN* myblockchain, char* query, int read_ok);
 static void run_query_batch(int* order, int num_queries);
 static void permute(int *order, int num_queries);
 static void permute_aux(int *order, int num_queries, int* fixed);
-static void dump_result(MYSQL* mysql, char* query);
+static void dump_result(MYBLOCKCHAIN* myblockchain, char* query);
 
 int count = 0;
 
 
 struct query
 {
-  MYSQL* mysql;
+  MYBLOCKCHAIN* myblockchain;
   char* query;
   int read_ok;
   int pri;
   int dump_result;
 };
 
-MYSQL lock, sel, del_ins;
+MYBLOCKCHAIN lock, sel, del_ins;
 
 struct query queries[] =
 {
@@ -143,14 +143,14 @@ static void run_query_batch(int* order, int num_queries)
     {
       q = queries + *order;
       printf("query='%s'\n", q->query);
-      safe_query(q->mysql, q->query, q->read_ok);
+      safe_query(q->myblockchain, q->query, q->read_ok);
     }
   order = save_order;
   for(i = 0; i < num_queries; i++,order++)
     {
       q = queries + *order;
       if(q->dump_result)
-       dump_result(q->mysql, q->query);
+       dump_result(q->myblockchain, q->query);
     }
   printf("\n");
 
@@ -167,26 +167,26 @@ static void safe_net_read(NET* net, char* query)
 }
 
 
-static void safe_query(MYSQL* mysql, char* query, int read_ok)
+static void safe_query(MYBLOCKCHAIN* myblockchain, char* query, int read_ok)
 {
   int len;
-  NET* net = &mysql->net;
+  NET* net = &myblockchain->net;
   net_clear(net);
   if(net_write_command(net,(uchar)COM_QUERY, query,strlen(query)))
-    die("Error running query '%s': %s", query, mysql_error(mysql));
+    die("Error running query '%s': %s", query, myblockchain_error(myblockchain));
   if(read_ok)
     {
       safe_net_read(net, query);
     }
 }
 
-static void dump_result(MYSQL* mysql, char* query)
+static void dump_result(MYBLOCKCHAIN* myblockchain, char* query)
 {
-  MYSQL_RES* res;
-  safe_net_read(&mysql->net, query);
-  res = mysql_store_result(mysql);
+  MYBLOCKCHAIN_RES* res;
+  safe_net_read(&myblockchain->net, query);
+  res = myblockchain_store_result(myblockchain);
   if(res)
-   mysql_free_result(res);
+   myblockchain_free_result(res);
 }
 
 static int* init_order(int* num_queries)
@@ -195,7 +195,7 @@ static int* init_order(int* num_queries)
   int *order, *order_end, *p;
   int n,i;
 
-  for(q = queries; q->mysql; q++)
+  for(q = queries; q->myblockchain; q++)
     ;
 
   n = q - queries;
@@ -213,24 +213,24 @@ int main()
   char* user = "root", *pass = "", *host = "localhost", *db = "test";
   int *order, num_queries;
   order = init_order(&num_queries);
-  if(!mysql_init(&lock) || !mysql_init(&sel) || !mysql_init(&del_ins))
-    die("error in mysql_init()");
+  if(!myblockchain_init(&lock) || !myblockchain_init(&sel) || !myblockchain_init(&del_ins))
+    die("error in myblockchain_init()");
 
-  mysql_options(&lock, MYSQL_READ_DEFAULT_GROUP, "mysql");
-  mysql_options(&sel, MYSQL_READ_DEFAULT_GROUP, "mysql");
-  mysql_options(&del_ins, MYSQL_READ_DEFAULT_GROUP, "mysql");
+  myblockchain_options(&lock, MYBLOCKCHAIN_READ_DEFAULT_GROUP, "myblockchain");
+  myblockchain_options(&sel, MYBLOCKCHAIN_READ_DEFAULT_GROUP, "myblockchain");
+  myblockchain_options(&del_ins, MYBLOCKCHAIN_READ_DEFAULT_GROUP, "myblockchain");
 
-  if(!mysql_real_connect(&lock, host, user, pass, db, 0,0,0 ) ||
-     !mysql_real_connect(&sel, host, user, pass, db, 0,0,0 ) ||
-     !mysql_real_connect(&del_ins, host, user, pass, db, 0,0,0 ))
-    die("Error in mysql_real_connect(): %s", mysql_error(&lock));
+  if(!myblockchain_real_connect(&lock, host, user, pass, db, 0,0,0 ) ||
+     !myblockchain_real_connect(&sel, host, user, pass, db, 0,0,0 ) ||
+     !myblockchain_real_connect(&del_ins, host, user, pass, db, 0,0,0 ))
+    die("Error in myblockchain_real_connect(): %s", myblockchain_error(&lock));
   lock.reconnect= sel.reconnect= del_ins.reconnect= 1;
 
   permute(order, num_queries);
   printf("count = %d\n", count);
 
-  mysql_close(&lock);
-  mysql_close(&sel);
-  mysql_close(&del_ins);
+  myblockchain_close(&lock);
+  myblockchain_close(&sel);
+  myblockchain_close(&del_ins);
   free(order);
 }

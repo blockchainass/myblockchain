@@ -1,4 +1,4 @@
-/* Copyright (c) 2000, 2001, 2005, 2006 MySQL AB
+/* Copyright (c) 2000, 2001, 2005, 2006 MyBlockchain AB
    Use is subject to license terms
 
    This program is free software; you can redistribute it and/or modify
@@ -21,7 +21,7 @@
 	   all changed data in single user misam is written to file */
 	/* if flag == HA_PANIC_READ then all misam files that was locked when
 	   mi_panic(HA_PANIC_WRITE) was done is locked. A mi_readinfo() is
-	   done for all single user files to get changes in database */
+	   done for all single user files to get changes in blockchain */
 
 
 int myrg_panic(enum ha_panic_function flag)

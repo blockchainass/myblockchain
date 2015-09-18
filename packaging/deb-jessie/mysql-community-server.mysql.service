@@ -13,21 +13,21 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 
-# MySQL systemd service file
+# MyBlockchain systemd service file
 
 [Unit]
-Description=MySQL Community Server
+Description=MyBlockchain Community Server
 After=network.target
 
 [Install]
 WantedBy=multi-user.target
 
 [Service]
-User=mysql
-Group=mysql
+User=myblockchain
+Group=myblockchain
 PermissionsStartOnly=true
-ExecStartPre=/usr/share/mysql/mysql-systemd-start pre
-ExecStart=/usr/bin/mysqld_safe
-ExecStartPost=/usr/share/mysql/mysql-systemd-start post
+ExecStartPre=/usr/share/myblockchain/myblockchain-systemd-start pre
+ExecStart=/usr/bin/myblockchaind_safe
+ExecStartPost=/usr/share/myblockchain/myblockchain-systemd-start post
 TimeoutSec=600
 Restart=on-failure

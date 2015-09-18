@@ -1,0 +1,19 @@
+!include ../my.cnf
+
+[myblockchaind.1]
+log-slave-updates
+
+[myblockchaind.2]
+log-slave-updates
+master-info-repository=TABLE
+relay-log-info-repository=TABLE
+
+[myblockchaind.3]
+log-slave-updates
+master-info-repository=TABLE
+relay-log-info-repository=TABLE
+
+[ENV]
+SERVER_MYPORT_3=		@myblockchaind.3.port
+SERVER_MYSOCK_3=		@myblockchaind.3.socket
+

@@ -35,7 +35,7 @@ public:
   handler *clone(const char *name, MEM_ROOT *mem_root);
   const char *table_type() const
   {
-    return (table->in_use->variables.sql_mode & MODE_MYSQL323) ?
+    return (table->in_use->variables.sql_mode & MODE_MYBLOCKCHAIN323) ?
            "HEAP" : "MEMORY";
   }
   const char *index_type(uint inx)

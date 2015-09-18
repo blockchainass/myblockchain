@@ -35,7 +35,7 @@ Created 2/16/1997 Heikki Tuuri
 class MVCC;
 
 /** Read view lists the trx ids of those transactions for which a consistent
-read should not see the modifications to the database. */
+read should not see the modifications to the blockchain. */
 
 class ReadView {
 	/** This is similar to a std::vector but it is not a drop

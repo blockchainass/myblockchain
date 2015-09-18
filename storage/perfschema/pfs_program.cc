@@ -30,7 +30,7 @@
 #include "sql_string.h"
 #include "pfs_setup_object.h"
 #include "pfs_buffer_container.h"
-#include "mysqld.h"                //system_charset_info
+#include "myblockchaind.h"                //system_charset_info
 #include <string.h>
 
 LF_HASH program_hash;

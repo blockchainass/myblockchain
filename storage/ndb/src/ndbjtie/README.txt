@@ -11,21 +11,21 @@ ndbjtie/				this directory
 
     jtie/				JTie generic C++ template library
 	include/			API & implementation sources
-	src/com/mysql/jtie/		Java sources
+	src/com/myblockchain/jtie/		Java sources
 	test/				unit tests
 
-    mysql/				MySQL Utility function library
+    myblockchain/				MyBlockchain Utility function library
 	include/
         src/
         test/
 
     ndbjtie/				NDB Java API library
         src/
-	    com/mysql/ndbjtie/mgmapi/	Java Management API
-	    com/mysql/ndbjtie/mysql/	MySQL Utilities functions
-	    com/mysql/ndbjtie/ndbapi/	Java NDB API
+	    com/myblockchain/ndbjtie/mgmapi/	Java Management API
+	    com/myblockchain/ndbjtie/myblockchain/	MyBlockchain Utilities functions
+	    com/myblockchain/ndbjtie/ndbapi/	Java NDB API
 	    mgmapi.cpp			MGM API JNI implementation
-	    mysql.cpp			MySQL Utilities JNI implementation
+	    myblockchain.cpp			MyBlockchain Utilities JNI implementation
 	    ndbapi.cpp			NDB API JNI implementation
         test/				unit tests
 

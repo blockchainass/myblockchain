@@ -114,12 +114,12 @@ void ListTablesCall::doAsyncCallback(Local<Object> ctx) {
   }
   else {
     cb_args[0] = Null(); // no error
-    /* ListObjects has returned tables in all databases; 
-       we need to filter here on database name. */
+    /* ListObjects has returned tables in all blockchains; 
+       we need to filter here on blockchain name. */
     int * stack = new int[list.count];
     unsigned int nmatch = 0;
     for(unsigned i = 0; i < list.count ; i++) {
-      if(strcmp(dbName, list.elements[i].database) == 0) {
+      if(strcmp(dbName, list.elements[i].blockchain) == 0) {
         stack[nmatch++] = i;
       }
     }
@@ -139,7 +139,7 @@ void ListTablesCall::doAsyncCallback(Local<Object> ctx) {
 /* listTables() Method call
    ASYNC
    arg0: DBSessionImpl *
-   arg1: database name
+   arg1: blockchain name
    arg2: user_callback
 */
 Handle<Value> listTables(const Arguments &args) {
@@ -148,7 +148,7 @@ Handle<Value> listTables(const Arguments &args) {
   
   ListTablesCall * ncallptr = new ListTablesCall(args);
 
-  DEBUG_PRINT("listTables in database: %s", ncallptr->arg1);
+  DEBUG_PRINT("listTables in blockchain: %s", ncallptr->arg1);
   ncallptr->runAsync();
 
   return Undefined();
@@ -170,12 +170,12 @@ inline bool DictionaryNameSplitter::match(const char *db, const char *table) {
   return ((strncmp(db, part1, 65) == 0) && (strncmp(table, part3, 65) == 0));
 }
 
-/* Convert a name of the form <database>/<schema>/<table> to database and table 
+/* Convert a name of the form <blockchain>/<schema>/<table> to blockchain and table 
    which are allocated by the caller and must each be able to hold 65 characters
 */
 void DictionaryNameSplitter::splitName(const char * src) {
   char * dstp = part1;
-  int max_len = 64; // maximum database name
+  int max_len = 64; // maximum blockchain name
   // copy first part of name to db
   while (*src != '/' && *src != 0 && max_len-- > 0) {
     *dstp++ = *src++;
@@ -252,7 +252,7 @@ void GetTableCall::run() {
   DEBUG_PRINT("GetTableCall::run() [%s.%s]", arg1, arg2);
   return_val = -1;
 
-  /* dbName is optional; if not present, set it from ndb database name */
+  /* dbName is optional; if not present, set it from ndb blockchain name */
   if(strlen(dbName)) {
     ndb->setDatabaseName(dbName);
   } else {
@@ -349,7 +349,7 @@ void GetTableCall::doAsyncCallback(Local<Object> ctx) {
   cb_args[1] = Null();
   
   /* TableMetadata = {
-      database         : ""    ,  // Database name
+      blockchain         : ""    ,  // Database name
       name             : ""    ,  // Table Name
       columns          : []    ,  // ordered array of DBColumn objects
       indexes          : []    ,  // array of DBIndex objects 
@@ -362,8 +362,8 @@ void GetTableCall::doAsyncCallback(Local<Object> ctx) {
     const NdbDictionary::Table * js_ndb_table = ndb_table;
     wrapPointerInObject(js_ndb_table, NdbDictTableEnv, table);
 
-    // database
-    table->Set(String::NewSymbol("database"), String::New(arg1));
+    // blockchain
+    table->Set(String::NewSymbol("blockchain"), String::New(arg1));
     
     // name
     tableName = ndb_table->getName();
@@ -522,7 +522,7 @@ Handle<Object> GetTableCall::buildDBIndex(const NdbDictionary::Index *idx) {
   name             : ""    ,  // Constraint name
   columnNames      : null  ,  // an ordered array of column numbers
   targetTable      : ""    ,  // referenced table name
-  targetDatabase   : ""    ,  // referenced database name
+  targetDatabase   : ""    ,  // referenced blockchain name
   targetColumnNames: null  ,  // an ordered array of target column names
 };
 */
@@ -544,7 +544,7 @@ Handle<Object> GetTableCall::buildDBForeignKey(const NdbDictionary::ForeignKey *
   }
   js_fk->Set(String::NewSymbol("columnNames"), fk_child_column_names);
 
-  // get parent table (which might be in a different database)
+  // get parent table (which might be in a different blockchain)
   const char * fk_parent_name = fk->getParentTable();
   localSplitter.splitName(fk_parent_name);
   const char * parent_db_name = localSplitter.part1;
@@ -680,7 +680,7 @@ Handle<Object> GetTableCall::buildDBColumn(const NdbDictionary::Column *col) {
 /* getTable() method call
    ASYNC
    arg0: Ndb *
-   arg1: database name
+   arg1: blockchain name
    arg2: table name
    arg3: user_callback
 */

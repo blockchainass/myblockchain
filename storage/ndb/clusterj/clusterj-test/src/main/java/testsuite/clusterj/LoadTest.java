@@ -20,8 +20,8 @@ package testsuite.clusterj;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.mysql.clusterj.ClusterJUserException;
-import com.mysql.clusterj.DynamicObject;
+import com.myblockchain.clusterj.ClusterJUserException;
+import com.myblockchain.clusterj.DynamicObject;
 
 import testsuite.clusterj.model.Employee;
 

@@ -16,8 +16,8 @@
 
 volatile int32 bad;
 my_thread_attr_t thr_attr;
-mysql_mutex_t mutex;
-mysql_cond_t cond;
+myblockchain_mutex_t mutex;
+myblockchain_cond_t cond;
 uint running_threads;
 const int THREADS= 30;
 const int CYCLES= 3000;
@@ -37,10 +37,10 @@ void test_concurrently(const char *test, my_start_routine handler, int n, int m)
       abort();
     }
   }
-  mysql_mutex_lock(&mutex);
+  myblockchain_mutex_lock(&mutex);
   while (running_threads)
-    mysql_cond_wait(&cond, &mutex);
-  mysql_mutex_unlock(&mutex);
+    myblockchain_cond_wait(&cond, &mutex);
+  myblockchain_mutex_unlock(&mutex);
 
   now= my_getsystime()-now;
   EXPECT_FALSE(bad)

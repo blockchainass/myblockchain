@@ -14,13 +14,13 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 
 #
-# The MySQL Community Server configuration file.
+# The MyBlockchain Community Server configuration file.
 #
 # For explanations see
-# http://dev.mysql.com/doc/mysql/en/server-system-variables.html
+# http://dev.myblockchain.com/doc/myblockchain/en/server-system-variables.html
 
 # * IMPORTANT: Additional settings that can override those from this file!
 #   The files must end with '.cnf', otherwise they'll be ignored.
 #
-!includedir /etc/mysql/conf.d/
-!includedir /etc/mysql/mysql.conf.d/
+!includedir /etc/myblockchain/conf.d/
+!includedir /etc/myblockchain/myblockchain.conf.d/

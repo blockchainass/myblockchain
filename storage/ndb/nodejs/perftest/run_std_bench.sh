@@ -39,6 +39,6 @@ Analyze() {
 DoRun ndb 
 Sum | tee -a $SUMMARYFILE
 
-# DoRun mysql
+# DoRun myblockchain
 # Sum | tee -a $SUMMARYFILE
 

@@ -15,7 +15,7 @@
 
 
 #include "semisync_slave.h"
-#include "mysql.h"
+#include "myblockchain.h"
 #include "debug_sync.h"
 
 char rpl_semi_sync_slave_enabled;
@@ -90,18 +90,18 @@ int ReplSemiSyncSlave::slaveStop(Binlog_relay_IO_param *param)
 {
   if (rpl_semi_sync_slave_status)
     rpl_semi_sync_slave_status= 0;
-  if (mysql_reply)
-    mysql_close(mysql_reply);
-  mysql_reply= 0;
+  if (myblockchain_reply)
+    myblockchain_close(myblockchain_reply);
+  myblockchain_reply= 0;
   return 0;
 }
 
-int ReplSemiSyncSlave::slaveReply(MYSQL *mysql,
+int ReplSemiSyncSlave::slaveReply(MYBLOCKCHAIN *myblockchain,
                                  const char *binlog_filename,
                                  my_off_t binlog_filepos)
 {
   const char *kWho = "ReplSemiSyncSlave::slaveReply";
-  NET *net= &mysql->net;
+  NET *net= &myblockchain->net;
   uchar reply_buffer[REPLY_MAGIC_NUM_LEN
                      + REPLY_BINLOG_POS_LEN
                      + REPLY_BINLOG_NAME_LEN];

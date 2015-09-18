@@ -28,8 +28,8 @@ static
 struct my_option
 my_long_options[] =
 {
-  { "database", 'd',
-    "Name of the database used by ndbinfo",
+  { "blockchain", 'd',
+    "Name of the blockchain used by ndbinfo",
     (uchar**) &opt_ndbinfo_db, (uchar**) &opt_ndbinfo_db, 0,
     GET_STR, REQUIRED_ARG, 0, 0, 0, 0, 0, 0 },
   { "prefix", 256,
@@ -227,8 +227,8 @@ struct view {
     "        ON s.state_int_value = t.state"
   },
   { "server_transactions",
-    "SELECT map.mysql_connection_id, t.*"
-    "FROM information_schema.ndb_transid_mysql_connection_map map "
+    "SELECT map.myblockchain_connection_id, t.*"
+    "FROM information_schema.ndb_transid_myblockchain_connection_map map "
     "JOIN `<NDBINFO_DB>`.cluster_transactions t "
     "  ON (map.ndb_transid >> 32) = (t.transid >> 32)"
   },
@@ -265,9 +265,9 @@ struct view {
     "        ON s.state_int_value = o.state"
   },
   { "server_operations",
-    "SELECT map.mysql_connection_id, o.* "
+    "SELECT map.myblockchain_connection_id, o.* "
     "FROM `<NDBINFO_DB>`.cluster_operations o "
-    "JOIN information_schema.ndb_transid_mysql_connection_map map"
+    "JOIN information_schema.ndb_transid_myblockchain_connection_map map"
     "  ON (map.ndb_transid >> 32) = (o.transid >> 32)"
   },
   { "membership",
@@ -582,9 +582,9 @@ int main(int argc, char** argv){
     return 2;
 
   printf("#\n");
-  printf("# SQL commands for creating the tables in MySQL Server which\n");
+  printf("# SQL commands for creating the tables in MyBlockchain Server which\n");
   printf("# are used by the NDBINFO storage engine to access system\n");
-  printf("# information and statistics from MySQL Cluster\n");
+  printf("# information and statistics from MyBlockchain Cluster\n");
   printf("#\n");
 
   printf("# Only create objects if NDBINFO is supported\n");

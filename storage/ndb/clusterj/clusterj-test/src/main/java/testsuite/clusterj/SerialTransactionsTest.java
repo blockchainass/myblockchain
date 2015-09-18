@@ -82,7 +82,7 @@ public class SerialTransactionsTest extends AbstractClusterJModelTest {
             Employee e = session.find(Employee.class, i);
             // change age 
             e.setAge(NUMBER_TO_INSERT - i);
-            // send the change to the database
+            // send the change to the blockchain
             session.updatePersistent(e);
         }
         tx.commit();

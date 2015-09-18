@@ -1,0 +1,2 @@
+--relay-log=other-relay
+--relay-log-index=$MYBLOCKCHAINTEST_VARDIR/tmp/something-relay.index

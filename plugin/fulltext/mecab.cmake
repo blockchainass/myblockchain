@@ -44,11 +44,11 @@ ELSE()
 ENDIF()
 
 
-# MYSQL_CHECK_MECAB
+# MYBLOCKCHAIN_CHECK_MECAB
 #
 # Provides the following configure options:
 # WITH_MECAB=[system|<path/to/custom/installation>]
-FUNCTION (MYSQL_CHECK_MECAB)
+FUNCTION (MYBLOCKCHAIN_CHECK_MECAB)
   IF(NOT WITH_MECAB)
     RETURN()
   ENDIF()

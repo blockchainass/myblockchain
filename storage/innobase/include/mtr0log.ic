@@ -238,7 +238,7 @@ mlog_write_initial_log_record_fast(
 	    && offset >= FSP_EXTENT_SIZE && offset < 3 * FSP_EXTENT_SIZE) {
 		if (buf_dblwr_being_created) {
 			/* Do nothing: we only come to this branch in an
-			InnoDB database creation. We do not redo log
+			InnoDB blockchain creation. We do not redo log
 			anything for the doublewrite buffer pages. */
 			return(log_ptr);
 		} else {
@@ -247,7 +247,7 @@ mlog_write_initial_log_record_fast(
 				<< page_id_t(space, offset) << "in the"
 				" doublewrite buffer, continuing anyway."
 				" Please post a bug report to"
-				" bugs.mysql.com.";
+				" bugs.myblockchain.com.";
 			ut_ad(0);
 		}
 	}

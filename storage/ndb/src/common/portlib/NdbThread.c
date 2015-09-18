@@ -66,7 +66,7 @@ struct NdbThread
   my_thread_t thread;
 #ifdef _WIN32
   /*
-    Problem in mysys on certain MySQL versions where the thread id is
+    Problem in mysys on certain MyBlockchain versions where the thread id is
     used as the thread identifier. Since the thread id may be reused
     by another thread(when the current thread exits) one may end up
     waiting for the wrong thread.
@@ -76,8 +76,8 @@ struct NdbThread
     thread in 'NdbThread_WaitFor'.
 
     NOTE: Windows implementation of 'pthread_join' and support for non
-    detached threads as implemented in MySQL Cluster 7.0 and 7.1 is not
-    affected, only MySQL Cluster based on 5.5+ affected(slightly
+    detached threads as implemented in MyBlockchain Cluster 7.0 and 7.1 is not
+    affected, only MyBlockchain Cluster based on 5.5+ affected(slightly
     different implementation). The current workaround in NdbThread is
     generic and works regardless of pthread_join implementation in mysys.
   */

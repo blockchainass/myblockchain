@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Copyright (c) 2003, 2005, 2006 MySQL AB
+# Copyright (c) 2003, 2005, 2006 MyBlockchain AB
 # Use is subject to license terms
 #
 # This program is free software; you can redistribute it and/or
@@ -26,18 +26,18 @@ fi
 BASE=`pwd`
 DATA=$BASE/var
 ROOT=`cd ../..; pwd`
-MYSQLD=$ROOT/sql/mysqld
-MYSQL=$ROOT/client/mysql
-MYSQLADMIN=$ROOT/client/mysqladmin
-SOCK=$DATA/mysql.sock
-PID=$DATA/mysql.pid
+MYBLOCKCHAIND=$ROOT/sql/myblockchaind
+MYBLOCKCHAIN=$ROOT/client/myblockchain
+MYBLOCKCHAINADMIN=$ROOT/client/myblockchainadmin
+SOCK=$DATA/myblockchain.sock
+PID=$DATA/myblockchain.pid
 H=../ftdefs.h
 OPTS="--no-defaults --socket=$SOCK --character-sets-dir=$ROOT/sql/share/charsets"
 DELAY=10
 
 stop_myslqd()
 {
-  [ -S $SOCK ] && $MYSQLADMIN $OPTS shutdown
+  [ -S $SOCK ] && $MYBLOCKCHAINADMIN $OPTS shutdown
   [ -f $PID ] && kill `cat $PID` && sleep 15 && [ -f $PID ] && kill -9 `cat $PID`
 }
 
@@ -70,12 +70,12 @@ for batch in t/* ; do
   fi
   OPTS="--defaults-file=$BASE/$batch/my.cnf --socket=$SOCK --character-sets-dir=$ROOT/sql/share/charsets"
   stop_myslqd
-  rm -f $MYSQLD
+  rm -f $MYBLOCKCHAIND
   echo "building $batch"
   echo "============== $batch ===============" >> var/ft_test.log
   (cd $ROOT; gmake) >> var/ft_test.log 2>&1
 
-  for prog in $MYSQLD $MYSQL $MYSQLADMIN ; do
+  for prog in $MYBLOCKCHAIND $MYBLOCKCHAIN $MYBLOCKCHAINADMIN ; do
     if [ ! -x $prog ] ; then
       echo "build failed: no $prog"
       exit 1
@@ -83,15 +83,15 @@ for batch in t/* ; do
   done
 
   echo "=====================================" >> var/ft_test.log
-  $MYSQLD $OPTS --basedir=$BASE --pid-file=$PID \
+  $MYBLOCKCHAIND $OPTS --basedir=$BASE --pid-file=$PID \
                 --language=$ROOT/sql/share/english \
                 --skip-grant-tables --skip-innodb \
                 --skip-networking --tmpdir=$DATA >> var/ft_test.log 2>&1 &
 
   sleep $DELAY
-  $MYSQLADMIN $OPTS ping
+  $MYBLOCKCHAINADMIN $OPTS ping
   if [ $? != 0 ] ; then
-    echo "$MYSQLD refused to start"
+    echo "$MYBLOCKCHAIND refused to start"
     exit 1
   fi
   for test in `cd data; echo *.r|sed "s/\.r//g"` ; do
@@ -101,7 +101,7 @@ for batch in t/* ; do
     fi
     echo "testing $batch/$test"
     FT_MODE=`cat $batch/ft_mode 2>/dev/null`
-    ./Ecreate.pl $test "$FT_MODE" | $MYSQL $OPTS --skip-column-names test >var/$test.eval
+    ./Ecreate.pl $test "$FT_MODE" | $MYBLOCKCHAIN $OPTS --skip-column-names test >var/$test.eval
     echo "reporting $batch/$test"
     ./Ereport.pl var/$test.eval data/$test.r > $batch/$test.out || exit
   done

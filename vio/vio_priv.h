@@ -20,12 +20,12 @@
 
 #define DONT_MAP_VIO
 #include <my_global.h>
-#include <mysql_com.h>
+#include <myblockchain_com.h>
 #include <my_sys.h>
 #include <m_string.h>
 #include <violite.h>
 
-#include "mysql/psi/psi_memory.h"
+#include "myblockchain/psi/psi_memory.h"
 
 extern PSI_memory_key key_memory_vio;
 extern PSI_memory_key key_memory_vio_read_buffer;

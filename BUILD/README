@@ -1,5 +1,5 @@
 This directory used to contain lots of build scripts for building
-MySQL on various platforms. They are mostly gone, use cmake instead.
+MyBlockchain on various platforms. They are mostly gone, use cmake instead.
 
 Some scripts have been kept for backward compatibility (other scripts
 depend on them). Others have been kept to illustrate how to enable
@@ -8,7 +8,7 @@ want to use these scripts for building, you may want to speed things
 up a bit by setting environment variable MAKEFLAGS="-j8"
 (or some other number/flag depending on your environment)
 
-The recommended way to build MySQL for developers:
+The recommended way to build MyBlockchain for developers:
 
 cd <some build directory>
 cmake <path to source directory>

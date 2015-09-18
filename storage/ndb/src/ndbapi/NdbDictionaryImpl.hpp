@@ -40,8 +40,8 @@ is_ndb_blob_table(const char* name, Uint32* ptab_id = 0, Uint32* pcol_no = 0);
 bool
 is_ndb_blob_table(const class NdbTableImpl* t);
 
-extern int ndb_dictionary_is_mysqld;
-#define ASSERT_NOT_MYSQLD assert(ndb_dictionary_is_mysqld == 0)
+extern int ndb_dictionary_is_myblockchaind;
+#define ASSERT_NOT_MYBLOCKCHAIND assert(ndb_dictionary_is_myblockchaind == 0)
 
 class NdbDictObjectImpl {
 public:
@@ -87,7 +87,7 @@ public:
   int m_scale;
   int m_length;
   int m_column_no;
-  CHARSET_INFO * m_cs;          // not const in MySQL
+  CHARSET_INFO * m_cs;          // not const in MyBlockchain
 
   bool m_pk;
   bool m_distributionKey;
@@ -187,7 +187,7 @@ public:
   Uint32 m_primaryTableId;
   BaseString m_internalName; // db/schema/table
   BaseString m_externalName; //           table
-  BaseString m_mysqlName;    //        db/table
+  BaseString m_myblockchainName;    //        db/table
   UtilBuffer m_frm; 
   Vector<Uint32> m_fd;
   Vector<Int32> m_range;
@@ -1196,7 +1196,7 @@ inline
 const char *
 NdbTableImpl::getMysqlName() const
 {
-  return m_mysqlName.c_str();
+  return m_myblockchainName.c_str();
 }
 
 inline
@@ -1605,7 +1605,7 @@ NdbDictionaryImpl::getIndex(const char* index_name,
   return tab->m_index;
 
 retry:
-  // Index not found, try fetching it from current database
+  // Index not found, try fetching it from current blockchain
   const BaseString
     old_internal_indexname(m_ndb.old_internalize_index_name(&prim, index_name));
 

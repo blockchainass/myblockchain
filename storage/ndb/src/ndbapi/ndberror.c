@@ -28,7 +28,7 @@
 
 typedef struct ErrorBundle {
   int code;
-  int mysql_code;
+  int myblockchain_code;
   ndberror_classification classification;
   const char * message;
 } ErrorBundle;
@@ -67,7 +67,7 @@ typedef struct ErrorBundle {
 
 #define IT ndberror_cl_internal_temporary
 
-/* default mysql error code for unmapped codes */
+/* default myblockchain error code for unmapped codes */
 #define DMEC -1
 
 static const char* empty_string = "";
@@ -428,7 +428,7 @@ ErrorBundle ErrorCodes[] = {
   { 884,  DMEC, AE, "Stack overflow in interpreter" },
   { 885,  DMEC, AE, "Stack underflow in interpreter" },
   { 886,  DMEC, AE, "More than 65535 instructions executed in interpreter" },
-  { 897,  DMEC, AE, "Update attempt of primary key via ndbcluster internal api (if this occurs via the MySQL server it is a bug, please report)" },
+  { 897,  DMEC, AE, "Update attempt of primary key via ndbcluster internal api (if this occurs via the MyBlockchain server it is a bug, please report)" },
   { 892,  DMEC, AE, "Unsupported type in scan filter" },
   { 1233, DMEC, AE, "Table read-only" },
   { 4256, DMEC, AE, "Must call Ndb::init() before this function" },
@@ -960,7 +960,7 @@ ErrorBundle ErrorCodes[] = {
   { OPERATION_NOT_ALLOWED_START_STOP, DMEC, AE,
    "Operation not allowed while nodes are starting or stopping."},
   { NO_CONTACT_WITH_DB_NODES, DMEC, AE,
-    "No contact with database nodes" }
+    "No contact with blockchain nodes" }
 };
 
 static
@@ -1035,7 +1035,7 @@ ndberror_update(ndberror_struct * error){
     if(ErrorCodes[i].code == error->code){
       error->classification = ErrorCodes[i].classification;
       error->message        = ErrorCodes[i].message;
-      error->mysql_code     = ErrorCodes[i].mysql_code;
+      error->myblockchain_code     = ErrorCodes[i].myblockchain_code;
       found = 1;
       break;
     }
@@ -1044,7 +1044,7 @@ ndberror_update(ndberror_struct * error){
   if(!found){
     error->classification = UE;
     error->message        = "Unknown error code";
-    error->mysql_code     = DMEC;
+    error->myblockchain_code     = DMEC;
   }
 
   found = 0;

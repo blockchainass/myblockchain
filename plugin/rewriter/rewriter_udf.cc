@@ -24,7 +24,7 @@
 #include <my_global.h>
 #include <my_sys.h>
 
-#include <mysql.h>
+#include <myblockchain.h>
 #include <ctype.h>
 
 extern "C" {
@@ -33,7 +33,7 @@ my_bool load_rewrite_rules_init(UDF_INIT *initid, UDF_ARGS *args, char *message)
 {
   if (get_rewriter_plugin_info() != NULL)
     return 0;
-  strncpy(message, "Rewriter plugin needs to be installed.", MYSQL_ERRMSG_SIZE);
+  strncpy(message, "Rewriter plugin needs to be installed.", MYBLOCKCHAIN_ERRMSG_SIZE);
   return 1;
 }
 

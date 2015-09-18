@@ -110,7 +110,7 @@ start_helper_thread(void)
     return -1;
   }
 
-  if (mysql_thread_create(key_thread_timer_notifier, &timer_notify_thread,
+  if (myblockchain_thread_create(key_thread_timer_notifier, &timer_notify_thread,
                           NULL, timer_notify_thread_func, &barrier))
   {
     my_message_local(ERROR_LEVEL,
@@ -244,7 +244,7 @@ timer_notify_thread_func(void *arg __attribute__((unused)))
 static int
 start_helper_thread(void)
 {
-  if (mysql_thread_create(key_thread_timer_notifier, &timer_notify_thread,
+  if (myblockchain_thread_create(key_thread_timer_notifier, &timer_notify_thread,
                           NULL, timer_notify_thread_func, NULL))
   {
     my_message_local(ERROR_LEVEL,

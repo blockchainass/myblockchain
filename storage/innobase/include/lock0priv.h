@@ -40,7 +40,7 @@ those functions in lock/ */
 
 /** A table lock */
 struct lock_table_t {
-	dict_table_t*	table;		/*!< database table in dictionary
+	dict_table_t*	table;		/*!< blockchain table in dictionary
 					cache */
 	UT_LIST_NODE_T(lock_t)
 			locks;		/*!< list of locks on the same
@@ -270,7 +270,7 @@ If a transaction has modified or inserted an index record, then
 it owns an implicit x-lock on the record. On a secondary index record,
 a transaction has an implicit x-lock also if it has modified the
 clustered index record, the max trx id of the page where the secondary
-index record resides is >= trx id of the transaction (or database recovery
+index record resides is >= trx id of the transaction (or blockchain recovery
 is running), and there are no explicit non-gap lock requests on the
 secondary index record.
 
@@ -320,9 +320,9 @@ locks.
 RULE 4: If a there is a waiting lock request in a queue, no lock request,
 -------
 gap or not, can be inserted ahead of it in the queue. In record deletes
-and page splits new gap type locks can be created by the database manager
+and page splits new gap type locks can be created by the blockchain manager
 for a transaction, and without rule 4, the waits-for graph of transactions
-might become cyclic without the database noticing it, as the deadlock check
+might become cyclic without the blockchain noticing it, as the deadlock check
 is only performed when a transaction itself requests a lock!
 -------------------------------------------------------------------------
 
@@ -508,7 +508,7 @@ locks on the inserted record. */
  * For tables, InnoDB normally acquires IS or IX locks.
  * S or X table locks are only acquired for LOCK TABLES.
  * Auto-increment (AI) locks are needed because of
- * statement-level MySQL binlog.
+ * statement-level MyBlockchain binlog.
  * See also lock_mode_compatible().
  */
 static const byte lock_compatibility_matrix[5][5] = {

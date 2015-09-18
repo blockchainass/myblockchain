@@ -1,0 +1,5 @@
+create blockchain myblockchaintest;
+create table myblockchaintest.t1(a int);
+select table_schema from information_schema.tables where table_schema='myblockchaintest';
+table_schema
+drop blockchain myblockchaintest;

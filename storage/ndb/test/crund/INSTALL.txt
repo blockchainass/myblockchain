@@ -47,7 +47,7 @@ Gnu 'make' and 'ant' are used as build tools for the Java, C++ sources
 
         ./src/crund_schema.sql
 
-    See convenience scripts for startup, shutdown, mysql etc in:
+    See convenience scripts for startup, shutdown, myblockchain etc in:
         ./scripts
 
 4) Run CRUND:
@@ -70,7 +70,7 @@ Gnu 'make' and 'ant' are used as build tools for the Java, C++ sources
         $ make run.ndbapi
         $ ant run.ndbjtie
         $ ant run.clusterj
-        $ ant run.mysql
+        $ ant run.myblockchain
         ...
 
     or directly run binaries/classes with properties file options, e.g.:
@@ -90,8 +90,8 @@ Gnu 'make' and 'ant' are used as build tools for the Java, C++ sources
         ./scripts/process.h
 
     The log_xxx.csv file can be imported into a spreadsheet application for
-    charting or loaded into mysql for further result processing:
-        mysql> load data infile 'log_xxx.cvs' into table 'results' \
+    charting or loaded into myblockchain for further result processing:
+        myblockchain> load data infile 'log_xxx.cvs' into table 'results' \
                fields terminated by ',' ignore 1 lines;
 
     See table views in crund schema sorting benchmark results by parameters

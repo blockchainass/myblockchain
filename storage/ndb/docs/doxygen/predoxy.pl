@@ -1,4 +1,4 @@
-# Copyright (C) 2003, 2005 MySQL AB, 2010 Sun Microsystems, Inc.
+# Copyright (C) 2003, 2005 MyBlockchain AB, 2010 Sun Microsystems, Inc.
 #  All rights reserved. Use is subject to license terms.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -15,7 +15,7 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 
 #
-#  Written by Lars Thalmann, lars@mysql.com, 2003.
+#  Written by Lars Thalmann, lars@myblockchain.com, 2003.
 #
 
 use strict;
@@ -34,10 +34,10 @@ print OUTFILE<<EOT;
 <center>
 EOT
 print OUTFILE "Documentation generated " . localtime() . 
-    " from mysql source files.";
+    " from myblockchain source files.";
 print OUTFILE<<EOT;
 <br>
-&copy; 2003, 2005 MySQL AB, 2010 Sun Microsystems, Inc.
+&copy; 2003, 2005 MyBlockchain AB, 2010 Sun Microsystems, Inc.
 <br>
 </center>
 </small></address>

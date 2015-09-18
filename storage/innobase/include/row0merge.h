@@ -35,7 +35,7 @@ Created 13/06/2005 Jan Lindstrom
 #include "rem0types.h"
 #include "rem0rec.h"
 #include "btr0types.h"
-#include "row0mysql.h"
+#include "row0myblockchain.h"
 #include "lock0types.h"
 #include "srv0srv.h"
 #include "ut0stage.h"
@@ -104,11 +104,11 @@ struct index_def_t {
 	bool		rebuild;	/*!< whether the table is rebuilt */
 	ulint		ind_type;	/*!< 0, DICT_UNIQUE,
 					or DICT_CLUSTERED */
-	ulint		key_number;	/*!< MySQL key number,
+	ulint		key_number;	/*!< MyBlockchain key number,
 					or ULINT_UNDEFINED if none */
 	ulint		n_fields;	/*!< number of fields in index */
 	index_field_t*	fields;		/*!< field definitions */
-	st_mysql_ftparser*
+	st_myblockchain_ftparser*
 			parser;		/*!< fulltext parser plugin */
 	bool		is_ngram;	/*!< true if it's ngram parser */
 };
@@ -116,7 +116,7 @@ struct index_def_t {
 /** Structure for reporting duplicate records. */
 struct row_merge_dup_t {
 	dict_index_t*		index;	/*!< index being sorted */
-	struct TABLE*		table;	/*!< MySQL table object */
+	struct TABLE*		table;	/*!< MyBlockchain table object */
 	const ulint*		col_map;/*!< mapping of column numbers
 					in table to the rebuilt table
 					(index->table), or NULL if not
@@ -276,9 +276,9 @@ sorted index entries to indexes.
 old_table unless creating a PRIMARY KEY
 @param[in]	online		true if creating indexes online
 @param[in]	indexes		indexes to be created
-@param[in]	key_numbers	MySQL key numbers
+@param[in]	key_numbers	MyBlockchain key numbers
 @param[in]	n_indexes	size of indexes[]
-@param[in,out]	table		MySQL table, for reporting erroneous key value
+@param[in,out]	table		MyBlockchain table, for reporting erroneous key value
 if applicable
 @param[in]	add_cols	default values of added columns, or NULL
 @param[in]	col_map		mapping of old column numbers to new ones, or

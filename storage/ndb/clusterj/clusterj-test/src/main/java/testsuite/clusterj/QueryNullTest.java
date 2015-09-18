@@ -19,7 +19,7 @@ package testsuite.clusterj;
 
 import testsuite.clusterj.model.AllPrimitives;
 
-import com.mysql.clusterj.ClusterJUserException;
+import com.myblockchain.clusterj.ClusterJUserException;
 
 /** Query for columns compared to null. Comparisons using greaterThan,
  * greaterEqual, lessThan, and lessEqual throw ClusterJUserException.

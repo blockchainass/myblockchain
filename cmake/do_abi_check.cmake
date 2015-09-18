@@ -42,11 +42,11 @@
 # by new canons (.out files). The .out files that are not removed will
 # be replaced as the new .pp files.
 #
-# e.g. If include/mysql/plugin.h has an ABI change then this rule would
+# e.g. If include/myblockchain/plugin.h has an ABI change then this rule would
 # leave a <build directory>/abi_check.out file.
 #
 # A developer with a justified API change will then do a
-# mv <build directory>/abi_check.out include/mysql/plugin.pp 
+# mv <build directory>/abi_check.out include/myblockchain/plugin.pp 
 # to replace the old canons with the new ones.
 #
 
@@ -58,8 +58,8 @@ FOREACH(file ${ABI_HEADERS})
 
   EXECUTE_PROCESS(
     COMMAND ${COMPILER} 
-      -E -nostdinc -dI -DMYSQL_ABI_CHECK -I${SOURCE_DIR}/include
-      -I${BINARY_DIR}/include -I${SOURCE_DIR}/include/mysql -I${SOURCE_DIR}/sql
+      -E -nostdinc -dI -DMYBLOCKCHAIN_ABI_CHECK -I${SOURCE_DIR}/include
+      -I${BINARY_DIR}/include -I${SOURCE_DIR}/include/myblockchain -I${SOURCE_DIR}/sql
       -I${SOURCE_DIR}/libbinlogevents/export
       ${file} 
       ERROR_QUIET OUTPUT_FILE ${tmpfile})

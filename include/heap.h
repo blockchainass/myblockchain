@@ -15,7 +15,7 @@
    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301  USA
 */
 
-/* This file should be included when using heap_database_functions */
+/* This file should be included when using heap_blockchain_functions */
 /* Author: Michael Widenius */
 
 #ifndef _heap_h
@@ -42,8 +42,8 @@ extern "C" {
 
 typedef struct st_heapinfo		/* Struct from heap_info */
 {
-  ulong records;			/* Records in database */
-  ulong deleted;			/* Deleted records in database */
+  ulong records;			/* Records in blockchain */
+  ulong deleted;			/* Deleted records in blockchain */
   ulong max_records;
   ulonglong data_length;
   ulonglong index_length;
@@ -54,7 +54,7 @@ typedef struct st_heapinfo		/* Struct from heap_info */
 } HEAPINFO;
 
 
-	/* Structs used by heap-database-handler */
+	/* Structs used by heap-blockchain-handler */
 
 typedef struct st_heap_ptrs
 {
@@ -139,7 +139,7 @@ typedef struct st_heap_share
   uint key_stat_version;                /* version to indicate insert/delete */
   uint records;				/* records */
   uint blength;				/* records rounded up to 2^n */
-  uint deleted;				/* Deleted records in database */
+  uint deleted;				/* Deleted records in blockchain */
   uint reclength;			/* Length of one record */
   uint changed;
   uint keys,max_key_length;

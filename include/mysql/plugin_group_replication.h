@@ -13,13 +13,13 @@
    along with this program; if not, write to the Free Software Foundation,
    51 Franklin Street, Suite 500, Boston, MA 02110-1335 USA */
 
-#ifndef MYSQL_PLUGIN_GROUP_REPLICATION_INCLUDED
-#define MYSQL_PLUGIN_GROUP_REPLICATION_INCLUDED
+#ifndef MYBLOCKCHAIN_PLUGIN_GROUP_REPLICATION_INCLUDED
+#define MYBLOCKCHAIN_PLUGIN_GROUP_REPLICATION_INCLUDED
 
-/* API for Group Peplication plugin. (MYSQL_GROUP_REPLICATION_PLUGIN) */
+/* API for Group Peplication plugin. (MYBLOCKCHAIN_GROUP_REPLICATION_PLUGIN) */
 
-#include <mysql/plugin.h>
-#define MYSQL_GROUP_REPLICATION_INTERFACE_VERSION 0x0100
+#include <myblockchain/plugin.h>
+#define MYBLOCKCHAIN_GROUP_REPLICATION_INTERFACE_VERSION 0x0100
 
 enum enum_member_state {
   MEMBER_STATE_ONLINE= 1,
@@ -56,7 +56,7 @@ typedef struct st_group_replication_member_stats_info
   char* last_conflict_free_transaction;
 } GROUP_REPLICATION_GROUP_MEMBER_STATS_INFO;
 
-struct st_mysql_group_replication
+struct st_myblockchain_group_replication
 {
   int interface_version;
 

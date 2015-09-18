@@ -3,7 +3,7 @@ TWS (Table With Strings)
 ------------------------
 
 A benchmark that measures the round-trip latency (and a few other metrics)
-of basic lookup/insert/update/delete operations with MySQL Cluster APIs
+of basic lookup/insert/update/delete operations with MyBlockchain Cluster APIs
 on a predominantly string/varchar-based table.
 
 Currently supported APIs: NDB API, NDB JTie, ClusterJ, and JDBC.

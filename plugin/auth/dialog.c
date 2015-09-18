@@ -39,9 +39,9 @@
 #endif
 
 #include <my_global.h>
-#include <mysql.h>
-#include <mysql/plugin_auth.h>
-#include <mysql/client_plugin.h>
+#include <myblockchain.h>
+#include <myblockchain/plugin_auth.h>
+#include <myblockchain/client_plugin.h>
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -69,7 +69,7 @@
 /**
   dialog demo with two questions, one password and one, the last, ordinary.
 */
-static int two_questions(MYSQL_PLUGIN_VIO *vio, MYSQL_SERVER_AUTH_INFO *info)
+static int two_questions(MYBLOCKCHAIN_PLUGIN_VIO *vio, MYBLOCKCHAIN_SERVER_AUTH_INFO *info)
 {
   unsigned char *pkt;
   int pkt_len;
@@ -129,9 +129,9 @@ int set_salt(const char* password __attribute__((unused)),
   return 0;
 }
 
-static struct st_mysql_auth two_handler=
+static struct st_myblockchain_auth two_handler=
 {
-  MYSQL_AUTHENTICATION_INTERFACE_VERSION,
+  MYBLOCKCHAIN_AUTHENTICATION_INTERFACE_VERSION,
   "dialog", /* requires dialog client plugin */
   two_questions,
   generate_auth_string_hash,
@@ -141,7 +141,7 @@ static struct st_mysql_auth two_handler=
 };
 
 /* dialog demo where the number of questions is not known in advance */
-static int three_attempts(MYSQL_PLUGIN_VIO *vio, MYSQL_SERVER_AUTH_INFO *info)
+static int three_attempts(MYBLOCKCHAIN_PLUGIN_VIO *vio, MYBLOCKCHAIN_SERVER_AUTH_INFO *info)
 {
   unsigned char *pkt;
   int pkt_len, i;
@@ -170,9 +170,9 @@ static int three_attempts(MYSQL_PLUGIN_VIO *vio, MYSQL_SERVER_AUTH_INFO *info)
   return CR_ERROR;
 }
 
-static struct st_mysql_auth three_handler=
+static struct st_myblockchain_auth three_handler=
 {
-  MYSQL_AUTHENTICATION_INTERFACE_VERSION,
+  MYBLOCKCHAIN_AUTHENTICATION_INTERFACE_VERSION,
   "dialog", /* requires dialog client plugin */
   three_attempts,
   generate_auth_string_hash,
@@ -181,9 +181,9 @@ static struct st_mysql_auth three_handler=
   AUTH_FLAG_PRIVILEGED_USER_FOR_PASSWORD_CHANGE
 };
 
-mysql_declare_plugin(dialog)
+myblockchain_declare_plugin(dialog)
 {
-  MYSQL_AUTHENTICATION_PLUGIN,
+  MYBLOCKCHAIN_AUTHENTICATION_PLUGIN,
   &two_handler,
   "two_questions",
   "Sergei Golubchik",
@@ -198,7 +198,7 @@ mysql_declare_plugin(dialog)
   0,
 },
 {
-  MYSQL_AUTHENTICATION_PLUGIN,
+  MYBLOCKCHAIN_AUTHENTICATION_PLUGIN,
   &three_handler,
   "three_attempts",
   "Sergei Golubchik",
@@ -212,7 +212,7 @@ mysql_declare_plugin(dialog)
   NULL,
   0,
 }
-mysql_declare_plugin_end;
+myblockchain_declare_plugin_end;
 
 /********************* CLIENT SIDE ***************************************/
 /*
@@ -228,9 +228,9 @@ mysql_declare_plugin_end;
 */
 
 /**
-  type of the mysql_authentication_dialog_ask function
+  type of the myblockchain_authentication_dialog_ask function
 
-  @param mysql          mysql
+  @param myblockchain          myblockchain
   @param type           type of the input
                         1 - ordinary string input
                         2 - password string
@@ -239,16 +239,16 @@ mysql_declare_plugin_end;
   @param buf_len        the length of the buffer
 
   @retval               a pointer to the user input string.
-                        It may be equal to 'buf' or to 'mysql->password'.
+                        It may be equal to 'buf' or to 'myblockchain->password'.
                         In all other cases it is assumed to be an allocated
                         string, and the "dialog" plugin will free() it.
 */
-typedef char *(*mysql_authentication_dialog_ask_t)(struct st_mysql *mysql,
+typedef char *(*myblockchain_authentication_dialog_ask_t)(struct st_myblockchain *myblockchain,
                       int type, const char *prompt, char *buf, int buf_len);
 
-static mysql_authentication_dialog_ask_t ask;
+static myblockchain_authentication_dialog_ask_t ask;
 
-static char *builtin_ask(MYSQL *mysql __attribute__((unused)),
+static char *builtin_ask(MYBLOCKCHAIN *myblockchain __attribute__((unused)),
                          int type __attribute__((unused)),
                          const char *prompt,
                          char *buf, int buf_len)
@@ -272,7 +272,7 @@ static char *builtin_ask(MYSQL *mysql __attribute__((unused)),
 
   @note
    1. this plugin shows how a client authentication plugin
-      may read a MySQL protocol OK packet internally - which is important
+      may read a MyBlockchain protocol OK packet internally - which is important
       where a number of packets is not known in advance.
    2. the first byte of the prompt is special. it is not
       shown to the user, but signals whether it is the last question
@@ -280,7 +280,7 @@ static char *builtin_ask(MYSQL *mysql __attribute__((unused)),
       and whether the input is a password (not echoed).
    3. the prompt is expected to be sent zero-terminated
 */
-static int perform_dialog(MYSQL_PLUGIN_VIO *vio, MYSQL *mysql)
+static int perform_dialog(MYBLOCKCHAIN_PLUGIN_VIO *vio, MYBLOCKCHAIN *myblockchain)
 {
   unsigned char *pkt, cmd= 0;
   int pkt_len, res;
@@ -296,7 +296,7 @@ static int perform_dialog(MYSQL_PLUGIN_VIO *vio, MYSQL *mysql)
     if (pkt == 0)
     {
       /*
-        in mysql_change_user() the client sends the first packet, so
+        in myblockchain_change_user() the client sends the first packet, so
         the first vio->read_packet() does nothing (pkt == 0).
 
         We send the "password", assuming the client knows what it's doing.
@@ -304,24 +304,24 @@ static int perform_dialog(MYSQL_PLUGIN_VIO *vio, MYSQL *mysql)
         authentication plugin on the client if the first question
         asks for a password - which will be sent in clear text, by the way)
       */
-      reply= mysql->passwd;
+      reply= myblockchain->passwd;
     }
     else
     {
       cmd= *pkt++;
 
-      /* is it MySQL protocol packet ? */
+      /* is it MyBlockchain protocol packet ? */
       if (cmd == 0 || cmd == 254)
         return CR_OK_HANDSHAKE_COMPLETE; /* yes. we're done */
 
       /*
-        asking for a password with an empty prompt means mysql->password
+        asking for a password with an empty prompt means myblockchain->password
         otherwise we ask the user and read the reply
       */
       if ((cmd >> 1) == 2 && *pkt == 0)
-        reply= mysql->passwd;
+        reply= myblockchain->passwd;
       else
-        reply= ask(mysql, cmd >> 1, (const char *) pkt, 
+        reply= ask(myblockchain, cmd >> 1, (const char *) pkt, 
 				   reply_buf, sizeof(reply_buf));
       if (!reply)
         return CR_ERROR;
@@ -330,7 +330,7 @@ static int perform_dialog(MYSQL_PLUGIN_VIO *vio, MYSQL *mysql)
     res= vio->write_packet(vio, (const unsigned char *) reply, 
                            (int)strlen(reply)+1);
 
-    if (reply != mysql->passwd && reply != reply_buf)
+    if (reply != myblockchain->passwd && reply != reply_buf)
       free(reply);
 
     if (res)
@@ -355,12 +355,12 @@ static int init_dialog(char *unused1   __attribute__((unused)),
                        int unused3     __attribute__((unused)), 
                        va_list unused4 __attribute__((unused)))
 {
-  void *sym= dlsym(RTLD_DEFAULT, "mysql_authentication_dialog_ask");
-  ask= sym ? (mysql_authentication_dialog_ask_t) sym : builtin_ask;
+  void *sym= dlsym(RTLD_DEFAULT, "myblockchain_authentication_dialog_ask");
+  ask= sym ? (myblockchain_authentication_dialog_ask_t) sym : builtin_ask;
   return 0;
 }
 
-mysql_declare_client_plugin(AUTHENTICATION)
+myblockchain_declare_client_plugin(AUTHENTICATION)
   "dialog",
   "Sergei Golubchik",
   "Dialog Client Authentication Plugin",
@@ -371,5 +371,5 @@ mysql_declare_client_plugin(AUTHENTICATION)
   NULL,
   NULL,
   perform_dialog
-mysql_end_client_plugin;
+myblockchain_end_client_plugin;
 

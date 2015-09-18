@@ -2,46 +2,46 @@
 # Copyright Abandoned 1996 TCX DataKonsult AB & Monty Program KB & Detron HB
 # This file is public domain and comes with NO WARRANTY of any kind
 
-# MySQL daemon start/stop script.
+# MyBlockchain daemon start/stop script.
 
 # Usually this is put in /etc/init.d (at least on machines SYSV R4 based
-# systems) and linked to /etc/rc3.d/S99mysql and /etc/rc0.d/K01mysql.
-# When this is done the mysql server will be started when the machine is
+# systems) and linked to /etc/rc3.d/S99myblockchain and /etc/rc0.d/K01myblockchain.
+# When this is done the myblockchain server will be started when the machine is
 # started and shut down when the systems goes down.
 
 # Comments to support chkconfig on RedHat Linux
 # chkconfig: 2345 64 36
-# description: A very fast and reliable SQL database engine.
+# description: A very fast and reliable SQL blockchain engine.
 
 # Comments to support LSB init script conventions
 ### BEGIN INIT INFO
-# Provides: mysql
+# Provides: myblockchain
 # Required-Start: $local_fs $network $remote_fs
 # Should-Start: ypbind nscd ldap ntpd xntpd
 # Required-Stop: $local_fs $network $remote_fs
 # Default-Start:  2 3 4 5
 # Default-Stop: 0 1 6
-# Short-Description: start and stop MySQL
-# Description: MySQL is a very fast and reliable SQL database engine.
+# Short-Description: start and stop MyBlockchain
+# Description: MyBlockchain is a very fast and reliable SQL blockchain engine.
 ### END INIT INFO
  
-# If you install MySQL on some other places than @prefix@, then you
+# If you install MyBlockchain on some other places than @prefix@, then you
 # have to do one of the following things for this script to work:
 #
-# - Run this script from within the MySQL installation directory
+# - Run this script from within the MyBlockchain installation directory
 # - Create a /etc/my.cnf file with the following information:
-#   [mysqld]
-#   basedir=<path-to-mysql-installation-directory>
+#   [myblockchaind]
+#   basedir=<path-to-myblockchain-installation-directory>
 # - Add the above to any other configuration file (for example ~/.my.ini)
 #   and copy my_print_defaults to /usr/bin
-# - Add the path to the mysql-installation-directory to the basedir variable
+# - Add the path to the myblockchain-installation-directory to the basedir variable
 #   below.
 #
-# If you want to affect other MySQL variables, you should make your changes
-# in the /etc/my.cnf, ~/.my.cnf or other MySQL configuration files.
+# If you want to affect other MyBlockchain variables, you should make your changes
+# in the /etc/my.cnf, ~/.my.cnf or other MyBlockchain configuration files.
 
 # If you change base dir, you must also change datadir. These may get
-# overwritten by settings in the MySQL configuration files.
+# overwritten by settings in the MyBlockchain configuration files.
 
 basedir=
 datadir=
@@ -55,12 +55,12 @@ service_startup_timeout=900
 
 # Lock directory for RedHat / SuSE.
 lockdir='/var/lock/subsys'
-lock_file_path="$lockdir/mysql"
+lock_file_path="$lockdir/myblockchain"
 
-# The following variables are only set for letting mysql.server find things.
+# The following variables are only set for letting myblockchain.server find things.
 
 # Set some defaults
-mysqld_pid_file_path=
+myblockchaind_pid_file_path=
 if test -z "$basedir"
 then
   basedir=@prefix@
@@ -135,7 +135,7 @@ parse_server_arguments() {
       --datadir=*)  datadir=`echo "$arg" | sed -e 's/^[^=]*=//'`
 		    datadir_set=1
 	;;
-      --pid-file=*) mysqld_pid_file_path=`echo "$arg" | sed -e 's/^[^=]*=//'` ;;
+      --pid-file=*) myblockchaind_pid_file_path=`echo "$arg" | sed -e 's/^[^=]*=//'` ;;
       --service-startup-timeout=*) service_startup_timeout=`echo "$arg" | sed -e 's/^[^=]*=//'` ;;
     esac
   done
@@ -199,16 +199,16 @@ wait_for_pid () {
 }
 
 # Get arguments from the my.cnf file,
-# the only group, which is read from now on is [mysqld]
+# the only group, which is read from now on is [myblockchaind]
 if test -x ./bin/my_print_defaults
 then
   print_defaults="./bin/my_print_defaults"
 elif test -x $bindir/my_print_defaults
 then
   print_defaults="$bindir/my_print_defaults"
-elif test -x $bindir/mysql_print_defaults
+elif test -x $bindir/myblockchain_print_defaults
 then
-  print_defaults="$bindir/mysql_print_defaults"
+  print_defaults="$bindir/myblockchain_print_defaults"
 else
   # Try to find basedir in /etc/my.cnf
   conf=/etc/my.cnf
@@ -225,9 +225,9 @@ else
         print_defaults="$d/bin/my_print_defaults"
         break
       fi
-      if test -x "$d/bin/mysql_print_defaults"
+      if test -x "$d/bin/myblockchain_print_defaults"
       then
-        print_defaults="$d/bin/mysql_print_defaults"
+        print_defaults="$d/bin/myblockchain_print_defaults"
         break
       fi
     done
@@ -253,18 +253,18 @@ else
   fi
 fi
 
-parse_server_arguments `$print_defaults $extra_args mysqld server mysql_server mysql.server`
+parse_server_arguments `$print_defaults $extra_args myblockchaind server myblockchain_server myblockchain.server`
 
 #
 # Set pid file if not given
 #
-if test -z "$mysqld_pid_file_path"
+if test -z "$myblockchaind_pid_file_path"
 then
-  mysqld_pid_file_path=$datadir/`@HOSTNAME@`.pid
+  myblockchaind_pid_file_path=$datadir/`@HOSTNAME@`.pid
 else
-  case "$mysqld_pid_file_path" in
+  case "$myblockchaind_pid_file_path" in
     /* ) ;;
-    * )  mysqld_pid_file_path="$datadir/$mysqld_pid_file_path" ;;
+    * )  myblockchaind_pid_file_path="$datadir/$myblockchaind_pid_file_path" ;;
   esac
 fi
 
@@ -275,13 +275,13 @@ case "$mode" in
     # Safeguard (relative paths, core dumps..)
     cd $basedir
 
-    echo $echo_n "Starting MySQL"
-    if test -x $bindir/mysqld_safe
+    echo $echo_n "Starting MyBlockchain"
+    if test -x $bindir/myblockchaind_safe
     then
-      # Give extra arguments to mysqld with the my.cnf file. This script
+      # Give extra arguments to myblockchaind with the my.cnf file. This script
       # may be overwritten at next upgrade.
-      $bindir/mysqld_safe --datadir="$datadir" --pid-file="$mysqld_pid_file_path" $other_args >/dev/null 2>&1 &
-      wait_for_pid created "$!" "$mysqld_pid_file_path"; return_value=$?
+      $bindir/myblockchaind_safe --datadir="$datadir" --pid-file="$myblockchaind_pid_file_path" $other_args >/dev/null 2>&1 &
+      wait_for_pid created "$!" "$myblockchaind_pid_file_path"; return_value=$?
 
       # Make lock for RedHat / SuSE
       if test -w "$lockdir"
@@ -291,7 +291,7 @@ case "$mode" in
 
       exit $return_value
     else
-      log_failure_msg "Couldn't find MySQL server ($bindir/mysqld_safe)"
+      log_failure_msg "Couldn't find MyBlockchain server ($bindir/myblockchaind_safe)"
     fi
     ;;
 
@@ -299,22 +299,22 @@ case "$mode" in
     # Stop daemon. We use a signal here to avoid having to know the
     # root password.
 
-    if test -s "$mysqld_pid_file_path"
+    if test -s "$myblockchaind_pid_file_path"
     then
-      # signal mysqld_safe that it needs to stop
-      touch "$mysqld_pid_file_path.shutdown"
+      # signal myblockchaind_safe that it needs to stop
+      touch "$myblockchaind_pid_file_path.shutdown"
 
-      mysqld_pid=`cat "$mysqld_pid_file_path"`
+      myblockchaind_pid=`cat "$myblockchaind_pid_file_path"`
 
-      if (kill -0 $mysqld_pid 2>/dev/null)
+      if (kill -0 $myblockchaind_pid 2>/dev/null)
       then
-        echo $echo_n "Shutting down MySQL"
-        kill $mysqld_pid
-        # mysqld should remove the pid file when it exits, so wait for it.
-        wait_for_pid removed "$mysqld_pid" "$mysqld_pid_file_path"; return_value=$?
+        echo $echo_n "Shutting down MyBlockchain"
+        kill $myblockchaind_pid
+        # myblockchaind should remove the pid file when it exits, so wait for it.
+        wait_for_pid removed "$myblockchaind_pid" "$myblockchaind_pid_file_path"; return_value=$?
       else
-        log_failure_msg "MySQL server process #$mysqld_pid is not running!"
-        rm "$mysqld_pid_file_path"
+        log_failure_msg "MyBlockchain server process #$myblockchaind_pid is not running!"
+        rm "$myblockchaind_pid_file_path"
       fi
 
       # Delete lock for RedHat / SuSE
@@ -324,7 +324,7 @@ case "$mode" in
       fi
       exit $return_value
     else
-      log_failure_msg "MySQL server PID file could not be found!"
+      log_failure_msg "MyBlockchain server PID file could not be found!"
     fi
     ;;
 
@@ -340,44 +340,44 @@ case "$mode" in
     ;;
 
   'reload'|'force-reload')
-    if test -s "$mysqld_pid_file_path" ; then
-      read mysqld_pid <  "$mysqld_pid_file_path"
-      kill -HUP $mysqld_pid && log_success_msg "Reloading service MySQL"
-      touch "$mysqld_pid_file_path"
+    if test -s "$myblockchaind_pid_file_path" ; then
+      read myblockchaind_pid <  "$myblockchaind_pid_file_path"
+      kill -HUP $myblockchaind_pid && log_success_msg "Reloading service MyBlockchain"
+      touch "$myblockchaind_pid_file_path"
     else
-      log_failure_msg "MySQL PID file could not be found!"
+      log_failure_msg "MyBlockchain PID file could not be found!"
       exit 1
     fi
     ;;
   'status')
     # First, check to see if pid file exists
-    if test -s "$mysqld_pid_file_path" ; then 
-      read mysqld_pid < "$mysqld_pid_file_path"
-      if kill -0 $mysqld_pid 2>/dev/null ; then 
-        log_success_msg "MySQL running ($mysqld_pid)"
+    if test -s "$myblockchaind_pid_file_path" ; then 
+      read myblockchaind_pid < "$myblockchaind_pid_file_path"
+      if kill -0 $myblockchaind_pid 2>/dev/null ; then 
+        log_success_msg "MyBlockchain running ($myblockchaind_pid)"
         exit 0
       else
-        log_failure_msg "MySQL is not running, but PID file exists"
+        log_failure_msg "MyBlockchain is not running, but PID file exists"
         exit 1
       fi
     else
-      # Try to find appropriate mysqld process
-      mysqld_pid=`pidof $libexecdir/mysqld`
+      # Try to find appropriate myblockchaind process
+      myblockchaind_pid=`pidof $libexecdir/myblockchaind`
 
       # test if multiple pids exist
-      pid_count=`echo $mysqld_pid | wc -w`
+      pid_count=`echo $myblockchaind_pid | wc -w`
       if test $pid_count -gt 1 ; then
-        log_failure_msg "Multiple MySQL running but PID file could not be found ($mysqld_pid)"
+        log_failure_msg "Multiple MyBlockchain running but PID file could not be found ($myblockchaind_pid)"
         exit 5
-      elif test -z $mysqld_pid ; then 
+      elif test -z $myblockchaind_pid ; then 
         if test -f "$lock_file_path" ; then 
-          log_failure_msg "MySQL is not running, but lock file ($lock_file_path) exists"
+          log_failure_msg "MyBlockchain is not running, but lock file ($lock_file_path) exists"
           exit 2
         fi 
-        log_failure_msg "MySQL is not running"
+        log_failure_msg "MyBlockchain is not running"
         exit 3
       else
-        log_failure_msg "MySQL is running but PID file could not be found"
+        log_failure_msg "MyBlockchain is running but PID file could not be found"
         exit 4
       fi
     fi
@@ -385,7 +385,7 @@ case "$mode" in
     *)
       # usage
       basename=`basename "$0"`
-      echo "Usage: $basename  {start|stop|restart|reload|force-reload|status}  [ MySQL server options ]"
+      echo "Usage: $basename  {start|stop|restart|reload|force-reload|status}  [ MyBlockchain server options ]"
       exit 1
     ;;
 esac

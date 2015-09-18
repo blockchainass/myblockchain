@@ -2604,7 +2604,7 @@ void Dbdih::startInfoReply(Signal* signal, Uint32 nodeId)
  * synchronize this information with all other nodes in the cluster.
  * This information will also be synchronized to the file system in
  * the Sysfile. This file is where all restarts start by looking at
- * the state of the our database on files.
+ * the state of the our blockchain on files.
  * The COPY_GCIREQ signal is used to distribute this message.
  *
  * When all nodes have synchronized this information to disk and confirmed
@@ -7415,7 +7415,7 @@ Dbdih::nr_run_redo(Signal* signal, TakeOverRecordPtr takeOverPtr)
 
   g_eventLogger->info("All start fragments sent, requesting LDM to restore"
                       " all fragments and to execute the REDO log to bring"
-                      " the database to an off-line but consistent state");
+                      " the blockchain to an off-line but consistent state");
 
   takeOverPtr.p->toCurrentTabref = 0;
   takeOverPtr.p->toCurrentFragid = 0;

@@ -49,8 +49,8 @@
 #ifdef _WIN32
 #include <winsock2.h>
 #endif
-#include <mysql.h>
-#include <mysqld_error.h>
+#include <myblockchain.h>
+#include <myblockchaind_error.h>
 #include <NdbApi.hpp>
 
 #include <stdlib.h>
@@ -75,8 +75,8 @@ milliSleep(int milliseconds){
   std::cout << "Error in " << __FILE__ << ", line: " << __LINE__ \
             << ", code: " << code \
             << ", msg: " << msg << "." << std::endl
-#define MYSQLERROR(mysql) { \
-  PRINT_ERROR(mysql_errno(&mysql),mysql_error(&mysql)); \
+#define MYBLOCKCHAINERROR(myblockchain) { \
+  PRINT_ERROR(myblockchain_errno(&myblockchain),myblockchain_error(&myblockchain)); \
   exit(-1); }
 #define APIERROR(error) { \
   PRINT_ERROR(error.code,error.message); \
@@ -138,12 +138,12 @@ void closeTransaction(Ndb * ndb , async_callback_t * cb);
 /**
  * Function to create table
  */
-void create_table(MYSQL &mysql);
+void create_table(MYBLOCKCHAIN &myblockchain);
 
 /**
  * Function to drop table
  */
-void drop_table(MYSQL &mysql);
+void drop_table(MYBLOCKCHAIN &myblockchain);
 
 /**
  * stat. variables
@@ -200,9 +200,9 @@ callback(int result, NdbTransaction* trans, void* aObject)
 /**
  * Create table "api_async"
  */
-void create_table(MYSQL &mysql) 
+void create_table(MYBLOCKCHAIN &myblockchain) 
 {
-  while (mysql_query(&mysql, 
+  while (myblockchain_query(&myblockchain, 
 		  "CREATE TABLE"
 		  "  api_async"
 		  "    (REG_NO INT UNSIGNED NOT NULL,"
@@ -211,21 +211,21 @@ void create_table(MYSQL &mysql)
 		  "     PRIMARY KEY USING HASH (REG_NO))"
 		  "  ENGINE=NDB"))
   {
-    if (mysql_errno(&mysql) != ER_TABLE_EXISTS_ERROR)
-      MYSQLERROR(mysql);
-    std::cout << "MySQL Cluster already has example table: api_async. "
+    if (myblockchain_errno(&myblockchain) != ER_TABLE_EXISTS_ERROR)
+      MYBLOCKCHAINERROR(myblockchain);
+    std::cout << "MyBlockchain Cluster already has example table: api_async. "
 	      << "Dropping it..." << std::endl; 
-    drop_table(mysql);
+    drop_table(myblockchain);
   }
 }
 
 /**
  * Drop table api_async
  */
-void drop_table(MYSQL &mysql)
+void drop_table(MYBLOCKCHAIN &myblockchain)
 {
-  if (mysql_query(&mysql, "DROP TABLE api_async"))
-    MYSQLERROR(mysql);
+  if (myblockchain_query(&myblockchain, "DROP TABLE api_async"))
+    MYBLOCKCHAINERROR(myblockchain);
 }
 
 
@@ -418,30 +418,30 @@ int main(int argc, char** argv)
 {
   if (argc != 3)
   {
-    std::cout << "Arguments are <socket mysqld> <connect_string cluster>.\n";
+    std::cout << "Arguments are <socket myblockchaind> <connect_string cluster>.\n";
     exit(-1);
   }
-  char * mysqld_sock  = argv[1];
+  char * myblockchaind_sock  = argv[1];
   const char *connectstring = argv[2];
   ndb_init();
-  MYSQL mysql;
+  MYBLOCKCHAIN myblockchain;
 
   /**************************************************************
-   * Connect to mysql server and create table                   *
+   * Connect to myblockchain server and create table                   *
    **************************************************************/
   {
-    if ( !mysql_init(&mysql) ) {
-      std::cout << "mysql_init failed\n";
+    if ( !myblockchain_init(&myblockchain) ) {
+      std::cout << "myblockchain_init failed\n";
       exit(-1);
     }
-    if ( !mysql_real_connect(&mysql, "localhost", "root", "", "",
-			     0, mysqld_sock, 0) )
-      MYSQLERROR(mysql);
+    if ( !myblockchain_real_connect(&myblockchain, "localhost", "root", "", "",
+			     0, myblockchaind_sock, 0) )
+      MYBLOCKCHAINERROR(myblockchain);
 
-    mysql_query(&mysql, "CREATE DATABASE ndb_examples");
-    if (mysql_query(&mysql, "USE ndb_examples") != 0) MYSQLERROR(mysql);
+    myblockchain_query(&myblockchain, "CREATE DATABASE ndb_examples");
+    if (myblockchain_query(&myblockchain, "USE ndb_examples") != 0) MYBLOCKCHAINERROR(myblockchain);
 
-    create_table(mysql);
+    create_table(myblockchain);
   }
 
   /**************************************************************
@@ -461,7 +461,7 @@ int main(int argc, char** argv)
   }
 
   Ndb* myNdb = new Ndb( &cluster_connection,
-			"ndb_examples" );  // Object representing the database
+			"ndb_examples" );  // Object representing the blockchain
   if (myNdb->init(1024) == -1) {      // Set max 1024 parallel transactions
     APIERROR(myNdb->getNdbError());
   }

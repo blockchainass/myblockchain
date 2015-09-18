@@ -88,7 +88,7 @@ static int g_configinfo = 0;
 static int g_xml = 0;
 static int g_config_from_node = 0;
 
-const char *load_default_groups[]= { "mysql_cluster",0 };
+const char *load_default_groups[]= { "myblockchain_cluster",0 };
 
 typedef ndb_mgm_configuration_iterator Iter;
 

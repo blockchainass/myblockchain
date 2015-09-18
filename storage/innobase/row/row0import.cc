@@ -38,7 +38,7 @@ Created 2012-02-08 by Sunny Bains.
 #include "pars0pars.h"
 #include "row0upd.h"
 #include "row0sel.h"
-#include "row0mysql.h"
+#include "row0myblockchain.h"
 #include "srv0start.h"
 #include "row0quiesce.h"
 #include "ut0new.h"
@@ -170,14 +170,14 @@ struct row_import {
 
 	/** Check if the table schema that was read from the .cfg file
 	matches the in memory table definition.
-	@param thd MySQL session variable
+	@param thd MyBlockchain session variable
 	@return DB_SUCCESS or error code. */
 	dberr_t match_table_columns(
 		THD*			thd) UNIV_NOTHROW;
 
 	/** Check if the table (and index) schema that was read from the
 	.cfg file matches the in memory table definition.
-	@param thd MySQL session variable
+	@param thd MyBlockchain session variable
 	@return DB_SUCCESS or error code. */
 	dberr_t match_schema(
 		THD*			thd) UNIV_NOTHROW;
@@ -620,7 +620,7 @@ struct FetchIndexRootPages : public AbstractCallback {
 
 		if (!dict_tf_is_valid(ibd_table_flags)) {
 
-			ib_errf(m_trx->mysql_thd, IB_LOG_LEVEL_ERROR,
+			ib_errf(m_trx->myblockchain_thd, IB_LOG_LEVEL_ERROR,
 				ER_TABLE_SCHEMA_MISMATCH,
 				".ibd file has invalid table flags: %lx",
 				ibd_table_flags);
@@ -633,7 +633,7 @@ struct FetchIndexRootPages : public AbstractCallback {
 
 		if (table_rec_format != ibd_rec_format) {
 
-			ib_errf(m_trx->mysql_thd, IB_LOG_LEVEL_ERROR,
+			ib_errf(m_trx->myblockchain_thd, IB_LOG_LEVEL_ERROR,
 				ER_TABLE_SCHEMA_MISMATCH,
 				"Table has %s row format, .ibd"
 				" file has %s row format.",
@@ -1173,7 +1173,7 @@ row_import::match_index_columns(
 
 /** Check if the table schema that was read from the .cfg file matches the
 in memory table definition.
-@param thd MySQL session variable
+@param thd MyBlockchain session variable
 @return DB_SUCCESS or error code. */
 dberr_t
 row_import::match_table_columns(
@@ -1282,7 +1282,7 @@ row_import::match_table_columns(
 
 /** Check if the table (and index) schema that was read from the .cfg file
 matches the in memory table definition.
-@param thd MySQL session variable
+@param thd MyBlockchain session variable
 @return DB_SUCCESS or error code. */
 dberr_t
 row_import::match_schema(
@@ -1391,7 +1391,7 @@ row_import::set_root_by_heuristic() UNIV_NOTHROW
 			" the tablespace has " << m_n_indexes << " indexes";
 	}
 
-	dict_mutex_enter_for_mysql();
+	dict_mutex_enter_for_myblockchain();
 
 	ulint	i = 0;
 	dberr_t	err = DB_SUCCESS;
@@ -1434,7 +1434,7 @@ row_import::set_root_by_heuristic() UNIV_NOTHROW
 		}
 	}
 
-	dict_mutex_exit_for_mysql();
+	dict_mutex_exit_for_myblockchain();
 
 	return(err);
 }
@@ -1615,7 +1615,7 @@ PageConverter::adjust_cluster_index_blob_column(
 
 	if (len < BTR_EXTERN_FIELD_REF_SIZE) {
 
-		ib_errf(m_trx->mysql_thd, IB_LOG_LEVEL_ERROR,
+		ib_errf(m_trx->myblockchain_thd, IB_LOG_LEVEL_ERROR,
 			ER_INNODB_INDEX_CORRUPT,
 			"Externally stored column(%lu) has a reference"
 			" length of %lu in the cluster index %s",
@@ -2106,7 +2106,7 @@ row_import_discard_changes(
 
 	if (trx->dict_operation_lock_mode != RW_X_LATCH) {
 		ut_a(trx->dict_operation_lock_mode == 0);
-		row_mysql_lock_data_dictionary(trx);
+		row_myblockchain_lock_data_dictionary(trx);
 	}
 
 	ut_a(trx->dict_operation_lock_mode == RW_X_LATCH);
@@ -2149,11 +2149,11 @@ row_import_cleanup(
 
 	DBUG_EXECUTE_IF("ib_import_before_commit_crash", DBUG_SUICIDE(););
 
-	trx_commit_for_mysql(trx);
+	trx_commit_for_myblockchain(trx);
 
-	row_mysql_unlock_data_dictionary(trx);
+	row_myblockchain_unlock_data_dictionary(trx);
 
-	trx_free_for_mysql(trx);
+	trx_free_for_myblockchain(trx);
 
 	prebuilt->trx->op_info = "";
 
@@ -2182,7 +2182,7 @@ row_import_error(
 			prebuilt->table->name.m_name);
 
 		ib_senderrf(
-			trx->mysql_thd, IB_LOG_LEVEL_WARN,
+			trx->myblockchain_thd, IB_LOG_LEVEL_WARN,
 			ER_INNODB_IMPORT_ERROR,
 			table_name, (ulong) err, ut_strerr(err));
 	}
@@ -2243,7 +2243,7 @@ row_import_adjust_root_pages_of_secondary_indexes(
 				break;
 			}
 
-			ib_errf(trx->mysql_thd,
+			ib_errf(trx->myblockchain_thd,
 				IB_LOG_LEVEL_WARN,
 				ER_INNODB_INDEX_CORRUPT,
 				"Index %s not found or corrupt,"
@@ -2280,7 +2280,7 @@ row_import_adjust_root_pages_of_secondary_indexes(
 			break;
 		} else if (purge.get_n_rows() != n_rows_in_table) {
 
-			ib_errf(trx->mysql_thd,
+			ib_errf(trx->myblockchain_thd,
 				IB_LOG_LEVEL_WARN,
 				ER_INNODB_INDEX_CORRUPT,
 				"Index %s contains %lu entries,"
@@ -2378,7 +2378,7 @@ row_import_set_sys_max_row_id(
 			err = DB_CORRUPTION;);
 
 	if (err != DB_SUCCESS) {
-		ib_errf(prebuilt->trx->mysql_thd,
+		ib_errf(prebuilt->trx->myblockchain_thd,
 			IB_LOG_LEVEL_WARN,
 			ER_INNODB_INDEX_CORRUPT,
 			"Index `%s` corruption detected, invalid DB_ROW_ID"
@@ -3219,7 +3219,7 @@ row_import_update_index_root(
 
 		que_thr_t*	thr;
 
-		graph->fork_type = QUE_FORK_MYSQL_INTERFACE;
+		graph->fork_type = QUE_FORK_MYBLOCKCHAIN_INTERFACE;
 
 		ut_a(thr = que_fork_start_command(graph));
 
@@ -3231,7 +3231,7 @@ row_import_update_index_root(
 		err = trx->error_state;
 
 		if (err != DB_SUCCESS) {
-			ib_errf(trx->mysql_thd, IB_LOG_LEVEL_ERROR,
+			ib_errf(trx->myblockchain_thd, IB_LOG_LEVEL_ERROR,
 				ER_INTERNAL_ERROR,
 				"While updating the <space, root page"
 				" number> of index %s - %s",
@@ -3363,10 +3363,10 @@ Imports a tablespace. The space id in the .ibd file must match the space id
 of the table in the data dictionary.
 @return error code or DB_SUCCESS */
 dberr_t
-row_import_for_mysql(
+row_import_for_myblockchain(
 /*=================*/
 	dict_table_t*	table,		/*!< in/out: table */
-	row_prebuilt_t*	prebuilt)	/*!< in: prebuilt struct in MySQL */
+	row_prebuilt_t*	prebuilt)	/*!< in: prebuilt struct in MyBlockchain */
 {
 	dberr_t		err;
 	trx_t*		trx;
@@ -3386,7 +3386,7 @@ row_import_for_mysql(
 
 	trx_start_if_not_started(prebuilt->trx, true);
 
-	trx = trx_allocate_for_mysql();
+	trx = trx_allocate_for_myblockchain();
 
 	/* So that the table is not DROPped during recovery. */
 	trx_set_dict_operation(trx, TRX_DICT_OP_INDEX);
@@ -3394,7 +3394,7 @@ row_import_for_mysql(
 	trx_start_if_not_started(trx, true);
 
 	/* So that we can send error messages to the user. */
-	trx->mysql_thd = prebuilt->trx->mysql_thd;
+	trx->myblockchain_thd = prebuilt->trx->myblockchain_thd;
 
 	/* Ensure that the table will be dropped by trx_rollback_active()
 	in case of a crash. */
@@ -3435,7 +3435,7 @@ row_import_for_mysql(
 
 	memset(&cfg, 0x0, sizeof(cfg));
 
-	err = row_import_read_cfg(table, trx->mysql_thd, cfg);
+	err = row_import_read_cfg(table, trx->myblockchain_thd, cfg);
 
 	/* Check if the table column definitions match the contents
 	of the config file. */
@@ -3445,7 +3445,7 @@ row_import_for_mysql(
 		/* We have a schema file, try and match it with our
 		data dictionary. */
 
-		err = cfg.match_schema(trx->mysql_thd);
+		err = cfg.match_schema(trx->myblockchain_thd);
 
 		/* Update index->page and SYS_INDEXES.PAGE_NO to match the
 		B-tree root page numbers in the tablespace. Use the index
@@ -3528,7 +3528,7 @@ row_import_for_mysql(
 			table_name, sizeof(table_name),
 			table->name.m_name);
 
-		ib_errf(trx->mysql_thd, IB_LOG_LEVEL_ERROR,
+		ib_errf(trx->myblockchain_thd, IB_LOG_LEVEL_ERROR,
 			ER_INTERNAL_ERROR,
 			"Cannot reset LSNs in table %s : %s",
 			table_name, ut_strerr(err));
@@ -3536,7 +3536,7 @@ row_import_for_mysql(
 		return(row_import_cleanup(prebuilt, trx, err));
 	}
 
-	row_mysql_lock_data_dictionary(trx);
+	row_myblockchain_lock_data_dictionary(trx);
 
 	/* If the table is stored in a remote tablespace, we need to
 	determine that filepath from the link file and system tables.
@@ -3560,7 +3560,7 @@ row_import_for_mysql(
 	);
 
 	if (filepath == NULL) {
-		row_mysql_unlock_data_dictionary(trx);
+		row_myblockchain_unlock_data_dictionary(trx);
 		return(row_import_cleanup(prebuilt, trx, DB_OUT_OF_MEMORY));
 	}
 
@@ -3580,9 +3580,9 @@ row_import_for_mysql(
 			err = DB_TABLESPACE_NOT_FOUND;);
 
 	if (err != DB_SUCCESS) {
-		row_mysql_unlock_data_dictionary(trx);
+		row_myblockchain_unlock_data_dictionary(trx);
 
-		ib_senderrf(trx->mysql_thd, IB_LOG_LEVEL_ERROR,
+		ib_senderrf(trx->myblockchain_thd, IB_LOG_LEVEL_ERROR,
 			ER_FILE_NOT_FOUND,
 			filepath, err, ut_strerr(err));
 
@@ -3591,7 +3591,7 @@ row_import_for_mysql(
 		return(row_import_cleanup(prebuilt, trx, err));
 	}
 
-	row_mysql_unlock_data_dictionary(trx);
+	row_myblockchain_unlock_data_dictionary(trx);
 
 	ut_free(filepath);
 
@@ -3691,7 +3691,7 @@ row_import_for_mysql(
 	/* The dictionary latches will be released in in row_import_cleanup()
 	after the transaction commit, for both success and error. */
 
-	row_mysql_lock_data_dictionary(trx);
+	row_myblockchain_lock_data_dictionary(trx);
 
 	/* Update the root pages of the table's indexes. */
 	err = row_import_update_index_root(trx, table, false, true);

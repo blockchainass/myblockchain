@@ -30,7 +30,7 @@ FILE(READ "${SRC_SCRIPT}" C_SRC_SCRIPT)
 STRING(REPLACE "-DCPACK_MONOLITHIC_INSTALL=" "-E echo " C_COMP_SCRIPT "${C_SRC_SCRIPT}")
 
 # The original script also calls the WiX tools candle and light and tests for successful execution. 
-# But the wxs file resulting when using a MySQL Cluster install is broken and will result in failures 
+# But the wxs file resulting when using a MyBlockchain Cluster install is broken and will result in failures 
 # and warnings from these tools. To avoid build failures we remove the RESULT_VARIABLE and add OUTPUT_QUIET
 STRING(REPLACE "RESULT_VARIABLE CANDLE_RESULT" "OUTPUT_QUIET" C_CANDLE_QUIET_SCRIPT "${C_COMP_SCRIPT}")
 STRING(REPLACE "RESULT_VARIABLE LIGHT_RESULT" "OUTPUT_QUIET" C_LIGHT_QUIET_SCRIPT "${C_CANDLE_QUIET_SCRIPT}")
