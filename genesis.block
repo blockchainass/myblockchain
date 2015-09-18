@@ -1,0 +1,6 @@
+CREATE TABLE blocks (
+  id INT,
+  previous_block_id INT
+) TYPE=innodb;
+
+INSERT INTO blocks (id, previous_block_id) VALUES (42, NULL);
