@@ -18,14 +18,14 @@ Therefore there are special exceptions to the terms and conditions
 of the GPLv2 as applied to these client libraries, which are
 identified and described in more detail in the FOSS License
 Exception at
-<http://www.myblockchain.com/about/legal/licensing/foss-exception.html>.
+<http://www.myblockchain.xyz/>.
 
 This distribution may include materials developed by third
 parties. For license and attribution notices for these
 materials, please refer to the documentation that accompanies
 this distribution (see the "Licenses for Third-Party Components"
 appendix) or view the online documentation at
-<http://dev.myblockchain.com/doc/>.
+<http://www.myblockchain.xyz/doc/>.
 
 GPLv2 Disclaimer
 For the avoidance of doubt, except that if any license choice
@@ -38,8 +38,8 @@ of which version of the GPL is applied is otherwise unspecified.
 
 For further information about MyBlockchain or additional documentation,
 see:
-- The latest information about MyBlockchain: http://www.myblockchain.com
-- The current MyBlockchain documentation: http://dev.myblockchain.com/doc
+- The latest information about MyBlockchain: http://www.myblockchain.xyz
+- The current MyBlockchain documentation: http://www.myblockchain.xyz/doc
 
 Some Reference Manual sections of special interest:
 - If you are migrating from an older version of MyBlockchain, please
